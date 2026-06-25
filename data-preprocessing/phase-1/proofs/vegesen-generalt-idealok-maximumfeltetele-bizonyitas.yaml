@@ -1,0 +1,71 @@
+type: proof
+name: vegesen-generalt-idealok-maximumfeltetele-bizonyitas
+remarks: []
+references:
+  generalt-reszgyuru-es-ideal:
+    target:
+      type: theorem
+      name: generalt-reszgyuru-es-ideal
+  halmazrendszer-minimuma-es-maximuma:
+    target:
+      type: definition
+      name: halmazrendszer-minimuma-es-maximuma
+  idealok-unioja-ideal:
+    target:
+      type: theorem
+      name: idealok-unioja-ideal
+  reszhalmaz-reszbenrendezes:
+    target:
+      type: theorem
+      name: reszhalmaz-reszbenrendezes
+content:
+  - type: narrative
+    content: |
+      Tegyük fel ***indirekt***, hogy $R$ ***minden ideálja végesen generált***, ám ennek ellenére az $\mathcal{R}$
+      halmazrendszernek létezik egy olyan nemüres $\mathcal{S}$ részhalmaza, amelynek nincs maximális eleme. Ez a
+      [halmazrendszer-minimuma-es-maximuma] alapján azt jelenti, hogy bármilyen $X$ ideált választunk is ki
+      $\mathcal{S}$-ből, biztosan létezni fog egy $Y\in \mathcal{S}$ ideál is, amely $X$-nél bővebb, azaz amelyre
+      teljesül az $X\sub Y$ ***szigorú tartalmazási reláció***.
+  - type: formula
+    lead-in: |
+      Eszerint tehát $\mathcal{S}$ elemeiből alkotható egy olyan végtelen, ideálokból álló sorozat, amelyben minden
+      ideál szigorúan tartalmazza a sorozatban előtte lévőt:
+    content: |
+      I_1\sub I_2\sub I_3\sub \ldots
+  - type: narrative
+    content: |
+      Képezzük ennek a végtelen sok ideálnak az ***unióját***, és nevezzük az így kapott halmazt $U$-nak. A
+      [idealok-unioja-ideal] alapján ekkor $U$ is ideál az $R$ gyűrűben. Mivel $R$ minden ideálja végesen generált,
+      így $U$ is.
+  - type: formula
+    lead-in: |
+      Léteznek tehát az $R$ gyűrűben olyan $a_1,a_2,\ldots,a_n$ elemek, amelyek generálják az $U$ ideált, azaz:
+    content: |
+      U=(a_1,a_2,\ldots,a_n)
+  - type: narrative
+    content: |
+      Mivel e generátorelemek benne vannak az $U$ unióhalmazban, ezért minden generátorelemnek benne kell lennie az
+      $I_1, I_2, I_3,\ldots$ ideálok közül is legalább az egyikben. Mivel ezen ideálok közül mindegyik szigorúan
+      tartalmazza a sorozatban előtte lévőt, ezért kell lennie közöttük egy olyan $I_k$ ideálnak, amely már minden
+      generátorelemet tartalmaz.
+  - type: narrative
+    content: |
+      Tehát egyrészt teljesül az $U\sube I_k$ tartalmazási reláció, hiszen a [generalt-reszgyuru-es-ideal] miatt
+      $U$ a ***legszűkebb*** olyan ideál, amely az $a_1, a_2, \ldots, a_n$ generátorelemeket tartalmazza. Másrészt
+      a fenti ideálokból álló sorozat következő elemére, azaz $I_{k+1}$-re ugye teljesül az $I_k\sub I_{k+1}$
+      ***szigorú tartalmazási reláció***, továbbá az $I_{k+1}\sube U$ tartalmazási reláció is, hiszen $I_{k+1}$
+      egyike azon ideáloknak, amelyek uniójából állítottuk elő az $U$ ideált.
+  - type: formula
+    lead-in: |
+      Ezeket összevetve tehát az alábbit kaptuk:
+    content: |
+      U\sube I_k\sub I_{k+1}\sube U
+  - type: narrative
+    content: |
+      Mivel a $\sube$ és a $\sub$ relációk tranzitívak ([reszhalmaz-reszbenrendezes]), ezért ez azt jelenti, hogy
+      teljesül az $U\sub U$ ***szigorú tartalmazási reláció***. Ez viszont lehetetlen, hiszen ez azt jelentené,
+      hogy létezik olyan $x$ gyűrűelem, amelyre $x\in U$ és $x\otin U$ egyaránt teljesül.
+  - type: narrative
+    content: |
+      Ha tehát $R$ minden ideálja végesen generált, akkor az ezekből álló $\mathcal{R}$ halmazrendszer bármely
+      nemüres részhalmazának szükségképpen kell legyen maximuma.

@@ -1,0 +1,16 @@
+type: remark
+name: ideal-szerinti-kongruencia-ekvivalenciarelacio-megjegyzes
+references:
+  ekvivalenciarelacio-tulajdonsagai:
+    target:
+      type: theorem
+      name: ekvivalenciarelacio-tulajdonsagai
+content:
+  - type: narrative
+    content: |
+      Ez alapján tehát ha $r$ és $s$ az $R$ gyűrű két tetszőleges eleme, akkor az $r+I$ és $s+I$ maradékosztályok
+      viszonyaira vonatkozóan két eset lehetséges. Vagy teljesen megegyeznek egymással, azaz pontosan ugyanazok az
+      elemeik, vagy pedig egyáltalán nincs közös elemük. Ha ugyanis teljesül az $r\equiv s\pod I$ kongruencia,
+      akkor az azt jelenti, hogy $r$ és $s$ ugyanabban a maradékosztályban van, következésképp $r+I=s+I$. Ha
+      viszont a kongruencia nem teljesül, akkor ők külön maradékosztályba kerültek, amelyeknek a tétel alapján nem
+      lehet közös elemük, hiszen ekvivalencia-osztályok (bővebben lásd a [ekvivalenciarelacio-tulajdonsagai]t).

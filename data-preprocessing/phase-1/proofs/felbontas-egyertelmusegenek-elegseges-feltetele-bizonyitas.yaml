@@ -1,0 +1,73 @@
+type: proof
+name: felbontas-egyertelmusegenek-elegseges-feltetele-bizonyitas
+remarks: []
+references:
+  asszocialtsag-es-egysegek-kapcsolata:
+    target:
+      type: theorem
+      name: asszocialtsag-es-egysegek-kapcsolata
+  egyseg-letezesenek-szukseges-es-elegseges-feltetele:
+    target:
+      type: theorem
+      name: egyseg-letezesenek-szukseges-es-elegseges-feltetele
+  egysegek-es-egysegelem-viszonya:
+    target:
+      type: theorem
+      name: egysegek-es-egysegelem-viszonya
+  felbonthatatlan-elem:
+    target:
+      type: definition
+      name: felbonthatatlan-elem
+content:
+  - type: formula
+    lead-in: |
+      Tekintsük ugyanis egy felbontható $x$ elem két tetszőleges felbontását:
+    content: |
+      x=p_1\cdot p_2\cdot \ldots \cdot p_n = q_1\cdot q_2\cdot \ldots \cdot q_k
+  - type: narrative
+    content: |
+      Azt kell bizonyítani, hogy a kétféle felbontásban ugyanannyi felbonthatatlan tényező van, és minden baloldali
+      tényezőnek van egy asszociált párja a jobboldali felbontásban. Kezdjük $p_1$-gyel.
+  - type: narrative
+    content: |
+      Mivel jelen esetben minden felbonthatatlan prímtulajdonságú, ezért $p_1$ is az, amely ugye a fenti egyenlet
+      alapján osztója a jobboldali $q_1\cdot \ldots \cdot q_k$ szorzatnak. A prímtulajdonság miatt ekkor osztója e
+      szorzat legalább egy tényezőjének is. Az általánosság megsértése nélkül feltételezhetjük, hogy ez a tényező
+      $q_1$. Ha mégsem ez lenne a helyzet, akkor a megfelelő módon átsorszámozzuk a jobboldali tényezőket.
+  - type: narrative
+    content: |
+      Teljesül tehát a $p_1|q_1$ oszthatóság, de mivel $q_1$ felbonthatatlan, ezért ez a [felbonthatatlan-elem]
+      alapján csak úgy teljesülhet, ha $q_1=p_1\cdot e_1$, ahol $e_1$ valamilyen egység. Az egység létezéséből a
+      [egyseg-letezesenek-szukseges-es-elegseges-feltetele] miatt következik, hogy a gyűrű egységelemes. Ekkor
+      azonban alkalmazható a [asszocialtsag-es-egysegek-kapcsolata], amely szerint $p_1$ és $q_1$ egymás
+      asszociáltjai &ndash; azaz megtaláltuk $p_1$ asszociált párját a jobboldalon.
+  - type: formula
+    lead-in: |
+      Az egyenletünk &ndash; amelyet a nullosztómentesség miatt egyszerűsíthetjük $p_1$-gyel &ndash; most így néz
+      ki:
+    content: |
+      \cancel{p_1}\cdot p_2\cdot \ldots \cdot p_n = \underbrace{\cancel{p_1}\cdot e_1}_{=q_1}\cdot q_2\cdot \ldots
+      \cdot q_k
+  - type: narrative
+    content: |
+      Ezután $p_2$-vel folytatjuk ugyanezt az eljárást, majd $p_3$-mal, stb. Az előbb látott gondolatmenet alapján
+      mindegyikhez megtaláljuk az asszociált párját a jobboldalon. Amikor az utolsó baloldali tényezővel is
+      megtörtént az egyszerűsítés, akkor az egyenlet baloldalán az egységelem marad, a jobboldalon pedig az
+      egyszerűsítések során előálló $n$ darab egységtényező. Kérdés, hogy ezeken az egységeken kívül marad-e még
+      további tényező a jobboldalon?
+  - type: formula
+    lead-in: |
+      Például:
+    content: |
+      1=e_1\cdot e_2\cdot \ldots \cdot e_n\cdot \underbrace{q_{n+1}\cdot q_{n+2} \cdot \ldots \cdot q_k}_{?}
+  - type: narrative
+    content: |
+      Ha ez így lenne, akkor az azt jelentené, hogy a $q_{n+1}$, $q_{n+2}$, ..., $q_k$ tényezők mindegyike osztója
+      lenne az egységelemnek, tehát végsősoron ők mind egységek lennének (a [egysegek-es-egysegelem-viszonya]
+      értelmében). Ez viszont lehetetlen, hiszen ezek a tényezők felbonthatatlanok, és így a [felbonthatatlan-elem]
+      szerint nem lehetnek egységek.
+  - type: narrative
+    content: |
+      Ezért az egyszerűsítési eljárás során a baloldali és a jobboldali tényezők egyszerre fogynak el, és eközben
+      mindegyik baloldali tényezőhöz megtaláljuk az ő asszociált párját a jobboldalon. Az $x$ elem két felbontása
+      tehát sorrendtől és asszociáltságtól eltekintve valóban megegyezik.

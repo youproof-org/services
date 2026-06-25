@@ -1,0 +1,21 @@
+type: theorem
+name: termeszetes-szamok-beagyazasa-osszegtarto
+proofs:
+  - termeszetes-szamok-beagyazasa-osszegtarto-bizonyitas
+remarks: []
+references:
+  peano-axiomarendszer:
+    target:
+      type: definition
+      name: peano-axiomarendszer
+content:
+  - type: formula
+    lead-in: |
+      Tegyük fel, hogy $\N_1$ a Peano-axiómarendszer ([peano-axiomarendszer]) szerint definiált természetes számok
+      halmaza, valamint adva van egy $f:\N_1 \to \Z$ függvény az alábbiak szerint:
+    content: |
+      f(n)=[(n;0)]
+  - type: narrative
+    content: |
+      Ekkor tetszőleges $a$ és $b$ természetes számokra teljesül, hogy $f(a+b)=f(a)\oplus f(b)$. Más szavakkal $f$
+      egy ***injektív homomorfizmus*** az $(\N_1, +)$ és a $(\Z ,\oplus )$ algebrai struktúrák között.

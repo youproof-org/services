@@ -1,0 +1,187 @@
+type: chapter
+name: 19-alice-es-bob-idealjai
+title: Alice és Bob ideáljai
+
+references:
+  euklideszi-gyuru:
+    target:
+      type: definition
+      name: euklideszi-gyuru
+  euklideszi-gyuruben-letezik-kituntetett-kozos-oszto:
+    target:
+      type: theorem
+      name: euklideszi-gyuruben-letezik-kituntetett-kozos-oszto
+  euklideszi-gyurukben-teljesul-a-szamelmelet-alaptetele:
+    target:
+      type: theorem
+      name: euklideszi-gyurukben-teljesul-a-szamelmelet-alaptetele
+  euklideszi-norma-egyenlotlensegi-tulajdonsaga:
+    target:
+      type: theorem
+      name: euklideszi-norma-egyenlotlensegi-tulajdonsaga
+  euklideszi-norma-szigoru-egyenlotlensegenek-feltetele:
+    target:
+      type: theorem
+      name: euklideszi-norma-szigoru-egyenlotlensegenek-feltetele
+  felbonthatatlan-elem:
+    target:
+      type: definition
+      name: felbonthatatlan-elem
+  kituntetett-kozos-oszto:
+    target:
+      type: definition
+      name: kituntetett-kozos-oszto
+  kituntetett-kozos-oszto-letezesenek-kovetkezmenye:
+    target:
+      type: theorem
+      name: kituntetett-kozos-oszto-letezesenek-kovetkezmenye
+  primtulajdonsagu-elem:
+    target:
+      type: definition
+      name: primtulajdonsagu-elem
+  szamelmelet-alaptetele-nem-egysegelemes-integritastartomanyokban:
+    target:
+      type: theorem
+      name: szamelmelet-alaptetele-nem-egysegelemes-integritastartomanyokban
+  szamelmelet-alaptetelenek-szukseges-feltetele:
+    target:
+      type: theorem
+      name: szamelmelet-alaptetelenek-szukseges-feltetele
+
+abstract:
+  - type: narrative
+    content: |
+      Az előző részben megvizsgáltuk, hogyan kell osztási maradékokkal műveleteket végezni. Ezeket a műveleteket
+      moduláris összeadásnak és moduláris szorzásnak neveztük, és igazoltuk, hogy az osztási maradékok halmaza
+      ezzel a két művelettel gyűrűt alkot. Ennek során megmutattuk a 9. részben ismertetett Diffie-Hellman
+      kulcscsere protokoll helyességét. Ezután általánosságban is megvizsgáltuk a gyűrűk közötti művelettartó
+      leképezések, azaz a gyűrűhomomorfizmusok tulajdonságait. Ez adta a motivációt a kongruencia fogalmának
+      bevezetéséhez. Megmutattuk, hogy a kongruencia nem függ egy konkrét $f$ gyűrűhomomorfizmustól, hanem csak
+      azoktól az elemektől, amelyekhez $f$ a célgyűrű nullelemét rendeli hozzá. Ezt a részhalmazt $f$ magjának
+      neveztük. Ezzel párhuzamosan definiáltuk az ideál fogalmát, és megmutattuk, hogy egy gyűrűben pontosan az
+      ideálok lehetnek gyűrűhomomorfizmusok magjai. Ehhez meg kellett ismerkednünk a maradékosztálygyűrű (vagy
+      faktorgyűrű) fogalmával. Végül egy egyszerű következményként adódott az úgynevezett homomorfizmustétel.
+  - type: narrative
+    content: |
+      De vajon hogyan néznek ki az egész számok gyűrűjének ideáljai? Mi a kapcsolat az ideálok és a 16. részben
+      bevezetett oszthatósági alapfogalmak között? Mik azok a főideálgyűrűk, és ezeknek milyen jó tulajdonságaik
+      vannak? Mi közük az euklidészi gyűrűkhöz? Hogyan zárható le a számelmélet alaptételének kérdése végérvényesen
+      az ideálok segítségével? Ebben a részben erről lesz szó...
+prerequisite-warning:
+  - type: narrative
+    content: |
+      Figyelem! Ez a rész erőteljesen épít a 12., 16., 17. és 18. részekben felépített alábbi definíciókra,
+      valamint a hozzájuk kapcsolódó tételekre:
+  - type: recall
+    target:
+      type: definition
+      name: rendezett-halmaz
+  - type: recall
+    target:
+      type: definition
+      name: oszthatosag
+  - type: recall
+    target:
+      type: definition
+      name: egyseg
+  - type: recall
+    target:
+      type: definition
+      name: asszocialt
+  - type: recall
+    target:
+      type: definition
+      name: szamelmelet-alaptetele
+  - type: recall
+    target:
+      type: definition
+      name: euklideszi-gyuru
+  - type: recall
+    target:
+      type: definition
+      name: reszgyuru
+  - type: recall
+    target:
+      type: definition
+      name: ideal
+  - type: narrative
+    content: |
+      Ezek kontextusba helyezése miatt erőteljesen ajánlott elolvasni a 12., 16., 17. és 18. részeket, mivel
+      gyakran hivatkozni fogunk rájuk. A teljes cikksorozat elejét itt találod.
+prologue:
+  - type: narrative
+    content: |
+      Az oszthatósági alapfogalmak kapcsán a 16. részben ismerkedtünk meg a felbonthatatlan (vagy prím-) számokkal,
+      és láttuk, hogy ezek bizonyos értelemben az építőkövek szerepét töltik be a számok között. A 17. részben
+      ugyanis igazoltuk, hogy egyrészt minden egész szám előállítható prímszámok szorzataként, másrészt pedig azt,
+      hogy ez lényegében csak egyféleképpen tehető meg. Ezt a két állítást &ndash; tehát a prímtényezős felbontás
+      ***létezését*** és ***egyértelműségét*** &ndash; együttesen a ***számelmélet alaptételének*** neveztük. Mi
+      azonban nem kimondottan az egész számok körében, hanem ennél általánosabban, a gyűrűk &ndash; pontosabban az
+      integritástartományok &ndash; absztrakciós szintjén vizsgáltuk a kérdést. Ezen a szinten általánosságban már
+      különválik a felbonthatatlan ([felbonthatatlan-elem]) és a prím fogalma ([primtulajdonsagu-elem]). Láttuk,
+      hogy a számelmélet alaptétele bizony nem teljesül minden integritástartományban, ezért megpróbáltuk
+      meghatározni ennek feltételeit. Először ismételjük át ennek főbb lépéseit.
+  - type: narrative
+    content: |
+      A keresett feltételek megtalálása mindeddig felemásan sikerült. Elsőként a
+      [szamelmelet-alaptetele-nem-egysegelemes-integritastartomanyokban] és a
+      [szamelmelet-alaptetelenek-szukseges-feltetele] fogalmazott meg egy-egy szükséges feltételt. E két tétel
+      alapján a számelmélet alaptétele csak ***egységelemes*** integritástartományokban teljesülhet, és azok közül
+      is csak azokban, amelyekben ***minden felbonthatatlan elem prímtulajdonságú***. Itt egyrészt megemlítettük,
+      hogy ez a két feltétel ***szükséges ugyan, de önmagában még nem elégséges*** az alaptételhez. Másrészt
+      viszont azt is megemlítettük, hogy "nem hiányzik sok", mivel a második feltétel az alaptétel egyértelműségi
+      állításához már elégséges (azaz a prímtényezős felbontás létezését ugyan nem garantálja, ám ha az mégis
+      létezik, akkor egyértelmű).
+  - type: narrative
+    content: |
+      Ezután a 17. részben megismerkedtünk az úgynevezett ***euklidészi gyűrűkkel*** ([euklideszi-gyuru]),
+      amelyekben bizonyos absztrakt értelemben elvégezhető a ***maradékos osztás***. Ennek két fontos következménye
+      volt. Egyrészt a [euklideszi-gyuruben-letezik-kituntetett-kozos-oszto] értelmében bármely két elemnek létezik
+      a ***kitüntetett közös osztója*** ([kituntetett-kozos-oszto]), amelyből a
+      [kituntetett-kozos-oszto-letezesenek-kovetkezmenye] alapján következik, hogy ***minden felbonthatatlan elem
+      prímtulajdonságú*** (azaz az alaptétel ***egyértelműségi*** állítása).
+  - type: narrative
+    content: |
+      Másrészt viszont a [euklideszi-norma-egyenlotlensegi-tulajdonsaga] és a
+      [euklideszi-norma-szigoru-egyenlotlensegenek-feltetele] alapján ha egy integritástartományon létezik
+      ***bármilyen*** euklidészi norma, akkor létezik olyan is, amely szigorúan nagyobb értéket ad bármilyen
+      kéttényezős szorzatra, mint a tényezőkre külön-külön (kivéve ha valamelyik tényező egység, amikoris
+      egyenlőség áll fenn). Ebből a [euklideszi-gyurukben-teljesul-a-szamelmelet-alaptetele] alapján már viszonylag
+      egyszerűen következik a ***prímtényezős felbontás létezéséről*** szóló állítás.
+  - type: narrative
+    content: |
+      A maradékos osztás elvégezhetősége tehát egy ***elégséges feltétel*** az alaptétel tejesüléséhez,
+      megemlítettük ***ugyanakkor***, hogy sajnos ***nem szükséges***. Léteznek ugyanis olyan
+      integritástartományok, amelyek nem euklidészi gyűrűk, mégis teljesül bennük az alaptétel. Van már tehát
+      ***szükséges (de nem elégséges)***, és ***elégséges (de nem szükséges)*** feltételünk. Jó volna mostmár
+      végleg lezárni ezt a kérdést, és találni egy olyan feltételrendszert, amely egyszerre ***szükséges és
+      elégséges*** is. Szerencsére az előző részben bevezetett ***ideálok*** segítségével ebben a részben képesek
+      leszünk megfogalmazni egy ilyen feltételrendszert.
+  - type: narrative
+    content: |
+      Ez szoros összefüggésben fog állni bizonyos ideálok egymáshoz való viszonyával. Minthogy egy gyűrű ideáljai
+      tulajdonképpen halmazok, ezért nem árt először megismerkedni néhány halmazokkal kapcsolatos alapfogalommal és
+      jelöléssel.
+sections:
+  - 01-halmazelmeleti-gyorstalpalo
+  - 02-halmazrendszerek
+  - 03-halmazrendszerek-reszbenrendezese
+  - 04-idealok-generalasa
+  - 05-a-foidealok-kapcsolata-az-oszthatosaggal
+  - 06-a-foidealok-es-a-szamelmelet-alaptetele
+  - 07-foidealgyuruk
+  - 08-osszefoglalas
+
+epilogue:
+  - type: narrative
+    content: |
+      Ebben a részben tehát végérvényesen lezártuk a számelmélet alaptételének kérdését azáltal, hogy egyszerre
+      szükséges és elégséges feltételrendszert mutattunk a teljesülésére. Ehhez egy rövid halmazelméleti
+      gyorstalpaló után az ideálok elméletének néhány alapvető összefüggésével ismerkedtünk meg. Végül bevezettük
+      az euklidészi gyűrűknél általánosabb főideálgyűrűk fogalmát, és igazoltuk, hogy ezekben is mindig teljesül az
+      alaptétel.
+  - type: narrative
+    content: |
+      A következő részekben elsősorban a főideálgyűrűk &ndash; és speciálisan az egész számok $\Z$ gyűrűjének
+      &ndash; ideáljaival, valamint az ezek szerinti kongruenciákkal és faktorgyűrűkkel fogunk foglalkozni. Ennek
+      során az RSA-algoritmus és a különböző prímtesztelő eljárások számelméleti összetevőivel ismerkedünk meg.

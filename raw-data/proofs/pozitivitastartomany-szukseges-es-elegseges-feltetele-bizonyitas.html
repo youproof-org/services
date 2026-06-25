@@ -1,0 +1,113 @@
+<!-- wp:paragraph -->
+<p><strong><em>Nézzük először a könnyebbik irányt.</em></strong> Azt kell belátnunk, hogy ha valamilyen [latex]P[/latex] részhalmazhoz létezik olyan [latex]\leq[/latex] részbenrendezés, amelynek épp [latex]P[/latex] a pozitivitástartománya, és kielégíti a [yp_element slug="rendezett-gyuru" type="link" /] szerinti rendezési axiómákat, akkor [latex]P[/latex] zárt az összeadásra és a szorzásra, valamint nem tartalmazza a nullelemet.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Vegyünk két tetszőleges [latex]P[/latex]-beli elemet, és jelöljük őket [latex]a[/latex]-val és [latex]b[/latex]-vel. Az, hogy ők [latex]P[/latex]-ben vannak, a [yp_element slug="pozitivitastartomany" type="link" /] miatt ezt jelenti:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a&amp;\
+eq 0 \\ b&amp;\
+eq 0 \\ a&amp;\geq 0 \\ b&amp;\geq 0\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az 1. rendezési axióma miatt az [latex]a\geq 0[/latex] egyenlőtlenség mindkét oldalához [latex]b[/latex]-t adva az egyenlőtlenség továbbra is érvényes, azaz [latex]a+b\geq b[/latex]. De mivel részbenrendezésről van szó, és [latex]b\geq 0[/latex] ugye teljesül, ezért a <strong><em>tranzitivitás</em></strong> miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a+b\geq 0[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Igaz ugyanakkor az is, hogy [latex]a+b \
+eq 0[/latex], hiszen máskülönben [latex]a=-b[/latex] lenne a helyzet, azaz a pozitivitástartomány [yp_element slug="pozitivitastartomany" type="link" /]ja utáni megjegyzés alapján egyiküknek a [latex]-P[/latex] negativitástartományban kéne lennie. Ez ugye ellentmondana annak, hogy mindkettő [latex]P[/latex]-ben van, így valóban [latex]a+b[/latex] is benne van [latex]P[/latex]-ben, azaz [latex]P[/latex] <strong><em>zárt az összeadásra</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most nézzük, mi a helyzet az [latex]ab[/latex] és a [latex]ba[/latex] szorzatokkal? A 2. rendezési axióma miatt az [latex]a\geq 0[/latex] egyenlőtlenség mindkét oldalát megszorozhatjuk a [latex]b\geq 0[/latex] elemmel jobbról is és balról is, azaz egyrészt [latex]ab\geq 0b[/latex], másrészt [latex]ba\geq b0[/latex]. Mindkét egyenlőtlenség jobboldala a [yp_element slug="gyuruk-alapveto-tulajdonsagai" type="link" /] 1. pontja alapján [latex]0[/latex]-val egyenlő, ezért:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}ab&amp;\geq 0 \\ ba&amp;\geq 0\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Tekintve, hogy a gyűrű a tétel feltétele miatt <strong><em>nullosztómentes</em></strong>, ezért e két szorzat közül egyik sem [latex]0[/latex], és így mindkettő szintén benne van [latex]P[/latex]-ben, azaz [latex]P[/latex] <strong><em>zárt a szorzásra is</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Végül, mivel [latex]P[/latex]-ről azt mondtuk, hogy pozitivitástartománya a [latex]\leq[/latex] rendezési relációnak, ezért a [yp_element slug="pozitivitastartomany" type="link" /] miatt <strong><em>nem tartalmazza a nullelemet</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Most nézzük a nehezebbik irányt.</em></strong> Itt azt kell belátnunk, hogy ha valamilyen [latex]P[/latex] részhalmaz zárt az összeadásra és a szorzásra, valamint nem tartalmazza a gyűrű nullelemét, akkor létezik olyan részbenrendezés a gyűrűn, amelynek épp [latex]P[/latex] a pozitivitástartománya, és kielégíti a [yp_element slug="rendezett-gyuru" type="link" /] szerinti rendezési axiómákat.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Definiáljunk hát egy [latex]\lesssim[/latex] szimbólummal jelölt relációt a gyűrű alaphalmazán a következőképpen: [latex]a \lesssim b[/latex] akkor és csak akkor, ha [latex]a=b[/latex] vagy pedig a [latex]b+(-a)[/latex] elem benne van a [latex]P[/latex] halmazban.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A feladatunk tehát megmutatni, hogy a [latex]P[/latex]-re vonatkozó feltételek teljesülése esetén [latex]\lesssim[/latex] valóban egy részbenrendezés (azaz reflexív, tranzitív és antiszimmetrikus), és ezen felül még a rendezési axiómákat is teljesíti. A <strong><em>reflexivitás</em></strong> azonnal látszik, hiszen a [latex]\lesssim[/latex] reláció teljesülésének első feltétele épp [latex]a=b[/latex] volt.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>tranzitivitás</em></strong> megmutatásához tegyük fel, hogy valamilyen [latex]a[/latex], [latex]b[/latex] és [latex]c[/latex] elemekre teljesülnek az [latex]a\lesssim b[/latex] és a [latex]b\lesssim c[/latex] relációk. Feladatunk megmutatni, hogy ekkor az [latex]a\lesssim c[/latex] reláció is teljesül. Feltehetjük, hogy ez a 3 elem páronként különbözik, máskülönben bármelyik kettő egyezése esetén nyilvánvalóan fennáll [latex]a\lesssim c[/latex]. Ha viszont páronként különböznek, akkor [latex]a\lesssim b[/latex] és [latex]b\lesssim c[/latex] épp azt jelenti, hogy a [latex]b+(-a)[/latex] és a [latex]c+(-b)[/latex] elemek benne vannak a [latex]P[/latex] halmazban. Mivel azonban [latex]P[/latex] zárt az összeadásra, ezért ezek összege is, azaz a [latex](b+(-a))+(c+(-b))[/latex] elem is benne van a [latex]P[/latex] halmazban. Az összeadásra vonatkozó gyűrűaxiómák miatt azonban ez a kifejezés [latex]c+(-a)[/latex]-val egyenlő, amely épp azt jelenti, hogy [latex]a\lesssim c[/latex]. A [latex]\lesssim[/latex] reláció tehát valóban tranzitív.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az <strong><em>antiszimmetria</em></strong> bizonyításához indirekt tegyük fel, hogy léteznek olyan galád [latex]a[/latex] és [latex]b[/latex] elemek, amelyekre [latex]a\lesssim b[/latex] és [latex]b\lesssim a[/latex] is teljesül, ugyanakkor [latex]a\
+eq b[/latex]. Ebben az esetben [latex]a\lesssim b[/latex] és [latex]b\lesssim a[/latex] épp azt jelenti, hogy a [latex]b+(-a)[/latex] és az [latex]a+(-b)[/latex] elemek benne vannak a [latex]P[/latex] halmazban. Mivel azonban [latex]P[/latex] zárt az összeadásra, ezért ezek összege is, azaz a [latex](b+(-a))+(a+(-b))[/latex] elem is benne van a [latex]P[/latex] halmazban. Az összeadásra vonatkozó gyűrűaxiómák miatt azonban ez a kifejezés épp a gyűrű nullelemével egyenlő. Ez ellentmond annak, hogy [latex]P[/latex] nem tartalmazza a nullelemet. A [latex]\lesssim[/latex] reláció tehát szükségképpen antiszimmetrikus kell legyen.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Annyi van még hátra, hogy megmutassuk, hogy a [latex]\lesssim[/latex] reláció teljesíti a [yp_element slug="rendezett-gyuru" type="link" /] szerinti <strong><em>rendezési axiómákat</em></strong> is. Nézzük az <strong><em>1. rendezési axiómát</em></strong>. Ehhez tegyük fel, hogy valamilyen [latex]a[/latex] és [latex]b[/latex] elemekre fennáll az [latex]a\lesssim b[/latex] reláció, és legyen [latex]c[/latex] egy tetszőleges gyűrűelem. Meg kell mutatnunk, hogy ekkor fennáll az [latex]a+c\lesssim b+c[/latex] reláció is. Feltehetjük, hogy [latex]a\
+eq b[/latex], hiszen máskülönben nyilvánvalóan a [latex]\lesssim[/latex] reláció már bizonyított reflexivitása miatt [latex]a+c\lesssim \underbrace{a}_{=b}+c[/latex] is igaz. Ha viszont [latex]a\
+eq b[/latex], akkor [latex]a\lesssim b[/latex] épp azt jelenti, hogy [latex]b+(-a)[/latex] benne van a [latex]P[/latex] halmazban. Ehhez a kifejezéshez hozzáadva a [latex]c[/latex] elemet és annak ellentettjét, a kifejezés eredménye a gyűrűaxiómák miatt nem változik:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](b+(-a))+\underbrace{(c+(-c))}_{=0}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel az összeadás kommutatív és asszociatív, így ez a kifejezés átzárójelezhető és átsorrendezhető:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](b+c)+((-a)+(-c))[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Vegyük azonban észre, hogy a jobboldali [latex](-a)+(-c)[/latex] tag a [yp_element slug="gyuruk-alapveto-tulajdonsagai" type="link" /] 5. pontja miatt így is írható: [latex]-(a+c)[/latex]. Így tehát azt kapjuk, hogy az alábbi elem szintén benne van a [latex]P[/latex] halmazban:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](b+c)+(-(a+c))[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez viszont a [latex]\lesssim[/latex] reláció definíciója miatt épp azt jelenti, hogy [latex]a+c\lesssim b+c[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Végül ellenőrizzük a [yp_element slug="rendezett-gyuru" type="link" /] szerinti <strong><em>2. rendezési axióma</em></strong> teljesülését is. Ehhez tegyük fel, hogy valamilyen [latex]a[/latex] és [latex]b[/latex] elemekre fennáll az [latex]a\lesssim b[/latex] reláció, és legyen adva egy tetszőleges [latex]0\lesssim c[/latex] gyűrűelem. Meg kell mutatnunk, hogy ekkor fennállnak az [latex]ac\lesssim bc[/latex], valamint a [latex]ca\lesssim cb[/latex] relációk is. Feltehetjük egyrészt, hogy [latex]c\
+eq 0[/latex], hiszen máskülönben nyilvánvalóan a [latex]\lesssim[/latex] reláció már bizonyított reflexivitása miatt [latex]\underbrace{0}_{=a0=0a}\lesssim \underbrace{0}_{=b0=0b}[/latex] is igaz. Másrészt azt is feltehetjük, hogy [latex]a\
+eq b[/latex], hiszen máskülönben ugyanezen okok miatt [latex]ac\lesssim \underbrace{a}_{=b}c[/latex] és [latex]ca\lesssim c\underbrace{a}_{=b}[/latex] szintén nyilvánvalóan teljesül.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ha viszont [latex]a\
+eq b[/latex] és [latex]c\
+eq 0[/latex], akkor egyrészt [latex]a\lesssim b[/latex] épp azt jelenti, hogy [latex]b+(-a)[/latex] benne van a [latex]P[/latex] halmazban, másrészt pedig [latex]0\lesssim c[/latex] épp azt jelenti, hogy [latex]c+(-0)=c[/latex] szintén benne van a [latex]P[/latex] halmazban. Mivel azonban [latex]P[/latex] zárt a szorzásra, ezért a [latex](b+(-a))c[/latex] valamint a [latex]c(b+(-a))[/latex] szorzatok szintén benne vannak a [latex]P[/latex] halmazban. E két szorzat viszont a disztributivitási szabályok és a [yp_element slug="gyuruk-alapveto-tulajdonsagai" type="link" /] 3. pontja miatt így írható fel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}(b+(-a))c &amp;= bc+(-a)c = bc+(-(ac)) \\ c(b+(-a)) &amp;= cb+c(-a) = cb + (-(ca)) \end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az, hogy ezek a [latex]P[/latex] halmazban vannak, a [latex]\lesssim[/latex] reláció definíciója miatt épp azt jelenti, hogy [latex]ac\lesssim bc[/latex] és [latex]ca\lesssim cb[/latex]. <strong><em>Valóban teljesül tehát a 2. rendezési axióma is.</em></strong></p>
+<!-- /wp:paragraph -->

@@ -1,0 +1,26 @@
+type: definition
+name: modularis-osszeadas-es-szorzas
+remarks:
+  - modularis-osszeadas-es-szorzas-megjegyzes
+content:
+  - type: narrative
+    content: |
+      Legyen $m\eq 0$ tetszőleges ***nemnulla*** egész szám. Jelölje $Z_m$ azt a halmazt, amelynek elemei az
+      ***$m$ abszolútértékénél kisebb, nemnegatív*** (azaz a $0$, $1$, $2$, ..., $|m|-1$) egész számok. E halmaz
+      elemeit ***modulo m maradékoknak*** nevezzük.
+  - type: narrative
+    content: |
+      Azt a $\bmod_m:\Z \to Z_m$ függvényt, amely minden egész számhoz az $m$-mel képzett ***nemnegatív*** osztási
+      maradékát rendeli, ***modulo m maradékképző függvénynek*** nevezzük.
+  - type: formula
+    lead-in: |
+      A $\bmod_m$ függvény, valamint a szokásos összeadás és szorzás segítségével értelmezzünk két darab
+      kétváltozós műveletet a $Z_m$ halmaz elemei között az alábbiak szerint:
+    content: |
+      \begin{aligned}a\oplus b &= \bmod_m(a+b) \\ a\odot b &= \bmod_m(a\cdot b)\end{aligned}
+  - type: narrative
+    content: |
+      A $\oplus$ szimbólummal jelölt műveletet ***modulo m összeadásnak***, a $\odot$ szimbólummal jelölt műveletet
+      ***modulo m szorzásnak***, az $m$ egész számot pedig ***modulusnak*** nevezzük. Amennyiben az adott
+      kontextusban nem fontos a modulus, úgy a fenti műveleteket egyszerűen csak ***moduláris összeadásnak*** és
+      ***moduláris szorzásnak*** hívjuk.

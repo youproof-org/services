@@ -1,0 +1,139 @@
+type: proof
+name: kinai-maradektetel-bizonyitas
+remarks: []
+references:
+  egesz-szamok-kozotti-kongruencia:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia
+  egesz-szamok-kozotti-kongruencia-tulajdonsagai:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia-tulajdonsagai
+  egyseg:
+    target:
+      type: definition
+      name: egyseg
+  kituntetett-kozos-oszto-tulajdonsagai:
+    target:
+      type: theorem
+      name: kituntetett-kozos-oszto-tulajdonsagai
+  linearis-kongruenciak:
+    target:
+      type: definition
+      name: linearis-kongruenciak
+  linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga:
+    target:
+      type: theorem
+      name: linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga
+content:
+  - type: narrative
+    content: |
+      ***Először a kongruenciarendszer megoldhatóságát igazoljuk.*** Az első kongruencia a
+      [linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga] alapján pontosan akkor oldható meg,
+      ha az $(1,p)$ kitüntetett közös osztónak többszöröse a jobboldalon álló $a$ egész szám. Ehhez hasonlóan a
+      második kongruencia pontosan akkor oldható meg, ha $(1,q)$-nak többszöröse a $b$ egész szám.
+  - type: formula
+    lead-in: |
+      A tételben szereplő kongruenciarendszer tehát pontosan akkor oldható meg, ha mindkét alábbi oszthatóság
+      teljesül:
+    content: |
+      \begin{aligned}(1,p)&|a \\ (1,q)&|b\end{aligned}
+  - type: narrative
+    content: |
+      Az oszthatóságok baloldalain álló kitüntetett közös osztók a [kituntetett-kozos-oszto-tulajdonsagai] 4.
+      pontja miatt $1$-gyel egyeznek meg. Minthogy az $1$ egész szám egység ([egyseg]), így ezek az oszthatóságok
+      nyilván teljesülnek, a tételben szereplő kongruenciarendszer tehát valóban megoldható.
+  - type: narrative
+    content: |
+      ***Másodszor azt mutatjuk meg, hogy minden megoldás ugyanabból a modulo $pq$ maradékosztályból származik.***
+      Legyen ezért $x_1$ és $x_2$ két tetszőleges egész, amelyek mindkét kongruenciát kielégítik.
+  - type: formula
+    lead-in: |
+      Azaz egyrészt:
+    content: |
+      \begin{aligned}x_1&\equiv a\pmod p \\ x_1&\equiv b\pmod q\end{aligned}
+  - type: formula
+    lead-in: |
+      Másrészt:
+    content: |
+      \begin{aligned}x_2&\equiv a\pmod p \\ x_2&\equiv b\pmod q\end{aligned}
+  - type: formula
+    lead-in: |
+      Ez a [egesz-szamok-kozotti-kongruencia-tulajdonsagai] 3. pontja alapján azt jelenti, hogy az $x_1$ és $x_2$
+      egész számok kongruensek egymással mindkét modulus szerint, azaz:
+    content: |
+      \begin{aligned}x_1&\equiv x_2\pmod p \\ x_1&\equiv x_2\pmod q\end{aligned}
+  - type: formula
+    lead-in: |
+      Ez a [egesz-szamok-kozotti-kongruencia] 3. pontja alapján azt jelenti, hogy az $x_1-x_2$ különbség
+      többszöröse $p$-nek is és $q$-nak is, azaz:
+    content: |
+      \begin{aligned}p&|x_1-x_2 \\ q&|x_1-x_2\end{aligned}
+  - type: narrative
+    content: |
+      Azaz $x_1-x_2$ prímtényezős felbontásában szerepel $p$ és $q$ összes prímtényezője, valamint esetlegesen
+      egyéb prímtényezők is.
+  - type: formula
+    lead-in: |
+      Tegyük fel, hogy $p$ és $q$ prímtényezős felbontásai a következők:
+    content: |
+      \begin{aligned}p&=p_1p_2\ldots p_k \\ q&=q_1q_2\ldots q_n\end{aligned}
+  - type: narrative
+    content: |
+      Mivel $p$ és $q$ egymáshoz relatív prímek, ezért nincs két egyforma prímtényezőjük. Azaz $p$ egyetlen
+      prímtényezője sem szerepel $q$ prímtényezői között, valamint $q$ egyetlen prímtényezője sem szerepel $p$
+      prímtényezői között.
+  - type: formula
+    lead-in: |
+      Így tehát az $x_1-x_2$ különbség így írható fel:
+    content: |
+      x_1-x_2=\underbrace{p_1p_2\ldots p_k}_{=p}\cdot \underbrace{q_1q_2\ldots q_n}_{=q}\cdot
+      \underbrace{r_1r_2\ldots r_l}_{\text{egyéb}}
+  - type: formula
+    lead-in: |
+      Azt kaptuk tehát, hogy teljesül az alábbi oszthatóság:
+    content: |
+      pq|x_1-x_2
+  - type: formula
+    lead-in: |
+      Ez ismét a [egesz-szamok-kozotti-kongruencia] 3. pontja alapján az alábbi kongruenciát jelenti:
+    content: |
+      x_1\equiv x_2\pmod{pq}
+  - type: narrative
+    content: |
+      Tehát valóban igaz, hogy bármely két, a tételben szereplő kongruenciarendszert kielégítő egész szám ugyanabba
+      a modulo $pq$ maradékosztályba esik.
+  - type: narrative
+    content: |
+      ***Végül azt kell igazolni,*** hogy ennek a bizonyos maradékosztálynak ***minden*** eleme kielégíti a
+      kongruenciarendszert.
+  - type: formula
+    lead-in: |
+      Tegyük fel ezért, hogy $s$ egy olyan egész szám ebben a maradékosztályban, amelyre teljesül a
+      kongruenciarendszer, azaz:
+    content: |
+      \begin{aligned}s&\equiv a\pmod p \\ s&\equiv b\pmod q\end{aligned}
+  - type: narrative
+    content: |
+      Tegyük fel ezenkívül ***indirekt***, hogy létezik olyan $t$ egész szám ugyanebben a maradékosztályban,
+      amelyre viszont nem teljesül legalább az egyik a tételben szereplő kongruenciák közül.
+  - type: formula
+    lead-in: |
+      Mivel $t$ ugyanabban a modulo $pq$ maradékosztályban van, mint $s$, ezért igaz az alábbi:
+    content: |
+      s\equiv t\pmod{pq}
+  - type: formula
+    lead-in: |
+      Minthogy a $p|pq$ valamint a $q|pq$ oszthatóságok nyilvánvalóan teljesülnek, ezért a
+      [egesz-szamok-kozotti-kongruencia-tulajdonsagai] 9. pontja miatt teljesülnek az alábbi kongruenciák is:
+    content: |
+      \begin{aligned}s&\equiv t\pmod p \\ s&\equiv t\pmod q\end{aligned}
+  - type: narrative
+    content: |
+      Azaz $t$ egyrészt ugyanabba a modulo $p$ maradékosztályba esik, mint $s$, vagyis a [linearis-kongruenciak]
+      utáni megjegyzés alapján ő megoldása az $x\equiv a\pmod p$ kongruenciának. Másrészt ehhez hasonlóan $t$
+      ugyanabba a modulo $q$ maradékosztályba is esik, mint $s$, ezért ő megoldása az $x\equiv b\pmod q$
+      kongruenciának is. Így tehát $t$ mégiscsak megoldása a tételben szereplő kongruenciarendszernek, ami
+      ellentmond az indirekt feltételezésünknek. Az $[s]_{pq}$ maradékosztálynak tehát valóban minden eleme
+      megoldás, ahogyan a tétel állítja.

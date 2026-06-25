@@ -1,0 +1,51 @@
+type: proof
+name: gyuru-reszbenrendezesenek-tulajdonsagai-bizonyitas
+remarks: []
+references:
+  gyuruk-alapveto-tulajdonsagai:
+    target:
+      type: theorem
+      name: gyuruk-alapveto-tulajdonsagai
+content:
+  - type: narrative
+    content: |
+      Az ***1. tulajdonság*** esetén tehát az a kiindulási feltételünk, hogy $0\leq a$.
+  - type: formula
+    lead-in: |
+      Mivel a $\leq$ reláció kompatibilis az összeadással, ezért mindkét oldalhoz $a$ ellentettjét adva &ndash;
+      amely a 3. gyűrűaxióma miatt létezik &ndash; továbbra is érvényes egyenlőtlenséget kapunk:
+    content: |
+      0+(-a)\leq a+(-a)
+  - type: narrative
+    content: |
+      Mivel $0$ a gyűrű nulleleme, ezért a baloldali összegből őt elhagyhatjuk, a jobboldali összeg pedig épp a
+      nullelemmel lesz egyenlő.
+  - type: formula
+    lead-in: |
+      Így tulajdonképpen megkapjuk az ***1. állítást***:
+    content: |
+      (-a)\leq 0
+  - type: narrative
+    content: |
+      A ***2. tulajdonság*** esetén a kiindulási feltételünk az, hogy $ac\leq bc$.
+  - type: formula
+    lead-in: |
+      Mivel a $\leq$ reláció kompatibilis az összeadással, ezért mindkét oldalhoz jobbról $-(ac)$-t, balról pedig
+      $-(bc)$-t adva továbbra is érvényes egyenlőtlenséget kapunk:
+    content: |
+      (-(bc))+\underbrace{ac+(-(ac))}_{=0}\leq \underbrace{(-(bc))+bc}_{=0}+(-(ac))
+  - type: formula
+    lead-in: |
+      Mindkét oldalon a két egymásnak ellentett tag kiejti egymást, így ezt kapjuk:
+    content: |
+      -(bc)\leq -(ac)
+  - type: formula
+    lead-in: |
+      Ez viszont a [gyuruk-alapveto-tulajdonsagai] 3. pontja miatt így is írható, megkapva ezzel a ***2.
+      állítást***:
+    content: |
+      b(-c)\leq a(-c)
+  - type: narrative
+    content: |
+      Végül a ***3. tulajdonság*** ugyanilyen módon igazolható, csak ekkor a kiindulási feltétel mindkét oldalához
+      $-(ca)$-t és $-(cb)$-t kell adni.

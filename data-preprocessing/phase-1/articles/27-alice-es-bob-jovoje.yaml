@@ -1,0 +1,100 @@
+type: chapter
+name: 27-alice-es-bob-jovoje
+title: Alice és Bob jövője
+
+abstract:
+  - type: narrative
+    content: |
+      Az előző részben a Miller-Rabin-prímteszt hibázási valószínűségére vonatkozó becslésünket lényegesen
+      megjavítottuk. Ennek során megismerkedtünk a primitív gyökök, a polinomok és a polinomfüggvények fogalmával,
+      valamint az ezekhez kapcsolódó kulcsfontosságú tételekkel. Ezután említést tettünk az úgynevezett
+      AKS-prímtesztről. Ez az elsőként felfedezett olyan hatékony prímteszt volt, amely minden esetben
+      determinisztikus &ndash; tehát 100%-os valószínűségű &ndash; választ ad, és nem függ semmilyen, eddig nem
+      bizonyított sejtéstől. Ezen elméleti jelentőségű eredmény alapján tehát a prímség vagy összetettség eldöntése
+      furcsamód a $P$ problémaosztályba tartozik (bővebben lásd a 7. részt), ugyanakkor a konkrét prímtényezők
+      megtalálása egy ennél sokkal nehezebb feladatnak tűnik. Végül azt a kérdést vizsgáltuk meg, hogy mi történik
+      akkor, ha az RSA-kulcsok generálásához prímek helyett véletlenül Carmichael-számokat használunk. Ezzel
+      lezártuk számelméleti vizsgálatainkat, és a sorozat utolsó részében egy képzeletbeli időutazás keretében arra
+      keressük a választ, hogy milyen kihívásokkal kell szembenéznie hőseinknek &ndash; és persze a kriptográfia
+      tudományának &ndash; a jövőben.
+  - type: narrative
+    content: |
+      Mi a probléma az RSA-algoritmussal, és miért fog elavulni a közeljövőben? Mik azok az elliptikus görbék, és
+      mit állít róluk az egymillió dollárt érő Birch és Swinnerton-Dyer sejtés? Hogyan lehet az elliptikus görbékre
+      újfajta titkosítási eljárásokat építeni? Mik azok a kvantumszámítógépek, és ha tényleg megvalósíthatók, akkor
+      mire lesznek képesek a jövőben? Kell-e miattuk aggódnia Alice-nak és Bob-nak? Vajon a kriptográfusok, vagy a
+      kiberbűnözők kerülnek ki győztesen ebből az emberiség egész történelmét végigkísérő kíméletlen háborúból? Az
+      utolsó részben erről lesz szó...
+prologue:
+  - type: narrative
+    content: |
+      Az elmúlt 26 részben az Olvasó vélhetően igen részletes képet kapott arról, hogy ez a bizonyos háború
+      meglehetősen szokatlan természetű. Ez ugyanis a hagyományos háborúktól eltérően az elméleti matematika
+      harcmezején zajlik, és olyan fegyverekkel vívják, amelyek csak a fejünkben léteznek. Ne legyenek kétségeink
+      azonban afelől, hogy paradox módon ezeknek a képzeletbeli fegyvereknek bizony sokkal pusztítóbb hatásuk lehet
+      a való világban, mint bármilyen hagyományos fegyvernek, legyen szó akár a legmodernebb termonukleáris
+      robbanótöltetek kíméletlen arzenáljáról.
+  - type: narrative
+    content: |
+      Mai világunkban ugyanis a legfontosabb erőforrás az a mérhetetlen mennyiségű adat, amelyet a legkülönfélébb
+      elektronikus eszközeink megállás nélkül ontanak magukból a nap huszonnégy órájában az év minden napján. Aki
+      ennek az erőforrásnak a birtokába kerül, és ki is tudja aknázni azt, az olyan elképesztő hatalomra tesz szert
+      a világ felett, amilyenre talán még a legvadabb álmainkban sem mernénk gondolni, és amelyre az egész eddigi
+      történelem során még nem volt példa.
+  - type: narrative
+    content: |
+      Gondoljunk csak például a nagy techcégekre: a Google és a Facebook bizony többet tud rólunk, mint a saját
+      családunk. Pontosan tudja, hogy mi az érdeklődési körünk, hogy mikor, hol és kivel találkozunk, hogy merre
+      járunk, miket és hol vásárolunk, merre barangolunk az Interneten, mik a legféltettebb titkaink. Ezeknek az
+      információknak a birtokában választások kimenetelét lehet befolyásolni még olyan nagyhatalmú országoknál is,
+      mint az Egyesült Államok. Vagy akár gondoljunk csak arra, hogy lépten-nyomon egyre több és több intelligens
+      eszköz vesz minket körbe, amelyek ráadásul az Interneten keresztül kommunikálnak egymással annak érdekében,
+      hogy minket minél jobban kiszolgáljanak.
+  - type: narrative
+    content: |
+      Az úgynevezett IoT (Internet of Things) technológiáknak köszönhetően rövidesen az életünk legalapvetőbb
+      területein is a számítógépek fogják átvenni az irányítást. Okos otthonok, okos városok, önvezető autók,
+      amelyek a közlekedési infrastruktúrától kapott információk alapján lesznek képesek döntéseket hozni a
+      másodperc törtrésze alatt. A számítógép-hálózatok ma már teljes országok villamosenergia és egyéb
+      ellátórendszereit képesek vezérelni. A világ pénzügyi folyamatait meghatározó döntéshozók a legkorszerűbb
+      adatbányászati eszközökre támaszkodnak.
+  - type: narrative
+    content: |
+      Ezek után nem nehéz elképzelni, hogy mekkora &ndash; akár világméretű &ndash; katasztrófákat lehet előidézni
+      azáltal, ha bizonyos adatok vagy bizonyos rendszerekhez való hozzáférési jogosultságok illetéktelen kezekbe
+      kerülnek. Az adatok és a kommunikációs csatornák kriptográfiai védelme tehát napjainkban fontosabbá vált,
+      mint valaha a világtörténelemben. Sőt, talán nem túlzás azt állítani, hogy az egész emberi civilizáció
+      törékeny léte többek között ezen áll vagy bukik.
+sections:
+  - 01-mi-a-problema-az-rsa-val
+  - 02-a-diszkret-logaritmus-problemajanak-altalanositasa
+  - 03-mivel-foglalkozik-az-algebrai-szamelmelet
+  - 04-algebrai-sikgorbek
+  - 05-a-projektiv-sik
+  - 06-az-elliptikus-gorbek-csoportstrukturaja
+  - 07-mit-allit-a-birch-es-swinnerton-dyer-sejtes
+  - 08-elliptikus-gorbek-es-kriptografia
+  - 09-a-ketres-kiserlet
+  - 10-schrodinger-macskaja
+  - 11-kvantumszamitogepek
+  - 12-kvantumkriptografia
+
+epilogue:
+  - type: narrative
+    content: |
+      A most ismertetett kvantum-kulcsmegosztás természetesen csak a jéghegy csúcsa, amellyel pusztán ízelítőt
+      kívántunk adni abból, hogy a kvantumkriptográfia valóban az abszolút biztonságot ígéri. A gyakorlati
+      alkalmazhatóságig azonban még hosszú út áll a kutatók előtt. Egyelőre nincs szükség rá, hiszen az RSA és az
+      elliptikus görbék révén rendelkezésünkre állnak azok az eljárások, amelyek a hagyományos számítógépek számára
+      feltörhetetlenek. A versenyfutás azonban hatalmas, hiszen ez az előny azonnal szertefoszlik a
+      kvantumszámítógépek megjelenésével. Ha a kvantumkriptográfia tényleg valósággá válik, akkor az információk
+      védelme érdekében folytatott harc Alice és Bob győzelmével ér véget. Egy ilymódon titkosított üzenet
+      feltörhetősége ugyanis azt jelentené, hogy hibás a kvantummechanika, amely az egész fizikát rombadöntené.
+  - type: narrative
+    content: |
+      De vajon a kvantumkriptográfia idejében hozza el Alice és Bob számára a végső győzelmet? Vagy esetleg lesz
+      egy olyan időszak, amikor a kvantumszámítógép már valóság, ám a világ még védtelen ellene egy ideig? Vajon a
+      civilizációnk át fogja tudni vészelni ezt az átmeneti időszakot?
+  - type: narrative
+    content: |
+      Reméljük, ám ez még a jövő zenéje...

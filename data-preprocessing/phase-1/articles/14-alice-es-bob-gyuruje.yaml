@@ -1,0 +1,118 @@
+type: chapter
+name: 14-alice-es-bob-gyuruje
+title: Alice és Bob gyűrűje
+
+references:
+  egesz-szamok-halmaza:
+    target:
+      type: definition
+      name: egesz-szamok-halmaza
+  egesz-szamok-osszeadasa:
+    target:
+      type: definition
+      name: egesz-szamok-osszeadasa
+  peano-axiomarendszer:
+    target:
+      type: definition
+      name: peano-axiomarendszer
+  termeszetes-szamok-beagyazasa-osszegtarto:
+    target:
+      type: theorem
+      name: termeszetes-szamok-beagyazasa-osszegtarto
+
+abstract:
+  - type: narrative
+    content: |
+      Az előző részben kényelmi okok miatt elkezdtük kibővíteni a szám fogalmát. Azon a nem is olyan egyszerű
+      absztrakciós úton kezdtünk el haladni, amelyen őseinknek is végig kellett menniük. Eddig a számokat bizonyos
+      dolgok, sokaságok megszámlálására használtuk, így látszólag semmi értelme sincs a "semminél kevesebb"
+      mennyiségekről beszélni. Ezt félretéve azonban láthattuk, hogy például adósság, vagy valamilyen hiány
+      kifejezésére igen praktikus eszközt kaphatunk a kezünkbe. Ennek az absztrakciónak a keretében új algebrai
+      fogalmakkal ismerkedtünk meg.
+  - type: narrative
+    content: |
+      Az egész számokat természetes számpárok ún. ekvivalencia-osztályaiként határoztuk meg, amelyek között egy
+      összeadásnak nevezett műveletet is definiáltunk. Ezután elkezdtük beágyazni ebbe az új számhalmazba a
+      Peano-axiómarendszer szerinti $\N$ halmazt egy úgynevezett injektív homomorfizmus &ndash; azaz struktúratartó
+      leképezés &ndash; segítségével. De vajon hogyan tudjuk a szorzás műveletét is ésszerű módon kiterjeszteni a
+      számegyenes 0-tól balra eső részére? Mit jelent az absztrakt algebrában a "neutrális elem", az "inverz", a
+      "gyűrű" és a "test" fogalma? Hogyan definiálható a kivonás művelete az egész számok között? Mi a helyzet az
+      osztással? Ebben a részben erről lesz szó...
+prerequisite-warning:
+  - type: narrative
+    content: |
+      Figyelem! Ez a rész erőteljesen épít az előző részben bevezetett alábbi definíciókra és a hozzájuk kapcsolódó
+      tételekre:
+  - type: recall
+    target:
+      type: definition
+      name: ekvivalenciarelacio
+  - type: recall
+    target:
+      type: definition
+      name: egesz-szamok-halmaza
+  - type: recall
+    target:
+      type: definition
+      name: homomorfizmus-izomorfizmus-beagyazas
+  - type: recall
+    target:
+      type: definition
+      name: pozitiv-es-negativ-egesz-szamok
+  - type: recall
+    target:
+      type: definition
+      name: egesz-szamok-osszeadasa
+  - type: narrative
+    content: |
+      E definíciók kontextusba helyezése, valamint a hozzájuk kapcsolódó tételek és egyéb fogalmak megismerése
+      miatt erőteljesen ajánlott elolvasni a 11., a 12. és a 13. részt mivel gyakran hivatkozni fogunk rájuk. A
+      teljes cikksorozat elejét itt találod.
+prologue:
+  - type: narrative
+    content: |
+      Ahhoz, hogy a szorzást is kiterjesszük az előző részben bevezetett új számkörre, ismét az intuíciónkra kell
+      hagyatkoznunk. Kezdhetnénk persze azzal, hogy megadunk egy képletet, mint a $\Z$ halmaz elemei közötti
+      szorzás definícióját. Ezzel azonban elveszne az az információ, hogy miért éppen azt a képletet használjuk,
+      nem pedig mást. Először is jelöljük ki a céljainkat.
+  - type: narrative
+    content: |
+      Az előző részben ugye azt mondtuk, hogy a Peano-axiómarendszer ([peano-axiomarendszer]) által definiált $\N$
+      halmazt szeretnénk beágyazni a $\Z$ halmazba egy úgynevezett struktúratartó leképezéssel. Az eredeti $\N$
+      halmazt átmenetileg $\N_1$-gyel, míg annak $\Z$-beli képét $\N_2$-vel jelöltük. A [egesz-szamok-osszeadasa]
+      szerinti $\oplus$ műveletről megmutattuk ([termeszetes-szamok-beagyazasa-osszegtarto]), hogy az az
+      $f(n)=[(n;0)]$ leképezés mellett valóban "ugyanúgy viselkedik" az $\N_2$ halmazon, mint a Peano-összeadás az
+      $\N_1$ halmazon.
+  - type: narrative
+    content: |
+      Hasonló a célunk a most bevezetendő $\odot$ művelettel kapcsolatban ugyanezen leképezés mellett. Ezt a
+      műveletet szorzásnak fogjuk nevezni, és ugyanúgy a teljes $\Z$ halmazon szeretnénk értelmezni, mint az
+      $\oplus$ műveletet. Ennek a halmaznak az elemei ugye a természetes számpárok ekvivalencia-osztályai
+      ([egesz-szamok-halmaza]). Mi lehet hát két ilyen ekvivalencia-osztály "szorzata"?
+sections:
+  - 01-hogyan-szorozzunk-a-Z-halmazon
+  - 02-egyenletek-megoldasa-az-latex-n-cdot-latex-algebrai-strukturaban
+  - 03-a-latex-z-latex-beli-szorzas-kovetelmenyei
+  - 04-i-kovetelmeny-az-latex-f-latex-lekepezes-legyen-szorzattarto
+  - 05-ii-kovetelmeny-adossag-szorzasa-pozitiv-egesz-szammal
+  - 06-iii-kovetelmeny-pozitiv-egesz-szam-szorzasa-adossaggal
+  - 07-iv-kovetelmeny-adossag-szorzasa-adossaggal
+  - 08-a-latex-z-latex-beli-szorzas-definicioja
+  - 09-a-szokasos-szamolasi-szabalyok-altalanossagban
+  - 10-neutralis-elem
+  - 11-inverz-elem-muvelet-invertalhatosaga
+  - 12-a-kivonas-muvelete
+  - 13-gyuruk-es-testek
+  - 14-visszateres-a-megszokott-jelolesekhez
+
+epilogue:
+  - type: narrative
+    content: |
+      Ebben a részben tehát intuitív módon értelmeztük a szorzás műveletét is az egész számok halmazán. Ezután
+      megmutattuk róla, hogy teljesíti a megszokott azonosságokat, valamint ugyanúgy viselkedik, mint a
+      Peano-szorzás az $\N$ halmazon. Végül megismerkedtünk néhány hasznos absztrakt algebrai fogalommal, és
+      megmutattuk, hogy a $\Z$ halmaz egy úgynevezett kommutatív, egységelemes gyűrűt alkot az új műveleteinkkel,
+      emiatt a kivonás korlátlanul elvégezhető rajta. Így már tulajdonképpen teljessé vált $\N$ beágyazása $\Z$-be
+      a $\leq$ rendezési reláció kiterjesztésétől eltekintve, amelyet a következő részben fogunk elvégezni.
+      Megemlítettük azonban, hogy az osztás még a $\Z$ halmazon sem végezhető el korlátlanul. Ez rövidesen elvezet
+      minket az egyik legfontosabb számelméleti fogalomhoz, méghozzá az oszthatóság kérdéséhez.

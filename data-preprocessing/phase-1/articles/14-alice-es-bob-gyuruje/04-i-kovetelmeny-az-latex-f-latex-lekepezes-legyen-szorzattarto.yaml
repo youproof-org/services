@@ -1,0 +1,77 @@
+type: section
+name: 04-i-kovetelmeny-az-latex-f-latex-lekepezes-legyen-szorzattarto
+title: 'I. követelmény: Az [latex]f[/latex] leképezés legyen szorzattartó'
+
+references:
+  homomorfizmus-izomorfizmus-beagyazas:
+    target:
+      type: definition
+      name: homomorfizmus-izomorfizmus-beagyazas
+  peano-szorzas-disztributivitas:
+    target:
+      type: theorem
+      name: peano-szorzas-disztributivitas
+  peano-szorzat-egyszerusites:
+    target:
+      type: theorem
+      name: peano-szorzat-egyszerusites
+  termeszetes-szamparok-ekvivalenciarelacioja:
+    target:
+      type: definition
+      name: termeszetes-szamparok-ekvivalenciarelacioja
+  termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel:
+    target:
+      type: theorem
+      name: termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel
+
+body:
+  - type: formula
+    lead-in: |
+      Ezt képlettel így írhatjuk fel:
+    content: |
+      \underbrace{[(n;0)]}_{=f(n)} \odot \underbrace{[(k;0)]}_{=f(k)} = \underbrace{[(n\cdot k;0)]}_{=f(n\cdot k)}
+  - type: formula
+    lead-in: |
+      Az egyenlet baloldalára felírva a fentebbi általános képletünket &ndash; és persze a 0 tagokat elhagyva
+      &ndash; a következőt kapjuk:
+    content: |
+      [(A\cdot nk;E\cdot nk)]=[(nk;0)]
+  - type: narrative
+    content: |
+      Azt kaptuk tehát, hogy az $(A\cdot nk;E\cdot nk)$ természetes számpárnak ugyanabba a $\sim$ reláció (lásd a
+      [termeszetes-szamparok-ekvivalenciarelacioja]t) szerinti ekvivalencia-osztályba kell esnie, mint az $(nk;0)$
+      számpárnak.
+  - type: formula
+    lead-in: |
+      Ez viszont az előző részben bizonyított
+      [termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel] miatt épp azt jelenti, hogy:
+    content: |
+      A\cdot nk + 0=E\cdot nk + nk
+  - type: formula
+    lead-in: |
+      A baloldalt 0-val egyszerűsítve, a jobboldalon pedig a Peano-szorzás disztributivitását
+      ([peano-szorzas-disztributivitas]) kihasználva ez így írható fel:
+    content: |
+      A\cdot nk=(E+1)\cdot nk
+  - type: narrative
+    content: |
+      Itt feltételezhetjük, hogy $nk\ eq 0$, máskülönben ez az egyenlet $A$ és $E$ megválasztásától függetlenül
+      teljesülne.
+  - type: formula
+    lead-in: |
+      Ha viszont $nk\ eq 0$, akkor az imént bizonyított [peano-szorzat-egyszerusites] miatt következik, hogy:
+    content: |
+      A=E+1
+  - type: narrative
+    content: |
+      A keresett 8 együtthatóról tehát azt már tudjuk, hogy az $A$ együtthatónak $E$-nél egy 1-gyel nagyobb
+      természetes számot kell választanunk. Ha így teszünk, akkor a fentiek alapján az $f$ leképezés biztosan
+      ***tartani fogja*** a Peano-szorzást. Tudományosabban fogalmazva ekkor $f$ egy ***injektív homomorfizmus***
+      (lásd a [homomorfizmus-izomorfizmus-beagyazas]t) lesz az $(\N_1 , \cdot )$ és a $(\Z , \odot )$ algebrai
+      struktúrák között.
+  - type: narrative
+    content: |
+      Mondhatnánk, hogy készen is vagyunk. Hiszen ez alapján ha az $A=1$ választással élünk, a másik 7 együtthatót
+      pedig 0-nak választjuk, akkor megvan a művelettartás. Igenám, de mi szeretnénk egyéb megkötéseket is tenni az
+      $\odot$ műveletre annak érdekében, hogy a szokásos számolási szabályok érvényben maradjanak ne csak az
+      $\N_2$-n belül, hanem a $\Z$ halmaz többi részén is.

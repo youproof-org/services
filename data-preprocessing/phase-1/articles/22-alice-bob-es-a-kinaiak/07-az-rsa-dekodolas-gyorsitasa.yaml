@@ -1,0 +1,134 @@
+type: section
+name: 07-az-rsa-dekodolas-gyorsitasa
+title: Az RSA-dekódolás gyorsítása
+
+references:
+  gyuruk-homomorfizmustetele:
+    target:
+      type: theorem
+      name: gyuruk-homomorfizmustetele
+  maradekosztalygyuruk-dekompozicioja:
+    target:
+      type: theorem
+      name: maradekosztalygyuruk-dekompozicioja
+
+body:
+  - type: narrative
+    content: |
+      Térjünk most vissza az előző részben közölt példára, amikoris Alice az RSA-algoritmussal rejtjelezett
+      **sziabobmiahelyzet** üzenetet küldte el Bob-nak. Bob a kulcsgenerálás során a $p=211$ és $q=139$
+      prímszámokat választotta, és ezek segítségével az $m=29329$ modulust, az $e=187$ publikus, valamint a
+      $d=11623$ titkos kitevőt állította elő.
+  - type: narrative
+    content: |
+      Alice a példában leírt módon a $Z_{29329}$ gyűrű elemeinek sorozatává alakította az elküldendő üzenetet,
+      melyek közül az első az $x_1=9620$ volt.
+  - type: formula
+    lead-in: |
+      Ebből a rejtjelezett számsorozat első tagja a $Z_{29329}$ gyűrűben végrehajtott alábbi moduláris hatványozás
+      eredményeként állt elő:
+    content: |
+      Z_{29329} \text{: } 9620^{187}=7812=y_1
+  - type: formula
+    lead-in: |
+      Bob ebből a $d=11623$ kitevő segítségével az alábbi, szintén a $Z_{29329}$ gyűrűben végrehajtott moduláris
+      hatványozással kaphatja vissza az eredeti $x_1$ számot:
+    content: |
+      Z_{29329} \text{: } 7812^{11623}=9620=x_1
+  - type: narrative
+    content: |
+      A 20. részben az egész számok maradékosztályai kapcsán szó volt róla, hogy a ***gyűrűk homomorfizmustétele***
+      ([gyuruk-homomorfizmustetele]) miatt tetszőleges $n\gt 0$ pozitív egész szám esetén a $Z_n$ gyűrű
+      ***izomorf*** a $\Z/n\Z$ maradékosztálygyűrűvel. Következésképp a ***maradékosztálygyűrűk
+      dekompozíciójáról*** szóló [maradekosztalygyuruk-dekompozicioja] miatt a $Z_p \times Z_q$ gyűrű is
+      ***izomorf*** a $Z_{pq}=Z_m$ gyűrűvel.
+  - type: narrative
+    content: |
+      Emiatt Bob a $p$ és $q$ prímszámok ismeretében megteheti, hogy a dekódoláskor elvégzendő moduláris
+      hatványozást a $Z_m$ gyűrű helyett a $Z_p \times Z_q$ gyűrűben végzi el, majd az eredményt
+      visszatranszformálja a $Z_m$ gyűrűbe. Kérdezhetnénk, hogy ez miért jó neki, amikor így egy helyett
+      gyakorlatilag két moduláris hatványozást kell elvégeznie? Igenám, csakhogy ezeknél már nem $m$, hanem a
+      nagyságrendileg feleannyi számjegyből álló $p$ és $q$ lesz a modulus. A moduláris hatványozás sebessége pedig
+      a kitevő méretén kívül erőteljesen függ a modulus méretétől is. Ráadásul a modulus méretét megfelezve a
+      moduláris hatványozás futásideje kevesebb mint a felére csökken. Így két feleakkora modulussal elvégzett
+      hatványozás összességében hatékonyabb, mintha csak egyet végeznénk el ugyan, de az eredeti modulussal.
+  - type: narrative
+    content: |
+      A fenti példában ez azt jelenti, hogy megérkezik Bob-hoz az $y_1=7812$ rejtjelezett szám, amely ugye a
+      $Z_{29329}$ gyűrű egy eleme.
+  - type: formula
+    lead-in: |
+      Ezt Bob a [maradekosztalygyuruk-dekompozicioja]ben megadott $g$ izomorfizmus segítségével áttranszformálja a
+      $Z_{211}\times Z_{139}$ gyűrűbe, azaz veszi a két prímmel való osztási maradékát:
+    content: |
+      g(7812)=(5; 28)
+  - type: formula
+    lead-in: |
+      Ezután elvégzi a dekódolást ebben a gyűrűben, azaz kiszámítja az alábbi két moduláris hatványt:
+    content: |
+      \begin{aligned}Z_{211} &\text{: } 5^{11623} \\ Z_{139} &\text{: } 28^{11623}\end{aligned}
+  - type: narrative
+    content: |
+      Itt tehát az első moduláris hatványozást a $Z_{211}$, míg a másodikat a $Z_{139}$ gyűrűben kell
+      végrehajtani. Ez hatékonyabban végrehajtható, mintha csak a $7812^{11623}$ moduláris hatványozást hajtanánk
+      végre ugyan, viszont a jóval nagyobb modulusú $Z_{29329}$ gyűrűben.
+  - type: formula
+    lead-in: |
+      Az előző részben megismert ***ismételt négyzetreemelések módszerével*** Bob az alábbi eredményt kapja:
+    content: |
+      \begin{aligned}Z_{211} &\text{: } 5^{11623}=125 \\ Z_{139} &\text{: } 28^{11623}=29\end{aligned}
+  - type: narrative
+    content: |
+      A kapott pár tehát a $(125;29)$. Ahhoz, hogy Bob ebből megkapja az Alice által küldött eredeti $x_1$
+      üzenetet, vissza kell transzformálja ezt a $Z_{211}\times Z_{139}$-beli elemet a $Z_{29329}$ gyűrűbe.
+  - type: formula
+    lead-in: |
+      Ezt a [maradekosztalygyuruk-dekompozicioja]ben megadott $f$ izomorfizmussal teheti meg:
+    content: |
+      f((125;29))=9620=x_1
+  - type: narrative
+    content: |
+      A kapott $x_1=9620$ eredmény helyességét könnyen leellenőrizhetjük. Ha ugyanis alkalmazzuk rá a $g$
+      függvényt, akkor vissza kell kapnunk a $(125;29)$ számpárt, hiszen a $g$ függvény épp az $f$ függvény
+      megfordítása. Valóban: a $9620$ egész számnak a $p=211$-gyel való osztási maradéka $125$, míg a $q=139$-cel
+      való osztási maradéka $29$. Vagyis a $(125;29)$ valóban az $x_1=9620$ üzenet párja a két gyűrű közötti
+      izomorfizmus szerint.
+  - type: narrative
+    content: |
+      Végezetül a ***kis Fermat-tétel*** egy egyszerű következményét ismertetjük, aminek a segítségével Alice és
+      Bob nemcsak a dekódolás során használt modulus, hanem ***a $d$ titkos kitevő*** méretét is jelentősen képes
+      lecsökkenteni.
+  - type: embed
+    target:
+      type: theorem
+      name: rsa-dekodolas-gyorsitasa
+  - type: embed
+    target:
+      type: proof
+      name: rsa-dekodolas-gyorsitasa-bizonyitas
+  - type: formula
+    lead-in: |
+      A fenti példánál maradva Bob-nak tehát a dekódoláshoz végre kéne hajtania az alábbi moduláris hatványozásokat
+      a $Z_{211}$ és a $Z_{139}$ gyűrűben:
+    content: |
+      \begin{aligned}Z_{211} &\text{: } 5^{11623}=125 \\ Z_{139} &\text{: } 28^{11623}=29\end{aligned}
+  - type: narrative
+    content: |
+      Az iménti tétel alapján ezen a ponton megteheti, hogy veszi a $d=11623$ kitevő $p-1=210$-zel és $q-1=138$-cal
+      való osztási maradékait, és $d$ helyett ezeket az osztási maradékokat használja kitevőként. Jelöljük az így
+      kapott új kitevőket $d_p$-vel és $d_q$-val.
+  - type: formula
+    lead-in: |
+      Jelen esetben ezek az alábbiak lesznek:
+    content: |
+      \begin{aligned}d_p&=\bmod_{210}(11623)=73 \\ d_q&=\bmod_{138}(11623)=31\end{aligned}
+  - type: formula
+    lead-in: |
+      A moduláris hatványozásokat ezekkel az eredeti $d$-nél jóval kisebb kitevőkkel elvégezve valóban ugyanazt az
+      eredményt kapjuk:
+    content: |
+      \begin{aligned}Z_{211} &\text{: } 5^{73}=125 \\ Z_{139} &\text{: } 28^{31}=29\end{aligned}
+  - type: narrative
+    content: |
+      Ráadásul a $d_p$ és $d_q$ kitevők csak a választott $p$ és $q$ prímszámoktól függenek, azaz Alice és Bob
+      megteheti, hogy már a kulcsgenerálás során előállítják ezeket.

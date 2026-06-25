@@ -1,0 +1,25 @@
+type: theorem
+name: lagrange-tetele
+proofs:
+  - lagrange-tetele-bizonyitas
+remarks:
+  - lagrange-tetele-megjegyzes
+content:
+  - type: narrative
+    content: |
+      Legyen $G$ tetszőleges ***véges*** csoport, $H$ pedig tetszőleges részcsoport $G$-ben.
+  - type: formula
+    lead-in: |
+      Ekkor a $H$ részcsoport rendje osztója $G$ rendjének, azaz teljesül az alábbi oszthatóság:
+    content: |
+      |H|\ |\ |G|
+  - type: narrative
+    content: |
+      Azaz létezik olyan egész szám, amellyel $H$ rendjét megszorozva épp $G$ rendjét kapjuk. Ez az egész szám a
+      $H$ részcsoport szerint bal- illetve jobboldali mellékosztályok számával egyezik meg, amelyet ***a $H$
+      részcsoport $G$-beli indexének*** nevezzük, és $|G:H|$-val jelöljük.
+  - type: formula
+    lead-in: |
+      Azaz teljesül az alábbi összefüggés:
+    content: |
+      |G|=|G:H|\cdot |H|

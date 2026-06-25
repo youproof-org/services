@@ -1,0 +1,17 @@
+type: theorem
+name: teljes-rendezes-szukseges-es-elegseges-feltetele
+proofs:
+  - teljes-rendezes-szukseges-es-elegseges-feltetele-bizonyitas
+remarks: []
+references:
+  rendezett-gyuru:
+    target:
+      type: definition
+      name: rendezett-gyuru
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy $(R,+,\cdot )$ egy tetszőleges gyűrű, valamint $P$ egy valamilyen, ezen a gyűrűn definiált,
+      a [rendezett-gyuru] szerinti rendezési axiómákat kielégítő részbenrendezési reláció pozitivitástartománya. A
+      $P$-hez tartozó részbenrendezési reláció ***akkor és csak akkor*** teljes rendezés, ha ***minden nemnulla
+      elemre*** igaz, hogy vagy ő maga, vagy pedig az ellentettje benne van $P$-ben.

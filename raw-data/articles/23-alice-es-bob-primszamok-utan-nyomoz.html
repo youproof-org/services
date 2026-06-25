@@ -1,0 +1,751 @@
+<!-- wp:paragraph -->
+<p><strong><em>Az <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/22-kinai-maradektetel-konguenciarendszerek-kis-fermat-tetel-rsa-bizonyitas-gyuruk-direkt-szorzata-rsa-dekodolas/" target="_blank">előző részben</a> igazoltuk, hogy az RSA rejtjelezési eljárás valóban minden esetben helyesen működik. Ezt alapvetően két fontos számelméleti összefüggés biztosította számunkra. Az első a kis Fermat-tétel ([yp_element slug="kis-fermat-tetel" type="link" /]), amely a <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/20-kongruencia-redukalt-maradekosztaly-euler-fuggveny-linearis-kongruencia-maradekrendszer-euler-fermat-tetel/" target="_blank">20. részben</a> ismertetett Euler-Fermat tétel ([yp_element slug="euler-fermat-tetel" type="link" /]) következménye a prímekre nézve. A másik összefüggés pedig a kínai maradéktétel ([yp_element slug="kinai-maradektetel" type="link" /]), amely az úgynevezett kongruenciarendszerek megoldhatóságával, illetve a megoldások számával volt kapcsolatos. Végül egyrészt ennek következményeként egy – egyébként a számelmélet más területein is – rendkívül fontos gyűrűizomorfizmussal, másrészt a kis Fermat-tétel egy egyszerű következményével ismerkedtünk meg, amelyek együtt lehetővé teszik a kommunikáló felek számára az RSA-dekódolás felgyorsítását.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>De vajon hogyan képes Alice és Bob az RSA-kulcsgeneráláshoz szükséges többszázjegyű prímszámokat találni? Hogyan tudják ezt megtenni anélkül, hogy az idők végezetéig osztáspróbákat kellene végezniük? Mik azok a prímtesztek, és pontosan hogyan működnek? Mely számokat nevezzük univerzális álprímeknek, és hogyan tudunk megszabadulni tőlük? Ebben a részben erről lesz szó...</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"className":"prerequisite-warning"} -->
+<p class="prerequisite-warning">Figyelem! Ez a rész erőteljesen épít a <a href="https://youproof.hu/kriptografia/16-oszhatosag-egyseg-asszocialt-felbonthatatlan-prim-szamelmelet-alaptetele/" target="_blank" rel="noreferrer noopener">16.</a>, <a href="https://youproof.hu/kriptografia/20-kongruencia-redukalt-maradekosztaly-euler-fuggveny-linearis-kongruencia-maradekrendszer-euler-fermat-tetel/" target="_blank" rel="noreferrer noopener">20.</a> és <a href="https://youproof.hu/kriptografia/22-kinai-maradektetel-konguenciarendszerek-kis-fermat-tetel-rsa-bizonyitas-gyuruk-direkt-szorzata-rsa-dekodolas/" target="_blank" rel="noreferrer noopener">22. részekben</a> felépített alábbi definíciókra, valamint a hozzájuk kapcsolódó tételekre:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egyseg" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="asszocialt" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="felbonthatatlan-elem" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="primtulajdonsagu-elem" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="redukalt-maradekosztaly" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="euler-fuggveny" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="kis-fermat-tetel" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="kinai-maradektetel" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph {"className":"prerequisite-warning"} -->
+<p class="prerequisite-warning">Ezek kontextusba helyezése miatt erőteljesen ajánlott elolvasni a <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/16-oszhatosag-egyseg-asszocialt-felbonthatatlan-prim-szamelmelet-alaptetele/" target="_blank">16.</a>, <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/20-kongruencia-redukalt-maradekosztaly-euler-fuggveny-linearis-kongruencia-maradekrendszer-euler-fermat-tetel/" target="_blank">20.</a> és <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/22-kinai-maradektetel-konguenciarendszerek-kis-fermat-tetel-rsa-bizonyitas-gyuruk-direkt-szorzata-rsa-dekodolas/" target="_blank">22. részeket</a>, mivel gyakran hivatkozni fogunk rájuk. A teljes cikksorozat elejét <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/1-alapfogalmak-caesar-vigenere-enigma-kulcsmegosztas/" target="_blank">itt</a> találod.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"dropCap":true} -->
+<p class="has-drop-cap">Alice és Bob tehát ott ülnek az RSA-algoritmus <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/21-rsa-algoritmus-kibovitett-euklideszi-algoritmus-euler-fuggveny-kulcsgeneralas-ismetelt-negyzetreemeles-modszere#rsa" target="_blank">21. részben</a> ismertetett leírása felett, és mindketten szeretnének maguknak egy-egy kulcspárt generálni. Ezután ezek publikus részeit megosztják majd egymással, és indulhat a biztonságos kommunikáció, azaz mindenki boldog. Igenám, csakhogy a kulcsgenerálási eljárás első lépéseként először is mindkettejüknek kellene találnia két-két többszázjegyű prímszámot. Azt a [yp_element slug="minden-prim-felbonthatatlan" type="link" /] és a [yp_element slug="kituntetett-kozos-oszto-letezesenek-kovetkezmenye" type="link" /] következményeként tudják, hogy az egész számok [latex]\Z[/latex] gyűrűjében a <strong><em>prímszámok</em></strong> ([yp_element slug="primtulajdonsagu-elem" type="link" /]) és <strong><em>felbonthatatlan számok</em></strong> ([yp_element slug="felbonthatatlan-elem" type="link" /]) köre éppenséggel egybeesik. Emiatt a továbbiakban ezt a két – egyébként teljesen különböző – gyűrűelméleti fogalmat egymás szinonímájaként fogjuk használni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A prímszámok keresése szempontjából lényeges kérdés, hogy azok mennyire gyakran fordulnak elő ebben a számtartományban. Az úgynevezett <strong><em>prímszámláló függvény</em></strong> egy olyan függvény, amely azt adja meg bármilyen [latex]n[/latex] pozitív egészre, hogy mennyi az [latex]n[/latex]-nél nemnagyobb pozitív prímek száma. Ezt a függvényt [latex]\pi[/latex]-vel jelöljük. Az alábbiakban a prímszámláló függvény értékét láthatjuk néhány pozitív egész számra:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}\pi(1)&amp;=0 \\ \pi(2)&amp;=1 \\ \pi(3)&amp;=2 \\ \pi(3)&amp;=2 \\ \pi(10)&amp;=4 \\ \pi(100)&amp;=25 \\ \pi(1000000)&amp;=78498 \\ &amp;\vdots \end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi ábrán pedig a függvény grafikonja látható az első 60 pozitív egész számra:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":6444,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_23_primszamlalo_fuggveny_grafikon.jpg" alt="Prímszámláló függvény" class="wp-image-6444"/><figcaption>Prímszámláló függvény</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Sajnos a prímszámláló függvényre nincs képletünk, amelybe tetszőleges pozitív egész számot behelyettesítve varázslatos módon megkaphatnánk az értékét. Azonban az úgynevezett <strong><em>analitikus számelmélet</em></strong> egy nevezetes tétele szerint ez az érték viszonylag jól becsülhető egy másik, könnyen kiszámítható függvénnyel. Ez <strong><em><a rel="noreferrer noopener" href="https://en.wikipedia.org/wiki/Prime_number_theorem" target="_blank">„nagy prímszámtétel”</a></em></strong> néven ismeretes, amelynek részleteire ebben a cikksorozatban nem térünk ki. Ez alapján kiszámítható, hogy a 300-600 számjegyből álló számok tartományában – amelyben Alice és Bob-nak prímeket kéne keresnie az RSA-kulcsokhoz – hogyan alakul a prímek eloszlása. Eszerint ha Alice és Bob teljesen véletlenszerűen kisorsol számokat ebből a tartományból, akkor nagyjából minden párszázadik próbálkozásnál belebotlanak egy-egy prímszámba.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Így már csak az a kérdés, hogy Alice és Bob hogyan tudja gyorsan eldönteni egy konkrét egész számról, hogy prím-e vagy sem. Az erre szolgáló algoritmusokat <strong><em>prímteszteknek</em></strong> nevezzük. A most következő prímtesztelő eljárás ismerős lehet az általános iskolából is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4 id="naive-primality-test">Prímtesztelés osztáspróbákkal</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Alice és Bob némi gondolkodás után néhány korábbi részben ismertetett összefüggés alapján az alábbi egyszerű, és mindenki számára jól ismert következtetésre jut a prímszámokkal kapcsolatban.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="primszamok-szukseges-es-elegseges-feltetele" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="primszamok-szukseges-es-elegseges-feltetele-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez alapján tehát egy adott [latex]n[/latex] egész szám esetén elegendő osztáspróbákkal ellenőrizni, hogy teljesül-e valamelyik oszthatóság az alábbiak közül:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}2&amp;|n \\ 3&amp;|n \\ 4&amp;|n \\ &amp;\vdots \\ |n|-1&amp;|n\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha ezek közül akárcsak egyetlen oszthatóság is teljesül, akkor az iménti tétel alapján a prímtesztelő algoritmus leállhat azzal a válasszal, hogy [latex]n[/latex] <strong><em>„biztosan összetett”</em></strong>. Ezzel szemben ha egyetlen oszthatóság sem teljesül a fentiek közül, akkor ugyancsak a fenti tétel alapján [latex]n[/latex] <strong><em>„biztosan prím”</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Például az [latex]n=7[/latex] <strong><em>„biztosan prím”</em></strong>, hiszen:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}2&amp;\
+mid 7 \\ 3&amp;\
+mid 7 \\ 4&amp;\
+mid 7 \\ 5&amp;\
+mid 7 \\ 6&amp;\
+mid 7\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezzel szemben az [latex]n=35[/latex] <strong><em>„biztosan összetett”</em></strong>, hiszen:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}2&amp;\
+mid 35 \\ 3&amp;\
+mid 35 \\ 4&amp;\
+mid 35 \\ 5&amp;|35\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Főhőseink tehát ez alapján bármilyen egész számról el tudják dönteni, hogy prímszám-e vagy sem. Csakhogy <strong><em>van egy kis probléma</em></strong> ezzel az eljárással, amely akkor jelentkezik, amikor a gyakorlatban előforduló nagyságrendű számokra kezdjük el lefuttatni. Vizsgáljuk ezért meg, hogy mekkora az eljárás számításigénye a bemenet méretének függvényében. A „bemenet mérete” alatt itt értelemszerűen a leírásához szükséges számjegyek számát fogjuk érteni. Jelöljük ezt a számot mondjuk [latex]k[/latex]-val, és tegyük fel, hogy tizes számrendszerben dolgozunk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A lehető legkisebb [latex]k[/latex] számjegyből álló egész szám a [latex]10^{k-1}[/latex] lesz. Vagyis ha a bemenet történetesen prímszám, akkor ez nagyságrendileg legalább ennyi osztáspróba után fog csak kiderülni. Ez bizony a bemenet méretének <strong><em>exponenciális függvénye</em></strong>, és így az algoritmus sajnos a <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/7-algoritmus-bonyolultsag-problemaosztalyok-polinomialis-exponencialis-p-np-sejtes-tanu-tetel#algorithm-time-complexity" target="_blank">7. részben</a> tanultak alapján nem nevezhető hatékonynak. Nem sokkal jobb a helyzet akkor sem, ha a bemenet összetett szám, kivéve persze az olyan ritka eseteket, amikor viszonylag kicsi prímtényezője is van. A <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/21-rsa-algoritmus-kibovitett-euklideszi-algoritmus-euler-fuggveny-kulcsgeneralas-ismetelt-negyzetreemeles-modszere#rsa" target="_blank">21. részben</a> már említettük, hogy az RSA esetén manapság tipikusan 300-600 számjegyből álló prímszámokat használnak, ezért az algoritmus futása ebben a számtartományban az idők végezetéig is eltarthat, és így a gyakorlatban nem használható.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Alice és Bob tehát tovább töri a fejét, hogyan tudnának ennél jóval kevesebb osztáspróbával is célt érni, és némi gondolkodás után az alábbi következtetésre jutnak.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="osztok-es-a-negyzetgyok" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="osztok-es-a-negyzetgyok-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez alapján tehát az osztáspróbákkal elegendő addig a számig elmenni, amelynek a négyzete még épp [latex]|n|[/latex] alatt marad. Ha eddig nem találunk osztót, akkor ezután sem fogunk. Például az [latex]n=61[/latex] <strong><em>„biztosan prím”</em></strong>, hiszen:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}2&amp;\
+mid 61 \\ 3&amp;\
+mid 61 \\ 4&amp;\
+mid 61 \\ 5&amp;\
+mid 61 \\ 6&amp;\
+mid 61 \\ 7&amp;\
+mid 61\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A további osztáspróbákat már nem érdemes elvégezni, hiszen [latex]8[/latex] négyzetével már túllépnénk a [latex]61[/latex]-et, így ha [latex]7[/latex]-ig bezárólag nincs osztója a [latex]61[/latex]-nek, akkor [latex]7[/latex]-nél nagyobb osztója sem lesz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ez első látásra lényeges gyorsításnak tűnik, de sajnos nem az.</em></strong> Most nem teljes matematikai precizitással felvázoljuk, hogy miért.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel ismét, hogy a bemeneti szám [latex]k[/latex] darab számjegyből áll, és tizes számrendszerben dolgozunk. A lehető legkisebb [latex]k[/latex] számjegyből álló szám a [latex]10^{k-1}[/latex]. Egy ekkora számnak a teszteléséhez az iménti tétel alapján nagyságrendileg [latex]r[/latex] darab osztáspróbát kell elvégezni, ahol [latex]r[/latex] a legnagyobb olyan szám, amelyre teljesül, hogy [latex]r^2\leq 10^{k-1}[/latex]. Tegyük fel, hogy [latex]r[/latex] a tizes számrendszerben [latex]l[/latex] darab számjeggyel írható le, azaz [latex]r[/latex] legalább [latex]10^{l-1}[/latex]. Ezt négyzetre emelve azt kapjuk, hogy [latex]r^2[/latex] legalább [latex]10^{2\cdot (l-1)}[/latex]. Összefoglalva:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]10^{2\cdot (l-1)} \leq r^2 \leq 10^{k-1}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]10^{l-1} \leq r \leq 10^{\frac{k-1}{2}}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez az exponenciális függvény tulajdonságai miatt azt jelenti, hogy [latex]r[/latex] felírásához legalább feleannyi számjegy kell, mint ahány számjegyből a bemeneti szám áll. Mivel [latex]r[/latex] az elvégzendő osztáspróbák számát jelenti, ezért ez sajnos még mindig a <strong><em>bemenet méretének exponenciális függvénye</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Alice és Bob tehát továbbra sem mennek sokra ezzel a prímtesztelési eljárással abban a számtartományban, ahol prímszámokat szeretnének keresni. Ezért most szintet lépünk, és egy lényegesen más elven működő prímtesztet ismertetünk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="fermat-primality-test"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A Fermat-prímteszt</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Ennek a prímtesztelő eljárásnak az alapja az <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/22-kinai-maradektetel-konguenciarendszerek-kis-fermat-tetel-rsa-bizonyitas-gyuruk-direkt-szorzata-rsa-dekodolas/" target="_blank">előző részben</a> megismert <strong><em>kis Fermat-tétel</em></strong>. Ez a tétel azt állítja, hogy <strong><em>HA</em></strong> egy [latex]n\gt 0[/latex] pozitív egész szám prímszám, <strong><em>AKKOR</em></strong> minden [latex]n[/latex]-hez <strong><em>relatív prím</em></strong> [latex]a[/latex] egész szám esetén teljesülni fog az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{n-1} \equiv 1 \pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Más megfogalmazásban azt is mondhatjuk, hogy amennyiben akárcsak egyetlen olyan [latex]n[/latex]-hez relatív prím [latex]a[/latex] egész szám is létezik, amelyre <strong><em>nem teljesül</em></strong> a fenti kongruencia, akkor [latex]n[/latex] biztosan <strong><em>nem prím</em></strong> (azaz összetett, vagy egység). Egy ilyen [latex]a[/latex] egész szám tehát <strong><em>„leleplezi”</em></strong> vagy <strong><em>„tanúsítja”</em></strong> [latex]n[/latex] összetettségét. Könnyen adódik, hogyha egy [latex]a[/latex] egész szám tanú a fenti értelemben, akkor minden olyan [latex]b[/latex] egész szám is tanú, amely [latex]a[/latex]-val azonos modulo [latex]n[/latex] maradékosztályban van. Ekkor ugyanis teljesül az [latex]a\equiv b\pmod n[/latex] kongruencia, és így a [yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" type="link" /] 8. pontja miatt teljesül az alábbi kongruencia is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{n-1} \equiv b^{n-1} \pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mármost ha a baloldal nem kongruens [latex]1[/latex]-gyel – azaz [latex]a[/latex] tanú –, akkor a jobboldal sem lehet kongruens [latex]1[/latex]-gyel – azaz [latex]b[/latex] is tanú. Az alábbi definícióban tehát a fenti értelemben vett „tanú” fogalmát praktikus módon komplett maradékosztályokra vonatkoztatjuk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="fermat-tanu" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="fermat-tanu-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>kis Fermat-tétel</em></strong> eszerint úgy is megfogalmazható, hogy amennyiben egy [latex]n[/latex] egész számnak <strong><em>létezik Fermat-tanúja</em></strong>, akkor <strong><em>„biztosan összetett”</em></strong>. Így ha [latex]n[/latex]-ről szeretnénk eldönteni, hogy prím-e, akkor nincs más dolgunk, mint keresni egy Fermat-tanút a <strong><em>nemnulla</em></strong> modulo [latex]n[/latex] maradékosztályok között. Igenám, csakhogy e maradékosztályok száma borzasztóan nagy – egészen pontosan [latex]n-1[/latex] –, így reménytelennek tűnik bármiféle ezek között való keresgélés. Az az érdekes, hogy ennek ellenére viszonylag gyorsan tudunk Fermat-tanút találni, amennyiben egyáltalán létezik ilyen. Most ennek okát fogjuk megvizsgálni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi táblázatban néhány adatot láthatunk az összes 500 és 600 közötti páratlan számról. A táblázat első oszlopa magát a vizsgált [latex]n[/latex] számot tartalmazza. A második oszlopban azt láthatjuk, hogy összesen hány modulo [latex]n[/latex] <strong><em>redukált maradékosztály</em></strong> létezik. Ez tehát a [yp_element slug="euler-fuggveny" type="link" /] alapján épp az <strong><em>Euler-féle [latex]\varphi[/latex]-függvény</em></strong> értéke. A harmadik oszlop tartalmazza azt, hogy e [latex]\varphi(n)[/latex] darab redukált maradékosztály között mennyi olyan van, amely <strong><em>nem Fermat-tanú</em></strong>. Ezt az értéket [latex]l(n)[/latex]-nel jelöltük. Végül a negyedik oszlop azt tartalmazza, hogy [latex]n[/latex] ténylegesen prím-e vagy sem:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{c||c}\begin{array}{c|c|c|c} n &amp; \varphi(n) &amp; l(n) &amp; \text{prím} \\ \hline 501 &amp; 332 &amp; 4 &amp; \text{nem} \\ 503 &amp; 502 &amp; 502 &amp; \text{igen} \\ 505 &amp; 400 &amp; 16 &amp; \text{nem} \\ 507 &amp; 312 &amp; 4 &amp; \text{nem} \\ 509 &amp; 508 &amp; 508 &amp; \text{igen} \\ 511 &amp; 432 &amp; 36 &amp; \text{nem} \\ 513 &amp; 324 &amp; 4 &amp; \text{nem} \\ 515 &amp; 408 &amp; 4 &amp; \text{nem} \\ 517 &amp; 460 &amp; 4 &amp; \text{nem} \\ 519 &amp; 344 &amp; 4 &amp; \text{nem} \\ 521 &amp; 520 &amp; 520 &amp; \text{igen} \\ 523 &amp; 522 &amp; 522 &amp; \text{igen} \\ 525 &amp; 240 &amp; 16 &amp; \text{nem} \\ 527 &amp; 480 &amp; 4 &amp; \text{nem} \\ 529 &amp; 506 &amp; 22 &amp; \text{nem} \\ 531 &amp; 348 &amp; 4 &amp; \text{nem} \\ 533 &amp; 480 &amp; 16 &amp; \text{nem} \\ 535 &amp; 424 &amp; 4 &amp; \text{nem} \\ 537 &amp; 356 &amp; 4 &amp; \text{nem} \\ 539 &amp; 420 &amp; 4 &amp; \text{nem} \\ 541 &amp; 540 &amp; 540 &amp; \text{igen} \\ 543 &amp; 360 &amp; 4 &amp; \text{nem} \\ 545 &amp; 432 &amp; 16 &amp; \text{nem} \\ 547 &amp; 546 &amp; 546 &amp; \text{igen} \\ 549 &amp; 360 &amp; 8 &amp; \text{nem} \end{array} &amp; \begin{array}{c|c|c|c} n &amp; \varphi(n) &amp; l(n) &amp; \text{prím} \\ \hline  551 &amp; 504 &amp; 4 &amp; \text{nem} \\ 553 &amp; 468 &amp; 36 &amp; \text{nem} \\ 555 &amp; 288 &amp; 8 &amp; \text{nem} \\ 557 &amp; 556 &amp; 556 &amp; \text{igen} \\ 559 &amp; 504 &amp; 36 &amp; \text{nem} \\ 561 &amp; 320 &amp; 320 &amp; \boxed{\text{nem}} \\ 563 &amp; 562 &amp; 562 &amp; \text{igen} \\ 565 &amp; 448 &amp; 16 &amp; \text{nem} \\ 567 &amp; 324 &amp; 4 &amp; \text{nem} \\ 569 &amp; 568 &amp; 568 &amp; \text{igen} \\ 571 &amp; 570 &amp; 570 &amp; \text{igen} \\ 573 &amp; 380 &amp; 4 &amp; \text{nem} \\ 575 &amp; 440 &amp; 4 &amp; \text{nem} \\ 577 &amp; 576 &amp; 576 &amp; \text{igen} \\ 579 &amp; 384 &amp; 4 &amp; \text{nem} \\ 581 &amp; 492 &amp; 4 &amp; \text{nem} \\ 583 &amp; 520 &amp; 4 &amp; \text{nem} \\ 585 &amp; 288 &amp; 32 &amp; \text{nem} \\ 587 &amp; 586 &amp; 586 &amp; \text{igen} \\ 589 &amp; 540 &amp; 36 &amp; \text{nem} \\ 591 &amp; 392 &amp; 4 &amp; \text{nem} \\ 593 &amp; 592 &amp; 592 &amp; \text{igen} \\ 595 &amp; 384 &amp; 24 &amp; \text{nem} \\ 597 &amp; 396 &amp; 4 &amp; \text{nem} \\ 599 &amp; 598 &amp; 598 &amp; \text{igen} \end{array} \end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A táblázatból legalábbis úgy tűnik, hogy amennyiben egy [latex]n[/latex] egész szám összetett, akkor ezt rendkívül sok, sőt „majdnem mindegyik” modulo [latex]n[/latex] redukált maradékosztály tanúsítja. Ez abból látszik, hogy az összetett számok esetén a táblázat harmadik oszlopában lévő szám nagyon kicsi. Az egyetlen kakukktojás ebben a számtartományban az [latex]561[/latex], akire hamarosan visszatérünk még. Ez azt is jelenti, hogy véletlenszerűen választott redukált maradékosztályok vizsgálatával jó eséllyel nagyon hamar „leleplezhetjük” [latex]n[/latex]-t, amennyiben összetett, hiszen kicsi az esélye, hogy épp a néhány nem Fermat-tanú valamelyikét választjuk. Ráadásul egy-egy ilyen vizsgálatot a <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/21-rsa-algoritmus-kibovitett-euklideszi-algoritmus-euler-fuggveny-kulcsgeneralas-ismetelt-negyzetreemeles-modszere#modular-exponentiation" target="_blank">21. részben</a> tanult <strong><em>ismételt négyzetreemelések módszerével</em></strong> rettentően hamar el is tudunk végezni. Hamarosan általánosságban is igazolni fogunk egy alsó becslést a Fermat-tanúk számára vonatkozóan. Ez ugyan jóval szerényebb lesz annál, mint ami a táblázatból látszik, ám egy hatékonyan működő prímteszthez még ez is bőven elég lesz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ehhez azonban először két segédtételre lesz szükségünk. Az első arra vonatkozik, hogy egy Fermat-tanúból hogyan tudunk előállítani egy másik Fermat-tanút.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="fermat-tanu-es-nem-fermat-tanu-szorzata" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="fermat-tanu-es-nem-fermat-tanu-szorzata-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A második segédtétel arra vonatkozóan mond ki egy fontos állítást, hogy mi történik akkor, ha egymástól különböző maradékosztályokat egyesével végigszorozzuk ugyanazzal a redukált maradékosztállyal.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="kulonbozo-maradekosztalyok-szorzasa-redukalt-maradekosztallyal" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="kulonbozo-maradekosztalyok-szorzasa-redukalt-maradekosztallyal-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>E két segédtétel segítségével mostmár könnyedén igazolhatjuk a Fermat-tanúk számára vonatkozó alsó becslésünket.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="fermat-tanuk-szama" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="fermat-tanuk-szama-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Na és akkor mi van?!</em></strong> – kérdezhetné az Olvasó. Nos, az a helyzet, hogy ezt az első látásra nem túl érdekes tényt Alice és Bob egy meglehetősen pofátlan kis trükkel prímteszteléshez tudja felhasználni. Ezt az eljárást <strong><em>Fermat-prímtesztnek</em></strong> nevezzük, és a következőképpen néz ki:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} -->
+<ol><li>Az algoritmus bemenete egy [latex]n\gt 1[/latex] pozitív egész szám, amelyről el kellene dönteni, hogy prím-e vagy összetett.</li><li>Válasszunk véletlenszerűen egy tetszőleges [latex]1[/latex] és [latex]n[/latex] közötti [latex]a[/latex] egész számot, azaz [latex]1\lt a\lt n[/latex].</li><li>A [yp_element slug="euklideszi-gyuruben-letezik-kituntetett-kozos-oszto" type="link" /] bizonyításában ismertetett <strong><em>euklidészi algoritmus</em></strong> segítségével számítsuk ki az [latex](a,n)[/latex] kitüntetett közös osztót. Ha [latex](a,n)\
+eq 1[/latex], akkor az algoritmus leáll a következő válasszal: <strong><em>az [latex]n[/latex] egész szám biztosan összetett, és az egyik osztója [latex](a,n)[/latex].</em></strong> Ha [latex](a,n)=1[/latex], akkor folytassuk a 4. lépéstől.</li><li>A <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/21-rsa-algoritmus-kibovitett-euklideszi-algoritmus-euler-fuggveny-kulcsgeneralas-ismetelt-negyzetreemeles-modszere/" target="_blank">21. részben</a> ismertetett <strong><em>ismételt négyzetreemelések módszerével</em></strong> ellenőrizzük le, hogy teljesül-e az [latex]a^{n-1}\equiv 1\pmod n[/latex] kongruencia. Amennyiben <strong><em>nem</em></strong> teljesül a kongruencia, akkor az algoritmus leáll a következő válasszal: <strong><em>az [latex]n[/latex] egész szám biztosan összetett, de nem találtuk meg egyetlen osztóját sem</em></strong>. Amennyiben teljesül a kongruencia, akkor az algoritmus a következő válasszal áll le: <strong><em>az [latex]n[/latex] egész szám „valószínűleg” prím</em></strong>.</li></ol>
+<!-- /wp:list -->
+
+<!-- wp:heading {"level":4} -->
+<h4>„Valószínűleg” prím?!</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Ez az egész elsőre teljesen értelmetlennek tűnik, ezért most vizsgáljuk meg, hogy miről is van szó tulajdonképpen. Képzeljük el, hogy a bemenő [latex]n[/latex] egész szám valójában összetett, ám ezt szeretné minél jobban eltitkolni előlünk. Mi azonban a <strong><em>kis Fermat-tételből</em></strong> ([yp_element slug="kis-fermat-tetel" type="link" /]) tudjuk, hogy [latex]n[/latex] esetleges összetettségét egy <strong><em>Fermat-tanú</em></strong> egyértelműen leleplezné.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezért az összes <strong><em>nemnulla</em></strong> modulo [latex]n[/latex] maradékosztályt szépen bedobáljuk egy képzeletbeli kalapba, majd becsukjuk a szemünket, és teljesen véletlenszerűen kihúzunk közülük egyet. Olyan ez, akárcsak egy lottósorsolás. Ez lenne tehát az algoritmus <strong><em>2. lépése</em></strong>. A <strong><em>3. lépésben</em></strong> azt vizsgáljuk meg, hogy egy redukált maradékosztályt húztunk-e ki. Annak, hogy nem, gyakorlatilag 0 az esélye, de ha mégis, akkor ez leleplezi [latex]n[/latex]-et, ráadásul még egy osztóját is megkapjuk. Majdnem biztos azonban, hogy tovább kell mennünk a <strong><em>4. lépésre</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezen a ponton már tudjuk, hogy a kiválasztott maradékosztály egy redukált maradékosztály. Ebben a lépésben azt ellenőrizzük le, hogy véletlenül nem egy <strong><em>Fermat-tanút</em></strong> találtunk-e. Ha igen – azaz a vizsgált kongruencia nem teljesült – akkor [latex]n[/latex] lelepleződött, hiszen a <strong><em>kis Fermat-tétel</em></strong> miatt biztosan összetett. Ha azonban <strong><em>nem Fermat-tanút</em></strong> fogtunk ki – azaz a vizsgált kongruencia teljesül –, akkor nem tudunk semmi biztosat mondani [latex]n[/latex]-ről, ugyanis a <strong><em>kis Fermat-tétel megfordítása nem igaz</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Azt viszont az előző szakaszban bizonyított [yp_element slug="fermat-tanuk-szama" type="link" /] alapján tudjuk, hogy a kalapban lévő redukált maradékosztályoknak <strong><em>legalább a fele</em></strong> – ám a tapasztalat alapján általában ennél jóval nagyobb része – <strong><em>Fermat-tanú</em></strong>. Így annak valószínűsége meglehetősen kicsi, hogy pont belehúztunk abba a néhány kósza nem Fermat-tanúba, miközben [latex]n[/latex] összetett. Ennél sokkal valószínűbb, hogy [latex]n[/latex] ténylegesen prím, és emiatt valóban nincs egyetlen Fermat-tanú sem abban a bizonyos kalapban. Ám biztosat ezen a ponton nem tudunk mondani, és ez az oka ennek a meglehetősen furcsán hangzó <strong><em>„valószínűleg prím”</em></strong> válasznak.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A Fermat-tanúk számára vonatkozó, a [yp_element slug="fermat-tanuk-szama" type="link" /]ben bizonyított alsó becslés ugyan önmagában nem túl erős, azonban Alice és Bob megteheti, hogy többször is húz a kalapból. A Fermat-tanúság ellenőrzése ugyanis – mint említettük – az <strong><em>ismételt négyzetreemelések módszerével</em></strong> rendkívül gyorsan elvégezhető. Tegyük fel, hogy a lehető legrosszabb a helyzet, és a redukált maradékosztályoknak mindössze csak a fele Fermat-tanú. Ekkor 50% annak valószínűsége, hogy főhőseink egy véletlenszerű választással pont a másik feléből választanak egy redukált maradékosztályt. Annak pedig már csak 25%, hogy ez kétszer egymás után is megtörténik. Az, hogy egy újabb, harmadik húzással sem találunk Fermat-tanút, már csak 12.5% valószínűséggel következik be. És így tovább, minden újabb húzással megfeleződik annak valószínűsége, hogy tévesen prímszámmá nyilvánítjuk [latex]n[/latex]-et.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel például, hogy 100 teljesen véletlenszerűen kiválasztott redukált maradékosztály egyike sem bizonyul Fermat-tanúnak. Ennek már csupán annyi az esélye, mint 100-szor zsinórban eltalálni, hogy egy feldobott pénzérme fej vagy írás lesz-e. Ez nagyságrendileg kevésbé valószínű, mint hogy valakinek 3-szor egymás után telitalálata lesz az 5-ös lottón.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Van azonban <strong><em>egy kis probléma</em></strong> ezzel a prímteszttel: sajnos léteznek olyan összetett számok, amelyeket nem lehet ilyen módon kiszűrni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Univerzális álprímek</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Térjünk vissza egy kicsit az előző szakasz elején szereplő táblázathoz. Itt a második oszlop a modulo [latex]n[/latex] redukált maradékosztályok számát mutatja – ezt [latex]\varphi(n)[/latex]-nel jelöltük –, a harmadik pedig azt, hogy ezek közül hány olyan van, amely <strong><em>NEM Fermat-tanú</em></strong> – ezt pedig [latex]l(n)[/latex]-nel jelöltük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Értelemszerűen a prímszámok esetén ez a két érték megegyezik, hiszen egy prímszámhoz nyilván nem létezik az összetettségét igazoló Fermat-tanú. Kérdés, hogy vajon létezik-e olyan <strong><em>összetett</em></strong> szám, amelyhez szintén nincs Fermat-tanú a redukált maradékosztályok között. A táblázatban felhívtuk a figyelmet az [latex]561[/latex] egész számra, amely épp ezzel a szemtelen tulajdonsággal rendelkezik. Ezeknek a számoknak külön nevük is van.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="carmichael-szamok" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha tehát véletlenül épp egy Carmichael-számba botlunk, akkor a Fermat-prímteszt azt nagyon nagy valószínűséggel tévesen prímnek fogja minősíteni, hiszen akárhány redukált maradékosztályt is húzunk ki a kalapból, azokra mind teljesülni fog a Fermat-kongruencia. Az ilyen számok összetettségét egyedül akkor fogjuk tudni detektálni, ha sikerül épp egy <strong><em>nem redukált maradékosztályt</em></strong> kisorsolni a kalapból. Ilyenkor ugyanis a 3. lépésben végrehajtott euklidészi algoritmus [latex]1[/latex]-től különböző eredménye lebuktatja a számunkat. Erre azonban gyakorlatilag semmi esély nincs, hiszen egy nagy szám esetén a maradékosztályoknak általában csak elenyésző hányada nem redukált maradékosztály.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A figyelmes Olvasó észreveheti az említett táblázatból, hogy egy [latex]n[/latex] univerzális álprímet mindössze az különbözteti meg egy valódi prímtől, hogy összetettsége miatt a [latex][0]_n[/latex] maradékosztályon kívül vannak még egyéb nem redukált maradékosztályok is. Ez onnan látszik, hogy a táblázat második oszlopában nem [latex]\varphi(n)=n-1[/latex] fog szerepelni, ahogyan a prímek esetében a [yp_element slug="euler-fuggveny-primhatvanyokra" type="link" /] alapján elvárható, hanem egy ennél kisebb szám. Ez valóban lebuktatja álprímünket. A gond csak az, hogy – mint ahogyan a <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/21-rsa-algoritmus-kibovitett-euklideszi-algoritmus-euler-fuggveny-kulcsgeneralas-ismetelt-negyzetreemeles-modszere#euler-function" target="_blank">21. részben</a> már említettük – az Euler-féle [latex]\varphi[/latex]-függvény kiszámítására csak [latex]n[/latex] prímtényezőinek ismeretében van esélyünk, máskülönben az idők végezetéig is eltarthat. Így erre nem tudunk támaszkodni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Érdekes kérdés, hogy vajon hány Carmichael-szám létezik? Ha esetleg ezek száma véges, akkor ezeket nyilvántarthatnánk a számítógép memóriájában, az algoritmus pedig leellenőrizhetné, hogy [latex]n[/latex] véletlenül nem szerepel-e ebben a listában. Régóta ismeretes, hogy tetszőleges [latex]a\gt 1[/latex] egész szám esetén végtelen sok [latex]a[/latex] alapú álprím létezik, az azonban sokáig nyitott kérdés volt, hogy vajon az univerzális álprímek száma is végtelen-e. Sajnálatos módon 1992-ben ezt is sikerült igazolni. Emiatt nem mehetünk el szó nélkül a probléma mellett, és az [latex]a^{n-1}\equiv 1\pmod n[/latex] kongruencia ellenőrzésén kívül egyéb dolgokat is meg kell vizsgálnunk annak érdekében, hogy a Carmichael-számokat is ki tudjuk szűrni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="miller-rabin-primality-test"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A Miller-Rabin prímteszt</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Ebben a szakaszban a Fermat-prímtesztünket fogjuk egy kicsit feljavítani annak érdekében, hogy a Carmichael-számokat is ki tudjuk szűrni. Előszöris szögezzük le, hogy a továbbiakban csak a <strong><em>páratlan</em></strong> [latex]n[/latex]-ekkel fogunk foglalkozni. Ez nem jelent tényleges megszorítást, hiszen az utolsó számjegyből azonnal látszik, hogy páratlan vagy páros-e a bemenetünk. Ez utóbbi esetben nyilván megállhatunk, és összetettnek nyilváníthatjuk a számunkat, hiszen az osztható [latex]2[/latex]-vel.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az általánosság megsértése nélkül feltételezhetjük tehát, hogy [latex]n\gt 1[/latex] egy páratlan egész szám. Ekkor azonban az [latex]a^{n-1}\equiv 1\pmod n[/latex] Fermat-kongruenciában szereplő [latex]n-1[/latex] kitevő biztosan páros lesz. Vagyis létezik olyan [latex]k_1[/latex] egész szám, amelyre teljesül az alábbi – és ezt meg is kapjuk, ha [latex]n-1[/latex]-et „elosztjuk” [latex]2[/latex]-vel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]n-1 = 2\cdot k_1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezután [latex]k_1[/latex]-re vizsgáljuk meg, hogy páratlan-e vagy páros. Utóbbi esetben hasonlóképpen tovább bonthatjuk [latex]n-1[/latex]-et, azaz létezni fog olyan [latex]k_2[/latex] egész szám, amelyre teljesül az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]n-1 = 2\cdot 2\cdot k_2[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>És így tovább mindaddig bontjuk tovább a jobboldali tényezőt, amíg páratlan számot nem kapunk. Ez garantáltan be fog következni véges számú lépés után, máskülönben [latex]n-1[/latex] prímtényezős felbontásában végtelen sok [latex]2[/latex]-es tényező szerepelne, ami lehetetlen. Tegyük fel, hogy [latex]e[/latex] darab lépés után egy valamilyen [latex]k[/latex] páratlan számot kapunk. Ekkor [latex]n-1[/latex]-re az alábbi kifejezést kaptuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]n-1=\underbrace{2\cdot 2\cdot \ldots \cdot 2}_{e \text{ darab}}\cdot k=2^e\cdot k[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Például ha az [latex]n=561[/latex] Carmichael-szám a bemenetünk, akkor [latex]n-1=560[/latex]-ra az iménti felbontás után [latex]e=4[/latex] és [latex]k=35[/latex] adódik, hiszen:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}n-1=560&amp;=2\cdot 280=\\&amp;=2^2\cdot 140=\\&amp;=2^3\cdot 70=\\&amp;=2^4\cdot 35\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ilymódon kiszámítva az [latex]e[/latex] és [latex]k[/latex] értékét, a Fermat-tesztben használt [latex]a^{n-1}\equiv 1\pmod n[/latex] kongruencia az alábbi alakot ölti:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{2^e\cdot k}\equiv 1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Amennyiben tehát [latex][a]_n[/latex] egy redukált maradékosztály és [latex]n[/latex] prím, akkor teljesül a fenti kongruencia. Ez viszont a [yp_element slug="egesz-szamok-kozotti-kongruencia" type="link" /] 3. pontja alapján azt jelenti, hogy [latex]n[/latex] osztója az alábbi kifejezésnek:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{2^e\cdot k}-1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most ezt a kifejezést fogjuk szorzattá alakítani a következő tétel segítségével.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="miller-rabin-szorzat" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="miller-rabin-szorzat-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel például, hogy továbbra is az [latex]n=561[/latex] Carmichael-szám a bemenetünk. Az [latex]n-1=560[/latex]-ból ugye már korábban kiszámítottuk az [latex]e=4[/latex] és [latex]k=35[/latex] értékeket. Ekkor az [latex]a^{n-1}-1=a^{560}-1[/latex] kifejezés az iménti tétel alapján így alakítható szorzattá:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{560}-1=(a^{35}-1)\cdot (a^{35}+1)\cdot (a^{70}+1)\cdot (a^{140}+1)\cdot (a^{280}+1)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha tehát [latex][a]_{561}[/latex] egy tetszőleges redukált maradékosztály, és az [latex]n=561[/latex] egy prímszám lenne, akkor ő garantáltan osztója lenne a baloldali [latex]a^{560}-1[/latex] kifejezésnek. Természetesen ez az oszthatóság teljesülhet egészen más okból is, és – minthogy az [latex]n=561[/latex] egy Carmichael-szám – jelen esetben teljesül is bármilyen [latex][a]_{561}[/latex] redukált maradékosztályra. A Fermat-prímteszt ezen a ponton annak rendje és módja szerint meg is bukik, hiszen néhány véletlenszerűen kiválasztott [latex][a]_{561}[/latex] redukált maradékosztály vizsgálata után tévesen arra a következtetésre jut, hogy az [latex]n=561[/latex] „valószínűleg prím”.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezen a ponton a <strong><em>Miller-Rabin-prímteszt</em></strong> továbbmegy, és az [latex]n=561[/latex] esetleges <strong><em>prímtulajdonságát</em></strong> ([yp_element slug="primtulajdonsagu-elem" type="link" /]) próbálja meg cáfolni a kiválasztott [latex][a]_{561}[/latex] redukált maradékosztály segítségével. Ha ugyanis [latex]n=561[/latex] osztója a baloldali [latex]a^{560}-1[/latex] egész számnak, akkor a <strong><em>prímtulajdonság</em></strong> miatt a [yp_element slug="primtulajdonsagu-elem" type="link" /] utáni megjegyzés alapján osztója kell legyen <strong><em>legalább az egyik</em></strong> jobboldalon szereplő tényezőnek is. Azaz teljesülnie kell az alábbi oszthatóságok közül legalább egynek tetszőleges [latex][a]_{561}[/latex] redukált maradékosztály esetén:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}561&amp;|a^{35}-1 \\ 561&amp;|a^{35}+1 \\ 561&amp;|a^{70}+1 \\ 561&amp;|a^{140}+1 \\ 561&amp;|a^{280}+1\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez viszont a [yp_element slug="egesz-szamok-kozotti-kongruencia" type="link" /] 3. pontja alapján azt jelenti, hogy teljesülnie kell <strong><em>legalább az egyik</em></strong> alábbi kongruenciának tetszőleges [latex][a]_{561}[/latex] redukált maradékosztály esetén:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a^{35}&amp;\equiv +1\pmod{561} \\ a^{35}&amp;\equiv -1\pmod{561} \\ a^{70}&amp;\equiv -1\pmod{561} \\ a^{140}&amp;\equiv -1\pmod{561} \\ a^{280}&amp;\equiv -1\pmod{561} \end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Más megfogalmazásban ez azt jelenti, hogy amennyiben találunk egy olyan [latex][a]_{561}[/latex] redukált maradékosztályt, amely esetén a fenti kongruenciák közül <strong><em>egyik sem</em></strong> teljesül, akkor az [latex]n=561[/latex] biztosan <strong><em>nem lehet prím</em></strong>. Egy ilyen maradékosztály tehát <strong><em>„leleplezi”</em></strong> vagy <strong><em>„tanúsítja”</em></strong> az [latex]n=561[/latex] összetettségét. Vizsgáljuk meg például a [latex][2]_{561}[/latex] redukált maradékosztályt, azaz legyen [latex]a=2[/latex]. Az <a rel="noreferrer noopener" href="https://www.mtholyoke.edu/courses/quenell/s2003/ma139/js/powermod.html" target="_blank">itt</a> lévő kalkulátor segítségével leellenőrizhetjük a fenti kongruenciákat:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}2^{35} \equiv 263 \ &amp;\cancel{\equiv}\ +1\pmod{561} \\ 2^{35} \equiv 263 \ &amp;\cancel{\equiv}\ -1\pmod{561} \\ 2^{70}\equiv 166 \ &amp;\cancel{\equiv}\ -1\pmod{561} \\ 2^{140}\equiv 67 \ &amp;\cancel{\equiv}\ -1\pmod{561} \\ 2^{280}\equiv 1 \ &amp;\cancel{\equiv}\ -1\pmod{561} \end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Minthogy egyetlen kongruencia sem teljesül, ezért az eddigi okfejtés alapján az [latex]n=561[/latex] Carmichael-szám <strong><em>biztosan összetett</em></strong>, azaz megbukott a Miller-Rabin-prímteszten.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az eljárás általános megfogalmazásához most bevezetünk egy új tanú fogalmat.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="miller-rabin-tanu" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="miller-rabin-tanu-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Felmerül a kérdés, hogy vajon a tanúk körének tágítását nem vittük-e túlzásba. Azaz nem lehetséges-e, hogy ha Fermat-tanúja nem is, de Miller-Rabin-tanúja már lehet esetleg prímszámoknak is. Az alábbi tétel szerint szerencsére nem ez a helyzet.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="primszamnak-nincs-miller-rabin-tanuja" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="primszamnak-nincs-miller-rabin-tanuja-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezekután ismertetjük a Miller-Rabin-prímtesztelő eljárást, amely tehát a Fermat-prímtesztnek a továbbfejlesztett változata:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} -->
+<ol><li>Az algoritmus bemenete egy [latex]n\gt 1[/latex] <strong><em>páratlan</em></strong> egész szám, amelyről el kellene dönteni, hogy prím-e vagy összetett.</li><li>Válasszunk véletlenszerűen egy tetszőleges [latex]1[/latex] és [latex]n[/latex] közötti [latex]a[/latex] egész számot, azaz [latex]1\lt a\lt n[/latex].</li><li>A [yp_element slug="euklideszi-gyuruben-letezik-kituntetett-kozos-oszto" type="link" /] bizonyításában ismertetett <strong><em>euklidészi algoritmus</em></strong> segítségével számítsuk ki az [latex](a,n)[/latex] kitüntetett közös osztót. Ha [latex](a,n)\
+eq 1[/latex], akkor az algoritmus leáll a következő válasszal: <strong><em>az [latex]n[/latex] egész szám biztosan összetett, és az egyik osztója [latex](a,n)[/latex].</em></strong> Ha [latex](a,n)=1[/latex], akkor folytassuk a 4. lépéstől.</li><li>Képezzük azt az [latex]e\geq 1[/latex] kitevőt és [latex]k\geq 1[/latex] páratlan számot, amelyre [latex]n-1=2^e\cdot k[/latex] teljesül.</li><li>A <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/21-rsa-algoritmus-kibovitett-euklideszi-algoritmus-euler-fuggveny-kulcsgeneralas-ismetelt-negyzetreemeles-modszere/" target="_blank">21. részben</a> ismertetett <strong><em>ismételt négyzetreemelések módszerével</em></strong> ellenőrizzük le, hogy az [latex][a]_n[/latex] maradékosztályra teljesül-e legalább az egyik a [yp_element slug="miller-rabin-tanu" type="link" /]ban felsorolt kongruenciák közül. Amennyiben <strong><em>nem</em></strong> teljesül egyetlen kongruencia sem, akkor Miller-Rabin-tanút találtunk, és az algoritmus leáll a következő válasszal: <strong><em>az [latex]n[/latex] egész szám biztosan összetett, de nem találtuk meg egyetlen osztóját sem</em></strong>. Amennyiben teljesül legalább az egyik kongruencia, akkor az algoritmus a következő válasszal áll le: <strong><em>az [latex]n[/latex] egész szám „valószínűleg” prím</em></strong>.</li></ol>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Már megint csak „valószínűleg” prím?</em></strong> – kérdezhetné teljes joggal az Olvasó. Látszólag valóban nem kerültünk közelebb a prímek azonosításához, hiszen ismét csak összetett számokat tudunk egyértelműen leleplezni. Ha azonban szerencsétlenül épp egy olyan maradékosztályt sikerült kihúzni a kalapból, amely nem Miller-Rabin-tanú, akkor ismét csak annyit mondhatunk, hogy a kérdéses szám <strong><em>„valószínűleg” prím</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez valóban így van, azonban a Fermat-prímteszthez hasonlóan itt is megtehetjük, hogy többször húzunk a kalapból. Ezen túlmenően a Miller-Rabin-tanú [yp_element slug="miller-rabin-tanu" type="link" /]ja utáni megjegyzés alapján egy adott [latex]n[/latex]-hez tartozó Miller-Rabin-tanúk köre biztosan nem szűkebb, mint az ugyanezen [latex]n[/latex]-hez tartozó Fermat-tanúk köre. Sőt, azt is láthattuk, hogy az [latex]n=561[/latex]-nek egyáltalán nincs Fermat-tanúja – hiszen Carmichael-számról van szó. Ezzel szemben például a [latex][2]_{561}[/latex] maradékosztály „lebuktatja” ezt a számot is, hiszen ő egy Miller-Rabin-tanú, amely bizonyítja az [latex]561[/latex] összetettségét.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Úgy tűnik tehát, mintha a Miller-Rabin-prímteszt elől még a Carmichael-számok sem tudnának „elbújni”, ami kétségkívül hatalmas előrelépés. De vajon tényleg nem léteznek univerzális álprímek erre a tesztre nézve? Sajnos ahhoz, hogy ezt megválaszolhassuk, az absztrakt algebra egy rendkívül fontos ágának, nevezetesen az úgynevezett <strong><em>csoportelméletnek</em></strong> az eszköztárára lesz szükségünk. Így ezt csak a következő részben tudjuk majd igazolni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most azonban térjünk vissza egy kicsit az RSA-kulcsgenerálás kérdésköréhez. Nem árt ugyanis, ha felhívjuk Alice és Bob figyelmét néhány fontos dologra, amire vigyázniuk kell, ha nem akarják, hogy Eve és Mallory borsot törjön az orruk alá.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A Fermat-faktorizáció</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Az RSA implementációja során sok apró részleten múlhat a biztonság. Számos hatékony támadás ismert ugyanis, amelyek az üzenethalmaz, a kulcsgeneráláshoz használt prímpár, valamint a kódoló és dekódoló kulcs nem elég körültekintő megválasztását használják ki. Ezt néhány példán keresztül illusztráljuk, amelyek közül az első az úgynevezett Fermat-faktorizációs algoritmus.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez az eljárás bizonyos körülmények között lehetővé teszi egy támadó számára, hogy hatékonyan kiszámíthassa a kódoláshoz és dekódoláshoz használt [latex]n[/latex] modulus prímtényezőit, és így tulajdonképpen ő maga is a titkos kulcs birtokába juthasson. Erre akkor nyílik lehetősége, ha a prímtényezők közötti <strong><em>különbség</em></strong> nem eléggé nagy. Ebben az esetben a két prímtényező közel van a [yp_element slug="osztok-es-a-negyzetgyok" type="link" /]ben szereplő [latex]r[/latex] számhoz. Ez ugye a legnagyobb olyan egész szám, amelynek négyzete még éppen nemnagyobb [latex]n[/latex]-nél. Így ennek a környékén jó eséllyel hamar megtalálhatjuk a prímtényezőket. Az erre szolgáló alább ismertetett módszer magától <a rel="noreferrer noopener" href="https://hu.wikipedia.org/wiki/Pierre_de_Fermat" target="_blank">Pierre de Fermat</a>-tól származik, amely a [yp_element slug="miller-rabin-szorzat" type="link" /] bizonyításának elején már említett [latex]x^2-y^2 = (x+y)\cdot (x-y)[/latex] összefüggésen alapul.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Képzeljük magunkat Eve helyébe, és tegyük fel, hogy az [latex]n=57\ 319\ 249\ 499[/latex] RSA-modulus prímtényezőit szeretnénk megtalálni. Azaz keressük azt a [latex]p[/latex] és [latex]q[/latex] prímszámot, amelyre teljesül az alábbi egyenlet – itt nyugodtan feltételezhetjük, hogy [latex]p\gt q[/latex], ha pedig mégsem, akkor nevezzük el őket fordítva:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]n=p\cdot q[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez első látásra reménytelennek tűnik, azonban abban reménykedhetünk, hogy az ismeretlen [latex]p[/latex] és [latex]q[/latex] prímtényezőket a kulcsgeneráláskor óvatlanul választották ki, és a különbségük kicsi. Most megmutatjuk, hogy mindig léteznek olyan [latex]a[/latex] és [latex]b[/latex] egész számok, amelyeknek összege [latex]p[/latex]-vel, különbsége pedig [latex]q[/latex]-val egyenlő. Azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}p&amp;=a+b \\ q&amp;=a-b\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Adjuk össze, és vonjuk ki egymásból a két egyenletet:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}p+q&amp;=2a \\ p-q&amp;=2b\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]p[/latex] és [latex]q[/latex] is biztosan páratlan – hiszen mindketten [latex]2[/latex]-től különböző prímek – ezért a fenti két egyenlet baloldalán álló [latex]p+q[/latex] összeg és [latex]p-q[/latex] különbség biztosan páros, azaz osztható [latex]2[/latex]-vel. A keresett [latex]a[/latex] és [latex]b[/latex] egész számok tehát valóban léteznek. Ekkor a fentebb említett összefüggés alapján:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]n=(\underbrace{a+b}_{=p})\cdot (\underbrace{a-b}_{=q})=a^2-b^2[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha valóban igaz a feltételezésünk, miszerint a két prím egymáshoz közel van, akkor a [latex]p-q=2b[/latex] összefüggés alapján [latex]b[/latex] kicsi. Ha viszont [latex]b[/latex] kicsi, akkor a négyzete is kicsi, amit az [latex]n=a^2-b^2[/latex] összefüggés jobboldaláról elhanyagolhatunk. Azaz feltételezhetjük, hogy a keresett [latex]a[/latex] közel lesz a [yp_element slug="osztok-es-a-negyzetgyok" type="link" /]ben szereplő [latex]r[/latex] számhoz, ami ugye a legnagyobb olyan egész szám, amelynek a négyzete nemnagyobb [latex]n[/latex]-nél. Ha most az [latex]n=a^2-b^2[/latex] összefüggésből kifejezzük [latex]b^2[/latex]-et, akkor az alábbit kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]b^2=a^2-n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Feladatunk [latex]a[/latex] megkeresése. Azt tudjuk, hogy [latex]r[/latex] környékén van, ezért innen kiindulva elkezdünk tippelni mindaddig, míg a jobboldali kifejezésre nem négyzetszámot kapunk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A fenti példában tehát [latex]n=57\ 319\ 249\ 499[/latex]. Ekkor [latex]r=239\ 414[/latex], mivel ez az a legnagyobb szám, amelynek a négyzete még nemnagyobb [latex]n[/latex]-nél. Ebből kiindulva adunk tippeket [latex]a[/latex]-ra, és vizsgáljuk, hogy az [latex]a^2-n[/latex] négyzetszám-e:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{c|c|c}a &amp; a^2-n &amp; \text{négyzetszám?} \\ \hline 239\ 415 &amp; 292\ 726 &amp; \text{nem} \\ 239\ 416 &amp; 771\ 557 &amp; \text{nem} \\ 239\ 417 &amp; 1\ 250\ 390 &amp; \text{nem} \\ 239\ 418 &amp; 1\ 729\ 225 &amp; \text{igen} \end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Meglepően gyorsan, mindössze [latex]4[/latex] lépés után négyzetszámot kaptunk a második oszlopban, amely tehát [latex]b^2[/latex]-tel egyezik meg. Ebből [latex]b=1315[/latex] adódik, és mivel [latex]a[/latex]-t is sikerült megtippelnünk, végülis megkaptuk a két prímtényezőt is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}p&amp;=a+b=239\ 418 + 1315 = 240\ 733 \\ q&amp;=a-b=239\ 418 - 1315=238\ 103\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Látható, hogy eléggé hatékonyan sikerült prímtényezőire bontani a bemeneti számunkat. Mostmár látszik is, hogy miért: a két prím különbsége mindössze [latex]2630[/latex] volt, ami nagyon kicsi a két prímhez képest. </p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Amikor tehát Alice és Bob kulcspárt generálnak maguknak, vigyázniuk kell, hogy a kiválasztott prímszámok átlagosan az őket leíró bitek felében különbözzenek egymástól. Ezzel viszonylag hamar elvehetik Eve kedvét a fenti eljárástól, a keresett [latex]a[/latex] ugyanis ebben az esetben nagyon messze lesz [latex]r[/latex]-től, amelyet így az idők végezetéig keresgélhet.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A kicsi kódoló kulcsok problémája</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/22-kinai-maradektetel-konguenciarendszerek-kis-fermat-tetel-rsa-bizonyitas-gyuruk-direkt-szorzata-rsa-dekodolas#residue-class-ring-decomposition" target="_blank">22. részben</a> a RSA dekódolás gyorsítási lehetőségei kapcsán megemlítettük, hogy az RSA biztonsága nem függ a publikus [latex]e[/latex] kódoló kitevő megválasztásától. Az <strong><em>ismételt négyzetreemelések módszerét</em></strong> vizsgálva a <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/21-rsa-algoritmus-kibovitett-euklideszi-algoritmus-euler-fuggveny-kulcsgeneralas-ismetelt-negyzetreemeles-modszere#modular-exponentiation" target="_blank">21. részben</a> megállapítottuk, hogy célszerű olyan kitevőt választani, amelynek bináris számábrázolásában kevés számú [latex]1[/latex]-es bit szerepel. Emiatt racionális megfontolásnak tűnhet, ha a megvalósítás során úgy döntünk, hogy egy viszonylag alacsony számtartományból választjuk ki a rendszer felhasználóihoz tartozó [latex]e[/latex] publikus kitevőket a kulcsgenerálás során. Ez azonban bizonyos körülmények között a nyílt üzenet kiszámítására adhat lehetőséget egy támadó számára anélkül, hogy feltörné a titkosító kódolást.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel ugyanis, hogy egy sokfelhasználós rendszerről van szó, és kicsi az a számtartomány, amelyből kisorsoljuk a felhasználók számára a publikus [latex]e[/latex] kitevőt. Ekkor előfordulhat, hogy több felhasználó is ugyanazt a kitevőt kapja. Tegyük fel, hogy [latex]k[/latex] darab felhasználó kapta ugyanazt az [latex]e[/latex] kitevőt. Szerencsétlen, ugyanakkor nem túl ritka esetekben még az is megeshet, hogy [latex]e\leq k[/latex] is teljesül. Ez látszólag nem jelent problémát, hiszen természetesen más és más prímpárokat sorsolunk hozzájuk, tehát e [latex]k[/latex] darab felhasználóhoz különböző modulusok és dekódoló kitevők fognak tartozni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Képzeljük el azonban, hogy valaki egy bizalmas körlevelet küld felhasználók egy csoportjának, amelybe történetesen a fenti [latex]k[/latex] darab felhasználó is beletartozik. Ebben az esetben tehát az [latex]x[/latex] nyílt szöveg ugyanaz lesz. A küldő fél egyenként előkeresi a publikus kulcstárból a címzettek publikus kulcsait, és mindenki számára egyedileg kódolja az üzenetet a <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/21-rsa-algoritmus-kibovitett-euklideszi-algoritmus-euler-fuggveny-kulcsgeneralas-ismetelt-negyzetreemeles-modszere#rsa-encoding-decoding" target="_blank">21. részben</a> leírt módon. A szerencsétlenül járt [latex]k[/latex] darab felhasználónak kiküldött [latex]y_1[/latex], [latex]y_2[/latex], ..., [latex]y_k[/latex] rejtett üzenetekből a támadó az alábbi kongruenciarendszert tudja felírni:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}y_1&amp;\equiv x^e\pmod{m_1} \\ y_2&amp;\equiv x^e\pmod{m_2} \\ &amp;\vdots \\ y_k&amp;\equiv x^e\pmod{m_k}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ebben a kongruenciarendszerben a támadó számára egyedül az [latex]x[/latex] nyílt üzenet ismeretlen, hiszen egyrészt a felhasználókhoz tartozó [latex]e[/latex] kitevő és a modulusok számára is elérhetők a publikus kulcstárból, másrészt pedig az [latex]y_1[/latex], [latex]y_2[/latex], ..., [latex]y_k[/latex] rejtett üzeneteket a kommunikációs csatorna lehallgatásával ismeri meg. Most megmutatjuk, hogy a támadó a fent ismertetett szerencsétlen körülmények fennállása esetén ebből a kongruenciarendszerből egy pillanat alatt megkaphatja az [latex]x[/latex] nyílt üzenetet.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Azt mindjárt az elején feltehetjük, hogy az [latex]m_1[/latex], [latex]m_2[/latex], ..., [latex]m_k[/latex] modulusok <strong><em>páronként relatív prímek</em></strong>. Ezek ugyanis véletlenszerűen sorsolt prímpárok szorzataiként állnak elő, így annak gyakorlatilag nincs esélye, hogy van közöttük két olyan, amelynek közös legalább az egyik prímtényezője. Emlékeztetnénk az olvasót a <strong><em>kínai maradéktételhez</em></strong> kapcsolódó [yp_element slug="kinai-maradektetel-alternativ" type="link" /]re, valamint a [yp_element slug="kinai-maradektetel-megforditasa" type="link" /]re, amelyek így már alkalmazhatók.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezek többszöri alkalmazásával azt kapjuk, hogy a [latex]\Z/m_1\Z \times \Z/m_2\Z \times \ldots \times \Z/m_k\Z[/latex] szorzatgyűrű (lásd a [yp_element slug="gyuruk-direkt-szorzata" type="link" /]t) elemei kölcsönösen egyértelmű megfeleltetésben állnak a [latex]\Z/m_1m_2\ldots m_k\Z[/latex] maradékosztálygyűrű elemeivel. A fenti kongruenciarendszer a szorzatgyűrűben tulajdonképpen az alábbi elemet írja le:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]([x^e]_{m_1};[x^e]_{m_2};\ldots;[x^e]_{m_k})[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ennek a [latex]\Z/m_1m_2\ldots m_k\Z[/latex] maradékosztálygyűrűben a [yp_element slug="kinai-maradektetel-megforditasa" type="link" /] alapján az alábbi maradékosztály felel meg:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][x^e]_{m_1\cdot m_2\cdot \ldots \cdot m_k}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Vegyük észre azonban, hogy az [latex]x[/latex] nyílt üzenetet a küldő az <strong><em>előkódolás</em></strong> során úgy választotta meg, hogy az [latex]0[/latex] és a legkisebb modulus közé essen. Az <strong><em>előkódolásról</em></strong> a <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/21-rsa-algoritmus-kibovitett-euklideszi-algoritmus-euler-fuggveny-kulcsgeneralas-ismetelt-negyzetreemeles-modszere#rsa-encoding-decoding" target="_blank">21. részben</a> írtunk bővebben. Teljesülnek tehát az alábbi egyenlőtlenségek:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}0\leq x &amp;\lt m_1 \\ 0\leq x&amp;\lt m_2 \\ &amp;\vdots \\ 0\leq x &amp;\lt m_k\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel azt mondtuk, hogy szerencsétlen módon az [latex]e\leq k[/latex] egyenlőtlenség is fennáll, ezért ebben az esetben nyilván teljesül az alábbi is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]0\leq x^e \lt m_1m_2\ldots m_k[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Így a támadó valójában az [latex][x^e]_{m_1m_2\ldots m_k}[/latex] maradékosztály legkisebb nemnegatív reprezentánselemét kapja meg, amely nem más, mint a nyílt üzenetnek ténylegesen az [latex]e[/latex]-edik hatványa – és nem pedig annak modulo megfelelője. Ebből viszont az [latex]x[/latex] nyílt üzenetet már egyszerűen megkaphatja.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Alice-nak és Bob-nak tehát azt javasolhatjuk, hogy a kulcsgeneráláskor semmiképpen se korlátozzák az [latex]e[/latex] kitevőt egy szűk számtartományra, nehogy a fenti kellemetlenségben legyen részük. A kódolás gyorsasága szempontjából a lényeg úgyis az, hogy kevés számú [latex]1[/latex]-es legyen [latex]e[/latex] bináris ábrázolásában, nem pedig az, hogy ő maga kicsi legyen. Ezen túlmenően amikor ugyanazt az üzenetet nagyszámú résztvevőnek továbbítjuk, akkor célszerű az üzenet egyes példányaiba valamilyen véletlentől függő elemet is belevinni. Például megtehetjük, hogy az utolsó valahány biten hasznos tartalom helyett elhelyezünk egy véletlenszámot.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ennek az az előnye, hogy így az eredeti [latex]x[/latex] üzenet egyes példányai különböző kódolandó nyílt üzenetekké válnak, amivel a fenti támadás lehetőségét egycsapásra kiiktattuk. Természetesen ekkor a küldő és fogadó félnek meg kell egyezniük egymással, hogy melyek lesznek a haszontalan bitek.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="common-modulus-attack"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Közös modulus választásának hibája</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Végül egy nagyon súlyos potenciális rendszertervezési hibára hívnánk fel a figyelmet. Mivel az RSA meglehetősen számításigényes, ezért csábító lehet az a gondolat, hogy a teljes rendszer számára egyetlen [latex]m[/latex] modulust generálunk, és csak az egyes felhasználókhoz tartozó [latex]e[/latex] publikus és [latex]d[/latex] titkos kitevők lesznek különbözőek a kulcsgenerálás során. Ez látszólag előnyös lehet, hiszen így például előre le tudunk gyártatni egy célhardvert, amely a modulo [latex]m[/latex] maradékosztálygyűrűben való számolásra van optimalizálva.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Képzeljük el, hogy az előző szakaszhoz hasonlóan ismét egy közös [latex]x[/latex] üzenet – például egy körlevél – érkezik mondjuk két felhasználóhoz. Tegyük fel, hogy e két felhasználóhoz az [latex]e_1[/latex] és [latex]e_2[/latex] publikus kitevők vannak rendelve. Nagy az esély rá, hogy e két kitevő egymáshoz <strong><em>relatív prím</em></strong>, azaz [latex](e_1,e_2)=1[/latex], és ebben az esetben egy támadó sajnos meg tudja fejteni az [latex]x[/latex] nyílt üzenetet. Ő ugyanis az alábbi kongruenciákat írhatja fel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}y_1&amp;\equiv x^{e_1}\pmod m \\ y_2&amp;\equiv x^{e_2}\pmod m\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ebben a kongruenciarendszerben a támadó számára ismét egyedül az [latex]x[/latex] nyílt üzenet ismeretlen, hiszen az összes többi paraméter a nyilvános kulcstárból, valamint a kommunikációs csatorna lehallgatásával megismerhető. Nézzük, hogy mihez kezd mindezzel a támadó.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>Bézout-lemmából</em></strong> ([yp_element slug="bezout-lemma-euklideszi-gyurukben" type="link" /]) tudjuk, hogy bármely két egész szám kitüntetett közös osztója kifejezhető a két szám <strong><em>lineáris kombinációjaként</em></strong>. Ezt jelen esetben az [latex]e_1[/latex] és [latex]e_2[/latex] kitevőkre alkalmazhatjuk. Mivel róluk azt mondtuk, hogy relatív prímek – azaz [latex](e_1,e_2)=1[/latex] –, ezért a <strong><em>Bézout-lemma</em></strong> alapján léteznek olyan [latex]u[/latex] és [latex]v[/latex] egész számok, amelyekre teljesül az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](e_1,e_2)=1=u\cdot e_1 + v\cdot e_2[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ráadásul a támadó a keresett [latex]u[/latex] és [latex]v[/latex] egész számokat hatékonyan elő tudja állítani a <strong><em>kibővített euklidészi algoritmus</em></strong> segítségével, amelyről a <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/21-rsa-algoritmus-kibovitett-euklideszi-algoritmus-euler-fuggveny-kulcsgeneralas-ismetelt-negyzetreemeles-modszere#extended-euclidean-algorithm" target="_blank">21. részben</a> volt szó részletesen. Most vizsgáljuk meg, hogy a kiszámított [latex]u[/latex] és [latex]v[/latex] egész számokból, valamint a kommunikációs csatornán elfogott [latex]y_1[/latex] és [latex]y_2[/latex] kódszövegekből képzett alábbi kifejezés mivel kongruens modulo [latex]m[/latex]:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]y_1^u\cdot y_2^v \equiv ?\pmod m[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]y_1\equiv x^{e_1}\pmod m[/latex] és [latex]y_2\equiv x^{e_2}\pmod m[/latex] az RSA-kódolás alapján, ezért a <strong><em>kongruencia tulajdonságairól</em></strong> szóló [yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" type="link" /] 8. és 5. pontjait alkalmazva ezt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](\underbrace{x^{e_1}}_{\equiv y_1})^u\cdot (\underbrace{x^{e_2}}_{\equiv y_2})^v \equiv \ ?\pmod m[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A baloldali kifejezést a <strong><em>hatványozás azonosságairól</em></strong> szóló [yp_element slug="hatvanyozas-azonossagai" type="link" /] 2. és 3. pontjai alapján átírhatjuk az alábbi módon:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x^{u\cdot e_1 + v\cdot e_2}\equiv \ ?\pmod m[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A Bézout-lemma alapján a kitevőről viszont már tudjuk, hogy az az [latex](e_1,e_2)=1[/latex] kitüntetett közös osztóval egyezik meg, azaz teljesül az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x^{\overbrace{u\cdot e_1 + v\cdot e_2}^{=1}}\equiv x\pmod m[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A támadó tehát pusztán publikusan, illetve a csatorna lehallgatása által megszerezhető információkból ki tudja számítani az [latex]x[/latex] nyílt szöveget anélkül, hogy feltörte volna az RSA-t. A fentiek alapján ugyanis nincs más dolga, mint kiszámítani az [latex]y_1^u\cdot y_2^v[/latex] kifejezést, amely tehát biztosan az [latex]x[/latex] nyílt üzenettel lesz kongruens modulo [latex]m[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Felhívnánk a figyelmet azonban egy apró „csalásra”, amelyet a fenti okfejtésben elkövettünk. Vizsgáljuk meg ugyanis jobban a Bézout-lemmából kapott [latex]u\cdot e_1 + v\cdot e_2=1[/latex] egyenletet. Mivel itt az [latex]e_1[/latex] és [latex]e_2[/latex] kitevők mindketten pozitívak, ezért ebből következik, hogy [latex]u[/latex] és [latex]v[/latex] közül pontosan az egyik szükségképpen <strong><em>negatív</em></strong>. Ők viszont a fenti [latex]y_1^u\cdot y_2^v[/latex] kifejezésben kitevőkként szerepelnek. Márpedig ebben az esetben elvileg nem használhatnánk a <strong><em>hatványozás azonosságairól</em></strong> szóló [yp_element slug="hatvanyozas-azonossagai" type="link" /]t és a <strong><em>kongruencia tulajdonságairól</em></strong> szóló [yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" type="link" /]t, hiszen ezeket csak pozitív kitevőkre bizonyítottuk. Arról már nem is beszélve, hogy az eddigi definícióink alapján negatív kitevőket egyelőre nem is tudunk értelmezni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ennek a kis hiányosságnak a pótlását a következő részre halasztjuk, mivel ehhez fel kell építeni néhány újabb fontos algebrai fogalmat. Ám elöljáróban megjegyezzük, hogy a hatványozás azonosságai és a kongruenciák tulajdonságai ebben a kibővített értelmezésben is érvényben fognak maradni. Így válik majd a fenti érvelés teljessé. Konklúzióként azonban elmondhatjuk, hogy a közös modulus választását mindenképpen el kell kerülni az RSA-algoritmuson alapuló kriptográfiai rendszerekben.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ebben a részben tehát főként azzal a problémával foglalkoztunk, hogy hogyan tud Alice és Bob az RSA-kulcsgeneráláshoz szükséges óriási prímszámokat találni. Ennek keretében megmutattuk, hogy a hagyományos, osztáspróbákon alapuló módszer a gyakorlatban a lassúsága miatt nem alkalmazható. Ezért bemutattunk két valószínűségi prímtesztet, amelyek a kis Fermat-tételen alapulnak. Az első a Fermat-prímteszt volt, amelynek fő hátránya, hogy léteznek olyan összetett számok, amelyeket nem tud kiszűrni. Ezeket univerzális álprímeknek vagy Carmichael-számoknak nevezzük, amelyekről a közelmúltban kimutatták, hogy sajnos végtelen sok van belőlük. Ezt a problémát kiküszöbölendő bemutattuk a Miller-Rabin-prímtesztet, amely – úgy tűnik – kiszűri az univerzális álprímeket is. Végül felhívtuk a figyelmet pár olyan dologra, amelyekre Alice-nak és Bob-nak oda kell figyelniük a kulcsgenerálás során.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A következő részben megismerkedünk az absztrakt algebra talán legfontosabb ágának, az úgynevezett csoportelméletnek az alapjaival. Ezután az így felépített eszközök segítségével igazolni fogjuk, hogy a Miller-Rabin-prímtesztre nézve valóban nem léteznek univerzális álprímek. Végül adunk egy felső korlátot is annak valószínűségére, hogy egy összetett számot tévesen prímmé nyilvánít ez a teszt.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A következő részt <a href="https://youproof.hu/kriptografia/24-csoport-reszcsoport-mellekosztaly-lagrange-tetel-csoport-rendje-elem-rendje-miller-rabin-primteszt/">itt</a> találod...</em></strong></p>
+<!-- /wp:paragraph -->

@@ -1,0 +1,15 @@
+type: theorem
+name: abszolutertek-euklideszi-norma
+proofs:
+  - abszolutertek-euklideszi-norma-bizonyitas
+remarks: []
+references:
+  egesz-szamok-abszoluterteke:
+    target:
+      type: definition
+      name: egesz-szamok-abszoluterteke
+content:
+  - type: narrative
+    content: |
+      A [egesz-szamok-abszoluterteke] szerinti $f(a)=|a|$ abszolútérték-függvény egy ***euklidészi norma*** a $\Z$
+      gyűrűn. Más szavakkal: $\Z$ egy euklidészi gyűrű.

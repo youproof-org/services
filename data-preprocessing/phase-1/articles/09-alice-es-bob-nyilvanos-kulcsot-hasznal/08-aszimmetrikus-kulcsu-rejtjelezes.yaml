@@ -1,0 +1,61 @@
+type: section
+name: 08-aszimmetrikus-kulcsu-rejtjelezes
+title: Aszimmetrikus kulcsú rejtjelezés
+
+body:
+  - type: narrative
+    content: |
+      Ennek a résznek az elején felvázoltuk az eddig ismertetett rejtjelezők közös működési modelljét, amelyet
+      ***szimmetrikus kulcsú rejtjelezésnek*** neveztünk. Ebben az esetben Bob ugyanazt a kulcsot használja a
+      dekódoláshoz, amelyet Alice használ a rejtjelezéshez. Diffie és Hellman fentebb már említett forradalmi
+      írásában azonban az úgynevezett ***aszimmetrikus kulcsú rejtjelezés*** merőben új alapgondolata
+      körvonalazódott.
+  - type: narrative
+    content: |
+      Az 5. részben a háromutas kulcsforgalom kapcsán már éltünk egy olyan analógiával, amely ládákat, lakatokat és
+      kulcsokat használt a rejtjelezés szemléltetésére. Ezzel az analógiával élve a szimmetrikus kulcsú rejtjelezés
+      úgy fogható fel, hogy Alice a Bob-nak szánt üzenetet beteszi egy ládába, amelyet lezár egy lakattal. Bob csak
+      akkor tudja kinyitni a ládát, ha neki is van egy másolata a lakatot nyitó kulcsról. A problémát itt az
+      okozza, hogy hogyan tudjuk eljuttatni a kulcsmásolatokat a kommunikáló felekhez biztonságosan.
+  - type: narrative
+    content: |
+      Az ***aszimmetrikus kulcsú rejtjelezés*** egy egészen más gondolatra épül. A kulcsos, lakatos analógiával
+      élve ez kicsit olyan, mintha nem a kulcsról, hanem a lakatról készítenénk másolatokat. Képzeljük el, hogy Bob
+      szeretné, ha bárki tudna neki titkos üzenetet küldeni. Ennek érdekében Bob a saját lakatját minél több
+      példányban publikusan elérhetővé teszi bárki számára. A trükk abban van, hogy a Bob-féle lakatokat mindössze
+      egyetlen kulcs nyitja, amely végig ott lapul Bob zsebében.
+  - type: narrative
+    content: |
+      Tegyük fel, hogy Alice szeretne Bob-nak egy titkos üzenetet küldeni. Elmegy hát a postára, kér egy Bob-féle
+      lakatot, az üzenetet beleteszi egy ládába, amelyet lezár ezzel a lakattal. Ezt könnyedén megteheti, hiszen a
+      lakatot csak rá kell pattintani a ládára. Innentől kezdve azonban kizárólag Bob fogja tudni kinyitni ezt a
+      lakatot, hiszen csak ő rendelkezik az ehhez szükséges egyetlen kulccsal. Olyannyira, hogy a láda lezárása
+      után még maga Alice sem tudja többé kinyitni azt.
+  - type: narrative
+    content: |
+      A lakatokat félretéve itt tehát arról van szó, hogy egy üzenet dekódolásához szükség van egy plusz
+      információra ahhoz képest, mint ami a rejtjelezéséhez kell. A dekódoláshoz szükséges plusz információt
+      ***privát (titkos) kulcsnak***, míg a rejtjelezéshez szükséges információt ***publikus (nyilvános)
+      kulcsnak*** nevezzük. A rendszerben lévő valamennyi résztvevőhöz tehát nem egy kulcs, hanem egy kulcspár
+      tartozik. E kulcspár privát részét csak az adott résztvevő ismeri, és azt soha nem adja ki a kezéből. Ezzel
+      szemben a kulcspár publikus része bárki számára elérhető egy nyilvános kulcstárban egy telefonkönyvhöz
+      hasonlóan.
+  - type: narrative
+    content: |
+      Tegyük fel, hogy Alice szeretne Bob-nak elküldeni egy $x$ üzenetet. Ehhez előkeresi a nyilvános kulcstárból
+      Bob $K_b$ publikus kulcsát, és ezzel paraméterezi az $E$ rejtjelező függvényt. Ily módon előáll az $y$
+      kódszöveg, amelyet elküld Bob-nak. Ezt az üzenetet kizárólag Bob tudja visszafejteni, mivel a $K_b$ publikus
+      kulcshoz tartozó $k_b$ privát kulcsot csak ő ismeri. Bob tehát a $k_b$ privát kulccsal paraméterezi a $D$
+      dekódoló függvényt könnyedén vissza tudja állítani az eredeti $x$ üzenetet.
+  - type: figure
+    lead-in: |
+      Ez a folyamat látható az alábbi ábrán:
+    src: 11-aszimmetrikus-kulcsu-rejtjelezo-modell.jpg
+    alt: Aszimmetrikus kulcsú rejtjelező modell
+    caption: Aszimmetrikus kulcsú rejtjelező modell
+  - type: narrative
+    content: |
+      Ez az alapgondolat forradalmat indított el a kriptográfiában, megindult ugyanis a versenyfutás a dicsőségért,
+      amely a fentieknek megfelelő $E$ és $D$ függvények elsőként való megtalálásáért járt. A dicsőség Ron
+      Rivest-nek, Adi Shamir-nak, és Len Adleman-nak jutott, akik 1977-ben publikálták az úgynevezett
+      ***RSA-algoritmust***, amely alapjaiban változtatta meg világunkat.

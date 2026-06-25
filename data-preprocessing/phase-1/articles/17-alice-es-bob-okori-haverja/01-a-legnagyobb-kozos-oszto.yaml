@@ -1,0 +1,56 @@
+type: section
+name: 01-a-legnagyobb-kozos-oszto
+title: A legnagyobb közös osztó
+
+body:
+  - type: narrative
+    content: |
+      Először is tisztázzuk, hogy mit értünk két egész szám ***legnagyobb közös osztóján***. Tegyük fel, hogy $a$
+      és $b$ valamilyen egész számok. Azt mondjuk, hogy a $c$ egész szám $a$ és $b$ ***közös osztója***, ha
+      egyidejűleg teljesülnek a $c|a$ és $c|b$ oszthatóságok. Például a $18$ és $24$ közös osztói az $1$, $2$, $3$
+      és $6$ egész számok, valamint ezek ellentettjei. A ***legnagyobb közös osztó*** alatt értelemszerűen ezek
+      közül a legnagyobbat, azaz a $6$ egész számot értjük. Általánosságban az $a$ és $b$ egész számok legnagyobb
+      közös osztóját $(a,b)$-vel szoktuk jelölni. Az iménti példában tehát $(18,24)=6$.
+  - type: narrative
+    content: |
+      A legnagyobb közös osztó definícióját a fentiek alapján tehát megadhatnánk a következőképpen.
+  - type: embed
+    target:
+      type: definition
+      name: legnagyobb-kozos-oszto
+  - type: embed
+    target:
+      type: remark
+      name: legnagyobb-kozos-oszto-megjegyzes
+  - type: narrative
+    content: |
+      Kérdés, hogy az iménti megjegyzésben közölt eseten kívül vajon minden más esetben létezik-e a legnagyobb
+      közös osztó. Ennek megmutatásához először ismertetünk egy segédtételt:
+  - type: embed
+    target:
+      type: theorem
+      name: oszthatosag-es-rendezesi-relacio-kapcsolata
+  - type: embed
+    target:
+      type: proof
+      name: oszthatosag-es-rendezesi-relacio-kapcsolata-bizonyitas
+  - type: narrative
+    content: |
+      Ennek a segédtételnek a felhasználásával mostmár könnyen meg tudjuk mutatni, hogy a $\Z$ gyűrűben mindig
+      létezik $a$ és $b$ legnagyobb közös osztója, amennyiben legalább az egyikük nem $0$.
+  - type: embed
+    target:
+      type: theorem
+      name: legnagyobb-kozos-oszto-letezese
+  - type: embed
+    target:
+      type: proof
+      name: legnagyobb-kozos-oszto-letezese-bizonyitas
+  - type: narrative
+    content: |
+      ***A legnagyobb közös osztó definíciójával azonban van egy kis probléma.*** Nevezetesen: felhasználtuk hozzá
+      az egész számok $\Z$ gyűrűjének rendezési relációját. Mi azonban szeretnénk ezt a fogalmat tetszőleges
+      integritástartományokra kiterjeszteni. Ugyanakkor nem szeretnénk csak a definíció kedvéért megkövetelni
+      valamiféle rendezési reláció létezését. Ráadásul a 15. részben láthattuk, hogy bizonyos gyűrűk egyáltalán
+      nem, vagy akár végtelen sokféleképpen rendezhetők. Ez utóbbi esetben például nem is lenne egyértelmű, hogy
+      melyik rendezés szerinti legnagyobb közös osztóról beszélünk.

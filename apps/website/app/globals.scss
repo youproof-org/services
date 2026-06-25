@@ -1,0 +1,89 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+:root {
+  color-scheme: light;
+  scroll-padding-top: 120px;
+}
+
+body {
+  font-family: var(--font-mulish);
+  font-weight: $font-light;
+  font-size: 1.125rem;
+  line-height: 1.9;
+  background: $white;
+  color: $black;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  margin: 0;
+}
+
+/* KaTeX inline math: prevent extra vertical spacing */
+.inline-math {
+  display: inline;
+}
+
+/* KaTeX display math: remove built-in margins (formula blocks handle spacing) */
+.katex-display {
+  margin: 0;
+}
+
+/* Reference errors */
+.ref-error {
+  font-size: 0.85em;
+  color: $red-100;
+  font-style: italic;
+}
+
+/* Normal link references */
+.ref-link {
+  color: $blue-500;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+/* Concept references (terms, definitions, theorems, proofs, remarks, claims, terms) */
+.ref-concept {
+  color: inherit;
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: rgba(120, 120, 120, 0.38);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+  transition: text-decoration-color 160ms ease;
+
+  &:hover,
+  &:focus-visible {
+    text-decoration-color: rgba(120, 120, 120, 0.72);
+    background: rgba(245, 245, 245, 1.0);
+  }
+}
+
+/* Shared page content wrapper — used by book/part/chapter pages */
+.page-content {
+  flex: 1;
+  width: 100%;
+  max-width: $max-width;
+  margin: 0 auto;
+
+  @include tablet {
+    text-align: justify;
+    margin-top: -200px;
+    position: relative;
+    background: white;
+    max-width: 90%;
+  }
+
+  @include wide {
+    max-width: 75rem;
+  }
+}
+
+/* Book shell — min-h-screen */
+.book-shell {
+  min-height: 100vh;
+}

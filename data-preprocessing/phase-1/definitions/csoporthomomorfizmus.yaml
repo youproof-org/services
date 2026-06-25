@@ -1,0 +1,41 @@
+type: definition
+name: csoporthomomorfizmus
+remarks:
+  - csoporthomomorfizmus-megjegyzes
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy adva van egy $(G,\cdot)$ és egy $(H,\odot)$ csoport.
+  - type: formula
+    lead-in: |
+      Ekkor egy $f:G\to H$ függvényt ***csoporthomomorfizmusnak*** nevezünk, amennyiben tetszőleges $G$-beli $a$ és
+      $b$ elemekre teljesül az alábbi ***művelettartó tulajdonság***:
+    content: |
+      f(a\cdot b)=f(a)\odot f(b)
+  - type: narrative
+    content: |
+      Amennyiben $H$ minden eleme ***legalább egy*** $G$-beli elemhez hozzá van rendelve, akkor $f$-et
+      ***szürjektív csoporthomomorfizmusnak*** vagy ***csoportráképzésnek*** nevezzük.
+  - type: figure
+    src: szurjektiv_homomorfizmus.jpg
+    alt: 
+    caption: Szürjektív csoporthomomorfizmus
+  - type: narrative
+    content: |
+      Amennyiben $H$ minden eleme ***legfeljebb egy*** $G$-beli elemhez van hozzárendelve, akkor $f$-et ***injektív
+      csoporthomomorfizmusnak*** vagy ***csoportbeágyazásnak*** nevezzük.
+  - type: figure
+    src: injektiv_homomorfizmus.jpg
+    alt: 
+    caption: Injektív csoporthomomorfizmus
+  - type: narrative
+    content: |
+      Amennyiben $H$ minden eleme ***pontosan egy*** $G$-beli elemhez van hozzárendelve, akkor $f$-et ***bijektív
+      csoporthomomorfizmusnak*** vagy ***csoportizomorfizmusnak*** nevezzük.
+  - type: figure
+    src: izomorfizmus.jpg
+    alt: 
+    caption: Bijektív csoporthomomorfizmus (csoportizomorfizmus)
+  - type: narrative
+    content: |
+      Ilyenkor azt mondjuk, hogy a $G$ és a $H$ csoport ***izomorf egymással***. Ezt így jelöljük: $G\simeq H$.

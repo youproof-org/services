@@ -1,0 +1,12 @@
+type: theorem
+name: primitiv-gyokokrol-szolo-tetel
+proofs: []
+remarks: []
+content:
+  - type: formula
+    lead-in: |
+      Egy $m\gt 0$ pozitív egész szám esetén ***akkor és csak akkor*** létezik primitív gyök modulo $m$, ha $m$ az
+      alábbiak valamelyike, ahol $p$ tetszőleges ***pozitív, páratlan prímszám***, $k$ pedig tetszőleges
+      ***pozitív*** kitevő:
+    content: |
+      1,2,4,p^k,2p^k

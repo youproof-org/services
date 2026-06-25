@@ -1,0 +1,53 @@
+type: proof
+name: termeszetes-szamparok-ekvivalenciarelacioja-tetel-bizonyitas
+remarks: []
+references:
+  peano-osszeg-egyszerusites:
+    target:
+      type: theorem
+      name: peano-osszeg-egyszerusites
+  termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel:
+    target:
+      type: theorem
+      name: termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel
+content:
+  - type: narrative
+    content: |
+      Az ekvivalenciareláció definíciója alapján azt kell igazolnunk, hogy a $\sim$ reláció ***reflexív,
+      szimmetrikus és tranzitív***.
+  - type: narrative
+    content: |
+      A ***reflexivitás*** nyilván teljesül, hiszen tetszőleges $(a;b)$ számpár esetén $(a;b)\sim (a;b)$. Ez
+      ugyanis a [termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel] miatt épp azt
+      jelenti, hogy $a+b=b+a$, amely a Peano-összeadás kommutativitása miatt természetesen igaz.
+  - type: narrative
+    content: |
+      A ***szimmetria*** is nyilván teljesül. Tegyük fel ugyanis, hogy tetszőleges $(a;b)$ és $(c;d)$ számpárok
+      esetén $(a;b)\sim (c;d)$. Ez a [termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel]
+      miatt azt jelenti, hogy $a+d=b+c$. A kommutativitás miatt természetesen ekkor $c+b=d+a$ is igaz. Ez viszont
+      ismét a tétel miatt épp azt jelenti, hogy $(c;d)\sim (a;b)$.
+  - type: narrative
+    content: |
+      Végül a ***tranzitivitás*** is könnyen adódik. Tegyük fel ugyanis, hogy valamely $(a;b)$, $(c;d)$ és $(e;f)$
+      számpárokra $(a;b)\sim (c;d)$ valamint $(c;d)\sim (e;f)$ is teljesül.
+  - type: formula
+    lead-in: |
+      Ebből a [termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel] alapján az alábbi két
+      egyenletet írhatjuk fel:
+    content: |
+      \begin{aligned}a+d&=b+c \\ c+f&=d+e \end{aligned}
+  - type: formula
+    lead-in: |
+      Adjuk össze a két egyenletet:
+    content: |
+      a+d+c+f=b+c+d+e
+  - type: formula
+    lead-in: |
+      Ám ekkor a [peano-osszeg-egyszerusites] miatt az egyenlet mindkét oldalát $(c+d)$-vel egyszerűsíthetjük:
+    content: |
+      a+f=b+e
+  - type: narrative
+    content: |
+      Ez viszont a [termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel] szerint épp azt
+      jelenti, hogy $(a;b)\sim (e;f)$. A $\sim$ tehát ***valóban egy ekvivalenciareláció*** az $\N\times \N$
+      halmazon.

@@ -1,0 +1,22 @@
+type: proof
+name: asszocialtsag-ekvivalenciarelacio-bizonyitas
+remarks: []
+references:
+  asszocialt:
+    target:
+      type: definition
+      name: asszocialt
+content:
+  - type: narrative
+    content: |
+      Teljesen nyilvánvalóan adódik az asszociáltság [asszocialt]jából.
+  - type: ordered-list
+    lead-in: |
+      Ugyanis:
+    items:
+      - 'Bármely elemnek nyilván pontosan ugyanazok az osztói és többszörösei is, mint önmagának.'
+      - 'Ha egy $a$ elemnek pontosan ugyanazok az osztói és többszörösei, mint egy $b$ elemnek, akkor nyilván a
+        $b$ elemnek is pontosan ugyanazok az osztói és többszörösei, mint az $a$ elemnek.'
+      - 'Ha egy $a$ elemnek pontosan ugyanazok az osztói és többszörösei, mint egy $b$ elemnek, amelynek viszont
+        pontosan ugyanazok az osztói és többszörösei, mint egy $c$ elemnek, akkor nyilván az $a$ elemnek is
+        pontosan ugyanazok az osztói és többszörösei, mint a $c$ elemnek.'

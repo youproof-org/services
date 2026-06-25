@@ -1,0 +1,45 @@
+type: section
+name: 06-digitalis-tanusitvanyok
+title: Digitális tanúsítványok
+
+body:
+  - type: narrative
+    content: |
+      Ennek a résznek az elején megemlítettünk egy még megoldásra váró problémát, amely a nyilvános kulcsokba
+      vetett bizalommal függ össze. Nevezetesen ahhoz, hogy Alice biztonsággal használhassa Bob nyilvános kulcsát
+      &ndash; akár egy neki szánt bizalmas üzenet titkosításához, akár egy tőle származó digitális aláírás
+      ellenőrzéséhez &ndash; mindenekelőtt meg kell bíznia abban, hogy az valóban Bob nyilvános kulcsa, nem pedig a
+      csaló Mallory-é.
+  - type: narrative
+    content: |
+      Ezt a problémát Alice és Bob egy olyan harmadik résztvevő bevonásával tudják megoldani, akiben mindketten
+      megbíznak. E résztvevő feladata tanúsítani, hogy egy adott publikus kulcs valóban a tulajdonosként megjelölt
+      résztvevőhöz tartozik. Őt ezért ***tanúsító hatóságnak vagy szervezetnek (certificate authority &ndash;
+      CA)*** nevezzük.
+  - type: narrative
+    content: |
+      Tegyük fel például, hogy Bob egy új felhasználó a rendszerben. Generál magának egy nyilvános és titkos
+      kulcspárt. A titkos kulcsot szépen elzárja a széfjébe, majd a nyilvános kulcsával elballag a CA-hoz. Itt
+      igazolja a személyazonosságát, és megkéri a CA-t, hogy állítson ki számára egy úgynevezett ***digitális
+      tanúsítványt*** arról, hogy a bemutatott publikus kulcs valóban az övé. Itt megjegyezzük, hogy sok esetben a
+      kulcspárt maga a CA generálja a résztvevők számára, ám ez a lényegen nem változtat.
+  - type: unordered-list
+    lead-in: |
+      A CA által kiállított tanúsítvány nagyjából a következőket tartalmazza:
+    items:
+      - "A tanúsítvány tulajdonosának (jelen esetben Bob) adatai"
+      - "A tanúsítvány tulajdonosának publikus kulcsa"
+      - "A tanúsítvány érvényességi ideje"
+      - "A tanúsítvány kiállítója"
+      - "A tanúsítvány kiállítójának digitális aláírása"
+  - type: narrative
+    content: |
+      Tegyük most fel, hogy Alice bizalmas üzenetet szeretne küldeni Bob-nak, előbb azonban meg akar győződni róla,
+      hogy valóban Bob van-e a "vonal" túloldalán. Megkéri tehát a "vonal" túloldalán lévő résztvevőt, hogy
+      igazolja magát egy tanúsítvánnyal, amelyet egy olyan CA állított ki, akiben Alice megbízik. Bob elküldi tehát
+      Alice-nak a fenti tanúsítványt. Alice ezután ellenőrzi a tanúsítványon szereplő digitális aláírás
+      hitelességét. Ezt a CA nyilvános kulcsával tudja megtenni a fentebb már ismertetett módon. Itt feltételezzük,
+      hogy a CA nyilvános kulcsát Alice ismeri, és megbízik annak hitelességében. Például azért, mert a
+      rendszeradminisztrátor elhelyezte azt Alice számítógépén, mint megbízható nyilvános kulcsot. Miután Alice
+      ellenőrizte a tanúsítványon szereplő aláírást, már nyugodtan megbízhat a kommunikációs partnere
+      hitelességében &ndash; azaz, hogy ő valóban Bob.

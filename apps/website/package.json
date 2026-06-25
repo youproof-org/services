@@ -1,0 +1,35 @@
+{
+  "name": "youproof-website",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "postinstall": "node scripts/check-latex.mjs",
+    "predev": "node scripts/sync-figures.mjs",
+    "dev": "next dev",
+    "prebuild": "node scripts/sync-figures.mjs",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^7.2.0",
+    "@fortawesome/free-brands-svg-icons": "^7.2.0",
+    "@fortawesome/free-solid-svg-icons": "^7.2.0",
+    "@fortawesome/react-fontawesome": "^3.2.0",
+    "js-yaml": "^4.1.0",
+    "katex": "^0.16.0",
+    "next": "^15.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "chokidar": "^5.0.0",
+    "postcss": "^8.0.0",
+    "sass": "^1.98.0",
+    "typescript": "^5.0.0"
+  }
+}

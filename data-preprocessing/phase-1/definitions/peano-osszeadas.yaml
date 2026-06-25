@@ -1,0 +1,16 @@
+type: definition
+name: peano-osszeadas
+remarks: []
+content:
+  - type: ordered-list
+    lead-in: |
+      Az $\N$ halmazon értelmezett, $+$-szal jelölt kétváltozós műveletet ***összeadásnak*** nevezzük, amennyiben
+      teljesülnek rá a következő tulajdonságok:
+    items:
+      - 'Tetszőleges $a$ számra teljesül, hogy $a+0=a$.'
+      - 'Amennyiben valamely $a$ és $b$ számokra az $a+b$ eredménye már ismert, úgy teljesül, hogy
+        $a+s(b)=s(a+b)$.'
+  - type: narrative
+    content: |
+      A fentiekben $0$ jelöli az $\N$ halmaznak a Peano-axiómák szerinti, "nullának" nevezett elemét, valamint $s$
+      jelöli a szintén a Peano-axiómák szerinti "rákövetkezés" függvényt.

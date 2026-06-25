@@ -1,0 +1,529 @@
+<!-- wp:paragraph -->
+<p><strong><em>Az <a rel="noreferrer noopener" aria-label="előző részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/12-szorzas-disztributivitas-teljes-indukcio-indirekt-bizonyitas-relacio-teljes-rendezes-rendezett-halmaz/" target="_blank">előző részben</a> tovább folytattuk a számelmélet felépítését a semmiből. A Peano-axiómarendszer és a </em></strong><a rel="noreferrer noopener" aria-label="11. részből (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/11-peano-axiomarendszer-termeszetes-szam-muvelet-osszeadas-kommutativitas-asszociativitas-teljes-indukcio/" target="_blank"><strong><em>11. részből</em></strong></a><strong><em> már ismert összeadás műveletének segítségével bevezettünk egy második műveletet is az [latex]\N[/latex] halmazon. Ezt szorzásnak neveztük el, amelyről megmutattuk, hogy valóban teljesíti mindazon tulajdonságokat, amiket az általános iskolában megszokhattunk tőle. Ezután megismerkedtünk a reláció és a rendezett halmaz fogalmával, és definiáltunk egy olyan relációt az [latex]\N[/latex] halmazon, amelynek a segítségével egy egyértelmű sorrendet tudtunk felállítani e halmaz elemei, azaz a természetes számok között. Megemlítettük ugyanakkor, hogy ez a számkör túl szűkös olyan kellőképpen általános számelméleti összefüggések feltárásához, amelyeket a matematika más területein is kamatoztatni tudnánk. De vajon mi volt az az absztrakciós folyamat, amelyet őseink is követtek, amikor elkezdtek a „semminél kevesebb” mennyiségekről elmélkedni? Mit lehet az ilyen mennyiségekkel modellezni? Tulajdonképpen mik azok a negatív számok? Hogyan köthető egy ilyen látszólag értelmetlen fogalom a valósághoz? Ebben a részben erről lesz szó...</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"className":"prerequisite-warning"} -->
+<p class="prerequisite-warning">Figyelem! Ez a rész erőteljesen épít az <a aria-label="előző (új fülön nyitja meg)" rel="noreferrer noopener" href="https://youproof.hu/kriptografia/12-szorzas-disztributivitas-teljes-indukcio-indirekt-bizonyitas-relacio-teljes-rendezes-rendezett-halmaz/" target="_blank">előző</a> és az <a rel="noreferrer noopener" aria-label="azelőtti (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/11-peano-axiomarendszer-termeszetes-szam-muvelet-osszeadas-kommutativitas-asszociativitas-teljes-indukcio/" target="_blank">azelőtti</a> részekben bevezetett alábbi definíciókra:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-axiomarendszer" type="recall-collapsed" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-osszeadas" type="recall-collapsed" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-szorzas" type="recall-collapsed" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="termeszetes-szamok-rendezese" type="recall-collapsed" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph {"className":"prerequisite-warning"} -->
+<p class="prerequisite-warning">E definíciók kontextusba helyezése, valamint a hozzájuk kapcsolódó tételek megismerése miatt erőteljesen ajánlott tehát elolvasni a <a rel="noreferrer noopener" aria-label="11. (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/11-peano-axiomarendszer-termeszetes-szam-muvelet-osszeadas-kommutativitas-asszociativitas-teljes-indukcio/" target="_blank">11.</a> és a <a rel="noreferrer noopener" aria-label="12. részt (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/12-szorzas-disztributivitas-teljes-indukcio-indirekt-bizonyitas-relacio-teljes-rendezes-rendezett-halmaz/" target="_blank">12. részt</a>, mivel gyakran hivatkozni fogunk rájuk. A teljes cikksorozat elejét <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/1-alapfogalmak-caesar-vigenere-enigma-kulcsmegosztas/" target="_blank">itt</a> találod.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"dropCap":true} -->
+<p class="has-drop-cap">Az általános iskolában vélhetően mindenki megtanulta a négy alapműveletet, illetve azok alapvető tulajdonságait. Mi ezek közül eddig mindössze <strong><em>az összeadással és a szorzással</em></strong> ismerkedtünk meg. Ezután azonban láthatóan falba ütköztünk, hiszen a természetes számok [latex]\N[/latex] halmazán algebrai értelemben nem értelmezhető sem a <strong><em>kivonás</em></strong>, sem pedig az <strong><em>osztás</em></strong>. Ez alatt azt értjük, hogy ezek a „művelet-szerűségek” általánosságban kivezetnek a természetes számok köréből. Algebrai értelemben az olyan függvényeket neveztük <strong><em>műveleteknek</em></strong>, amelyek [latex]\N[/latex]-beli elemekből alkotott párokhoz szintén [latex]\N[/latex]-beli elemeket rendelnek hozzá. Például a [latex]+[/latex] szimbólummal jelölt művelet egy olyan függvény, amely a [latex](3;2)[/latex] párhoz – és a kommutativitása miatt természetesen a [latex](2;3)[/latex] párhoz is – az [latex]5[/latex] szimbólummal jelölt [latex]\N[/latex]-beli elemet rendeli hozzá.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ilyen értelemben sajnos a szokásos kivonást nem nevezhetjük műveletnek. Az még rendben is lenne, hogy a [latex](3;2)[/latex] párhoz hozzárendeli az [latex]1[/latex] szimbólummal jelölt természetes számot – hiszen [latex]3-2=1[/latex]. De mit rendeljen hozzá mondjuk a [latex](2;3)[/latex] párhoz? Az [latex]\N[/latex] halmazban nincs olyan elem, amely ehhez a párhoz rendelhető, mint egy kivonás eredménye. Márpedig a <strong><em>művelet</em></strong> fogalmának definíciója egyértelműen kimondja, hogy egy ilyen függvénynek <strong><em>minden</em></strong> elempárhoz hozzá kell rendelnie valamilyen elemet az alaphalmazból.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Megtehetjük persze – hiszen a matematikában mindent szabad mindaddig, míg a logika egyszerű de annál szigorúbb szabályait betartjuk –, hogy átírjuk a művelet definícióját, és nem kötjük ki, hogy minden elempárra értelmezve legyen. Ám ekkor roppant kényelmetlen dolgunk lenne, hiszen bármilyen olyan definíciót, tételt vagy bizonyítást, amely a művelet fogalmát használja szintén át kellene fogalmaznunk. Meg kellene ugyanis különböztetnünk azokat az eseteket, amelyekben egy művelet értelmezve van egy adott elempárra azoktól, amelyekben nincs. Nem állítom, hogy ez lehetetlen lenne, de semmiképpen sem kényelmes.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A matematikusok alapvetően lusták, ezért ilyen esetekben rendszeresen az általánosítás és az absztrakció eszközéhez nyúlnak. Ez azt jelenti, hogy olyan általánosabb fogalmakat és elméleteket dolgoznak ki, amelyekben az adott probléma sokkal kényelmesebben kezelhető. Mi is ezt az utat fogjuk követni. A problémánk tehát az, hogy a természetes számok között általánosságban nem végezhető el a kivonás. Az ezen a halmazon ugyanis nem művelet. Ezért ebben és a következő részben át fogunk térni egy másik számhalmazra, amelyben ez a probléma egy csapásra megszűnik. Ezt azonban nem a szokásos módon fogjuk megtenni, hanem továbbra is szigorúan az eddig felépített fogalmainkra, tételeinkre, valamint a Peano-axiómarendszerre támaszkodva. Így válik ugyanis világossá, hogy a korai gondolkodók számára mennyire nem volt magától értetődő absztrakció a számegyenes 0-tól balra lévő részének felfedezése (vagy megalkotása?).</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az eddigiekhez hasonlóan tehát töröljünk most ki mindent a fejünkből, amit a negatív számokról tudunk. Számunkra most kizárólag a természetes számok [latex]\N[/latex] halmaza létezik a rajta értelmezett két művelettel és az előző részben megismert rendezési relációval.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Kompánia bankárai</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A <a rel="noreferrer noopener" aria-label="7. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/7-algoritmus-bonyolultsag-problemaosztalyok-polinomialis-exponencialis-p-np-sejtes-tanu-tetel/" target="_blank">7. részben</a> már megismert Kompánia országában az állampolgárok már időtlen idők óta aranytallérokat használtak fizetőeszközként. Sajnos azonban – ahogy az lenni szokott – egyre jobban kezdett elterjedni a bűnözés. Ezért az emberek egy idő után már nem szívesen tárolták aranytallérjaikat otthon a párna alatt. Volt, aki elásta a kertben, mások elrejtették a padláson vagy egyéb helyeken. Azaz egyre nagyobb piaci igény kezdett el kialakulni egy olyan szolgáltatásra, amely biztosítani tudja az állampolgárok számára pénzük biztonságos tárolását.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Megjelentek tehát a bankok, akik vállalták, hogy megőrzik és nyilvántartják az emberek aranytallérjait némi jutalékért cserébe. Minden ügyfelük számára nyitottak tehát egy úgynevezett <strong><em>betéti számlát</em></strong>. Ez azt tartalmazta, hogy a banknál tárolt összes aranytallér közül hány darab tartozik az adott ügyfélhez. Ennek leírására logikus módon a természetes számok már jól ismert [latex]\N[/latex] halmazának elemeit használták.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A kapzsi bankárok azonban hamar felismerték, hogy mivel kereshetnének jóval több pénzt annál, mint amit a betéti számlák után jutalékként kapnak az ügyfelektől. Elkezdtek hát további jutalékért cserébe <strong><em>kölcsönadni</em></strong> aranytallérokat az embereknek. Egyre többet és többet. Egy idő után már annál is többet, mint amennyi aranytallért összesen őriztek a páncéltermeikben. Ezt a látszólagos ellentmondást egy roppant egyszerű trükkel oldották fel. Minden ügyfél számára nyitottak egy úgynevezett <strong><em>hitelszámlát</em></strong> is a már meglévő betéti számla mellé. Ez azt tartalmazta, hogy az adott ügyfél a banknak mennyi aranytallérral tartozik. Logikus módon ennek leírására is a természetes számok [latex]\N[/latex] halmazának elemeit használták.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Természetesen sok esetben nem történt valódi aranytallér kifizetés az ügyfél számára, hiszen nem is mindig volt rá szükség. Tegyük fel például, hogy Alice vásárol valamit Bobtól [latex]n[/latex] aranytallérért, de nincs rá pénze. Megkéri ezért a bankot, hogy adjon hozzá a saját hitelszámlájához [latex]n[/latex] aranytallérnyi összeget, Bob betéti számlájához pedig szintén adjon hozzá egy ugyanekkora összeget. Vegyük észre, hogy habár nem történt valódi aranytallér fizetés Alice és Bob között, a banknál nyilvántartott számláik alapján azonban mégis elmondhatjuk, hogy Bob „vagyona” [latex]n[/latex] aranytallérral növekedett, miközben Alice „vagyona” ugyanekkora összeggel csökkent.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ebből mindaddig nincs probléma, ameddig az ügyfelek nem kezdik el tömegesen kivenni az aranytallérjaikat a bankokból. Ha azonban ez mégis megtörténik valami miatt, akkor nagy meglepetésben lesz részük. A bank páncéltermében tárolt valódi aranytallérok száma ugyanis jóval kevesebb, mint amennyinek a betéti és hitelszámlák alapján ott kéne lennie. Nyilvánvaló tehát, hogy szabályozni kell, hogy a bankok mennyi aranytallérnyi összeget tarthatnak nyilván az ügyfelek számláin ahhoz képest, mint amennyit valóban tárolnak a páncéltermükben. Kompánia országában például 8:1 ez az arány. Ez azt jelenti, hogy ha egy bank páncéltermében 100 valódi aranytallér van, akkor az ügyfelek számláin összesen 800 virtuális aranytallér lehet nyilvántartva. De természetesen Kompánia csak egy képzeletbeli ország...</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Számunkra most nem is a hitelkihelyezés állami szabályozásának módja az érdekes, ezért feltételezzük, hogy a bankok természetesen tisztességesen <strong><em>és</em></strong> a törvényeknek megfelelően működnek. Szándékosan az „és”, nem pedig az „azaz” szót használtam. Most inkább azt vizsgáljuk meg, hogy mi az, ami egy ügyfél <strong><em>vagyonát</em></strong> jellemzi a fenti felállásban.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A vagyon, mint mennyiség</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Az előző szakaszban tehát egy mérhető mennyiség fogalma kezdett el körvonalazódni, amely – mint látni fogjuk – alapjában véve más, mint azok a mennyiségek, amelyeket eddig az [latex]\N[/latex] halmaz elemeivel tudtunk mérni. A fenti bankos példában ezt a mennyiséget „vagyonnak” neveztük, amit a „betéti” és a „hitelszámla” egyenlegével, azaz lényegében egy természetes számokból álló párral jellemeztünk. A továbbiakban is használni fogjuk ezeket a bankokhoz köthető fogalmakat a könnyebb érthetőség kedvéért, azonban tartsuk szem előtt, hogy absztrakt szinten ezek lényegtelenek.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egy vagyont, mint mennyiséget leíró matematikai objektum tehát a természetes számpárok halmazának egy eleme. Ezt a halmazt az előző rész fényében [latex]\N \times \N[/latex]-nel jelöljük. Ennek a halmaznak egy eleme például a [latex](3;2)[/latex] számpár, egy másik eleme pedig mondjuk a [latex](4;3)[/latex] számpár. Általánosságban egy [latex](a;b)[/latex] számpár – ahol [latex]a[/latex] is és [latex]b[/latex] is természetes számok – egy olyan ügyfél vagyonát jelöli, akinek a betéti számláján [latex]a[/latex] darab, míg a hitelszámláján [latex]b[/latex] darab aranytallér van nyilvántartva.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Vegyük észre, hogy egy ügyfél vagyona nem változik, ha mind a hitel-, mind pedig a betéti számlájának egyenlegét <strong><em>ugyanazzal az összeggel</em></strong> növeljük. Előfordulhat tehát az, hogy egy [latex](a;b)[/latex] számpár ugyanazt a vagyont jelöli, mint egy [latex](c;d)[/latex] számpár, holott [latex]a\
+eq c[/latex] és [latex]b\
+eq d[/latex]. Az előző részben megismertük a <strong><em>kétváltozós reláció</em></strong> fogalmát ([yp_element slug="ketvaltozos-relacio" type="link" /]), amellyel egy halmaz elemei között valamilyen viszony meglétét, vagy meg nem létét fejezhetjük ki. Jelen esetben az [latex]\N\times \N[/latex] halmazban lévő számpárok között szeretnénk azt a viszonyt kifejezni, hogy két ilyen számpár „ugyanazt a vagyont jelöli”-e vagy nem.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most öntsük matematikai formába ezt az <strong><em>„ugyanazt a vagyont jelöli”-relációt</em></strong> az előző bekezdésben foglaltak alapján.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="termeszetes-szamparok-ekvivalenciarelacioja" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A definíció első pontja tehát azt fejezi ki, hogy ha a reláció baloldalán lévő számpár mindkét komponensét ugyanazzal az [latex]n[/latex] értékkel növeljük meg, akkor az így kapott jobboldali számpár ugyanazt a vagyont jelölje. A második pont ugyanezt mondja ki, csak a másik irányban. Erre azért van szükség, mivel szeretnénk, ha az „ugyanazt a vagyont jelöli”-reláció szimmetrikus lenne. Ha tehát két számpár között fennáll az egyik irányban, akkor fennálljon a másik irányban is. Nyilvánvaló, hogy egy valamiféle egyenlőséget vagy azonosságot kifejező relációtól elvárjuk ezt a tulajdonságot. Ezt azonban rögzíteni kell a definícióban, ha a továbbiakban hivatkozni szeretnénk rá. Ez alapján például [latex](3;2)\sim (4;3)[/latex] a definíció 1. pontja miatt, míg [latex](4;3)\sim (3;2)[/latex] a definíció 2. pontja miatt teljesül.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A fenti definíció jól leírja azt az intuitív gondolatot, hogy mikor tekintünk két vagyont leíró számpárt azonosnak. Ez azonban a gyakorlatban nem túl praktikus. Ha például az a kérdés, hogy [latex](2738;12993)\sim (3625; 13885)[/latex] teljesül-e, akkor máris gondba kerülünk. Mondhatnánk azt, hogy mivel a [latex]3625-2738[/latex] és a [latex]13885-12993[/latex] különbségek nem egyeznek meg, ezért ez a reláció nem teljesül. De ne feledjük, hogy ez csalás lenne, mivel a <strong><em>kivonás</em></strong> fogalma még <strong><em>nem létezik</em></strong> számunkra. Ezért szükségünk van egy olyan kritériumra, amelyet a már létező fogalmainkkal könnyen tudunk ellenőrizni, és pontosan azokban az esetekben teljesül, amikor a definíció követelménye is. Egy ilyen kritériumot fogalmaz meg az alábbi tétel.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Vegyük észre, hogy ez már egy olyan feltétel, amely kizárólag a [yp_element slug="peano-osszeadas" type="link" /]ban bevezetett Peano-összeadást használja. Ha ez a tétel igaz, akkor az azt jelenti, hogy akár ezzel a kritériummal is definiálhattuk volna a [latex]\sim[/latex] relációt. Ebből azonban nem látszódna egyértelműen a vagyoni helyzetek mérésére vonatkozó analógia. Most nézzük a tétel bizonyítását. Egy kicsit hosszadalmas lesz, de érdemes végigkövetni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most tehát van egy olyan relációnk, amellyel a vagyoni helyzeteket mérő számpárok – tehát lényegében az [latex]\N \times \N[/latex] halmaz elemei – között valamiféle egyenlőséget tudunk kifejezni. Azt fogjuk megvizsgálni, hogy milyen hatása van ennek a relációnak az [latex]\N \times \N[/latex] halmazra. Ehhez egy újabb fontos fogalommal fogunk megismerkedni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="equivalence-relations"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Ekvivalenciarelációk</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Az előző részben megismerkedtünk az úgynevezett <strong><em>rendezési relációkkal</em></strong>. Ezek ugye arra szolgálnak, hogy egy halmaz elemei között valamilyen egyértelmű sorrendet tudjunk felállítani. A rendezési relációk semmiben nem különböznek bármilyen más relációtól azt leszámítva, hogy az alábbi 4 speciális tulajdonságot kell teljesíteniük:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} -->
+<ol><li><strong><em>Reflexivitás ([yp_element slug="reflexiv-relacio" type="link" /]):</em></strong> Minden elem álljon relációban önmagával.</li><li><strong><em>Antiszimmetria ([yp_element slug="antiszimmetrikus-relacio" type="link" /]):</em></strong> Ha két elem nem azonos, akkor közöttük legfeljebb az egyik irányban teljesüljön a reláció (ahogyan azt egy „kisebb-nagyobb” jellegű fogalomtól elvárnánk).</li><li><strong><em>Tranzitivitás ([yp_element slug="tranzitiv-relacio" type="link" /]):</em></strong> A reláció láncszerűen öröklődjön az elemek között (vagyis ha [latex]a[/latex] és [latex]b[/latex], valamint [latex]b[/latex] és [latex]c[/latex] között is fennáll, akkor álljon fenn közvetlenül [latex]a[/latex] és [latex]c[/latex] között is).</li><li><strong><em>Trichotómia ([yp_element slug="trichotom-relacio" type="link" /]):</em></strong> Két tetszőleges elem között legalább az egyik irányban teljesüljön (vagyis bármely két elem legyen „összehasonlítható” egymással).</li></ol>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>Ebben a szakaszban relációk egy másik fajtájával fogunk megismerkedni, amelyeket <strong><em>ekvivalenciarelációknak</em></strong> nevezünk. Ezek nem arra szolgálnak, hogy sorrendet állítsunk fel egy halmaz elemei között, hanem arra, hogy azokat <strong><em>csoportosítani, osztályozni</em></strong> tudjuk. Méghozzá oly módon, hogy a halmaz minden eleme <strong><em>pontosan egy</em></strong> osztályba kerüljön. Ez azt jelenti, hogy minden elemről egyértelműen meg lehessen mondani, hogy ő melyik osztályba került. Ezenkívül ne legyen olyan elem, amely nem került bele egyik osztályba sem. Egy valamilyen [latex]H[/latex] halmaz ilyen tulajdonságú osztályozását [latex]H[/latex] <strong><em>partíciójának</em></strong>, magukat az osztályokat pedig <strong><em>ekvivalencia-osztályoknak</em></strong> nevezzük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi ábra egy 10 elemű [latex]H[/latex] halmaz egy lehetséges partícióját mutatja:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":3235} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_13_particio.jpg" alt="Partíció" class="wp-image-3235"/><figcaption>Partíció</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Ezzel szemben az alábbi ábrán lévő osztályozás nem partíció, mivel van olyan elem, amely nem került be egyetlen osztályba sem, valamint van olyan elem, amely egynél több osztályba is bele került:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":3236} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_13_nem_particio.jpg" alt="Nem partíció" class="wp-image-3236"/><figcaption>Nem partíció</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Egy <strong><em>ekvivalenciarelációnak</em></strong> tehát azt kell tudnia megmondani két tetszőleges elemről, hogy ők azonos osztályba kerültek-e, vagy sem. Most vizsgáljuk meg, hogy milyen speciális tulajdonságok szükségesek ahhoz, hogy ez az osztályozás valóban egy partíció legyen. Érezhető, hogy a <strong><em>reflexivitás</em></strong> és a <strong><em>tranzitivitás</em></strong> mindenképpen szükséges lesz. Nyilvánvaló ugyanis, hogy egy elem önmagával azonos osztályba kerül bármilyen partíció esetén (az „azonos osztályban van”-reláció tehát reflexív). Ezenkívül az is nyilvánvaló, hogy ha [latex]a[/latex] és [latex]b[/latex] azonos osztályba kerültek, valamint [latex]b[/latex] és [latex]c[/latex] is azonos osztályba kerültek, akkor [latex]a[/latex] és [latex]c[/latex] is azonos osztályba kerültek (a reláció tehát tranzitív).</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>E két speciális tulajdonságon kívül azonban szükség van még egy harmadikra is. Ezt a nem kevésbé nyilvánvaló tulajdonságot rögzíti az alábbi definíció:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="szimmetrikus-relacio" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez egész egyszerűen annyit fejez ki, hogyha két elem között fennáll a reláció valamelyik irányban, akkor fennáll a másik irányban is. Megjegyezzük még, hogy a nevével ellentétben ez a tulajdonság <strong><em>nem ellentéte</em></strong> a [yp_element slug="antiszimmetrikus-relacio" type="link" /]ban szereplő <strong><em>antiszimmetria</em></strong> tulajdonságának. Létezik ugyanis olyan reláció, amely egyszerre szimmetrikus és antiszimmetrikus. Triviális példa erre egy tetszőleges halmaz elemeinek egyenlősége, mint reláció. Létezik továbbá olyan reláció is, amely se nem szimmetrikus, se nem antiszimmetrikus. Erre egy későbbi részben fogunk példát mutatni, amikor bevezetjük az <strong><em>oszthatóság</em></strong> fogalmát, amely alapvető fontosságú lesz minden további vizsgálatunk szempontjából.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezek után a rendezési relációkhoz hasonlóan most az ekvivalenciareláció fogalmát rögzítjük:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="ekvivalenciarelacio" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most vizsgáljuk meg, hogy egy ekvivalenciareláció valóban alkalmas-e egy halmaz elemeinek osztályozására oly módon, hogy ez az osztályozás egy partíció legyen. Az alábbi tétel azt mondja ki, hogy a reflexivitáson, tranzitivitáson és szimmetrián kívül nincs szükség egyéb tulajdonságra ehhez.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="ekvivalenciarelacio-tulajdonsagai" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="ekvivalenciarelacio-tulajdonsagai-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Az iménti tételből következik, hogy egy tetszőleges halmaz ekvivalenciarelációi és partíciói kölcsönösen egyértelmű megfeleltetésben állnak egymással.</em></strong> Ha ugyanis egy ekvivalencarelációból a tételben szereplő módon képezzük a hozzá tartozó partíciót, majd ebből a partícióhoz tartozó ekvivalenciarelációt, akkor e konstrukció <strong><em>„pontosan akkor”-jellege</em></strong> miatt az eredeti relációt kapjuk vissza. Ehhez hasonlóan ha egy partícióból képezzük a hozzá tartozó ekvivalenciarelációt, majd ebből a relációból a hozzá tartozó partíciót, akkor az eredeti partíciót kapjuk vissza.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Az egész számok, mint ekvivalencia-osztályok</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A fentiek fényében térjünk most vissza az előző szakaszban definiált [latex]\sim[/latex] relációnkhoz, amelyet az [latex]\N\times \N[/latex] halmazon – azaz a természetes számpárokon – értelmeztünk a [yp_element slug="termeszetes-szamparok-ekvivalenciarelacioja" type="link"/] alapján. Megjegyezzük, hogy a [yp_element slug="termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel" type="link" /] miatt e reláció vonatkozásában mindegy, hogy a tételben vagy a reláció eredeti definíciójában szereplő feltételeket használjuk a továbbiakban, hiszen az említett tétel épp azt mondja ki, hogy vagy mindkét tulajdonság teljesül, vagy egyik sem. Az alábbi tétel igazolásához – amely a [latex]\sim[/latex] reláció kulcsfontosságú tulajdonságát mondja ki – az utóbbi tulajdonságot fogjuk használni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="termeszetes-szamparok-ekvivalenciarelacioja-tetel" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="termeszetes-szamparok-ekvivalenciarelacioja-tetel-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha viszont [latex]\sim[/latex] egy ekvivalenciareláció, akkor a [yp_element slug="ekvivalenciarelacio-tulajdonsagai" type="link" /] alapján ez a reláció <strong><em>ekvivalencia-osztályokra</em></strong> bontja az [latex]\N\times \N[/latex] halmazt. Vizsgáljuk meg, hogyan néznek ki ezek az ekvivalencia-osztályok. Ábrázoljuk az [latex]\N\times \N[/latex] halmaz elemeit egy kétdimenziós koordinátarendszer rácspontjaiként, és csoportosítsuk ezeket a pontokat az ekvivalencia-osztályok alapján. Az alábbi ábrán ezek az ekvivalencia-osztályok láthatók bekarikázva:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":3238} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_13_NxN_ekvivalencia_osztalyai.jpg" alt="NxN ekvivalencia-osztályai" class="wp-image-3238"/><figcaption>[latex]\N \times \N[/latex] ekvivalencia-osztályai</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>A vagyoni helyzetek analógiájával élve az azonos csoportba került számpárok mind ugyanazt a vagyoni helyzetet írják le. Ha például egy ügyfélnek 2 aranytallér van a betéti számláján és 3 aranytallér a hitelszámláján, akkor ugyanolyan a vagyoni helyzete, mintha 0 aranytallér lenne a betéti számláján és 1 a hitelszámláján. Az első esetet a [latex](2;3)[/latex], míg a második esetet a [latex](0;1)[/latex] számpár írja le. Mivel vagyoni helyzet szempontjából mindegy, hogy melyik leírást választjuk, ezért ennek megfelelően e két számpár ugyanabba az ekvivalencia-osztályba került. Ezt úgy is mondhatjuk, hogy a [latex](2;3)[/latex] és a [latex](0;1)[/latex] számpárok <strong><em>ugyanazt az ekvivalencia-osztályt reprezentálják</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Minket ezért a továbbiakban nem külön-külön az egyes számpárok, azaz az [latex]\N\times \N[/latex] halmaz elemei érdekelnek, hanem azok az ekvivalencia-osztályok, amelyeket <strong><em>reprezentálják</em></strong>. A most következő, elsőre furcsának tűnő definíció bevezet egy olyan halmazt, amelynek az <strong><em>elemei ezek az ekvivalencia-osztályok</em></strong> lesznek. Ez a halmaz annyira fontos lesz a továbbiakban, hogy a definíció külön nevet is ad ezeknek az ekvivalencia-osztályoknak, mint e halmaz elemeinek.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-halmaza" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Jól vigyázzunk a fenti jelölésekkel, az [latex](a;b)[/latex] ugyanis egy egyszerű természetes számpárt jelöl, amely az [latex]\N\times \N[/latex] halmaz eleme. Ezzel szemben [latex][(a;b)][/latex] egy ekvivalencia-osztályt, azaz – a fenti definíció szerinti elnevezés alapján – egy <strong><em>egész számot jelöl</em></strong>, amely viszont a [latex]\Z[/latex] halmaz eleme. Igaz továbbá, hogy egy egész számot végtelen sok különböző számpárral reprezentálhatunk. Ha például [latex](c;d)[/latex] egy olyan számpár, hogy [latex](a;b)\sim (c;d)[/latex], akkor a [latex][(c;d)][/latex] is ugyanazt az egész számot jelöli, mint [latex][(a;b)][/latex]. Ez nagyon hasonló ahhoz, mint amikor törtszámokat írunk le többféleképpen. Például [latex]\frac{1}{2}=\frac{2}{4}=\frac{3}{6}=\dots[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A fenti definíció azért tűnik elsőre furcsának, mert nem vagyunk hozzászokva, hogy egy egész számot [latex][(a;b)][/latex] alakban jelöljünk. Ezért hamarosan <strong><em>be fogunk vezetni egy olyan jelölést</em></strong>, amelyet az általános iskolában már megszoktunk. Egyelőre azonban tekintsük ezeket az [latex][(a;b)][/latex] alakú furcsaságokat az egész számoknak.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="injective-homomorphism"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A természetes számok beágyazása [latex]\Z[/latex]-be</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Most tehát egyrészt van egy [latex]\N[/latex]-nel jelölt halmazunk a rajta értelmezett két művelettel és a [latex]\leq[/latex] relációval, amelyek definiálásához áttételesen vagy közvetlenül a Peano-axiómákat ([yp_element slug="peano-axiomarendszer" type="link" /]) használtuk. Ennek elemeit <strong><em>természetes számoknak</em></strong> neveztük. Másrészt van egy [latex]\Z[/latex]-vel jelölt halmazunk, amelynek elemei az [latex]\N\times \N[/latex] halmazon értelmezett [latex]\sim[/latex]-vel jelölt reláció ekvivalencia-osztályai. Ezeket az ekvivalencia-osztályokat – bármilyen furcsa egyelőre, de – <strong><em>egész számoknak</em></strong> neveztük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Látható, hogy [latex]\N[/latex] és [latex]\Z[/latex] a mostani értelmezésünk szerint két, teljesen más jellegű objektumokat tartalmazó halmaz, így nyilván <strong><em>egyik sem lehet részhalmaza a másiknak</em></strong>. Mivel mi jelenleg az eddig megismert természetes számok általánosításán dolgozunk, ezért <strong><em>ez nem elfogadható</em></strong> számunkra. Egy általánosítás során ugyanis az a kívánatos, hogy a speciálisabb kiindulási objektumok halmaza az általánosabb objektumok halmazának részhalmaza legyen.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az eddigi [latex]\N[/latex]-nek nevezett halmazról tehát át szeretnénk térni a továbbiakban egy olyan halmazra, amely [latex]\Z[/latex]-nek valamilyen részhalmaza, és <strong><em>„ugyanúgy viselkedik”</em></strong>, mint a „régi” [latex]\N[/latex] halmaz. Az „ugyanúgy viselkedik” kifejezés jelentésére hamarosan rátérünk, de az már biztos, hogy szükségünk van egy függvényre, amely a „régi” és az „új” [latex]\N[/latex] halmaz elemeit <strong><em>kölcsönösen egyértelműen megfelelteti egymással</em></strong>. Jelöljük most átmenetileg a „régi” halmazt [latex]\N_1[/latex]-gyel, az „újat” [latex]\N_2[/latex]-vel (amely ugye már része [latex]\Z[/latex]-nek), a közöttük lévő kölcsösen egyértelmű függvényt pedig [latex]f[/latex]-fel. Ez az elrendezés látható az alábbi ábrán:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":3240} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_13_bijekcio_N1_N2_kozott.jpg" alt="Kölcsönösen egyértelmű megfeleltetés N1 és N2 között" class="wp-image-3240"/><figcaption>Kölcsönösen egyértelmű megfeleltetés [latex]\N_1[/latex] és [latex]\N_2[/latex] között</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>kölcsönösen egyértelműség</em></strong> tehát azt jelenti, hogy minden [latex]\N_2[/latex]-beli elem pontosan egy – azaz se nem több, se nem kevesebb – [latex]\N_1[/latex]-beli elemhez legyen hozzárendelve az [latex]f[/latex] függvény által, és fordítva, minden [latex]\N_1[/latex]-beli elemhez legyen hozzárendelve pontosan egy [latex]\N_2[/latex]-beli elem.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most térjünk rá arra a kérdésre, hogy mit jelent az, hogy [latex]\N_2[/latex] <strong><em>„ugyanúgy viselkedik”</em></strong>, mint [latex]\N_1[/latex]. Vegyük észre, hogy az [latex]\N_1[/latex] halmaz nem csupán egy halmaz, hanem definiálva van rajta egy [latex]+[/latex]-szal és egy [latex]\cdot[/latex]-tal jelölt művelet ([yp_element slug="peano-osszeadas" type="link" /] és [yp_element slug="peano-szorzas" type="link" /]), valamint egy [latex]\leq[/latex]-val jelölt rendezési reláció ([yp_element slug="termeszetes-szamok-rendezese" type="link" /]).</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Annak érdekében, hogy az általánosítási projektünk teljes legyen, be szeretnénk vezetni a [latex]\Z[/latex] halmazon is két műveletet, valamint egy teljes rendezést. De nem akárhogyan, hanem úgy, hogy amennyiben ezt a két új műveletet, valamint az új rendezési relációt csak az [latex]\N_2[/latex] halmazon vizsgáljuk – amely ugye [latex]\Z[/latex] részhalmaza –, akkor azok „ugyanúgy viselkedjenek”, mint a régi [latex]\N_1[/latex] halmazon értelmezett műveleteink és rendezési relációnk. Az absztrakt algebrában ilyenkor azt mondjuk, hogy az [latex]\N_1[/latex] és az [latex]\N_2[/latex] halmazok közötti [latex]f[/latex] leképezés egy <strong><em>művelet- és rendezéstartó leképezés</em></strong> – vagy összefoglaló néven <strong><em>struktúratartó leképezés</em></strong> – kell legyen.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Vezessünk be tehát a [latex]\Z[/latex] halmazon is két műveletet, és egyelőre jelöljük az egyiket [latex]\oplus[/latex]-szal, a másikat pedig [latex]\odot[/latex]-tal, amelyek rendre a régi [latex]\N_1[/latex] halmazon értelmezett [latex]+[/latex] és [latex]\cdot[/latex] műveletek megfelelői lesznek. Az alábbi ábrán láthatjuk, mit jelent pontosan az, hogy az [latex]f[/latex] leképezés <strong><em>„tartja”</em></strong> a [latex]+[/latex] műveletet. A [latex]\cdot[/latex] művelet „tartása” ugyanígy értelmezhető:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":3242} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_13_muvelettarto_lekepezes.jpg" alt="Művelettartó leképezés" class="wp-image-3242"/><figcaption>Művelettartó leképezés</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Ha tehát a régi [latex]\N_1[/latex] halmaz két tetszőleges [latex]a[/latex] és [latex]b[/latex] elemei esetén a [latex]+[/latex] művelet eredménye a szintén [latex]\N_1[/latex]-beli [latex]a+b[/latex] elem, akkor elvárjuk az [latex]f[/latex] leképzéstől, hogy az [latex]\N_2[/latex]-beli [latex]f(a)[/latex] és [latex]f(b)[/latex] elemek esetén az [latex]f(a)\oplus f(b)[/latex] művelet eredménye a szintén [latex]\N_2[/latex]-beli [latex]f(a+b)[/latex] elem legyen. Azaz tetszőleges [latex]\N_1[/latex]-beli elemek közötti [latex]+[/latex] művelet eredményének képe épp az eredeti elemek képei közötti [latex]\oplus[/latex] művelet eredménye legyen. A [latex]\cdot[/latex] és az újonnan bevezetett [latex]\odot[/latex] műveletek tekintetében ugyanezt várjuk el az [latex]f[/latex] leképezéstől.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A műveletekhez hasonlóan vezessünk be egy relációt is a [latex]\Z[/latex] halmazon, amelyet egyelőre jelöljünk [latex]\lesssim[/latex]-vel. Ez a régi [latex]\N_1[/latex] halmazon értelmezett [latex]\leq[/latex] reláció megfelelője lesz a [latex]\Z[/latex] halmazban. Az alábbi ábrán láthatjuk, mit jelent az, hogy az [latex]f[/latex] leképezés <strong><em>„tartja”</em></strong> a [latex]\leq[/latex] relációt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":3244} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_13_relaciotarto_lekepezes.jpg" alt="Relációtartó leképezés" class="wp-image-3244"/><figcaption>Relációtartó leképezés</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Azaz tetszőleges [latex]\N_1[/latex]-beli elemek között <strong><em>pontosan akkor</em></strong> teljesüljön a [latex]\leq[/latex] reláció, ha az [latex]\N_2[/latex]-beli képeik között teljesül a [latex]\lesssim[/latex] reláció.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az absztrakt algebrában ezek a különleges, „tartási tulajdonságokkal” rendelkező függvények vagy leképezések központi jelentőségűek. Segítségükkel ugyanis a különböző úgynevezett <strong><em>algebrai struktúrák</em></strong> (azaz műveletekkel és/vagy relációkkal ellátott halmazok) mélyebb szerkezete vizsgálható anélkül, hogy elvesznénk az egyes konkrét reprezentációk részleteiben. Ezért fontos, hogy megismerkedjünk az alábbi fogalmakkal, amelyek tehát alapvetőek az algebrában:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="homomorfizmus-izomorfizmus-beagyazas" show_title="true"/]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezzel a szóhasználattal élve tehát szeretnénk egy <strong><em>injektív homomorfizmust</em></strong> – azaz egy <strong><em>beágyazást</em></strong> – létesíteni a régi [latex]\N_1[/latex] és az imént megkonstruált [latex]\Z[/latex] halmaz között. Ekkor [latex]\Z[/latex]-nek az [latex]\N_2[/latex] részhalmaza <strong><em>izomorf</em></strong> lenne a régi [latex]\N_1[/latex] halmazzal a [latex]+[/latex] és a [latex]\cdot[/latex] műveletek, valamint a [latex]\leq[/latex] reláció tekintetében. Az izomorfia ebben az esetben azt jelentené, hogy az [latex]\N_1[/latex] és az [latex]\N_2[/latex] halmazok feletti algebrai struktúrák lényegében azonosak lennének – attól eltekintve, hogy másként jelöljük az elemeiket, a műveleteket és a rendezési relációkat.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A beágyazáshoz tehát két dolgot kell tennünk. Először is definiálnunk kell egy [latex]f:\N_1 \to \Z[/latex] függvényt. Ezután pedig értelmeznünk kell a [latex]\Z[/latex] halmazon az újdonsült [latex]\oplus[/latex] és [latex]\odot[/latex] műveleteket, valamint a [latex]\lesssim[/latex] relációt úgy, hogy [latex]f[/latex] az [latex]\N_1[/latex] halmaz [latex]\Z[/latex]-be való beágyazását valósítsa meg, és [latex]\N_1[/latex] képe épp az [latex]\N_2[/latex] halmaz legyen [latex]\Z[/latex]-n belül. Amint ez megvan, onnantól kezdve az eddigi [latex]\N_1[/latex] halmaz helyett nyugodtan tekinthetjük majd [latex]\N_2[/latex]-t a <strong><em>természetes számok halmazának</em></strong>. Az izomorfia miatt ugyanis arra ugyanúgy érvényesek lesznek a Peano-axiómák és minden eddig bizonyított tételünk. Ezen kívül nyugodtan használhatjuk majd azokat a jelöléseket, amelyeket az általános iskolából már megszokhattunk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Intuitív módon konstruáljuk most meg az [latex]f:\N_1 \to \Z[/latex] függvényt, amely a beágyazást fogja megvalósítani. Ehhez megint a vagyoni helyzetekre vonatkozó analógiára gondoljunk. Legyen szó bármilyen vagyoni helyzetről, az alábbi 3 eset lehetséges:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li>Az ügyfélnek több betétje van a banknál, mint hitele.</li><li>Az ügyfélnek kevesebb betétje van a banknál, mint hitele.</li><li>Az ügyfélnek ugyanannyi a betétje, mint a hitele.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>A következő tétel arról szól, hogy bármely vagyoni helyzet mindhárom esetben biztosan reprezentálható egy olyan számpárral is, amelynek az egyik komponense [latex]0[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="ekvivalencia-osztalyok-reprezentansa" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="ekvivalencia-osztalyok-reprezentansa-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez tehát azt jelenti, hogy a [latex]\Z[/latex] halmazban lévő összes [latex][(a;b)][/latex]-vel jelölt ekvivalencia-osztály (azaz egész szám) leírható [latex][(n;0)][/latex], [latex][(0;n)][/latex] vagy [latex][(0;0)][/latex] alakban is. Ezekre hamarosan az alábbi – az általános iskolában már megszokott – megnevezéseket és jelöléseket fogjuk használni:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="pozitiv-es-negativ-egesz-szamok" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Egyelőre azonban maradjunk még az ekvivalencia-osztályokat használó jelölésnél. A fentebb már említett [latex]f:\N_1 \to \Z[/latex] <strong><em>beágyazófüggvényt</em></strong> az alábbi módon fogjuk definiálni:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f(n)=[(n;0)][/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ahogy az alábbi ábrán látható, a beágyazófüggvény az [latex]\N_1[/latex] elemeihez – amiket egészen idáig <strong><em>természetes számoknak</em></strong> neveztünk – a nulla és a pozitív egész számokat felelteti meg. Ezek alkotják az [latex]\N_2[/latex] részhalmazt a [latex]\Z[/latex] halmazon belül:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":3246} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_13_N_beagyazasa_Z_be.jpg" alt="Természetes számok beágyazása Z-be" class="wp-image-3246"/><figcaption>Természetes számok beágyazása [latex]\Z[/latex]-be</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Az is látható, hogy a negatív egész számoknak nincs megfelelője a természetes számok között, ez tehát egy <strong><em>valódi beágyazás</em></strong>. Ez épp megfelel az elvárásainknak, tekintve, hogy most a számfogalom bővítését hajtjuk végre éppen. Most már csak azt kell biztosítani, hogy a [latex]\oplus[/latex] és [latex]\odot[/latex] műveleteket, valamint a [latex]\lesssim[/latex] relációt úgy definiáljuk a [latex]\Z[/latex] halmazon, hogy azok [latex]\N_2[/latex]-re való megszorításai épp az [latex]\N_1[/latex] halmazon értelmezett [latex]+[/latex] és [latex]\cdot[/latex] műveletek, valamint a [latex]\leq[/latex] reláció megfelelői legyenek. Azaz – algebrai szóhasználattal és jelölésmóddal élve – <strong><em>az [latex](\N_1 ,+,\cdot , \leq)[/latex] algebrai struktúra legyen izomorf az [latex](\N_2 , \oplus , \odot , \lesssim )[/latex] algebrai struktúrával</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="integer-addition"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Összeadás a [latex]\Z[/latex] halmazon</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Értelmezzük hát az „összeadás” műveletét az egész számok [latex]\Z[/latex] halmazán, amelyet ugye egyelőre a [latex]\oplus[/latex] műveleti jellel jelölünk. Ezzel szeretnénk ugyanis hangsúlyozni, hogy ez <strong><em>látszólag teljesen független</em></strong> attól a [latex]+[/latex] szimbólummal jelölt művelettől, amelyet a [yp_element slug="peano-osszeadas" type="link" /]ban Peano-összeadásnak neveztünk. A Peano-összeadás ugyanis – a mostani jelölésekkel – az [latex]\N_1[/latex] halmazon volt értelmezve, amelynek az elemei ugye a természetes számok. Ezzel szemben a [latex]\oplus[/latex] művelet az imént megkonstruált [latex]\Z[/latex] halmazon van értelmezve, amelynek az elemei ugye a vagyoni helyzeteket jelölő természetes számpárok ekvivalencia-osztályai. Látni fogjuk azonban, hogy e két művelet  között az előző szakaszban megadott [latex]f:\N_1 \to \Z[/latex] beágyazófüggvény fog szoros kapcsolatot teremteni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Na de mégis hogyan lehet ekvivalencia-osztályok közötti „műveletről” beszélni? Mi értelme van ennek? Ennek értelmezéséhez megint a vagyoni helyzetekről szóló analógiához nyúlunk. Tegyük fel, hogy Alice vagyonát egy [latex](a;b)[/latex] számpár reprezentálja. Ez ugye azt jelenti, hogy Alice betéti számláján [latex]a[/latex], hitelszámláján pedig [latex]b[/latex] darab aranytallér van nyilvántartva. Hasonlóan tegyük fel, hogy Bob vagyonát egy [latex](c;d)[/latex] számpár reprezentálja ugyanilyen értelmezéssel. Teljesen értelmes feltenni egy olyan kérdést, hogy <strong><em>mennyi lesz az ő közös vagyonuk</em></strong>, ha összeházasodnak?</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Kézenfekvő, ha azt mondjuk, hogy ebben az esetben ezt a közös vagyont – Alice és Bob vagyonának <strong><em>„összegét”</em></strong> – az [latex](a+c;b+d)[/latex] számpár reprezentálja. Ezzel tehát logikusan azt fejezzük ki, hogy a betéti számlák egyenlegén kívül a hitelszámlák egyenlegeit is össze kell adni. Vegyük észre, hogy ilyen módon a [latex]\oplus[/latex] művelet definícióját visszavezethetjük egy már definiált fogalomra, nevezetesen a Peano-összeadásra ([yp_element slug="peano-osszeadas" type="link" /]).</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Fontos azonban megjegyezni, hogy nekünk valójában vagyoni helyzeteknek megfelelő ekvivalencia-osztályokat kellene tudni „összeadni”. Márpedig az imént csak egy-egy természetes számpárt adtunk össze. Azonban a [yp_element slug="ekvivalencia-osztalyok-reprezentansa" type="link" /] értelmében tetszőleges számpárról egyértelműen azonosítani lehet, hogy ő melyik ekvivalencia-osztályhoz tartozik. Ha tehát adva van két ekvivalencia-osztály, amelyeket szeretnénk „összeadni”, akkor az a kérdés, hogy vajon mindegy-e, hogy e két ekvivalencia-osztálynak mely elemein végezzük el a „számlánkénti” összeadást?</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Nézzük például a [latex][(3;0)][/latex] és a [latex][(0;5)][/latex] ekvivalencia-osztályok „összegét”. Ennek a két osztálynak az alábbiakban felsoroltuk néhány elemét az egyenlőségjelek utáni kapcsoszárójelek között:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned} [(3;0)]&amp;=\{ (3;0), (4;1), (5;2), (6;3), \dots \} \\ [(0;5)]&amp;=\{ (0;5), (1;6), (2;7), (3;8), \dots \} \end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>E két osztálynak egy-egy eleme a [latex](3;0)[/latex] és a [latex](0;5)[/latex] számpár. Ezeken elvégezve a „számlánkénti” összeadást a [latex](3;5)[/latex] számpárt kapjuk, amely a [latex][(0;2)][/latex] ekvivalencia-osztályba tartozik. Ennek az „eredmény-osztálynak” az elemeit soroltuk fel alább:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][(0;2)]=\{ (0;2), (1;3), (2;4), (3;5), (4;6), (5;7), \dots \}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Kérdés, hogy mondhatjuk-e nyugodt szívvel azt, hogy [latex][(3;0)]\oplus [(0;5)]=[(0;2)][/latex]? Nem lehetséges-e, hogy ha a [latex][(3;0)][/latex] és a [latex][(0;5)][/latex] osztályok valamely más elemeit összegezzük, akkor eredményül egy olyan számpárt kapunk, amely nem a [latex][(0;2)][/latex] osztályba tartozik? Elvégre minden osztályban végtelen sok számpár van, miért ne választhatnánk épp ilyen szerencsétlenül?</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A most következő tétel azt állítja, hogy <strong><em>ilyen nem fordulhat elő</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-osszeadasa-joldefinialt" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-osszeadasa-joldefinialt-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Eszerint tehát mindegy, hogy a két ekvivalencia-osztály mely elemein végezzük el a „számlánkénti” összegzést. Az eredmény minden esetben ugyanabból az ekvivalencia-osztályból fog kikerülni. Azt mondhatjuk tehát, hogy a [latex]\Z[/latex] halmaz elemei között az alábbi definícióval értelmezett [latex]\oplus[/latex] művelet <strong><em>jóldefiniált</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-osszeadasa" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most vizsgáljuk meg, hogy az előző szakaszban definiált [latex]f[/latex] beágyazófüggvény valóban tartja-e a [latex]+[/latex] műveletet.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="termeszetes-szamok-beagyazasa-osszegtarto" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="termeszetes-szamok-beagyazasa-osszegtarto-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Végezetül vizsgáljuk meg, hogy vajon az egész számok [latex]\Z[/latex] halmazán értelmezett [latex]\oplus[/latex] művelet is teljesíti-e az általános iskolában már megszokott tulajdonságokat a természetes számok között értelmezett Peano-összeadáshoz hasonlóan.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-osszeadasa-kommutativ-es-asszociativ" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-osszeadasa-kommutativ-es-asszociativ-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Hol tartunk most?</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Ismételten álljunk meg, és szedjük össze, hol tartunk most a számelmélet felépítésében.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Megállapítottuk, hogy a természetes számok [latex]\N[/latex] halmaza algebrai értelemben túlságosan szűkösnek bizonyul. Elkezdtük ezért végigkövetni azt a <a href="https://hu.wikipedia.org/wiki/Negat%C3%ADv_%C3%A9s_nemnegat%C3%ADv_sz%C3%A1mok#Negat.C3.ADv_sz.C3.A1mok_els.C5.91_haszn.C3.A1lata" target="_blank" rel="noreferrer noopener" aria-label="nem kis absztrakciós utat (új fülön nyitja meg)">nem kis absztrakciós utat</a>, amelynek eredményeként őseink felfedezték a számegyenes nullától balra lévő részét, azaz a <strong><em>negatív számokat</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egy banki analógiával élve és a Peano-axiómáknál maradva ezeket az absztrakt objektumokat <strong><em>természetes számpárokkal</em></strong> próbáltuk leírni, amelyek első komponense banki betétet, második komponense pedig banki adósságot jelöl. Az alábbi definícióval bevezettünk e számpárok között egy relációt, amely az ugyanolyan vagyoni helyzeteket jelölő számpárokat azonosítja:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="termeszetes-szamparok-ekvivalenciarelacioja" type="recall-collapsed" show_link_to_article="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Megismerkedtünk az <strong><em>ekvivalenciareláció</em></strong> fogalmával:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="ekvivalenciarelacio" type="recall-collapsed" show_link_to_article="false" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezután megmutattuk, hogy a [latex]\sim[/latex] reláció egy ekvivalenciareláció az [latex]\N \times \N[/latex] halmazon, amely ezt a halmazt ekvivalencia-osztályokra bontja. Ezeket az osztályokat neveztük <strong><em>egész számoknak</em></strong>:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-halmaza" type="recall-collapsed" show_link_to_article="false" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezekre egy, az iskolai tanulmányainkból már jól ismert jelölést is bevezettünk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="pozitiv-es-negativ-egesz-szamok" type="recall-collapsed" show_link_to_article="false" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezután definiáltunk egy – egyelőre – [latex]\oplus[/latex]-szal jelölt műveletet a [latex]\Z[/latex] halmazon, amelyet az <strong><em>egész számok összeadásának</em></strong> neveztünk, és amelyről megmutattuk, hogy <strong><em>kommutatív és asszociatív</em></strong>:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-osszeadasa" type="recall-collapsed" show_link_to_article="false" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-osszeadasa-kommutativ-es-asszociativ" type="recall-collapsed" show_link_to_article="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Végül megadtunk egy függvényt, amellyel elkezdtük algebrai értelemben <strong><em>beágyazni</em></strong> a természetes számokat az egész számok [latex]\Z[/latex] halmazába. Egyelőre azt mutattuk meg, hogy ez a függvény valóban <strong><em>tartja</em></strong> a Peano-összeadás műveletét:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="termeszetes-szamok-beagyazasa-osszegtarto" type="recall-collapsed" show_link_to_article="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A következő részekben tovább folytatjuk az egész számok felépítését. Az összeadáshoz hasonlóan a Peano-szorzást, valamint a rendezési relációnkat is intuitív módon ki fogjuk terjeszteni erre a számkörre. Ezzel teljessé fog válni a természetes számok beágyazása a [latex]\Z[/latex] halmazba. Végül általánosságban is megvizsgáljuk, hogy az így kapott új algebrai struktúrával milyen előnyökhöz jutottunk. Ennek keretében további absztrakt algebrai fogalmakkal fogunk megismerkedni, amelyeknek majd a prímszámok elméletének általánosabb tárgyalásakor vesszük hasznát.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A következő részt <a href="https://youproof.hu/kriptografia/14-egesz-szam-szorzas-absztrakt-algebra-neutralis-elem-inverz-kivonas-gyuru-ferdetest-test/">itt</a> találod...</em></strong></p>
+<!-- /wp:paragraph -->

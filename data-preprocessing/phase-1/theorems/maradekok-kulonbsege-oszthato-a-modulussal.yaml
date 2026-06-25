@@ -1,0 +1,15 @@
+type: theorem
+name: maradekok-kulonbsege-oszthato-a-modulussal
+proofs:
+  - maradekok-kulonbsege-oszthato-a-modulussal-bizonyitas
+remarks: []
+content:
+  - type: formula
+    lead-in: |
+      Tegyük fel, hogy $a$, $b$ és $c\eq 0$ tetszőleges egész számok, melyekre teljesülnek az alábbi
+      egyenlőtlenségek:
+    content: |
+      \begin{aligned}0&\leq a\lt |c| \\ 0&\leq b\lt |c|\end{aligned}
+  - type: narrative
+    content: |
+      Tegyük fel továbbá, hogy teljesül a $c|a-b$ oszthatóság is. Ekkor $a$ és $b$ megegyezik.

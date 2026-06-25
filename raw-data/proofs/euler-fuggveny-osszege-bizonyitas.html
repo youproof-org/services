@@ -1,0 +1,165 @@
+<!-- wp:paragraph -->
+<p>Minden egyes, a tételben szereplő [latex]d_i[/latex] osztóból állítsuk elő az összes olyan számpárt, amelynek első tagja [latex]d_i[/latex], második tagja pedig egy olyan [latex]d_i[/latex]-nél kisebb nemnegatív egész szám, amely relatív prím [latex]d_i[/latex]-hez. A [yp_element slug="euler-fuggveny-alternativ-definicio" type="link" /] alapján pontosan [latex]\varphi(d_i)[/latex] darab olyan számpárt tudunk előállítani, amelynek első tagja [latex]d_i[/latex], hiszen [latex]\varphi(d_i)[/latex] épp azoknak az egészeknek a számát adja meg, amelyek a fenti szabály értelmében a számpár második tagjaként szerepelhetnek. Jelöljük [latex]S[/latex]-sel az előállított számpárok halmazát, továbbá [latex]a_{ij}[/latex]-vel a [latex]j[/latex]-edik olyan számpárnak a második tagját, amelynek első tagja [latex]d_i[/latex]. Ekkor [latex]S[/latex] elemeit az alábbi lista sorolja fel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}S=\{&amp;(d_1;a_{11}), (d_1;a_{12}), (d_1;a_{13}), \ldots, (d_1;a_{1\varphi(d_1)}), \\ &amp;(d_2;a_{21}), (d_2;a_{22}), (d_2;a_{23}), \ldots, (d_2;a_{2\varphi(d_2)}), \\ &amp;(d_3;a_{31}), (d_3;a_{32}), (d_3;a_{33}), \ldots, (d_3;a_{3\varphi(d_3)}), \\ &amp;\vdots \\ &amp;(d_k;a_{k1}), (d_k;a_{k2}), (d_k;a_{k3}), \ldots, (d_k;a_{k\varphi(d_k)}) \}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Látható, hogy az [latex]i[/latex]-edik sorban [latex]\varphi(d_i)[/latex] darab elem van, az [latex]S[/latex] halmaz <strong><em>elemeinek a száma</em></strong> tehát épp a tételben szereplő összeg lesz, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\varphi(d_1)+\varphi(d_2)+\ldots+\varphi(d_k)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most képezzünk egy másik, [latex]T[/latex]-vel jelölt halmazt, amelybe pakoljuk bele az egész számokat [latex]0[/latex]-tól [latex]n-1[/latex]-ig, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]T=\{0, 1, 2, \ldots, n-1\}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt szeretnénk tehát igazolni, hogy az [latex]S[/latex] és [latex]T[/latex] halmazok elemei között egy kölcsönösen egyértelmű megfeleltetés létesíthető, hiszen ebből már következik, hogy mindketten ugyanannyi – azaz [latex]n[/latex] darab – elemet tartalmaznak, ami épp a tétel állítása. Ehhez mutatunk egy [latex]f:S\to T[/latex] és egy [latex]g:T\to S[/latex] függvényt, amelyekről belátjuk, hogy egymás megfordításai.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]f[/latex] függvény legyen olyan, amely a fentiekben leírtaknak megfelelően konstruált tetszőleges [latex](d;a)\in S[/latex] számpárhoz az alábbi képlet jobboldalán szereplő egész számot rendeli hozzá. Itt a már megszokott jelölést alkalmazva [latex]\frac{n}{d}[/latex] azt az egész számot jelöli, amelyet a [latex]d[/latex] osztóval megszorozva az eredmény [latex]n[/latex]:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f((d;a))=a\cdot \frac{n}{d}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most megmutatjuk, hogy a képlet jobboldalán szereplő kifejezés eredménye valóban a [latex]T[/latex] halmazba esik. Az [latex]\frac{n}{d}[/latex] egész szám nyilván pozitív, máskülönben őt a nemnegatív [latex]d[/latex] osztóval megszorozva nem kaphatnánk eredményül a pozitív [latex]n[/latex]-t. A [latex](d;a)[/latex] számpár konstrukciója miatt tudjuk, hogy teljesül az alábbi két egyenlőtlenség:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]0\leq a\lt d[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez a jobboldali [latex]\lt[/latex]-vel jelölt szigorú rendezési reláció [yp_element slug="egesz-szamok-rendezese" type="link" /]ja alapján azzal ekvivalens, hogy [latex]a\
+eq d[/latex], és teljesül az alábbi két egyenlőtlenség:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]0\leq a \leq d[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A két egyenlőtlenség mindkét oldalát a pozitív [latex]\frac{n}{d}[/latex]-vel megszorozva a [yp_element slug="rendezett-gyuru" type="link" /]ban szereplő <strong><em>2. rendezési axióma</em></strong> alapján egyrészt ezt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]0\leq a\cdot \frac{n}{d} \leq \overbrace{n}^{=d\cdot \frac{n}{d}}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Másrészt pedig [latex]a\cdot \frac{n}{d}\
+eq n[/latex] is teljesül, hiszen [latex]a\cdot \frac{n}{d}=n[/latex] esetén mindkét oldalt [latex]d[/latex]-vel szorozva [latex]an=nd[/latex], majd ezt a pozitív [latex]n[/latex]-nel a [yp_element slug="szorzat-egyszerusitese-gyurukben" type="link" /] alapján egyszerűsítve [latex]a=d[/latex] következne, ami ellentmondás. Vagyis az [latex]f[/latex] függvény az [latex]S[/latex] halmaz minden eleméhez valóban a [latex]T[/latex] halmaz valamely elemét, azaz a [latex]0[/latex], [latex]1[/latex], ..., [latex]n-1[/latex] egész számok valamelyikét rendeli hozzá.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most a másik irányba képző [latex]g:T\to S[/latex] függvényt adjuk meg. Ez a függvény legyen olyan, hogy tetszőleges [latex]a\in T[/latex] egész számhoz az alábbi képlet jobboldalán szereplő számpárt rendeli hozzá. Itt [latex]\frac{n}{(a,n)}[/latex] illetve [latex]\frac{a}{(a,n)}[/latex] azokat az egész számokat jelöli, amelyeket a pozitív [latex](a,n)[/latex] kitüntetett közös osztóval megszorozva az eredmény rendre [latex]n[/latex] illetve [latex]a[/latex]:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]g(a)=(\frac{n}{(a,n)};\frac{a}{(a,n)})[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most azt kell megmutatni, hogy a képlet jobboldalán szereplő számpár az [latex]S[/latex] halmaz egy eleme, azaz hogy a [latex]g[/latex] függvény valóban az [latex]S[/latex] halmazba képez. A számpár első tagja nyilván osztója [latex]n[/latex]-nek, hiszen őt megszorozva [latex](a,n)[/latex]-nel épp [latex]n[/latex] az eredmény. Ráadásul szükségképpen pozitív is, máskülönben őt megszorozva a pozitív [latex](a,n)[/latex]-nel nem kaphatnánk eredményül a pozitív [latex]n[/latex]-et. A számpár második tagja egyrészt ugyanilyen okok miatt nemnegatív, másrészt az első tagnál biztosan kisebb. Tegyük ugyanis fel indirekt, hogy nem ez a helyzet, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\frac{n}{(a,n)}\leq\frac{a}{(a,n)}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mindkét oldalt a pozitív [latex](a,n)[/latex]-nel szorozva [latex]n\leq a[/latex]-t kapnánk, ami lehetetlen, hiszen [latex]a[/latex] a [latex]T[/latex] halmaz egy eleme, azaz biztosan kisebb [latex]n[/latex]-nél. Végül azt kell megmutatni, hogy a számpár két tagja egymáshoz relatív prím. A <strong><em>kitüntetett közös osztó kiemelési tulajdonsága</em></strong> miatt (lásd a [yp_element slug="kituntetett-kozos-oszto-kiemelesi-tulajdonsaga" type="link" /]t) teljesül az alábbi asszociáció:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](\frac{n}{(a,n)},\frac{a}{(a,n)})\cdot (a, n) \sim (\underbrace{\frac{n}{(a,n)}\cdot (a,n)}_{=n},\underbrace{\frac{a}{(a,n)}\cdot (a,n)}_{=a})[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](\frac{n}{(a,n)},\frac{a}{(a,n)})\cdot (a, n) \sim \underbrace{(n,a)}_{=(a,n)}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Minthogy a [yp_element slug="asszocialtsag-es-egysegek-kapcsolata" type="link" /] alapján egy egységelemes integritástartományban valamely elem asszociáltjai pontosan az egységszeresei, emiatt a baloldalon tényezőként szereplő [latex](\frac{n}{(a,n)},\frac{a}{(a,n)})[/latex] kitüntetett közös osztó szükségképpen <strong><em>egység</em></strong> kell legyen, és így a [yp_element slug="relativ-primek" type="link" /] utáni megjegyzés alapján az [latex]\frac{n}{(a,n)}[/latex] valamint az [latex]\frac{a}{(a,n)}[/latex] egész számok egymáshoz valóban relatív prímek. Ezzel tehát beláttuk, hogy a [latex]g[/latex] függvény tényleg az [latex]S[/latex] halmazba képez.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Utolsó lépésként</em></strong> azt kell megmutatni, hogy az [latex]f[/latex] és [latex]g[/latex] függvények kölcsönösen egymás megfordításai. Ez egyrészt azt jelenti, hogy tetszőleges [latex]a\in T[/latex] esetén [latex]f(g(a))=a[/latex], másrészt pedig azt, hogy tetszőleges [latex](d;a)\in S[/latex] esetén [latex]g(f((d;a)))=(d;a)[/latex] teljesül. Ellenőrizzük először az első azonosságot az [latex]f[/latex] és [latex]g[/latex] függvények fenti képleteibe való behelyettesítéssel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f(g(a))=f(\underbrace{(\frac{n}{(a,n)};\frac{a}{(a,n)})}_{=g(a)})=\frac{a}{(a,n)}\cdot \frac{n}{\frac{n}{(a,n)}}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mindkét oldalt szorozzuk meg először [latex](a,n)[/latex]-nel, majd [latex]\frac{n}{(a,n)}[/latex]-nel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{(a,n)\cdot \frac{n}{(a,n)}}_{=n}\cdot f(g(a))=a\cdot n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]n[/latex] pozitív, így biztosan nem nulla, azaz szabad vele egyszerűsíteni, amivel megkapjuk a kívánt azonosságot:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f(g(a))=a[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Végül a [latex]g(f((d;a)))=(d;a)[/latex] azonosságot is a két függvény képletébe való behelyettesítéssel igazoljuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]g(f((d;a)))=g(\underbrace{a\cdot \frac{n}{d}}_{=f((d;a))})=(\frac{n}{(a\cdot \frac{n}{d},n)};\frac{a\cdot \frac{n}{d}}{(a\cdot \frac{n}{d},n)})[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt kell megmutatnunk, hogy a jobboldalon szereplő bonyolult kifejezéssel megkapott számpár valójában megegyezik a kiindulási [latex](d;a)[/latex] számpárral, azaz hogy teljesül az alábbi két egyenlet:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}d&amp;=\frac{n}{(a\cdot \frac{n}{d},n)} \\ a&amp;=\frac{a\cdot \frac{n}{d}}{(a\cdot \frac{n}{d},n)}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az első egyenletből ekvivalens átalakításokkal a következőt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}d&amp;=\frac{n}{(a\cdot \frac{n}{d},n)} \\ d\cdot (a\cdot \frac{n}{d},n) &amp;=n \\ (a\cdot n,d\cdot n) &amp;=n \\ n\cdot (a,d)&amp;=n \end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A második egyenletből pedig a következőt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a&amp;=\frac{a\cdot \frac{n}{d}}{(a\cdot \frac{n}{d},n)} \\ a\cdot (a\cdot \frac{n}{d},n) &amp;=a\cdot \frac{n}{d} \\ (a\cdot \frac{n}{d},n) &amp;= \frac{n}{d} \\ d\cdot (a\cdot \frac{n}{d}, n)&amp;=n \\ (a\cdot n, d\cdot n) &amp;=n \\ n\cdot (a,d)&amp;=n\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel a [latex](d;a)[/latex] számpár az [latex]S[/latex] halmaz egy eleme, ezért [latex]S[/latex] definíciója miatt [latex]a[/latex] relatív prím [latex]d[/latex]-hez, vagyis [latex](a,d)=1[/latex], és így mindkét azonosság teljesül.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Minthogy az [latex]f[/latex] és [latex]g[/latex] függvényekről megmutattuk, hogy egymás megfordításai, ezért ők egy <strong><em>kölcsönösen egyértelmű megfeleltetést</em></strong> létesítenek az [latex]S[/latex] és a [latex]T[/latex] halmazok elemei között, és ez az, amit bizonyítani akartunk.</p>
+<!-- /wp:paragraph -->

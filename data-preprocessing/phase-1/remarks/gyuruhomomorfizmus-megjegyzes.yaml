@@ -1,0 +1,52 @@
+type: remark
+name: gyuruhomomorfizmus-megjegyzes
+content:
+  - type: narrative
+    content: |
+      ***A gyűrűizomorfizmus szimmetrikus:*** Azaz ha $R\simeq S$ teljesül, akkor $S\simeq R$ is teljesül. Nyilván,
+      hiszen ha az ábrán a nyilak irányát megfordítjuk, akkor az így kapott $g$ megfeleltetés is kölcsönösen
+      egyértelmű.
+  - type: formula
+    lead-in: |
+      Ez azt jelenti, hogy ha $a_S$ és $b_S$ az $S$ gyűrű két tetszőleges eleme, akkor léteznek olyan $a_R$ és
+      $b_R$ elemek az $R$-gyűrűben, amelyekre teljesülnek az alábbiak:
+    content: |
+      \begin{aligned}f(a_R)&=a_S \\ f(b_R)&=b_S \\ g(a_S)&=a_R \\ g(b_S)&=b_R\end{aligned}
+  - type: formula
+    lead-in: |
+      Ekkor azonban $f$ művelettartó tulajdonságai, valamint a fentiek miatt teljesülnek az alábbi egyenletek:
+    content: |
+      \begin{aligned}g(a_S\oplus b_S)&=g(f(a_R)\oplus f(b_R))=g(f(a_R+b_R))=a_R+b_R=\\&=g(a_S)+g(b_S) \\ g(a_S\odot
+      b_S)&=g(f(a_R)\odot f(b_R))=g(f(a_R\cdot b_R))=a_R\cdot b_R=\\&=g(a_S)\cdot g(b_S)\end{aligned}
+  - type: narrative
+    content: |
+      A $g$ leképezés tehát szintén gyűrűizomomorfizmus, csak épp $S$-ből mutat $R$-be.
+  - type: narrative
+    content: |
+      ***A gyűrűizomorfizmus tranzitív:*** Azaz tetszőleges $R$, $S$ és $T$ gyűrűk esetén ha $R\simeq S$ és
+      $S\simeq T$, akkor $R\simeq T$. Jelöljük ugyanis $f_{RS}$-sel az $R$-ből $S$-be mutató, $f_{ST}$-vel pedig az
+      $S$-ből $T$-be mutató gyűrűizomorfizmust. Ezek után definiáljuk az $R$-ből közvetlenül $T$-be mutató $g$
+      leképezést $f_{RS}$ és $f_{ST}$ egymás után alkalmazásaként. Azaz tetszőleges $R$-beli $r$ elemre legyen
+      $g(r)=f_{ST}(f_{RS}(r))$.
+  - type: figure
+    lead-in: |
+      Az alábbi ábráról azonnal látszik, hogy az $R$-ből $T$-be mutató $g$ leképezés is kölcsönösen egyértelmű:
+    src: gyuruizomorfizmus_tranzitivitas.jpg
+    alt: Gyűrűizomorfia tranzitivitása
+    caption: Gyűrűizomorfia tranzitivitása
+  - type: narrative
+    content: |
+      A művelettartó tulajdonságok könnyen adódnak az $f_{RS}$ és $f_{ST}$ gyűrűizomorfizmusok hasonló
+      tulajdonságaiból.
+  - type: formula
+    lead-in: |
+      A három gyűrű műveleti jeleit az alábbi levezetésben nem különböztettük meg, ám javasoljuk az Olvasónak, hogy
+      gondolja végig, melyik műveletet melyik gyűrűben kell elvégezni:
+    content: |
+      \begin{aligned}g(a+b)&=f_{ST}(f_{RS}(a+b))=f_{ST}(f_{RS}(a)+f_{RS}(b))=\\&=f_{ST}(f_{RS}(a))+f_{ST}(f_{RS}(b))=\\&=g(a)+g(b)
+      \\ g(a\cdot b)&=f_{ST}(f_{RS}(a\cdot b))=f_{ST}(f_{RS}(a)\cdot f_{RS}(b))=\\&=f_{ST}(f_{RS}(a))\cdot
+      f_{ST}(f_{RS}(b))=\\&=g(a)\cdot g(b)\end{aligned}
+  - type: narrative
+    content: |
+      ***Végül a gyűrűizomorfizmus reflexív:*** Azaz tetszőleges $R$ gyűrű izomorf önmagával ($R\simeq R$), ugyanis
+      az $f(a)=a$ leképezés nyilvánvalóan gyűrűizomorfizmus $R$-ből önmagába.

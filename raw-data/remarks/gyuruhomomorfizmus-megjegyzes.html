@@ -1,0 +1,39 @@
+<!-- wp:paragraph -->
+<p><strong><em>A gyűrűizomorfizmus szimmetrikus:</em></strong> Azaz ha [latex]R\simeq S[/latex] teljesül, akkor [latex]S\simeq R[/latex] is teljesül. Nyilván, hiszen ha az ábrán a nyilak irányát megfordítjuk, akkor az így kapott [latex]g[/latex] megfeleltetés is kölcsönösen egyértelmű. Ez azt jelenti, hogy ha [latex]a_S[/latex] és [latex]b_S[/latex] az [latex]S[/latex] gyűrű két tetszőleges eleme, akkor léteznek olyan [latex]a_R[/latex] és [latex]b_R[/latex] elemek az [latex]R[/latex]-gyűrűben, amelyekre teljesülnek az alábbiak:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}f(a_R)&amp;=a_S \\ f(b_R)&amp;=b_S \\ g(a_S)&amp;=a_R \\ g(b_S)&amp;=b_R\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ekkor azonban [latex]f[/latex] művelettartó tulajdonságai, valamint a fentiek miatt teljesülnek az alábbi egyenletek:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}g(a_S\oplus b_S)&amp;=g(f(a_R)\oplus f(b_R))=g(f(a_R+b_R))=a_R+b_R=\\&amp;=g(a_S)+g(b_S) \\ g(a_S\odot b_S)&amp;=g(f(a_R)\odot f(b_R))=g(f(a_R\cdot b_R))=a_R\cdot b_R=\\&amp;=g(a_S)\cdot g(b_S)\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [latex]g[/latex] leképezés tehát szintén gyűrűizomomorfizmus, csak épp [latex]S[/latex]-ből mutat [latex]R[/latex]-be.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A gyűrűizomorfizmus tranzitív:</em></strong> Azaz tetszőleges [latex]R[/latex], [latex]S[/latex] és [latex]T[/latex] gyűrűk esetén ha [latex]R\simeq S[/latex] és [latex]S\simeq T[/latex], akkor [latex]R\simeq T[/latex]. Jelöljük ugyanis [latex]f_{RS}[/latex]-sel az [latex]R[/latex]-ből [latex]S[/latex]-be mutató, [latex]f_{ST}[/latex]-vel pedig az [latex]S[/latex]-ből [latex]T[/latex]-be mutató gyűrűizomorfizmust. Ezek után definiáljuk az [latex]R[/latex]-ből közvetlenül [latex]T[/latex]-be mutató [latex]g[/latex] leképezést [latex]f_{RS}[/latex] és [latex]f_{ST}[/latex] egymás után alkalmazásaként. Azaz tetszőleges [latex]R[/latex]-beli [latex]r[/latex] elemre legyen [latex]g(r)=f_{ST}(f_{RS}(r))[/latex]. Az alábbi ábráról azonnal látszik, hogy az [latex]R[/latex]-ből [latex]T[/latex]-be mutató [latex]g[/latex] leképezés is kölcsönösen egyértelmű:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":4848,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_18_gyuruizomorfizmus_tranzitivitas.jpg" alt="Gyűrűizomorfia tranzitivitása" class="wp-image-4848"/><figcaption>Gyűrűizomorfia tranzitivitása</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>A művelettartó tulajdonságok könnyen adódnak az [latex]f_{RS}[/latex] és [latex]f_{ST}[/latex] gyűrűizomorfizmusok hasonló tulajdonságaiból. A három gyűrű műveleti jeleit az alábbi levezetésben nem különböztettük meg, ám javasoljuk az Olvasónak, hogy gondolja végig, melyik műveletet melyik gyűrűben kell elvégezni:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}g(a+b)&amp;=f_{ST}(f_{RS}(a+b))=f_{ST}(f_{RS}(a)+f_{RS}(b))=\\&amp;=f_{ST}(f_{RS}(a))+f_{ST}(f_{RS}(b))=\\&amp;=g(a)+g(b) \\ g(a\cdot b)&amp;=f_{ST}(f_{RS}(a\cdot b))=f_{ST}(f_{RS}(a)\cdot f_{RS}(b))=\\&amp;=f_{ST}(f_{RS}(a))\cdot f_{ST}(f_{RS}(b))=\\&amp;=g(a)\cdot g(b)\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Végül a gyűrűizomorfizmus reflexív:</em></strong> Azaz tetszőleges [latex]R[/latex] gyűrű izomorf önmagával ([latex]R\simeq R[/latex]), ugyanis az [latex]f(a)=a[/latex] leképezés nyilvánvalóan gyűrűizomorfizmus [latex]R[/latex]-ből önmagába.</p>
+<!-- /wp:paragraph -->

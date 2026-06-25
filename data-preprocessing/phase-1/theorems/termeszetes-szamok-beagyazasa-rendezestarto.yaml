@@ -1,0 +1,53 @@
+type: theorem
+name: termeszetes-szamok-beagyazasa-rendezestarto
+proofs:
+  - termeszetes-szamok-beagyazasa-rendezestarto-bizonyitas
+remarks: []
+references:
+  egesz-szamok-halmaza:
+    target:
+      type: definition
+      name: egesz-szamok-halmaza
+  egesz-szamok-osszeadasa:
+    target:
+      type: definition
+      name: egesz-szamok-osszeadasa
+  egesz-szamok-rendezese:
+    target:
+      type: definition
+      name: egesz-szamok-rendezese
+  peano-axiomarendszer:
+    target:
+      type: definition
+      name: peano-axiomarendszer
+  peano-osszeadas:
+    target:
+      type: definition
+      name: peano-osszeadas
+  termeszetes-szamok-rendezese:
+    target:
+      type: definition
+      name: termeszetes-szamok-rendezese
+content:
+  - type: unordered-list
+    lead-in: |
+      E tétel megfogalmazásához az alábbi jelöléseket használjuk:
+    items:
+      - '$\N_1$-gyel a Peano-axiómarendszer ([peano-axiomarendszer]) szerint
+        definiált halmazt jelöljük.'
+      - 'Az egész számokra a [egesz-szamok-halmaza] szerinti jelölést alkalmazzuk.'
+      - 'A $\Z$ halmazon értelmezett [egesz-szamok-rendezese] szerinti teljes
+        rendezést a $\lesssim$, az $\N_1$ halmazon értelmezett [termeszetes-szamok-rendezese] szerinti teljes rendezést pedig a $\leq$ szimbólummal jelöljük.'
+      - 'A $\Z$ halmazon értelmezett [egesz-szamok-osszeadasa] szerinti összeadást
+        a $\oplus$, az $\N_1$ halmazon értelmezett [peano-osszeadas] szerinti
+        Peano-összeadást pedig a $+$ szimbólummal jelöljük.'
+  - type: formula
+    lead-in: |
+      Tegyük fel, hogy adva van egy $f:\N_1 \to \Z$ függvény az alábbiak szerint:
+    content: |
+      f(n)=[(n;0)]
+  - type: narrative
+    content: |
+      Ekkor az $\N_1$ halmaz tetszőleges $a$ és $b$ elemeire igaz, hogy $a\leq b$ ***pontosan akkor*** teljesül, ha
+      $f(a)\lesssim f(b)$ is teljesül. Más szavakkal $f$ egy ***injektív homomorfizmus*** az $(\N_1, \leq)$ és a
+      $(\Z ,\lesssim )$ teljesen rendezett halmazok, mint algebrai struktúrák között.

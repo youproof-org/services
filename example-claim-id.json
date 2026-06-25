@@ -1,0 +1,9 @@
+{
+  "type": "claim",
+  "name": "successor-existence",
+  "parent": {
+    "type": "definition",
+    "namespace": "/szamrendszerek/termeszetes-szamok",
+    "name": "peano-axiomarendszer"
+  }
+}

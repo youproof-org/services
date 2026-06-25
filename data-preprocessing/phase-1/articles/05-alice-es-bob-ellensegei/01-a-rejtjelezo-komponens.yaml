@@ -1,0 +1,67 @@
+type: section
+name: 01-a-rejtjelezo-komponens
+title: A rejtjelező komponens
+
+body:
+  - type: narrative
+    content: |
+      Alice és Bob az adataik támadókkal szembeni védelme érdekében tehát kénytelenek egy úgynevezett
+      ***rejtjelező*** komponenst használni.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán látható ennek a komponensnek az elhelyezkedése az előző részekből már ismert
+      információátviteli modellben:
+    src: 01-informacioatviteli-modell-teljes.jpg
+    alt: Információátviteli modell
+    caption: Információátviteli modell
+  - type: narrative
+    content: |
+      Látható, hogy az egyetlen praktikus rejtjelezési pont a csatornakódoló és a forráskódoló között helyezkedik
+      el. Ha a forráskódoló elé építenénk be, akkor jó esetben a forrásból érkező információ jellegétől függően
+      különböző rejtjelezési eljárásokat kéne kitalálnunk. Rosszabb esetben a rejtjelezés egyáltalán nem volna
+      lehetséges, mivel sokszor magát a forráskódolót tekintjük az információátviteli rendszer belépési pontjának.
+      A csatornakódoló után szintén nem célszerű rejtjelezőt elhelyezni. Ebben az esetben ugyanis a kódszöveget (a
+      rejtjelezett bitsorozatot) semmi nem védené a csatorna zaja által okozott sérülésektől. Ezzel kapcsolatban
+      lásd az előző részt.
+  - type: narrative
+    content: |
+      A támadóval szemben mindig feltételezni kell, hogy teljes részletességgel ismeri az alkalmazott forrás- és
+      csatornakódolási eljárásokat. Például mert ő is birtokában van az ehhez használt eszközöknek vagy szoftver
+      megoldásoknak, amelyeket egyébként bárki megvásárolhat a boltban. Amennyiben nem alkalmazunk rejtjelezést, és
+      a támadó hozzá tud férni a csatornán áthaladó bitekhez, úgy a csatorna- és forráskódolási eljárások
+      ismeretében lényegében a Bob-nak küldött információhoz is hozzá tud férni.
+  - type: unordered-list
+    lead-in: |
+      A továbbiakban kriptográfiai szempontból fogjuk vizsgálni az információátviteli rendszerünket, ezért a fenti
+      modellünket egyszerűsíteni fogjuk az alábbiak szerint:
+    items:
+      - "A forráskódolót a forrás részének tekintjük."
+      - "A forrásdekódolót a nyelő részének tekintjük."
+      - "A csatornakódolót és -dekódolót a csatorna részének tekintjük."
+      - "Végül feltételezzük, hogy a támadó ugyanúgy megkapja a csatornára küldött bitsorozatot, mint Bob (mert például lehallgatja a csatonát)."
+  - type: figure
+    lead-in: |
+      Ha tehát Alice és Bob biztonságosan szeretnének kommunikálni egymással, a rejtjelezőt a következőképpen kell
+      használniuk ebben az egyszerűsített modellben:
+    src: 02-egyszerusitett-modell.jpg
+    alt: Egyszerűsített információátviteli modell
+    caption: Egyszerűsített információátviteli modell
+  - type: narrative
+    content: |
+      Alice a csatornára küldés előtt a rejtjelező segítségével végrehajt egy ***kódoló transzformációt*** a
+      Bob-nak szánt adaton, azaz a ***nyílt szövegen (plaintext)***. Ez a transzformáció előállítja a titkosított
+      adatot, azaz a ***kódszöveget (ciphertext)***. A kódszöveg ezek után a csatornán keresztül megérkezik
+      Bob-hoz, aki a visszafejtő segítségével a kódoló transzformáció inverzét (megfordítását) hajtja végre rajta.
+      Ezt ***dekódoló transzformációnak*** nevezzük, amely tehát visszaállítja Bob számára az eredeti adatot. A
+      ***támadó*** a csatorna lehallgatásával szintén hozzájut a kódszöveghez, célja pedig ebből a nyílt szöveg
+      előállítása és tartalmának megismerése.
+  - type: narrative
+    content: |
+      Az első részben közölt súlyos történelmi példákból láttuk, hogy a támadóval szemben mindig feltételezni kell,
+      hogy részletesen ismeri az Alice és Bob által használt rejtjelezési eljárást. Például mert ő is megvásárolta
+      a boltban az ezt megvalósító szoftver- vagy hardvereszközt. Éppen ezért a kódoló és dekódoló eljárásokat úgy
+      kell megtervezni, hogy egy ***kulcsnak*** nevezett adattal paraméterezhető legyen, és a rejtjelezés
+      biztonsága kizárólag az Alice és Bob által paraméterként használt kulcsnak, ne pedig magának az eljárásnak a
+      titokban tartásától függjön. Ez alatt azt értjük, hogy a kulcs ismeretében "könnyű", míg annak hiányában
+      "nehéz" feladat legyen a nyílt szöveg előállítása a kódszövegből. A cikksorozat következő részeiben lesz szó
+      arról, hogy algoritmikus szempontból mit értünk "könnyű" illetve "nehéz" feladat alatt.

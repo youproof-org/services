@@ -1,0 +1,83 @@
+type: section
+name: 04-hogyan-vedekezzunk-a-csatorna-zaja-ellen
+title: Hogyan védekezzünk a csatorna zaja ellen?
+
+body:
+  - type: narrative
+    content: |
+      Most nézzünk egy rendkívül egyszerű példát annak illusztrálására, hogy algoritmikus úton &ndash; azaz
+      ***csatornakódolást*** alkalmazva &ndash; hogyan növelhetjük meg az átvitel biztonságát. Tegyük fel, hogy egy
+      p=0.1 hibavalószínűségű BSC-vel állunk szemben, azaz a csatornánk átlagosan minden tizedik bitet az
+      ellentettjére változtat a rajta lévő zaj miatt. Tegyük fel továbbá, hogy 2 bites üzeneteket szeretnénk
+      átküldeni a csatornán. Először vizsgáljuk meg a hibás üzenetvétel valószínűségét abban az esetben, ha nem
+      alkalmazunk semmiféle csatornakódolást. Ekkor a csatorna bemenetére 4 féle közlemény kerülhet: **00**,
+      **01**, **10** vagy **11**. Ezek közül bármely üzenetet adjuk a bemenetre, azokban az esetekben történik
+      hibás detektálás a vételi oldalon, amikor vagy az első, vagy a második, vagy pedig mindkettő bit elromlik a
+      csatornán.
+  - type: formula
+    lead-in: |
+      Ennek az összetett eseménynek a valószínűségét az alábbi képlettel lehet kiszámítani a p
+      bithitbavalószínűségből:
+    content: |
+      \begin{aligned}\overbrace{p\cdot (1-p)}^{\text{első bit hibás}} + \overbrace{(1-p)\cdot p}^{\text{második bit
+      hibás}} &+ \\ + \underbrace{p\cdot p}_{\text{mindkét bit hibás}} = 2p-p^2\end{aligned}
+  - type: narrative
+    content: |
+      Ez p=0.1 bithibavalószínűség esetén 0.19, azaz átlagosan a leadott 2 bites közlemények ötöde hibás lesz a
+      vételi oldalon.
+  - type: narrative
+    content: |
+      Ez elfogadhatatlan, ezért most alkalmazzuk a következő egyszerű csatornakódolást: a közlemények minden bitjét
+      triplázzuk meg a küldés előtt. Például a **01** közlemény helyett a **000111** kódszót küldjük a csatornára.
+      Ezek után a vételi oldalra érkező biteket hármasával dolgozzuk fel, és minden három bitet többségi döntés
+      alapján dekódolunk. Azaz pontosan akkor detektálunk **1**-es szimbólumot, ha a vett három bit között legalább
+      két darab **1**-es érkezik a csatornán. Ha például a vételi oldalra a **010110** bitsorozat érkezik meg,
+      akkor a vett közlemény többségi döntés alapján &ndash; helyesen &ndash; a **01** lesz. Látható, hogy annak
+      ellenére, hogy 2 bit is elromlott a csatornán, az eredeti közleményt kaptuk vissza. Most nézzük meg, hogy mi
+      a hibás közleménydetektálás valószínűsége ebben az esetben.
+  - type: narrative
+    content: |
+      Egyszerűbb kiszámítani a helyes detektálás valószínűségét, majd ezt 1-ből levonva megkapjuk a hibázás
+      valószínűségét. Helyes a detektálás akkor, ha a két bemeneti szimbólumból kapott mindkét 3 bites blokk esetén
+      a többségi döntés helyes volt. Egy darab 3 bites blokk esetén akkor helyes a döntés, ha a csatorna legfeljebb
+      1 bitet rontott el a 3-ból.
+  - type: formula
+    lead-in: |
+      Ennek valószínűsége p = 0.1 esetén:
+    content: |
+      \begin{aligned}\overbrace{(1-p)\cdot (1-p)\cdot (1-p)}^{\text{nincs bithiba}} &+ \\ + \overbrace{p\cdot
+      (1-p)\cdot (1-p)}^{\text{első bit hibás}} &+ \\ + \overbrace{(1-p)\cdot p\cdot (1-p)}^{\text{második bit
+      hibás}} &+ \\ + \overbrace{(1-p)\cdot (1-p)\cdot p}^{\text{harmadik bit hibás}} &= 0.972\end{aligned}
+  - type: narrative
+    content: |
+      Mivel ennek mindkét blokkra teljesülnie kell, ezért a helyes detektálás valószínűsége ennek négyzete. A
+      hibázás valószínűsége tehát
+  - type: formula
+    content: |
+      1-0.972^2=0.055216
+  - type: narrative
+    content: |
+      Látható, hogy a fenti egyszerű csatornakódolást alkalmazva csaknem a negyedére sikerült lecsökkentenünk a
+      hibásan detektált közlemények átlagos számát, pedig ugyanazt a rosszminőségű csatornát használtuk. A probléma
+      az, hogy ezért hatalmas árat fizettünk: nevezetesen 3-szor annyi idő alatt sikerült átvinnünk a kívánt
+      információt, hiszen minden bitet meg kellett tripláznunk.
+  - type: narrative
+    content: |
+      Az alkalmazott csatornakódolásnak tehát a hibavalószínűségen kívül további fontos tulajdonsága az úgynevezett
+      ***kódsebesség.*** Ez azt adja meg, hogy a csatorna bemenetére adott szimbólumok átlagosan hány bit
+      információt szállítanak. Ennek mértékegysége &ndash; a csatornakapacitáshoz hasonlóan &ndash; szintén
+      ***bit/szimbólum***. A fenti első példában az átküldendő adatfolyamunkat 2 bites közleményekre szabdaltuk, és
+      ezeket mindenféle kódolás nélkül küldtük a csatorna bemenetére. Ebben az esetben a kódsebesség 1
+      bit/szimbólum volt. Cserébe viszont meglehetősen magas (0.19) volt a hibavalószínűség. Ezzel szemben a
+      második példában alkalmazott triplázásos kódolás mellett mindössze 0.055-re csökkent a hibavalószínűség,
+      cserébe viszont a kódsebesség a harmadára esett vissza.
+  - type: narrative
+    content: |
+      Úgy tűnik tehát, hogy egy csatornakód hibavalószínűsége és kódsebessége két egymásnak ellentmondó szempont,
+      amelyek között kénytelenek vagyunk kompromisszumot kötni, amikor csatornakódot tervezünk. A korábbi részekben
+      már többször emlegetett Claude Shannon azonban az információelmélet kidolgozásakor meglepő módon ezzel
+      ellentétes következtetésre jutott az 1940-es évek végén. Ez az eredmény ***csatornakódolási tétel*** néven
+      ismeretes, amelynek hatására komoly kutatások indultak meg a csatornakódok &ndash; és azon belül is az
+      úgynevezett ***hibajavító kódok*** &ndash; matematikai elméletében. A csatornakódolási tétel meglepő
+      állítását, és az említett kutatások jelenlegi állását egy rövid kitérő után ismertetjük, előbb azonban nézzük
+      meg a hibajavító kódok működési alapelveit.

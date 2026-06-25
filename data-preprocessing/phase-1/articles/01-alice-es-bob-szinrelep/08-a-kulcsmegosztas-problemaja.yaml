@@ -1,0 +1,21 @@
+type: section
+name: 08-a-kulcsmegosztas-problemaja
+title: A kulcsmegosztás problémája
+
+body:
+  - type: narrative
+    content: |
+      Figyeljük meg, hogy az összes eddig bemutatott esetben volt valami közös. Nevezetesen: ahhoz, hogy kettő vagy
+      több résztvevő titkosított kommunikációt folytathasson egymással egy nembiztonságos csatornán, meg kell
+      egyezniük egy közös kulcsban. Ezzel el is érkeztünk a kriptográfia tudományának egyik fő kérdéséhez, az
+      úgynevezett kulcsmegosztás problémájához. A **kulcsmegosztás problémája** arról szól, hogy ezt hogyan tudják
+      megtenni biztonságosan. A 20. század második feléig alapvetésnek tartották, hogy a kulcsmegosztáshoz
+      mindenképpen szükség van egy biztonságos csatornára (például személyes találkozó). A szakma őrültségnek
+      nevezte az ezzel ellentétes felvetéseket.
+  - type: narrative
+    content: |
+      Nagy szerencsénkre az 1970-es években akadt néhány őrült, akik megmutatták a világnak, hogy a kulcsmegosztás
+      problémája megoldható nembiztonságos csatornán is. Ezzel pedig megteremtették az alapját mindannak, amit
+      napjainkban információs társadalomnak nevezünk. Nélkülük ma nem létezne mobiltelefon, bankkártyás fizetés és
+      Internet. Ez a cikksorozat előttük próbál meg tisztelegni azáltal, hogy részletesen bemutatja és közérthetővé
+      teszi eredményeiket, melyek alapjaiban változtatták meg világunkat.

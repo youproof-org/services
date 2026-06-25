@@ -1,0 +1,37 @@
+type: theorem
+name: egesz-szamok-kozotti-kongruencia
+proofs:
+  - egesz-szamok-kozotti-kongruencia-bizonyitas
+remarks:
+  - egesz-szamok-kozotti-kongruencia-megjegyzes
+references:
+  ideal-szerinti-kongruencia:
+    target:
+      type: definition
+      name: ideal-szerinti-kongruencia
+content:
+  - type: narrative
+    content: |
+      Legyenek $a$, $b$ két tetszőleges, valamint $m\geq 0$ ***nemnegatív*** egész szám, és legyen $I$ az $m$ által
+      generált főideál, azaz $I=(m)$.
+  - type: ordered-list
+    lead-in: |
+      Ekkor teljesülnek az alábbiak:
+    items:
+      - 'Amennyiben $m\gt 0$, úgy a [ideal-szerinti-kongruencia] szerinti $a\equiv
+        b\pod I$ kongruencia ***akkor és csak akkor*** teljesül, ha $a$ és $b$ ugyanazt a ***nemnegatív***
+        maradékot adja $m$-mel osztva.'
+      - 'Amennyiben $m=0$, úgy az $a\equiv b\pod I$ kongruencia ***akkor és csak akkor*** teljesül, ha $a=b$.'
+      - 'Általánosságban az $a\equiv b\pod I$ kongruencia ***akkor és csak akkor*** teljesül, ha fennáll az
+        $m|a-b$ oszthatóság.'
+      - 'Speciálisan amennyiben $m=1$, úgy az $a\equiv b\pod I$ kongruencia ***mindig*** teljesül.'
+  - type: formula
+    lead-in: |
+      Az $a$ és $b$ ***egész számok közötti***, $I=(m)$ főideál szerinti ***kongruenciát illetve inkongruenciát***
+      speciálisan így is jelölhetjük:
+    content: |
+      \begin{aligned}&a\equiv b\pmod m \\ &a\ \cancel{\equiv}\ b\pmod m \end{aligned}
+  - type: narrative
+    content: |
+      Ilyenkor azt mondjuk, hogy ***az $a$ egész szám kongruens a $b$ egész számmal az $m$ modulus szerint, vagy
+      modulo $m$***.

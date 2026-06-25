@@ -1,0 +1,118 @@
+type: section
+name: 01-ismet-a-fuggvenyekrol
+title: Ismét a függvényekről
+
+body:
+  - type: narrative
+    content: |
+      A 6. részben a Turing-gépek kapcsán már felmerült a függvény fogalma. Ott adva volt egy Turing-gép, amely a
+      bemeneti szalagjára írt jelsorozatból a futása során a kimeneti szalagján előállított egy másik jelsorozatot.
+      Azt mondhatjuk tehát, hogy a Turing-gép valamilyen hozzárendelést valósít meg a szimbólumkészletéből
+      alkotható jelsorozatok között. Ezt a hozzárendelést ***a Turing-gép által kiszámított függvénynek***
+      nevezzük. Az alábbiakban egy ennél általánosabb definíciót adunk a függvény fogalmára.
+  - type: narrative
+    content: |
+      Ehhez hasonlóan általánosságban egy ***függvény*** is egy hozzárendelést valósít meg két tetszőleges &ndash;
+      nem feltétlenül különböző &ndash; halmaz között. ***Alaphalmaznak*** nevezzük azt a halmazt, amelyek közül a
+      bemenetek, míg ***képhalmaznak*** nevezzük azt a halmazt, amelyek közül a kimenetek kerülhetnek ki. Az
+      alaphalmaz és a képhalmaz lehet különböző, ezt azonban nem követeljük meg. Legyen például $A$ és $B$ két
+      &ndash; nem feltétlenül különböző &ndash; halmaz.
+  - type: formula
+    lead-in: |
+      Ekkor egy olyan $f$ hozzárendelést, amely az $A$ halmaz minden eleméhez legfeljebb egy $B$-beli elemet
+      rendel, az $A$ halmazból a $B$ halmazba képező ***függvénynek*** nevezzük és így jelöljük:
+    content: |
+      f:A \to B
+  - type: formula
+    lead-in: |
+      Ha például $x$ az $A$ halmaz egy olyan eleme, amelyhez az $f$ függvény hozzárendel egy $B$-beli elemet, akkor
+      ezt a $B$-beli elemet az $x$ ***képének*** nevezzük és így jelöljük:
+    content: |
+      f(x)
+  - type: narrative
+    content: |
+      Elképzelhető, hogy az alaphalmaz nem minden elemének van képe, azonban fontos megkötés, hogy minden elemnek
+      legfeljebb 1 képe lehet. Az alaphalmaz azon részét, amely a képpel rendelkező elemeket tartalmazza, a
+      ***függvény értelmezési tartományának*** nevezzük. Hasonlóan elképzelhető, hogy a képhalmaz nem minden eleme
+      képe az alaphalmaz valamely elemének, itt viszont már nincs megkötés arra vonatkozóan, hogy a képhalmaz egy
+      adott eleme hány alaphalmazbeli elemnek lehet képe. Ha például $x$ és $y$ az alaphalmaz két különböző eleme,
+      akkor elképzelhető, hogy a képük ugyanaz az elem a képhalmazban, azaz $f(x)=f(y)$. A képhalmaz azon részét,
+      amely azokat az elemeket tartalmazza, amelyek képei legalább egy alaphalmazbeli elemnek, a ***függvény
+      értékkészletének*** nevezzük. Az alábbi ábrán a most ismertetett fogalmakat szemléltetjük.
+  - type: figure
+    lead-in: |
+      Itt az $f$ függvény alaphalmaza $A$, képhalmaza $B$, értelmezési tartománya $C$, értékkészlete pedig $D$:
+    src: 02-fuggveny.jpg
+    alt: Függvény értelmezési tartománya és értékkészlete
+    caption: Függvény értelmezési tartománya és értékkészlete
+  - type: narrative
+    content: |
+      Jogosan merülhet fel a kérdés az olvasóban, hogy mi értelme van az értelmezési tartományon kívül az ennél
+      &ndash; adott esetben &ndash; bővebb alaphalmazról beszélni, ha a függvény úgyis csak az értelmezési
+      tartománybeli elemekhez rendel képet. Hasonlóan jogos kérdés, hogy mi értelme van az értékkészleten kívül az
+      ennél &ndash; adott esetben &ndash; bővebb képhalmazról beszélni, ha a függvény úgyis csak az
+      értékkészletbeli elemeket rendeli hozzá képként az alaphalmazbeli elemekhez. Nos, ennek pusztán praktikussági
+      okai vannak, ugyanis sok esetben nehéz pontosan meghatározni akár az értelmezési tartományt, akár az
+      értékkészletet. Ezért célszerűbb olyan alap- és képhalmazt választani, amelyeket könnyen meg tudunk
+      határozni, ugyanakkor nem túl tágak a tényleges értelmezési tartományhoz és értékkészlethez képest.
+  - type: narrative
+    content: |
+      Hogy ne csak a levegőbe beszéljünk, nézzük is rögtön egy egyszerű példát. Tekintsük például azt a függvényt,
+      amely tetszőleges $n$ egész számhoz hozzárendeli mondjuk a 2-nek az $n$-edik hatványát, azaz a $2^n$ egész
+      számot. Nevezzük ezt a függvényt $f$-nek.
+  - type: formula
+    lead-in: |
+      Ekkor az alábbi képlettel adhatjuk meg ezt a függvényt:
+    content: |
+      f(n)=2^n
+  - type: narrative
+    content: |
+      Látható, hogy ennek a függvénynek a bemenetei és a kimenetei is ugyanabból a halmazból, nevezetesen az egész
+      számok közül kerülnek ki.
+  - type: formula
+    lead-in: |
+      Az egész számok halmazát konvencionálisan $\Z$-vel szokták jelölni, ezért a korábbi jelölésekkel ezt
+      írhatjuk:
+    content: |
+      f:\Z \to \Z
+  - type: narrative
+    content: |
+      A fenti $f$ függvény különleges abból a szempontból, hogy le lehet írni csak az $n$ változótól függő explicit
+      képlettel: $f(n)=2^n$. Ez sok esetben nem, vagy csak nehezen tehető meg. Tekintsük például a híres
+      ***Fibonacci-függvényt***, amely a pozitív egész számokon van értelmezve.
+  - type: formula
+    lead-in: |
+      Ennek az értéke $n=1$ és $n=2$ esetén 1, azaz $f(1)=1$ és $f(2)=1$, minden további $n$-re pedig teljesíti az
+      alábbi úgynevezett függvényegyenletet:
+    content: |
+      f(n)=f(n-1) + f(n-2)
+  - type: formula
+    lead-in: |
+      A Fibonacci-függvény néhány további értékét ennek alapján könnyedén kiszámíthatjuk:
+    content: |
+      f(3)=f(2)+f(1)=1+1=2
+  - type: formula
+    content: |
+      f(4)=f(3)+f(2)=1+2=3
+  - type: formula
+    content: |
+      f(5)=f(4)+f(3)=2+3=5
+  - type: formula
+    content: |
+      \vdots
+  - type: narrative
+    content: |
+      Látható, hogy ez az $f(n)$-re adott kifejezés nem explicit, mivel a függvény két korábbi helyén felvett
+      értékétől függ. Ha például ez alapján az $f(100)$-at szeretnénk kiszámítani, akkor előbb ki kell számítanunk
+      a függvény 100 alatti számokra adott értékeit is.
+  - type: formula
+    lead-in: |
+      Érdekességképp megjegyezzük, hogy a Fibonacci-függvény esetén létezik csak $n$-től függő explicit képlet is:
+    content: |
+      f(n)=\frac{(1+\sqrt{5})^n - (1-\sqrt{5})^n}{\sqrt{5} \cdot 2^n}
+  - type: narrative
+    content: |
+      Az Olvasó behelyettesítésekkel könnyen leellenőrizheti ennek a képletnek a helyességét. Az persze más kérdés,
+      hogy hogyan lehet egy ilyen képletre rájönni. Ennek ismertetését a szükséges absztrakt algebrai ismeretek
+      hiányában mellőzzük. Sok olyan fontos függvény van azonban, amelyre ilyen explicit képlet nem is létezik,
+      ezért általánosságban az értelmezési tartomány és/vagy az értékkészlet meghatározása nem egyszerű feladat.

@@ -1,0 +1,28 @@
+type: definition
+name: halmazmuveletek
+remarks: []
+references:
+  halmazelmeleti-alapfogalmak:
+    target:
+      type: definition
+      name: halmazelmeleti-alapfogalmak
+content:
+  - type: narrative
+    content: |
+      Legyen $A$ és $B$ két tetszőleges halmaz. Ekkor az $A$ és $B$ halmazok ***uniójának (vagy egyesítésének)***
+      nevezett halmaznak azok az objektumok az elemei, amelyek elemei az $A$ és $B$ közül ***legalább az
+      egyiknek***. Ezt a halmazt $A\cup B$-vel jelöljök.
+  - type: narrative
+    content: |
+      Az $A$ és $B$ halmazok ***metszetének (vagy közös részének)*** nevezett halmaznak azok az objektumok az
+      elemei, amelyek elemei az $A$ halmaznak is ***és*** a $B$ halmaznak is. Ezt a halmazt $A\cap B$-vel jelöljük.
+      Ha $A$ és $B$ közös részének egyáltalán nincsenek elemei &ndash; azaz $A\cap B=\empty$ &ndash;, akkor őket
+      ***diszjunkt halmazoknak*** nevezzük.
+  - type: narrative
+    content: |
+      Végül az $A$ és $B$ halmazok ***különbségének*** nevezett halmaznak azok az objektumok az elemei, amelyek
+      elemei az $A$ halmaznak, de ***nem*** elemei a $B$ halmaznak. Ezt a halmazt $A\setminus B$-vel jelöljük.
+      Amennyiben $B\sube A$, akkor az $A\setminus B$ halmazt a $B$ halmaz ***$A$-ra vonatkozó komplementerének***
+      is nevezzük. Beszélhetünk egy valamilyen $A$ halmaznak egyszerűen csak a ***komplementeréről***, amely alatt
+      az $U\setminus A$ halmazt értjük, ahol $U$ jelöli a [halmazelmeleti-alapfogalmak] szerinti univerzális
+      halmazt. Az $A$ halmaz komplementerét $\overline{A}$-val jelöljük.

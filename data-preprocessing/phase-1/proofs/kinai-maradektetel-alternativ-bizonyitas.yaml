@@ -1,0 +1,72 @@
+type: proof
+name: kinai-maradektetel-alternativ-bizonyitas
+remarks: []
+references:
+  halmazmuveletek:
+    target:
+      type: definition
+      name: halmazmuveletek
+  kinai-maradektetel:
+    target:
+      type: theorem
+      name: kinai-maradektetel
+content:
+  - type: narrative
+    content: |
+      Az $A=[a]_p$ és $B=[b]_q$ maradékosztályok metszete pontosan azokat az egész számokat fogja tartalmazni,
+      amelyek mindkét maradékosztályban benne vannak.
+  - type: formula
+    lead-in: |
+      Ezek az alábbi kongruenciarendszert kielégítő egész számok lesznek:
+    content: |
+      \begin{aligned}x&\equiv a\pmod p \\ x&\equiv b\pmod q\end{aligned}
+  - type: narrative
+    content: |
+      A ***kínai maradéktétel*** ([kinai-maradektetel]) alapján ezek az egész számok pontosan egy modulo $pq$
+      maradékosztályt alkotnak, azaz valóban $A\cap B\in \Z/pq\Z$.
+  - type: narrative
+    content: |
+      Most igazoljuk, hogy a tételben megadott képlet valóban az $A\cap B$ maradékosztály egy reprezentánselemét
+      adja. Ehhez azt kell megmutatni, hogy az $aqx_2 + bpx_1$ egész szám benne van ebben a halmazban.
+  - type: formula
+    lead-in: |
+      A halmazműveletekről szóló [halmazmuveletek] alapján ez pontosan akkor teljesül, ha teljesül az alábbi két
+      feltétel:
+    content: |
+      \begin{aligned}aqx_2 + bpx_1 &\in A \\ aqx_2 + bpx_1 &\in B\end{aligned}
+  - type: formula
+    lead-in: |
+      ***Nézzük először az első feltételt!*** Mivel az $A$ halmaz egy modulo $p$ maradékosztály, amelynek az $a$
+      egész szám egy reprezentánsa, ezért ez a feltétel pontosan akkor teljesül, ha fennáll az alábbi kongruencia:
+    content: |
+      aqx_2 + bpx_1 \equiv a\pmod p
+  - type: narrative
+    content: |
+      A kongruencia baloldalán szereplő összeg második, $bpx_1$ tagja ugye $p$-nek többszöröse, így ő $0$-val
+      kongruens modulo $p$. Az összeg első, $aqx_2$ tagjában viszont a $qx_2$ tényező a tétel szövege alapján
+      $1$-gyel, és így ez a tag $a$-val kongruens modulo $p$.
+  - type: formula
+    lead-in: |
+      Összefoglalva tehát valóban teljesül a fenti kongruencia:
+    content: |
+      a\cdot \underbrace{qx_2}_{\equiv 1} + \underbrace{bpx_1}_{\equiv 0} \equiv a\pmod p
+  - type: formula
+    lead-in: |
+      ***Most nézzük a második feltételt!*** Mivel a $B$ halmaz egy modulo $q$ maradékosztály, amelynek a $b$ egész
+      szám egy reprezentánsa, ezért ez a feltétel pontosan akkor teljesül, ha fennáll az alábbi kongruencia:
+    content: |
+      aqx_2 + bpx_1 \equiv b\pmod q
+  - type: narrative
+    content: |
+      A kongruencia baloldalán szereplő összeg első, $aqx_2$ tagja ugye $q$-nek többszöröse, így ő $0$-val
+      kongruens modulo $q$. Az összeg második, $bpx_1$ tagjában viszont a $px_1$ tényező a tétel szövege alapján
+      $1$-gyel, és így ez a tag $b$-vel kongruens modulo $q$.
+  - type: formula
+    lead-in: |
+      Összefoglalva tehát valóban teljesül a fenti kongruencia:
+    content: |
+      \underbrace{aqx_2}_{\equiv 0} + b\cdot \underbrace{px_1}_{\equiv 1} \equiv b\pmod q
+  - type: narrative
+    content: |
+      A $aqx_2 + bpx_1$ összeg tehát benne van az $A\cap B$ metszetben, amely &ndash; mint láttuk &ndash; egy
+      modulo $pq$ maradékosztály, és így valóban annak egy reprezentánselemét adja.

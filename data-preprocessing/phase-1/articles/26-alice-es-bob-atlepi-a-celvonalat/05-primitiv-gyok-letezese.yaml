@@ -1,0 +1,74 @@
+type: section
+name: 05-primitiv-gyok-letezese
+title: Primitív gyök létezése
+
+references:
+  csoportelem-rendje:
+    target:
+      type: definition
+      name: csoportelem-rendje
+  csoportelem-rendjere-vonatkozo-osszefuggesek:
+    target:
+      type: theorem
+      name: csoportelem-rendjere-vonatkozo-osszefuggesek
+
+body:
+  - type: narrative
+    content: |
+      Most a polinomokról eddig tanultakat arra fogjuk felhasználni, hogy igazoljuk az első szakaszban már említett
+      nevezetes állítást, miszerint modulo $p$ mindig ***létezik primitív gyök***, amennyiben $p$ egy tetszőleges
+      pozitív prímszám. Ehhez először két segédtételt fogunk bizonyítani.
+  - type: narrative
+    content: |
+      ***Az első segédtétel*** egy csoportelméleti állítás lesz. A [csoportelem-rendje]ban bevezettük a
+      ***csoportelem rendjének*** a fogalmát, amellyel kapcsolatban a
+      [csoportelem-rendjere-vonatkozo-osszefuggesek]ben mondtunk ki néhány hasznos összefüggést. Most ezek
+      felhasználásával megmutatjuk, hogy hogyan lehet kiszámolni egy csoportelem tetszőleges ***hatványának***
+      rendjét, ha egyébként magának a csoportelemnek a rendje már ismert.
+  - type: embed
+    target:
+      type: theorem
+      name: csoportelem-hatvanyanak-rendje
+  - type: embed
+    target:
+      type: proof
+      name: csoportelem-hatvanyanak-rendje-bizonyitas
+  - type: narrative
+    content: |
+      ***A második segédtétel*** egy nevezetes állítás az ***Euler-féle $\varphi$-függvénnyel*** kapcsolatban.
+  - type: embed
+    target:
+      type: theorem
+      name: euler-fuggveny-osszege
+  - type: narrative
+    content: |
+      A most következő bizonyítás gondolatmenete az lesz, hogy mutatunk két halmazt, amelyek közül az egyik egy $n$
+      elemű halmaz lesz, a másiknak pedig annyi eleme lesz, mint a tételben szereplő összeg eredménye. Ezután e két
+      halmaz elemei között egy kölcsönösen egyértelmű megfeleltetést fogunk mutatni, ami tulajdonképpen azt
+      jelenti, hogy ugyanannyi elemük van. E megfeleltetés első ránézésre kissé mesterkéltnek fog tűnni, a mögötte
+      lévő intuícióról azonban a bizonyítás utáni megjegyzésben szót ejtünk.
+  - type: embed
+    target:
+      type: proof
+      name: euler-fuggveny-osszege-bizonyitas
+  - type: embed
+    target:
+      type: remark
+      name: euler-fuggveny-osszege-bizonyitas-megjegyzes
+  - type: narrative
+    content: |
+      Ezek után már minden eszköz rendelkezésünkre áll ahhoz, hogy a primitív gyökök létezésére adjuk egy elégséges
+      feltételt, amely kulcsfontosságú lesz ennek a résznek a második felében.
+  - type: embed
+    target:
+      type: theorem
+      name: primitiv-gyok-modulo-p
+  - type: narrative
+    content: |
+      Vigyázzunk azonban, ez ugyanis csupán elégséges, de ***nem szükséges*** feltétel primitív gyök létezésére. Az
+      első szakaszban például láttuk, hogy a $(\Z/10\Z)^{\times}$ multiplikatív csoport is ciklikus, noha a $10$
+      minden, csak nem prím.
+  - type: embed
+    target:
+      type: proof
+      name: primitiv-gyok-modulo-p-bizonyitas

@@ -1,0 +1,210 @@
+type: proof
+name: euler-fuggveny-osszege-bizonyitas
+remarks:
+  - euler-fuggveny-osszege-bizonyitas-megjegyzes
+references:
+  asszocialtsag-es-egysegek-kapcsolata:
+    target:
+      type: theorem
+      name: asszocialtsag-es-egysegek-kapcsolata
+  egesz-szamok-rendezese:
+    target:
+      type: definition
+      name: egesz-szamok-rendezese
+  euler-fuggveny-alternativ-definicio:
+    target:
+      type: theorem
+      name: euler-fuggveny-alternativ-definicio
+  kituntetett-kozos-oszto-kiemelesi-tulajdonsaga:
+    target:
+      type: theorem
+      name: kituntetett-kozos-oszto-kiemelesi-tulajdonsaga
+  relativ-primek:
+    target:
+      type: definition
+      name: relativ-primek
+  rendezett-gyuru:
+    target:
+      type: definition
+      name: rendezett-gyuru
+  szorzat-egyszerusitese-gyurukben:
+    target:
+      type: theorem
+      name: szorzat-egyszerusitese-gyurukben
+content:
+  - type: narrative
+    content: |
+      Minden egyes, a tételben szereplő $d_i$ osztóból állítsuk elő az összes olyan számpárt, amelynek első tagja
+      $d_i$, második tagja pedig egy olyan $d_i$-nél kisebb nemnegatív egész szám, amely relatív prím $d_i$-hez. A
+      [euler-fuggveny-alternativ-definicio] alapján pontosan $\varphi(d_i)$ darab olyan számpárt tudunk
+      előállítani, amelynek első tagja $d_i$, hiszen $\varphi(d_i)$ épp azoknak az egészeknek a számát adja meg,
+      amelyek a fenti szabály értelmében a számpár második tagjaként szerepelhetnek. Jelöljük $S$-sel az
+      előállított számpárok halmazát, továbbá $a_{ij}$-vel a $j$-edik olyan számpárnak a második tagját, amelynek
+      első tagja $d_i$.
+  - type: formula
+    lead-in: |
+      Ekkor $S$ elemeit az alábbi lista sorolja fel:
+    content: |
+      \begin{aligned}S=\{&(d_1;a_{11}), (d_1;a_{12}), (d_1;a_{13}), \ldots, (d_1;a_{1\varphi(d_1)}), \\
+      &(d_2;a_{21}), (d_2;a_{22}), (d_2;a_{23}), \ldots, (d_2;a_{2\varphi(d_2)}), \\ &(d_3;a_{31}), (d_3;a_{32}),
+      (d_3;a_{33}), \ldots, (d_3;a_{3\varphi(d_3)}), \\ &\vdots \\ &(d_k;a_{k1}), (d_k;a_{k2}), (d_k;a_{k3}),
+      \ldots, (d_k;a_{k\varphi(d_k)}) \}\end{aligned}
+  - type: formula
+    lead-in: |
+      Látható, hogy az $i$-edik sorban $\varphi(d_i)$ darab elem van, az $S$ halmaz ***elemeinek a száma*** tehát
+      épp a tételben szereplő összeg lesz, azaz:
+    content: |
+      \varphi(d_1)+\varphi(d_2)+\ldots+\varphi(d_k)
+  - type: formula
+    lead-in: |
+      Most képezzünk egy másik, $T$-vel jelölt halmazt, amelybe pakoljuk bele az egész számokat $0$-tól $n-1$-ig,
+      azaz:
+    content: |
+      T=\{0, 1, 2, \ldots, n-1\}
+  - type: narrative
+    content: |
+      Azt szeretnénk tehát igazolni, hogy az $S$ és $T$ halmazok elemei között egy kölcsönösen egyértelmű
+      megfeleltetés létesíthető, hiszen ebből már következik, hogy mindketten ugyanannyi &ndash; azaz $n$ darab
+      &ndash; elemet tartalmaznak, ami épp a tétel állítása. Ehhez mutatunk egy $f:S\to T$ és egy $g:T\to S$
+      függvényt, amelyekről belátjuk, hogy egymás megfordításai.
+  - type: narrative
+    content: |
+      Az $f$ függvény legyen olyan, amely a fentiekben leírtaknak megfelelően konstruált tetszőleges $(d;a)\in S$
+      számpárhoz az alábbi képlet jobboldalán szereplő egész számot rendeli hozzá.
+  - type: formula
+    lead-in: |
+      Itt a már megszokott jelölést alkalmazva $\frac{n}{d}$ azt az egész számot jelöli, amelyet a $d$ osztóval
+      megszorozva az eredmény $n$:
+    content: |
+      f((d;a))=a\cdot \frac{n}{d}
+  - type: narrative
+    content: |
+      Most megmutatjuk, hogy a képlet jobboldalán szereplő kifejezés eredménye valóban a $T$ halmazba esik. Az
+      $\frac{n}{d}$ egész szám nyilván pozitív, máskülönben őt a nemnegatív $d$ osztóval megszorozva nem kaphatnánk
+      eredményül a pozitív $n$-t.
+  - type: formula
+    lead-in: |
+      A $(d;a)$ számpár konstrukciója miatt tudjuk, hogy teljesül az alábbi két egyenlőtlenség:
+    content: |
+      0\leq a\lt d
+  - type: formula
+    lead-in: |
+      Ez a jobboldali $\lt$-vel jelölt szigorú rendezési reláció [egesz-szamok-rendezese]ja alapján azzal
+      ekvivalens, hogy $a\eq d$, és teljesül az alábbi két egyenlőtlenség:
+    content: |
+      0\leq a \leq d
+  - type: formula
+    lead-in: |
+      A két egyenlőtlenség mindkét oldalát a pozitív $\frac{n}{d}$-vel megszorozva a [rendezett-gyuru]ban szereplő
+      ***2. rendezési axióma*** alapján egyrészt ezt kapjuk:
+    content: |
+      0\leq a\cdot \frac{n}{d} \leq \overbrace{n}^{=d\cdot \frac{n}{d}}
+  - type: narrative
+    content: |
+      Másrészt pedig $a\cdot \frac{n}{d}\eq n$ is teljesül, hiszen $a\cdot \frac{n}{d}=n$ esetén mindkét oldalt
+      $d$-vel szorozva $an=nd$, majd ezt a pozitív $n$-nel a [szorzat-egyszerusitese-gyurukben] alapján
+      egyszerűsítve $a=d$ következne, ami ellentmondás. Vagyis az $f$ függvény az $S$ halmaz minden eleméhez
+      valóban a $T$ halmaz valamely elemét, azaz a $0$, $1$, ..., $n-1$ egész számok valamelyikét rendeli hozzá.
+  - type: narrative
+    content: |
+      Most a másik irányba képző $g:T\to S$ függvényt adjuk meg. Ez a függvény legyen olyan, hogy tetszőleges $a\in
+      T$ egész számhoz az alábbi képlet jobboldalán szereplő számpárt rendeli hozzá.
+  - type: formula
+    lead-in: |
+      Itt $\frac{n}{(a,n)}$ illetve $\frac{a}{(a,n)}$ azokat az egész számokat jelöli, amelyeket a pozitív $(a,n)$
+      kitüntetett közös osztóval megszorozva az eredmény rendre $n$ illetve $a$:
+    content: |
+      g(a)=(\frac{n}{(a,n)};\frac{a}{(a,n)})
+  - type: narrative
+    content: |
+      Most azt kell megmutatni, hogy a képlet jobboldalán szereplő számpár az $S$ halmaz egy eleme, azaz hogy a $g$
+      függvény valóban az $S$ halmazba képez. A számpár első tagja nyilván osztója $n$-nek, hiszen őt megszorozva
+      $(a,n)$-nel épp $n$ az eredmény. Ráadásul szükségképpen pozitív is, máskülönben őt megszorozva a pozitív
+      $(a,n)$-nel nem kaphatnánk eredményül a pozitív $n$-et. A számpár második tagja egyrészt ugyanilyen okok
+      miatt nemnegatív, másrészt az első tagnál biztosan kisebb.
+  - type: formula
+    lead-in: |
+      Tegyük ugyanis fel indirekt, hogy nem ez a helyzet, azaz:
+    content: |
+      \frac{n}{(a,n)}\leq\frac{a}{(a,n)}
+  - type: narrative
+    content: |
+      Mindkét oldalt a pozitív $(a,n)$-nel szorozva $n\leq a$-t kapnánk, ami lehetetlen, hiszen $a$ a $T$ halmaz
+      egy eleme, azaz biztosan kisebb $n$-nél. Végül azt kell megmutatni, hogy a számpár két tagja egymáshoz
+      relatív prím.
+  - type: formula
+    lead-in: |
+      A ***kitüntetett közös osztó kiemelési tulajdonsága*** miatt (lásd a
+      [kituntetett-kozos-oszto-kiemelesi-tulajdonsaga]t) teljesül az alábbi asszociáció:
+    content: |
+      (\frac{n}{(a,n)},\frac{a}{(a,n)})\cdot (a, n) \sim (\underbrace{\frac{n}{(a,n)}\cdot
+      (a,n)}_{=n},\underbrace{\frac{a}{(a,n)}\cdot (a,n)}_{=a})
+  - type: formula
+    lead-in: |
+      Azaz:
+    content: |
+      (\frac{n}{(a,n)},\frac{a}{(a,n)})\cdot (a, n) \sim \underbrace{(n,a)}_{=(a,n)}
+  - type: narrative
+    content: |
+      Minthogy a [asszocialtsag-es-egysegek-kapcsolata] alapján egy egységelemes integritástartományban valamely
+      elem asszociáltjai pontosan az egységszeresei, emiatt a baloldalon tényezőként szereplő
+      $(\frac{n}{(a,n)},\frac{a}{(a,n)})$ kitüntetett közös osztó szükségképpen ***egység*** kell legyen, és így a
+      [relativ-primek] utáni megjegyzés alapján az $\frac{n}{(a,n)}$ valamint az $\frac{a}{(a,n)}$ egész számok
+      egymáshoz valóban relatív prímek. Ezzel tehát beláttuk, hogy a $g$ függvény tényleg az $S$ halmazba képez.
+  - type: narrative
+    content: |
+      ***Utolsó lépésként*** azt kell megmutatni, hogy az $f$ és $g$ függvények kölcsönösen egymás megfordításai.
+      Ez egyrészt azt jelenti, hogy tetszőleges $a\in T$ esetén $f(g(a))=a$, másrészt pedig azt, hogy tetszőleges
+      $(d;a)\in S$ esetén $g(f((d;a)))=(d;a)$ teljesül.
+  - type: formula
+    lead-in: |
+      Ellenőrizzük először az első azonosságot az $f$ és $g$ függvények fenti képleteibe való behelyettesítéssel:
+    content: |
+      f(g(a))=f(\underbrace{(\frac{n}{(a,n)};\frac{a}{(a,n)})}_{=g(a)})=\frac{a}{(a,n)}\cdot
+      \frac{n}{\frac{n}{(a,n)}}
+  - type: formula
+    lead-in: |
+      Mindkét oldalt szorozzuk meg először $(a,n)$-nel, majd $\frac{n}{(a,n)}$-nel:
+    content: |
+      \underbrace{(a,n)\cdot \frac{n}{(a,n)}}_{=n}\cdot f(g(a))=a\cdot n
+  - type: formula
+    lead-in: |
+      Mivel $n$ pozitív, így biztosan nem nulla, azaz szabad vele egyszerűsíteni, amivel megkapjuk a kívánt
+      azonosságot:
+    content: |
+      f(g(a))=a
+  - type: formula
+    lead-in: |
+      Végül a $g(f((d;a)))=(d;a)$ azonosságot is a két függvény képletébe való behelyettesítéssel igazoljuk:
+    content: |
+      g(f((d;a)))=g(\underbrace{a\cdot \frac{n}{d}}_{=f((d;a))})=(\frac{n}{(a\cdot \frac{n}{d},n)};\frac{a\cdot
+      \frac{n}{d}}{(a\cdot \frac{n}{d},n)})
+  - type: formula
+    lead-in: |
+      Azt kell megmutatnunk, hogy a jobboldalon szereplő bonyolult kifejezéssel megkapott számpár valójában
+      megegyezik a kiindulási $(d;a)$ számpárral, azaz hogy teljesül az alábbi két egyenlet:
+    content: |
+      \begin{aligned}d&=\frac{n}{(a\cdot \frac{n}{d},n)} \\ a&=\frac{a\cdot \frac{n}{d}}{(a\cdot
+      \frac{n}{d},n)}\end{aligned}
+  - type: formula
+    lead-in: |
+      Az első egyenletből ekvivalens átalakításokkal a következőt kapjuk:
+    content: |
+      \begin{aligned}d&=\frac{n}{(a\cdot \frac{n}{d},n)} \\ d\cdot (a\cdot \frac{n}{d},n) &=n \\ (a\cdot n,d\cdot
+      n) &=n \\ n\cdot (a,d)&=n \end{aligned}
+  - type: formula
+    lead-in: |
+      A második egyenletből pedig a következőt:
+    content: |
+      \begin{aligned}a&=\frac{a\cdot \frac{n}{d}}{(a\cdot \frac{n}{d},n)} \\ a\cdot (a\cdot \frac{n}{d},n) &=a\cdot
+      \frac{n}{d} \\ (a\cdot \frac{n}{d},n) &= \frac{n}{d} \\ d\cdot (a\cdot \frac{n}{d}, n)&=n \\ (a\cdot n,
+      d\cdot n) &=n \\ n\cdot (a,d)&=n\end{aligned}
+  - type: narrative
+    content: |
+      Mivel a $(d;a)$ számpár az $S$ halmaz egy eleme, ezért $S$ definíciója miatt $a$ relatív prím $d$-hez, vagyis
+      $(a,d)=1$, és így mindkét azonosság teljesül.
+  - type: narrative
+    content: |
+      Minthogy az $f$ és $g$ függvényekről megmutattuk, hogy egymás megfordításai, ezért ők egy ***kölcsönösen
+      egyértelmű megfeleltetést*** létesítenek az $S$ és a $T$ halmazok elemei között, és ez az, amit bizonyítani
+      akartunk.

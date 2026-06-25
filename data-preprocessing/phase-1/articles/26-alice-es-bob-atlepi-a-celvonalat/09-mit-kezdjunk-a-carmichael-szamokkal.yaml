@@ -1,0 +1,36 @@
+type: section
+name: 09-mit-kezdjunk-a-carmichael-szamokkal
+title: Mit kezdjünk a Carmichael-számokkal?
+
+references:
+  carmichael-szamok-tulajdonsagai:
+    target:
+      type: theorem
+      name: carmichael-szamok-tulajdonsagai
+  lagrange-tetele:
+    target:
+      type: theorem
+      name: lagrange-tetele
+
+body:
+  - type: narrative
+    content: |
+      Az előző szakaszban igazolt tétel tehát a Carmichael-számok esetén közvetlenül nem ad lehetőséget a
+      ***Lagrange-tétel*** alkalmazására, és ezáltal a nem Miller-Rabin-tanúkat tartalmazó valódi részcsoport
+      további zsugorítására. Ezért most kénytelenek leszünk az előző részben megismert ***csoporthomomorfizmusok
+      struktúratartó tulajdonságaira***, valamint a Lagrange-tételben definiált ***részcsoportindex*** (lásd a
+      [lagrange-tetele]t) fogalmára támaszkodni.
+  - type: narrative
+    content: |
+      Az alábbi tételben azt mutatjuk meg, hogy ez a bizonyos valódi részcsoport annál kisebb (vagy más szavakkal
+      annál nagyobb a részcsoportindexe), minél több prímtényezője van a vizsgált $n$ összetett számnak. Ez azért
+      lesz hasznos a Carmichael-számok esetén, mivel a ***Korselt-kritérium*** [carmichael-szamok-tulajdonsagai]e
+      alapján egy ilyen számnak legalább 3 prímtényezője van.
+  - type: embed
+    target:
+      type: theorem
+      name: nem-miller-rabin-tanuk-reszcsoportindexe
+  - type: embed
+    target:
+      type: proof
+      name: nem-miller-rabin-tanuk-reszcsoportindexe-bizonyitas

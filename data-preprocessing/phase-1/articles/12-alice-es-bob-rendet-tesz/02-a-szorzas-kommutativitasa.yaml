@@ -1,0 +1,68 @@
+type: section
+name: 02-a-szorzas-kommutativitasa
+title: A szorzás kommutativitása
+
+references:
+  peano-szorzas:
+    target:
+      type: definition
+      name: peano-szorzas
+
+body:
+  - type: narrative
+    content: |
+      Általános iskolában megtanultuk, hogy az összeadáshoz hasonlóan a szorzás esetén is felcserélhető a két
+      tényező sorrendje. Első jogos kérdés tehát, hogy vajon a [peano-szorzas]ban ismertetett "szorzásnak" nevezett
+      művelet teljesíti-e ezt a kritériumot?
+  - type: narrative
+    content: |
+      Ennek megmutatásához két segédtételre lesz szükségünk. Az ***első segédtétel*** azt mondja ki, hogy a
+      definíció 1. pontjában szereplő esetben a tényezők felcserélhetők &ndash; azaz, hogy az $a \cdot 0$-hoz
+      hasonlóan a $0 \cdot a$ eredménye is 0 lesz:
+  - type: embed
+    target:
+      type: theorem
+      name: peano-szorzas-kommutativitas-0-lemma
+  - type: narrative
+    content: |
+      Ez ugyan magától értetődőnek tűnik, de ismételten felhívjuk a figyelmet arra, hogy mindenben kételkednünk
+      kell, amit nem vezettünk vissza az axiómákra, az azokból alkotott definíciókra vagy korábban már bizonyított
+      állításokra. Márpedig a $\cdot$-tal jelölt Peano-szorzás jelenleg nem több pusztán egy általunk kreált
+      definíciónál. A bizonyításhoz az előző részben már jól bejáratott ***teljes indukciót*** alkalmazzuk,
+      amelynek használatát a 4. Peano-axióma teszi lehetővé:
+  - type: embed
+    target:
+      type: proof
+      name: peano-szorzas-kommutativitas-0-lemma-bizonyitas
+  - type: narrative
+    content: |
+      A kommutativitáshoz szükséges ***második segédtétel*** lényegében azt mondja ki, hogy mi történik a
+      Peano-szorzás definíciójának ([peano-szorzas]) 2. pontjában szereplő képlettel, ha felcseréljük a tényezőket:
+  - type: embed
+    target:
+      type: theorem
+      name: peano-szorzas-kommutativitas-lemma
+  - type: embed
+    target:
+      type: proof
+      name: peano-szorzas-kommutativitas-lemma-bizonyitas
+  - type: narrative
+    content: |
+      Ezután bizonyítjuk a szorzás kommutativitását:
+  - type: embed
+    target:
+      type: theorem
+      name: peano-szorzas-kommutativitas
+  - type: embed
+    target:
+      type: proof
+      name: peano-szorzas-kommutativitas-bizonyitas
+  - type: narrative
+    content: |
+      Látható tehát, hogy a [peano-szorzas]ban értelmezett "szorzásnak" nevezett művelet valóban kommutatív, ahogy
+      azt az általános iskolában már megszokhattuk tőle.
+  - type: narrative
+    content: |
+      Most nézzünk meg egy rendkívül fontos kapcsolatot az előző részben definiált "összeadás" és a mostani részben
+      definiált "szorzás" nevű műveletek között. Ez a tulajdonság szintén jól ismert az általános iskolából, most
+      viszont vizsgáljuk meg, hogy tulajdonképpen miért is van ez így.

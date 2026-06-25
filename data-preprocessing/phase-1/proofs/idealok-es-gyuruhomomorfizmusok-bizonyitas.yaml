@@ -1,0 +1,19 @@
+type: proof
+name: idealok-es-gyuruhomomorfizmusok-bizonyitas
+remarks: []
+references:
+  gyuruhomomorfizmus-magjanak-szukseges-feltetele:
+    target:
+      type: theorem
+      name: gyuruhomomorfizmus-magjanak-szukseges-feltetele
+  maradekosztalygyuruk:
+    target:
+      type: theorem
+      name: maradekosztalygyuruk
+content:
+  - type: narrative
+    content: |
+      Ha $I$ magja egy gyűrűhomomorfizmusnak, akkor a [gyuruhomomorfizmus-magjanak-szukseges-feltetele] alapján
+      ideál $R$-ben, azaz $I\triangleleft R$. ***Megfordítva:*** Ha $I$ ideál $R$-ben, akkor a
+      [maradekosztalygyuruk] alapján az $R$-ből kiinduló és az $R/I$ faktorgyűrűbe mutató természetes
+      gyűrűhomomorfizmusnak éppen $I$ a magja.

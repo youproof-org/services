@@ -1,0 +1,43 @@
+<!-- wp:paragraph -->
+<p>Tekintsük például az alábbi egész számokból álló végtelen sorozatot, amely tehát a definíció alapján egy [latex]\Z[/latex] feletti harmadfokú polinom, hiszen a [latex]4[/latex]-es indexű tagjától kezdve csupa [latex]0[/latex] számokból áll (ne feledjük, a számozás a nulladik indextől indul):</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](1,3,0,1,0,0,0,\ldots)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez a polinom tulajdonképpen az [latex]1+3x+0x^2+x^3[/latex] kifejezést reprezentálja, de ugyanúgy reprezentálja az [latex]x^3+3x+1[/latex] és az [latex]1+x+2x^3+2x-x^3[/latex] kifejezéseket is, hiszen ezek csupán a tagok sorrendjében és az [latex]x[/latex] hatványainak csoportosításában különböznek egymástól, lényegüket tekintve viszont mind ugyanannak a polinomnak a különböző megnyilvánulásai.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Amikor polinomokkal számolunk, sok esetben kézenfekvőbb a definícióhoz képest ebben a kevésbé szigorú formájukban gondolnunk rájuk. Azt, hogy intuitív módon a „szokásos szabályok” szerint lehet ezekkel a kifejezésekkel „számolni” az a kikötés biztosítja, hogy a polinom együtthatói valamilyen <strong><em>kommutatív gyűrűből</em></strong> kell származzanak, és hogy a definícióban lévő képletekben szereplő összeadások illetve szorzások alatt e <strong><em>gyűrű műveleteit</em></strong> kell érteni. Ettől függetlenül a kellő precizitás érdekében mi továbbra is a definícióban szereplő, végtelen sorozatokkal történő reprezentációt fogjuk használni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezen túlmenően a végtelen sorozatokkal történő reprezentációnak praktikussági okai is vannak. Így ugyanis a polinomok összegének illetve szorzatának definiálásakor nem kell foglalkozni azzal, hogy a két összeadandó vagy összeszorzandó polinomnak mi a foka. A képletek ugyanis ettől függetlenül működnek, hiszen <strong><em>minden</em></strong> polinomot egységesen, egy végtelen, gyűrűelemekből álló sorozatként képzelhetünk el ilyenkor.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Nagyon fontos kikötés azonban, hogy <strong><em>nem minden végtelen sorozatot tekintünk polinomnak</em></strong>, hanem csak azokat, amelyek esetén véges sok tag után a sorozat minden további tagja a gyűrű nulleleme. Ez biztosítja azt, hogy nem léteznek végtelen fokú polinomok. Ezenkívül a fok tekintetében különbséget kell tennünk a <strong><em>nulladfokú polinomok</em></strong> és a <strong><em>nullapolinom</em></strong> között. A definíció szerint előbbieknek létezik foka (ami nevezetesen nulla), míg a utóbbinak nem. Ennek a megkülönböztetésnek fontos szerepe van bizonyos további tételekben is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Végül tartsuk szem előtt, hogy a konstans polinomok jellegüket tekintve teljesen más matematikai objektumok, mint magának az [latex]R[/latex] gyűrűnek az elemei, noha kifejezésként felírva őket ez nem látszik elsőre. Például a [latex]3[/latex] jelölhet egy [latex]\Z[x][/latex]-beli konstans polinomot leíró kifejezést is, továbbá egy [latex]\Z[/latex]-beli egész számot is. Előbbi esetben tulajdonképpen az alábbi végtelen sorozatról van szó, ami nagyon nem ugyanaz, mint maga a [latex]3[/latex] egész szám:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](3,0,0,0,\ldots)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez azonban mégsem okoz zavart, ugyanis tetszőleges [latex]R[/latex] kommutatív gyűrű <strong><em>beágyazható</em></strong> (lásd a [yp_element slug="gyuruhomomorfizmus" type="link" /]t) az [latex]R[x][/latex] halmazba. Az [latex]f:R\to R[x][/latex] beágyazófüggvényt tetszőleges [latex]r\in R[/latex] gyűrűelem esetén az alábbi hozzárendelés valósítja meg:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]r\xmapsto{f} (r,0_R,0_R,0_R,\ldots)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez nyilvánvalóan egyrészt egy kölcsönösen egyértelmű megfeleltetés [latex]R[/latex] elemei és a konstans polinomok között, másrészt tartja az [latex]R[/latex] gyűrű összeadását és szorzását. Ilyen értelemben tehát [latex]R[/latex] elemei <strong><em>azonosíthatók</em></strong> a nekik megfelelő konstans polinomokkal. Vagyis az [latex]R[/latex] gyűrűt gyakorlatilag tekinthetjük az [latex]R[x][/latex] halmaz részének is, habár szigorúan matematikai értelemben nem erről van szó. Ez nagyon hasonló ahhoz, mint ahogy a természetes számok [latex]\N[/latex] halmazát a rajta értelmezett két művelettel és a rendezési relációval együtt az egész számok [latex]\Z[/latex] halmazába ágyaztuk be (lásd az erről szóló [yp_element slug="termeszetes-szamok-beagyazasa-osszegtarto" type="link" show_type_name="false" /], [yp_element slug="termeszetes-szamok-beagyazasa-szorzattarto" type="link" show_type_name="false" /] valamint [yp_element slug="termeszetes-szamok-beagyazasa-rendezestarto" type="link" /]eket).</p>
+<!-- /wp:paragraph -->

@@ -1,0 +1,55 @@
+<!-- wp:paragraph -->
+<p>Az [latex]f[/latex] függvényről a [yp_element slug="kinai-maradektetel-alternativ" type="link" /]ben igazoltuk, hogy minden [latex]\Z/p\Z \times \Z/q\Z[/latex]-beli rendezett párhoz <strong><em>pontosan egy</em></strong> [latex]\Z/pq\Z[/latex]-beli maradékosztályt rendel hozzá. Méghozzá azt a maradékosztályt, amely a rendezett pár két komponensének a metszete.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="kinai-maradektetel-megforditasa" type="link" /]ben pedig azt mutattuk meg, hogy ilymódon minden [latex]\Z/pq\Z[/latex]-beli maradékosztály <strong><em>pontosan egy</em></strong> [latex]\Z/p\Z \times \Z/q\Z[/latex]-beli rendezett párhoz lehet hozzárendelve, amelyet ráadásul épp a [latex]g[/latex] függvény segítségével kaphatunk meg.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez egyrészt azt jelenti, hogy a [latex]\Z/p\Z \times \Z/q\Z[/latex] halmaz elemei kölcsönösen egyértelmű megfeleltetésben állnak a [latex]\Z/pq\Z[/latex] halmaz elemeivel. Másrészt pedig azt jelenti, hogy e kölcsönösen egyértelmű megfeleltetést az [latex]f[/latex] függvény segítségével az egyik, míg a [latex]g[/latex] függvény segítségével a másik irányban kaphatjuk meg. Más szavakkal az [latex]f[/latex] és [latex]g[/latex] függvények épp egymás megfordításai. Ezt az alábbi ábra mutatja:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":6149,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_22_f_es_g_egymashoz_valo_viszonya.jpg" alt="Az f és g függvények egymáshoz való viszonya" class="wp-image-6149"/><figcaption>Az [latex]f[/latex] és [latex]g[/latex] függvények egymáshoz való viszonya</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Így már csak azt kell igazolni, hogy [latex]f[/latex] és [latex]g[/latex] <strong><em>művelettartó leképezések</em></strong> (lásd a [yp_element slug="gyuruhomomorfizmus" type="link" /]t). Annak érdekében, hogy világos legyen, melyik műveletet melyik gyűrűben kell elvégezni, a [latex]\Z/pq\Z[/latex] maradékosztálygyűrű összeadását és szorzását jelöljük a [latex]\boxplus[/latex] és [latex]\boxdot[/latex], míg a [latex]\Z/p\Z \times \Z/q\Z[/latex] gyűrű összeadását és szorzását a [latex]\oplus[/latex] és [latex]\odot[/latex] szimbólumokkal. Ezeket a jelöléseket bevezetve azt kell igazolni, hogy tetszőleges [latex]a[/latex], [latex]b[/latex], [latex]c[/latex] és [latex]d[/latex] egész számokra teljesülnek az alábbiak:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}f(([a]_p;[b]_q) \oplus ([c]_p;[d]_q)) &amp;= f(([a]_p;[b]_q))\boxplus f(([c]_p;[d]_q)) \\ f(([a]_p;[b]_q) \odot ([c]_p;[d]_q)) &amp;= f(([a]_p;[b]_q))\boxdot f(([c]_p;[d]_q)) \\ g([a]_{pq} \boxplus [b]_{pq}) &amp;= g([a]_{pq})\oplus g([b]_{pq}) \\ g([a]_{pq} \boxdot [b]_{pq}) &amp;= g([a]_{pq})\odot g([b]_{pq})\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Kezdjük a [latex]g[/latex] függvénnyel. Az erre vonatkozó két állítás baloldalait a [yp_element slug="egesz-szamok-maradekosztalygyurui" type="link" /] és a [latex]g[/latex] függvény képletének felhasználásával az alábbi módon lehet kifejteni (itt a [latex]+[/latex] és [latex]\cdot[/latex] szimbólumok a szokásos egészek közötti összeadást és szorzást jelölik):</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}g([a]_{pq} \boxplus [b]_{pq}) &amp;= g([a+b]_{pq})=([a+b]_p;[a+b]_q) \\ g([a]_{pq} \boxdot [b]_{pq}) &amp;= g([a\cdot b]_{pq})=([a\cdot b]_p;[a\cdot b]_q)\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Míg a jobboldalakból ezt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}g([a]_{pq})\oplus g([b]_{pq}) &amp;= ([a]_p;[a]_q)\oplus ([b]_p;[b]_q) \\ g([a]_{pq})\odot g([b]_{pq}) &amp;= ([a]_p;[a]_q)\odot ([b]_p;[b]_q)\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="gyuruk-direkt-szorzata" type="link" /] alapján a kapott rendezett párokat komponensenként kell összeadni illetve összeszorozni. Az első komponenshez szükséges összeadást és szorzást a modulo [latex]p[/latex], míg a második komponenshez szükséges összeadást és szorzást a modulo [latex]q[/latex] maradékosztálygyűrűben kell elvégezni. Ismételten a [yp_element slug="egesz-szamok-maradekosztalygyurui" type="link" /] felhasználásával így az alábbit kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}g([a]_{pq})\oplus g([b]_{pq}) &amp;= ([a+b]_p;[a+b]_q) \\ g([a]_{pq})\odot g([b]_{pq}) &amp;= ([a\cdot b]_p;[a\cdot b]_q)\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [latex]g[/latex]-re vonatkozó két állítás bal- és jobboldalai tehát megegyeznek, azaz a [latex]g[/latex] függvény tartja mindkét műveletet, így ő egy <strong><em>gyűrűizomorfizmus</em></strong> [latex]\Z/pq\Z[/latex] és [latex]\Z/p\Z \times \Z/q\Z[/latex] között.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mivel az [latex]f[/latex] függvény a [latex]g[/latex] függvény megfordítása, ezért a [yp_element slug="gyuruhomomorfizmus" type="link" /] utáni megjegyzés alapján ő is egy <strong><em>gyűrűizomorfizmus</em></strong> a két gyűrű között, csak épp a másik irányba képez.</p>
+<!-- /wp:paragraph -->

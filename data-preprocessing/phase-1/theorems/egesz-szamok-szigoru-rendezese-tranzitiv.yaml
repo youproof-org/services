@@ -1,0 +1,10 @@
+type: theorem
+name: egesz-szamok-szigoru-rendezese-tranzitiv
+proofs:
+  - egesz-szamok-szigoru-rendezese-tranzitiv-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Tetszőleges $a$, $b$ és $c$ ***egész számok*** esetén ha $a\leq b$ és $b\leq c$ teljesül, valamint az ennél
+      szigorúbb $a\lt b$ vagy $b\lt c$ közül ***legalább az egyik*** teljesül, akkor $a\lt c$ is teljesül.

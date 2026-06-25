@@ -1,0 +1,60 @@
+type: section
+name: 05-a-szuletesnapi-tamadas
+title: A születésnapi támadás
+
+body:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy a csaló Mallory és Bob adásvételi szerződést kötnek Bob autójára. Mallory kézségesen
+      vállalja, hogy megírja a szerződés szövegét. Az adásvételi szerződésen kívül azonban Mallory egy másik, hamis
+      szerződést is ír, miszerint kölcsönadott Bob-nak 10 millió forintot, amelynek visszafizetését Bob egy adott
+      határidőig vállalja. Mallory kezében tehát van két szerződés, egy valódi és egy hamis. Azt szeretné elérni,
+      hogy a hamis szerződés is el legyen látva Bob digitális aláírásával. A valódi szerződésre azért van szüksége,
+      hogy megszerezze Bob digitális aláírását, mivel azt ő maga &ndash; Bob titkos kulcsának hiányában &ndash; nem
+      tudja előállítani. Az így megszerzett digitális aláírást ezután a hamis szerződés hitelesítéséhez akarja
+      felhasználni.
+  - type: narrative
+    content: |
+      Van azonban egy probléma, amit Mallory-nek még meg kell oldania a csaláshoz. Mivel a digitális aláírás nem az
+      íráshordozóhoz, hanem a tartalomhoz kötött, ezért a valódi és a hamis szerződés digitális aláírása nagy
+      valószínűséggel nem fog megegyezni. Ez csak egyetlen módon lehetséges: ha történetesen ugyanaz a két
+      szerződést leíró bitsorozat hash értéke.
+  - type: narrative
+    content: |
+      Mallory ezért elkezdi módosítgatni mind a valódi, mind pedig a hamis szerződést. Csak olyan módosításokat
+      hajt végre rajta, amelyek a két szöveg lényegi részét nem érintik. Például extra szóközöket helyez el, kihagy
+      egy-egy vesszőt, máshogy tördeli a szöveget, átfogalmaz néhány mondatot, stb. Egy adásvételi vagy egy
+      kölcsönszerződés már elegendően hosszú ahhoz, hogy az ilyen láthatatlan változtatások összes lehetséges
+      kombinációinak száma meglehetősen nagy legyen. Például, hogy összemérhető legyen a lehetséges hash értékek
+      számának nagyságrendjével. A valódi szerződés módosított változatait jelölje $x_1, x_2, x_3, \dots$, a hamis
+      szerződés módosított változatait pedig $y_1, y_2, y_3, \dots$.
+  - type: narrative
+    content: |
+      Ugyan apró módosításokról van szó, azonban a hash függvény lavinahatása miatt már ezek is gyakorlatilag
+      véletlenszerű hash értékeket fognak eredményezni. Mallory mindkét sorozatból veszi az első változatot &ndash;
+      azaz $x_1$-et és $y_1$-et &ndash;, mindkettőnek kiszámítja a hash értékét &ndash; azaz $h(x_1)$-et és
+      $h(y_1)$-et &ndash;, és összehasonlítja őket. Amennyiben ezek különböznek, akkor a két sorozat következő
+      elemére hajtja végre ugyanezt, és így tovább mindaddig, amíg nem talál egy olyan $x_i, y_i$ valódi-hamis
+      szerződéspárt, amelyek hash értéke megegyezik.
+  - type: narrative
+    content: |
+      Amennyiben valamilyen elavult hash függvényről van szó, akkor a születésnap paradoxon miatt Mallory belátható
+      időn belül ütközést fog találni. Legyen tehát $x_i$ az a valódi, $y_i$ pedig az a hamis szerződésváltozat,
+      amelyeknél ez az ütközés bekövetkezik, azaz amelyekre $h(x_i)=h(y_i)$. Ezután Mallory odaadja a mit sem sejtő
+      Bob-nak a valódi $x_i$ szerződést aláírásra, az így megszerzett $\text{sig}(x_i)$ digitális aláírást pedig a
+      hash értékek egyezősége miatt nyugodtan felhasználhatja a hamis $y_i$ szerződés digitális aláírásaként is.
+  - type: narrative
+    content: |
+      Mallory és Bob a megkötött valódi szerződésnek megfelelően lezavarják az adásvételt, elbúcsúznak egymástól,
+      és mindenki megy szépen haza. Telik-múlik az idő, és elérkezik a hamis kölcsönszerződés szerinti fizetési
+      határidő, amely szerződés létezéséről Bob nem is tud. Mallory felszólítja Bob-ot, hogy adja vissza neki a nem
+      létező kölcsönt. Bob tiltakozik, miszerint ő soha nem kötött kölcsönszerződést Mallory-vel. Mallory ezért a
+      bírósághoz fordul, és bemutatja a hamis szerződést, amelyen ott virít Bob digitális aláírása. A bíróság pedig
+      az aláírás ellenőrzése után Mallory-nek fog igazat adni, és kötelezni fogja Bob-ot a nem létező kölcsön
+      visszafizetésére. Mallory pedig jót röhög a markába, mivel így tulajdonképpen ingyen megszerezte Bob autóját,
+      és még némi pénzt is sikerült tőle kicsalnia.
+  - type: narrative
+    content: |
+      Az ilyen jellegű csalásokat a megfelelő minőségű és elegendően hosszú lenyomatokat előállító hash függvények
+      alkalmazásával lehet kivédeni. Ilyenkor ugyanis egy ütközés megtalálása Mallory számára algoritmikusan
+      kivitelezhetetlen lesz.

@@ -1,0 +1,97 @@
+type: section
+name: 06-a-tanu-tetel-bizonyitasa-vazlat
+title: A tanú-tétel bizonyítása (vázlat)
+
+body:
+  - type: narrative
+    content: |
+      Itt csak a ***tanú-tétel*** bizonyításának alapötletét ismertetjük, a részletek ugyanis főként technikai
+      jellegűek, és csak elterelnék a figyelmet a gondolatmenetről.
+  - type: narrative
+    content: |
+      Tekintve, hogy ez egy ***"akkor és csak akkor"*** típusú állítás, ezért a bizonyítás két részből fog állni.
+      ***Egyrész*** bizonyítani kell, hogy ***ha*** a $K$ nyelv $P$-ben van, ***akkor*** az $L$ nyelv $NP$-beli.
+      ***Másrészt*** azt is bizonyítani kell, hogy az $L$ nyelv $NP$-belisége semmilyen más esetben nem fordulhat
+      elő, ***csak akkor***, ha a $K$ nyelv $P$-beli. Másként fogalmazva bizonyítani kell a ***másik irányú
+      következtetést is***, azaz azt, hogy ***ha*** az $L$ nyelv $NP$-ben van, ***akkor*** a $K$ nyelv $P$-beli.
+  - type: narrative
+    content: |
+      Kezdjük ez utóbbival, azaz tegyük fel az $L$ nyelvről, hogy $NP$-ben van. Ez azt jelenti, hogy polinomiális
+      időkomplexitású **nemdeterminisztikus** Turing-géppel eldönthető, ezért bármely, a nyelvbe tartozó $x$
+      jelsorozathoz (de csak azokhoz) létezik legalább 1 olyan számítási útvonal, amelyet követve a számolás
+      végeredménye az **"igen"** válasz.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán egy ilyen útvonal látható:
+    src: 09-nyelv-felismerese-nemdeterminisztikusan.jpg
+    alt: Nyelv felismerése nemdeterminisztikus Turing-géppel
+    caption: Nyelv felismerése nemdeterminisztikus Turing-géppel
+  - type: narrative
+    content: |
+      Építsünk most egy olyan **determinisztikus** Turing-gépet, amely az $x$ bemeneten kívül megkapja még ennek az
+      útvonalnak a leírását is valamilyen formában. Jelöljük ezt a gépet $M$-mel. Az $M$ gép legyen olyan, hogy
+      szimulálja a nemdeterminisztikus testvérének működését, de minden olyan szituációban, ahol a
+      nemdeterminisztikus gép számítási útvonala elágazik, $M$ a kapott útvonal-leírás szerinti úton haladjon
+      tovább a számítással. A technikai részleteket az Olvasóra bízom, de viszonylag könnyen belátható, hogy
+      egyrészt az útvonal leírható "nem túl hosszan", azaz úgy, hogy hossza az $x$ bemenet hosszának
+      ***polinomiális függvénye*** legyen. Másrészt szintén viszonylag könnyen belátható, hogy az $M$
+      **determinisztikus** Turing-gép időkomplexitása szintén polinomiális, tekintve hogy az eredeti
+      **nemdeterminisztikus** gép időkomplexitása is polinomiális volt.
+  - type: narrative
+    content: |
+      Ez azt jelenti, hogy az útvonal leírása megfelel a tanúval szemben támasztott követelményeknek. Ezen kívül az
+      is igaz, hogy csak azokra az $x$ jelsorozatokhoz van ilyen tanú, amelyek $L$-ben vannak. Az eredeti
+      **nemdeterminisztikus** Turing-gép ugyanis az egyéb jelsorozatokat nem fogadja el, így az ilyen
+      jelsorozatokra nincs **"igen"** végződésű számítási útvonal, következésképp az azt leíró tanú sem létezhet.
+  - type: narrative
+    content: |
+      A tanú tétel másik felének bizonyításához azt kell belátni, hogy ***ha*** az $L$ nyelvhez tartozó
+      jelsorozatokhoz (de csak azokhoz) létezik tanú a fenti értelemben, ***akkor*** az $L$ nyelv polinomiális
+      időkomplexitású **nemdeterminisztikus** Turing-géppel eldönthető. Vegyünk tehát egy tetszőleges $x$ bemeneti
+      jelsorozatot, és építsünk egy olyan **nemdeterminisztikus** gépet, amely $x$-et elfogadja, ha az $L$ nyelvhez
+      tartozik, és elutasítja, ha nem.
+  - type: narrative
+    content: |
+      Azt mondtuk, hogy az $x$ jelsorozat akkor és csak akkor tartozik $L$-hez, ha létezik hozzá egy ezt bizonyító
+      tanú. Ha tehát a készülő gépünk végig tudná vizsgálni az összes olyan jelsorozatot, amely tanúként szóba
+      jöhet, akkor el tudná dönteni az $x$ jelsorozat $L$-be tartozását is. Szerencsére az ilyen lehetséges
+      tanúkból véges sok van, mivel azt mondtuk, hogy a tanú "nem túl hosszú" $x$-hez képest. Ha például az $x$
+      jelsorozat hossza $n$ szimbólum, akkor a keresett tanú &ndash; ha egyáltalán létezik &ndash; maximum $f(n)$
+      darab szimbólummal leírható, ahol $f$ egy valamilyen rögzített polinomiális függvény.
+  - type: narrative
+    content: |
+      A készülő **nemdeterminisztikus** gépünknek tehát nincs más dolga, mint különböző számítási útvonalakon
+      előállítani az ***összes lehetséges*** tanújelöltet, és mindegyik számítási útvonalon leellenőrizni, hogy az
+      adott tanújelölt bizonyítja-e az $x$ jelsorozat $L$-be tartozását. Ehhez az ellenőrzéshez pedig használhatja
+      a feltételünk szerint létező polinomiális időkomplexitású **determinisztikus** Turing-gépet. Tegyük fel
+      például, hogy a bináris ábécét használjuk, és az $x$ jelsorozat hosszúsága alapján maximum 3 szimbólum hosszú
+      tanújelöltek jöhetnek szóba.
+  - type: figure
+    lead-in: |
+      Ekkor a **nemdeterminisztikus** gépünk számítási útvonalai a következőképpen alakulnak:
+    src: 10-tanujeloltek-tesztelese-nemdeterminisztikusan.jpg
+    alt: Tanújelöltek tesztelése nemdeterminisztikus Turing-géppel
+    caption: Tanújelöltek tesztelése nemdeterminisztikus Turing-géppel
+  - type: narrative
+    content: |
+      A működés első felében annyiszor ágazik el minden útvonal, ahány szimbólumból a lehetséges tanújelöltek
+      állnak. Erről ugye tudjuk, hogy az $x$ bemenet hosszának polinomiális függvénye. A működés második felében
+      &ndash; miután minden lehetséges tanújelölt előállt valamelyik útvonalon &ndash; le kell futtatni mindegyik
+      számítási ágon az adott $t$ tanút ellenőrző polinomiális időkomplexitású **determinisztikus** Turing-gépet,
+      azaz innentől kezdve már nem fognak tovább ágazni az útvonalak. Ennek a szakasznak a hossza ugye az $(x,t)$
+      összetett jelsorozat hosszának polinomiális függvénye.
+  - type: narrative
+    content: |
+      Az így megkonstruált **nemdeterminisztikus** Turing-gépnek az összlépésszáma tehát végsősoron szintén az
+      eredeti $x$ bemenet hosszának polinomiális függvénye az összes lehetséges számítási útvonalon. Az is igaz
+      továbbá, hogy ez a gép akkor és csak akkor fogja elfogadni az $x$ bemenetet, ha van **"igen"** végződésű
+      számítási útvonala. Ez viszont akkor és csak akkor lehetséges, ha az $x$ jelsorozathoz létezik az ő $L$-be
+      tartozását bizonyító tanú.
+  - type: narrative
+    content: |
+      ***Ezzel bizonyítottuk*** az $NP$ nyelvosztály kétféle definíciójának ekvivalenciáját. A továbbiakban tehát
+      nyugodtan használhatjuk a tanú létezését megkövetelő definíciót, amikor egy adott nyelv $NP$-be tartozását
+      akarjuk igazolni.
+  - type: narrative
+    content: |
+      Most pedig rátérhetünk a számítástudomány egyik legfontosabb ***megoldatlan problémájára***.

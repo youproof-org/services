@@ -1,0 +1,94 @@
+type: proof
+name: reszcsoport-feltetele-bizonyitas
+remarks: []
+references:
+  csoport:
+    target:
+      type: definition
+      name: csoport
+  inverz-elem-egyertelmu:
+    target:
+      type: theorem
+      name: inverz-elem-egyertelmu
+  ketvaltozos-muvelet:
+    target:
+      type: definition
+      name: ketvaltozos-muvelet
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy $H$ részcsoport $G$-ben. Ekkor a műveleti zártság &ndash; azaz az ***1. tulajdonság***
+      &ndash; nyilvánvalóan teljesül, máskülönben $H$ nem lenne csoport a $G$ műveletére nézve, és így részcsoport
+      sem lehetne $G$-ben.
+  - type: narrative
+    content: |
+      Mivel $H$-nak létezik egységeleme &ndash; hiszen maga is csoport &ndash;, ezért a ***2. tulajdonsághoz*** azt
+      kell megmutatni, hogy ez az egységelem megegyezik $G$ egységelemével. Jelöljük $H$ egységelemét $e_H$-val,
+      $G$ egységelemét pedig $e_G$-vel, és tegyük fel indirekt, hogy ez a kettő nem ugyanaz. Ha a kettő nem
+      ugyanaz, akkor az sem mindegy, hogy melyik csoportban beszélünk inverzképzésről. Jelölje most ${e_H}^{-1}$ az
+      $e_H$ elem $G$-beli inverzét.
+  - type: formula
+    lead-in: |
+      Őket összeszorozva tehát a $G$ csoport egységelemét kell kapjuk, azaz:
+    content: |
+      e_H\cdot {e_H}^{-1}=e_G
+  - type: formula
+    lead-in: |
+      Mivel $e_H$ a $H$ csoport egységeleme, ezért nyilvánvalóan igaz az alábbi:
+    content: |
+      e_H\cdot e_H=e_H
+  - type: formula
+    lead-in: |
+      Végül, mivel $e_G$ a $G$ csoport egységeleme, ezért az alábbi is teljesül:
+    content: |
+      e_H\cdot e_G=e_H
+  - type: formula
+    lead-in: |
+      Mivel $H$ csoport, így a csoportművelet asszociativitása miatt:
+    content: |
+      (e_H\cdot e_H)\cdot {e_H}^{-1}=e_H\cdot (e_H\cdot {e_H}^{-1})
+  - type: formula
+    lead-in: |
+      A baloldalt kifejtve ezt kapjuk:
+    content: |
+      \underbrace{(e_H\cdot e_H)}_{=e_H}\cdot {e_H}^{-1}=e_H\cdot {e_H}^{-1}=e_G
+  - type: formula
+    lead-in: |
+      A jobboldalt kifejtve pedig ezt:
+    content: |
+      e_H\cdot \underbrace{(e_H\cdot {e_H}^{-1})}_{=e_G}=e_H\cdot e_G=e_H
+  - type: narrative
+    content: |
+      Ez a kettő eredmény viszont a fentebb már említett asszociativitás miatt indirekt feltételezésünkkel
+      ellentétben mégis meg kell egyezzen, így valóban $e_G=e_H$.
+  - type: narrative
+    content: |
+      Végül az inverzképzésre való zártság &ndash; azaz a ***3. tulajdonság*** &ndash; igazolásához képezzük a $H$
+      csoport valamely $a$ elemének inverzét mindkét csoportban, és megmutatjuk, hogy ezek valójában megegyeznek. A
+      $H$-beli inverzet jelöljük $x_H$-val, míg a $G$-beli inverzet $x_G$-vel.
+  - type: formula
+    lead-in: |
+      Az $a$ elemet a $G$-beli inverzével összeszorozva a $G$ csoport egységelemét kell kapnunk, azaz:
+    content: |
+      a\cdot x_G=e_G
+  - type: narrative
+    content: |
+      Ugyanakkor az $a$ elemet a $H$-beli inverzével összeszorozva a $H$ csoport egységelemét kell kapnunk, amiről
+      azonban már láttuk, hogy megegyezik a $G$ csoport egységelemével.
+  - type: formula
+    lead-in: |
+      Azaz:
+    content: |
+      a\cdot x_H=e_H=e_G
+  - type: narrative
+    content: |
+      Minthogy a $G$-beli inverzképzés a [inverz-elem-egyertelmu] alapján egyértelmű, ezért szükségképpen
+      $x_H=x_G$. Azaz a $H$ csoport valóban zárt a $G$-beli inverzképzésre.
+  - type: narrative
+    content: |
+      ***Visszafelé:*** Most azt kell megmutatnunk, hogy amennyiben teljesül mind a 3 tulajdonság, úgy $H$
+      részcsoport $G$-ben. A $G$ csoport művelete az 1. tulajdonság alapján nem vezet ki $H$-ból, így az algebrai
+      értelemben művelet ezen a szűkebb halmazon is (lásd a [ketvaltozos-muvelet]t). Továbbá a 2. és 3. tulajdonság
+      miatt létezik egységelem, és minden elemnek létezik inverze is $H$-ban. Így a [csoport] szerinti
+      csoportaxiómákból már csak a művelet asszociativitását kell igazolnunk. Ezeket azonban $H$ megörökli a
+      $G$-től a művelettel együtt. Így tehát $H$ valóban részcsoport $G$-ben.

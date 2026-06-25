@@ -1,0 +1,51 @@
+type: proof
+name: egesz-szamok-gyuruje-bizonyitas
+remarks: []
+references:
+  egesz-szamok-osszeadasa:
+    target:
+      type: definition
+      name: egesz-szamok-osszeadasa
+  egesz-szamok-osszeadasa-kommutativ-es-asszociativ:
+    target:
+      type: theorem
+      name: egesz-szamok-osszeadasa-kommutativ-es-asszociativ
+  egesz-szamok-szorzasa-kommutativ-asszociativ-es-disztributiv:
+    target:
+      type: theorem
+      name: egesz-szamok-szorzasa-kommutativ-asszociativ-es-disztributiv
+  gyuru-test:
+    target:
+      type: definition
+      name: gyuru-test
+content:
+  - type: narrative
+    content: |
+      Nincs más dolgunk, mint sorra leellenőrizni a [gyuru-test]ban felsorolt gyűrűaxiómák teljesülését.
+  - type: ordered-list
+    items:
+      - 'A $\oplus$ művelet a [egesz-szamok-osszeadasa-kommutativ-es-asszociativ]
+        alapján ***kommutatív és asszociatív***.'
+      - 'A $\oplus$ művelet [egesz-szamok-osszeadasa]ja alapján a $[(0;0)]$ egész
+        szám ***neutrális elem*** erre a műveletre nézve, hiszen tetszőleges $a$ és $b$ természetes számok esetén
+        $[(a;b)] \oplus [(0;0)] = [(a+0;b+0)] = [(a;b)]$.'
+      - 'Ugyanezen definíció alapján tetszőleges $a$ és $b$ természetes számok esetén $[(a;b)] \oplus [(b;a)] =
+        [(a+b;b+a)] = [(0;0)]$. Más szavakkal a $\oplus$ művelet ***invertálható*** a teljes $\Z$ halmazon.'
+      - 'A $\odot$ művelet a [egesz-szamok-szorzasa-kommutativ-asszociativ-es-disztributiv] értelmében ***asszociatív***.'
+      - 'Ugyanezen tétel miatt teljesülnek a ***disztributivitási szabályok*** is.'
+  - type: narrative
+    content: |
+      A $(\Z , \oplus , \odot )$ algebrai struktúra tehát ***valóban gyűrű***.
+  - type: narrative
+    content: |
+      Ezen felül a [egesz-szamok-szorzasa-kommutativ-asszociativ-es-disztributiv] az asszociativitás mellett
+      kimondja a $\odot$ művelet ***kommutativitását*** is.
+  - type: narrative
+    content: |
+      Igaz továbbá, hogy a $\odot$ műveletre nézve az $[(1;0)]$ egész szám ***neutrális elem***, ugyanis
+      tetszőleges $a$ és $b$ természetes számok esetén $[(a;b)] \odot [(1;0)] = [(a\cdot 1 + b\cdot 0;a\cdot 0 +
+      b\cdot 1)] = [(a;b)]$.
+  - type: narrative
+    content: |
+      A $(\Z , \oplus , \odot )$ algebrai struktúra tehát valóban egy ***kommutatív, egységelemes gyűrű***, ahogyan
+      a tétel állítja.

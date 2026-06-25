@@ -1,0 +1,92 @@
+type: section
+name: 01-formalis-nyelvek
+title: Formális nyelvek
+
+body:
+  - type: narrative
+    content: |
+      A 3. részben már képet kaptunk arról, hogy számokat &ndash; vagy bármi mást &ndash; hogyan lehet leírni
+      valamilyen véges szimbólumkészlettel. Például a számítógépek tipikusan 2 elemű szimbólumkészlettel dolgoznak,
+      amelynek elemeit bináris szimbólumoknak nevezzük. Mi kényelmi szempontból egy ennél bővebb készlettel fogunk
+      dolgozni, ám ennek nincs elméleti jelentősége. Rögzítsük tehát először magát a szimbólumkészletet, illetve
+      azokat a szabályokat, amivel az egyes problémapéldányokat és magát az eredményt le fogjuk írni. Csak ezután
+      van ugyanis értelme algoritmusról beszélni.
+  - type: narrative
+    content: |
+      Kezdjük a szimbólumkészlettel. A mi szimbólumkészletünk összesen 11 elemből fog állni. Legyenek ezek a **0,
+      1, 2, 3, 4, 5, 6, 7, 8, 9** és a **#** szimbólumok. Ez a 11 elemű halmaz lesz tehát az az ***ábécé***, amivel
+      az algoritmusunk dolgozni fog. Az ábécét, mint halmazt tipikusan görög nagybetűkkel szoktuk jelölni. Nevezzük
+      például a fenti ábécét $\Sigma$-nak (ejtsd: "szigma").
+  - type: formula
+    lead-in: |
+      Eszerint tehát:
+    content: |
+      \Sigma = \lbrace 0; 1; 2; 3; 4; 5; 6; 7; 8; 9; \# \brace
+  - type: narrative
+    content: |
+      Az algoritmus a $\Sigma$ elemeiből alkotott jelsorozatok formájában fogja megkapni a bemenetét, és a
+      kimenetét is ilyen formában kell előállítania. Azt a halmazt, amely a $\Sigma$ elemeiből alkotott összes
+      lehetséges véges hosszúságú jelsorozatból áll, $\Sigma^*$-gal (ejtsd: "szigma csillag") jelöljük.
+  - type: narrative
+    content: |
+      A $\Sigma^*$ halmaznak az ábécével ellentétben végtelen sok eleme van. Eleme például a **12##986#1##**, a
+      **###7#**, vagy a **32#11#67** jelsorozat, de ide soroljuk azt a jelsorozatot is, amely 0 darab szimbólumból
+      áll. Ennek a speciális jelsorozatnak a neve ***üres jelsorozat***. Az üres jelsorozatot általában
+      $\varepsilon$-nal (ejtsd: "epszilon") jelöljük. Az $\varepsilon$ tehát nem az ábécé egy szimbóluma, hanem azt
+      a jelsorozatot jelöli, amely egyetlen szimbólumot sem tartalmaz.
+  - type: narrative
+    content: |
+      Most, hogy megállapodtunk a szimbólumkészletben, rögzítsük a bemeneti és a kimeneti jelsorozatokkal szemben
+      támasztott követelményeket. Nyilvánvalóan nem minden $\Sigma^*$-beli jelsorozat lesz bemenetként értelmezhető
+      az algoritmus számára. Például állapodjunk meg abban, hogy az összeadandó számokat 10-es számrendszerben kell
+      felsorolnunk, és ezeket a számokat a # szimbólummal kell elválasztanunk egymástól. Eszerint a megállapodás
+      szerint például a **32#11#67** jelsorozat egy értelmes bemenet, és azt fogja jelenteni az algoritmus számára,
+      hogy adja össze a 32, a 11 és a 67 számokat. Állapodjunk meg továbbá abban, hogy értelmes bemenet esetén az
+      algoritmus az összeadás eredményét szintén 10-es számrendszerben írja a kimenetre. A **32#11#67** bemeneti
+      jelsorozat esetén tehát az algoritmus kimenetén az **110** jelsorozatnak kell megjelennie a megállapodás
+      szerint.
+  - type: narrative
+    content: |
+      Mivel "hülyebiztos" algoritmust szeretnénk készíteni, ezért kezdenünk kell valamit azokkal az esetekkel is,
+      amikor a felhasználó a bemenetre nem egy értelmes jelsorozatot adott meg. Például a **###7#** nem egy
+      értelmes jelsorozat a fenti értelmezés szerint. Állapodjunk meg abban, hogy az ilyen esetekben az algoritmus
+      kimenete legyen az üres jelsorozat, azaz $\varepsilon$. Az értelmes jelsorozatok tehát a $\Sigma^*$-on belül
+      egy részhalmazt alkotnak. Az algoritmusnak nyilván először el kell tudnia dönteni, hogy a bemeneti jelsorozat
+      egyáltalán eleme-e ennek a részhalmaznak, és csak ezután kezdheti elvégezni az összeadást. Ehhez kapcsolódik
+      a most következő definíció.
+  - type: narrative
+    content: |
+      A $\Sigma^*$ halmaznak egy valamilyen $L$ részhalmazát a $\Sigma$ ábécé feletti ***formális nyelvnek***, az
+      $L$ részhalmaz elemeit pedig e formális nyelv ***mondatainak*** nevezzük. Ez a definíció egy kissé
+      szokatlannak tűnik annak fényében, amit eddig a "nyelvről", mint fogalomról gondoltunk. De igazából semmi
+      meglepő nincs benne. Vegyük például a szokásos magyar ábécét az írásjelekkel és az egyéb, írásban használt
+      szimbólummal együtt. A magyar nyelv tulajdonképpen nem más, mint az ezekből alkotott összes lehetséges
+      jelsorozatok halmazának egy jól meghatározott részhalmaza. Az persze más kérdés, hogy ezt a jól meghatározott
+      &ndash; és általában szintén végtelen sok elemet tartalmazó &ndash; részhalmazt hogyan jelölhetjük ki az
+      összes jelsorozat tengerében valamilyen véges leírással anélkül, hogy egyenként fel kellene sorolni az
+      elemeit. Erre szolgálnak az úgynevezett ***nyelvtani szabályok***, amelyek meghatározzák, hogy mely
+      jelsorozatokat tekintjük a magyar nyelv mondatainak, és melyeket nem.
+  - type: narrative
+    content: |
+      Egy formális nyelv ilyen tekintetben semmiben nem különbözik a természetes nyelvektől két dolgot leszámítva.
+      Egyrészt egy formális nyelv a fenti definíció szerint a $\Sigma^*$ halmaz bármely részhalmaza lehet. Még akár
+      egy olyan részhalmaz is, amelynek a kijelölésére nem lehet a nyelvtani szabályokat egy véges leírással
+      megadni. Ennek a résznek egy későbbi szakaszában fogunk ilyenekre példát mutatni. Ilyen nyelvek esetén azt
+      fogjuk mondani, hogy egy jelsorozat nyelvbe tartozása ***algoritmikusan eldönthetetlen***. Másrészt, egy
+      formális nyelvet leíró véges szabályrendszer &ndash; amennyiben létezik &ndash; egyértelmű, és általában
+      lényegesen egyszerűbb, mint amit a természetes nyelvek esetén megszoktunk.
+  - type: narrative
+    content: |
+      A formális nyelvek elméletével &ndash; és általában a nyelvtudománnyal &ndash; kapcsolatos úttörő munkássága
+      miatt érdemes megismerni Noam Chomsky nevét. Chomsky eredményei rettentő fontos szerepet játszanak az
+      informatikában is, hiszen az ember és gép, illetve a gép és gép közötti kommunikáció is minden esetben
+      formális nyelvek segítségével történik. Gondoljunk csak például a programozási nyelvekre, vagy akár arra az
+      egyszerű nyelvre, amelyet az imént definiáltunk az összeadó algoritmusunk bemeneteinek és kimeneteinek
+      leírására.
+  - type: narrative
+    content: |
+      Látható, hogy a formális nyelvek fenti definíciója önmagában nem túl használható. Ezért most megismerkedünk
+      egy olyan matematikai objektummal, amelynek a segítségével el tudjuk dönteni, hogy egy jelsorozat egy adott
+      nyelv mondata-e. Egy ilyen objektumra tehát tekinthetünk az adott nyelv szabályainak egyfajta véges
+      leírásaként. Ezen kívül pedig ez az objektum a fenti, egész számok összeadásával kapcsolatos problémánkat is
+      képes lesz megoldani.

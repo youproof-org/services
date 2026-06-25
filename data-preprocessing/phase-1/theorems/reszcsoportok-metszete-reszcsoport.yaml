@@ -1,0 +1,16 @@
+type: theorem
+name: reszcsoportok-metszete-reszcsoport
+proofs:
+  - reszcsoportok-metszete-reszcsoport-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $G$ egy tetszőleges csoport, valamint legyen $\mathcal{H}$ egy olyan $G$ feletti halmazrendszer, amely
+      $G$ valahány &ndash; akár végtelen számú &ndash; ***részcsoportját*** tartalmazza elemként. Ekkor a
+      $\mathcal{H}$-ban lévő halmazok metszete is ***részcsoport*** $G$-ben.
+  - type: narrative
+    content: |
+      Ehhez hasonlóan ha $\mathcal{N}$ egy olyan halmazrendszer, amely $G$ valahány &ndash; akár végtelen számú
+      &ndash; ***normálosztóját*** tartalmazza elemként, akkor az $\mathcal{N}$-ben lévő halmazok metszete is
+      ***normálosztó*** $G$-ben.

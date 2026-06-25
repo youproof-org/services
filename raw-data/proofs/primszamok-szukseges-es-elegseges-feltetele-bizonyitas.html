@@ -1,0 +1,88 @@
+<!-- wp:paragraph -->
+<p><strong><em>Először nézzük azt az esetet, amikor [latex]n[/latex] pozitív, azaz [latex]n\gt 0[/latex].</em></strong> Ekkor ugye [latex]|n|=n[/latex] a [yp_element slug="egesz-szamok-abszoluterteke" type="link" /] alapján.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel, hogy [latex]n[/latex]-nek létezik [latex]1[/latex]-nél nagyobb, de [latex]|n|=n[/latex]-nél kisebb osztója, amit jelöljünk [latex]k[/latex]-val. Azaz egyrészt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]1\lt k\lt n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Másrészt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]k|n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez az oszthatóság a [yp_element slug="oszthatosag" type="link" /] alapján azt jelenti, hogy létezik olyan [latex]l[/latex] egész szám, hogy teljesül az alábbi egyenlet:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]n=k\cdot l[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>felbonthatatlanság</em></strong> [yp_element slug="felbonthatatlan-elem" type="link" /]ja alapján azt kell bizonyítani, hogy ez a szorzat [latex]n[/latex]-nek egy <strong><em>nemtriviális felbontása</em></strong>, azaz sem [latex]k[/latex], sem pedig [latex]l[/latex] nem egység, és nem is asszociáltja [latex]n[/latex]-nek.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egyrészt a [yp_element slug="egysegek-es-egysegelem-viszonya" type="link" /] alapján az egész számok [latex]\Z[/latex] gyűrűjében az [latex]1[/latex]-en és a [latex]-1[/latex]-en kívül nincs más egység. Mivel [latex]1[/latex] pozitív, ezért a [yp_element slug="pozitivitastartomany" type="link" /] utáni megjegyzés alapján [latex]-1[/latex] negatív. Emiatt [latex]k[/latex] biztosan nem lehet egység, hiszen ő maga pozitív, továbbá határozottan nagyobb [latex]1[/latex]-nél.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Másrészt a [yp_element slug="asszocialtsag-es-egysegek-kapcsolata" type="link" /] alapján [latex]n[/latex]-nek mindössze két asszociáltja van, méghozzá önmaga, és az ellentettje, azaz [latex]-n[/latex]. Mivel [latex]n[/latex] pozitív, ezért a [yp_element slug="pozitivitastartomany" type="link" /] utáni megjegyzés alapján [latex]-n[/latex] negatív. Emiatt viszont [latex]k[/latex] biztosan nem lehet [latex]n[/latex] asszociáltja sem, hiszen ő maga pozitív, továbbá határozottan kisebb [latex]n[/latex]-nél.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A [latex]k[/latex] egész szám tehát egy olyan osztója [latex]n[/latex]-nek, amely se nem egység, se nem asszociáltja [latex]n[/latex]-nek. Most ugyanezt kellene megmutatni a fenti szorzat másik tényezőjéről, azaz [latex]l[/latex]-ről is. Ez viszont automatikusan teljesül a [yp_element slug="egysegtenyezo-nullosztomentes-esetben" type="link" /] miatt. Ha ugyanis [latex]l[/latex] egység lenne, akkor ez alapján [latex]k[/latex] szükségképpen [latex]n[/latex]-nek asszociáltja lenne. Ha viszont [latex]l[/latex] asszociáltja lenne [latex]n[/latex]-nek, akkor [latex]k[/latex] szükségképpen egység lenne. Mindkét esetről láttuk, hogy nem ez a helyzet.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Megtaláltuk tehát [latex]n[/latex]-nek egy nemtriviális felbontását, így ő a [yp_element slug="felbonthatatlan-elem" type="link" /] alapján valóban összetett.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Visszafelé:</em></strong> Tegyük most fel <strong><em>indirekt</em></strong>, hogy [latex]n[/latex] összetett ugyan, ám mégsem létezik olyan osztója, amely [latex]1[/latex]-nél nagyobb, de [latex]|n|=n[/latex]-nél kisebb. Mivel összetett, így a [yp_element slug="felbonthatatlan-elem" type="link" /] alapján létezik valamilyen nemtriviális felbontása. Például:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]n=k\cdot l[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Egyrészt</em></strong>, mivel [latex]n\
+eq 0[/latex], ezért a [yp_element slug="oszthatosag-tulajdonsagai" type="link" /] 4. pontja alapján [latex]k[/latex] és [latex]l[/latex] egyike sem lehet [latex]0[/latex]. <strong><em>Másrészt</em></strong>, mivel a fenti felbontás ugye nemtriviális, ezért egyikük sem lehet egység, továbbá egyikük sem lehet asszociáltja [latex]n[/latex]-nek. <strong><em>Harmadrészt</em></strong>, indirekt feltevésünk miatt egyikük sem eshet az [latex]1[/latex] és az [latex]|n|=n[/latex] közötti számtartományba. Végül <strong><em>negyedrészt</em></strong> a [yp_element slug="oszthatosag-es-rendezesi-relacio-kapcsolata" type="link" /] alapján egyikük sem lehet nagyobb [latex]n[/latex]-nél. <strong><em>Összefoglalva</em></strong> tehát [latex]k[/latex] és [latex]l[/latex] mindketten negatívak, határozottan kisebbek [latex]-1[/latex]-nél, továbbá [latex]-n[/latex]-től különbözőek. Ezt mutatja az alábbi ábra:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":6468,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_23_osztok_elhelyezkedese_2.jpg" alt="Osztók elhelyezkedése" class="wp-image-6468"/><figcaption>Osztók elhelyezkedése</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]n=k\cdot l[/latex] egyenlet miatt azonban a [yp_element slug="gyuruk-alapveto-tulajdonsagai" type="link" /] 4. pontja alapján teljesül az alábbi egyenlet is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]n=(-k)\cdot (-l)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [latex]k[/latex] és [latex]l[/latex] egész számok ellentettjei tehát szintén osztói [latex]n[/latex]-nek, mindketten pozitívak, határozottan nagyobbak [latex]1[/latex]-nél, továbbá [latex]n[/latex]-től különbözőek. Ezt az alábbi ábra mutatja:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":6469,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_23_osztok_elhelyezkedese_1.jpg" alt="Osztók ellentettjeinek elhelyezkedése" class="wp-image-6469"/><figcaption>Osztók ellentettjeinek elhelyezkedése</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="oszthatosag-es-rendezesi-relacio-kapcsolata" type="link" /] miatt az [latex]n[/latex]-nél nagyobb számtartományt ismételten kizárhatjuk. Így végülis indirekt feltételezésünkkel ellentétben mégiscsak találtunk két olyan osztót – nevezetesen a [latex]-k[/latex] és [latex]-l[/latex] egész számokat –, amelyek [latex]1[/latex]-nél nagyobbak, de [latex]|n|=n[/latex]-nél kisebbek.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Végezetül nézzük most azt az esetet, amikor [latex]n[/latex] negatív, azaz [latex]n\lt 0[/latex].</em></strong> Ekkor egyrészt a [yp_element slug="pozitivitastartomany" type="link" /] utáni megjegyzés alapján [latex]-n[/latex] pozitív. Másrészt pedig a [yp_element slug="asszocialtsag-tulajdonsagai" type="link" /] 1. pontja alapján ő [latex]n[/latex]-nek asszociáltja, azaz pontosan ugyanazok az osztói, mint [latex]n[/latex]-nek. Így [latex]n[/latex] akkor és csak akkor prím, ha [latex]-n[/latex] is, amelyre viszont pozitivitása miatt szóról szóra alkalmazható a fenti gondolatmenet.</p>
+<!-- /wp:paragraph -->

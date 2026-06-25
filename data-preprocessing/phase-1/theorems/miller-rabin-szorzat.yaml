@@ -1,0 +1,14 @@
+type: theorem
+name: miller-rabin-szorzat
+proofs:
+  - miller-rabin-szorzat-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyenek adottak valamilyen tetszőleges $e\geq 1$ és $k\geq 1$ egész számok.
+  - type: formula
+    lead-in: |
+      Ekkor bármilyen $a$ egész szám esetén teljesül az alábbi összefüggés:
+    content: |
+      a^{2^e\cdot k}-1 = (a^k-1)\cdot (a^k+1)\cdot (a^{2k}+1)\cdot (a^{4k}+1)\cdot \ldots \cdot (a^{2^{e-1}k}+1)

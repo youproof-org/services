@@ -1,0 +1,27 @@
+type: theorem
+name: polinom-gyokenek-feltetele
+proofs:
+  - polinom-gyokenek-feltetele-bizonyitas
+remarks: []
+references:
+  oszthatosag:
+    target:
+      type: definition
+      name: oszthatosag
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ egy tetszőleges ***kommutatív, egységelemes gyűrű***, $f\in R[x]$ egy tetszőleges ***polinom*** a
+      hozzátartozó $F$ polinomfüggvénnyel, $r\in R$ pedig egy tetszőleges ***gyűrűelem***.
+  - type: formula
+    lead-in: |
+      Ekkor ***létezik*** olyan $q\in R[x]$ ***polinom***, amelynek $Q$ polinomfüggvényére teljesül az alábbi
+      egyenlet:
+    content: |
+      F(x)=(x-r)\cdot Q(x)+F(r)
+  - type: narrative
+    content: |
+      Legyen most $f_r\in R[x]$ az az ***elsőfokú polinom***, amelyhez az $F_r(x)=x-r$ polinomfüggvény tartozik.
+      Ebben az esetben az $r$ gyűrűelem ***akkor és csak akkor gyöke*** az $f$ polinomnak, ha teljesül az $f_r|f$
+      oszthatóság az $R[x]$ polinomgyűrűben a [oszthatosag] szerinti értelemben. Az $f_r$ polinomot az $f$ polinom
+      ***$r$ gyökéhez tartozó gyöktényezőjének*** nevezzük.

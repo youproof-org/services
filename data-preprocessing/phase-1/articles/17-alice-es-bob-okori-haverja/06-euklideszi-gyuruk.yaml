@@ -1,0 +1,115 @@
+type: section
+name: 06-euklideszi-gyuruk
+title: Euklidészi gyűrűk
+
+references:
+  egesz-szamok-szigoru-rendezese-tranzitiv:
+    target:
+      type: theorem
+      name: egesz-szamok-szigoru-rendezese-tranzitiv
+  euklideszi-algoritmus-alapgondolata:
+    target:
+      type: theorem
+      name: euklideszi-algoritmus-alapgondolata
+  kituntetett-kozos-oszto-letezesenek-kovetkezmenye:
+    target:
+      type: theorem
+      name: kituntetett-kozos-oszto-letezesenek-kovetkezmenye
+  kituntetett-kozos-oszto-tulajdonsagai:
+    target:
+      type: theorem
+      name: kituntetett-kozos-oszto-tulajdonsagai
+  termeszetes-szamok-minimumtetele:
+    target:
+      type: theorem
+      name: termeszetes-szamok-minimumtetele
+
+body:
+  - type: narrative
+    content: |
+      Az ***euklidészi algoritmus*** alapgondolatának fentebbi ismertetésekor feltételeztük, hogy az $a$ és $b$
+      bemenet egy-egy pozitív egész szám, amelyeknek tehát a kitüntetett közös osztóját keressük. Az alapötletet a
+      [euklideszi-algoritmus-alapgondolata] tétel szolgáltatta, mely szerint ha $a$ és $b$ között el tudjuk végezni
+      a ***maradékos osztást***, akkor az $(a,b)$ kitüntetett közös osztó &ndash; amennyiben egyáltalán létezik
+      &ndash; meg fog egyezni a $(b,r_1)$ kitüntetett közös osztóval, ahol $r_1$ a maradékos osztás során képződő
+      maradék. Ezek után a $b$ és $r_1$ között kell maradékos osztást végezni, így ha a képződő maradék $r_2$,
+      akkor a $(b,r_1)$ kitüntetett közös osztó &ndash; amennyiben létezik &ndash; meg fog egyezni az $(r_1,r_2)$
+      kitüntetett közös osztóval.
+  - type: narrative
+    content: |
+      Ezt az eljárást tovább folytatjuk mindaddig, míg valamelyik lépésben a képződő maradék $0$ nem lesz. Ha az
+      utolsó nemnulla maradék $r_n$, akkor végülis azt kaptuk, hogy az $(a,b)$ kitüntetett közös osztó meg fog
+      egyezni az $(r_n,0)$ kitüntetett közös osztóval. Ez viszont a [kituntetett-kozos-oszto-tulajdonsagai] 4.
+      pontja alapján egységelemes gyűrűkben &ndash; és csak azokban &ndash; biztosan létezik, és $r_n$-nel egyezik
+      meg.
+  - type: narrative
+    content: |
+      Már csak azt kell belátni, hogy véges számú lépés után biztosan $0$ lesz a képződő maradék. Ezt fentebb csak
+      feltételeztük, most azonban a végtelen leszállás módszerével könnyedén adódik. Az $a$ és $b$ elemek maradékos
+      osztásánál ugyanis fontos követelmény volt, hogy az $a$ elemet úgy tudjuk kifejezni "valahányszor $b$, meg
+      egy kis maradék" alakban, hogy a maradék mindig ***szigorúan kisebb*** legyen, mint $b$. Ha &ndash;
+      feltételezve, hogy a maradékos osztást mindig el tudjuk végezni &ndash; az eljárás nem érne véget véges számú
+      lépés után, akkor az $r_1 \gt r_2 \gt r_3 \gt \ldots$ sorozat a $\gt$ reláció
+      [egesz-szamok-szigoru-rendezese-tranzitiv] szerinti tranzitivitása miatt a természetes számoknak egy olyan
+      részhalmaza lenne, amelynek nem lenne minimuma. Ez viszont, mint azt a [termeszetes-szamok-minimumtetele]ben
+      láttuk, lehetetlen.
+  - type: narrative
+    content: |
+      Igenám, csakhogy mi ***tetszőleges integritástartományra*** szeretnénk kiterjeszteni ezt az algoritmust.
+      Márpedig például az egész számok $\Z$ gyűrűjére nem érvényes a minimumtétel, más integritástartományok pedig
+      még csak nem is feltétlenül számokból, hanem egyéb objektumokból állhatnak. Vegyük azonban észre, hogy minket
+      nem konkrétan a képződő maradékok érdekelnek, hanem azoknak ***a gyűrű nullelemétől való*** &ndash; bizonyos
+      absztrakt értelemben vett &ndash; ***"távolsága"***. Ha valahogy sikerülne az adott gyűrűben értelmezni egy
+      olyan távolságfogalmat, amely biztosítja, hogy az euklidészi algoritmus során bármely lépésében a képződő
+      maradék nullelemtől mért absztrakt "távolsága" ***szigorúan kisebb*** legyen, mint az előző lépésben képződő
+      maradék ugyanilyen értelemben vett nullelemtől való "távolsága", akkor nyert ügyünk lenne.
+  - type: narrative
+    content: |
+      A most következő definíció külön nevet ad az olyan integritástartományoknak, amelyekben értelmezhető ilyen
+      absztrakt távolságfogalom.
+  - type: embed
+    target:
+      type: definition
+      name: euklideszi-gyuru
+  - type: embed
+    target:
+      type: remark
+      name: euklideszi-gyuru-megjegyzes
+  - type: narrative
+    content: |
+      Nem meglepő módon tehát a keresett távolságfogalom egy függvény lesz, amely az $R$ integritástartomány
+      elemeit a természetes számok $\N$ halmazára képezi le. Egy elemhez hozzárendelt szám fogja "mérni" az adott
+      elemnek a nullelemtől való absztrakt "távolságát". A definícióban szereplő első követelmény logikus módon azt
+      fogalmazza meg, hogy csak és kizárólag a nullelem távolsága legyen $0$. A második követelmény pedig
+      lényegében a pozitív egész számokon értelmezett maradékos osztás általánosításaként fogható fel.
+  - type: narrative
+    content: |
+      Fontos megjegyezni még, hogy egy euklidészi gyűrűnek, mint algebrai struktúrának nem része a konkrét
+      euklidészi norma. A fenti definíció szerint elegendő, ha ***létezik*** ilyen norma az adott gyűrűn. Sőt, ha
+      egy integritástartomány euklidészi gyűrű, akkor általában több euklidészi norma is értelmezhető rajta.
+      Általában azonban igen nehéz annak eldöntése, hogy egy $R$ integritástartomány euklidészi gyűrű-e vagy sem.
+      Természetesen ha találunk egy olyan függvényt, amely euklidészi norma, akkor $R$ nyilván euklidészi gyűrű. Ha
+      azonban nem találunk ilyen függvényt, akkor ez még önmagában nem elég a nemleges válaszhoz. Ehhez azt kéne
+      igazolni, hogy ilyen függvény ***egyáltalán nem is létezik*** az adott $R$-hez. Ez számos nyitott kérdéshez
+      és sejtéshez vezet, melyek a mai napig bizonyítatlanul várják az utókor ötleteit.
+  - type: narrative
+    content: |
+      Meg fogjuk ugyanakkor mutatni, hogy az egész számok $\Z$ gyűrűje euklidészi gyűrű. Ehhez a 15. részben
+      bevezetett rendezési reláció felhasználásával mutatni fogunk egy olyan függvényt, amely $\Z$-ből $\N$-be
+      képez, és amely eleget tesz az euklidészi normákra vonatkozó követelményeknek. Előbb azonban azt fogjuk
+      megvizsgálni, hogy miért olyan fontosak az euklidészi gyűrűk a számelmélet alaptételének szempontjából.
+      Például azért, mert ezekben bármely két elemnek létezik kitüntetett közös osztója, és így a
+      [kituntetett-kozos-oszto-letezesenek-kovetkezmenye] értelmében ***teljesül bennük a számelmélet alaptételének
+      egyértelműségi állítása***. Ezt az alábbi tétel mondja ki.
+  - type: embed
+    target:
+      type: theorem
+      name: euklideszi-gyuruben-letezik-kituntetett-kozos-oszto
+  - type: embed
+    target:
+      type: proof
+      name: euklideszi-gyuruben-letezik-kituntetett-kozos-oszto-bizonyitas
+  - type: narrative
+    content: |
+      Hamarosan látni fogjuk, hogy ennél több is igaz. Nevezetesen: nemcsak a prímtényezős felbontás
+      ***egyértelműsége***, hanem a ***létezése*** is garantált euklidészi gyűrűkben.

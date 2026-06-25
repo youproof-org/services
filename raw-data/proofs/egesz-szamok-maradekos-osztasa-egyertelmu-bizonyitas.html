@@ -1,0 +1,94 @@
+<!-- wp:paragraph -->
+<p>Előszöris azt igazoljuk, hogy a maradékos osztás ezekkel a szigorúbb feltételekkel is elvégezhető, azaz mindenképpen <strong><em>létezik nemnegatív maradék is</em></strong>. Ezután fogjuk igazolni ennek <strong><em>egyértelműségét</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="abszolutertek-euklideszi-norma" type="link" /]ből tudjuk, hogy az abszolútérték függvény egy euklidészi norma a [latex]\Z[/latex] gyűrűn. Ez a [yp_element slug="euklideszi-gyuru" type="link" /] alapján azt jelenti, hogy tetszőleges [latex]a[/latex] és [latex]b\
+eq 0[/latex] egész számhoz létezik olyan [latex]k_0[/latex] hányados és [latex]r_0[/latex] maradék, amelyekre teljesülnek az alábbiak:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a&amp;=k_0\cdot b + r_0 \\ |r_0|&amp;\lt |b|\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Feladatunk megmutatni, hogy ezekből előállítható olyan [latex]k[/latex] hányados és [latex]r[/latex] maradék is, amelyek a tételben szereplő szigorúbb feltételeknek is eleget tesznek.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Amennyiben [latex]r_0\geq 0[/latex], akkor az abszolútérték-függvény [yp_element slug="egesz-szamok-abszoluterteke" type="link" /]ja miatt [latex]|r_0|=r_0[/latex]. Ekkor az [latex]r=r_0[/latex] és a [latex]k=k_0[/latex] választás épp megfelel a feltételeknek.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Így elegendő csak azzal az esettel foglalkozni, amikor [latex]r_0\lt 0[/latex]. Ekkor az abszolútérték-függvény definíciója miatt [latex]|r_0|=-r_0[/latex]. Mivel [latex]r_0\lt 0[/latex], ezért a [yp_element slug="gyuru-reszbenrendezesenek-tulajdonsagai" type="link" /] 1. pontja miatt [latex]-r_0\gt 0[/latex]. Ekkor az euklidészi normára vonatkozó [latex]|r_0|\lt|b|[/latex] feltétel az alábbi két eset valamelyikével ekvivalens attól függően, hogy [latex]b[/latex] pozitív vagy negatív:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} -->
+<ol><li>Ha [latex]b[/latex] <strong><em>pozitív</em></strong>, akkor [latex]0\lt \overbrace{-r_0}^{=|r_0|}\lt \overbrace{b}^{=|b|}[/latex].</li><li>Ha [latex]b[/latex] <strong><em>negatív</em></strong>, akkor [latex]0\lt \underbrace{-r_0}_{=|r_0|}\lt \underbrace{-b}_{=|b|}[/latex].</li></ol>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>A jobboldali egyenlőtlenségekhez [latex]r_0[/latex]-t, a baloldali egyenlőtlenségekhez pedig az 1. esetben [latex](r_0+b)[/latex]-t, a 2. esetben pedig [latex](r_0-b)[/latex]-t adva az alábbiakat kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} -->
+<ol><li>Ha [latex]b[/latex] <strong><em>pozitív</em></strong>, akkor [latex]0\lt r_0+b\lt \overbrace{b}^{=|b|}[/latex].</li><li>Ha [latex]b[/latex] <strong><em>negatív</em></strong>, akkor [latex]0\lt r_0-b\lt \underbrace{-b}_{=|b|}[/latex].</li></ol>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>Azaz ha meg tudnánk oldani, hogy az eredeti [latex]a=k_0b+r_0[/latex] egyenletből kiindulva olyan maradékos osztást végezzünk, amelynek eredményeképp az 1. esetben [latex](r_0+b)[/latex], a 2. esetben pedig [latex](r_0-b)[/latex] legyen a maradék, akkor ezek eleget tennének a tételben szereplő feltételeknek. Ezt viszont a [yp_element slug="gyuru-test" type="link" /]ban szereplő 5. gyűrűaxióma szerinti disztributivitási szabályok kihasználásával és egy piszkos kis trükkel minden gond nélkül meg tudjuk tenni:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a&amp;=k_0b+r_0=k_0b+r_0+b-b=(\overbrace{k_0-1}^{k})b + \overbrace{r_0+b}^{r}\\a&amp;=k_0b+r_0=k_0b+r_0+b-b=(\underbrace{k_0+1}_{k})b + \underbrace{r_0-b}_{r}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Így tehát <strong><em>pozitív</em></strong> [latex]b[/latex] esetén a [latex]k=k_0-1[/latex] és [latex]r=r_0+b[/latex] választással, míg <strong><em>negatív</em></strong> [latex]b[/latex] esetén a [latex]k=k_0+1[/latex] és [latex]r=r_0-b[/latex] választással az [latex]r[/latex] maradék garantáltan pozitív lesz. Ezzel minden esetet lefedtünk, az egész számok körében tehát valóban <strong><em>mindig elvégezhető a maradékos osztás úgy, hogy a kapott maradék nemnegatív</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Azt kell még megmutatni, hogy ilyen feltételekkel viszont már csak <strong><em>egyféleképpen végezhető el</em></strong>. Tegyük fel, hogy kétféleképpen is elvégezhető a nemnegatív maradékos osztás. Ez azt jelenti, hogy léteznek olyan [latex]k_1[/latex] és [latex]k_2[/latex] hányadosok, valamint <strong><em>nemnegatív</em></strong> [latex]r_1[/latex] és [latex]r_2[/latex] maradékok, amelyekre teljesülnek az alábbiak:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}&amp;a=k_1\cdot b + r_1 \\ &amp;a=k_2\cdot b + r_2\\ &amp;0\leq r_1 \lt |b| \\ &amp;0\leq r_2\lt |b|\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A két fenti egyenletet egymásból kivonva a következőt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]0=(k_1-k_2)\cdot b + r_1 - r_2[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mindkét oldalból [latex](k_1-k_2)\cdot b[/latex]-t kivonva az alábbi lesz a szituáció:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]r_1-r_2=(k_2-k_1)\cdot b[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez viszont az oszthatóság [yp_element slug="oszthatosag" type="link" /]ja alapján épp azt jelenti, hogy teljesül a [latex]b|r_1-r_2[/latex] oszthatóság. Mivel [latex]r_1[/latex] és [latex]r_2[/latex] is a [latex]b[/latex]-vel való maradékos osztás során kapott nemnegatív maradékok, így ők biztosan szigorúan kisebbek [latex]b[/latex] abszolútértékénél. Ebből viszont a [yp_element slug="maradekok-kulonbsege-oszthato-a-modulussal" type="link" /] alapján [latex]r_1=r_2[/latex] következik, azaz a maradékok valóban megegyeznek.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ekkor azonban a korábban kapott [latex]r_1-r_2=(k_2-k_1)\cdot b[/latex] egyenlet az alábbi alakra egyszerűsödik:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{0}_{=r_1-r_2}=(k_2-k_1)\cdot b[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel a tétel szövegében kikötöttük, hogy [latex]b\
+eq 0[/latex], ezért a nullosztómentesség miatt ez csak akkor teljesülhet, ha [latex]k_2-k_1=0[/latex], amiből [latex]k_1=k_2[/latex] következik. Így tehát a hányadosok is megegyeznek.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Azaz valóban:</em></strong> tetszőleges [latex]a[/latex] és [latex]b\
+eq 0[/latex] egész számok között <strong><em>pontosan egyféleképpen</em></strong> lehet elvégezni a maradékos osztást úgy, hogy a kapott maradék <strong><em>nemnegatív</em></strong>.</p>
+<!-- /wp:paragraph -->

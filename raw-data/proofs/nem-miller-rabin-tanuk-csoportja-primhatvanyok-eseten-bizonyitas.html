@@ -1,0 +1,335 @@
+<!-- wp:paragraph -->
+<p>Mivel a tételben szereplő [latex]G_n[/latex] halmaz elemei a NEM Miller-Rabin-tanúk, ezért a [yp_element slug="miller-rabin-tanu" type="link" /] utáni megjegyzés alapján az biztos, hogy itt csak redukált maradékosztályok lehetnek, azaz [latex]G_n\sube (\Z/n\Z)^{\times}[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ha [latex]c=1[/latex]</em></strong>, akkor [latex]n=p^c=p[/latex] egy prímszám, amelynek a [yp_element slug="primszamnak-nincs-miller-rabin-tanuja" type="link" /] értelmében egyáltalán nincsenek Miller-Rabin-tanúi, azaz ebben az esetben [latex]G_n=(\Z/n\Z)^{\times}[/latex]. Ezzel [latex]c=1[/latex]-re igazoltuk a <strong><em>2. és 3. állításokat</em></strong>. Mivel [latex]n=p[/latex] most egy prímszám, ezért az <strong><em>1. állítás</em></strong> a kis Fermat-tételből ([yp_element slug="kis-fermat-tetel" type="link" /]) azonnal következik, mely szerint bármilyen [latex]n=p[/latex]-hez relatív prím [latex]a[/latex] egész számra teljesül az [latex]a^{p-1}\equiv 1\pmod p[/latex] kongruencia. A [yp_element slug="redukalt-maradekosztaly-feltetele" type="link" /] alapján az [latex]n=p[/latex]-hez relatív prím egész számok pontosan a redukált maradékosztályokat, azaz a [latex](\Z/n\Z)^{\times}[/latex] multiplikatív csoport elemeit reprezentálják, ami ugye – mint láttuk – megegyezik a NEM Miller-Rabin-tanúk [latex]G_n[/latex] halmazával.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az általánosság megsértése nélkül feltehetjük tehát, hogy [latex]c\geq 2[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Nézzük az 1. állítást ebben az esetben!</em></strong> Azt kell tehát bizonyítani, hogy az [latex]n=p^c[/latex] egész szám NEM Miller-Rabin-tanúinak [latex]a[/latex] reprezentánselemei, és csak azok elégítik ki az alábbi kongruenciát:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{p-1}\equiv 1\pmod{\underbrace{n}_{=p^c}}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha az [latex][a]_n[/latex] maradékosztály nem Miller-Rabin-tanú, akkor <strong><em>egyrészt</em></strong> a [yp_element slug="miller-rabin-tanu" type="link" /] utáni megjegyzés alapján csak redukált maradékosztály lehet, és így a [yp_element slug="redukalt-maradekosztaly-feltetele" type="link" /] szerint [latex]a[/latex] és [latex]n=p^c[/latex] relatív prímek. Ekkor viszont érvényes az <strong><em>Euler-Fermat tétel</em></strong> ([yp_element slug="euler-fermat-tetel" type="link" /]), miszerint:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{\varphi(n)}\equiv 1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Másrészt</em></strong> viszont ha [latex][a]_n[/latex] nem Miller-Rabin-tanú, akkor szintén a [yp_element slug="miller-rabin-tanu" type="link" /] utáni megjegyzés szerint <strong><em>nem lehet Fermat-tanú sem</em></strong>. Ez a [yp_element slug="fermat-tanu" type="link" /] alapján azt jelenti, hogy fennáll az alábbi kongruencia is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{n-1}\equiv 1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="csoportelem-rendjere-vonatkozo-osszefuggesek" type="link" /] 2. pontja alapján tehát a [latex](\Z/n\Z)^{\times}[/latex] csoportban az [latex][a]_n[/latex] elem rendje közös osztója [latex]\varphi(n)[/latex]-nek és [latex]n-1[/latex]-nek. Ez viszont a [yp_element slug="kituntetett-kozos-oszto" type="link" /] miatt azt jelenti, hogy osztója a [latex](\varphi(n), n-1)[/latex] <strong><em>kitüntetett közös osztónak</em></strong> is, azaz teljesül az alábbi oszthatóság:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]o([a]_n)|(\varphi(n), n-1)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Alkalmazva az [latex]n=p^c[/latex] helyettesítést a jobboldalon szereplő kitüntetett közös osztóra a [yp_element slug="euler-fuggveny-primhatvanyokra" type="link" /] alapján, továbbá a [yp_element slug="gyuru-test" type="link" /]ban szereplő 5. gyűrűaxióma szerint a következőt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](\underbrace{p^c-p^{c-1}}_{=\varphi(p^c)}, p^c-1)=((p-1)p^{c-1},p^c-1)=\ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Szintén a gyűrűaxiómák következménye, hogy a jobboldalon szereplő [latex]p^c-1[/latex] kifejezésből is kiemelhető a [latex]p-1[/latex] tényező, méghozzá az alábbi összefüggés miatt, amelyet az Olvasó maga is leellenőrizhet a zárójelek felbontásával:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]p^c-1=(p-1)(p^{c-1}+p^{c-2}+\ldots+p+1)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Alkalmazhatjuk tehát a kitüntetett közös osztó kiemelési tulajdonságát ([yp_element slug="kituntetett-kozos-oszto-kiemelesi-tulajdonsaga" type="link" /]), azaz a fenti kitüntetett közös osztóból kiemelhetjük [latex]p-1[/latex]-et:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots=(p-1)\cdot (p^{c-1},p^{c-1}+p^{c-2}+\ldots+p+1)=\ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Vegyük észre, hogy az itt szereplő jobboldali [latex]p^{c-1}+p^{c-2}+\ldots+p+1[/latex] összeg minden tagja osztható [latex]p[/latex]-vel, kivéve az utolsó. Ez az összeg tehát [latex]p[/latex]-vel osztva [latex]1[/latex] maradékot ad, azaz a prímtényezői biztosan mind különböznek [latex]p[/latex]-től. Ezzel szemben a baloldali [latex]p^{c-1}[/latex] prímtényezői között csak [latex]p[/latex] szerepel. A két mennyiség emiatt egymáshoz relatív prím, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots=(p-1)\cdot \underbrace{1}_{=(p^{c-1},p^{c-1}+p^{c-2}+\ldots+p+1)}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt kaptuk tehát, hogy ha az [latex][a]_n[/latex] maradékosztály nem Miller-Rabin-tanú, akkor az ő rendje a [latex](\Z/n\Z)^{\times}[/latex] csoportban osztója lesz a [latex](\varphi(n),n-1)=p-1[/latex] kitüntetett közös osztónak. Ez viszont a [yp_element slug="csoportelem-rendjere-vonatkozo-osszefuggesek" type="link" /] 2. pontja alapján épp azt jelenti, hogy valóban teljesül az alábbi kongruencia, ahogyan a tétel állítja:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{p-1}\equiv 1\pmod{\underbrace{n}_{=p^c}}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Most nézzük visszafelé!</em></strong> Tegyük fel, hogy teljesül az iménti kongruencia egy [latex]a[/latex] egész számra. Most azt kell bizonyítani, hogy ekkor az [latex][a]_n[/latex] maradékosztály nem Miller-Rabin-tanú. Mivel [latex]n=p^c[/latex] páratlan, ezért [latex]n-1=p^c-1[/latex] páros, és így valahányszor osztható [latex]2[/latex]-vel. Azaz létezik olyan [latex]e\geq 1[/latex] kitevő és [latex]k\geq 1[/latex] páratlan egész, hogy:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]n-1=p^c-1=2^e\cdot k[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ehhez hasonlóan [latex]p-1[/latex]-hez is létezik olyan [latex]f\geq 1[/latex] kitevő és [latex]l\geq 1[/latex] páratlan egész, hogy:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]p-1=2^f\cdot l[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A korábban már említett [latex]p^c-1=(p-1)(p^{c-1}+p^{c-2}+\ldots+p+1)[/latex] azonosság alapján tudjuk, hogy teljesül az alábbi oszthatóság:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{2^fl}_{=p-1}|\overbrace{2^ek}^{=p^c-1}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]l[/latex] és [latex]k[/latex] páratlan, így ezek prímtényezői között biztosan nem szerepel a [latex]2[/latex]-es. Ezért a fenti oszthatóság csak úgy teljesülhet, ha fennáll az alábbi két feltétel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}f&amp;\leq e \\ l&amp;|k\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ugye abból indultunk ki, hogy teljesül az [latex]a^{p-1}\equiv 1\pmod n[/latex] kongruencia. Ez az imént bevezetett [latex]p-1=2^fl[/latex] jelölést alkalmazva így írható:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{2^fl}\equiv 1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez a hatványozás azonosságairól szóló [yp_element slug="hatvanyozas-azonossagai" type="link" /] 2. pontja miatt így is írható:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](a^l)^{2^f}\equiv 1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="csoportelem-rendjere-vonatkozo-osszefuggesek" type="link" /] 2. pontja alapján tehát az [latex][a^l]_n[/latex] maradékosztály rendje osztója [latex]2^f[/latex]-nek. Ez csak úgy lehet, ha ez a rend is valamilyen 2-hatvány egy <strong><em>[latex]f[/latex]-nél nemnagyobb, nemnegatív</em></strong> [latex]j[/latex] kitevővel, azaz [latex]o([a^l]_n)=2^j[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ha [latex]j=0[/latex]</em></strong>, akkor ugye [latex](a^l)^{2^0}=a^l[/latex] és így teljesül az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^l\equiv 1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>De mivel tudjuk, hogy [latex]l|k[/latex] – azaz [latex]k[/latex] az [latex]l[/latex]-nek többszöröse –, ezért ekkor teljesül az [latex]a^k\equiv 1\pmod n[/latex] kongruencia is. Ez épp a [yp_element slug="miller-rabin-tanu" type="link" /]ban szereplő első kongruencia, amely szerint tehát [latex][a]_n[/latex] valóban <strong><em>nem lehet Miller-Rabin-tanú</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ha [latex]j\geq 1[/latex]</em></strong>, akkor ez az elemrend [yp_element slug="csoportelem-rendje" type="link" /]ja miatt azt jelenti, hogy [latex]2^j[/latex] a <strong><em>legkisebb</em></strong> olyan kitevő, amely esetén az alábbi kongruencia teljesül:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](a^l)^{2^j}\equiv 1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az ennél kisebb kitevőkre ez már nem teljesül, tehát például:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](a^l)^{2^{j-1}}\ \cancel{\equiv}\ 1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A felső kongruencia baloldala épp az alsó kongruencia baloldalának négyzete, hiszen:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]((a^l)^{2^{j-1}})^2=(a^l)^{2^{j-1}\cdot 2}=(a^l)^{2^j}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha most az áttekinthetőség kedvéért bevezetjük az [latex]x=(a^l)^{2^{j-1}}[/latex] jelölést, akkor fenti két kongruencia tulajdonképpen az alábbi két állításnak felel meg:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}x\ &amp;\cancel{\equiv}\ 1\pmod n \\ x^2&amp;\equiv 1\pmod n\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az alsó kongruencia a [yp_element slug="egesz-szamok-kozotti-kongruencia" type="link" /] 3. pontja alapján az alábbi oszthatóságot jelenti:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]n|x^2-1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ennek az oszthatóságnak a jobboldala a [yp_element slug="gyuru-test" type="link" /]ban ismertetett gyűrűaxiómák miatt szorzatba fejthető:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{n}_{=p^c}|(x+1)\cdot (x-1)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez az oszthatóság tehát biztosan teljesül. Ugyanakkor az is bizonyos, hogy [latex]x+1[/latex] és [latex]x-1[/latex] közül legfeljebb az egyikük prímtényezői között szerepelhet [latex]p[/latex], hiszen közöttük mindössze 2 a különbség. Más szavakkal az egyikük biztosan relatív prím lesz [latex]n=p^c[/latex]-hez, és így az <strong><em>euklidészi lemma</em></strong> ([yp_element slug="euklideszi-lemma" type="link" /]) alapján a másik viszont biztosan osztható lesz [latex]n[/latex]-nel. Azaz az alábbi oszthatóságok közül pontosan az egyik teljesül:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}n&amp;|x+1 \\ n&amp;|x-1\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azonban a második oszthatóság lehetetlen, hiszen az a [yp_element slug="egesz-szamok-kozotti-kongruencia" type="link" /] 3. pontja szerint azt jelentené, hogy mégiscsak teljesülne az [latex]x\equiv 1\pmod n[/latex] kongruencia, amiről már láttuk, hogy nem teljesülhet. Következésképp csak az első oszthatóság teljesülhet. Ez viszont ismét a [yp_element slug="egesz-szamok-kozotti-kongruencia" type="link" /] 3. pontja miatt épp az alábbi kongruenciát jelenti:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x\equiv -1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azonban emlékezzünk rá, hogy [latex]x[/latex]-szel tulajdonképpen az [latex](a^l)^{2^{j-1}}=a^{2^{j-1}l}[/latex] kifejezést jelöltük, ezért ez a kongruencia ennek felel meg:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{2^{j-1}l} \equiv -1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel korábban már láttuk, hogy [latex]k[/latex] többszöröse [latex]l[/latex]-nek, azaz létezik olyan [latex]t[/latex] egész szám, amely esetén [latex]lt=k[/latex]. Ráadásul mivel a [latex]k[/latex] és [latex]l[/latex] számokról tudjuk, hogy páratlan számok, ezért a [latex]t[/latex] is szükségképpen páratlan. Ha tehát a fenti kongruencia mindkét oldalát [latex]t[/latex]-edik hatványra emeljük (amelyet ugye a [yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" type="link" /] 8. pontja alapján tehetünk meg), akkor ezt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{2^{j-1}\overbrace{lt}^{=k}} \equiv \overbrace{(-1)^t}^{=-1}\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Itt a jobboldal valóban [latex]-1[/latex] marad, hiszen negatív szám páratlanadik hatványa ugyancsak negatív. Végeredményben tehát ezt kaptuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{2^{j-1}k} \equiv -1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Tekintve, hogy [latex]j-1[/latex] biztosan kisebb a bevezetett [latex]e[/latex] kitevőnél, ezért az alábbi kongruenciák közül biztosan teljesül az egyik:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a^k&amp;\equiv -1 \\ a^{2k}&amp;\equiv -1\pmod n \\ a^{4k}&amp;\equiv -1\pmod n \\ &amp;\vdots \\ a^{2^{e-1}\cdot k}&amp;\equiv -1\pmod n\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez viszont a [yp_element slug="miller-rabin-tanu" type="link" /] alapján azt jelenti, hogy az [latex][a]_n[/latex] maradékosztály ebben az esetben <strong><em>sem lehet Miller-Rabin-tanú</em></strong>. Ezzel a tétel <strong><em>1. állítását</em></strong> igazoltuk, miszerint valóban pontosan azok a maradékosztályok nem Miller-Rabin-tanúk – azaz tartoznak bele a tétel szövegében szereplő [latex]G_n[/latex] halmazba –, amelyekre teljesül az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{p-1}\equiv 1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Most igazoljuk a 2. állítást</em></strong>, amely azt állítja, hogy [latex]G_n[/latex] részcsoportja a [latex](\Z/n\Z)^{\times}[/latex] multiplikatív csoportnak. Mivel [latex](\Z/n\Z)^{\times}[/latex] rendje véges, ezért a [yp_element slug="reszcsoport-feltetele-veges-csoportok-eseten" type="link" /] szerint elegendő azt ellenőrizni, hogy [latex]G_n[/latex] <strong><em>nemüres</em></strong> és <strong><em>zárt a maradékosztályok közötti szorzásra</em></strong>, mint műveletre. Az első feltétel nyilván teljesül, hiszen [latex]1^{p-1}\equiv 1\pmod n[/latex], és így az <strong><em>1. állítás</em></strong> értelmében az [latex][1]_n[/latex] maradékosztály benne van [latex]G_n[/latex]-ben.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Legyen most [latex][a]_n[/latex] és [latex][b]_n[/latex] két tetszőleges maradékosztály, amelyek a [latex]G_n[/latex] halmaz elemei. Ez az imént bizonyított <strong><em>1. állítás</em></strong> alapján azt jelenti, hogy teljesülnek az alábbi kongruenciák:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a^{p-1}&amp;\equiv 1\pmod n \\ b^{p-1}&amp;\equiv 1\pmod n\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A két kongruenciát a [yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" type="link" /] 5. pontja alapján összeszorozhatjuk egymással, így ezt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{p-1}b^{p-1}\equiv 1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A baloldalt a hatványozás azonosságairól szóló [yp_element slug="hatvanyozas-azonossagai" type="link" /] 1. pontját felhasználva átírhatjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](ab)^{p-1}\equiv 1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez viszont ismét az imént bizonyított <strong><em>1. állítás</em></strong> miatt azt jelenti, hogy az [latex][ab]_n[/latex] maradékosztály is a [latex]G_n[/latex] halmaz eleme. Az [latex][ab]_n[/latex] maradékosztály azonban a [yp_element slug="egesz-szamok-maradekosztalygyurui" type="link" /]ben szereplő definíciónak megfelelően épp az [latex][a]_n[/latex] és [latex][b]_n[/latex] maradékosztályok szorzata. A [latex]G_n[/latex] halmaz tehát valóban részcsoport [latex](\Z/n\Z)^{\times}[/latex]-ban.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Végül a 3. állítást igazoljuk.</em></strong> Azt már láttuk, hogy [latex]c=1[/latex] esetben [latex]G_n=(\Z/n\Z)^{\times}[/latex], így elegendő azt igazolni, hogy [latex]c\geq 2[/latex] esetén viszont valódi részcsoportról van szó. Azaz kell találni egy olyan redukált maradékosztályt, amely <strong><em>nincs</em></strong> benne a [latex]G_n[/latex] halmazban. Más szavakkal kell találnunk egy olyan [latex]a[/latex] egész számot, amely relatív prím [latex]n=p^c[/latex]-hez, de amelyre [latex]a^{p-1}\ \cancel{\equiv}\ 1\pmod{p^c}[/latex]. Hiszen ekkor egyrészt a [yp_element slug="redukalt-maradekosztaly-feltetele" type="link" /] alapján [latex][a]_n[/latex] egy redukált maradékosztály, másrészt pedig a már bizonyított <strong><em>1. állítás</em></strong> alapján [latex][a]_n\
+otin G_n[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Nézzük meg először, hogy mi következik abból, ha egy [latex]a[/latex] szám teljesíti a fenti kongruenciát. Ekkor ugye a [latex](\Z/n\Z)^{\times}[/latex] csoportban a [yp_element slug="csoportelem-rendjere-vonatkozo-osszefuggesek" type="link" /] 2. pontja alapján az [latex][a]_n[/latex] maradékosztály rendje osztója [latex]p-1[/latex]-nek, azaz teljesül az alábbi oszthatóság:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]o([a]_n)|p-1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ám [latex]p-1[/latex] prímtényezős felbontásában biztosan nem szerepel [latex]p[/latex], így nem szerepelhet [latex]p-1[/latex] egyetlen osztójának prímtényezős felbontásában sem, emiatt [latex]o([a]_n)[/latex] felbontásában sem, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]p\
+mid o([a]_n)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Megfordítva a gondolatmenetet, ha tehát találunk egy olyan [latex][a]_n[/latex] <strong><em>redukált maradékosztályt</em></strong>, amelynek rendje osztható [latex]p[/latex]-vel, akkor az kizárja azt, hogy teljesüljön az [latex]a^{p-1}\equiv 1\pmod{p^c}[/latex] kongruencia, ami a már bizonyított <strong><em>1. állítás</em></strong> alapján azt jelentené, hogy [latex][a]_n\
+otin G_n[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Vegyük észre, hogy a [latex][p+1]_n[/latex] maradékosztály teljesíti ezt a feltételt. Egyrészt ugyanis [latex]p+1[/latex] nyilván relatív prím [latex]p[/latex]-hez – azaz [latex][p+1]_n[/latex] egy <strong><em>redukált maradékosztály</em></strong> –, másrészt pedig teljesül az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]p+1\equiv 1\pmod p[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ekkor azonban alkalmazható a [yp_element slug="prim-modulus-hatvanyozasa" type="link" /], amely szerint teljesül az alábbi kongruencia is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](p+1)^{p^{c-1}}\equiv 1\pmod{\underbrace{p^c}_{=n}}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez viszont a [yp_element slug="csoportelem-rendjere-vonatkozo-osszefuggesek" type="link" /] 2. pontja alapján azt jelenti, hogy a [latex][p+1]_n[/latex] maradékosztály rendje osztója [latex]p^{c-1}[/latex]-nek. Továbbá ugyanezen tétel 5. pontja miatt ez a rend biztosan nem [latex]1[/latex], hiszen [latex][p+1]_n\
+eq [1]_n[/latex]. Minthogy [latex]p^{c-1}[/latex] prímtényezős felbontásában csak [latex]p[/latex] szerepel, ezért ennek bármilyen [latex]1[/latex]-től különböző osztója szükségképpen osztható [latex]p[/latex]-vel.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A [latex][p+1]_n[/latex] redukált maradékosztály tehát valóban nincs benne [latex]G_n[/latex]-ben, és így [latex]G_n[/latex] tényleg <strong><em>valódi részcsoportja</em></strong> [latex](\Z/n\Z)^{\times}[/latex]-nek, ahogyan a tétel állítja.</p>
+<!-- /wp:paragraph -->

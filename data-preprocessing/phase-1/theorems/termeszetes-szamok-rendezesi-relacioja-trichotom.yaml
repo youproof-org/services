@@ -1,0 +1,10 @@
+type: theorem
+name: termeszetes-szamok-rendezesi-relacioja-trichotom
+proofs:
+  - termeszetes-szamok-rendezesi-relacioja-trichotom-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Az $\N$ halmaz tetszőleges $a$ és $b$ elemére teljesül, hogy az $a\leq b$ és $b\leq a$ relációk közül
+      legalább az egyik fennáll &ndash; azaz a $\leq$ reláció ***trichotóm***.

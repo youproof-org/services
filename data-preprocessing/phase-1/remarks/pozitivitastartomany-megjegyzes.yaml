@@ -1,0 +1,19 @@
+type: remark
+name: pozitivitastartomany-megjegyzes
+references:
+  gyuru-reszbenrendezesenek-tulajdonsagai:
+    target:
+      type: theorem
+      name: gyuru-reszbenrendezesenek-tulajdonsagai
+content:
+  - type: narrative
+    content: |
+      A [gyuru-reszbenrendezesenek-tulajdonsagai] 1. pontjából azonnal következik, hogy ***ha egy gyűrűelem
+      pozitív*** egy rendezésre nézve, ***akkor az ellentettje negatív***, illetve visszafelé: ***ha egy gyűrűelem
+      negatív*** egy rendezésre nézve, ***akkor az ellentettje pozitív***.
+  - type: narrative
+    content: |
+      Igaz továbbá az is, hogy ***nem létezik egyszerre pozitív és negatív gyűrűelem*** semmilyen rendezésre nézve.
+      Ha ugyanis valamilyen $a$ gyűrűelem egyszerre lenne pozitív és negatív, akkor $0\leq a$ és $a\leq 0$
+      egyszerre teljesülne. Az antiszimmetria miatt azonban ekkor $a=0$ lenne, azonban ez ellentmondana annak,
+      miszerint a nullelem definíció szerint se nem pozitív, se nem negatív.

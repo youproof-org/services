@@ -1,0 +1,52 @@
+type: section
+name: 05-a-rivest-shamir-adleman-rsa-aszimmetrikus-kulcsu-rejtjelezo-eljaras
+title: A Rivest-Shamir-Adleman (RSA) aszimmetrikus kulcsú rejtjelező eljárás
+
+body:
+  - type: narrative
+    content: |
+      A 9. részben mutattuk be az ***aszimmetrikus kulcsú rejtjelezés*** forradalmian új gondolatát. Ezt most pár
+      mondatban átismételjük, ám javasoljuk az Olvasónak a hivatkozott rész átolvasását. A nagy ötlet ugye az volt,
+      hogy a fogadó oldalon az üzenet visszafejtéséhez más kulcsot kelljen használni, mint amivel a küldő oldal
+      titkosította azt. Ekkor ugyanis nincs szükség arra, hogy a fogadó és a küldő oldal előzetesen megállapodjon
+      egy közös kulcsban.
+  - type: narrative
+    content: |
+      Ezt sok esetben egyébként nem is tudnák megtenni. Gondoljunk csak például arra, amikor valamilyen külföldi
+      webáruházban vásárolunk. Ez a vásárlás végén átirányít minket egy olyan bank fizetőoldalára, amelynek nem is
+      vagyunk az ügyfelei. Ilyenkor a böngészőnknek a begépelt bankkártyaadatokat titkosítva kell elküldenie a bank
+      szerverére, hiszen rendkívül érzékeny adatokról van szó. Amennyiben nem létezne aszimmetrikus kulcsú
+      titkosítás, akkor a folyamat itt meg is akadna. Szükség lenne ugyanis egy közös kulcsra a vásárló és a bank
+      közötti kommunikáció titkosításához. Az ***RSA-eljárásnak*** köszönhetően azonban ilyenre nincs szükség,
+      mivel a böngésző a bank ***publikus kulcsával*** &ndash; amely tehát bárki számára elérhető &ndash;
+      titkosíthatja az elküldendő bankkártyaadatokat, amelyet azután csak a bank fog tudni visszafejteni a saját
+      ***titkos kulcsával***.
+  - type: narrative
+    content: |
+      ***Visszatérve főszereplőinkhez:*** Tegyük fel, hogy Alice szeretne Bob-nak elküldeni egy $x$ üzenetet. Ehhez
+      előkeresi a nyilvános kulcstárból Bob $K_b$ ***publikus kulcsát***, és ezzel paraméterezi az $E$ rejtjelező
+      függvényt. Ily módon előáll az $y$ kódszöveg, amelyet elküld Bob-nak. Ezt az üzenetet kizárólag Bob tudja
+      visszafejteni, mivel a $K_b$ publikus kulcshoz tartozó $k_b$ ***privát kulcsot*** csak ő ismeri. Bob tehát a
+      $k_b$ privát kulccsal paraméterezve a $D$ dekódoló függvényt könnyedén vissza tudja állítani az eredeti $x$
+      üzenetet, míg a privát kulcsot nem ismerő támadó számára ez gyakorlatilag lehetetlen.
+  - type: figure
+    lead-in: |
+      Ez a folyamat látható az alábbi ábrán:
+    src: 02-aszimmetrikus-kulcsu-rejtjelezo-modell.jpg
+    alt: Aszimmetrikus kulcsú rejtjelező modell
+    caption: Aszimmetrikus kulcsú rejtjelező modell
+  - type: narrative
+    content: |
+      Az 1970-es évek nagy kérdése volt, hogy vajon mik lehetnek az ábrán szereplő $E$ és $D$ függvények &ndash; ha
+      egyáltalán léteznek ilyenek. Az úttörő eredmény az alábbi képen látható ***Ronald Linn Rivest***, ***Adi
+      Shamir*** és ***Leonard Max Adleman*** érdeme, akik 1977-ben publikálták az úgynevezett
+      ***Rivest-Shamir-Adleman (RSA) algoritmust***, amely talán az emberiség egyik legnagyobb horderejű
+      felfedezése volt &ndash; legalábbis a társadalmunkra gyakorolt hatását tekintve mindenképpen.
+  - type: figure
+    src: 03-adi-shamir-balra-ron-rivest.jpg
+    alt: Adi Shamir (balra), Ron Rivest (középen) és Len Adleman (jobbra)
+    caption: Adi Shamir (balra), Ron Rivest (középen) és Len Adleman (jobbra)
+  - type: narrative
+    content: |
+      Az alábbiakban &ndash; mostmár a szükséges számelméleti ismeretekkel felvértezve &ndash; ismertetjük ennek az
+      eljárásnak a részleteit, majd az egészet egy egyszerű példán szemléltetjük.

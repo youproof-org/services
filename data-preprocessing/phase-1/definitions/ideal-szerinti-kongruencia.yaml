@@ -1,0 +1,23 @@
+type: definition
+name: ideal-szerinti-kongruencia
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ tetszőleges gyűrű és legyen $I$ valamilyen ideál $R$-ben. Amennyiben az $R$ gyűrű valamilyen $a$
+      és $b$ elemeire teljesül, hogy az $a-b$ különbség az $I$ ideálnak eleme, akkor azt mondjuk, hogy $a$ és $b$
+      ***kongruensek az $I$ ideál szerint (vagy kongruensek modulo $I$)***.
+  - type: formula
+    lead-in: |
+      Ezt a relációt így jelöljük:
+    content: |
+      a\equiv b\pod I
+  - type: narrative
+    content: |
+      Amennyiben $a$ és $b$ között nem áll fenn az imént definiált modulo $I$ kongruencia, akkor őket
+      ***inkongruensnek nevezzük modulo $I$***.
+  - type: formula
+    lead-in: |
+      Ezt így jelöljük:
+    content: |
+      a\ \cancel{\equiv}\ b\pod I

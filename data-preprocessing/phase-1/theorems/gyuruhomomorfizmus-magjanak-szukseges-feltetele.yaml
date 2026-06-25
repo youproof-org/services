@@ -1,0 +1,16 @@
+type: theorem
+name: gyuruhomomorfizmus-magjanak-szukseges-feltetele
+proofs:
+  - gyuruhomomorfizmus-magjanak-szukseges-feltetele-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy egy $R$ gyűrű valamely $I$ részhalmaza egy $R$-ből kiinduló gyűrűhomomorfizmus magja. Tegyük
+      fel továbbá, hogy $a$ egy tetszőleges elem $I$-ben, és $r$ egy tetszőleges elem $R$-ben.
+  - type: ordered-list
+    lead-in: |
+      Ekkor teljesülnek az alábbiak:
+    items:
+      - '$I$ részgyűrű $R$-ben.'
+      - 'Az $a\cdot r$ és az $r\cdot a$ szorzatok benne vannak $I$-ben.'

@@ -1,0 +1,23 @@
+type: definition
+name: oszthatosag
+remarks:
+  - oszthatosag-megjegyzes
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy $R$ egy ***kommutatív gyűrű***, valamint $a$ és $b$ a gyűrű két eleme. Amennyiben létezik
+      olyan $k$ gyűrűelem, hogy $ak=b$, akkor azt mondjuk, hogy ***$a$ osztója $b$-nek az $R$ gyűrűben***. Ezzel
+      egyenértékű megfogalmazások: ***$b$ osztható $a$-val*** vagy ***$b$ többszöröse $a$-nak***.
+  - type: narrative
+    content: |
+      Az oszthatóság tehát egy ***kétváltozós reláció*** az $R$ gyűrűben. Azt a relációt, hogy "$a$ osztója $b$-nek
+      $R$-ben", így jelöljük: $a|_R b$.
+  - type: narrative
+    content: |
+      Amennyiben $a$ és $b$ között nem áll fenn az oszthatósági reláció &ndash; azaz ***$a$ nem osztója $b$-nek az
+      $R$ gyűrűben*** &ndash;, azt így jelöljük: $a{\mid}_R b$.
+  - type: narrative
+    content: |
+      Ha a kontextusból egyértelmű, hogy melyik gyűrűben vizsgáljuk az oszthatóságot, akkor a relációt jelölő
+      szimbólumból elhagyhatjuk a gyűrűre való hivatkozást. Ilyenkor például $a|_R b$ helyett egyszerűen $a|b$-t
+      írhatunk.

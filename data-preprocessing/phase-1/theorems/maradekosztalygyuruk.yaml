@@ -1,0 +1,47 @@
+type: theorem
+name: maradekosztalygyuruk
+proofs:
+  - maradekosztalygyuruk-bizonyitas
+remarks: []
+references:
+  ideal-szerinti-kongruencia-ekvivalenciarelacio:
+    target:
+      type: theorem
+      name: ideal-szerinti-kongruencia-ekvivalenciarelacio
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ egy tetszőleges gyűrű, és tegyük fel, hogy $I$ ideál $R$-ben. Jelöljük $R/I$-vel azt a halmazt,
+      amelynek elemei a [ideal-szerinti-kongruencia-ekvivalenciarelacio]ben definiált $I$ ideál szerinti
+      maradékosztályok.
+  - type: ordered-list
+    lead-in: |
+      Vezessünk be ezek között két műveletet az alábbiak szerint:
+    items:
+      - 'Ha $A=a+I$ és $B=b+I$ két maradékosztály, akkor ezek ***összege*** legyen az $A\oplus B=(a+b)+I$
+        maradékosztály.'
+      - 'Ha $A=a+I$ és $B=b+I$ két maradékosztály, akkor ezek ***szorzata*** legyen az $A\odot B=(a\cdot b)+I$
+        maradékosztály.'
+  - type: narrative
+    content: |
+      Ekkor az $R/I$ halmaz ezzel a két művelettel gyűrűt alkot, amelyet az $R$ gyűrű ***$I$ ideál szerinti
+      maradékosztálygyűrűjének*** vagy ***faktorgyűrűjének*** nevezünk.
+  - type: narrative
+    content: |
+      Ha $0_R$ jelöli az $R$ gyűrű nullelemét, akkor az $R/I$ gyűrű ***nulleleme*** a $0_R+I$ maradékosztály.
+  - type: narrative
+    content: |
+      Ha $-a$ jelöli az $R$ gyűrű egy $a$ elemének ellentettjét, akkor az $R/I$ gyűrű $a+I$ elemének
+      ***ellentettje*** a $(-a)+I$ maradékosztály.
+  - type: narrative
+    content: |
+      Ha $R$ ***egységelemes***, és $1_R$ jelöli az egységelemét, akkor $R/I$ is egységelemes, az egységelem pedig
+      az $1_R+I$ maradékosztály.
+  - type: narrative
+    content: |
+      Ha $R$ ***kommutatív***, akkor $R/I$ is az.
+  - type: narrative
+    content: |
+      Tekintsük továbbá azt az $f:R\to R/I$ függvényt, amely minden $R$-beli $r$ elemhez az $r+I$ maradékosztályt
+      rendeli hozzá az $R/I$ gyűrűből. Ekkor $f$ egy ***gyűrűhomomorfizmus*** $R$ és $R/I$ között, melynek magja
+      $I$. Ennek a neve ***természetes gyűrűhomomorfizmus***.

@@ -1,0 +1,63 @@
+<!-- wp:paragraph -->
+<p>A [yp_element slug="egesz-szamok-es-maradekosztalygyuruk-additiv-csoportja-ciklikus" type="link" /] alapján a [latex]\Z^+[/latex] illetve a [latex](\Z/m\Z)^+[/latex] csoportok ciklikusak. Ezért ha [latex]G[/latex] izomorf valamelyikükkel, akkor a [yp_element slug="csoporthomomorfizmusok-ciklikussagtarto-tulajdonsaga" type="link" /] alapján [latex]G[/latex] is ciklikus, hiszen a csoportizomorfizmus a [yp_element slug="csoporthomomorfizmus" type="link" /] alapján egy szürjektív homomorfizmus.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Megfordítva:</em></strong> Tegyük fel, hogy [latex]G[/latex] ciklikus, és legyen [latex]g[/latex] egy generátorelem. Ekkor [latex]G[/latex] minden eleme felírható [latex]g[/latex] egész kitevős hatványaként.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>1. eset – [latex]g[/latex] rendje (lásd a [yp_element slug="csoportelem-rendje" type="link" /]t) végtelen:</em></strong> Tekintsük azt az [latex]f:\Z^+\to G[/latex] függvényt, amely minden [latex]n[/latex] egész számhoz hozzárendeli a [latex]g^n[/latex] elemet. Mivel a [yp_element slug="csoportelem-rendjere-vonatkozo-osszefuggesek" type="link" /] alapján [latex]g[/latex] bármely két hatványa különbözik, ezért ez a függvény injektív lesz, hiszen különböző egész számok képe különböző [latex]G[/latex]-beli elem lesz. Továbbá, mivel [latex]G[/latex] minden eleme felírható [latex]g[/latex] egész kitevős hatványaként, ezért [latex]f[/latex] egyben szürjektív is. Így már csak a <strong><em>művelettartó tulajdonságot</em></strong> kell igazolni. Ez viszont az egész kitevős hatványozás azonosságaiból ([yp_element slug="egesz-kitevos-hatvanyozas-azonossagai" type="link" /] 3. pontja) következik:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f(n+k)=g^{n+k}=g^n\cdot g^k=f(n)\cdot f(k)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azaz [latex]G[/latex] ebben az esetben izomorf a [latex]\Z^+[/latex] csoporttal.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>2. eset – [latex]g[/latex] rendje véges:</em></strong> Legyen [latex]g[/latex] rendje [latex]m[/latex], és tekintsük azt az [latex]f:(\Z/m\Z)^+\to G[/latex] függvényt, amely minden [latex][n]_m[/latex] maradékosztályhoz hozzárendeli a [latex]g^n[/latex] elemet. Tekintsünk két tetszőleges maradékosztályt, legyenek ezek például [latex][n]_m[/latex] és [latex][k]_m[/latex], és tegyük fel, hogy teljesülnek az alábbiak:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f([n]_m)=f([k]_m)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]f[/latex] függvény definíciója alapján ez az egyenlet így írható fel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]g^n=g^k[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ám mivel [latex]g[/latex] rendje véges, ezért a [yp_element slug="csoportelem-rendjere-vonatkozo-osszefuggesek" type="link" /] 1. pontja alapján ekkor teljesül az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]n\equiv k\pmod m[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez viszont azt jelenti, hogy [latex]n[/latex] és [latex]k[/latex] ugyanazt a modulo [latex]m[/latex] maradékosztályt reprezentálják, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][n]_m=[k]_m[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Vagyis különböző maradékosztályok képei nem lehetnek azonosak, így az [latex]f[/latex] függvény injektív. Továbbá, mivel [latex]G[/latex] minden eleme felírható [latex]g[/latex] egész kitevős hatványaként, és bármely egész szám reprezentál valamilyen modulo [latex]m[/latex] maradékosztályt, ezért [latex]f[/latex] egyben szürjektív is. Így már csak a <strong><em>művelettartó tulajdonságot</em></strong> kell igazolni. Ez viszont ismét az egész kitevős hatványozás azonosságaiból ([yp_element slug="egesz-kitevos-hatvanyozas-azonossagai" type="link" /] 3. pontja), továbbá a maradékosztályok közötti összeadás műveletének definíciójából ([yp_element slug="egesz-szamok-maradekosztalygyurui" type="link" /]) következik:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f([n]_m+[k]_m)=f([n+k]_m)=g^{n+k}=g^n\cdot g^k=f([n]_m)\cdot f([k]_m)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azaz [latex]G[/latex] ebben az esetben izomorf a [latex](\Z/m\Z)^+[/latex] csoporttal.</p>
+<!-- /wp:paragraph -->

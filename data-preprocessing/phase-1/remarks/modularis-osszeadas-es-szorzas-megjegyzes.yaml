@@ -1,0 +1,55 @@
+type: remark
+name: modularis-osszeadas-es-szorzas-megjegyzes
+references:
+  egesz-szamok-abszoluterteke:
+    target:
+      type: definition
+      name: egesz-szamok-abszoluterteke
+  egesz-szamok-maradekos-osztasa-egyertelmu:
+    target:
+      type: theorem
+      name: egesz-szamok-maradekos-osztasa-egyertelmu
+  gyuru-test:
+    target:
+      type: definition
+      name: gyuru-test
+  gyuruk-alapveto-tulajdonsagai:
+    target:
+      type: theorem
+      name: gyuruk-alapveto-tulajdonsagai
+  ketvaltozos-muvelet:
+    target:
+      type: definition
+      name: ketvaltozos-muvelet
+content:
+  - type: ordered-list
+    lead-in: |
+      A definícióból azonnal adódnak az alábbi észrevételek:
+    items:
+      - 'A $\bmod_m$ maradékképzés ***valóban egy függvény***, mivel a hozzárendelés a [egesz-szamok-maradekos-osztasa-egyertelmu] alapján ***egyértelmű***. Ez alatt azt
+        értjük, hogy minden egész számhoz ***pontosan egy*** modulo $m$ maradék rendelhető, se több, se kevesebb.
+        Megjegyezzük ugyanakkor, hogy a hozzárendelés nyilván ***nem kölcsönösen egyértelmű***, hiszen egy adott
+        $Z_m$-beli elem végtelen sok egész szám modulo $m$ maradéka lehet. Például végtelen sok olyan egész szám
+        van, ami $2$-vel osztva $1$ maradékot ad: nevezetesen minden páratlan szám.'
+      - 'Ennek következménye, hogy a definícióban szereplő $\oplus$ és $\odot$ szimbólummal jelölt műveletek
+        ***valóban műveletek*** a szó algebrai értelmében is (lásd az erről szóló [ketvaltozos-muvelet]t). Ugyanis a definíció szerint a hagyományos összeadás/szorzás
+        elvégzése után alkalmazni kell a $\bmod_m$ maradékképző függvény, amely a $Z_m$ halmazba képez. A két
+        művelet tehát $Z_m$-beli elemekből alkotott párokhoz valóban $Z_m$-beli elemeket rendel hozzá, azaz nem
+        vezet ki a $Z_m$ halmazból.'
+      - 'Bármilyen $a$ egész szám modulo $m$ maradéka megegyezik a modulo $-m$ maradékával. Azaz a $\bmod_m$ és a
+        $\bmod_{-m}$ függvények minden $m\eq 0$ esetén ugyanazt a hozzárendelést valósítják meg. Ugyanis a
+        [gyuruk-alapveto-tulajdonsagai] 4. pontja alapján $a=km+r=(-k)(-m)+r$, és
+        ha $0\leq r\lt |m|$ teljesül, akkor az abszolútérték-függvény [egesz-szamok-abszoluterteke]ja értelmében $0\leq r\lt |-m|$ is nyilván teljesül.'
+      - 'A $\bmod_m$ függvény az $|m|=1$ szélsőséges esetben is értelmes, csak épp nem túl változatos. Ilyenkor
+        ugyanis a $Z_m$ halmaz a ***nullgyűrű*** ([gyuru-test]) lesz, azaz
+        mindössze egyetlen elemet fog tartalmazni, méghozzá a $0$ egész számot. A $\bmod_m$ maradékképző függvény
+        pedig minden egész számhoz a $0$-t fogja hozzárendelni. Nyilván, hiszen az $m=1$ vagy $m=-1$ modulusok
+        minden számnak osztói &ndash; mivel egységek &ndash;, és így a maradék minden esetben $0$.'
+      - 'A $\bmod_m(a)=a$ egyenlőség ***akkor és csak akkor*** teljesül, ha az $a$ egész szám maga is modulo $m$
+        maradék, azaz teljesül a $0\leq a\lt |m|$ egyenlőtlenség. Nyilván, hiszen ebben az esetben a maradékos
+        osztás az $a=0\cdot m+a$ alakra egyszerűsödik, így $a$ nemnegatív maradéka $m$-mel osztva önmaga.
+        ***Megfordítva:*** ha $a$ maradéka önmaga &ndash; azaz $\bmod_m(a)=a$ &ndash;, akkor nyilván teljesül a
+        $0\leq a\lt |m|$ egyenlőtlenség, hiszen ez a modulo $m$ maradékok definíciója.'
+      - 'Végül megjegyezzük, hogy a $Z_m$-en értelmezett két moduláris műveletre nincs standard jelölés, a
+        definícióban önkényesen használtuk a $\oplus$ és $\odot$ szimbólumokat. Ettől kontextustól függően
+        eltérhetünk, ám ezt minden esetben jelezni fogjuk.'

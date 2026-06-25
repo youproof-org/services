@@ -1,0 +1,38 @@
+type: proof
+name: ideal-szerinti-muveletek-joldefinialtsaga-bizonyitas
+remarks: []
+references:
+  ideal:
+    target:
+      type: definition
+      name: ideal
+  ideal-szerinti-kongruencia:
+    target:
+      type: definition
+      name: ideal-szerinti-kongruencia
+content:
+  - type: narrative
+    content: |
+      Az első két kongruencia a [ideal-szerinti-kongruencia] alapján épp azt jelenti, hogy az $a_1-a_2$ és a
+      $b_1-b_2$ különbségek benne vannak $I$-ben. Minthogy $I$ részgyűrű $R$-ben (hiszen ideál), ezért e két
+      különbség összege, azaz $(a_1+b_1)-(a_2+b_2)$ szintén $I$-ben van, és így valóban teljesül az $a_1+b_1\equiv
+      a_2+b_2\pod I$ kongruencia.
+  - type: narrative
+    content: |
+      A szorzatra vonatkozó $a_1b_1\equiv a_2b_2\pod I$ kongruencia viszont akkor teljesülne, ha $a_1b_1-a_2b_2$ is
+      benne lenne $I$-ben, így most ezt fogjuk ellenőrizni. E kifejezés értéke nem változik, ha kivonunk belőle
+      $a_1b_2$-t, majd hozzá is adjuk.
+  - type: formula
+    lead-in: |
+      Ezt felírva, és $a_1$-et, valamint $b_2$-t kiemelve ezt kapjuk:
+    content: |
+      a_1b_1-a_2b_2+a_1b_2-a_1b_2=a_1\cdot (b_1-b_2)+(a_1-a_2)\cdot b_2
+  - type: narrative
+    content: |
+      Nézzük meg a jobboldali kifejezés két tagját. Az első tag ugye az $a_1\cdot (b_1-b_2)$ szorzat. A $b_1-b_2$
+      tényezőről tudjuk, hogy benne van $I$-ben. De mivel $I$ ideál, így egyben balideál is, ezért az ő elemeit
+      balról megszorozva bármilyen $R$-beli elemmel (például $a_1$-gyel) az eredmény szintén $I$-beli lesz (lásd a
+      [ideal]t). Ugyanezen okok miatt &ndash; mivel $I$ ***jobbideál*** is &ndash; a fenti összeg másik tagja, azaz
+      az $(a_1-a_2)\cdot b_2$ szorzat is benne van $I$-ben. Így e két tag összege, azaz lényegében $a_1b_1-a_2b_2$
+      szintén benne van $I$-ben &ndash; hiszen $I$ részgyűrű, azaz zárt az összeadásra &ndash;, tehát valóban
+      teljesül az $a_1b_1\equiv a_2b_2\pod I$ kongruencia is.

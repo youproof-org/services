@@ -1,0 +1,41 @@
+@use 'variables' as *;
+
+.breadcrumb {
+  font-size: 0.75rem;
+  font-weight: $font-light;
+  flex-shrink: 0;
+
+  ol {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+
+.separator {
+  color: $gray-400;
+}
+
+.current {
+  font-weight: $font-bold;
+}
+
+.link {
+  text-decoration: none;
+  color: inherit;
+
+  &:hover {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+}

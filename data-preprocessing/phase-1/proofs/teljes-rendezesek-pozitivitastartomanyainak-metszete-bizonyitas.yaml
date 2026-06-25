@@ -1,0 +1,39 @@
+type: proof
+name: teljes-rendezesek-pozitivitastartomanyainak-metszete-bizonyitas
+remarks: []
+references:
+  gyuruk-alapveto-tulajdonsagai:
+    target:
+      type: theorem
+      name: gyuruk-alapveto-tulajdonsagai
+  pozitivitastartomany-szukseges-es-elegseges-feltetele:
+    target:
+      type: theorem
+      name: pozitivitastartomany-szukseges-es-elegseges-feltetele
+  teljes-rendezes-szukseges-es-elegseges-feltetele:
+    target:
+      type: theorem
+      name: teljes-rendezes-szukseges-es-elegseges-feltetele
+content:
+  - type: narrative
+    content: |
+      Az [teljes-rendezes-szukseges-es-elegseges-feltetele] alapján ***minden*** $a\eq 0$ elemre teljesül, hogy
+      vagy ő, vagy pedig az ellentettje benne van az összes olyan pozitivitástartományban, amely valamilyen, a
+      rendezési axiómákat kielégítő teljes rendezéshez tartozik.
+  - type: narrative
+    content: |
+      ***Az első esetben*** $a\cdot a$ is benne van az összes ilyen pozitivitástartományban, hiszen azok &ndash;
+      nullosztómentes gyűrűről lévén szó &ndash; a [pozitivitastartomany-szukseges-es-elegseges-feltetele] miatt
+      zártak a szorzás műveletére nézve.
+  - type: narrative
+    content: |
+      ***Második esetben*** az $a$ elem helyett a $(-a)$ elem van benne ezekben a pozitivitástartományokban, de
+      ekkor &ndash; szintén a [pozitivitastartomany-szukseges-es-elegseges-feltetele] miatt &ndash; a $(-a)\cdot
+      (-a)$ szorzat is. Vegyük észre azonban, hogy ez a szorzat a [gyuruk-alapveto-tulajdonsagai] 4. pontja alapján
+      épp $a\cdot a$-val egyenlő.
+  - type: narrative
+    content: |
+      ***Azt kaptuk tehát***, hogy minden $a\eq 0$ elem önmagával vett szorzata mindenképpen pozitív bármely teljes
+      rendezésre nézve &ndash; még akkor is, ha ő maga negatív. De ekkor e szorzatok tetszőleges kombinációban
+      felírt összegei is pozitívak, hiszen a [pozitivitastartomany-szukseges-es-elegseges-feltetele] szerint egy
+      nullosztómentes gyűrűben a pozitivitástartományok zártak az összeadásra nézve.

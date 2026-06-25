@@ -1,0 +1,21 @@
+type: definition
+name: polinomok-gyokei
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ egy tetszőleges ***kommutatív gyűrű***, $f\in R[x]$ egy tetszőleges ***$R$ feletti polinom***,
+      $F:R\to R$ pedig az $f$ polinomhoz tartozó polinomfüggvény. Jelöljük továbbá az $R$ gyűrű nullelemét
+      $0_R$-rel.
+  - type: narrative
+    content: |
+      Ekkor az ***$f$ polinom gyökeinek*** nevezzük azokat az $x\in R$ gyűrűelemeket, amelyekhez az $F$
+      polinomfüggvény az $R$ gyűrű ***nullelemét*** rendeli hozzá.
+  - type: formula
+    lead-in: |
+      Azaz amelyekre teljesül az alábbi:
+    content: |
+      F(x)=0_R
+  - type: narrative
+    content: |
+      Ilyenkor azt mondjuk, hogy $x$ az ***$f$ polinom gyöke az $R$ gyűrűben***.

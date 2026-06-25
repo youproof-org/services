@@ -1,0 +1,355 @@
+<!-- wp:paragraph -->
+<p>Az <strong><em>1. állítás</em></strong> bizonyításához <strong><em>először</em></strong> azt igazoljuk, hogy [latex]D_n[/latex] részcsoport [latex](\Z/n\Z)^{\times}[/latex]-ben. A [yp_element slug="reszcsoport-feltetele-veges-csoportok-eseten" type="link" /] alapján ez az alábbi 3 feltétel ellenőrzését jelenti:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} -->
+<ol><li>[latex]D_n[/latex] <strong><em>nemüres</em></strong></li><li>Fennáll a [latex]D_n\sube (\Z/n\Z)^{\times}[/latex] <strong><em>tartalmazási reláció</em></strong></li><li>[latex]D_n[/latex] <strong><em>zárt</em></strong> a [latex](\Z/n\Z)^{\times}[/latex] csoport műveletére nézve.</li></ol>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Az első feltétel</em></strong> nyilván teljesül, hiszen teljesülnek az alábbi kongruenciák:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}1^{2^{j_{\text{max}}}k} &amp;\equiv 1\pmod{p_1^{c_1}} \\ 1^{2^{j_{\text{max}}}k} &amp;\equiv 1\pmod{p_2^{c_2}} \\ &amp;\vdots \\ 1^{2^{j_{\text{max}}}k} &amp;\equiv 1\pmod{p_r^{c_r}}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Így tehát az [latex][1]_n[/latex] maradékosztály biztosan benne van [latex]D_n[/latex]-ben.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A második feltételhez</em></strong> tekintsünk egy tetszőleges [latex][a]_n\in D_n[/latex] maradékosztályt, és igazoljuk, hogy ő egy <strong><em>redukált maradékosztály</em></strong>, azaz [latex][a]_n\in (\Z/n\Z)^{\times}[/latex]. Mivel [latex][a]_n\in D_n[/latex], ezért a tétel szövege alapján tetszőleges [latex]p_i[/latex] prímtényezőre teljesül az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{2^{j_{\text{max}}}k}\equiv \pm 1\pmod{p_i^{c_i}}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Akár [latex]1[/latex], akár [latex]-1[/latex] szerepel a jobboldalon, a kongruenciát négyzetre emelve az alábbit kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{2^{j_{\text{max}}+1}k}\equiv 1\pmod{p_i^{c_i}}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Találtunk tehát egy olyan pozitív kitevőt – nevezetesen [latex]2^{j_{\text{max}}+1}k[/latex]-t –, amelyre emelve [latex]a[/latex]-t az eredmény kongruens lesz [latex]1[/latex]-gyel modulo [latex]p_i^{c_i}[/latex]. Ebből viszont a [yp_element slug="euler-fermat-tetel-megforditasa" type="link" /] alapján következik, hogy [latex]a[/latex] relatív prím [latex]p_i^{c_i}[/latex]-hez, azaz prímtényezős felbontása nem tartalmazza a [latex]p_i[/latex] prímtényezőt. Minthogy ez [latex]n[/latex] összes prímtényezőjével végigjátszható, így azt kapjuk, hogy [latex]a[/latex] prímtényezős felbontás nem tartalmazza [latex]n[/latex] egyetlen prímtenyőjét sem, tehát relatív prím magához [latex]n[/latex]-hez. Ez viszont a [yp_element slug="redukalt-maradekosztaly-feltetele" type="link" /] értelmében azt jelenti, hogy [latex][a]_n[/latex] <strong><em>redukált maradékosztály</em></strong>, vagyis valóban benne van [latex](\Z/n\Z)^{\times}[/latex]-ben.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Végül a harmadik feltételhez</em></strong> tekintsünk két tetszőleges [latex][a]_n[/latex] és [latex][b]_n[/latex] maradékosztályt a [latex]D_n[/latex] halmazban. A [latex]D_n[/latex] definíciója alapján ekkor teljesülnek az alábbi kongruenciák:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{cc} \begin{aligned}a^{2^{j_{\text{max}}}k} &amp;\equiv \pm 1\pmod{p_1^{c_1}} \\ a^{2^{j_{\text{max}}}k} &amp;\equiv \pm 1\pmod{p_2^{c_2}} \\ &amp;\vdots \\ a^{2^{j_{\text{max}}}k} &amp;\equiv \pm 1\pmod{p_r^{c_r}}\end{aligned} &amp; \begin{aligned}b^{2^{j_{\text{max}}}k} &amp;\equiv \pm 1\pmod{p_1^{c_1}} \\ b^{2^{j_{\text{max}}}k} &amp;\equiv \pm 1\pmod{p_2^{c_2}} \\ &amp;\vdots \\ b^{2^{j_{\text{max}}}k} &amp;\equiv \pm 1\pmod{p_r^{c_r}}\end{aligned} \end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha az egymás mellett álló kongruenciákat összeszorozzuk, és alkalmazzuk a <strong><em>hatványozás azonosságairól</em></strong> szóló [yp_element slug="hatvanyozas-azonossagai" type="link" /] 1. pontját, akkor az alábbi kongruenciákat kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}(ab)^{2^{j_{\text{max}}}k} &amp;\equiv \pm 1\pmod{p_1^{c_1}} \\ (ab)^{2^{j_{\text{max}}}k} &amp;\equiv \pm 1\pmod{p_2^{c_2}} \\ &amp;\vdots \\ (ab)^{2^{j_{\text{max}}}k} &amp;\equiv \pm 1\pmod{p_r^{c_r}}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Vagyis az [latex][ab]_n[/latex] maradékosztály szintén benne van [latex]D_n[/latex]-ben. Mivel ez a [yp_element slug="egesz-szamok-maradekosztalygyurui" type="link" /] alapján épp az [latex][a]_n[/latex] és [latex][b]_n[/latex] maradékosztályok szorzata, ezért [latex]D_n[/latex] valóban zárt a [latex](\Z/n\Z)^{\times}[/latex] csoport műveletére nézve. Minthogy a [yp_element slug="reszcsoport-feltetele-veges-csoportok-eseten" type="link" /] mindhárom feltétele teljesül, ezért [latex]D_n[/latex] részcsoport [latex](\Z/n\Z)^{\times}[/latex]-ben, azaz [latex]D_n\leq (\Z/n\Z)^{\times}[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most az <strong><em>1. állítás másik felét</em></strong>, azaz a [latex]H_n\leq D_n[/latex] részcsoport relációt igazoljuk. A [yp_element slug="nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten" type="link" /] 2. pontja alapján azt már tudjuk, hogy [latex]H_n[/latex] részcsoport [latex](\Z/n\Z)^{\times}[/latex]-ban, azaz zárt a maradékosztályok közötti szorzásra nézve. Így már csak a [latex]H_n\sube D_n[/latex] tartalmazási relációt kell igazolni. Legyen ezért [latex][a]_n[/latex] a [latex]H_n[/latex] halmaz egy tetszőleges eleme és mutassuk meg róla, hogy ő egyúttal benne van [latex]D_n[/latex]-ben is. Mivel [latex][a]_n\in H_n[/latex], így a tétel szövege alapján [latex]a[/latex]-ra teljesül az alábbi kongurencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{2^{j_{\text{max}}}k}\equiv \pm 1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ám ekkor az [latex]n[/latex] prímtényezős felbontásában szereplő összes [latex]p_i^{c_i}[/latex] tényező esetén a [yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" type="link" /] 9. pontja alapján teljesül az alábbi kongruencia is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{2^{j_{\text{max}}}k}\equiv \pm 1\pmod{p_i^{c_i}}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez viszont a tétel szövege alapján épp azt jelenti, hogy [latex][a]_n\in D_n[/latex], azaz valóban teljesül a [latex]H_n\sube D_n[/latex] tartalmazási reláció, és így [latex]H_n[/latex] tényleg részcsoport [latex]D_n[/latex]-ben. Ezzel igazoltuk a tétel <strong><em>1. állítását</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>2. állítás</em></strong> igazolásához ki kellene számítani a [latex]H_n[/latex] részcsoport [latex]D_n[/latex]-beli indexét. Ezt nem közvetlenül fogjuk megtenni, hanem a [yp_element slug="csoporthomomorfizmusok-strukturatarto-tulajdonsagai" type="link" /] alkalmazásával, méghozzá a következő lépésekben:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} -->
+<ol><li>Konstruálunk egy olyan [latex]I_n[/latex]-nel jelölt <strong><em>csoportot</em></strong>, amelyben már könnyű kiszámítani a részcsoportindexeket.</li><li>Konstruálunk egy [latex]D_n[/latex]-ből [latex]I_n[/latex]-be képző <strong><em>csoporthomomorfizmust</em></strong>.</li><li>Megmutatjuk, hogy ez egy <strong><em>szürjektív</em></strong> csoporthomomorfizmus, azaz minden [latex]I_n[/latex]-beli elem hozzá van rendelve legalább egy [latex]D_n[/latex]-beli elemhez.</li><li>Megmutatjuk, hogy a [latex]H_n[/latex] részcsoport <strong><em>teljes egészében tartalmazza</em></strong> ennek a bizonyos csoporthomomorfizmusnak <strong><em>a magját</em></strong>.</li><li>Megkeressük azt az [latex]I_n[/latex]-beli részcsoportot, amelynek <strong><em>teljes inverz képe</em></strong> épp [latex]H_n[/latex].</li><li>Ennek a részcsoportnak az [latex]I_n[/latex]-beli indexe már könnyen kiszámítható lesz, amely a [yp_element slug="csoporthomomorfizmusok-strukturatarto-tulajdonsagai" type="link" /] 2. pontja alapján épp meg fog egyezni a [latex]H_n[/latex] részcsoport [latex]D_n[/latex]-beli indexével.</li></ol>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Kezdjük az 1. lépéssel!</em></strong> A kérdéses [latex]I_n[/latex] csoport álljon az <strong><em>összes</em></strong> olyan [latex]r[/latex] hosszú sorozatból – ahol ugye [latex]r[/latex] a tétel szövege alapján az [latex]n[/latex] egész szám különböző prímtényezőinek a számát jelöli –, amelyeknek mindegyik komponensében [latex]+1[/latex] vagy [latex]-1[/latex] áll. Azaz például az alábbi [latex]r[/latex] darab komponensből álló sorozat legyen [latex]I_n[/latex] egyik eleme:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{(+1;-1;-1;+1;\ldots;-1)}_{r\ \text{darab komponens}}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]I_n[/latex] tehát tulajdonképpen nem más, mint a [latex]\{+1;-1\}[/latex] halmaz [latex]r[/latex]-szer önmagával vett <strong><em>direkt szorzata</em></strong> (lásd a [yp_element slug="halmazok-direkt-szorzata" type="link" /]t). Az [latex]I_n[/latex] csoportművelete legyen a [yp_element slug="csoportok-direkt-szorzata" type="link" /]ben definiált <strong><em>komponensenkénti szorzás</em></strong>. Azaz két ilyen [latex]+1[/latex]-ekből és [latex]-1[/latex]-ekből álló [latex]r[/latex] hosszú sorozat <strong><em>szorzata</em></strong> legyen az a szintén [latex]r[/latex] hosszú sorozat, amelynek mindegyik komponense a két bemeneti sorozat azonos pozícióban lévő komponenseinek szorzata.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mivel a [latex]\{+1;-1\}[/latex] halmaz épp az egész számok [latex]\Z[/latex] gyűrűjének egységeiből áll, ezért ez a halmaz a szokásos szorzással tulajdonképpen [latex]\Z[/latex] multiplikatív csoportját alkotja (lásd a [yp_element slug="gyuru-additiv-es-multiplikativ-csoportja" type="link" /] utáni megjegyzést). Ekkor azonban a [yp_element slug="csoportok-direkt-szorzata" type="link" /] alapján [latex]I_n[/latex] is csoport a <strong><em>komponensenkénti szorzással</em></strong>, mint művelettel. Minthogy az [latex]I_n[/latex] csoport [latex]r[/latex] hosszú sorozatokból áll, és egy-egy ilyen sorozat minden komponense [latex]+1[/latex] vagy [latex]-1[/latex] lehet, ezért <strong><em>[latex]I_n[/latex] rendje [latex]2^r[/latex]</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Most 2. lépésként</em></strong> egy [latex]D_n[/latex]-ből [latex]I_n[/latex]-be képező [latex]f_n:D_n\to I_n[/latex] <strong><em>csoporthomomorfizmust</em></strong> konstruálunk a következőképpen. Legyen [latex][a]_n[/latex] a [latex]D_n[/latex] csoport egy tetszőleges eleme. Ekkor ugye a tétel szövege alapján az [latex]a^{2^{j_{\text{max}}}k}[/latex] hatvány az [latex]n[/latex] prímtényezős felbontásában szereplő <strong><em>minden</em></strong> [latex]p_i^{c_i}[/latex] tényező esetén [latex]+1[/latex]-gyel vagy [latex]-1[/latex]-gyel lesz kongruens modulo [latex]p_i^{c_i}[/latex]. Az [latex]f_n[/latex] függvény tehát rendelje hozzá [latex][a]_n[/latex]-hez azt az [latex]I_n[/latex]-beli sorozatot, melynek [latex]i[/latex]-edik komponensében épp az ennek megfelelő [latex]+1[/latex] vagy [latex]-1[/latex] egész szám áll. Tegyük fel például, hogy [latex]a[/latex]-ra az alábbi kongruenciák teljesülnek:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a^{2^{j_{\text{max}}}k} &amp;\equiv +1\pmod{p_1^{c_1}} \\ a^{2^{j_{\text{max}}}k} &amp;\equiv -1\pmod{p_2^{c_2}} \\ a^{2^{j_{\text{max}}}k} &amp;\equiv +1\pmod{p_3^{c_3}} \\ &amp;\vdots \\ a^{2^{j_{\text{max}}}k} &amp;\equiv -1\pmod{p_r^{c_r}}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ekkor az imént definiált [latex]f_n[/latex] függvény az [latex][a]_n\in D_n[/latex] maradékosztályhoz az alábbi sorozatot rendeli hozzá az [latex]I_n[/latex] csoportból:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][a]_n \xmapsto{f_n} (+1;-1;+1;\ldots;-1)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Könnyen láthatóan [latex]f_n[/latex] valóban egy <strong><em>csoporthomomorfizmus</em></strong>. Tekintsünk ugyanis két tetszőleges [latex][a]_n[/latex] és [latex][b]_n[/latex] maradékosztályt a [latex]D_n[/latex] halmazban, és legyen [latex]p_i^{c_i}[/latex] egy tetszőleges tényező az [latex]n[/latex] prímtényzős felbontásában. Ekkor a tétel szövege alapján az [latex]a^{2^{j_{\text{max}}}k}[/latex] és [latex]b^{2^{j_{\text{max}}}k}[/latex] hatványok [latex]+1[/latex]-gyel vagy [latex]-1[/latex]-gyel lesznek kongruensek modulo [latex]p_i^{c_i}[/latex]. Tegyük fel, hogy jelen esetben az alábbi kombináció teljesül, de természetesen a gondolatmenet a másik három kombinációra is végigjátszható:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a^{2^{j_{\text{max}}}k} &amp;\equiv +1\pmod{p_i^{c_i}} \\ b^{2^{j_{\text{max}}}k} &amp;\equiv -1\pmod{p_i^{c_i}}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ekkor az [latex]f_n([a]_n)[/latex] sorozat [latex]i[/latex]-edik pozíciójában [latex]+1[/latex], míg az [latex]f_n([b]_n)[/latex] szorozat [latex]i[/latex]-edik pozíciójában [latex]-1[/latex] fog szerepelni:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}[a]_n &amp;\xmapsto{f_n} (\ldots;+1;\ldots) \\ [b]_n &amp;\xmapsto{f_n} (\ldots;-1;\ldots)\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>E két sorozat szorzatában pedig ennek megfelelően [latex]-1[/latex] lesz az [latex]i[/latex]-edik pozícióban, hiszen [latex]1\cdot (-1)=-1[/latex]:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]? \xmapsto{f_n} (\ldots;-1;\ldots)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt kell igazolni, hogy [latex]f_n[/latex] <strong><em>tartja a két csoport műveletét</em></strong>, azaz hogy a baloldali kérdőjel helyére behelyettesítve az [latex][a]_n[/latex] és [latex][b]_n[/latex] maradékosztályok szorzatát teljesül a fenti hozzárendelés. Mivel ez a szorzat a [yp_element slug="egesz-szamok-maradekosztalygyurui" type="link" /] alapján épp az [latex][ab]_n[/latex] maradékosztállyal egyezik meg, ezért az a kérdés, hogy teljesül-e az alábbi hozzárendelés:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][ab]_n \xmapsto{f_n} (\ldots;-1;\ldots)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Vagyis az [latex]f_n[/latex] függvény definíciója alapján az a kérdés, hogy teljesül-e az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](ab)^{2^{j_{\text{max}}}k} \equiv -1\pmod{p_i^{c_i}}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez viszont nyilván teljesül, hiszen ezt a kongruenciát épp az [latex]a[/latex]-ra és [latex]b[/latex]-re vonatkozó két fentebbi kongruencia összeszorzásával kapjuk meg. Minthogy a fenti gondolatmenet az [latex]n[/latex] prímtényezős felbontásában szereplő összes többi tényezőre is szóról-szóra megismételhető, ezért [latex]f_n[/latex] <strong><em>valóban egy csoporthomomorfizmus</em></strong> [latex]D_n[/latex]-ből [latex]I_n[/latex]-be.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A 3. lépéshez</em></strong> meg kell mutatni, hogy az [latex]f_n[/latex] csoporthomomorfizmus <strong><em>szürjektív</em></strong>. Azaz tetszőleges [latex]r[/latex] hosszú, [latex]+1[/latex]-ekből és [latex]-1[/latex]-ekből álló sorozathoz létezik olyan [latex][a]_n\in D_n[/latex] maradékosztály, amely épp a kérdéses sorozatnak egy [latex]f_n[/latex] szerinti ősképe. Nevezzük most <strong><em>bázissorozatoknak</em></strong> azokat a sorozatokat, melyeknek pontosan egy komponense [latex]-1[/latex], a többi viszont [latex]+1[/latex]. Ezekből a bázissorozatokból szorzásokkal előállítható az [latex]I_n[/latex] csoport tetszőleges [latex]X[/latex] eleme, méghozzá a következő egyszerű eljárással:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li>Vegyük az egyik tetszőleges bázissorozatot, és szorozzuk meg önmagával. Ekkor a csupa [latex]+1[/latex]-ekből álló sorozatot kapjuk.</li><li>Ezt szorozzuk meg azokkal a bázissorozatokkal, amelyeknél épp azokban a pozíciókban van [latex]-1[/latex], ahol a keresett [latex]X[/latex] sorozatban is.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>Az így megkapott [latex]X[/latex] sorozatnak viszont [latex]f_n[/latex] művelettartó tulajdonsága miatt épp az a [latex]D_n[/latex]-beli maradékosztály lesz az ősképe, amelyet az [latex]X[/latex] előállításához használt bázissorozatok ősképeinek [latex]D_n[/latex]-beli szorzataként kapunk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Például tegyük fel, hogy [latex]X[/latex] előáll az [latex]X_1[/latex], [latex]X_2[/latex] és [latex]X_3[/latex] bázissorozatok szorzataként az [latex]I_n[/latex] csoportban, azaz az iménti eljárással:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]X_1\cdot X_1\cdot  X_2\cdot X_3=X[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel, hogy az [latex]X_1[/latex], [latex]X_2[/latex] és [latex]X_3[/latex] bázissorozatok [latex]f_n[/latex] szerinti ősképei [latex]D_n[/latex]-ben mondjuk rendre az [latex]A_1[/latex], [latex]A_2[/latex] és [latex]A_3[/latex] maradékosztályok, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}f_n(A_1)&amp;=X_1 \\ f_n(A_2)&amp;=X_2 \\ f_n(A_3)&amp;=X_3\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ekkor az [latex]f_n[/latex] csoporthomomorfizmus művelettartó tulajdonsága miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{f_n(A_1)}_{=X_1}\cdot \underbrace{f_n(A_1)}_{=X_1}\cdot \underbrace{f_n(A_2)}_{=X_2}\cdot \underbrace{f_n(A_3)}_{=X_3}=\underbrace{f_n(A_1\cdot A_1\cdot A_2\cdot A_3)}_{=X}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Elegendő tehát megmutatni, hogy a bázissorozatoknak létezik ősképe, ezek ismeretében ugyanis a fenti eljárással megtalálhatjuk tetszőleges [latex]X[/latex] sorozat ősképét is. Ez a fenti példában nevezetesen az [latex]A_1\cdot A_1\cdot A_2\cdot A_3[/latex] szorzat lesz. Ha tehát megmutatjuk, hogy a bázissorozatokhoz létezik őskép, akkor azzal egyúttal azt is megmutattuk, hogy bármely [latex]I_n[/latex]-beli sorozathoz is létezik őskép, azaz [latex]f_n[/latex] valóban szürjektív.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tekintsünk ezért most egy tetszőleges [latex]B_i[/latex] bázissorozatot, amelynek tehát az [latex]i[/latex]-edik pozíciójában [latex]-1[/latex], az összes többi pozíciójában pedig [latex]+1[/latex] szerepel. E sorozat ősképének előállításához lényegében a [yp_element slug="nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten" type="link" /] 4. állításának bizonyításában szereplő gondolatmenetet fogjuk megismételni. Az [latex]n[/latex] ugye felírható [latex]n=p_i^{c_i}m[/latex] alakban, ahol [latex]p_i^{c_i}[/latex] az [latex]n[/latex] prímtényezős felbontásában szereplő [latex]i[/latex]-edik tényező, az [latex]m[/latex] pedig az összes többi tényező szorzata. Azaz [latex]p_i^{c_i}[/latex] és [latex]m[/latex] relatív prímek. Ekkor ugye érvényes a <strong><em>kínai maradéktétel</em></strong> ([yp_element slug="kinai-maradektetel" type="link" /]), amelynek következményeként a [yp_element slug="maradekosztalygyuruk-dekompozicioja" type="link" /] alapján fennáll az alábbi <strong><em>gyűrűizomorfizmus</em></strong>:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\Z/n\Z \simeq \Z/p_i^{c_i}\Z \times \Z/m\Z[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A tétel szövegéből ugye azt is tudjuk, hogy a [latex]j_{\text{max}}[/latex] kitevőhöz létezik olyan [latex]s[/latex] egész szám, amelyre teljesül az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]s^{2^{j_{\text{max}}}}\equiv -1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Továbbá az említett bizonyításban azt is megmutattuk, hogy ekkor az [latex]s^{2^{j_{\text{max}}}}[/latex] hatvány [latex]-1[/latex]-gyel kongruens modulo [latex]p_i^{c_i}[/latex] is, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]s^{2^{j_{\text{max}}}}\equiv -1\pmod{p_i^{c_i}}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezt az [latex]s[/latex] egész számot most felhasználjuk a keresett [latex]B_i[/latex] bázissorozat ősképének előállításához. Legyen ez az őskép azon [latex]a[/latex] egész szám által reprezentált [latex][a]_n[/latex] maradékosztály, amelyhez a [yp_element slug="maradekosztalygyuruk-dekompozicioja" type="link" /]ben szereplő [latex]g[/latex] gyűrűizomorfizmus épp az [latex]([s]_{p_i^{c_i}};[1]_m)[/latex] maradékosztálypárt rendeli hozzá a [latex]\Z/p_i^{c_i}\Z \times \Z/m\Z[/latex] szorzatgyűrűből, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][a]_n \xmapsto{g} ([s]_{p_i^{c_i}};[1]_m)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha most a bal- és a jobboldalon álló kifejezést is [latex]2^{j_{\text{max}}}k[/latex]-adik hatványra emeljük, akkor [latex]g[/latex] <strong><em>művelettartó tulajdonsága</em></strong> miatt érvényes lesz az alábbi hozzárendelés is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][a^{2^{j_{\text{max}}}k}]_n \xmapsto{g} ([s^{2^{j_{\text{max}}}k}]_{p_i^{c_i}};[1^{2^{j_{\text{max}}}k}]_m)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]k[/latex] páratlan, és az [latex]s^{2^{j_{\text{max}}}}[/latex] hatvány [latex]-1[/latex]-gyel kongruens modulo [latex]p_i^{c_i}[/latex], ezért ez teljesülni fog az [latex]s^{2^{j_{\text{max}}}k}[/latex] hatványra is. Így tehát a fenti hozzárendelés az alábbira egyszerűsödik:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][a^{2^{j_{\text{max}}}k}]_n \xmapsto{g} ([-1]_{p_i^{c_i}};[1]_m)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="maradekosztalygyuruk-dekompozicioja" type="link" /] alapján a [latex]g[/latex] gyűrűizomorfizmus a baloldalon lévő [latex][a^{2^{j_{\text{max}}}k}]_n[/latex] maradékosztályhoz az [latex]([a^{2^{j_{\text{max}}}k}]_{p_i^{c_i}};[a^{2^{j_{\text{max}}}k}]_m)[/latex] maradékosztálypárt rendeli hozzá, amely maradékosztálypár tehát megegyezik a jobboldalon látható [latex]([-1]_{p_i^{c_i}};[1]_m)[/latex] maradékosztálypárral. Teljesülnek tehát az alábbi kongruenciák:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a^{2^{j_{\text{max}}}k} &amp;\equiv -1\pmod{p_i^{c_i}} \\ a^{2^{j_{\text{max}}}k} &amp;\equiv +1\pmod m\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Itt a második kongruencia [latex]m[/latex] modulusa az [latex]n[/latex] prímtényezős felbontásából minden [latex]p_i^{c_i}[/latex]-n kívüli tényezőt tartalmaz, így tehát az a [yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" type="link" /] 9. pontjának felhasználásával felbontható olyan kongruenciákra, amelyekben ezek a tényezők a modulusok. Azaz a fenti két kongruencia az alábbi [latex]r[/latex] darab kongruenciával ekvivalens:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a^{2^{j_{\text{max}}}k} &amp;\equiv +1\pmod{p_1^{c_1}} \\ a^{2^{j_{\text{max}}}k} &amp;\equiv +1\pmod{p_2^{c_2}} \\ &amp;\vdots \\ a^{2^{j_{\text{max}}}k} &amp;\equiv +1\pmod{p_{i-1}^{c_{i-1}}} \\ a^{2^{j_{\text{max}}}k} &amp;\equiv -1\pmod{p_i^{c_i}} \\ a^{2^{j_{\text{max}}}k} &amp;\equiv +1\pmod{p_{i+1}^{c_{i+1}}} \\ a^{2^{j_{\text{max}}}k} &amp;\equiv +1\pmod{p_{i+2}^{c_{i+2}}} \\ &amp;\vdots \\ a^{2^{j_{\text{max}}}k} &amp;\equiv +1\pmod{p_r^{c_r}}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ekkor az [latex][a]_n[/latex] maradékosztály egyrészt a tétel szövege alapján benne van [latex]D_n[/latex]-ben, másrészt pedig az [latex]f_n[/latex] csoporthomomorfizmus épp a [latex]B_i[/latex] bázissorozatot rendeli hozzá, amelynek tehát az [latex]i[/latex]-edik pozíciójában [latex]-1[/latex], az összes többi pozíciójában pedig [latex]+1[/latex] szerepel. Minthogy ilymódon tetszőleges bázissorozathoz találhatunk ősképet a [latex]D_n[/latex] csoportban, ezért [latex]f_n[/latex] valóban egy szürjektív csoporthomomorfizmus [latex]D_n[/latex]-ből [latex]I_n[/latex]-be.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A fentebb felvázolt stratégiánk 4. lépéseként</em></strong> megmutatjuk, hogy a tétel szövegében szereplő [latex]H_n[/latex] részcsoport – amelynek tehát a [latex]D_n[/latex]-beli indexét szeretnénk meghatározni – teljes egészében tartalmazza az [latex]f_n[/latex] csoporthomomorfizmus magját. Ezt most jelöljük [latex]K_n[/latex]-nel, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]K_n=\ker{f_n}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt szeretnénk tehát megmutatni, hogy a következő a helyzet:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":7353,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_26_homomorfizmus_es_reszcsoport_viszonyok.jpg" alt="A Dn, Hn és Kn részcsoportok viszonya" class="wp-image-7353"/><figcaption>A [latex]D_n[/latex], [latex]H_n[/latex] és [latex]K_n[/latex] részcsoportok viszonya</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Tekintsünk ezért egy tetszőleges [latex][a]_n\in K_n[/latex] maradékosztályt, és mutassuk meg, hogy ekkor [latex][a]_n\in H_n[/latex] is teljesül. Mivel [latex][a]_n[/latex] benne van az [latex]f_n[/latex] csoporthomomorfizmus [latex]K_n[/latex]-nel jelölt magjában, ezért az ő [latex]f_n[/latex] szerinti képe épp az [latex]I_n[/latex] csoport egységeleme lesz. Ez nem más, mint a csupa [latex]+1[/latex]-esekből álló [latex]r[/latex] hosszú sorozat, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][a]_n \xmapsto{f_n} (+1;+1;\ldots;+1)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]f_n[/latex] csoporthomomorfizmus definíciójából adódik, hogy ekkor teljesülnek az alábbi kongruenciák:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a^{2^{j_{\text{max}}}k} &amp;\equiv +1\pmod{p_1^{c_1}} \\ a^{2^{j_{\text{max}}}k} &amp;\equiv +1\pmod{p_2^{c_2}} \\ &amp;\vdots \\ a^{2^{j_{\text{max}}}k} &amp;\equiv +1\pmod{p_r^{c_r}}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez a [yp_element slug="egesz-szamok-kozotti-kongruencia" type="link" /] 3. pontja alapján azt jelenti, hogy az [latex]n[/latex] prímtényezős felbontásában szereplő összes [latex]p_i^{c_i}[/latex] tényezőre igaz, hogy ő osztója az [latex]a^{2^{j_{\text{max}}}k}-1[/latex] különbségnek is. Ekkor azonban nyilván maga [latex]n[/latex] is osztója ennek a különbségnek, hiszen:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{p_1^{c_1}\cdot p_2^{c_2}\cdot \ldots \cdot p_r^{c_r}}_{=n}|a^{2^{j_{\text{max}}}k}-1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez viszont ismét a [yp_element slug="egesz-szamok-kozotti-kongruencia" type="link" /] 3. pontja alapján épp azt jelenti, hogy teljesül az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{2^{j_{\text{max}}}k}\equiv 1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Tehát a tétel szövege alapján [latex][a]_n\in H_n[/latex], azaz valóban teljesül a [latex]K_n\sube H_n[/latex] tartalmazási reláció.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>5. lépésként</em></strong> meghatározzuk azt az [latex]I_n[/latex]-beli részcsoportot, amelynek <strong><em>teljes inverz képe</em></strong> épp [latex]H_n[/latex]. Nézzük ezért először, hogy [latex]H_n[/latex] elemei milyen [latex]I_n[/latex]-beli sorozatokra képződnek le [latex]f_n[/latex] által. Ha [latex][a]_n[/latex] a [latex]H_n[/latex] részcsoport valamely eleme, akkor a tétel szövege alapján az alábbi kongruenciák közül teljesül valamelyik:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a^{2^{j_{\text{max}}}k} &amp;\equiv +1\pmod n \\ a^{2^{j_{\text{max}}}k} &amp;\equiv -1\pmod n\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez viszont a [yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" type="link" /] 9. pontja alapján azt jelenti, hogy az [latex]a^{2^{j_{\text{max}}}k}[/latex] hatvány <strong><em>vagy</em></strong> [latex]+1[/latex]-gyel, <strong><em>vagy</em></strong> pedig [latex]-1[/latex]-gyel kongruens modulo [latex]p_i^{c_i}[/latex] is az [latex]n[/latex] egész szám prímtényezős felbontásában szereplő <strong><em>minden</em></strong> [latex]p_i^{c_i}[/latex] tényező esetén. Az [latex]f_n[/latex] függvény tehát a definíciója alapján [latex]H_n[/latex] elemeihez vagy a csupa [latex]+1[/latex]-esekből, vagy pedig a csupa [latex]-1[/latex]-esekből álló sorozatot rendeli hozzá.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Azt kell még megmutatni, hogy ez <strong><em>csak</em></strong> a [latex]H_n[/latex]-beli elemekre igaz. Legyen ezért [latex][a]_n\in D_n[/latex] most egy olyan maradékosztály, amely <strong><em>nincs benne</em></strong> [latex]H_n[/latex]-ben. Tegyük fel <strong><em>indirekt</em></strong>, hogy az [latex]f_n[/latex] függvény őt ennek ellenére a [latex](+1;+1;\ldots;+1)[/latex] vagy a [latex](-1;-1;\ldots;-1)[/latex] sorozatok valamelyikére képezi le. Ez az [latex]f_n[/latex] függvény definíciója alapján azt jelentené, hogy az [latex]a^{2^{j_{\text{max}}}k}[/latex] hatvány vagy [latex]+1[/latex]-gyel, vagy pedig [latex]-1[/latex]-gyel kongruens modulo [latex]p_i^{c_i}[/latex] az [latex]n[/latex] prímtényezős felbontásában szereplő <strong><em>minden</em></strong> [latex]p_i^{c_i}[/latex] tényező esetén. Az előző gondolatmenet alapján tehát ez a hatvány [latex]+1[/latex]-gyel vagy [latex]-1[/latex]-gyel lenne kongruens modulo [latex]n[/latex] is, ami azt jelentené, hogy [latex][a]_n[/latex] mégiscsak benne lenne [latex]H_n[/latex]-ben, ami ellentmondás.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Összefoglalva</em></strong> tehát az <strong><em>1. lépésben</em></strong> mutattunk egy csoportot, amelyben könnyű részcsoportindexeket számolni. Ez lenne az [latex]I_n[/latex] csoport, amelynek tehát a rendje [latex]2^r[/latex]. Ezután a <strong><em>2. lépésben</em></strong> egy [latex]f_n[/latex] csoporthomomorfizmust mutattunk [latex]D_n[/latex] és [latex]I_n[/latex] között. Ezután <strong><em>3. lépésként</em></strong> igazoltuk, hogy [latex]f_n[/latex] <strong><em>szürjektív</em></strong>, majd <strong><em>4. lépésként</em></strong> azt, hogy a [latex]D_n[/latex] csoport [latex]H_n[/latex] részcsoportja teljes egészében tartalmazza [latex]f_n[/latex] magját. Végül az <strong><em>5. lépésben</em></strong> igazoltuk, hogy [latex]H_n[/latex] a teljes inverz képe [latex]I_n[/latex] azon kételemű részcsoportjának, amely csak a csupa [latex]+1[/latex]-ből és a csupa [latex]-1[/latex]-ből álló sorozatból áll. Nevezzük most ezt a részcsoportot [latex]J_n[/latex]-nek.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Minden adott tehát, hogy a <strong><em>6. lépésben</em></strong> alkalmazzuk a [yp_element slug="csoporthomomorfizmusok-strukturatarto-tulajdonsagai" type="link" /]t. Ez alapján a [latex]J_n[/latex] szerinti baloldali mellékosztályok kölcsönösen egyértelmű megfeleltetésben állnak a [latex]H_n[/latex] szerinti baloldali mellékosztályokkal, következésképp az [latex]|I_n:J_n|[/latex] részcsoportindex épp megegyezik a [latex]|D_n:H_n|[/latex] részcsoportindexszel. Mivel [latex]J_n[/latex] rendje [latex]2[/latex], [latex]I_n[/latex] rendje pedig [latex]2^r[/latex], ezért a <strong><em>Lagrange-tétellel</em></strong> ([yp_element slug="lagrange-tetele" type="link" /]) összevetve megkapjuk a tétel <strong><em>2. állítását</em></strong>:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]|I_n:J_n|=|D_n:H_n|=2^{r-1}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p></p>
+<!-- /wp:paragraph -->

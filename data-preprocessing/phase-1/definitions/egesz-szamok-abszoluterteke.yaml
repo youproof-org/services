@@ -1,0 +1,12 @@
+type: definition
+name: egesz-szamok-abszoluterteke
+remarks: []
+content:
+  - type: formula
+    lead-in: |
+      Definiáljunk egy $f:\Z \to \N$ függvényt a következőképpen:
+    content: |
+      f(a) = \begin{cases} a &\text{ha } a\geq 0 \\ -a &\text{ha } a\lt 0 \end{cases}
+  - type: narrative
+    content: |
+      Ekkor az $f(a)$ természetes számot az $a$ egész szám ***abszolútértékének*** nevezzük. Ennek jelölése: $|a|$.

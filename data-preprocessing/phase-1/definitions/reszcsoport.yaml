@@ -1,0 +1,13 @@
+type: definition
+name: reszcsoport
+remarks:
+  - reszcsoport-megjegyzes
+content:
+  - type: narrative
+    content: |
+      Ha egy $G$ csoport valamely $H$ részhalmaza maga is csoport a $G$ műveletére nézve, akkor azt mondjuk, hogy
+      $H$ ***részcsoport*** $G$-ben. Ezt így jelöljük: $H\leq G$.
+  - type: narrative
+    content: |
+      Ha $H$ részcsoport $G$-ben, de $H\eq G$, akkor azt mondjuk, hogy $H$ ***valódi részcsoport*** $G$-ben. Ezt
+      így jelöljük: $H\lt G$.

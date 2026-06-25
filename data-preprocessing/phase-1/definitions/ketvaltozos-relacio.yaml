@@ -1,0 +1,10 @@
+type: definition
+name: ketvaltozos-relacio
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Ha $H$ egy tetszőleges halmaz, akkor a $H\times H$ halmaz egy valamilyen $R$ részhalmazát ***kétváltozós
+      relációnak*** nevezzük. Ha $a$ és $b$ a $H$ halmaz két tetszőleges &ndash; nem feltétlenül különböző &ndash;
+      eleme, és az $(a; b)$ rendezett pár benne van az $R$ halmazban, akkor azt mondjuk, hogy ***$a$ és $b$ között
+      fennáll az $R$ reláció***. Ezt így jelöljük: $aRb$.

@@ -1,0 +1,24 @@
+type: definition
+name: miller-rabin-tanu
+remarks:
+  - miller-rabin-tanu-megjegyzes
+content:
+  - type: narrative
+    content: |
+      Legyen $n\gt 1$ egy tetszőleges páratlan szám, $a$ pedig tetszőleges egész szám, amely nem többszöröse
+      $n$-nek, azaz $n\mid a$.
+  - type: formula
+    lead-in: |
+      Képezzük azt az $e\geq 1$ kitevőt és $k\geq 1$ páratlan számot, amelyekre teljesül az alábbi:
+    content: |
+      n-1=2^e\cdot k
+  - type: formula
+    lead-in: |
+      Tegyük fel továbbá, hogy az alábbi kongruenciák ***egyike sem*** teljesül:
+    content: |
+      \begin{aligned}a^k&\equiv +1\pmod n \\ a^k&\equiv -1\pmod n \\ a^{2k}&\equiv -1\pmod n \\ a^{4k}&\equiv
+      -1\pmod n \\ &\vdots \\ a^{2^{e-1}\cdot k}&\equiv -1\pmod n\end{aligned}
+  - type: narrative
+    content: |
+      Ekkor az $a$ egész szám által reprezentált $[a]_n$ ***maradékosztályt*** az $n$ egész szám
+      ***Miller-Rabin-tanújának*** nevezzük.

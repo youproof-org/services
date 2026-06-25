@@ -1,0 +1,13 @@
+type: definition
+name: vegesen-generalt-idealok-es-foidealok
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ tetszőleges gyűrű, $I$ pedig valamilyen ideál $R$-ben. Amennyiben $R$-nek létezik olyan véges
+      számú elemet tartalmazó $X=\{a_1;a_2;\ldots;a_n\}$ részhalmaza, amely esetén $\lang X\ang =I$, akkor azt
+      mondjuk, hogy ***az $I$ ideál végesen generált***. Ezt így jelöljük: $I=(a_1,a_2,\ldots,a_n)$.
+  - type: narrative
+    content: |
+      Speciálisan ha $I$ generálható az $R$ gyűrű egyetlen eleméből álló részhalmazával, akkor $I$-t
+      ***főidálnak*** nevezzük. Az $a\in R$ által generált $I$ főideált így jelöljük: $I=(a)$.

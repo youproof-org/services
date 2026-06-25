@@ -1,0 +1,123 @@
+<!-- wp:paragraph -->
+<p>A [latex]d[/latex] titkos kitevőt tehát alábbi lineáris kongruencia megoldásaként kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]e\cdot x\equiv 1\pmod{(p-1)\cdot (q-1)}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ennek a kongruenciának a [yp_element slug="linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga" type="link" /] alapján természetesen létezik megoldása, amely a [yp_element slug="linearis-kongruenciak-megoldasai-es-megoldasszama" type="link" /] 1. pontja szerint egyértelmű.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A továbbiakban azt szeretnénk igazolni, hogy tetszőleges [latex]x[/latex] egész szám esetén teljesül az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x^{e\cdot d}\equiv x\pmod m[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="rsa-algoritmus-helyes-mukodese" type="link" /] bizonyításának gondolatmenetét követve az [latex]e\cdot d\equiv 1\pmod{(p-1)\cdot (q-1)}[/latex] kongruenciából következik, hogy létezik olyan [latex]k[/latex] egész szám, amelyre teljesül az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]k\cdot (p-1)\cdot (q-1)+1=e\cdot d[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A fenti <strong><em>bizonyítandó kongruencia</em></strong> tehát így is írható:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x^{\overbrace{k\cdot (p-1)\cdot (q-1)+1}^{=ed}}\equiv x\pmod m[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Legyen most [latex]r[/latex] az [latex]m[/latex] modulus egy tetszőleges pozitív prímosztója. Mivel [latex]p[/latex] és [latex]q[/latex] relatív prímek és [latex]m=pq[/latex], ezért [latex]r[/latex] biztosan osztója [latex]p[/latex] és [latex]q[/latex] közül pontosan az egyiknek. Az általánosság megsértése nélkül feltehetjük, hogy [latex]p[/latex]-nek osztója, máskülönben az alábbi gondolatmenet ugyanígy működik [latex]p[/latex] és [latex]q[/latex] szerepének felcserélésével. Ekkor az alábbi két eset lehetséges:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li>Ha [latex]p[/latex] prím, akkor [latex]r=p[/latex], és így [latex]r-1=p-1[/latex], azaz [latex]r-1|p-1[/latex].</li><li>Ha [latex]p[/latex] Carmichael-szám, akkor [latex]r|p[/latex], és így a <strong><em>Korselt-kritérium</em></strong> miatt [latex]r-1|p-1[/latex].</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>Mindkét esetben azt kaptuk tehát, hogy teljesül az [latex]r-1|p-1[/latex] oszthatóság, azaz létezik olyan egész szám, amivel [latex]r-1[/latex]-et megszorozva [latex]p-1[/latex]-et kapunk. Jelöljük ezt az egész számot [latex]\frac{p-1}{r-1}[/latex]-gyel.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>kis Fermat-tételből</em></strong> ([yp_element slug="kis-fermat-tetel" type="link" /]) tudjuk, hogy bármilyen [latex]r[/latex]-hez relatív prím [latex]x[/latex] egész szám esetén teljesül az alábbi kogruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x^{r-1}\equiv 1\pmod r[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ekkor tetszőleges [latex]n[/latex] <strong><em>pozitív</em></strong> egész esetén a [yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" type="link" /] 8. pontja alapján teljesül az alábbi kongruencia is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x^{n\cdot (r-1)}\equiv 1\pmod r[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Szorozzuk meg mindkét oldalt [latex]x[/latex]-szel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x^{n\cdot (r-1) + 1}\equiv x\pmod r[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Vegyük észre, hogy ez a kongruencia már abban az esetben is teljesül, ha [latex]x[/latex] <strong><em>nem relatív prím</em></strong> [latex]r[/latex]-hez. Ilyenkor ugyanis [latex]x[/latex] szükségképpen többszöröse [latex]r[/latex]-nek – hiszen [latex]r[/latex] ugye prím –, vagyis a kongruencia mindkét oldalán [latex]0[/latex] áll ebben az esetben. Ha tehát ez a kongruencia minden [latex]x[/latex]-re és minden pozitív egész [latex]n[/latex]-re teljesül, akkor nyilván teljesül az alábbi speciális eseben is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]n=k\cdot \frac{p-1}{r-1}\cdot (q-1)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez egy egész szám, méghozzá a korábban már igazolt [latex]r-1|p-1[/latex] oszthatóság miatt. Ezt behelyettesítve a fenti kongruencia kitevőjébe az alábbit kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x^{\overbrace{k\cdot \frac{p-1}{r-1}\cdot (q-1)}^{=n}\cdot (r-1) + 1}\equiv x\pmod r[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Elvégezve a kitevőben lévő [latex]r-1[/latex]-gyel való szorzást az alábbi kongruenciát kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x^{k\cdot (p-1)\cdot (q-1) + 1}\equiv x\pmod r[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez tehát az [latex]m[/latex] modulus minden pozitív [latex]r[/latex] prímosztójára teljesül, ami viszont azt jelenti, hogy a [yp_element slug="egesz-szamok-kozotti-kongruencia" type="link" /] 3. pontja alapján teljesül az alábbi oszthatóság:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]r|x^{k\cdot (p-1)\cdot (q-1)+1}-x[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Felhívnánk a figyelmet arra, hogy az [latex]m=pq[/latex] modulus <strong><em>négyzetmentes</em></strong>. Ennek egyrészt az az oka, hogy [latex]p[/latex] és [latex]q[/latex] nem tartalmaznak közös prímtényezőket, hiszen azt mondtuk, hogy egymáshoz relatív prímek. Másrészt pedig mindkettőre igaz, hogy vagy prím, vagy pedig Carmichael-szám, márpedig egy prím nyilvánvalóan, egy Carmichael-szám pedig a <strong><em>Korselt-kritérium</em></strong> ([yp_element slug="korselt-kriterium" type="link" /]) miatt négyzetmentes, így a relatív prímség miatt ezek szorzata is az, vagyis a [yp_element slug="negyzetmentesseg-feltetele" type="link" /] alapján [latex]m[/latex] minden prímtényezője első hatványon szerepel.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mármost ha [latex]m[/latex] minden prímtényezőjére teljesül a fenti oszthatóság, akkor ezek szorzatára is teljesül. Mivel mindegyikük első hatványon szerepel [latex]m[/latex] prímtényezős felbontásában, ezért ez a szorzat [latex]m[/latex]-mel egyezik meg. Vagyis teljesül az alábbi oszthatóság is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]m|x^{k\cdot (p-1)\cdot (q-1)+1}-x[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez viszont ismét a [yp_element slug="egesz-szamok-kozotti-kongruencia" type="link" /] 3. pontja alapján azt jelenti, hogy a <strong><em>bizonyítandó kongruencia</em></strong> is teljesül:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x^{k\cdot (p-1)\cdot (q-1)+1}\equiv x\pmod m[/latex]
+<!-- /wp:shortcode -->

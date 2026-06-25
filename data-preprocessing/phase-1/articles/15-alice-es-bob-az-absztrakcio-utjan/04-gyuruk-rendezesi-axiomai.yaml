@@ -1,0 +1,176 @@
+type: section
+name: 04-gyuruk-rendezesi-axiomai
+title: Gyűrűk rendezési axiómái
+
+references:
+  pozitiv-es-negativ-egesz-szamok:
+    target:
+      type: definition
+      name: pozitiv-es-negativ-egesz-szamok
+  rendezesek-es-pozitivitastartomanyok-kapcsolata:
+    target:
+      type: theorem
+      name: rendezesek-es-pozitivitastartomanyok-kapcsolata
+  rendezett-gyuru:
+    target:
+      type: definition
+      name: rendezett-gyuru
+  rendezett-halmaz:
+    target:
+      type: definition
+      name: rendezett-halmaz
+  szorzas-rendezesfordito-gyuruben:
+    target:
+      type: theorem
+      name: szorzas-rendezesfordito-gyuruben
+
+body:
+  - type: narrative
+    content: |
+      Az előző szakasz tanulságai alapján most a gyűrűaxiómák után megfogalmazunk két újabb axiómát. Ezeket egy
+      gyűrűn értelmezett rendezési relációnak kell majd teljesítenie ahhoz, hogy őt "jól viselkedőnek" tekintsük.
+      Ezeket ***rendezési axiómáknak*** nevezzük.
+  - type: narrative
+    content: |
+      Az már fix, hogy az első rendezési axióma az összeadással való teljes kompatibilitás lesz. A szorzásra sajnos
+      a [szorzas-rendezesfordito-gyuruben] miatt ilyet nem tudunk előírni. Eszerint ugyanis ha a $c\geq 0$
+      elemekkel való szorzásra követeljük meg azt, hogy a rendezés iránya megmaradjon, akkor a $c\leq 0$ elemekkel
+      való szorzás rendezésfordító lesz. Ha viszont a $c\leq 0$ elemekkel való szorzásra szeretnénk megtartani a
+      rendezés irányát, akkor viszont a $c\geq 0$ esetekben lesz rendezésfordító a szorzás. Választanunk kell
+      tehát, hogy melyiket tekintsük axiómának e kettő közül.
+  - type: narrative
+    content: |
+      Alapvetően ugye az a célunk, hogy a természetes számok rendezését terjesszük ki az egész számok $(\Z ,+,\cdot
+      )$ gyűrűjére. Márpedig ebben a gyűrűben épp a pozitív egész számok és a $0$ felelnek meg a természetes
+      számoknak. Célszerű tehát, ha az ezzel analóg $c\geq 0$ esetekben követeljük meg a rendezés tartását az
+      általános gyűrűk rendezési axiómáinak rögzítésekor is. Mivel nem akarunk kizárólag a kommutatív gyűrűkre
+      szorítkozni, ezért mindkét irányú szorzásra elő kell írnunk ezt a feltételt. Így tehát a rendezési axiómákat
+      a következőképpen célszerű megadni.
+  - type: embed
+    target:
+      type: definition
+      name: rendezett-gyuru
+  - type: narrative
+    content: |
+      ***Az egész számok gyűrűjét*** a [pozitiv-es-negativ-egesz-szamok] alapján ***három részre osztottuk***.
+      Megkülönböztettünk ***negatív*** és ***pozitív*** egész számokat, és a ***nulla*** egész számot, amelyet nem
+      tekintettünk sem pozitívnak, sem pedig negatívnak. Habár ezeket a fogalmakat bármiféle rendezési relációtól
+      függetlenül vezettük be a kapcsolódó cikkben, ám hamarosan látni fogjuk, hogy szoros összefüggésben van a
+      most következő fogalmakkal.
+  - type: embed
+    target:
+      type: definition
+      name: pozitivitastartomany
+  - type: embed
+    target:
+      type: remark
+      name: pozitivitastartomany-megjegyzes
+  - type: narrative
+    content: |
+      Vegyünk példaképp egy 11 elemű gyűrűt, és rajzoljuk fel az alaphalmazát a benne található elemekkel. Középen
+      a gyűrű nulleleme, körülötte pedig a többi elem helyezkedjen el. Ezen kívül minden elem és az ő ellentettje
+      legyen egymással szemben.
+  - type: figure
+    lead-in: |
+      Ez az elrendezés látható az alábbi ábrán:
+    src: 01-11-elemu-gyuru-pelda.jpg
+    alt: 11 elemű gyűrű (példa)
+    caption: 11 elemű gyűrű (példa)
+  - type: narrative
+    content: |
+      Tegyük fel, hogy létezik ezen a gyűrűn 3 olyan rendezési reláció is, amelyek teljesítik a [rendezett-gyuru]
+      szerinti rendezési axiómákat.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán egy példa látható arra, hogy az ezekhez tartozó pozitivitástartományok ($P_1$, $P_2$ és
+      $P_3$) és negativitástartományok ($-P_1$, $-P_2$ és $-P_3$) hogyan helyezkedhetnek el a gyűrű alaphalmazán
+      belül:
+    src: 02-reszbenrendezesek-pozitivitas-es-negativitastartomanyai.jpg
+    alt: Részbenrendezések pozitivitás- és negativitástartományai
+    caption: Részbenrendezések pozitivitás- és negativitástartományai
+  - type: narrative
+    content: |
+      Megjegyzendő, hogy létezhet olyan elem a gyűrűben akár a nullelemen kívül is, amely se nem pozitív, se nem
+      negatív egy adott rendezésre nézve. Ne felejtsük el ugyanis, hogy a részbenrendezés [rendezett-halmaz]ja nem
+      követeli meg a trichotómiát, vagyis azt, hogy bármely két elem összehasonlítható legyen. A fenti ábrán
+      látható például, hogy az $e$ elem és a $0$ nem összehasonlítható a $P_1$ és a $P_3$ pozitivitástartományokhoz
+      tartozó rendezési relációk szerint. A "nem összehasonlítható" itt azt jelenti, hogy közöttük egyik irányban
+      sem teljesül a reláció. Ezzel szemben egy teljes rendezés megköveteli a trichotómiát. Következésképp ebben az
+      esetben bármely gyűrűelem és a nullelem között legalább az egyik irányban teljesülni fog egy ilyen rendezési
+      reláció.
+  - type: narrative
+    content: |
+      Tegyük most fel, hogy a fenti gyűrűn létezik 2 olyan rendezési reláció is, amelyek szintén teljesítik a
+      [rendezett-gyuru] szerinti rendezési axiómákat, de ezen felül még teljes rendezések is.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán egy példa látható arra, hogy az ezekhez tartozó pozitivitástartományok ($P_4$ és $P_5$) és
+      negativitástartományok ($-P_4$ és $-P_5$) hogyan helyezkedhetnek el a gyűrű alaphalmazán belül:
+    src: 03-teljes-rendezesek-pozitivitas-es-negativitastartomanyai.jpg
+    alt: Teljes rendezések pozitivitás- és negativitástartományai
+    caption: Teljes rendezések pozitivitás- és negativitástartományai
+  - type: narrative
+    content: |
+      Az eddigiek alapján semmi nem zárja ki, hogy egy gyűrűn több olyan rendezés is létezzen, amelyek eleget
+      tesznek a rendezési axiómáknak. Ha például $\leq$ és $\lesssim$ két ilyen, egymástól különböző rendezési
+      reláció egy gyűrű alaphalmazán, akkor &ndash; mint azt a következő tételben látni fogjuk &ndash; a hozzájuk
+      tartozó $P_{\leq}$ és a $P_{\lesssim}$ pozitivitástartományok is különbözni fognak. Következésképp ***mások
+      lesznek a negatív és pozitív elemek*** a $\leq$ rendezésre nézve, mint a $\lesssim$ rendezésre nézve.
+  - type: narrative
+    content: |
+      Nézzük tehát az erről szóló tételt.
+  - type: embed
+    target:
+      type: theorem
+      name: rendezesek-es-pozitivitastartomanyok-kapcsolata
+  - type: narrative
+    content: |
+      Más szavakkal ***a pozitivitástartomány egyértelműen meghatározza a hozzá tartozó rendezést***.
+  - type: embed
+    target:
+      type: proof
+      name: rendezesek-es-pozitivitastartomanyok-kapcsolata-bizonyitas
+  - type: narrative
+    content: |
+      Látható tehát, hogy egy gyűrűben ***önmagában nincs értelme pozitív vagy negatív elemekről beszélni***. Azt
+      ugyanis, hogy mely elemek pozitívak és melyek negatívak, az adott rendezési reláció, illetve az előző tétel
+      alapján az adott pozitivitástartomány határozza meg.
+  - type: narrative
+    content: |
+      Jogos a kérdés, hogy akkor a [pozitiv-es-negativ-egesz-szamok] alapján milyen jogon mondtuk azt bizonyos
+      egész számokra, hogy pozitívak, másokra pedig azt, hogy negatívak anélkül, hogy megneveztünk volna egy
+      konkrét rendezési relációt. Ezt a kérdést hamarosan megválaszoljuk, ehhez azonban szükségünk lesz két fontos
+      tételre. Egyrészt szeretnénk egy könnyen ellenőrizhető kritériumot találni, amely alapján egy gyűrű
+      alaphalmazának egy adott részhalmazáról eldönthetjük, hogy pozitivitástartománya-e egy rendezési relációnak
+      vagy nem. Másrészt, miután ezt eldöntöttük egy részhalmazról, szeretnénk azt is könnyen eldönteni, hogy ez a
+      rendezési reláció vajon egy teljes rendezés-e, vagy csak részbenrendezés.
+  - type: narrative
+    content: |
+      Az alábbi tétel az első kérdésre ad egy könnyen ellenőrizhető kritériumot ***nullosztómentes gyűrűk
+      esetén***.
+  - type: embed
+    target:
+      type: theorem
+      name: pozitivitastartomany-szukseges-es-elegseges-feltetele
+  - type: embed
+    target:
+      type: proof
+      name: pozitivitastartomany-szukseges-es-elegseges-feltetele-bizonyitas
+  - type: narrative
+    content: |
+      Most tehát már van egy ***szükséges és egyben elégséges feltételünk*** arra, hogy egy gyűrű alaphalmazának
+      bármilyen részhalmazáról eldöntsük, vajon ő egy rendezési reláció pozitivitástartománya-e vagy sem. Ráadásul
+      a bizonyításból az is könnyen látszik, hogy igenlő válasz esetén hogyan kaphatjuk meg magát a keresett
+      rendezési relációt (ami a [rendezesek-es-pozitivitastartomanyok-kapcsolata] miatt ugye ***egyértelmű***).
+  - type: narrative
+    content: |
+      A most következő tétel annak eldöntésére ad egy könnyen ellenőrizhető kritériumot, hogy ez a bizonyos
+      rendezés vajon egy teljes rendezés-e vagy sem.
+  - type: embed
+    target:
+      type: theorem
+      name: teljes-rendezes-szukseges-es-elegseges-feltetele
+  - type: embed
+    target:
+      type: proof
+      name: teljes-rendezes-szukseges-es-elegseges-feltetele-bizonyitas

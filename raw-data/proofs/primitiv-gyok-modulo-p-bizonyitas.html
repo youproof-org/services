@@ -1,0 +1,76 @@
+<!-- wp:paragraph -->
+<p>A [latex](\Z/p\Z)^{\times}[/latex] csoport a [latex]\Z/p\Z[/latex] maradékosztálygyűrű redukált maradékosztályaiból áll, ezért a [yp_element slug="euler-fuggveny" type="link" /] alapján ennek a csoportnak a rendje [latex]\varphi(p)[/latex], azaz a [yp_element slug="euler-fuggveny-primhatvanyokra" type="link" /] miatt [latex]p-1[/latex]. Mivel a [yp_element slug="elem-rendje-es-csoport-rendje" type="link" /] miatt bármely elem rendje osztója a csoport rendjének, ezért ha [latex]d\
+mid p-1[/latex], akkor [latex](\Z/p\Z)^{\times}[/latex]-ben <strong><em>nincs [latex]d[/latex] rendű elem</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az általánosság megsértése nélkül feltehetjük tehát, hogy [latex]d|p-1[/latex]. A [latex]d[/latex] rendű redukált maradékosztályok a [yp_element slug="csoportelem-rendjere-vonatkozo-osszefuggesek" type="link" /] 4. pontja szerint mind megoldásai a [latex]\Z/p\Z[/latex] maradékosztálygyűrű elemein értelmezett alábbi egyenletnek:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x^d=[1]_p[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mindkét oldalból kivonva az [latex][1]_p[/latex] maradékosztályt az alábbi egyenletet kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x^d-[1]_p=[0]_p[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Vegyük észre, hogy ennek az egyenletnek a megoldásai a [yp_element slug="polinomok-gyokei" type="link" /] alapján épp egy [latex]\Z/p\Z[/latex] feletti [latex]d[/latex]-edfokú polinom gyökei. Mivel [latex]\Z/p\Z[/latex] izomorf [latex]\Z_p[/latex]-vel, ami pedig a [yp_element slug="maradekok-gyuruje-nullosztomentes" type="link" /] alapján nullosztómentes, így [latex]\Z/p\Z[/latex] is <strong><em>nullosztómentes</em></strong>. Emiatt viszont a [yp_element slug="polinom-gyokeinek-szama" type="link" /] alapján ennek a bizonyos polinomnak legfeljebb [latex]d[/latex] darab gyöke, azaz a fenti egyenletnek <strong><em>legfeljebb [latex]d[/latex] darab</em></strong> megoldása van. Azt ugyan nem tudjuk még, hogy a [latex](\Z/p\Z)^{\times}[/latex] csoportban létezik-e egyáltalán [latex]d[/latex] rendű redukált maradékosztály – hiszen épp ezt szeretnénk igazolni –, de ha igen, akkor ő mindenképpen megoldás. Tegyük fel tehát, hogy például az [latex][a]_p[/latex] redukált maradékosztály egy [latex]d[/latex] rendű megoldás, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][a]_p^d=[1]_p[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex][a]_p[/latex] rendje [latex]d[/latex], így a [yp_element slug="csoportelem-rendjere-vonatkozo-osszefuggesek" type="link" /] 3. pontja szerint az ő [latex][a]_p^0[/latex], [latex][a]_p^1[/latex], [latex][a]_p^2[/latex], ..., [latex][a]_p^{d-1}[/latex] hatványai mind különböznek egymástól, azaz különböző redukált maradékosztályok. Ezek a hatványok viszont szintén megoldásai a fenti egyenletnek, hiszen a hatványozás azonosságairól szóló [yp_element slug="egesz-kitevos-hatvanyozas-azonossagai" type="link" /] 2. pontja alapján tetszőleges [latex]k[/latex] kitevő esetén teljesül az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]([a]_p^k)^d=[a]_p^{kd}=[a]_p^{dk}=(\underbrace{[a]_p^d}_{=[1]_p})^k=[1]_p[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel a megoldásszámról láttuk, hogy nem lehet [latex]d[/latex]-nél nagyobb, így az [latex][a]_p^0[/latex], [latex][a]_p^1[/latex], ..., [latex][a]_p^{d-1}[/latex] hatványokon kívül nincs más megoldás. Kérdés, hogy ezek közül melyek azok, amelyek [latex][a]_p[/latex]-hez hasonlóan szintén [latex]d[/latex] rendűek. A <strong><em>csoportelem hatványának rendjéről</em></strong> szóló [yp_element slug="csoportelem-hatvanyanak-rendje" type="link" /] alapján tetszőleges [latex]i[/latex] kitevő esetén [latex][a]_p^i[/latex] rendje akkor és csak akkor egyezik meg [latex][a]_p[/latex] rendjével (azaz [latex]d[/latex]-vel), ha az [latex]i[/latex] kitevő relatív prím [latex]d[/latex]-hez. Így tehát a [latex]d[/latex] rendű elemek száma megegyezik a [latex]0[/latex], [latex]1[/latex], ..., [latex]d-1[/latex] kitevők közül azoknak a számával, amelyek relatív prímek [latex]d[/latex]-hez. Ez a [yp_element slug="euler-fuggveny-alternativ-definicio" type="link" /] alapján épp [latex]\varphi(d)[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Most foglaljuk össze az eddigieket:</em></strong> Az egyszerűség kedvéért jelöljük [latex]h(d)[/latex]-vel a [latex]d[/latex] rendű elemek számát. Eddig azt igazoltuk, hogy amennyiben [latex]d[/latex] <strong><em>nem osztója</em></strong> [latex]p-1[/latex]-nek, akkor [latex]h(d)=0[/latex], ha pedig [latex]d[/latex] <strong><em>osztója</em></strong> [latex]p-1[/latex]-nek, akkor az alábbi két eset lehetséges: [latex]h(d)=\varphi(d)[/latex] vagy [latex]h(d)=0[/latex]. A tétel bizonyításához azt kell belátnunk, hogy az utóbbi kizárt.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tekintsük ezért [latex]p-1[/latex] összes pozitív osztóját: [latex]d_1[/latex], [latex]d_2[/latex], ..., [latex]d_k[/latex]. Mivel a [yp_element slug="elem-rendje-es-csoport-rendje" type="link" /] alapján bármely elem rendje csak ezen számok közül kerülhet ki, továbbá ugye összesen [latex]p-1[/latex] darab elem van, ezért egyrészt igaz az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]h(d_1)+h(d_2)+\ldots+h(d_k)=p-1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Másrészt a [yp_element slug="euler-fuggveny-osszege" type="link" /] alapján igaz az alábbi is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\varphi(d_1)+\varphi(d_2)+\ldots+\varphi(d_k)=p-1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Érvényes tehát az alábbi összefüggés:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]h(d_1)+\ldots+h(d_k)=\varphi(d_1)+\ldots+\varphi(d_k)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az eddigiek alapján a baloldalon minden [latex]h(d_i)[/latex] tag vagy [latex]0[/latex]-val vagy pedig [latex]\varphi(d_i)[/latex]-vel egyezik meg. Ez az egyenlőség viszont csak ez utóbbi esetben teljesülhet, azaz [latex]p-1[/latex] minden [latex]d[/latex] osztója esetén a [latex]d[/latex] rendű elemek száma valóban [latex]\varphi(d)[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A modulo [latex]p[/latex] primitív gyökök épp azok az elemek, amelyeknek rendje [latex]p-1[/latex]. A fentiek szerint ezekből [latex]\varphi(p-1)[/latex] darab van, ami biztosan nagyobb [latex]0[/latex]-nál, azaz <strong><em>létezik primitív gyök</em></strong> modulo [latex]p[/latex].</p>
+<!-- /wp:paragraph -->

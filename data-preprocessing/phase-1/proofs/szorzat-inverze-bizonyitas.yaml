@@ -1,0 +1,23 @@
+type: proof
+name: szorzat-inverze-bizonyitas
+remarks: []
+references:
+  inverz-elem:
+    target:
+      type: definition
+      name: inverz-elem
+content:
+  - type: formula
+    lead-in: |
+      Ha $e$-vel jelöljük a $*$ művelet neutrális elemét, akkor egyrészt:
+    content: |
+      (x*y)*(y^{-1}*x^{-1})=x*(\underbrace{y*y^{-1}}_{=e})*x^{-1}=x*x^{-1}=e
+  - type: formula
+    lead-in: |
+      Másrészt:
+    content: |
+      (y^{-1}*x^{-1})*(x*y)=y^{-1}*(\underbrace{x^{-1}*x}_{=e})*y=y^{-1}*y=e
+  - type: narrative
+    content: |
+      Azaz a [inverz-elem] alapján $(x*y)$ és $y^{-1}*x^{-1}$ valóban egymás inverzei. Ha $x$ és $y$
+      felcserélhetők, akkor pedig nyilván $(x*y)^{-1}=(y*x)^{-1}=x^{-1}*y^{-1}$ is igaz.

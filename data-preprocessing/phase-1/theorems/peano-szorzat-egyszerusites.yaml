@@ -1,0 +1,9 @@
+type: theorem
+name: peano-szorzat-egyszerusites
+proofs:
+  - peano-szorzat-egyszerusites-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Tetszőleges $a$, $b$ és $c$ természetes számok esetén ha $c\eq 0$ és $a\cdot c = b\cdot c$, akkor $a=b$.

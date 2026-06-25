@@ -1,0 +1,42 @@
+type: proof
+name: maradekok-kulonbsege-oszthato-a-modulussal-bizonyitas
+remarks: []
+references:
+  egesz-szamok-abszoluterteke:
+    target:
+      type: definition
+      name: egesz-szamok-abszoluterteke
+  oszthatosag-es-rendezesi-relacio-kapcsolata:
+    target:
+      type: theorem
+      name: oszthatosag-es-rendezesi-relacio-kapcsolata
+  oszthatosag-tulajdonsagai:
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+content:
+  - type: formula
+    lead-in: |
+      Mivel $a-b$ és $b-a$ egymás ellentettjei, ezért a $c|a-b$ oszthatóság miatt a [oszthatosag-tulajdonsagai] 8.
+      pontja alapján az alábbi oszthatóságok mind teljesülnek:
+    content: |
+      \begin{aligned}c&|a-b \\ c&|b-a \\ (-c)&|a-b \\ (-c)&|b-a\end{aligned}
+  - type: narrative
+    content: |
+      A fenti négy oszthatóság között biztosan van olyan, amelynek ***mindkét oldalán nemnegatív számok
+      szerepelnek***. Ezért az általánosság megsértése nélkül feltehetjük, hogy a $c|a-b$ oszthatóság ilyen. Ha
+      mégsem ez lenne a helyzet, akkor választunk egy olyat, amire ez teljesül, és az alábbi gondolatmenetet arra
+      alkalmazzuk.
+  - type: narrative
+    content: |
+      Tehát feltehetjük, hogy $0\leq a-b$. Itt két eset lehetséges: vagy $0=a-b$, vagy pedig a $0\lt a-b$ szigorú
+      egyenlőtlenség teljesül. Ha az utóbbi, akkor a $c|a-b$ oszthatóságra alkalmazható a
+      [oszthatosag-es-rendezesi-relacio-kapcsolata], miszerint bármely pozitív egész szám legalább akkora, mint az
+      osztói. Azaz $c\leq a-b$. De ez ***ellentmondás***, hiszen $a$ és $b$ szigorúan kisebbek $c$
+      abszolútértékénél. De mivel $c$-ről feltettük, hogy nemnegatív, ezért az abszolútérték-függvény
+      [egesz-szamok-abszoluterteke]ja miatt $a$ és $b$ szigorúan kisebbek magánál $c$-nél is. Így &ndash; lévén
+      hogy mindketten nemnegatívak &ndash; a különbségük méginkább szigorúan kisebb $c$-nél.
+  - type: narrative
+    content: |
+      A fentiekből az következik, hogy a $c|a-b$ oszthatóság csak a $0=a-b$ esetben teljesülhet. Ebből viszont
+      $a=b$ következik, ahogyan a tétel állítja.

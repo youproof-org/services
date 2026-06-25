@@ -1,0 +1,19 @@
+type: theorem
+name: az-egesz-szamok-halmaza-integritastartomany
+proofs:
+  - az-egesz-szamok-halmaza-integritastartomany-bizonyitas
+remarks: []
+references:
+  egesz-szamok-osszeadasa:
+    target:
+      type: definition
+      name: egesz-szamok-osszeadasa
+  egesz-szamok-szorzasa:
+    target:
+      type: definition
+      name: egesz-szamok-szorzasa
+content:
+  - type: narrative
+    content: |
+      Az egész számok $\Z$ halmaza egy ***egységelemet tartalmazó integritástartományt alkot*** a szokásos
+      összeadás ([egesz-szamok-osszeadasa]) és a szokásos szorzás ([egesz-szamok-szorzasa]) műveletekkel.

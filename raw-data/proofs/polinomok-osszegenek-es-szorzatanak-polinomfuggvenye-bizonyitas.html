@@ -1,0 +1,67 @@
+<!-- wp:paragraph -->
+<p>A továbbiakban reprezentáljuk az [latex]f[/latex] és [latex]g[/latex] polinomokat az alábbi végtelen sorozatokkal, ahol [latex]0_R[/latex] jelöli az [latex]R[/latex] gyűrű nullelemét:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}f&amp;=(a_0,a_1,a_2,\ldots, a_n,0_R,0_R,0_R,\ldots) \\ g&amp;=(b_0,b_1,b_2,\ldots, b_m,0_R,0_R,0_R,\ldots)\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="polinomok" type="link" /] szerint e két polinom <strong><em>összegének</em></strong> [latex]k[/latex]-adik tagját az alábbi képletből kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]c_k=a_k+b_k[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Szintén a [yp_element slug="polinomok" type="link" /] alapján a két polinom <strong><em>szorzatának</em></strong> [latex]k[/latex]-adik tagját pedig az alábbi képlet szolgáltatja:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]c_k=a_0b_k+a_1b_{k-1}+a_2b_{k-2}+\ldots+a_kb_0[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az általánosság megsértése nélkül feltételezhetjük, hogy [latex]m=n[/latex]. Ha ugyanis például [latex]m\leq n[/latex] lenne a helyzet, akkor a [latex]g[/latex] polinom tagjait az [latex]m+1[/latex]-edik indextől kezdve, ha pedig [latex]m\geq n[/latex], akkor meg az [latex]f[/latex] polinom tagjait az [latex]n+1[/latex]-edik indextől kezdve [latex]0_R[/latex]-nek választva érvényes marad az alábbi gondolatmenet.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezek fényében a két polinomhoz tartozó polinomfüggények a [yp_element slug="polinomfuggveny" type="link" /] alapján minden [latex]x\in R[/latex] gyűrűelemhez az alábbi kifejezések eredményét rendelik hozzá:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}F(x)&amp;=a_0+a_1x+a_2x^2+\ldots+a_nx^n \\ G(x)&amp;=b_0+b_1x+b_2x^2+\ldots+b_nx^n\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>E két polinomfüggvény <strong><em>pontonkénti összege</em></strong> a [yp_element slug="fuggvenyek-kozotti-muveletek" type="link" /] értelmében az alábbi lesz (miután a tagok sorrendjét az [latex]x[/latex] hatványai szerint sorbarendeztük és csoportosítottuk):</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](F+G)(x)=(a_0+b_0) + (a_1+b_1)x + (a_2+b_2)x^2 + \ldots + (a_n+b_n)x^n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Látható, hogy itt tetszőleges [latex]k[/latex] esetén az [latex]x^k[/latex] tag együtthatója [latex]a_k+b_k[/latex] alakban írható fel, vagyis ez a <strong><em>pontonkénti összegfüggvény</em></strong> a [yp_element slug="polinomfuggveny" type="link" /] értelmében valóban az [latex]f+g[/latex] <strong><em>összegpolinomhoz tartozó polinomfüggvény</em></strong> lesz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A két polinomfüggvény <strong><em>pontonkénti szorzatának</em></strong> kiszámításához az alábbi zárójeles kifejezést kell felbontani:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}(F\cdot G)(x)=&amp;(a_0+a_1x+a_2x^2+\ldots+a_nx^n)\cdot \\ \cdot &amp;(b_0+b_1x+b_2x^2+\ldots+b_nx^n)\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha most minden tagot minden taggal megszorzunk, akkor tetszőleges [latex]k[/latex] esetén az [latex]x^k[/latex] tag együtthatója azoknak az [latex]a_ib_j[/latex] szorzatoknak az összege lesz, ahol [latex]i+j=k[/latex], azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a_0b_k+a_1b_{k-1}+a_2b_{k-2}+\ldots+a_kb_0[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Vagyis ez a <strong><em>pontonkénti szorzatfüggvény</em></strong> a [yp_element slug="polinomfuggveny" type="link" /] értelmében valóban az [latex]f\cdot g[/latex] <strong><em>szorzatpolinomhoz tartozó polinomfüggvény</em></strong> lesz.</p>
+<!-- /wp:paragraph -->

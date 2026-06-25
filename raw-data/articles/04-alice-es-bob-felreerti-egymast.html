@@ -1,0 +1,284 @@
+<!-- wp:paragraph -->
+<p><strong><em>Az </em></strong><a rel="noreferrer noopener" aria-label="előző részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/3-szamrendszerek-binaris-hexadecimalis-szamabrazolas-bitmap/" target="_blank"><strong><em>előző részben</em></strong></a><strong><em> leírtak fényében az Alice és Bob közötti kommunikáció konkrét tartalmától a továbbiakban teljesen elvonatkoztatunk. Azt egy 1-esekből és 0-ákból álló bináris sorozatnak fogjuk tekinteni. Most folytatjuk információelméleti kitérőnket, és megismerkedünk az átviteli csatornával, amelynek feladata ezt a sorozatot eljuttatni Alice-tól Bob-hoz. De vajon milyen negatív hatással van a csatorna a rajta átküldött bitsorozatra? Hogyan védekezhetünk e negatív hatás ellen? Ennek mik az elvi korlátai? Miért lehet elolvasni egy CD-t akkor is, ha megkarcolódott? Mi az a hibajavító kódolás és hogyan működik? Ebben a részben erről lesz szó...</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"dropCap":true} -->
+<p class="has-drop-cap">Az eddig megismert információátviteli modellünk eddig két komponenst tartalmazott. Az információforrásról és a forráskódolóról a <a rel="noreferrer noopener" aria-label=" (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/2-informacio-adat-ascii-entropia-forraskodolas-digitalizalas/" target="_blank">2. részben</a> volt szó bővebben. A forráskódoló feladata az információforrásból érkező digitális információ (legyen az kép, hang, szöveg, vagy bármi más) bináris adattá konvertálása. Ez az adat azután valamilyen <strong><em>kommunikációs csatornán</em></strong> keresztül eljut a vevő oldalra, ahol a forráskódolás megfordításával Bob számára értelmezhető információvá (kép, hang, szöveg, vagy bármi más) alakul vissza. Az alábbi ábrán a kommunikációs csatornával kibővített modell látható:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":753} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_4_modell_reszlet.jpg" alt="Információátviteli modell (részlet)" class="wp-image-753"/><figcaption>Információátviteli modell (részlet)</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Megjegyezzük, hogy matematikai szempontból irreleváns a csatorna jellege, az információ átvitelének időbeli lefolyása, mint ahogyan az is, hogy az információ Bob-hoz való megérkezését mennyi idővel előzi meg ennek az információnak az Alice általi előállítása és elküldése. Gondoljunk csak például valamilyen CD-re írt adatokra. De bármilyen jellegű médiumot is reprezentál a modellünkben a „csatorna” feliratú doboz, nem árt felkészülnünk egy jelentős problémára, amely a csatorna fizikai jellege miatt sajnos elkerülhetetlen. Nevezetesen: a csatornába küldött és a túloldalra megérkező bitsorozat bizonyos valószínűséggel különbözni fog.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ennek az oka egész egyszerűen az, hogy a biteknek bármilyen valós csatornában mindig van valamilyen fizikai reprezentációja. Ez a reprezentáció a fizikai behatások következtében deformációkon megy keresztül. Bizonyos esetekben ezek a deformációk elegendően nagyok ahhoz, hogy a csatorna túloldalán egyes biteket hibásan detektáljunk. Az ilyen eseteket <strong><em>bithibák</em></strong>nak nevezzük. Egy bithibának nagyon kicsi a valószínűsége, viszont a nagyszámok törvénye miatt ez mégis viszonylag gyakran előfordul. Ráadásul – ha csak az előző részben bemutatott <a rel="noreferrer noopener" aria-label=" (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/3-szamrendszerek-binaris-hexadecimalis-szamabrazolas-bitmap#bitmap-example" target="_blank">példára</a> gondolunk – a legtöbb esetben sokszorosan összefüggő adatokról van szó. Ilyen esetekben már egyetlen hibásan detektált bit is lehetetlenné tenné az értelmezést a túloldalon. Ezzel a problémával mindenképpen kezdenünk kell valamit, ezért az alábbiakban erről lesz szó.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="noise"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A csatorna negatív hatása</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Nézzünk először egy életszerű példát. Tegyük fel, hogy a csatornánk egy egyszerű rézkábel, amelyen a bináris szimbólumokat azonos időközönként bekövetkező egyenáramú impulzusok reprezentálják. Egy adott impulzus magassága határozza meg, hogy őt bináris <strong>0</strong> vagy <strong>1</strong> szimbólumként kell értelmezni a túloldalon. Például a 0.8V és 1.2V közötti magasságú impulzusok jelentsék a <strong>0</strong> biteket, az 1.8V és 2.2V közötti magasságú impulzusok pedig jelentsék az <strong>1</strong> biteket. Így a vételi oldalon egyértelműen eldönthető, hogy hol vannak a bithatárok, illetve hogy milyen bitről van szó. Például a <strong>011001</strong> bitsorozatot reprezentáló elektronikus jel alakja az adó oldalon valahogy így nézne ki:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":754} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_4_binaris_jel_ado.jpg" alt="Elektronikus jel (adó oldal)" class="wp-image-754"/><figcaption>Elektronikus jel (adó oldal)</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Nyilván az a célunk, hogy minél rövidebb idő alatt minél több bit, azaz végsősoron minél több ilyen impulzus haladjon át a csatornán. Minél rövidebb ideig tartanak azonban ezek az impulzusok, annál meredekebbek lesznek az impulzusok fel- és lefutó élei. Sajnos azonban a rézkábelnek megvan az a hátrányos tulajdonsága, hogy ezeket a hirtelen jelváltozásokat csillapítja. Ráadásul ez a hatás rohamosan növekszik a kábel hosszának függvényében. Ezért előfordulhat, hogy a vételi oldalhoz már az alábbi deformált jel fog érkezni:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":755} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_4_binaris_jel_vevo.jpg" alt="Elektronikus jel (vételi oldal)" class="wp-image-755"/><figcaption>Elektronikus jel (vételi oldal)<br></figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Sajnos ebben az esetben a második bitnek megfelelő impulzus olyan mértékben deformálódott, hogy a vételi oldalon már nem lehet megállapítani, hogy a magassága melyik bináris szimbólumnak megfelelő sávba esik. Ezáltal nem lehet eldönteni, hogy az Alice által küldött bináris sorozat a <strong>011001</strong>, vagy pedig a <strong>001001</strong> volt. Nem kell hangsúlyoznunk, hogy ez mekkora félreértésekhez vezethet egy Alice és Bob közötti kommunikációban.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A fenti egy tipikus példája az úgynevezett <strong><em>törléses bithibáknak</em></strong>. Ilyen hibákról akkor beszélünk, amikor a vételi oldalon egy adott bitről nem tudjuk eldönteni, hogy <strong>1</strong> vagy <strong>0</strong> volt-e, csak azt látjuk, hogy hiba történt abban a bitpozícióban. Ennél sokkal kellemetlenebbek az úgynevezett <strong><em>átállítódásos bithibák</em></strong>. Ilyenkor egész egyszerűen <strong>0</strong> helyett <strong>1</strong>-et vagy <strong>1</strong> helyett <strong>0</strong>-át detektálunk, vagyis a vételi oldal a hiba tényéről sem szerez tudomást, az rejtve marad a számára. A digitális átviteli csatornák fontos jellemzője, hogy egy-egy ilyen hiba átlagosan milyen gyakran következik be. Ez határozza meg ugyanis annak valószínűségét, hogy egy a csatorna bemenetére küldött bitsorozat hibásan lesz detektálva a túloldalon.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A matematikában egy esemény bekövetkezésének <strong><em>valószínűségét</em></strong> egy 0 és 1 közötti számmal jellemezhetjük. Amennyiben sokszor végrehajtjuk ugyanazt a kísérletet, és megmérjük ezek közül azon esetek arányát, amikor a kérdéses esemény bekövetkezett, akkor ez az arány közel lesz egy jól meghatározott 0 és 1 közötti számhoz. Minél több kísérletet végzünk, annál közelebb. Ezt a számot nevezzük az adott esemény valószínűségének. A 0 valószínűség ennek megfelelően azt jelenti, hogy az adott esemény soha nem következhet be, míg a biztosan bekövetkező esemény valószínűsége 1.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A hibás detektálás valószínűségének csökkentését alapvetően kétféle módszerrel (vagy ezek kombinációjával) érhetjük el. Egyrészt használhatunk jobb minőségű csatornát. Ennek nyilván gátat szab a csatornára elkölthető pénz mennyisége. Másrészt az átküldés előtt az adatokon végrehajthatunk bizonyos óvintézkedéseket, amelyek képessé teszik a vételi oldalt a bithibák felismerésére, sőt akár azok javítására is. Az ilyen jellegű óvintézkedéseket összefoglaló néven <strong><em>csatornakódolásnak</em></strong> nevezzük. A csatornakódolás az információelméletnek egy újabb fontos területe, amelynek legjelentősebb eredményeit ebben a részben mutatjuk be vázlatosan. Ehhez bevezetjük a diszkrét memóriamentes csatorna absztrakt modelljét, amely matematikailag kezelhetővé teszi a fentiekben leírt kellemetlen jelenségeket függetlenül attól, hogy milyen konkrét fizikai csatornáról van szó.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Csatornamodellek</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A gyakorlatban előforduló csatornákat jól leírja az úgynevezett <strong><em>diszkrét memóriamentes csatorna</em></strong> modellje. Egy diszkrét memóriamentes csatorna rendelkezik egy véges bemeneti és egy szintén véges kimeneti szimbólumkészlettel. Ezt a végességet jelenti a <strong><em>diszkrét</em></strong> elnevezés. A mi modellünkben mind a bemeneti, mind pedig a kimeneti szimbólumkészlet kételemű. A <strong>0</strong> és az <strong>1</strong> szimbólumokból áll, mivel a csatornánkat bináris adatok továbbítására használjuk. Esetenként a kimeneti szimbólumkészlethez hozzávehetjük még a <strong>?</strong> szimbólumot is, amennyiben a fentihez hasonló törléses bithibákat is modellezni szeretnénk. A csatornáról ebben a modellben feltételezzük továbbá a <strong><em>szinkron</em></strong> működést. Ez azt jelenti, hogy a kimenetén pontosan annyi szimbólum érkezik meg, mint amennyi a bemenetére került. Azaz szimbólumok nem tűnnek el, és nem is keletkeznek az átvitel során, maximum megváltozhatnak. Végül a <strong><em>memóriamentesség</em></strong> azt jelenti, hogy a csatorna hibázásának valószínűsége független a korábban átküldött szimbólumoktól.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="graph"></div>
+<!-- /wp:html -->
+
+<!-- wp:paragraph -->
+<p>Egy ilyen csatorna jól modellezhető egy úgynevezett <strong><em>irányított élsúlyozott gráffal</em></strong>. Egy gráf bizonyos dolgokat és az ezek közötti kapcsolatokat írja le. A dolgokat a gráf <strong><em>csúcs</em></strong>ai, míg a közöttük lévő kapcsolatokat az őket összekötő <strong><em>él</em></strong>ek reprezentálják. Egy gráfot vizuálisan többféleképpen is megjeleníthetünk. Nem a konkrét megjelenítés számít ugyanis, hanem az, hogy mely csúcsok vannak összekötve éllel és melyek nincsenek. Az alábbi ábrán például ugyanannak a gráfnak két különböző vizuális megjelenítése látható:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":756} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_4_iranyitatlan_graf.jpg" alt="Gráf (példa)" class="wp-image-756"/><figcaption>Gráf (példa)</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Irányított gráfokat</em></strong> akkor használunk, ha a leírni kívánt kapcsolatok nem szimmetrikusak. Ha például valakinek szimpatikus valaki más, attól még nem biztos, hogy ez a szimpátia kölcsönös. Ezt az adott gráf éleinek lerajzolásakor egyszerű vonalak helyett nyilakkal szemléltetjük. Az alábbi ábrán például egy 5 ember közötti szimpátiagráfot láthatunk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":757} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_4_iranyitott_graf.jpg" alt="Irányított gráf (példa)" class="wp-image-757"/><figcaption>Irányított gráf (példa)</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Végül <strong><em>élsúlyozott gráfokat</em></strong> akkor használunk, ha a kapcsolatokat valamilyen számértékekkel is szeretnénk jellemezni. Ilyenkor ezeket a számokat az adott él fölé írjuk. Például egy várostérképet reprezentáló gráf éleihez rendelt értékek jelenthetik az adott élnek megfelelő útszakasz pillanatnyi leterheltségét. Ez alapján egy útvonaltervező szoftver például el tudja kerülni a dugókat.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A diszkrét memóriamentes csatornák modelljét is felfoghatjuk egy olyan irányított élsúlyozott gráfnak, amelynek csúcspontjai két csoportra oszthatók. Az egyik csoport csúcspontjai a bemeneti, a másik csoport csúcspontjai pedig a kimeneti szimbólumoknak felelnek meg. A gráf élei a bemeneti szimbólumokat kötik össze egy vagy több kimeneti szimbólummal. Egy-egy ilyen él azt jelzi, hogy az adott bemeneti szimbólum esetén milyen kimeneti szimbólumok jelenhetnek meg a túloldalon. Végül az élekhez rendelt súlyok azt jelzik, hogy mely „átmenet” milyen valószínűséggel következhet be az adott csatornán. Az alábbi ábrán egy ilyen csatornamodell látható:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":758} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_4_csatornamodell_bsc.jpg" alt="Bináris szimmetrikus csatorna (BSC)" class="wp-image-758"/><figcaption>Bináris szimmetrikus csatorna (BSC)</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Ezt <strong><em>bináris szimmetrikus csatornának (BSC)</em></strong> nevezzük. A BSC esetén csak átállítódásos hibák fordulhatnak elő, azaz valamilyen <em>p</em> valószínűséggel kapunk a bemenethez képest ellentétes bitet a kimeneten. Egy másik gyakori csatornamodellt láthatunk az alábbi ábrán:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":759} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_4_csatornamodell_torleses.jpg" alt="Bináris törléses csatorna" class="wp-image-759"/><figcaption>Bináris törléses csatorna</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Ezt <strong><em>bináris törléses csatornának</em></strong> nevezzük, és ilyenkor a <em>p</em> valószínűségű átállítódásokon kívül a kimeneten a <strong>?</strong> szimbólum is előfordulhat valamilyen <em>q</em> valószínűséggel. Ez azokat az eseteket modellezi, amikor az adott bit a vételi oldalon felismerhetetlen lett, de a hiba ténye nem maradt rejtve.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A továbbiakban az egyszerűség kedvéért a BSC modellt fogjuk használni, mivel ez viszonylag jól leírja a gyakorlatban előforduló csatornákat.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Csatornakapacitás</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Bármilyen csatornamodellt is alkalmazunk, az érezhető, hogy a csatorna „zaját” tulajdonképpen az éleken lévő valószínűségekkel jellemezhetjük. A gyakorlatban ezeket mérésekkel lehet meghatározni. Ha a csatornán nincs zaj, akkor a bemeneti szimbólum egyértelműen meghatározza a kimeneti szimbólumot. Ekkor minden átmenetvalószínűség <em>0</em> vagy <em>1</em> értékű. Ahogy a zaj növekszik, a valószínűségek ettől egyre jobban eltérnek, azaz a kimeneti szimbólumsorozatból egyre kisebb bizonyossággal tudjuk meghatározni a bemeneti sorozatot. Végsősoron tehát egyre kevesebb a csatornán átvihető <a rel="noreferrer noopener" aria-label="információ mennyisége (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/2-informacio-adat-ascii-entropia-forraskodolas-digitalizalas#entropy" target="_blank">információ mennyisége</a> átlagosan.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ha az átvitt információ mennyiségét nem kötjük egy konkrét bemeneti szimbólumsorozathoz, akkor definiálhatjuk az úgynevezett <strong><em>csatornakapacitást</em></strong>. Ez a szimbólumonként átlagosan átvihető maximális információmennyiséget méri tetszőleges bemeneti valószínűségeloszlás esetén. A matematikai részleteket itt mellőzzük, de egy hasonlattal élve a csatorna kapacitása hasonló egy út szélességéhez. Csak a csatorna műszaki konstrukciójától függ, nem pedig az éppen rajta továbbított információ jellegétől. Ugyanígy egy út szélessége sem függ attól, hogy éppen milyen forgalom halad rajta keresztül, a maximális áteresztőképességét azonban meghatározza.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A csatornakapacitás elméleti meghatározása az átmenetvalószínűségek ismeretében általában nem egyszerű feladat, de létezik rá tetszőlegesen pontos eredményt szolgáltató numerikus eljárás. A csatornakapacitás mértékegysége <em><strong>bit/szimbólum</strong></em>, ami azt fejezi ki, hogy a csatorna bemeneti szimbólumonként hány bit információt képes továbbitani átlagosan. A fentebbi BSC modell csatornakapacitása látható az alábbi ábrán a <em>p</em> átállítódásos bithibavalószínűség függvényében:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":760} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_4_csatornakapacitas_bsc.jpg" alt="BSC csatornakapacitása" class="wp-image-760"/><figcaption>BSC csatornakapacitása</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Látható, hogy a legrosszabb eset az, amikor a csatorna 50-50% valószínűséggel hibázik. Ilyenkor a kimeneti szimbólumsorozat statisztikailag teljesen független a bemeneti szimbólumsorozattól, azaz a csatornakapacitás <em>0</em>, információ nem vihető át rajta. Ezzel szemben a soha nem hibázó, illetve a mindig hibázó csatorna egyaránt zajmentesnek tekinthető. Ilyenkor ugyanis a kimeneti szimbólumból mindig egyértelműen meghatározható a bemeneti szimbólum. Az utóbbi eset hasonló a mindig hazudozó politikushoz: bármit is mond, annak mindig az ellenkezője lesz az igazság. A valódi csatornák kapacitása a teljesen zajmentes, illetve a teljesen zajos végletek között helyezkedik el valahol.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Hogyan védekezzünk a csatorna zaja ellen?</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Most nézzünk egy rendkívül egyszerű példát annak illusztrálására, hogy algoritmikus úton – azaz <strong><em>csatornakódolást</em></strong> alkalmazva – hogyan növelhetjük meg az átvitel biztonságát. Tegyük fel, hogy egy <em>p=0.1</em> hibavalószínűségű BSC-vel állunk szemben, azaz a csatornánk átlagosan minden tizedik bitet az ellentettjére változtat a rajta lévő zaj miatt. Tegyük fel továbbá, hogy 2 bites üzeneteket szeretnénk átküldeni a csatornán. Először vizsgáljuk meg a hibás üzenetvétel valószínűségét abban az esetben, ha nem alkalmazunk semmiféle csatornakódolást. Ekkor a csatorna bemenetére 4 féle közlemény kerülhet: <strong>00</strong>, <strong>01</strong>, <strong>10</strong> vagy <strong>11</strong>. Ezek közül bármely üzenetet adjuk a bemenetre, azokban az esetekben történik hibás detektálás a vételi oldalon, amikor vagy az első, vagy a második, vagy pedig mindkettő bit elromlik a csatornán. Ennek az összetett eseménynek a valószínűségét az alábbi képlettel lehet kiszámítani a <em>p</em> bithitbavalószínűségből:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}\overbrace{p\cdot (1-p)}^{\text{első bit hibás}} + \overbrace{(1-p)\cdot p}^{\text{második bit hibás}} &amp;+ \\ + \underbrace{p\cdot p}_{\text{mindkét bit hibás}} = 2p-p^2\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez <em>p=0.1</em> bithibavalószínűség esetén <em>0.19</em>, azaz átlagosan a leadott 2 bites közlemények ötöde hibás lesz a vételi oldalon.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez elfogadhatatlan, ezért most alkalmazzuk a következő egyszerű csatornakódolást: a közlemények minden bitjét triplázzuk meg a küldés előtt. Például a <strong>01</strong> közlemény helyett a <strong>000111</strong> kódszót küldjük a csatornára. Ezek után a vételi oldalra érkező biteket hármasával dolgozzuk fel, és minden három bitet többségi döntés alapján dekódolunk. Azaz pontosan akkor detektálunk <strong>1</strong>-es szimbólumot, ha a vett három bit között legalább két darab <strong>1</strong>-es érkezik a csatornán. Ha például a vételi oldalra a <strong>010110</strong> bitsorozat érkezik meg, akkor a vett közlemény többségi döntés alapján – helyesen – a <strong>01</strong> lesz. Látható, hogy annak ellenére, hogy 2 bit is elromlott a csatornán, az eredeti közleményt kaptuk vissza. Most nézzük meg, hogy mi a hibás közleménydetektálás valószínűsége ebben az esetben.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egyszerűbb kiszámítani a helyes detektálás valószínűségét, majd ezt 1-ből levonva megkapjuk a hibázás valószínűségét. Helyes a detektálás akkor, ha a két bemeneti szimbólumból kapott mindkét 3 bites blokk esetén a többségi döntés helyes volt. Egy darab 3 bites blokk esetén akkor helyes a döntés, ha a csatorna legfeljebb 1 bitet rontott el a 3-ból. Ennek valószínűsége <em>p = 0.1</em> esetén:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}\overbrace{(1-p)\cdot (1-p)\cdot (1-p)}^{\text{nincs bithiba}} &amp;+ \\ + \overbrace{p\cdot (1-p)\cdot (1-p)}^{\text{első bit hibás}} &amp;+ \\ + \overbrace{(1-p)\cdot p\cdot (1-p)}^{\text{második bit hibás}} &amp;+ \\ + \overbrace{(1-p)\cdot (1-p)\cdot p}^{\text{harmadik bit hibás}} &amp;= 0.972\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel ennek mindkét blokkra teljesülnie kell, ezért a helyes detektálás valószínűsége ennek négyzete. A hibázás valószínűsége tehát</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]1-0.972^2=0.055216[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Látható, hogy a fenti
+egyszerű csatornakódolást alkalmazva csaknem a negyedére sikerült
+lecsökkentenünk a hibásan detektált közlemények átlagos számát, pedig ugyanazt
+a rosszminőségű csatornát használtuk. A probléma az, hogy ezért hatalmas árat
+fizettünk: nevezetesen 3-szor annyi idő alatt sikerült átvinnünk a kívánt
+információt, hiszen minden bitet meg kellett tripláznunk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az alkalmazott csatornakódolásnak tehát a hibavalószínűségen kívül további fontos tulajdonsága az úgynevezett <strong><em>kódsebesség.</em></strong> Ez azt adja meg, hogy a csatorna bemenetére adott szimbólumok átlagosan hány bit információt szállítanak. Ennek mértékegysége – a csatornakapacitáshoz hasonlóan – szintén <em><strong>bit/szimbólum</strong></em>. A fenti első példában az átküldendő adatfolyamunkat 2 bites közleményekre szabdaltuk, és ezeket mindenféle kódolás nélkül küldtük a csatorna bemenetére. Ebben az esetben a kódsebesség 1 bit/szimbólum volt. Cserébe viszont meglehetősen magas (0.19) volt a hibavalószínűség. Ezzel szemben a második példában alkalmazott triplázásos kódolás mellett mindössze 0.055-re csökkent a hibavalószínűség, cserébe viszont a kódsebesség a harmadára esett vissza.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Úgy tűnik tehát, hogy egy csatornakód hibavalószínűsége és kódsebessége két egymásnak ellentmondó szempont, amelyek között kénytelenek vagyunk kompromisszumot kötni, amikor csatornakódot tervezünk. A korábbi részekben már többször emlegetett <a rel="noreferrer noopener" aria-label="Claude Shannon (új fülön nyitja meg)" href="https://hu.wikipedia.org/wiki/Claude_Shannon" target="_blank">Claude Shannon</a> azonban az információelmélet kidolgozásakor meglepő módon ezzel ellentétes következtetésre jutott az 1940-es évek végén. Ez az eredmény <strong><em>csatornakódolási tétel</em></strong> néven ismeretes, amelynek hatására komoly kutatások indultak meg a csatornakódok – és azon belül is az úgynevezett <strong><em>hibajavító kódok</em></strong> – matematikai elméletében. A csatornakódolási tétel meglepő állítását, és az említett kutatások jelenlegi állását egy rövid kitérő után ismertetjük, előbb azonban nézzük meg a hibajavító kódok működési alapelveit.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A hibajavító kódok működése</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Hibajavításról</em></strong> akkor beszélünk, ha az Alice által Bobnak szánt közleményeket úgy juttatjuk át a zajos és megbízhatatlan csatornán, hogy a vételi oldal a csatorna által okozott bithibákat lehetőség szerint képes legyen kijavítani, és ne legyen szükség a közlemények újraküldésére. <strong><em>Hibajelzés</em></strong> esetén ezzel szemben csak jelezni tudjuk, ha volt bithiba, ám azt a vételi oldal kijavítani nem képes, így ilyenkor a közlemények újraküldése szükséges. A gyakorlatban használt hibajavító kódok általában mindkét tulajdonsággal rendelkeznek. Bizonyos mértékig képesek jelezni a bithibákat, egy ennél kisebb mértékben pedig javítani is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egy hibajavító kódoló a bemenetére érkező <em>k</em> bit hosszúságú közleményeket valamilyen szabályok alapján <em>k</em>-nál hosszabb, <em>n</em> bit hosszúságú kódszavakba képezi le oly módon, hogy ez a leképezés invertálható (megfordítható) legyen. Invertálhatóság alatt azt értjük, hogy egy kódszóról mindig egyértelműen el lehessen dönteni, hogy az melyik közleményből lett leképezve. A kódsebességet a [latex]\frac{k}{n}[/latex] hányados adja meg. A fenti triplázásos példában a <em>k=2</em> hosszú közleményeket <em>n=6</em> hosszú kódszavakra képeztük le az alábbi szabályok alapján:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}00 &amp;\to 000000 \\ 01 &amp;\to 000111 \\ 10 &amp;\to 111000 \\ 11 &amp;\to 111111\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A hibajavító és hibajelző képességet itt az adja, hogy 6 biten 64 különböző bitsorozat írható le, ám ezek közül itt mindössze csak négyet tekintünk tényleges kódszónak. Ezért ha a vételi oldalra valamilyen ettől a négytől különböző 6-hosszú bitsorozat érkezik meg, Bob azonnal detektálhatja, hogy hiba történt az átvitel során, sőt bizonyos esetekben még javítani is képes ezeket a hibákat. Nézzük meg, mi kell ahhoz, hogy a hibákat javítani is lehessen.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A javításhoz Bobnak valahogyan el kell tudnia dönteni, hogy a hozzá megérkező hibás bitsorozat melyik kódszóhoz áll a „legközelebb”. Két azonos hosszúságú bitsorozat „távolságának” mérésére szolgál az úgynevezett <strong><em>Hamming-távolság</em></strong>, amely azt adja meg, hogy a két bitsorozat hány pozícióban különbözik egymástól. Például a <strong>000000</strong> és a <strong>000111</strong> sorozatok Hamming-távolsága <em>3</em>, mivel az utolsó <em>3</em> pozícióban különböznek. A Hamming-távolság teljesíti a „távolsággal”, mint fogalommal szemben elvárt intuitív követelményeket, azaz tetszőleges <em>a</em>, <em>b</em> és <em>c</em> bitsorozatra igazak az alábbiak:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li><strong>Szimmetria:</strong> <em>a</em> „távolsága” <em>b</em>-től ugyanannyi, mint <em>b</em> „távolsága” <em>a</em>-tól.</li><li><strong>Egyenlőségi tulajdonság:</strong> <em>a</em> és <em>b</em> „távolsága” akkor és csak akkor <em>0</em>, ha <em>a</em> és <em>b</em> megegyeznek.</li><li><strong>Háromszög-egyenlőtlenség:</strong> az <em>a</em> és <em>b</em> közötti, valamint a <em>b</em> és <em>c</em> közötti „távolságok” összege legalább annyi, mint az <em>a</em> és <em>c</em> közötti közvetlen „távolság”.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>Ahhoz, hogy Bob minél több hibát tudjon javítani vagy jelezni <em>n</em> bites kódszavak használata esetén, célszerű az összes <em>n</em> hosszú bitsorozat közül azokat kiválasztani kódszavaknak, amelyek minél „távolabb” vannak egymástól a fenti értelemben. Egy hibajavító kódolásnak ezért egy rendkívül fontos paramétere az úgynevezett <strong><em>kódtávolság</em></strong>, amely nem más, mint a két egymáshoz „legközelebb” eső kódszó Hamming-távolsága. Ezt a mennyiséget <em>d<sub>min</sub></em>-nel jelöljük. Az alábbi ábrán egy <em>d<sub>min</sub></em> kódtávolságú hibajavító kód két legközelebbi kódszava (<em>a</em> és <em>b</em>) látható:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":761} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_4_kodtavolsag.jpg" alt="Kódtávolság" class="wp-image-761"/><figcaption>Kódtávolság</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>A baloldali (vagy jobboldali) körben lévő kisebb pontok azokat az <em>n</em> hosszú bitsorozatokat jelölik, amelyek nem kódszavak, viszont Hamming-távolságuk alapján <em>a</em>-hoz (vagy <em>b</em>-hez) közelebb vannak, mint bármely más kódszóhoz. Ha Bob a vételi oldalra megérkező <em>n</em> hosszú bitsorozatokat mindig a hozzájuk legközelebbi kódszóra javítja, akkor biztos lehet benne, hogy bármely [latex]\frac{d_{min}-1}{2}[/latex]-nél nem nagyobb számú átállítódásos bithibát képes javítani. Ennél nagyobb számú bithiba esetén azonban előfordulhat, hogy a vett bitsorozat már egy másik kódszóhoz van a legközelebb, mint amit Alice elküldött. Ezen kívül Bob bármely [latex]d_{min}-1[/latex]-nél nem nagyobb számú bithibát képes detektálni. Ennél nagyobb számú bithiba esetén azonban előfordulhat, hogy Bob éppenséggel egy kódszót kapott a vételi oldalon, amely azonban egy másik kódszó, mint amit Alice elküldött.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Elméletben Alice és Bob a fentiek alapján könnyen konstruálhat magának egy adott számú bithibát javítani képes hibajavító kódot, hiszen nincs más dolguk, mint a lehető legmesszebb „elhelyezni” egymástól a kódszavakat. Ezen kívül a dekódolás is elméletben könnyű, hiszen Bob-nak a csatornáról érkező vett bitsorozathoz kell csupán megtalálnia a hozzá legközelebbi kódszót. A problémát az adja, hogy <em>k</em> hosszú közleményekhez <em>2<sup>k</sup></em> darab kódszót kell ilyen módon „elhelyezni” a hibajavító kód konstrukciójakor, a dekódoláskor pedig Bob-nak a vett bitsorozat ugyancsak <em>2<sup>k</sup></em> darab kódszótól mért Hamming-távolságait kell kiszámítania ahhoz, hogy megtalálja közöttük a legközelebbit. A <em>2<sup>k</sup></em> mennyiség nagyon gyorsan növekszik <em>k</em> függvényében, ezért ezzel az elméleti módszerrel adott esetben egyetlen közlemény dekódolása is reménytelenül sokáig tartana még a leggyorsabb számítógépeknek is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>kódelmélet</em></strong> tudománya azzal foglalkozik, hogy hogyan lehet oly módon elvégezni a hibajavítást, hogy ne kelljen mind a <em>2<sup>k</sup></em> darab Hamming-távolságot kiszámítani. E kódok műkődési alapelve az, hogy bizonyos követelményeket kielégítő műveleteket értelmezünk a kódszavak halmazán, és az így kialakított matematikai objektumok algebrai tulajdonságait és összefüggéseit próbáljuk meg kihasználni a kódolás és dekódolás során. A legfontosabb polgári életben használt hibajavító kód a <strong><em><a rel="noreferrer noopener" aria-label="Reed-Solomon kódcsalád (új fülön nyitja meg)" href="https://en.wikipedia.org/wiki/Reed%E2%80%93Solomon_error_correction" target="_blank">Reed-Solomon kódcsalád</a></em></strong>, amelyet Irving S. Reed és Gustave Solomon fejlesztettek ki az 1950-es években. Ezzel védik többek között a különböző optikai adathordozókon (CD, DVD, Blu-ray) lévő adatokat a fizikai sérülésektől. Ha például egy CD véletlenül megkarcolódik, azzal rengeteg bit olvashatatlanná válik, ennek ellenére a Reed-Solomon hibajavító kódolásnak köszönhetően az adatok továbbra is kinyerhetőek, feltételezve persze, hogy a sérülés mértéke egy bizonyos szint alatt marad. Ezen kívül a manapság szinte minden reklámon megtalálható QR-kódokat is Reed-Solomon kóddal védik a rossz képminőség okozta felismerési hibák ellen.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A csatornakódolási tétel</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Most térjünk vissza a már említett csatornakódolási tétel meglepő állítására, amely megcáfolta azt az intuitív elképzelést, miszerint a kódsebesség és a hibavalószínűség közötti kompromisszumra lenne szükség egy csatornakód tervezésekor.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezzel szemben a tétel a következőt állítja: <strong><em>ha az elérni kívánt kódsebesség kisebb, mint a csatornakapacitás, akkor létezik tetszőlegesen kicsi hibavalószínűségű csatornakód</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Igaz továbbá a tétel megfordítása is: <strong><em>ha az elérni kívánt kódsebesség a csatornakapacitásnál nagyobb, akkor ilyen kód nem létezik</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Gondoljunk csak bele, hogy ez mennyire ellentmond annak, amit gondolnánk az eddigiek alapján. Tegyük fel, hogy a hibavalószínűséget valamilyen nagyon kicsi érték alá szeretnénk szorítani, és mindemellett azt is szeretnénk elérni, hogy a kódsebesség minél közelebb legyen az elvi maximumhoz, azaz a csatornakapacitáshoz. A tétel állítása szerint ilyen kódnak léteznie kell. Az egyetlen bökkenő az, hogy a csatornakódolási tétel pusztán ilyen kód létezését állítja, nem mond azonban semmit arról, hogy azt hogyan kéne megkonstruálni. Például nem tudjuk azt sem, hogy egy adott hibavalószínűségi korlát eléréséhez milyen hosszú kódszavakat kellene használnunk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az ezzel kapcsolatos kutatások napjainkban is tartanak. Ennek nagy lökést adtak az 1960-as években felfedezett úgynevezett <strong><em>konvolúciós kódok</em></strong>. Ezen kívül a kódelméleti kutatások viszonylag új vonalát jelentik az úgynevezett <strong><em>turbó kódok</em></strong>, melyek kódsebessége már megközelíti a csatornakapacitást. Jelenleg úgy tűnik, hogy széleskörű elterjedésüknek csak a kódolás és dekódolás során fellépő nagy késleltetés és komplexitás szab határt. Legfőbb felhasználási területük az űrtávközlés, azon belül is főként a mélyűr kommunikáció. Itt tipikusan nagyon zajos csatornákon, és emiatt rendkívül alacsony csatornakapacitás mellett kell tudni megbízhatóan kommunikálni. Gondoljunk csak például a New Horizons nevű űrszondára, amelynek nemrég a Plútó térségéből kellett képeket és mérési adatokat visszaküldeni a Földre. Olyan távolságból, ahonnan még a rádiójeleknek is 4-5 óráig tart ideérni fénysebességgel. Egy ilyen csatornán rengeteg a bithiba, ugyanakkor a nagy késleltetés miatt szeretnénk elkerülni az üzenetek újraküldését, amennyire csak lehet.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A fentiek alapján az információátviteli modellünket az alábbi ábrán látható módon kell tehát kibővítenünk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":763} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_4_kibovitett_modell.jpg" alt="Információátviteli modell (részlet)" class="wp-image-763"/><figcaption>Információátviteli modell (részlet)</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Az adatainkat tehát a rosszminőségű kommunikációs csatornák okozta adatvesztéstől meg kell védenünk. Ezért ebben a részben tettünk egy rövid kitérőt az információelmélet egy másik nagy területe, a csatornakódolás és a hibajavító kódok elmélete irányába. Érintőlegesen bemutattuk ezek működésének alapelveit, illetve a legfontosabb kódelméleti alapfogalmakat. Ezután megemlékeztünk a rendkívül meglepő csatornakódolási tételről, amely optimális csatornakódok létezését igazolja. Végül megemlítettük az ilyen kódok keresésére indított kutatások jelenlegi állását.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A modellünk azonban még nem teljes. Az adatainkat ugyanis nem csak a sérülésektől, hanem a rossz szándékú támadóktól is meg kell védenünk. A következő rész fontos szereplőjévé lép majd elő a korábban már említett Eve, aki a csatorna lehallgatásával bizalmas információkra szeretné rátenni az enyves kezét. Ezen kívül történetünk egy új szereplőjével is meg fogunk ismerkedni, aki még az Eve-énél is gonoszabb tettektől sem riad vissza némi anyagi haszon reményében...</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A következő részt <a href="https://youproof.hu/kriptografia/5-one-time-pad-passziv-aktiv-tamado-haromutas-kulcsforgalom/">itt</a> találod...</em></strong></p>
+<!-- /wp:paragraph -->

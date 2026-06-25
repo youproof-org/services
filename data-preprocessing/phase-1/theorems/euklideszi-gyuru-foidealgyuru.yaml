@@ -1,0 +1,15 @@
+type: theorem
+name: euklideszi-gyuru-foidealgyuru
+proofs:
+  - euklideszi-gyuru-foidealgyuru-bizonyitas
+remarks: []
+references:
+  abszolutertek-euklideszi-norma:
+    target:
+      type: theorem
+      name: abszolutertek-euklideszi-norma
+content:
+  - type: narrative
+    content: |
+      Minden ***euklidészi gyűrű*** &ndash; és így a [abszolutertek-euklideszi-norma] miatt az egész számok $\Z$
+      gyűrűje is &ndash; ***főideálgyűrű***.

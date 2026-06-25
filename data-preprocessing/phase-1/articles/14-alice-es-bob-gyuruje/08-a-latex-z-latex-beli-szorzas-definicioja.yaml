@@ -1,0 +1,84 @@
+type: section
+name: 08-a-latex-z-latex-beli-szorzas-definicioja
+title: 'A [latex]\Z[/latex]-beli szorzás definíciója'
+
+body:
+  - type: narrative
+    content: |
+      Foglaljuk össze, mire jutottunk eddig.
+  - type: formula
+    lead-in: |
+      A $\odot$ művelet képletének meghatározására az alábbi általánosnak tekinthető képletből indultunk ki
+      (amelyben tehát ismeretlennek tekintettük az $A$, $B$, $C$ és $D$, valamint az $E$, $F$, $G$ és $H$
+      együtthatóhat):
+    content: |
+      \begin{aligned}[(a;b)]\odot [(c;d)] = [(&A\cdot ac + B\cdot ad + C\cdot bc + D\cdot bd; \\ &E\cdot ac +
+      F\cdot ad + G\cdot bc + H\cdot bd)]\end{aligned}
+  - type: narrative
+    content: |
+      Az előző szakaszban meghatároztunk 4 olyan követelményt, amelyet elvárunk egy "normálisan viselkedő"
+      szorzástól, mint művelettől.
+  - type: formula
+    lead-in: |
+      Habár a 8 együttható továbbra is ismeretlen, azt azonban már tudjuk, hogy e 4 követelménynek ez a képlet
+      eleget fog tenni, amennyiben az együtthatókra igazak az alábbiak:
+    content: |
+      \begin{aligned}A&=E+1 \\ D&=H+1 \\ F&=B+1 \\ G&=C+1 \\ \end{aligned}
+  - type: narrative
+    content: |
+      Mondhatnánk, hogy ezzel nem vagyunk sokkal előrébb, hiszen a $B$, $C$, $E$ és $H$ együtthatókat még mindig
+      nem ismerjük. Ez igaz ugyan, azonban a fenti okfejtésből az következik, hogy ***a kívánt tulajdonságok
+      teljesülése nem függ ennek a 4 együtthatónak az értékétől***. Így azokat tulajdonképpen szabadon
+      megválaszthatjuk. Annak érdekében, hogy minél egyszerűbb legyen a végleges képletünk, célszerű ezeket
+      önkényesen 0-nak választani &ndash; feltéve, ha nem vagyunk mazochisták.
+  - type: formula
+    lead-in: |
+      Így ezeket az együtthatókat kapjuk:
+    content: |
+      \begin{array}{cc} \begin{aligned}E&=0 \\ H&=0 \\ B&=0 \\ C&= 0 \end{aligned} & \begin{aligned} A=E+1&=1 \\
+      D=H+1&=1 \\ F=B+1&=1 \\ G=C+1&=1 \end{aligned} \end{array}
+  - type: narrative
+    content: |
+      Ezek alapján már definiálhatjuk az ***egész számok szorzásának*** műveletét.
+  - type: embed
+    target:
+      type: definition
+      name: egesz-szamok-szorzasa
+  - type: narrative
+    content: |
+      Először megmutatjuk, hogy a $\odot$ művelet nemcsak az előző szakaszban megfogalmazott IV. követelmény
+      szerinti esetekben ***jóldefiniált*** &ndash; tehát amikor adósságot szorzunk adóssággal &ndash;, hanem a
+      teljes $\Z$ halmazon:
+  - type: embed
+    target:
+      type: theorem
+      name: egesz-szamok-szorzasa-joldefinialt
+  - type: embed
+    target:
+      type: proof
+      name: egesz-szamok-szorzasa-joldefinialt-bizonyitas
+  - type: narrative
+    content: |
+      Most vizsgáljuk meg, hogy tényleg minden szükséges tulajdonságot teljesít-e ez a művelet. Az biztos, hogy az
+      $f(n)=[(n;0)]$ beágyazófüggvény &ndash; amellyel tehát a Peano-axiómák szerinti $\N_1$ halmazt ágyazzuk be a
+      $\Z$ halmazba &ndash; tartja a Peano-szorzást, hiszen épp ez volt az I. követelményünk az előző szakaszban.
+      Ezért ezt most tételként is kimondhatjuk:
+  - type: embed
+    target:
+      type: theorem
+      name: termeszetes-szamok-beagyazasa-szorzattarto
+  - type: embed
+    target:
+      type: proof
+      name: termeszetes-szamok-beagyazasa-szorzattarto-bizonyitas
+  - type: narrative
+    content: |
+      Végül megmutatjuk, hogy a $\odot$ művelet teljesíti az iskolából jól ismert számolási szabályokat.
+  - type: embed
+    target:
+      type: theorem
+      name: egesz-szamok-szorzasa-kommutativ-asszociativ-es-disztributiv
+  - type: embed
+    target:
+      type: proof
+      name: egesz-szamok-szorzasa-kommutativ-asszociativ-es-disztributiv-bizonyitas

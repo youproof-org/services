@@ -1,0 +1,21 @@
+type: theorem
+name: polinom-gyokeinek-szama
+proofs:
+  - polinom-gyokeinek-szama-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ egy tetszőleges ***kommutatív, egységelemes és nullosztómentes*** gyűrű, legyen továbbá $f\in
+      R[x]$ egy tetszőleges ***nemnulla*** polinom, amelynek pontosan az $r_1$, $r_2$, ..., $r_k$ gyűrűelemek a
+      gyökei.
+  - type: formula
+    lead-in: |
+      Ha a $\odot$ szimbólummal jelöljük az $R[x]$ polinomgyűrű szorzását, akkor az $f$ polinom felírható az alábbi
+      alakban, ahol $f_{r_1}$, $f_{r_2}$, ..., $f_{r_k}$ az $f$ polinom ***minden*** gyökéhez tartozó egy-egy
+      gyöktényezőjét, $q$ pedig egy olyan polinomot jelöl, amelynek a fentieken kívül nincs további gyöke $R$-ben:
+    content: |
+      f=f_{r_1}\odot f_{r_2}\odot \ldots \odot f_{r_k}\odot q
+  - type: narrative
+    content: |
+      Ebből következik, hogy $f$-nek legfeljebb annyi gyöke van $R$-ben, mint amennyi a foka.

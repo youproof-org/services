@@ -1,0 +1,12 @@
+type: theorem
+name: bezout-lemma
+proofs:
+  - bezout-lemma-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ ***főideálgyűrű***, továbbá legyenek $a$ és $b$ az $R$ tetszőleges elemei. Ekkor az $a$ és $b$
+      elemek kitüntetett közös osztója kifejezhető $u\cdot a+v\cdot b$ alakban az $R$ gyűrű alkalmasan választott
+      $u$ és $v$ elemeinek segítségével. Ezt az összeget az $a$ és $b$ elemek $u$ és $v$ elemekkel vett ***lineáris
+      kombinációjának*** nevezzük.

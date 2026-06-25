@@ -1,0 +1,17 @@
+type: theorem
+name: legnagyobb-kozos-oszto-kituntetett
+proofs:
+  - legnagyobb-kozos-oszto-kituntetett-bizonyitas
+remarks: []
+references:
+  kituntetett-kozos-oszto-egyertelmusege:
+    target:
+      type: theorem
+      name: kituntetett-kozos-oszto-egyertelmusege
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy a $d$ egész szám valamely $a$ és $b$ egész számok legnagyobb közös osztója. Tegyük fel
+      továbbá, hogy $a$-nak és $b$-nek ***létezik*** legalább 1 ***kitüntetett közös osztója***, amelyet jelöljünk
+      most $e$-vel. Ekkor $d$ és $e$ egymás asszociáltjai, és így a [kituntetett-kozos-oszto-egyertelmusege]
+      értelmében $d$ is kitüntetett közös osztó.

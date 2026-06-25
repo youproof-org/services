@@ -1,0 +1,58 @@
+type: section
+name: 04-a-matematikai-bizonyitas-fogalma
+title: A matematikai bizonyítás fogalma
+
+body:
+  - type: narrative
+    content: |
+      Az olyan állításokat, amelyek nem axiómák, hanem azoknak valamilyen logikai következményei, ***tételeknek
+      ***nevezzük. Ahhoz, hogy egy matematikai állítást tételnek nevezhessünk, ***bizonyítást ***kell adnunk rá.
+      Ennek során az állítást szigorú logikai érveléssel vissza kell vezetnünk vagy magukra az axiómákra, vagy
+      pedig korábban már bizonyított tételekre.
+  - type: narrative
+    content: |
+      Példaként ***fogalmazzuk meg első tételünket***, és nézzük meg, hogyan történik egy bizonyítás. Ez egy
+      roppant magától értetődő állításnak fog tűnni. Azonban ne feledjük, hogy mivel valóban kitöröltünk mindent a
+      fejünkből a természetes számokkal kapcsolatban (ugye?!), ezért most kizárólag a fenti 4 axiómára
+      szorítkozhatunk.
+  - type: narrative
+    content: |
+      A tételek végét a definíciókéhoz hasonlóan a &#x2663; karakterrel, a bizonyítások végét pedig a ∎ karakterrel
+      fogjuk jelölni.
+  - type: embed
+    target:
+      type: theorem
+      name: peano-szamossag
+  - type: embed
+    target:
+      type: proof
+      name: peano-szamossag-bizonyitas
+  - type: narrative
+    content: |
+      Látható, hogy a természetes számok végtelensége egyáltalán nem magától értetődő, amennyiben kizárólag a
+      Peano-axiómarendszer 4 darab állítására támaszkodhatunk az érvelésben. Ez a példa jól tükrözi, hogy milyen
+      körültekintően kell eljárni egy logikai érvelés során. Halkan megjegyezzük ugyanakkor, hogy a fenti tétel
+      kimondása előtt tisztáznunk kellett volna, hogy pontosan mit értünk ***"végtelen sok elemet tartalmazó
+      halmaz"*** alatt. A szükséges halmazelméleti ismereteket most nem részletezzük, azonban egy rövid példával
+      megpróbálunk rávilágítani a lényegre.
+  - type: narrative
+    content: |
+      Képzeljünk el egy szállodát végtelen sok szobával, amelyek 0-tól vannak sorszámozva. A kérdés: hogyan tudunk
+      elszállásolni egy újonnan érkező vendéget, ha az összes szoba foglalt? A megoldás roppant egyszerű: megkérünk
+      minden vendéget, hogy költözzön át az 1-gyel nagyobb sorszámú szobába. Ezt minden további nélkül meg tudjuk
+      tenni, következésképp felszabadul a 0-ás sorszámú szoba, ahová az újonnan érkező vendéget elhelyezhetjük.
+      Sőt, ha a vendégeket arra kérjük, hogy költözzenek át a kétszer nagyobb sorszámú szobába, akkor minden
+      páratlan sorszámú szoba felszabadul, így akár végtelen sok új vendég is elhelyezhető.
+  - type: narrative
+    content: |
+      A költöztetéssel lényegében egy úgynevezett ***kölcsönösen egyértelmű megfeleltetést*** létesítettünk az
+      összes szobák $A$ halmazából egy olyan $B$ halmazba, amely nem tartalmazta az összes szobát. A kölcsönösen
+      egyértelműség itt azt jelenti, hogy $A$ minden szobájából elköltöztettük a vendégeket, és $B$ minden
+      szobájába pontosan egy $A$-beli szobából költöztettünk vendégeket. A matematikában is hasonlóan definiáljuk a
+      végtelen számosságot: egy ***halmaz számossága akkor végtelen***, ha létezik kölcsönösen egyértelmű
+      megfeleltetés saját maga és egy valódi részhalmaza között. A Peano-axiómarendszerben bevezetett $s$ függvény
+      épp egy ilyen megfeleltetést valósít meg.
+  - type: narrative
+    content: |
+      Most bevezetünk egy általános iskolából is jól ismert műveletet az $\N$ halmazon, azaz a természetes számok
+      között. Ennek a műveletnek a konstrukciójához azonban szintén az axiómáinkat fogjuk csak használni.

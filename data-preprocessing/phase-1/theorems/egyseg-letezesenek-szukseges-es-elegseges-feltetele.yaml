@@ -1,0 +1,14 @@
+type: theorem
+name: egyseg-letezesenek-szukseges-es-elegseges-feltetele
+proofs:
+  - egyseg-letezesenek-szukseges-es-elegseges-feltetele-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Egy ***kommutatív és nullosztómentes gyűrűben*** akkor és csak akkor létezik egység, ha létezik egységelem.
+  - type: narrative
+    content: |
+      Amennyiben a gyűrű ***csak kommutatív***, de nem feltétlenül nullosztómentes, úgy csak annyit tudunk mondani,
+      hogy ha létezik egységelem, akkor létezik egység is. Ebben az esetben egy egység létezéséből még nem
+      következik az, hogy egységelem is létezik.

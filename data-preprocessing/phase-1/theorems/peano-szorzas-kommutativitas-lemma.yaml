@@ -1,0 +1,11 @@
+type: theorem
+name: peano-szorzas-kommutativitas-lemma
+proofs:
+  - peano-szorzas-kommutativitas-lemma-bizonyitas
+remarks: []
+content:
+  - type: formula
+    lead-in: |
+      Az $\N$ halmaz tetszőleges $a$ és $b$ elemeire igaz az alábbi összefüggés:
+    content: |
+      s(b)\cdot a=(b\cdot a) + a

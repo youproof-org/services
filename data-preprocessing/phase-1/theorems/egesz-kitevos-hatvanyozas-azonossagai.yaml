@@ -1,0 +1,20 @@
+type: theorem
+name: egesz-kitevos-hatvanyozas-azonossagai
+proofs:
+  - egesz-kitevos-hatvanyozas-azonossagai-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $H$ tetszőleges halmaz, amelyen értelmezve van egy $\cdot$ szimbólummal vagy egymás után írással
+      jelölt ***asszociatív*** művelet. Tegyük fel továbbá, hogy e műveletre nézve ***létezik neutrális elem***, és
+      legyenek $a$ és $b$ a $H$ két invertálható eleme.
+  - type: ordered-list
+    lead-in: |
+      Ekkor tetszőleges &ndash; tehát nem feltétlenül csak pozitív &ndash; $n$ és $k$ egész számok esetén
+      teljesülnek az alábbi tulajdonságok:
+    items:
+      - 'Ha $a$ és $b$ felcserélhetők, azaz $ab=ba$, akkor $(a\cdot b)^n=a^n\cdot b^n$'
+      - '$(a^n)^k = a^{n\cdot k}$'
+      - '$a^n\cdot a^k=a^{n+k}$'
+      - '$a^{-n}=(a^n)^{-1}$, azaz az $a^{-n}$ hatvány az $a^n$ hatvány inverze.'

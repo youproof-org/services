@@ -1,0 +1,94 @@
+type: section
+name: 09-a-ketres-kiserlet
+title: A kétrés-kísérlet
+
+body:
+  - type: narrative
+    content: |
+      Ebben a szakaszban a kvantummechanika egyik fontos kísérletét, az úgynevezett ***kétrés-kísérletet***
+      ismertetjük. A történet az 1600-as évekig, a fény természetéről folytatott első vitákig nyúlik vissza. Az
+      egyik akkoriban uralkodó elmélet szerint a fény apró részecskékből, úgynevezett ***fotonokból*** áll, amelyek
+      puskagolyókhoz hasonlóan haladnak előre a térben egyenes vonalban mindaddig, míg akadályba nem ütköznek.
+      Innen aztán egy részük visszaverődik, más részük pedig elnyelődik. Ez az elmélet kiválóan megmagyarázta
+      azokat a fényjelenségeket, amelyeket makroszkópikus világunkban tapasztalhatunk.
+  - type: narrative
+    content: |
+      Képzeljünk el például egy fényforrást, amely fotonokat bocsájt ki magából, valamint egy ernyőt, amelyen a
+      becsapódó fotonok intenzitásuktól függően nyomot hagynak. Helyezzünk a fényforrás és az ernyő közé egy olyan
+      átlátszatlan lemezt, amelyen van egy rés. Ekkor értelemszerűen a fotonok az ernyőnek csak a rés mögé eső
+      részén fognak nyomot hagyni, míg az árnyékban lévő részeken nem keletkezik nyom. Ez teljesen megfelel a
+      puskagolyó-modellnek, vagyis úgy tűnik, hogy a fény valóban ***részecske természetű***.
+  - type: narrative
+    content: |
+      Most kezdjük el egyre jobban szűkíteni a rést. Egy idő után azt fogjuk tapasztalni, hogy a fotonok elkezdenek
+      nyomot hagyni az ernyőn a rés mögötti résztől távolabb is, méghozzá egyre csökkenő intenzitással. Mintha az
+      egyenesen haladó fotonok egy része a résen áthaladva irányt változtatna. Látszólag ugyanaz történik, mint
+      amikor a vízben keltett síkhullámok egy, a hullámhosszukkal összemérhető szélességű résen keresztülhaladva a
+      túloldalon koncentrikus félkörökként kezdenek továbbhaladni.
+  - type: figure
+    lead-in: |
+      Ez látható az alábbi ábrán:
+    src: 15-fenyhullamok-egy-res-eseten.jpg
+    alt: Fényhullámok egy rés esetén
+    caption: Fényhullámok egy rés esetén
+  - type: narrative
+    content: |
+      Az ernyő rés mögötti részén lesz a legnagyobb intenzitású a fény által hagyott nyom, hiszen ez a pont van a
+      legközelebb a réshez. Oldalirányban távolodva viszont a hullámoknak egyre nagyobb utat kell megtenniük,
+      amelynek során erősségük egyre jobban csökken. A fény tehát valójában ***hullám természetű***, csak ez
+      makroszkópikus méretekben nem látszik &ndash; mondhatnánk. Még inkább megerősíti ezt az elméletet, ha egy
+      helyett két keskeny rést is nyitunk a lemezen.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán látszik, hogy mi történik ilyenkor:
+    src: 16-fenyhullamok-ket-res-eseten.jpg
+    alt: Fényhullámok két rés esetén
+    caption: Fényhullámok két rés esetén
+  - type: narrative
+    content: |
+      Ebben az esetben az ernyőn az ábrán látható furcsa csíkok fognak megjelenni. Ez azzal magyarázható, hogy a
+      két résből kiinduló koncentrikus hullámok bizonyos helyeken erősítik, másutt pedig kioltják egymást, azaz
+      ***interferencia*** lép fel. Ugyanúgy, mint amikor a vízbe egymás mellé két kavicsot dobunk, és a két
+      becsapódás helyéről kiinduló körhullámok összetalálkoznak. A részecske-hullám vita tehát eldőlni látszott az
+      utóbbi javára.
+  - type: narrative
+    content: |
+      Volt azonban egy ***fotoeffektusnak*** nevezett jelenség, amelyet sehogyan sem lehetett megmagyarázni, ha a
+      fényt egyszerűen csak valamiféle hullámnak tekintjük. A fotoeffektus során megfigyelték, hogy bizonyos
+      fémekre ejtett fény elektromos áramot hozott létre egy alkalmas elektromos áramkörben. A feltételezés szerint
+      a fény elektronokat ütött ki a fémből, amelyek így "folyni kezdtek" az áramkörben. Ugyanakkor azt is
+      megfigyelték, hogy míg egy gyenge kék &ndash; azaz rövid hullámhosszú &ndash; fény elég volt az áram
+      megindításához, addig egy erős vörös &ndash; azaz nagy hullámhosszú &ndash; fény nem. A hullámelmélet szerint
+      ugyanakkor a fényhullám ereje a fényerősséggel, és nem pedig a hullámhosszal arányos, azaz egy erős fénynek
+      elég erősnek kellett volna lennie az áramkeltéshez. Különös módon ez mégsem így volt. A jelenséget Albert
+      Einstein azzal magyarázta, hogy a fény valóban fotonokból áll, amelyek ugyanakkor a fény hullámhosszától
+      függő nagyságú energiával rendelkeznek, és csak bizonyos küszöbérték alatti hullámhosszal rendelkező fotonok
+      képesek elektronokat kiszabadítani. Einstein a fotoeffektus magyarázatáért 1921-ben fizikai Nobel-díjat
+      kapott.
+  - type: narrative
+    content: |
+      Kezdték tehát felismerni, hogy a fény furcsamód ***kettős természetű***: egyszerre mutat részecske- és
+      hullámtulajdonságokat. Ezt azonban akkoriban azzal magyarázták, hogy a fény ugyan részecskékből áll, ám ezek
+      valamilyen módon interferálnak egymással, amennyiben egyfajta tömegjelenségként vizsgáljuk őket. Időközben
+      azonban fejlődött a technológia, és olyan eszközöket sikerült megalkotni, amelyek a hagyományos
+      fényforrásokkal ellentétben képesek voltak ***egyesével*** is fotonokat kibocsájtani.
+  - type: narrative
+    content: |
+      Ha a fenti kísérleti elrendezésben a fényforrást egy ilyen fotonágyúra cseréljük le, akkor értelemszerűen azt
+      várnánk, hogy az egyenként kilőtt fotonok az ernyőnek a két rés mögötti részén fognak nyomot hagyni nagyjából
+      fele-fele arányban, hiszen ebben az esetben nem tudnak interferálni más fotonokkal. Így tehát az
+      interferenciára utaló csíkos mintázat helyett mindössze két csíknak kellene megjelennie az ernyőn a rések
+      mögött. ***Megdöbbentő módon azonban nem ez történik: ebben az esetben is ugyanúgy megjelenik az
+      interferenciakép.*** Mintha az egyes fotonok varázslatos módon ***egyszerre mindkét résen***
+      keresztülmennének, és a túloldalon valahogyan képesek volnának önmagukkal interferenciára lépni.
+  - type: narrative
+    content: |
+      Az egyetlen mód, hogy megtudjuk, mi is történik valójában, ha detektorokat helyezünk el a résekhez &ndash;
+      gondolnánk. Ezek ugyanis egyértelműen jeleznék, hogy egy-egy foton konkrétan melyik résen haladt át, vagy
+      esetleg tényleg áthaladt-e mindkettőn egyszerre. Nos, miután elhelyezzük a detektorokat és megismételjük a
+      kísérletet, egy még megdöbbentőbb dolog történik: interferenciakép helyett ezúttal valóban az eredetileg várt
+      két csík fog megjelenni az ernyőn. ***Mintha a fotonok megfigyelése módosítaná az eredményt.***
+  - type: narrative
+    content: |
+      Most dobjuk félre egy picit a józat eszünket, és nézzük, milyen elképesztő magyarázatot ad erre a
+      kvantummechanika.

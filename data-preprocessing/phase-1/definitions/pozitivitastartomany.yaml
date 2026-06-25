@@ -1,0 +1,22 @@
+type: definition
+name: pozitivitastartomany
+remarks:
+  - pozitivitastartomany-megjegyzes
+references:
+  rendezett-gyuru:
+    target:
+      type: definition
+      name: rendezett-gyuru
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy $(R,+,\cdot )$ egy ***részbenrendezhető gyűrű***, és legyen $\leq$ egy olyan részbenrendezés
+      a gyűrű $R$ alaphalmazán, amely teljesíti a [rendezett-gyuru] szerinti ***rendezési axiómákat***. Ekkor
+      azoknak az $a\eq 0$ gyűrűelemeknek a halmazát, amelyekre teljesül az $a\geq 0$ reláció, a gyűrű
+      ***pozitivitástartományának nevezzük a $\leq$ rendezésre nézve***, és $P_{\leq}$-vel jelöljük. A $P_{\leq}$
+      halmazban lévő elemekre ilyenkor azt mondjuk, hogy ***pozitívak a $\leq$ rendezésre nézve***.
+  - type: narrative
+    content: |
+      Ehhez hasonlóan azoknak az $a\eq 0$ gyűrűelemeknek a halmazát, amelyekre teljesül az $a\leq 0$ reláció, a
+      gyűrű ***negativitástartományának nevezzük a $\leq$ rendezésre nézve***, és $-P_{\leq}$-vel jelöljük. A
+      $-P_{\leq}$ halmazban lévő elemekre ilyenkor azt mondjuk, hogy ***negatívak a $\leq$ rendezésre nézve***.

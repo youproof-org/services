@@ -1,0 +1,49 @@
+type: proof
+name: teljes-rendezes-szukseges-es-elegseges-feltetele-bizonyitas
+remarks: []
+references:
+  gyuru-reszbenrendezesenek-tulajdonsagai:
+    target:
+      type: theorem
+      name: gyuru-reszbenrendezesenek-tulajdonsagai
+  pozitivitastartomany:
+    target:
+      type: definition
+      name: pozitivitastartomany
+content:
+  - type: narrative
+    content: |
+      Jelöljük a $P$ pozitivitástartomány által meghatározott relációt a $\leq$ szimbólummal. Mivel ez ismét egy
+      ***"akkor és csak akkor"*** típusú állítás, ezért ezúttal is mindkét irányú következtetést bizonyítani kell.
+  - type: narrative
+    content: |
+      ***Nézzük meg először***, hogy mi következik $P$-re vonatkozóan abból, ha $\leq$ egy teljes rendezés. Az ugye
+      világos, hogy tetszőleges $a\eq 0$ elemre vagy teljesül a $0\leq a$ reláció, vagy pedig nem. Ha teljesül,
+      akkor a [pozitivitastartomany] miatt maga $a$ benne van a $P$ halmazban. Ha nem teljesül, akkor viszont a
+      rendezés ***trichotómiája*** miatt &ndash; lévén, hogy teljes rendezésről van szó &ndash; szükségképpen
+      teljesül az $a\leq 0$ reláció. Ebben az esetben viszont a [gyuru-reszbenrendezesenek-tulajdonsagai] 1. pontja
+      miatt teljesül a $0\leq (-a)$ reláció is. Mivel $a\eq 0$, ezért $(-a)\eq 0$, és így a [pozitivitastartomany]
+      miatt ekkor $-a$ benne van a $P$ halmazban. Teljes rendezés esetén tehát minden nemnulla elemre igaz, hogy
+      vagy ő maga, vagy pedig az ellentettje benne van a rendezés pozitivitástartományában.
+  - type: narrative
+    content: |
+      ***Most visszafele nézzük meg***, hogy mi következik a $\leq$ részbenrendezésre vonatkozóan abból, ha minden
+      nemnulla elem vagy az ellentettje benne van a rendezés $P$ pozitivitástartományában. Ez nyilván igaz lesz
+      azokra az elemekre is, amelyeket valamilyen tetszőleges $a$ és $b$ elemekből képzünk a $b+(-a)$ képlettel
+      &ndash; kivéve persze, ha $a=b$, de ezekben az esetekben a rendezés reflexivitása miatt amúgyis teljesül mind
+      az $a\leq b$, mind pedig a $b\leq a$ reláció is. Ha tehát $a\eq b$, akkor vagy $b+(-a)$, vagy pedig az ő
+      ellentettje, azaz $-(b+(-a))$ benne van $P$-ben.
+  - type: narrative
+    content: |
+      Ha $b+(-a)$ van benne $P$-ben, akkor a [pozitivitastartomany] miatt $0\leq b+(-a)$. Az 1. rendezési axióma
+      miatt mindkét oldalhoz $a$-t adva továbbra is érvényes egyenlőtlenséget kapunk, azaz $a\leq b$.
+  - type: narrative
+    content: |
+      Ha viszont $-(b+(-a))$ van benne $P$-ben, akkor a [pozitivitastartomany], valamint a
+      [gyuru-reszbenrendezesenek-tulajdonsagai]  1. pontja miatt a $b+(-a)\leq 0$ fog teljesülni, amiből viszont
+      $b\leq a$ következik.
+  - type: narrative
+    content: |
+      Azt kaptuk tehát, hogyha tetszőleges nemnulla elem, vagy az ellentettje benne van egy rendezési reláció
+      pozitivitástartományában, akkor a rendezési reláció legalább az egyik irányban bármely két elem között
+      fennáll &ndash; azaz ő valóban egy teljes rendezés.

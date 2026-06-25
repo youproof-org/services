@@ -1,0 +1,75 @@
+type: section
+name: 06-blokkrejtjelezok
+title: Blokkrejtjelezők
+
+body:
+  - type: figure
+    lead-in: |
+      Rejtjelezőkre számos példát láttunk a korábbi részekben, de általánosságban a következő ábrával lehet
+      összefoglalni őket:
+    src: 03-rejtjelezo-modell.jpg
+    alt: Rejtjelező modell
+    caption: Rejtjelező modell
+  - type: narrative
+    content: |
+      Itt x jelöli a nyílt szöveget, y a kódszöveget, k pedig az Alice és Bob által használt kulcsot. Az E-vel
+      jelölt doboz a kódolási, a D-vel jelölt doboz pedig a dekódolási transzformációnak felel meg. A támadó a két
+      transzformáció közé ékelődik be, és feltételezzük róla, hogy csak az y kódszöveget látja, a nyílt szöveget és
+      a kulcsot nem ismeri.
+  - type: narrative
+    content: |
+      Egy valódi "boltban kapható" rejtjelező szoftver- vagy hardvereszköz n bit hosszú nyílt szöveg blokkokat
+      kódol n bit hosszú rejtjelezett blokkokba (n értéke tipikusan 128, 256, vagy 512 bit). Ezeket
+      ***blokkrejtjelezőknek*** nevezzük. A gyakorlati alkalmazásokban azonban általában ennél jóval hosszabb (vagy
+      rövidebb) üzeneteket szeretnénk titkosítani, ezért szükségünk van olyan eljárásokra, amelyek lehetővé teszik
+      tetszőleges hosszúságú üzenetek titkosítását egy n bites blokkrejtjelező ismételt alkalmazásával. Ezeket az
+      eljárásokat ***blokkrejtjelezési módoknak*** nevezzük.
+  - type: narrative
+    content: |
+      Az első kézenfekvő gondolatunk az lehetne, hogy a nyílt szöveget n bit hosszú blokkokra szeleteljük, ezeket
+      egyenként rejtjelezzük, és az így kapott szintén n bit hosszú rejtjelezett blokkokat egymás után fűzve kapjuk
+      a kódszöveget. A vételi oldalon ehhez hasonlóan a kódszöveget n bit hosszú blokkokra szeleteljük, ezeket
+      egyenként dekódoljuk, és az így kapott n bit hosszú nyílt blokkokat egymás után fűzve visszakapjuk a nyílt
+      szöveget. Ennek a módszernek hátránya, hogy a blokkok rejtjelezése egymástól függetlenül történik,
+      lehetőséget adva Eve-nek a gyakoriságelemzésre. Ez ugyan ilyen blokkméretek esetén eléggé reménytelen
+      vállalkozásnak tűnik, de nem lehetetlen.
+  - type: narrative
+    content: |
+      Ezért több blokkból álló üzenetek rejtjelezését célszerű úgy végezni, hogy egy rejtjelezett blokk ne csak az
+      azonos pozícióban lévő nyílt blokktól, hanem az előző rejtjelezett blokktól &ndash; és így áttételesen az
+      összes korábbi nyílt blokktól &ndash; is függjön. Ezen kívül előfordulhat, hogy az üzenet hossza nem n
+      többszöröse, így az utolsó nyílt blokk hossza kisebb lenne, mint n. Ilyen esetben az utolsó nyílt blokkot ki
+      kell egészíteni oly módon, hogy a vételi oldalon a dekódolás után a kiegészítés egyértelműen felismerhető és
+      eldobható legyen (a one-time pad fentebbi bemutatásánál az üzenet **X** betűkkel való feltöltésekor ugyanez
+      történt).
+  - type: narrative
+    content: |
+      A fenti problémákat a különböző blokkrejtjelezési módok különbözőképpen oldják meg, ezeket azonban nem
+      részletezzük. Számunkra most csak az a fontos, hogy a blokkrejtjelező egy olyan eszköz, amelyet ha
+      felparaméterezünk egy k kulccsal, a bemenetére pedig egy n bites nyílt bitsorozatot küldünk, akkor a
+      kimenetén elő fog állítani egy szintén n bites rejtjelezett bitsorozatot. Hasonlóképpen a blokkdekódoló egy
+      olyan eszköz, amelyet ha felparaméterezzük ugyanazzal a k kulccsal, a bemenetére pedig a rejtjelező által
+      előállított n bites rejtjelezett bitsorozatot küldjük, akkor a kimenetén elő fogja állítani az eredeti n
+      bites nyílt bitsorozatot.
+  - type: narrative
+    content: |
+      A 3. részben a számábrázolási módok kapcsán láthattuk, hogy bitsorozatokat lehet egész számokként értelmezni.
+      Ez alapján tehát a rejtjelezőt és a dekódolót felfoghatjuk ***matematikai függvények***ként is.
+  - type: formula
+    lead-in: |
+      Ha a nyílt blokknak megfelelő számot x-szel, a rejtjelezett blokknak megfelelőt y-nal, a k kulccsal
+      paraméterezett rejtjelező és dekódoló függvényeket pedig E^k^-val és D^k^-val jelöljük, akkor a rejtjelezés
+      és dekódolás tulajdonképpen az alábbi két összefüggést valósítja meg:
+    content: |
+      \begin{aligned}y &= E_k(x) \\ x &= D_k(y)\end{aligned}
+  - type: narrative
+    content: |
+      Egy szemléletes példával élve ez olyan, mintha Alice a Bob-nak szánt x üzenetet betenné egy lakattal ellátott
+      ládába, majd a lakatot lezárná a k kulccsal és a lezárt ládát elküldené Bob-nak. Ha Bob-nak van egy másolata
+      a k kulcsról, akkor ki tudja nyitni a ládán lévő lakatot, és ki tudja venni a ládából az x üzenetet. Eve-nek
+      ezzel szemben nincs másolata a k kulcsról, ezért ő nem tudja kinyitni a ládát. A ***kulcsmegosztás
+      problémája*** ebben az esetben azt jelenti, hogy Alice és Bob hogyan tudja elérni, hogy mindketten
+      rendelkezzenek egy-egy kulcsmásolattal anélkül, hogy egy ilyen másolatnak a birtokába kerüljön Eve is. Alice
+      persze megtehetné, hogy a kulcs másolatát beteszi egy másik ládába, amelyet egy másik kulccsal lezár, és ezt
+      elküldi Bob-nak. Ekkor azonban visszatértünk az előző problémára, mivel ebben az esetben Bob-nak szüksége van
+      egy másolatra erről a második kulcsról.

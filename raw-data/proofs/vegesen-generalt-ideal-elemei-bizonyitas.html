@@ -1,0 +1,115 @@
+<!-- wp:paragraph -->
+<p><strong><em>Először is a balideálok elemeire vonatkozó állítást igazoljuk.</em></strong> Jelöljük [latex]I[/latex]-vel azt a halmazt, amely pontosan az [latex]r_1a_1+r_2a_2+\ldots +r_na_n[/latex] alakban felírható elemeket tartalmazza. Azt kell bizonyítani, hogy [latex]I[/latex] a legszűkebb olyan balideál, amely tartalmazza az [latex]a_1[/latex], [latex]a_2[/latex], ..., [latex]a_n[/latex] elemeket.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Kezdjük annak igazolásával, hogy [latex]I[/latex] balideál.</em></strong> Ehhez a [yp_element slug="ideal" type="link" /] alapján azt kell megmutatni, hogy [latex]I[/latex] részgyűrű – amihez a [yp_element slug="reszgyuru-feltetele" type="link" /] feltételeit fogjuk felhasználni –, valamint, hogy tetszőleges elemét balról megszorozva bármelyik [latex]R[/latex]-beli elemmel az eredmény benne van [latex]I[/latex]-ben.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Összeadásra való zártság:</em></strong> Legyen [latex]r[/latex] és [latex]s[/latex] az [latex]I[/latex] halmaz két tetszőleges eleme. Mivel ők [latex]I[/latex] elemei, ezért felírhatók a tételben szereplő alakban:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}r &amp;= r_1a_1+r_2a_2+\ldots +r_na_n \\ s &amp;= s_1a_1+s_2a_2+\ldots +s_na_n\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ekkor ezek összege szintén a tételben szereplő alakban írható fel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]r+s = (r_1+s_1)a_1+(r_2+s_2)a_2+\ldots +(r_n+s_n)a_n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Emiatt az [latex]r+s[/latex] összeg szintén benne van [latex]I[/latex]-ben, amely tehát valóban zárt az összeadásra nézve.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Szorzásra való zártság:</em></strong> Legyen [latex]s[/latex] az [latex]I[/latex] halmaz tetszőleges eleme. Mivel [latex]s\in I[/latex], ezért ő felírható a tételben szereplő alakban:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]s=s_1a_1+s_2a_2+\ldots +s_na_n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezt balról megszorozva tetszőleges [latex]r\in R[/latex] elemmel az így kapott szorzat szintén a tételben szereplő alakban írható fel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]r\cdot s=r\cdot (s_1a_1+s_2a_2+\ldots +s_na_n)=(rs_1)a_1+(rs_2)a_2+\ldots +(rs_n)a_n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Emiatt az [latex]rs[/latex] szorzat szintén benne van [latex]I[/latex]-ben. Mivel [latex]r[/latex] tetszőleges [latex]R[/latex]-beli elem lehet – beleértve persze az [latex]I[/latex]-beli elemeket is –, ezért [latex]I[/latex] nemcsak az önmagán belüli szorzásra nézve zárt, hanem a tetszőleges [latex]R[/latex]-beli elemekkel való baloldali szorzásokra nézve is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Tartalmazza a nullelemet:</em></strong> Ez nyilvánvaló, hiszen a nullelem felírható a tételben szereplő alakban:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]0=0\cdot a_1+0\cdot a_2+\ldots +0\cdot a_n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ellentettképzésre való zártság:</em></strong> Legyen [latex]r[/latex] az [latex]I[/latex] halmaz tetszőleges eleme. Mivel [latex]r\in I[/latex], ezért ő felírható a tételben szereplő alakban:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]r=r_1a_1+r_2a_2+\ldots +r_na_n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>De ekkor ennek ellentettje szintén felírható ilyen alakban:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]-r=(-r_1)a_1+(-r_2)a_2+\ldots +(-r_n)a_n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Emiatt [latex](-r)[/latex] szintén benne van [latex]I[/latex]-ben, amely tehát zárt az ellentettképzésre is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]I[/latex] halmaz tehát teljesíti a balideálokra vonatkozó [yp_element slug="ideal" type="link" /] szerinti követelményeket, így valóban <strong><em>balideál</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Most azt kell megmutatni, hogy [latex]I[/latex] tartalmazza az [latex]a_1[/latex], [latex]a_2[/latex], ..., [latex]a_n[/latex] generátorelemeket.</em></strong> Ez nyilvánvaló, hiszen mindegyikük felírható a tételben szereplő alakban:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a_1&amp;=1\cdot a_1 + 0\cdot a_2 + 0\cdot a_3 +\ldots +0\cdot a_n \\ a_2&amp;=0\cdot a_1 + 1\cdot a_2 + 0\cdot a_3 +\ldots +0\cdot a_n \\ a_3&amp;=0\cdot a_1 + 0\cdot a_2 + 1\cdot a_3 +\ldots +0\cdot a_n \\ &amp;\vdots \\ a_n&amp;=0\cdot a_1 + 0\cdot a_2 + 0\cdot a_3 +\ldots +1\cdot a_n \end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt tehát már tudjuk, hogy [latex]I[/latex] egy olyan balideál, amely tartalmazza az [latex]a_1[/latex], [latex]a_2[/latex], ..., [latex]a_n[/latex] generátorelemeket. Annyit kell még igazolni, hogy ő a <strong><em>legszűkebb ilyen balideál</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="halmazrendszer-minimuma-es-maximuma" type="link" /] értelmében ez azt jelenti, hogy ha [latex]J[/latex] egy tetszőleges balideál, amely szintén tartalmazza a generátorelemeket, akkor [latex]I\sube J[/latex]. Meg kell tehát mutatni, hogy tetszőleges [latex]t\in I[/latex] esetén [latex]t\in J[/latex] is teljesül.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]t\in I[/latex], ezért ő felírható a tételben szereplő alakban:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]t=t_1a_1+t_2a_2+\ldots +t_na_n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt ugye tudjuk, hogy [latex]J[/latex] tartalmazza az [latex]a_1[/latex], [latex]a_2[/latex], ..., [latex]a_n[/latex] generátorelemeket. Tekintve, hogy [latex]J[/latex] balideál, ezért tartalmazza a [latex]t_1a_1[/latex], [latex]t_2a_2[/latex], ..., [latex]t_na_n[/latex] szorzatokat is, valamint ezek összegét is, azaz valóban teljesül [latex]t\in J[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]I[/latex] halmaz tehát <strong><em>valóban a legszűkebb olyan balideál, amely tartalmazza az</em></strong> [latex]a_1[/latex], [latex]a_2[/latex], ..., [latex]a_n[/latex] <strong><em>generátorelemeket</em></strong> – épp ahogyan a tétel állítja.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>jobbideálok elemeire vonatkozó állítás</em></strong> a fentiekhez nagyon hasonlóan igazolható, csak épp jobboldali szorzásokat kell alkalmazni. Végül a <strong><em>(kétoldali) ideálok elemeire vonatkozó állítás</em></strong> automatikusan adódik, hiszen egy (kétoldali) ideál egyszerre jobb- és balideál.</p>
+<!-- /wp:paragraph -->

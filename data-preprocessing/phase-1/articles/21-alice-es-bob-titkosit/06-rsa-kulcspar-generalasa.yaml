@@ -1,0 +1,127 @@
+type: section
+name: 06-rsa-kulcspar-generalasa
+title: RSA-kulcspár generálása
+
+references:
+  euler-fuggveny-primhatvanyokra:
+    target:
+      type: theorem
+      name: euler-fuggveny-primhatvanyokra
+  euler-fuggveny-szorzattarto-tulajdonsaga:
+    target:
+      type: theorem
+      name: euler-fuggveny-szorzattarto-tulajdonsaga
+  gyuruk-homomorfizmustetele:
+    target:
+      type: theorem
+      name: gyuruk-homomorfizmustetele
+  linearis-diofantoszi-egyenlet-osszes-megoldasa:
+    target:
+      type: theorem
+      name: linearis-diofantoszi-egyenlet-osszes-megoldasa
+  linearis-kongruenciak:
+    target:
+      type: definition
+      name: linearis-kongruenciak
+  linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga:
+    target:
+      type: theorem
+      name: linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga
+  linearis-kongruenciak-megoldasai-es-megoldasszama:
+    target:
+      type: theorem
+      name: linearis-kongruenciak-megoldasai-es-megoldasszama
+  redukalt-maradekosztaly-feltetele:
+    target:
+      type: theorem
+      name: redukalt-maradekosztaly-feltetele
+
+body:
+  - type: narrative
+    content: |
+      Előszöris Bobnak szüksége lesz egy publikus és egy privát részből álló kulcspárra. Ezek előállítását
+      ***kulcsgenerálásnak*** nevezzük. Ehhez Bob keres magának ***két különböző, elegendően nagy prímszámot***. Az
+      "elegendően nagy" manapság tipikusan 1024 vagy 2048 bináris számjeggyel ábrázolható prímeket jelent. Ez tízes
+      számrendszerben körülbelül a 300-600 számjegyű számok nagyságrendje. Arról egy következő részben lesz szó,
+      hogy Bob hogyan képes ilyen nagyságrendű prímeket találni viszonylag hamar, ezért ezt a problémát egyelőre
+      tegyük félre. Jelöljük a Bob által talált, és persze a lehető legnagyobb ***titokban tartott két prímet***
+      $p$-vel és $q$-val. Bob ezután összeszorozza ezt a két prímszámot. Az így kapott $m=p\cdot q$ egész számot
+      ***modulusnak*** fogjuk nevezni a továbbiakban, amelyet ***nem szükséges titokban tartani***, az ugyanis a
+      publikus kulcs része lesz.
+  - type: narrative
+    content: |
+      **Második lépésként **Bob kiszámítja az ***Euler-féle $\varphi$-függvény*** értékét az $m$ modulusra, azaz
+      kiszámítja a $\varphi(m)$ értéket.
+  - type: formula
+    lead-in: |
+      A $p$ és $q$ prímszámok ismeretében ezt a [euler-fuggveny-szorzattarto-tulajdonsaga], valamint a
+      [euler-fuggveny-primhatvanyokra] alapján könnyen meg tudja tenni:
+    content: |
+      \varphi(m)=(p-1)\cdot (q-1)
+  - type: narrative
+    content: |
+      Bob az így kiszámolt $\varphi(m)$ értéket szintén a lehető legnagyobb ***titokban tartja***.
+  - type: narrative
+    content: |
+      **Harmadik lépésként** Bob választ egy tetszőleges $0$ és $\varphi(m)$ közötti $e$ egész számot, amely
+      ***relatív prím*** $\varphi(m)$-hez. A [redukalt-maradekosztaly-feltetele] alapján ez tehát azt jelenti, hogy
+      Bob választ egy modulo $\varphi(m)$ redukált maradékosztályt, a keresett $e$ szám pedig ennek a legkisebb
+      pozitív reprezentánseleme lesz. Megint más megfogalmazásban a ***gyűrűk homomorfizmustétele***
+      ([gyuruk-homomorfizmustetele]) miatt a keresett $e$ szám tulajdonképpen a $Z_{\varphi(m)}$ gyűrű valamelyik
+      invertálható eleme lesz.
+  - type: narrative
+    content: |
+      Ezt Bob szintén hatékonyan ki tudja választani, mivel szerencsére &ndash; itt nem részletezett analitikus
+      számelméleti okok miatt &ndash; viszonylag gyakori, hogy két tetszőlegesen kiválasztott egész szám egymáshoz
+      relatív prím. Így Bob megteheti, hogy véletlenszerűen választ a $0$ és $\varphi(m)$ közötti számok közül,
+      majd az euklidészi algoritmus segítségével kiszámítja a kiválasztott szám és $\varphi(m)$ kitüntetett közös
+      osztóját. Ha ez egy egység &ndash; azaz a választott szám relatív prím $\varphi(m)$-hez &ndash;, akkor megvan
+      a keresett $e$, ha pedig nem, akkor Bob megismétli az eljárást egy másik véletlenszerűen választott számmal
+      mindaddig, amíg nem talál egy $\varphi(m)$-hez relatív prím számot. Az említett analitikus számelméleti
+      összefüggések miatt ez majdnem biztosan már néhány lépés után megtörténik. Az így kapott $e$ számot ***nem
+      szükséges titokban tartani***, az ugyanis a publikus kulcs része lesz.
+  - type: narrative
+    content: |
+      ***Negyedik lépésként*** Bob kiszámítja az előző lépésben kiválasztott $e$ szám multiplikatív inverzét a
+      $Z_{\varphi(m)}$ gyűrűben.
+  - type: formula
+    lead-in: |
+      Ehhez meg kell oldania az alábbi lineáris kongruenciát:
+    content: |
+      e\cdot x\equiv 1\pmod{\varphi(m)}
+  - type: narrative
+    content: |
+      A [linearis-kongruenciak] alapján a kongruencia megoldása egy modulo $\varphi(m)$ maradékosztály lesz, amely
+      &ndash; lévén, hogy $e$ relatív prím $\varphi(m)$-hez &ndash; a
+      [linearis-kongruenciak-megoldasai-es-megoldasszama] miatt ***egyértelmű*** lesz. Az $e$ szám
+      $Z_{\varphi(m)}$-beli multiplikatív inverze ennek az eredményül kapott maradékosztálynak a legkisebb pozitív
+      eleme lesz, amelyet a továbbiakban $d$-vel fogunk jelölni.
+  - type: narrative
+    content: |
+      A $d$ kiszámításához a [linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga] szerint
+      Bobnak tulajdonképpen az $ex+\varphi(m)y=1$ lineáris diofantoszi egyenletet kell megoldania, amelyhez a
+      [linearis-diofantoszi-egyenlet-osszes-megoldasa] 1. pontja alapján a ***kibővített euklidészi algoritmust***
+      használhatja. Bob a kapott $d$ számot ***titokban tartja***, az ugyanis a privát kulcs része lesz.
+  - type: unordered-list
+    lead-in: |
+      ***A kulcsgenerálás ezzel befejeződött.*** Bob kulcspárja a következő lesz:
+    items:
+      - '***Bob publikus kulcsa:*** Az $m$ modulusból és az $e$ egész számból álló $(m;e)$ számpár.'
+      - '***Bob privát kulcsa:*** Az $m$ modulusból és a $d$ egész számból álló $(m;d)$ számpár.'
+  - type: narrative
+    content: |
+      Bob mostmár akár meg is semmisítheti az eredetileg választott $p$ és $q$ prímszámokat, valamint a belőlük
+      kiszámított $\varphi(m)$ értéket, azokra ugyanis a továbbiakban nem feltétlenül van szüksége. A következő
+      részben látni fogjuk azonban, hogy a $p$ és $q$ számok segítségével Bob hogyan tudja jelentősen felgyorsítani
+      a dekódolás folyamatát. Mindenesetre biztonságos helyen kell ezeket tárolnia, ugyanis a segítségükkel a
+      publikus kulcsból a fentiek alapján hatékonyan kiszámítható a privát kulcs, így nem lenne jó, ha illetéktelen
+      kezekbe kerülnének. Nélkülük azonban jelenlegi számelméleti ismereteink alapján ez egy belátható időn belül
+      nem kivitelezhető feladat még a világ összes számítási kapacitásával sem. Ehhez ugyanis prímtényezőire kéne
+      bontani a publikus kulcsban szereplő $m$ modulust, vagy valamilyen más módon kiszámítani a $\varphi(m)$
+      értéket, ami ugye a $d$ szám meghatározásához kell.
+  - type: narrative
+    content: |
+      Bob a kulcspárjának publikus részét &ndash; azaz az $(m;e)$ számpárt &ndash; nyilvánosságra hozhatja, ugyanis
+      ennek segítségével lehet majd a neki szánt bizalmas üzeneteket titkosítani. Ezzel szemben a kulcspár titkos
+      részét &ndash; azaz az $(m;d)$ számpárt &ndash; a lehető legnagyobb titokban kell tartania, ugyanis a
+      titkosított üzeneteket kizárólag ezzel lehet majd visszafejteni.

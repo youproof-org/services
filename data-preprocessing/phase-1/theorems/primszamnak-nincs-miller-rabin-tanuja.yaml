@@ -1,0 +1,10 @@
+type: theorem
+name: primszamnak-nincs-miller-rabin-tanuja
+proofs:
+  - primszamnak-nincs-miller-rabin-tanuja-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Semmilyen $1$-nél nagyobb páratlan prímszámnak nincs Miller-Rabin-tanúja. Másként fogalmazva ha egy $1$-nél
+      nagyobb $n$ páratlan számnak van Miller-Rabin-tanúja, akkor $n$ összetett.

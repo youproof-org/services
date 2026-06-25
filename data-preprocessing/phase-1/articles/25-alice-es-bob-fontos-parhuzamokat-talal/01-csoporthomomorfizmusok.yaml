@@ -1,0 +1,59 @@
+type: section
+name: 01-csoporthomomorfizmusok
+title: Csoporthomomorfizmusok
+
+references:
+  gyuruhomomorfizmus:
+    target:
+      type: definition
+      name: gyuruhomomorfizmus
+  maradekkepzes-gyuruhomomorfizmus:
+    target:
+      type: theorem
+      name: maradekkepzes-gyuruhomomorfizmus
+  osszegtarto-lekepezes-nullelem-es-ellentettkepzestarto:
+    target:
+      type: theorem
+      name: osszegtarto-lekepezes-nullelem-es-ellentettkepzestarto
+
+body:
+  - type: narrative
+    content: |
+      A már említett $\bmod_m$ függvényről a [maradekkepzes-gyuruhomomorfizmus]ben megmutattuk, hogy ő egy
+      úgynevezett ***gyűrűhomomorfizmus*** $\Z$ és $Z_m$ között. Ez a [gyuruhomomorfizmus] alapján azt jelentette,
+      hogy a $\bmod_m$ függvény tartja a $\Z$ gyűrű összeadását és szorzását. Azaz teljesen mindegy, hogy két
+      számot először a $\Z$ gyűrűben adunk vagy szorzunk össze, az eredmény $\bmod_m$ szerinti képe a $Z_m$
+      gyűrűben ugyanaz lesz, mintha először képeztük volna a két szám maradékát, és ezeket adtuk vagy szoroztuk
+      volna össze a $Z_m$ gyűrűn értelmezett műveletekkel.
+  - type: narrative
+    content: |
+      Most bevezetünk egy nagyon hasonló fogalmat, amely tehát két gyűrű helyett két csoport között létesít ehhez
+      hasonló szoros kapcsolatot.
+  - type: embed
+    target:
+      type: definition
+      name: csoporthomomorfizmus
+  - type: embed
+    target:
+      type: remark
+      name: csoporthomomorfizmus-megjegyzes
+  - type: narrative
+    content: |
+      A gyűrűhomomorfizmus fogalmának bevezetése után egy fontos segédtételt bizonyítottunk, amely demonstrálta az
+      ilyen leképezések ***struktúratartó tulajdonságait***. Ez a
+      [osszegtarto-lekepezes-nullelem-es-ellentettkepzestarto] volt, amelyben azt mutattuk meg, hogy a
+      gyűrűhomomorfizmusok tartják a kiindulási gyűrű nullelemét, továbbá az ott értelmezett ellentettképzést is.
+      Azaz nullelem képe a célgyűrű nulleleme, illetve ellentett képe a kép ellentettje lesz a célgyűrűben.
+  - type: narrative
+    content: |
+      Most a csoporthomomorfizmusok kapcsán igazolunk egy nagyon hasonló segédtételt. Az egyetlen különbség
+      mindössze annyi, hogy csoportok esetén nullelem helyett általában egységelemről, míg ellentett helyett
+      inverzről szoktunk beszélni.
+  - type: embed
+    target:
+      type: theorem
+      name: csoporthomomorfizmus-egysegelem-es-inverzkepzestarto
+  - type: embed
+    target:
+      type: unknown
+      name: csoporthomomorfizmus-egysegelem--es-inverzkepzestarto-bizonyitas

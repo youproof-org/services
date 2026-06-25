@@ -1,0 +1,20 @@
+type: theorem
+name: ideal-szerinti-muveletek-joldefinialtsaga
+proofs:
+  - ideal-szerinti-muveletek-joldefinialtsaga-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ tetszőleges gyűrű, $I$ pedig valamilyen ideál $R$-ben.
+  - type: formula
+    lead-in: |
+      Tegyük fel továbbá, hogy az $R$ gyűrű valamilyen $a_1$ és $a_2$ valamint $b_1$ és $b_2$ elemeire teljesülnek
+      az alábbi kongruenciák:
+    content: |
+      \begin{aligned}a_1&\equiv a_2\pod I \\ b_1&\equiv b_2\pod I\end{aligned}
+  - type: formula
+    lead-in: |
+      Ekkor teljesülnek az alábbi kongruenciák is:
+    content: |
+      \begin{aligned}a_1+b_1&\equiv a_2+b_2\pod I \\ a_1\cdot b_1&\equiv a_2\cdot b_2\pod I\end{aligned}

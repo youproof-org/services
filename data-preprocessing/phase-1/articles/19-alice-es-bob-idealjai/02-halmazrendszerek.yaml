@@ -1,0 +1,79 @@
+type: section
+name: 02-halmazrendszerek
+title: Halmazrendszerek
+
+body:
+  - type: narrative
+    content: |
+      E rövid halmazelméleti gyorstalpaló után ebben a szakaszban olyan halmazokkal fogunk megismerkedni,
+      amelyeknek az elemei maguk is halmazok. Ezeknek az első hallásra furcsa halmazoknak külön nevük is van, és
+      kontextustól függően általában jelölésben is megkülönböztetjük őket.
+  - type: embed
+    target:
+      type: definition
+      name: halmazrendszerek
+  - type: formula
+    lead-in: |
+      Tegyük fel például, hogy az alaphalmazunk az alábbi:
+    content: |
+      H=\{1;2;3\}
+  - type: formula
+    lead-in: |
+      Ekkor a $\mathcal{P}(H)$ hatványhalmaznak összesen 8 eleme lesz, méghozzá a $H$ halmaz összes lehetséges
+      részhalmaza:
+    content: |
+      \mathcal{P}(H)=\{ \empty; \{1\};\{2\};\{3\}; \{1;2\}; \{1;3\}; \{2;3\}; \{1;2;3\}\}
+  - type: narrative
+    content: |
+      ***Jól vigyázzunk a jelölésekre!*** Először is a $\empty$ itt nem a "nulla" egész számot, hanem az üres
+      halmazt jelöli. Nagyon nem mindegy továbbá, hogy $1$-et, vagy pedig $\{1\}$-et írunk. Az $1$ ugyanis
+      ***NEM*** a $\mathcal{P}(H)$ hatványhalmaznak, hanem magának a $H$ ***alaphalmaznak*** egy eleme. Ezzel
+      szemben az egyetlen elemből álló $\{1\}$ halmaz már a $\mathcal{P}(H)$ hatványhalmaznak egy eleme. Látható,
+      hogy a $\mathcal{P}(H)$ halmazban valóban benne van $H$ összes részhalmaza elemként. Még a $\empty$-val
+      jelölt üres halmaz, sőt, maga a $H=\{1;2;3\}$ alaphalmaz is.
+  - type: narrative
+    content: |
+      A definíció szerint tehát $\mathcal{P}(H)$ maga is egy halmazrendszer $H$ felett, méghozzá a lehető
+      legbővebb, ami csak létezik. De tegyük fel, hogy mi $H$-nak csak a ***valódi részhalmazait*** szeretnénk
+      vizsgálni. Ezek szintén egy halmazrendszert alkotnak $H$ felett, amelyet jelöljünk most $\mathcal{H}$-val.
+  - type: formula
+    lead-in: |
+      Ekkor a $\mathcal{H}$ halmazrendszer az alábbi 6 elemből fog állni:
+    content: |
+      \mathcal{H}=\{ \{1\};\{2\};\{3\}; \{1;2\}; \{1;3\}; \{2;3\}\}
+  - type: narrative
+    content: |
+      Mint ahogyan a definícióban már említettük, a $\mathcal{H}$ halmazrendszer $\mathcal{P}(H)$-nak egy
+      részhalmaza lesz, azaz $\mathcal{H}\sube \mathcal{P}(H)$. Nyilván, hiszen minden $\mathcal{H}$-beli elem
+      egyúttal eleme a $\mathcal{P}(H)$ hatványhalmaznak is. Előbbi ugyanis a $H$ alaphalmaznak csak a valódi
+      részhalmazait tartalmazza elemként, utóbbi pedig az összeset.
+  - type: narrative
+    content: |
+      Ha esetleg az Olvasó megpróbálta magát a $H$ alaphalmazt, illetve a fenti $\mathcal{H}$ halmazrendszert
+      ugyanazon a ***Venn-diagramon*** ábrázolni, akkor ez a kísérlet minden bizonnyal sikertelenül zárult. Ennek
+      az a nagyon egyszerű oka, hogy teljesen más jellegű matematikai objektumokról van szó. Első esetben ugyanis a
+      vizsgált objektumok tulajdonképpen a $H$ halmaz elemei, azaz az $1$, $2$, és $3$ egész számok, így a
+      tárgyalási univerzumnak a $H$ halmazt tekinthetjük.
+  - type: figure
+    lead-in: |
+      Ennek megfelelően az alábbi Venn-diagramon a $H$ halmaz részhalmazait ellipszisekkel ábrázolhatjuk, míg a $H$
+      feletti halmazrendszereket ezen az ábrán nem tudjuk megjeleníteni:
+    src: 03-alaphalmaz-reszhalmazainak-abrazolasa-venn-diagramon.jpg
+    alt: Alaphalmaz részhalmazainak ábrázolása Venn-diagramon
+    caption: Alaphalmaz részhalmazainak ábrázolása Venn-diagramon
+  - type: narrative
+    content: |
+      Ezzel szemben a második esetben a vizsgált objektumok a $H$ ***részhalmazai***, a tárgyalási univerzum pedig
+      ebben az esetben a $\mathcal{P}(H)$ hatványhalmaz lesz.
+  - type: figure
+    lead-in: |
+      Ennek megfelelően az alábbi Venn-diagramon a $H$ halmaz részhalmazait pontokkal jelöljük, és így a $H$
+      feletti halmazrendszerek már láthatóvá válnak:
+    src: 04-hatvanyhalmaz-abrazolasa-venn-diagramon.jpg
+    alt: Hatványhalmaz ábrázolása Venn-diagramon
+    caption: Hatványhalmaz ábrázolása Venn-diagramon
+  - type: narrative
+    content: |
+      Itt például a példában szereplő $\mathcal{H}$ halmazrendszer mellett egy másik, $\mathcal{K}$-val jelölt
+      halmazrendszert is ábrázoltunk, amely a $H$ alaphalmaznak a pontosan egyelemű részhalmazait tartalmazza
+      elemként.

@@ -1,0 +1,843 @@
+<!-- wp:paragraph -->
+<p><strong><em>Az <a rel="noreferrer noopener" aria-label="előző részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/17-euklideszi-algoritmus-maradekos-osztas-legnagyobb-kozos-oszto-euklideszi-gyuru/" target="_blank">előző részben</a> a legnagyobb közös osztó fogalmát általánosítva megismerkedtünk a kitüntetett közös osztó fogalmával. Megmutattuk, hogy amennyiben bármely két elemnek létezik a kitüntetett közös osztója egy integritástartományban, úgy az elemek prímtényezős felbontásai – ha egyáltalán léteznek – egyértelműek lesznek. A kitüntetett közös osztó kiszámításához ismertettük az euklidészi algoritmus alapgondolatát a pozitív egész számokon. Ezt az euklidészi norma fogalmának bevezetésével sikerült működésre bírni egyéb integritástartományokon is. Ezeket euklidészi gyűrűknek neveztük. Igazoltuk azt is, hogy a prímtényezős felbontás egyértelműségén túl annak létezése is biztosított ezekben a speciális gyűrűkben. Végül igazoltuk, hogy az egész számok [latex]\Z[/latex] gyűrűje szintén euklidészi gyűrű, és így valóban teljesül benne a számelmélet alaptétele.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>De vajon hogyan lehet „felcsavarni” a számegyenest úgy, hogy az alkalmas legyen kriptográfiai kódoló és dekódoló függvények képzéséhez? Mit jelent a „kongruencia” fogalma, és hogyan lehet ezt általánosítani az úgynevezett „ideálok” és „gyűrűhomomorfizmusok” segítségével? Mik azok a „maradékosztálygyűrűk” és hogyan kell bennük számolni? Ebben a részben erről lesz szó...</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"className":"prerequisite-warning"} -->
+<p class="prerequisite-warning">Figyelem! Ez a rész erőteljesen épít a <a rel="noreferrer noopener" aria-label="13. (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/13-adossag-ekvivalenciarelacio-ekvivalencia-osztaly-egesz-szam-homomorfizmus-beagyazas-negativ-szam/" target="_blank">13.</a> és <a href="https://youproof.hu/kriptografia/14-egesz-szam-szorzas-absztrakt-algebra-neutralis-elem-inverz-kivonas-gyuru-ferdetest-test/" target="_blank" rel="noreferrer noopener" aria-label="14. részben (új fülön nyitja meg)">14. részben</a> felépített alábbi definíciókra, valamint a hozzájuk kapcsolódó tételekre:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="ekvivalenciarelacio" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="homomorfizmus-izomorfizmus-beagyazas" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="gyuru-test" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="neutralis-elem" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="inverz-elem" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph {"className":"prerequisite-warning"} -->
+<p class="prerequisite-warning">Ezek kontextusba helyezése miatt erőteljesen ajánlott elolvasni a <a rel="noreferrer noopener" aria-label="13. (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/13-adossag-ekvivalenciarelacio-ekvivalencia-osztaly-egesz-szam-homomorfizmus-beagyazas-negativ-szam/" target="_blank">13.</a> és <a href="https://youproof.hu/kriptografia/14-egesz-szam-szorzas-absztrakt-algebra-neutralis-elem-inverz-kivonas-gyuru-ferdetest-test/" target="_blank" rel="noreferrer noopener" aria-label="14. részt (új fülön nyitja meg)">14. részt</a>, mivel gyakran hivatkozni fogunk rájuk. Ezenkívül érdemes átismételni a Diffie-Hellman kulcscsere protokollról szóló <a rel="noreferrer noopener" aria-label="9. részt (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/9-diffie-hellman-protokoll-egyiranyu-fuggveny-modularis-aritmetika-asszimmetrikus-kulcs/" target="_blank">9. részt</a> is, ugyanis az ott felületesen már érintett moduláris aritmetika matematikai hátterét fogjuk ebben a részben tárgyalni. A teljes cikksorozat elejét <a rel="noreferrer noopener" aria-label="itt (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/1-alapfogalmak-caesar-vigenere-enigma-kulcsmegosztas/" target="_blank">itt</a> találod.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"dropCap":true} -->
+<p class="has-drop-cap">A Diffie-Hellman kulcscsere protokoll kapcsán a <a rel="noreferrer noopener" aria-label="9. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/9-diffie-hellman-protokoll-egyiranyu-fuggveny-modularis-aritmetika-asszimmetrikus-kulcs/" target="_blank">9. részben</a> már szóba kerültek az úgynevezett <strong><em>egyirányú függvények</em></strong>. Ezek olyan függvények, amelyek esetén a bemenetből algoritmikusan könnyű kiszámítani a kimenetet. Ezzel szemben ha csak a kimenet ismert, abból borzasztóan nehéz kitalálni, hogy mi lehetett a bemenet. Kriptográfiai szempontból az ilyen tulajdonságú függvények azért hasznosak Alice és Bob számára, mert ezek segítségével könnyen közölhetnek egymással olyan információt a nembiztonságos csatornán keresztül, ami a gonosz Eve számára rejtve marad. Eve csak valamilyen egyéb titkos információ birtokában tudná ezeket a függvényeket hatékonyan megfordítani. A számelméleti összefüggések azonban lehetővé teszik, hogy Alice-nak és Bob-nak ezt a – támadó számára létfontosságú – titkot egyáltalán ne kelljen közölniük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A Diffie-Hellman kulcscsere protokoll során például Alice és Bob egy közös titkos kulcsban való megegyezéshez használt ilyen függvényeket. Ezenkívül az úgynevezett <a rel="noreferrer noopener" aria-label="RSA-eljárás (új fülön nyitja meg)" href="https://hu.wikipedia.org/wiki/RSA-elj%C3%A1r%C3%A1s" target="_blank">RSA-eljárás</a> is hasonló függvényeket használ. Ez utóbbiról egy későbbi cikkben lesz szó részletesen, miután az ehhez szükséges számelméleti fogalmakkal megismerkedtünk. Mindkét eljárás az úgynevezett <strong><em>moduláris hatványozáson</em></strong> alapul. A hagyományos hatványozás a már jól ismert szorzásra vezethető vissza. Így például az [latex]a^n[/latex] kifejezést egy olyan szorzatként kell értelmezni, amelynek [latex]n[/latex] darab tényezője van, és minden tényezője [latex]a[/latex]. Azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^n=\underbrace{a\cdot a\cdot a\cdot \ldots \cdot a}_{\text{n darab}}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A moduláris hatványozást ugyanígy egy [latex]n[/latex] tényezős szorzatként értelmezzük. A különbség pusztán annyi, hogy a szorzást ilyenkor nem a hagyományos módon, a mindkét irányban végtelen számegyenesen kell elvégezni, hanem egy véges sok számot tartalmazó „óralapon”. A <a rel="noreferrer noopener" aria-label="9. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/9-diffie-hellman-protokoll-egyiranyu-fuggveny-modularis-aritmetika-asszimmetrikus-kulcs#modular-arithmetic" target="_blank">9. részben</a> erről részletesen szó volt, ám az ott szereplő példát vizsgáljuk meg mégegyszer, de mostmár az előző részben az <a rel="noreferrer noopener" aria-label="euklidészi algoritmus (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/17-euklideszi-algoritmus-maradekos-osztas-legnagyobb-kozos-oszto-euklideszi-gyuru#euclidean-algorithm" target="_blank">euklidészi algoritmus</a> kapcsán tanult <strong><em>maradékos osztás</em></strong> ismeretében.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az említett példában a [latex]4\cdot 5[/latex] szorzatot kellett kiszámítani a [latex]11[/latex] elemet tartalmazó óralapon számolva. Ezt a szorzást akkor úgy végeztük el, hogy először végrehajtottuk a hagyományos szorzást, amiből megkaptuk, hogy összesen [latex]4\cdot 5=20[/latex] lépést kell megtenni az óralapon. Ezután a [latex]0[/latex]-ból kiindulva az óramutató járásával megegyező irányban megtettük a [latex]20[/latex] lépést. A végeredmény az a szám lett, ahová megérkeztük, azaz [latex]9[/latex]. Ez látható az alábbi ábrán:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":2105,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_9_modulo_11_szorzas.jpg" alt="Modulo 11 szorzás" class="wp-image-2105"/><figcaption>Modulo 11 szorzás</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Vegyük észre, hogy itt tulajdonképpen egy <strong><em>maradékos osztásról</em></strong> van szó. Ha ugyanis a [latex]11[/latex] elemű óralapon lépkedünk, akkor a lépegetés során a [latex]11[/latex] egész számú többszöröseinél újra és újra visszajutunk a kiindulópontra. Így azt kell csak meghatározni, hogy az összlépésszám (jelen esetben [latex]20[/latex]) mennyi maradékot ad [latex]11[/latex]-gyel osztva. A végeredmény a keresett maradék lesz. Jelen esetben a [latex]20[/latex] és a [latex]11[/latex] közötti maradékos osztást elvégezve ez adódik:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]20=\underbrace{1}_{\text{hányados}}\cdot 11 + \underbrace{9}_{\text{maradék}}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A kapott <strong><em>hányados</em></strong> azt adja meg, hogy a lépegetés során összesen hányszor fogunk visszajutni a kezdőpontba. A <strong><em>maradékból</em></strong> pedig megkapjuk, hogy ezen felül még hány lépést kell pluszban megtennünk. A végeredmény szempontjából az óraaritmetikában <strong><em>csak a maradék fontos</em></strong>, a kapott hányadost elfelejtjük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Számolás maradékokkal</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A moduláris hatványozás alapja tehát az iménti példában látott moduláris szorzás. Problémát jelenthet azonban, ha a kitevő túl nagy. Például a [latex]2^{328}[/latex] hatvány óraaritmetikában való kiszámításához nem lenne szerencsés, ha előbb ki kellene számítanunk a [latex]2\cdot 2\cdot 2\cdot \ldots \cdot 2[/latex] szorzatot, amelynek [latex]328[/latex] tényezője van. Ilyenkor ugyanis még a maradékképzés előtt egy olyan nagy számot kapnánk részeredményként, amelynek hatására a számítógépünk tárolóregisztereiben úgynevezett „túlcsordulás” következne be.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A <a rel="noreferrer noopener" aria-label="2. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/3-szamrendszerek-binaris-hexadecimalis-szamabrazolas-bitmap#unsigned-integer" target="_blank">2. részben</a> a digitális áramkörökben történő számábrázolás kapcsán már volt szó arról, hogy a számítógépek általában maximum 64 bináris számjegyen tárolják a számokat. Mármost a [latex]2^{328}[/latex] részeredmény egészen pontosan [latex]329[/latex] bináris számjegyen férne el. A számítógép ezt a problémát úgy „oldja meg”, hogy jobb esetben elszáll programhibával. Rosszabb esetben pedig az első [latex]265[/latex] darab bináris számjegyet levágja a részeredmény elejéről, és az így kapott hibás részeredménnyel számol tovább. El lehet képzelni, hogy ennek milyen beláthatatlan következményei lennének.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ahhoz, hogy ezt a problémát megoldjuk, előszöris igazolni fogjuk az egész számok közötti maradékos osztás egy fontos tulajdonságát. Az euklidészi norma [yp_element slug="euklideszi-gyuru" type="link" /]jában a maradékos osztás során képződő maradékokra csak annyit kötöttünk ki, hogy a <strong><em>normájuk</em></strong> legyen kisebb, mint az osztó <strong><em>normája</em></strong>. Ez általában nem vonja maga után azt, hogy a maradék egyértelmű lesz. Például az [latex]5[/latex] és [latex]3[/latex] egész számok között kétféleképpen is elvégezhetjük a maradékos osztást:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}5&amp;=1\cdot 3 + 2 \\ 5&amp;=2\cdot 3 -1\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Első esetben [latex]2[/latex]-t, második esetben pedig [latex]-1[/latex]-et kaptunk maradékul. Mindkettő helyes, hiszen a [latex]\Z[/latex] gyűrűben az abszolútérték-függvény az euklidészi norma. Márpedig mindkét maradéknak kisebb az abszolútértéke, mint az osztónak, ami ugye jelen esetben [latex]3[/latex]. Azt fogjuk megmutatni, hogy amennyiben a maradékra még azt is kikötjük, hogy <strong><em>nemnegatív</em></strong>, úgy a maradékos osztás továbbra is elvégezhető. Ebben az esetben azonban már csak <strong><em>egyféleképpen</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ehhez először szükségünk lesz egy egyszerű segédtételre, amely a továbbiakban is hasznunkra lesz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="maradekok-kulonbsege-oszthato-a-modulussal" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="maradekok-kulonbsege-oszthato-a-modulussal-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mostmár igazolhatjuk, hogy az egész számok közötti <strong><em>nemnegatív maradékos osztás egyértelmű</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-maradekos-osztasa-egyertelmu" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-maradekos-osztasa-egyertelmu-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez azért jó hír a számunkra, mivel így minden [latex]a[/latex] egész számhoz hozzá tudunk rendelni egy nemnegatív maradékot, amelyet [latex]a[/latex]-nak egy valamilyen [latex]m\
+eq 0[/latex] egész számmal képzett maradékos osztása eredményezne. Ez a hozzárendelés ugye az iménti tétel értelmében <strong><em>egyértelmű</em></strong> lesz, azaz minden egész számhoz <strong><em>pontosan egy</em></strong> maradékot rendel. Így tulajdonképpen egy <strong><em>függvényt</em></strong> kapunk. Ennek a függvénynek az értékkészlete ráadásul véges lesz, hiszen pontosan [latex]m[/latex] darab olyan <strong><em>nemnegatív</em></strong> egész létezik, amely maradékként szóba jöhet, azaz értéke kisebb, mint [latex]m[/latex] <strong><em>abszolútértéke</em></strong>. Például [latex]m=3[/latex] vagy [latex]m=-3[/latex] esetén ezek a [latex]0[/latex], az [latex]1[/latex] és a [latex]2[/latex] nemnegatív egész számok.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezek az osztási maradékok tehát egy véges halmazt alkotnak. Ennek elemei között két műveletet is tudunk értelmezni az imént említett függvény segítségével. Erről szól az alábbi definíció, valamint az alatta szereplő megjegyzések és példák.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="modularis-osszeadas-es-szorzas" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="modularis-osszeadas-es-szorzas-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Nézzünk is egy egyszerű példát a fenti definícióban foglaltakra. Legyen például [latex]m=3[/latex]. Ekkor ugye a [latex]\Z_3[/latex] halmazról van szó, amelynek mindössze a [latex]0[/latex], az [latex]1[/latex] és a [latex]2[/latex] lesznek az elemei. Az alábbiakban a [latex]\bmod_3[/latex] függvény néhány hozzárendelését tüntettük fel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}\bmod_3(0)&amp;=0\\\bmod_3(1)&amp;=1\\\bmod_3(2)&amp;=2\\\bmod_3(3)&amp;=0\\\bmod_3(4)&amp;=1\\\bmod_3(5)&amp;=2\\&amp;\vdots\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi két táblázatban pedig a [latex]\Z_3[/latex] halmazon értelmezett [latex]\oplus[/latex] és [latex]\odot[/latex] műveletek úgynevezett <strong><em>műveleti táblái</em></strong> láthatók:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{cc}\begin{array}{c|ccc}\oplus &amp;0&amp;1&amp;2\\ \hline 0&amp;0&amp;1&amp;2 \\1&amp;1&amp;2&amp;0\\2&amp;2&amp;0&amp;1\end{array} &amp; \begin{array}{c|ccc}\odot &amp;0&amp;1&amp;2\\ \hline 0&amp;0&amp;0&amp;0 \\1&amp;0&amp;1&amp;2\\2&amp;0&amp;2&amp;1\end{array}\end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Például a [latex]2\oplus 1[/latex] művelet eredményét a 2-es sor 1-es oszlopából tudjuk kiolvasni a baloldali táblázatból, ami ugye [latex]0[/latex]. A műveletet a fenti definíció szerint elvégezve valóban [latex]0[/latex]-t kapunk, hiszen [latex]\bmod_3(2+1)=\bmod_3(3)=0[/latex]. Az [latex]1\oplus 2[/latex] eredménye ehhez hasonlóan az 1-es sor 2-es oszlopában szerepel, ami – hatalmas meglepetésre – szintén [latex]0[/latex]. A moduláris szorzás táblázata ugyanígy értelmezendő. Például [latex]2\odot 2=1[/latex]. Nyilván, hiszen ha [latex]2\cdot 2[/latex]-t elosztjuk [latex]3[/latex]-mal, akkor épp [latex]1[/latex] lesz a maradék.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Hamarosan visszatérhetünk a szakasz elején felvetett moduláris hatványozással kapcsolatos problémára. Előbb azonban megmutatjuk, hogy a moduláris összeadás és szorzás pontosan ugyanazokkal a „jól megszokott” tulajdonságokkal rendelkezik, mint a szokásos összeadás és szorzás.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="maradekok-gyuruje" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="maradekok-gyuruje-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:html -->
+<div id="modular-arithmetic-equations"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Egyenletek megoldása a [latex]\Z_m[/latex] gyűrűben</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Eszerint tehát amikor osztási maradékokkal számolunk, akkor nyugodtan hagyatkozhatunk minden olyan eddigi tételre, amelyeket eddig kommutatív, egységelemes gyűrűkre bizonyítottunk az előző részekben. Nagyjából minden ugyanúgy fog működni, ahogyan azt az egész számok körében már megszoktuk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>De csak nagyjából!</em></strong> Az egyenletek megoldásánál a [latex]\Z_m[/latex] gyűrűben körültekintően kell eljárnunk. A természetes számok körében a <a rel="noreferrer noopener" aria-label="14. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/14-egesz-szam-szorzas-absztrakt-algebra-neutralis-elem-inverz-kivonas-gyuru-ferdetest-test#equations-over-natural-numbers" target="_blank">14. részben</a> felhoztunk egy egyszerű példát. Akkor a [latex]2x+3=7[/latex] egyenletet kellett megoldanunk a <strong><em>természetes számok</em></strong> halmazán. A problémát az okozta, hogy „kivonás” és „osztás” ebben a számkörben – mint algebrai értelemben vett „művelet” – nem állt rendelkezésünkre. Ezért az alábbi két segédtételt voltunk kénytelenek felhasználni „kivonás” és „osztás” helyett:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-osszeg-egyszerusites" type="recall-expanded" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-szorzat-egyszerusites" type="recall-expanded" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Első lépésként az egyenlet jobboldalát [latex]7[/latex] helyett egy kéttagú összegként írtuk fel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]2x+3=4+3[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ebből a [yp_element slug="peano-osszeg-egyszerusites" type="link" /] alapján [latex]2x=4[/latex] következett. Ezután második lépésként ennek jobboldalát [latex]4[/latex] helyett egy kéttényezős szorzatként írtuk fel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]2x=2\cdot 2[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ebből viszont a [yp_element slug="peano-szorzat-egyszerusites" type="link" /] alapján az [latex]x=2[/latex] megoldás következett. Azaz a természetes számok körében egy egyenlet megoldásakor mindkét oldalból büntetlenül szabad volt „kivonni” ugyanazt a tetszőleges számot, valamint mindkét oldalt szabad volt „elosztani” ugyanazzal a tetszőleges <strong><em>nemnulla</em></strong> számmal. Méghozzá annak ellenére, hogy ez a két „művelet” ezen a számhalmazon nem állt rendelkezésünkre. Megemlítettük ugyanakkor, hogy más algebrai struktúrákban nagyon <strong><em>könnyen kaphatunk hibás eredményt</em></strong>, ha az ehhez hasonló lépéseket nem kellő körültekintéssel végezzük el.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A fenti két segédtételt azután a <a rel="noreferrer noopener" aria-label="15. rész elején (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/15-rendezett-gyuru-absztrakt-algebra-egesz-szam-rendezesi-relacio-rendezesi-axiomak#ring-basic-properties" target="_blank">15. rész elején</a> általánosítottuk tetszőleges gyűrűkre is. Itt a kivonással már nincs gond, hiszen az tetszőleges gyűrűben korlátlanul elvégezhető. Osztani azonban általában továbbra sem tudunk, mivel multiplikatív inverz létezése csak testekben garantált. Az alábbi tétel azonban mégis a segítségünkre siet:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="szorzat-egyszerusitese-gyurukben" type="recall-expanded" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Eszerint <strong><em>nullosztómentes gyűrűkben</em></strong>, és – ami talán még fontosabb – <strong><em>csak azokban</em></strong> továbbra is lehet tetszőleges nemnulla gyűrűelemmel „elosztani” egy egyenlet mindkét oldalát. Kérdés, hogy vajon a [latex]\Z_m[/latex] gyűrű minden [latex]m\
+eq 0[/latex] esetén nullosztómentes-e?</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Térjünk most vissza a fenti egyenletünkhöz, és ismét próbáljuk meg megoldani azt, ám ezúttal a [latex]\Z_8[/latex] gyűrűben keressük a megoldást. Az itt érvényes műveleti jelekkel ez az egyenlet az alábbi formát ölti – a könnyebb áttekinthetőség kedvéért a műveleti sorrendet zárójelekkel is kihangsúlyoztuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](2\odot x) \oplus 3=7[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A „kivonás” – mint említettük – gond nélkül elvégezhető. Emlékeztetjük az Olvasót, hogy egy gyűrűben „kivonás” alatt az ellentettel (additív inverzzel) való összeadást értjük. Így tehát most adjuk hozzá az egyenlet mindkét oldalához a [latex]3[/latex] gyűrűelem additív inverzét. A [latex]\Z_8[/latex] gyűrűben ez az [latex]5[/latex] egész szám lesz, hiszen a moduláris összeadás [yp_element slug="modularis-osszeadas-es-szorzas" type="link" /]ja alapján [latex]3\oplus 5=\bmod_8(3+5)=\bmod_8(8)=0[/latex]. A baloldalon tehát [latex]2\odot x[/latex] marad, míg a jobboldalon [latex]7\oplus 5=\bmod_8(7+5)=\bmod_8(12)=4[/latex]-et kapunk. Azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]2\odot x=4[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Gondolhatnánk, hogy innen már egyszerű a dolgunk, hiszen – hasonlóan a természetes számok körében alkalmazott megoldáshoz – felírhatjuk a jobboldalon szereplő [latex]4[/latex]-et egy kéttényezős szorzatként [latex]2\odot 2[/latex] alakban:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]2\odot x=2\odot 2[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha azonban most meggondolatlanul alkalmazzuk szépen a [yp_element slug="szorzat-egyszerusitese-gyurukben" type="link" /]t, és erre hivatkozva mindkét oldalt „egyszerűsítjük” [latex]2[/latex]-vel, akkor könnyen azt a következtetést vonhatjuk le, hogy a fenti egyenletből [latex]x=2[/latex] következik. <strong><em>EZ AZONBAN HIBÁS!</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]x=2[/latex] valóban megoldása a [latex](2\odot x)\oplus 3=7[/latex] egyenletnek, azonban <strong><em>van még egy további megoldás is</em></strong>. Nevezetesen az [latex]x=6[/latex], amely fölött ezzel a lépéssel szépen átsiklunk. Ellenőrizzük csak le, hogy a [latex]\Z_8[/latex] gyűrűben a [latex](2\odot 6)\oplus 3[/latex] valóban [latex]7[/latex]-tel egyezik meg.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mi okozhatja hát a problémát? Ha tüzetesen megvizsgáljuk az egyenletek egyszerűsíthetőségéről szóló [yp_element slug="szorzat-egyszerusitese-gyurukben" type="link" /]t, akkor feltűnhet, hogy az <strong><em>kizárólag nullosztómentes gyűrűkre érvényes</em></strong>. Márpedig ha [latex]\Z_8[/latex]-ban ez a lépés nem működik, az csak úgy lehetséges, hogy <strong><em>ez a gyűrű bizony nem nullosztómentes</em></strong>. Ez azonnal látható is, ha megvizsgáljuk a [latex]\Z_8[/latex] gyűrű „szórzótábláját”:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{c|cccccccc}\odot &amp;0&amp;1&amp;2&amp;3&amp;4&amp;5&amp;6&amp;7 \\ \hline 0&amp;0&amp;0&amp;0&amp;0&amp;0&amp;0&amp;0&amp;0 \\ 1&amp;0&amp;1&amp;2&amp;3&amp;4&amp;5&amp;6&amp;7 \\ 2&amp;0&amp;2&amp;4&amp;6&amp;0&amp;2&amp;4&amp;6 \\ 3&amp;0&amp;3&amp;6&amp;1&amp;4&amp;7&amp;2&amp;5 \\ 4&amp;0&amp;4&amp;0&amp;4&amp;0&amp;4&amp;0&amp;4 \\ 5&amp;0&amp;5&amp;2&amp;7&amp;4&amp;1&amp;6&amp;3 \\ 6&amp;0&amp;6&amp;4&amp;2&amp;0&amp;6&amp;4&amp;2 \\ 7&amp;0&amp;7&amp;6&amp;5&amp;4&amp;3&amp;2&amp;1 \end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha megfigyeljük, ebben a táblázatban az első soron és oszlopon kívül is bőven szerepel a nullelem. Ez azt jelenti, hogy egy szorzat olyan esetekben is lehet [latex]0[/latex], amikor történetesen egyik tényezője sem az. Ilyen például a [latex]2\odot 4[/latex] szorzat, hogy csak egyet említsünk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Jó lenne tehát valami általános szabály arra vonatkozóan, hogy mely esetekben nullosztómentes a [latex]\Z_m[/latex] gyűrű, és mely esetekben nem. Erről szól az alábbi tétel.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="maradekok-gyuruje-nullosztomentes" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="maradekok-gyuruje-nullosztomentes-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:html -->
+<div id="modular-power"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A moduláris hatványozás tulajdonságai</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Mostmár visszatérhetünk az eredeti problémánkhoz, és általánosan is megfogalmazhatjuk azt a fentiek alapján. Eszerint tehát a feladat az, hogy adott [latex]a[/latex] és [latex]n\gt 0[/latex] egész számok esetén számítsuk ki azt a maradékot, amelyet az [latex]a^n[/latex] hatvány ad valamilyen [latex]m\
+eq 0[/latex] egész számmal osztva. A konkrét feladatban a [latex]2^{328}[/latex] hatvány [latex]11[/latex]-gyel való osztási maradékát kellett kiszámítani. A probléma ugye az, hogy ezt az [latex]a^n[/latex] hatvány tényleges kiszámítása nélkül kellene megtennünk, máskülönben a modulo [latex]m[/latex] maradékképzés előtt kapott részeredmény kezelhetetlenül nagy lenne.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Azt viszont láttuk a előző szakaszban, hogy a [latex]\Z_m[/latex] gyűrűben ilyen szempontból sokkal könnyebb számolni, hiszen itt minden részeredmény egy véges számhalmazból kerül ki. Érdemes volna tehát már az elején „áttérni” a [latex]\Z_m[/latex] gyűrűre, és a hatványozást már az itteni moduláris szorzással végezni. Ehhez azonban az kell, hogy ez az „áttérés” ne befolyásolja a kapott végeredményt. Azaz ha előbb „áttérünk” a [latex]\Z_m[/latex] gyűrűbe és ott végezzük el a moduláris szorzásokat, akkor ugyanazt kell kapnunk, mintha előbb a [latex]\Z[/latex] gyűrűben végeznénk el a hagyományos szorzásokat, majd vennénk az így kapott eredmény [latex]\Z_m[/latex]-beli megfelelőjét.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A <a rel="noreferrer noopener" aria-label="13. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/13-adossag-ekvivalenciarelacio-ekvivalencia-osztaly-egesz-szam-homomorfizmus-beagyazas-negativ-szam#injective-homomorphism" target="_blank">13. részben</a> a természetes számok [latex]\Z[/latex]-be való beágyazásánál már volt szó az úgynevezett struktúratartó leképezésekről, amelyeket <strong><em>homomorfizmusoknak</em></strong> neveztünk (lásd a [yp_element slug="homomorfizmus-izomorfizmus-beagyazas" type="link" /]t). Nekünk most a fentiek alapján épp egy ilyen leképezésre lenne szükségünk a [latex]\Z[/latex] és [latex]\Z_m[/latex] gyűrűk között. Erről szól az alábbi definíció, amely tehát a [yp_element slug="homomorfizmus-izomorfizmus-beagyazas" type="link" /]ban definiált homomorfizmusfogalom speciális esete gyűrűkre, mint algebrai struktúrákra. Kivételesen feltüntettük a gyűrűk műveleti szimbólumait is annak érdekében, hogy világos legyen, mikor melyik gyűrűben kell az adott műveletet elvégezni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="gyuruhomomorfizmus" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="gyuruhomomorfizmus-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi tételben meg is adunk egy gyűrűhomomorfizmust az egész számok [latex]\Z[/latex] gyűrűjéből a véges sok elemet tartalmazó [latex]\Z_m[/latex] gyűrűbe. Nem lesz túl meglepő a dolog, hiszen ez a leképezés mindvégig itt volt az orrunk előtt.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="maradekkepzes-gyuruhomomorfizmus" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="maradekkepzes-gyuruhomomorfizmus-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A szakasz elején közölt példára alkalmazva az iménti tételt mostmár könnyedén kiszámíthatjuk, hogy a [latex]2^{328}[/latex] hatvány mennyi maradékot ad [latex]11[/latex]-gyel osztva. Ehhez annyit kell tennünk, hogy a [latex]328[/latex] darab tényezőre alkalmazzuk a [latex]\bmod_{11}[/latex] maradékképző függvényt, és vesszük az így kapott maradékok moduláris szorzatát a [latex]\Z_{11}[/latex] gyűrűben:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\bmod_{11}(\underbrace{2\cdot 2\cdot \ldots \cdot 2}_{\text{328 darab}})=\underbrace{\bmod_{11}(2)\odot \bmod_{11}(2)\odot \ldots \odot \bmod_{11}(2)}_{\text{328 darab}}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az a probléma tehát megoldódott, hogy a számolgatás közben nem fogunk olyan óriási részeredményeket kapni, amelyek túllépik a számítógép számábrázolási határait. Megjegyezzük ugyanakkor, hogy a gyakorlatban a kitevő nagyságrendje a többszázjegyű számok körében mozog. Ez a módszer tehát ebben a formában továbbra sem alkalmazható, mivel beláthatatlanul sok moduláris szorzást igényel. Egy későbbi részben azonban mutatni fogunk egy olyan módszert, amelynek a segítségével még ezek az óriási kitevős moduláris hatványok is pillanatok alatt kiszámíthatók.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez az <strong><em>ismételt négyzetre emelések módszere</em></strong> néven lesz ismeretes, és – anélkül, hogy most belemennénk a részletekbe – a moduláris hatványozás azonosságait fogja igen trükkös módon kihasználni. Ezek az azonosságok azonban tetszőleges kommutatív gyűrűben érvényesek, így az alábbi tételben ezt az általános esetet fogjuk igazolni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="hatvanyozas-azonossagai" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="hatvanyozas-azonossagai-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A Diffie-Hellman kulcscsere protokoll helyessége</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Mivel az iménti tétel tetszőleges kommutatív gyűrűre érvényes, így érvényes a [latex]\Z_m[/latex] gyűrűre is. Ez szoros összefüggésben van a 9. részben már részletesen ismertetett <a rel="noreferrer noopener" aria-label="Diffie-Hellman protokollal (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/9-diffie-hellman-protokoll-egyiranyu-fuggveny-modularis-aritmetika-asszimmetrikus-kulcs#diffie-hellman-protocol" target="_blank"><strong><em>Diffie-Hellman kulcscsere protokollal</em></strong></a>. Ennek helyességét akkor nem igazoltuk, így ezt most fogjuk megtenni. Ott ugye gyakorlatilag a [latex]\Z_m[/latex] gyűrűben kell moduláris hatványozást végezni. Ha Alice és Bob titkos kulcsot akarnak megbeszélni, akkor először a nembiztonságos csatornán keresztül megállapodnak egy [latex]x[/latex] egész számban és egy [latex]m\
+eq 0[/latex] modulusban, amelyet mindketten majd a moduláris hatványozáshoz fognak használni. Ezután mindketten kitalálnak maguknak egy-egy <strong><em>titkos kitevőt</em></strong>. Tegyük fel, hogy Alice titkos kitevője [latex]a[/latex], Bob-é pedig [latex]b[/latex]. Ezeket a kitevőket <strong><em>egymásnak sem árulják el</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezután Alice a [latex]\Z_m[/latex] gyűrűben kiszámítja az [latex]x^a[/latex] moduláris hatványt, és az eredményt átküldi Bobnak. Bob ugyanígy kiszámítja az [latex]x^b[/latex] moduláris hatványt, és az eredményt átküldi Alice-nak. Ezután a kapott számokat mindketten ismét modulárisan hatványozzák a saját titkos kitevőjükkel. Alice a Bob-tól kapott [latex]x^b[/latex] számból kiszámítja az [latex](x^b)^a[/latex], Bob pedig az Alice-tól kapott [latex]x^a[/latex] számból kiszámítja az [latex](x^a)^b[/latex] moduláris hatványt. A fenti [yp_element slug="hatvanyozas-azonossagai" type="link" /] tétel 2. pontja alapján azonban mindketten ugyanazt a számot fogják kapni:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{(x^b)^a}_{\text{Alice eredménye}}=x^{b\cdot a}=x^{a\cdot b}=\underbrace{(x^a)^b}_{\text{Bob eredménye}}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>Diffie-Hellman kulcscsere protokoll tehát valóban helyesen működik</em></strong>, mivel a moduláris hatványozás ugyanazokkal a tulajdonságokkal rendelkezik, mint a hagyományos hatványozás. Már csak azt a problémát kell megoldanunk, hogy ezeket a moduláris hatványokat óriási kitevők esetén is nagyon hatékonyan ki tudjuk számolni. Erre – mint már említettük – egy későbbi részben fogunk kitérni <strong><em>az ismételt négyzetre emelések módszere</em></strong> kapcsán, amely szintén a [yp_element slug="hatvanyozas-azonossagai" type="link" /]ben felsorolt tulajdonságokat használja ki.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Kongruenciák</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Most azonban ismerkedjünk meg további fontos fogalmakkal a [yp_element slug="gyuruhomomorfizmus" type="link" /]ban ismertetett <strong><em>gyűrűhomomorfizmusok</em></strong> kapcsán. Tegyük fel, hogy adva van egy [latex]R[/latex] és egy [latex]S[/latex] gyűrű, valamint egy közöttük lévő [latex]f:R\to S[/latex] művelettartó leképezés, azaz gyűrűhomomorfizmus. Ez tehát [latex]R[/latex] minden eleméhez hozzárendel valamilyen [latex]S[/latex]-beli elemet.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Elképzelhető azonban, hogy egy adott [latex]S[/latex]-beli elem több [latex]R[/latex]-beli elemhez is hozzá van rendelve. Így tehát [latex]R[/latex] elemei között definiálhatunk egy relációt, amely azt fejezi ki két [latex]R[/latex]-beli elem között, hogy nekik ugyanaz az [latex]f[/latex] gyűrűhomomorfizmus szerinti képük az [latex]S[/latex] gyűrűben. Erről szól az alábbi definíció.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="gyuruhomomorfizmus-szerinti-kongruencia" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A <a rel="noreferrer noopener" aria-label="13. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/13-adossag-ekvivalenciarelacio-ekvivalencia-osztaly-egesz-szam-homomorfizmus-beagyazas-negativ-szam#equivalence-relations" target="_blank">13. részben</a> már megismerkedtünk az úgynevezett <strong><em>ekvivalenciarelációkkal</em></strong>. Ezek olyan relációk voltak, amelyek egy halmaz elemeit osztályokba sorolják, méghozzá olymódon, hogy minden elem <strong><em>pontosan egy</em></strong> osztályba kerül bele. Vagyis az egyes osztályok között nincs átfedés, és minden elem bekerül valamelyik osztályba. A kongruencia fenti definíciójából azonnak adódik, hogy ez a reláció szintén egy ekvivalenciareláció.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="gyuruhomomorfizmus-szerinti-kongruencia-ekvivalenciarelacio" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="gyuruhomomorfizmus-szerinti-kongruencia-ekvivalenciarelacio-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez alapján tehát az [latex]f[/latex] gyűrűhomomorfizmus az [latex]R[/latex] gyűrűt maradékosztályokra bontja, és egy adott maradékosztályban minden elemnek ugyanaz lesz az [latex]f[/latex] szerinti képe az [latex]S[/latex] gyűrűben. Az alábbi ábrán például a [latex]\Z[/latex] és [latex]\Z_3[/latex] gyűrűk között lévő, fentebb már ismertetett [latex]\bmod_3[/latex] maradékképző függvény – mint gyűrűhomomorfizmus – szerinti maradékosztályokat szemléltetjük:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":4835,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_18_mod_3_maradekosztalyok.jpg" alt="A mod_3 szerinti maradékosztályok" class="wp-image-4835"/><figcaption>A [latex]\bmod_3[/latex] szerinti maradékosztályok</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Az ábra baloldalán az egész számok [latex]\Z[/latex] gyűrűjét reprezentáló, mindkét irányban végtelen számegyenes „felcsavarva” látható. Méghozzá olymódon, hogy az azonos maradékosztályba kerülő egész számok egy vonalba essenek. Ezek épp azok a számok lesznek, amelyek [latex]3[/latex]-mal osztva azonos maradékot adnak. Az ábra jobboldalán a [latex]\bmod_3[/latex] gyűrűhomomorfizmus képhalmaza, tehát jelen esetben a [latex]\Z_3[/latex] halmaz látható. Ennek elemeit egy óralapon helyeztük el ahhoz hasonlóan, ahogyan a <a rel="noreferrer noopener" aria-label="9. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/9-diffie-hellman-protokoll-egyiranyu-fuggveny-modularis-aritmetika-asszimmetrikus-kulcs#modular-arithmetic" target="_blank">9. részben</a> szemléltettük az <strong><em>óraaritmetikát</em></strong> a Diffie-Hellman kulcscsere protokoll kapcsán. A két halmaz közötti [latex]\bmod_3[/latex] leképezést nyilakkal szemléltettük, amely tehát minden egész számhoz az ő modulo [latex]3[/latex] maradékát rendeli hozzá.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Felmerülhet az Olvasóban a kérdés, hogy a fenti [yp_element slug="gyuruhomomorfizmus-szerinti-kongruencia" type="link" /]ban, valamint a [yp_element slug="gyuruhomomorfizmus-szerinti-kongruencia-ekvivalenciarelacio" type="link" /]ben miért kötöttük ki a két gyűrű közötti [latex]f[/latex] függvényről, hogy az <strong><em>gyűrűhomomorfizmus</em></strong> legyen. Hiszen a kongruenciát, mint relációt az eddigiek alapján definiálhattuk volna tetszőleges függvény szerint is. Az ugyanúgy egy ekvivalenciareláció lenne, ugyanis a [yp_element slug="gyuruhomomorfizmus-szerinti-kongruencia-ekvivalenciarelacio" type="link" /] bizonyításában egyáltalán nem használtuk ki az [latex]f[/latex] leképezés művelettartó tulajdonságait. Rövidesen világos lesz, hogy miért olyan fontos ez a tulajdonság.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="ring-homomorphism-kernel-and-image"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Gyűrűhomomorfizmus magja és képe</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Képzeljük el azt a szituációt, hogy adva van egy valamilyen [latex]R[/latex] gyűrű, valamint egy ezen értelmezett [latex]f[/latex] gyűrűhomomorfizmus, de nem ismerjük azt az [latex]S[/latex] gyűrűt, amelybe [latex]f[/latex] képez. Szeretnénk azonban feltárni [latex]S[/latex] szerkezetét. Hamarosan látni fogjuk, hogy ehhez előszöris az [latex]f[/latex] szerinti kongruenciareláció által meghatározott [latex]R[/latex]-beli maradékosztályokat kell meghatároznunk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Első körben azt gondolnánk, hogy erre nincs más mód, mint [latex]R[/latex] összes elemére alkalmazni az [latex]f[/latex] függvényt, és a kapott függvényértékek alapján meghatározni ezeket a maradékosztályokat. Szerencsére van egy ennél sokkal egyszerűbb módszer, ám ehhez már szükségünk lesz [latex]f[/latex] <strong><em>összegtartó tulajdonságára</em></strong>. Először ismertetünk egy hasznos segédtételt, amely ezt a tulajdonságot használja ki.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="osszegtarto-lekepezes-nullelem-es-ellentettkepzestarto" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="osszegtarto-lekepezes-nullelem-es-ellentettkepzestarto-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Térjünk most vissza az eredeti problémánkhoz, amikoris egy [latex]R[/latex] gyűrűből kiinduló, [latex]S[/latex] gyűrűbe mutató valamilyen [latex]f[/latex] <strong><em>gyűrűhomomorfizmus</em></strong> szerinti kongruenciareláció maradékosztályait szeretnénk meghatározni. Az előző segédtétel következményeként most meg fogjuk mutatni, hogy ezek között van egy kitüntetett maradékosztály, amely már egyértelműen meghatározza az összes többit. Ez a kitüntetett maradékosztály épp azokból az [latex]R[/latex]-beli elemekből áll, amelyekhez az [latex]f[/latex] leképezés az [latex]S[/latex] gyűrű <strong><em>nullelemét</em></strong> rendeli hozzá. Ennek a kitüntetett maradékosztálynak, valamint az [latex]f[/latex] értékkészletének külön nevet is ad az alábbi definíció.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="gyuruhomomorfizmus-magja-es-kepe" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="gyuruhomomorfizmus-magja-es-kepe-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Például az előző szakaszban felhozott [latex]\Z[/latex] és [latex]\Z_3[/latex] közötti [latex]\bmod_3[/latex] maradékképző függvény – mint gyűrűhomomorfizmus – magja épp a [latex]3[/latex]-mal osztható egész számokból áll. A [latex]\bmod_3[/latex] maradékképző függvény ugyanis pontosan ezekhez rendeli hozzá a [latex]\Z_3[/latex] gyűrű nullelemét, azaz a [latex]0[/latex] maradékot. A [latex]\bmod_3[/latex] függvény képe pedig a [yp_element slug="modularis-osszeadas-es-szorzas" type="link" /] utáni megjegyzés 5. pontja miatt maga a [latex]\Z_3[/latex] halmaz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Megjegyezzük, hogy egy [latex]f:R\to S[/latex] gyűrűhomomorfizmus magja <strong><em>soha nem lehet üres</em></strong>. A [yp_element slug="osszegtarto-lekepezes-nullelem-es-ellentettkepzestarto" type="link" /] 1. pontja alapján ugyanis szükségképpen tartalmazza legalább az [latex]R[/latex] gyűrű nullelemét, hiszen ennek képe biztosan az [latex]S[/latex] gyűrű nulleleme lesz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most azt mutatjuk meg, hogy egy gyűrűhomomorfizmus magja már egyértelműen meghatározza az általa indukált kongruenciarelációt.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="gyuruhomomorfizmus-szerinti-kongruenciak-ekvivalenciajanak-feltetele" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="gyuruhomomorfizmus-szerinti-kongruenciak-ekvivalenciajanak-feltetele-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez alapján tehát egy [latex]f[/latex] gyűrűhomomorfizmus szerinti kongruenciarelációt kizárólag annak magja, nem pedig maga az [latex]f[/latex] határozza meg. Még csak az sem érdekes, hogy [latex]f[/latex] milyen gyűrűbe képez. Nézzünk is erre egy egyszerű példát.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Legyen most a kiindulási gyűrűnk az egész számok [latex]\Z[/latex] gyűrűje, és legyen az egyik célgyűrű a [latex]\Z_2[/latex] gyűrű. A másik célgyűrű elsőre szokatlan lesz, mivel ennek alaphalmaza nem számokból, hanem az [latex]e[/latex] és az [latex]o[/latex] betűkből áll. Ezt a halmazt [latex]P[/latex]-vel fogjuk jelölni a példában. Vezessünk be ezen a halmazon is két műveletet, és jelöljük őket a [latex]\boxplus[/latex] és a [latex]\boxdot[/latex] szimbólumokkal. Ezt a két műveletet önkényesen az alábbi műveleti táblákkal definiáljuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{cc}\begin{array}{c|cc}\boxplus &amp;e&amp;o\\ \hline e&amp;e&amp;o \\o&amp;o&amp;e \end{array} &amp; \begin{array}{c|cc}\boxdot &amp;e&amp;o\\ \hline e&amp;e&amp;e \\o&amp;e&amp;o\\ \end{array}\end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Könnyű leellenőrizni, hogy a [latex]P[/latex] halmaz ezzel a két művelettel szintén gyűrűt alkot, melynek nulleleme az [latex]e[/latex] betű, egységeleme pedig az [latex]o[/latex] betű. Ennek legegyszerűbb módja, ha meggondoljuk, hogy ez a gyűrű [latex]\Z_2[/latex]-től pusztán abban különbözik, hogy máshogy jelöltük az elemeit és a két műveletét. Valóban, az Olvasó is könnyedén leellenőrizheti, hogy az alábbi [latex]h[/latex] leképezés tulajdonképpen egy [yp_element slug="gyuruhomomorfizmus" type="link" /] szerinti <strong><em>izomorfizmus</em></strong> a [latex]\Z_2[/latex] és a [latex]P[/latex] gyűrűk között, azaz [latex]\Z_2\simeq P[/latex]:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}h(0)&amp;=e\\h(1)&amp;=o\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Hamarosan meg fogjuk mutatni, hogy ez az izomorfizmus nem véletlenül teljesül e két gyűrű között. Ám egyelőre tegyük félre ezt a dolgot. Van tehát egy kiindulási gyűrűnk, amely az egész számok [latex]\Z[/latex] gyűrűje, valamint van két célgyűrűnk: a [latex]\Z_2[/latex] és az imént definiált, meglehetősen szokatlan [latex]P[/latex]. Nincs más hátra, mint találni két [latex]\Z[/latex]-ből kiinduló gyűrűhomomorfizmust, amelyeknek ugyanaz a magja [latex]\Z[/latex]-ben, azonban az egyiknek a célgyűrűje [latex]\Z_2[/latex], a másiknak pedig [latex]P[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az első viszonylag egyszerű, hiszen a [yp_element slug="modularis-osszeadas-es-szorzas" type="link" /] szerinti [latex]\bmod_2[/latex] maradékképző függvény a [yp_element slug="maradekkepzes-gyuruhomomorfizmus" type="link" /] alapján egy gyűrűhomomorfizmus [latex]\Z[/latex] és [latex]\Z_2[/latex] között. Ennek magja a [latex]2[/latex]-vel osztható (tehát páros) számokból áll, hiszen pontosan ezek fognak [latex]0[/latex] maradékot adni [latex]2[/latex]-vel osztva. A másik gyűrűhomomorfizmust az alábbi [latex]f[/latex] függvénnyel adjuk meg:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f(x)=\begin{cases} e &amp;\text{ha}\ x\ \text{páros} \\ o &amp;\text{ha}\ x\ \text{páratlan}\end{cases}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az Olvasóra bízzuk annak átgondolását, hogy [latex]f[/latex] valóban egy gyűrűhomomorfizmus [latex]\Z[/latex] és [latex]P[/latex] között. Mivel az [latex]e[/latex] betű a [latex]P[/latex] gyűrű nulleleme, ezért az [latex]f[/latex] gyűrűhomomorfizmus magja szintén a páros számokból áll.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A három gyűrűt és a közöttük lévő [latex]\bmod_2:\Z\to \Z_2[/latex] és [latex]f:\Z\to P[/latex] gyűrűhomomorfizmusokat, illetve ezek közös magját mutatja az alábbi ábra:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":4837,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_18_Z_Z2_P_viszonya.jpg" alt="Z, Z_2 és P gyűrűk viszonya" class="wp-image-4837"/><figcaption>A [latex]\Z[/latex], [latex]\Z_2[/latex] és [latex]P[/latex] gyűrűk viszonya</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Erre a szituációra már alkalmazhatjuk a kongruenciák ekvivalenciájáról szóló [yp_element slug="gyuruhomomorfizmus-szerinti-kongruenciak-ekvivalenciajanak-feltetele" type="link" /]t. Eszerint tehát a két gyűrűhomomorfizmus – habár azok teljesen más gyűrűkre képeznek – szerinti kongruenciarelációk teljesen azonosak lesznek. Ez azt jelenti, hogy az alábbi két reláció tetszőleges [latex]a[/latex] és [latex]b[/latex] egész számok között vagy egyszerre teljesül, vagy egyszerre nem teljesül:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a&amp;\equiv b\pod {\bmod_2}\\a&amp;\equiv b\pod f\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezt a két kongruenciarelációt tehát teljesen felesleges megkülönböztetni egymástól. Sőt, általában is hasznos lenne bevezetni egy olyan kongruencia-fogalmat, amely nem támaszkodik közvetlenül egy adott konkrét gyűrűhomomorfizmusra, hanem annak csak a magjára. Erről szól a következő szakasz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Részgyűrűk és ideálok</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel, hogy van egy [latex]R[/latex] gyűrű, amelyen egy kongruenciarelációt szeretnénk megadni. Nem szeretnénk ugyanakkor foglalkozni semmiféle más gyűrűvel, abba mutató gyűrűhomomorfizmusokkal meg aztán pláne nem. Szerencsére az előző szakaszban bizonyított [yp_element slug="gyuruhomomorfizmus-szerinti-kongruenciak-ekvivalenciajanak-feltetele" type="link" /] alapján nekünk elegendő [latex]R[/latex]-ben egy olyan részhalmazt keresni, amely alkalmas arra, hogy <strong><em>valamilyen</em></strong> gyűrűhomomorfizmus magja legyen. Ezt azonban ennek a hipotetikus gyűrűhomomorfizmusnak a konkrét ismerete nélkül szeretnénk megtenni. Ehhez először is definiálunk egy, a továbbiakban is hasznos fogalmat.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="reszgyuru" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A <a rel="noreferrer noopener" aria-label="16. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/16-oszhatosag-egyseg-asszocialt-felbonthatatlan-prim-szamelmelet-alaptetele#divisor" target="_blank">16. részben</a> az oszthatóság kapcsán már láttuk, hogy például a páros számok [latex]2\Z[/latex]-vel jelölt halmaza maga is gyűrű a [latex]\Z[/latex]-n értelmezett összeadásra és szorzásra nézve, így [latex]2\Z[/latex] részgyűrű [latex]\Z[/latex]-ben. Mivel nem minden egész szám páros, ezért [latex]2\Z\lt \Z[/latex], azaz [latex]2\Z[/latex] valódi részgyűrű [latex]\Z[/latex]-ben. A páratlan számok szintén részhalmazt alkotnak [latex]\Z[/latex]-n belül, ez a részhalmaz azonban nem részgyűrű, hiszen már a műveleti zártság sem teljesül az összeadásra. Például [latex]3+5=8[/latex], ami nem páratlan szám.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi tétel abban nyújt segítséget, hogy ne kelljen minden gyűrűaxiómát ellenőriznünk ahhoz, hogy egy részhalmazról eldöntsük, vajon részgyűrű-e vagy sem.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="reszgyuru-feltetele" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="reszgyuru-feltetele-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Még mielőtt visszatérnénk egy [latex]R[/latex] gyűrűből kiinduló gyűrűhomomorfizmusok <strong><em>magjainak</em></strong> azonosítására, vizsgáljuk meg azt a kérdést, hogy hogyan azonosíthatjuk egy [latex]S[/latex] gyűrűbe mutató gyűrűhomomorfizmusok <strong><em>képeit</em></strong>. Az alábbi tétel alapján ezekről sajnos nem tudunk túl sokat mondani.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="gyuruhomomorfizmus-kepenek-feltetele" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="gyuruhomomorfizmus-kepenek-feltetele-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Egy [latex]S[/latex] gyűrűben tehát az odamutató gyűrűhomomorfizmusok <strong><em>képeiről</em></strong> mindössze annyit tudunk mondani, hogy azok pontosan [latex]S[/latex] részgyűrűi lesznek. Ezzel szemben egy [latex]R[/latex] gyűrű azon részhalmazairól, amelyek valamilyen [latex]R[/latex]-ből kiinduló gyűrűhomomorfizmusok <strong><em>magjai</em></strong> lehetnek, ennél többet is fogunk tudni mondani. Most erre mutatunk egy szükséges feltételt, majd a következő szakaszban igazoljuk azt az egyáltalán nem nyilvánvaló tényt, hogy ez a feltétel egyben elégséges is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="gyuruhomomorfizmus-magjanak-szukseges-feltetele" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A 2. feltételben azért kellett mindkét irányú szorzást megemlíteni, mert ez a tétel <strong><em>tetszőleges</em></strong> – azaz nem feltétlenül csak kommutatív – <strong><em>gyűrűre</em></strong> érvényes. Vegyük észre, hogy ez a szorzásra szigorúbb feltételt ír elő annál, mintha [latex]I[/latex]-ről egyszerűen csak annyit kötnénk ki, hogy részgyűrű legyen (azaz, hogy az [latex]I[/latex]-beli elemek között végzett szorzás ne vezessen ki az [latex]I[/latex] halmazból). A 2. feltétel ezen felül megköveteli még azt is, hogy <strong><em>bármely</em></strong> [latex]R[/latex]-beli elemmel szorzunk is egy [latex]I[/latex]-beli elemet – akár jobbról, akár balról –, az így kapott eredménynek is a szűkebb [latex]I[/latex] halmazban kell maradnia.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="gyuruhomomorfizmus-magjanak-szukseges-feltetele-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az iménti tételben felsorolt két feltételt tehát egy gyűrű minden olyan részhalmaza teljesíti, amely egy valamilyen gyűrűhomomorfizmus magja lehet. Ezeknek a részhalmazoknak külön nevet is ad az alábbi definíció.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="ideal" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Természetesen kommutatív gyűrűk esetén nincs értelme külön jobb- vagy balideálokról beszélni, hiszen ott minden jobbideál egyben balideál is, és fordítva. Például az egész számok [latex]\Z[/latex] gyűrűjében ideált alkot a páros számok [latex]2\Z[/latex]-vel jelölt halmaza, hiszen ha egy páros számot bármilyen tetszőleges egész számmal megszorzunk, az eredmény ugyancsak páros.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezzel a szóhasználattal élve a [yp_element slug="gyuruhomomorfizmus-magjanak-szukseges-feltetele" type="link" /] úgy is megfogalmazható, hogy amennyiben egy [latex]R[/latex] gyűrű valamely [latex]I[/latex] részhalmaza magja valamilyen gyűrűhomomorfizmusnak, akkor [latex]I[/latex] ideál [latex]R[/latex]-ben. A következő szakaszban azt fogjuk megmutatni, hogy más részhalmaz nem is lehet gyűrűhomomorfizmus magja.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="residue-class-ring"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Maradékosztálygyűrűk</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Előszöris bevezetünk egy új jelölésmódot, amelynek a segítségével tömören le tudunk írni bizonyos részhalmazokat egy gyűrűben. Az alábbi definíció azonban nem csak gyűrűk, hanem tetszőleges algebrai struktúrák esetén alkalmazható.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="komplexusmuveletek" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="komplexusmuveletek-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most térjünk vissza az előző szakasz végén felvetett problémához. Azt már tudjuk, hogy ha egy [latex]R[/latex] gyűrű valamely [latex]I[/latex] részhalmaza magja valamilyen gyűrűhomomorfizmusnak, akkor [latex]I[/latex] ideál [latex]R[/latex]-ben. Most szeretnénk megmutatni, hogy ez visszafelé is igaz, azaz bármely [latex]I[/latex] ideál magja valamilyen gyűrűhomomorfizmusnak.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ehhez szükségünk van egy konstrukcióra, amelynek a segítségével egy tetszőleges [latex]I[/latex] ideálhoz tudunk konstruálni egy olyan [latex]f[/latex] gyűrűhomomorfizmust, amelynek épp [latex]I[/latex] lesz a magja. Ehhez azonban kell egy célgyűrű is, <strong><em>ahová</em></strong> [latex]f[/latex] mutatni fog. Ezt a gyűrűt és az [latex]f[/latex] gyűrűhomomorfizmust is az [latex]R[/latex] gyűrűből fogjuk képezni az [latex]I[/latex] ideál segítségével.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az ötletet a kongruenciákról szóló szakaszban már bemutatott [latex]\bmod_3[/latex] gyűrűhomomorfizmus szerinti maradékosztályokat szemléltető ábráról kölcsönözzük. Ezen az ábrán ugye felcsavartuk a számegyenest olymódon, hogy az azonos maradékosztályba eső elemek egyvonalba essenek:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":4839,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_18_felcsavart_szamegyenes.jpg" alt="A felcsavart számegyenes" class="wp-image-4839"/><figcaption>A felcsavart számegyenes</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Ugyan jelen esetben egy általános gyűrűről beszélünk, ahol nem sok értelme van számegyenesről beszélni, ám az analógia meglehetősen hasznos a megértéshez. Az ábrán a függőleges irányban álló maradékosztály az, amelyik a [latex]\bmod_3[/latex] gyűrűhomomorfizmus magja. Ez ugye épp a [latex]3[/latex]-mal osztható egész számok halmaza lesz, amelyet a fentebbi komplexusszorzást alkalmazva [latex]3\Z[/latex]-vel jelölünk. Kérdés, hogy a többi maradékosztályt, mint halmazt hogyan tudjuk kifejezni [latex]3\Z[/latex] segítségével.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel, hogy [latex]a[/latex] egy valamilyen előre rögzített egész szám, és jelöljük [latex][a]_3[/latex]-mal azt a maradékosztályt, amelynek ő eleme. A továbbiakban tehát ennek a maradékosztálynak [latex]a[/latex] lesz a képviselője. A fenti ábrán látható, hogy [latex]a[/latex]-ból kiindulva az [latex][a]_3[/latex] maradékosztály tetszőleges eleméhez – és csak ezekhez – eljuthatunk, ha [latex]3[/latex]-nak valamilyen többszöröse számú lépést teszünk meg valamilyen irányban a felcsavart számegyenesen. Komplexusműveletekkel kifejezve ez azt jelenti, hogy teljesül az alábbi halmazegyenlőség:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][a]_3=a+3\Z[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezek szerint tehát a [latex]\bmod_3[/latex] szerinti kongruencia minden maradékosztályát elő tudjuk állítani annak valamely önkényesen kiválasztott eleméből és a [latex]\bmod_3[/latex] magjából – azaz [latex]3\Z[/latex]-ből –, ami ugye a [yp_element slug="gyuruhomomorfizmus-magjanak-szukseges-feltetele" type="link" /] alapján ideál [latex]\Z[/latex]-ben.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most térjünk vissza az eredeti [latex]R[/latex] gyűrűnkhöz és annak valamely [latex]I[/latex] ideáljához. Az előző példával analóg módon szeretnénk valamiféle „maradékosztályokat” előállítani [latex]r+I[/latex] alakban, ahol [latex]r[/latex] az adott „maradékosztály” egy eleme. Az idézőjeles megfogalmazást az indokolja, hogy a [yp_element slug="gyuruhomomorfizmus-szerinti-kongruencia-ekvivalenciarelacio" type="link" /] <strong><em>gyűrűhomomorfizmus szerinti, nem pedig ideál szerinti</em></strong> maradékosztályokról beszél. Márpedig [latex]I[/latex]-ről egyelőre nem tudjuk, hogy vajon magja-e bármiféle gyűrűhomomorfizmusnak, hiszen épp ezt szeretnénk bizonyítani.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>gyűrűhomomorfizmus szerinti maradékosztályok</em></strong> tulajdonképpen a [yp_element slug="gyuruhomomorfizmus-szerinti-kongruencia" type="link" /]ban bevezetett <strong><em>gyűrűhomomorfizmus szerinti kongruencia</em></strong> ekvivalencia-osztályai. A [yp_element slug="gyuruhomomorfizmus-magja-es-kepe" type="link" /] utáni megjegyzés alapján két elem pontosan akkor volt kongruens egy [latex]f[/latex] gyűrűhomomorfizmus szerint, ha a különbségük benne volt [latex]f[/latex] magjában. Ezzel analóg módon talán praktikus lenne bevezetni az <strong><em>ideál szerinti kongruencia</em></strong> fogalmát.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="ideal-szerinti-kongruencia" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Nem lesz túl meglepő, hogy a gyűrűhomomorfizmus szerinti kongruenciához hasonlóan az <strong><em>ideál szerinti kongruencia is egy ekvivalenciareláció</em></strong>. Ennek ekvivalencia-osztályai ráadásul épp a kívánt alakban írhatók fel a komplexusműveletek segítségével.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="ideal-szerinti-kongruencia-ekvivalenciarelacio" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="ideal-szerinti-kongruencia-ekvivalenciarelacio-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="ideal-szerinti-kongruencia-ekvivalenciarelacio-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az <strong><em>ideálok szerinti kongruenciák</em></strong> tehát eddig láthatóan ugyanúgy „működnek”, mint a <strong><em>gyűrűhomomorfizmusok szerinti kongruenciák</em></strong>. Mindkettő maradékosztályokba sorolja a gyűrű elemeit, méghozzá minden elemet pontosan egybe. Eddig azonban az ideálok tulajdonságaiból csak azt használtuk ki, hogy részgyűrűk, a szorzásra vonatkozó tulajdonságot nem.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mi azonban egy adott [latex]I[/latex] ideálhoz keresünk egy olyan gyűrűhomomorfizmust, amelynek épp [latex]I[/latex] a magja. Ehhez viszont szükségünk lesz egy célgyűrűre is. Ennek a célgyűrűnek – habár első hallásra furcsának tűnik – az [latex]I[/latex] ideál szerinti maradékosztályok lesznek az elemei, így ezek között be szeretnénk vezetni két műveletet. Az ideálok szorzással kapcsolatos tulajdonságának most lesz jelentősége.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Hogy miért hangzik furcsának bevezetni két műveletet <strong><em>maradékosztályok</em></strong> között? Hát azért, mert a maradékosztályok <strong><em>halmazok</em></strong>, márpedig műveletet általában valamilyen halmaz <strong><em>elemei</em></strong> között szokás bevezetni. A matematikában azonban semmi nem tiltja, hogy bizonyos halmazok elemei maguk is halmazok legyenek. Emlékezzünk vissza, hogy a <a rel="noreferrer noopener" aria-label="13. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/13-adossag-ekvivalenciarelacio-ekvivalencia-osztaly-egesz-szam-homomorfizmus-beagyazas-negativ-szam/" target="_blank">13. részben</a> magukat az egész számokat is hasonlóképpen építettük fel. Akkor egy-egy természetes számpárral írtunk le egy készpénz-adósság párost, amely számpárok között definiáltunk egy „azonos vagyoni helyzetet jelöl”-relációt, amelyről megmutattuk, hogy egy ekvivalenciareláció. Az egész számok tulajdonképpen ennek a relációnak az ekvivalencia-osztályai, amelyek között vígan értelmezni tudtuk az összeadást és a szorzást, mint műveletet.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A trükk az volt, hogy két ekvivalencia-osztály <strong><em>összegének</em></strong> vagy <strong><em>szorzatának</em></strong> képzéséhez először kiválasztottunk egy-egy tetszőleges elemet a két osztályból. Ezután ezeken elvégeztük az eredeti halmazon értelmezett megfelelő műveletet, és az eredményül kapott elem ekvivalencia-osztálya lett az ekvivalencia-osztályok közötti összegzés illetve szorzás eredménye.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most ugyanezt a trükköt fogjuk alkalmazni, amikoris bevezetjük az <strong><em>összeadást és szorzást egy [latex]R[/latex] gyűrű [latex]I[/latex] ideáljának maradékosztályai között</em></strong>. Két maradékosztályt úgy fogunk összeadni, illetve összeszorozni, hogy kiválasztunk belőlük egy-egy tetszőleges elemet, amelyeket összeadunk, illetve összeszorzunk az eredeti [latex]R[/latex] gyűrű műveleteivel, majd azt a maradékosztályt választjuk végeredménynek, amelybe az így kapott elem esik. Egy ilyen maradékosztályok közötti műveletnek nyilvánvalóan akkor van csak értelme, ha az eredményül kapott maradékosztály nem függ attól, hogy a két bemeneti maradékosztályból mely elemeket választottuk ki a művelet elvégzéséhez. Ilyenkor mondjuk azt, hogy a művelet <strong><em>jóldefiniált</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi ábrán például az [latex]M[/latex] és [latex]N[/latex] maradékosztályok összeadása látható, amit két különböző elempár segítségével elvégezve ugyanaz az eredmény adódik:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":4840,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_18_maradekosztalyok_osszeadasa.jpg" alt="Maradékosztályok összeadása" class="wp-image-4840"/><figcaption>Maradékosztályok összeadása</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Megköveteljük tehát, hogy függetlenül attól, hogy az [latex]a_1+b_1[/latex] vagy az [latex]a_2+b_2[/latex] összeget számítjuk-e ki, az eredménynek mindkét esetben ugyanabba a maradékosztályba kell esnie. Természetesen ugyanezt megköveteljük a szorzásra is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egy [latex]R[/latex] gyűrűben egy [latex]f[/latex] <strong><em>gyűrűhomomorfizmus szerinti maradékosztályok</em></strong> közötti összeadás és szorzás jóldefiniáltságát [latex]f[/latex] művelettartó tulajdonságai biztosítják. Ugyanis az [latex]a_1\equiv a_2\pod f[/latex], és a [latex]b_1\equiv b_2\pod f[/latex] kongruenciák épp azt jelentik, hogy teljesülnek az [latex]f(a_1)=f(a_2)[/latex] és [latex]f(b_1)=f(b_2)[/latex] egyenletek. Ez viszont [latex]f[/latex] összegtartó tulajdonságából következően a [yp_element slug="gyuruhomomorfizmus-magja-es-kepe" type="link" /] utáni megjegyzés alapján épp azt jelenti, hogy az [latex]a_1-a_2[/latex] és [latex]b_1-b_2[/latex] különbségek benne vannak [latex]f[/latex] magjában, azaz [latex]\ker f[/latex]-ben. Ám [latex]\ker f[/latex] a [yp_element slug="gyuruhomomorfizmus-magjanak-szukseges-feltetele" type="link" /] miatt részgyűrű [latex]R[/latex]-ben, és így zárt az összeadásra. Ez alapján e két különbség összege, azaz [latex](a_1+b_1)-(a_2+b_2)[/latex] szintén benne van [latex]\ker f[/latex]-ben, azaz teljesül az [latex]a_1+b_1\equiv a_2+b_2\pod f[/latex] kongruencia. Az összeadás tehát valóban jóldefiniált, hiszen ugyanabba a maradékosztályba eső eredményt kapunk, függetlenül attól, hogy mely elemeket választjuk ki a műveletvégzéshez a két bemeneti maradékosztályból.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A szorzás jóldefiniáltsága [latex]f[/latex] szorzattartó tulajdonságából következik. Ha ugyanis a fenti két egyenletet összeszorozzuk, akkor [latex]f(a_1)\cdot f(b_1)=f(a_2)\cdot f(b_2)[/latex] következik. A szorzattartó tulajdonság miatt ez viszont azt jelenti, hogy [latex]f(a_1\cdot b_1)=f(a_2\cdot b_2)[/latex], azaz teljesül az [latex]a_1\cdot b_1\equiv a_2\cdot b_2\pod f[/latex] kongruencia.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Kérdés, hogy ez a jóldefiniáltság vajon az ideál szerinti maradékosztályokra is teljesül-e. Ezt biztosítja az alábbi tétel.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="ideal-szerinti-muveletek-joldefinialtsaga" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="ideal-szerinti-muveletek-joldefinialtsaga-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez tehát azt jelenti, hogy az ideál szerinti maradékosztályok közötti összeadás és szorzás valóban jóldefiniáltak, azaz <strong><em>műveletek</em></strong> a szó algebrai értelmében (lásd a [yp_element slug="ketvaltozos-muvelet" type="link" /]t).</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egyre több jel mutat tehát arra, hogy a <strong><em>gyűrűhomomorfizmusok szerinti kongruencia</em></strong> és az <strong><em>ideálok szerinti kongruencia</em></strong> fogalma tulajdonképpen <strong><em>egy és ugyanaz</em></strong>. Szedjük is össze az eddig megtalált párhuzamokat:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} -->
+<ol><li>Két elem között mindkettő pontosan akkor teljesül, ha a különbségük benne van egy bizonyos halmazban. Egyik esetben ez annak a <strong><em>gyűrűhomomorfizmusnak a magja</em></strong>, másik esetben pedig az az <strong><em>ideál</em></strong>, amely szerint képeztük az adott kongruenciát.</li><li>Mindkettő ekvivalenciareláció.</li><li>Mindkettőnek a maradékosztályai teljesen ugyanúgy fejezhetők ki a komplexusműveletek segítségével.</li><li>E maradékosztályok között mindkettő esetben ugyanúgy értelmezhetünk jóldefiniált műveleteket.</li></ol>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>Ha ez a két fogalom valóban ugyanaz, akkor az egyben azt is jelenti, hogy egy gyűrűből kiinduló gyűrűhomomorfizmusok magjai és az adott gyűrű ideáljai pontosan ugyanazok a halmazok lesznek. Visszautalnánk a [yp_element slug="gyuruhomomorfizmus-magjanak-szukseges-feltetele" type="link" /] tételre, amelyben már láttuk, hogy a gyűrűhomomorfizmusok magjai mind ideálok. Most azt fogjuk megmutatni, hogy ez visszafelé is igaz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez az alábbi tétel közvetlen következménye lesz, amely az <strong><em>ideál szerinti maradékosztályok halmazán</em></strong> imént bevezetett műveletek tulajdonságairól szól.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="maradekosztalygyuruk" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="maradekosztalygyuruk-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az imént bizonyított és a [yp_element slug="gyuruhomomorfizmus-magjanak-szukseges-feltetele" type="link" /] következményeként mostmár egyértelműen azonosítani tudjuk egy gyűrű azon részhalmazait, amelyek valamilyen gyűrűhomomorfizmusok magjai lehetnek. Erről szól az alábbi következmény.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="idealok-es-gyuruhomomorfizmusok" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="idealok-es-gyuruhomomorfizmusok-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez tehát azt jelenti, hogy a [yp_element slug="gyuruhomomorfizmus-szerinti-kongruencia" type="link" /]ban bevezetett <strong><em>gyűrűhomomorfizmus szerinti kongruencia</em></strong> fogalma helyett nyugodtan használhatjuk a továbbiakban a [yp_element slug="ideal-szerinti-kongruencia" type="link" /]ban bevezetett <strong><em>ideál szerinti kongruencia</em></strong> fogalmát. A [yp_element slug="gyuruhomomorfizmus-szerinti-kongruenciak-ekvivalenciajanak-feltetele" type="link" /] alapján ugyanis egy kongruenciareláció nem függ konkrét gyűrűhomomorfizmusoktól, hanem azoknak csakis a magjától. Most viszont épp azt bizonyítottuk, hogy bármely [latex]R[/latex] gyűrűben a belőle kiinduló gyűrűhomomorfizmusok magjai épp egybeesnek [latex]R[/latex] ideáljaival. Így tehát egy gyűrű ideáljai alapján az összes létező kongruenciarelációt megkaphatjuk, ami csak értelmezhető az adott gyűrűn.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="ring-homomorphism-theorem"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Gyűrűk homomorfizmustétele</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A fenti meglehetősen absztrakt fogalmakra most egy kézenfekvő példát mutatunk. Fentebb már előkerült a [latex]3\Z[/latex] halmaz, amely a [latex]3[/latex]-mal osztható egész számokat tartalmazza. Erről már megállapítottuk, hogy ő egy ideál [latex]\Z[/latex]-ben. Mi történik, ha [latex]\Z[/latex]-t ezzel az ideállal faktorizáljuk, azaz képezzük a [latex]\Z/3\Z[/latex] maradékosztálygyűrűt? Ennek 3 eleme lesz, méghozzá a [latex]3\Z[/latex] ideál szerinti maradékosztályok.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A komplexusműveletekkel jelölve a 3 maradékosztály a következő: a [latex]0+3\Z[/latex], az [latex]1+3\Z[/latex] valamint a [latex]2+3\Z[/latex]. Ezek azokból az egész számokból fognak állni, amelyek [latex]3[/latex]-mal osztva rendre [latex]0[/latex], [latex]1[/latex] illetve [latex]2[/latex] maradékot adnak. Az ezek közötti műveleteket a [yp_element slug="maradekosztalygyuruk" type="link" /] alapján könnyen elvégezhetjük. Például az [latex]1+3\Z[/latex] és a [latex]2+3\Z[/latex] maradékosztályok összege a [latex]0+3\Z[/latex], szorzata pedig a [latex]2+3\Z[/latex] maradékosztály lesz. Vezessük be a 3 maradékosztályra az alábbi jelöléseket:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}[0]_3&amp;=0+3\Z \\ [1]_3&amp;=1+3\Z \\ [2]_3&amp;=2+3\Z\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ekkor a [latex]\Z/3\Z[/latex] faktorgyűrű műveleti táblái így néznek ki:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{cc} \begin{array}{c|ccc} \oplus &amp; [0]_3 &amp; [1]_3 &amp; [2]_3 \\ \hline [0]_3 &amp; [0]_3 &amp; [1]_3 &amp; [2]_3 \\ [1]_3 &amp; [1]_3 &amp; [2]_3 &amp; [0]_3 \\ [2]_3 &amp; [2]_3 &amp; [0]_3 &amp; [1]_3 \end{array} &amp;	\begin{array}{c|ccc} \odot &amp; [0]_3 &amp; [1]_3 &amp; [2]_3 \\ \hline [0]_3 &amp; [0]_3 &amp; [0]_3 &amp; [0]_3 \\ [1]_3 &amp; [0]_3 &amp; [1]_3 &amp; [2]_3 \\ [2]_3 &amp; [0]_3 &amp; [2]_3 &amp; [1]_3 \end{array} \end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha összehasonlítjuk ezeket a műveleti táblákat a fejezet elején bemutatott [latex]\Z_3[/latex] gyűrű műveleti tábláival, akkor azt tapasztaljuk, hogy szinte megegyeznek egymással. Algebrai szóhasználattal élve úgy tűnik, mintha a [latex]\Z_3[/latex] és [latex]\Z/3\Z[/latex] gyűrűk <strong><em>izomorfak</em></strong> lennének. Íme a [latex]\Z_3[/latex] gyűrű műveleti táblái:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{cc}\begin{array}{c|ccc}\oplus &amp;0&amp;1&amp;2\\ \hline 0&amp;0&amp;1&amp;2 \\1&amp;1&amp;2&amp;0\\2&amp;2&amp;0&amp;1\end{array} &amp; \begin{array}{c|ccc}\odot &amp;0&amp;1&amp;2\\ \hline 0&amp;0&amp;0&amp;0 \\1&amp;0&amp;1&amp;2\\2&amp;0&amp;2&amp;1\end{array}\end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ez nem véletlenül van így!</em></strong> Emlékezzünk csak vissza, hogy a [latex]\Z_3[/latex] gyűrű tulajdonképpen nem más, mint egy [latex]\Z[/latex]-ből kiinduló <strong><em>gyűrűhomomorfizmus</em></strong>, nevezetesen a [latex]\bmod_3[/latex] maradékképző függvény <strong><em>képe</em></strong>. Ráadásul ennek a gyűrűhomomorfizmusnak a <strong><em>magja</em></strong> épp a [latex]3[/latex]-mal osztható egész számok halmaza, azaz [latex]3\Z[/latex]. Ez éppenséggel az az <strong><em>ideál</em></strong>, amelynek a segítségével a [latex]\Z/3\Z[/latex] faktorgyűrűt képeztük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi tétel szerint általánosságban is igaz, hogyha egy [latex]R[/latex] gyűrűt egy belőle kiinduló [latex]f[/latex] gyűrűhomomorfizmus <strong><em>magjával</em></strong> faktorizálunk, akkor az így kapott faktorgyűrű <strong><em>izomorf</em></strong> lesz [latex]f[/latex] <strong><em>képével</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="gyuruk-homomorfizmustetele" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="gyuruk-homomorfizmustetele-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ennek alkalmazásához most visszautalnánk a [yp_element slug="gyuruhomomorfizmus-szerinti-kongruenciak-ekvivalenciajanak-feltetele" type="link" /] kapcsán felvetett példára. Ez a tétel szólt arról, hogy egy [latex]f[/latex] gyűrűhomomorfizmus szerinti kongruenciát kizárólag [latex]f[/latex] magja, nem pedig maga [latex]f[/latex] határoz meg. Ennek demonstrálásához képeztünk két különböző, de azonos magú gyűrűhomomorfizmust az egész számok [latex]\Z[/latex] gyűrűjéből két másik gyűrűre. Ezek közül az egyik a már jól ismert kételemű [latex]\Z_2[/latex] gyűrű volt. A másik gyűrűt akkor [latex]P[/latex]-vel jelöltük, és alaphalmaza az [latex]e[/latex] és [latex]o[/latex] betűket tartalmazta. Ennek a meglehetősen mesterkélt gyűrűnek a műveleteit a műveleti tábláival adtuk meg. Azt tapasztaltuk, hogy a két gyűrű csak az elemek elnevezésében és a használt műveleti jelekben tért el egymástól, de ezeken kívül teljesen ugyanaz volt a szerkezetük. Azaz <strong><em>izomorfak</em></strong> voltak egymással.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Nos, ez az imént bizonyított <strong><em>homomorfizmustétel következménye</em></strong>. A [latex]\Z_2[/latex] és [latex]P[/latex] gyűrűkbe mutató két gyűrűhomomorfizmusnak ugyanis megegyezett a magja, amely ugye – mint ahogy azt a [yp_element slug="idealok-es-gyuruhomomorfizmusok" type="link" /] alapján már tudjuk – egy <strong><em>ideál</em></strong> a [latex]\Z[/latex] gyűrűben. Következésképp a homomorfizmustétel miatt mindkét gyűrű izomorf a [latex]\Z[/latex] gyűrű ezen ideál szerinti faktorgyűrűjével, és így a [yp_element slug="gyuruhomomorfizmus" type="link" /] utáni megjegyzés alapján egymással is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ebben a részben tehát megismerkedtünk a Diffie-Hellman kulcscsere protokollban és az RSA-eljárásban használt moduláris aritmetika matematikai alapjaival. Ennek kapcsán megismerkedtünk olyan gyűrűkkel, amelyeknek csak véges sok elemük van, és meg is tanultunk számolni ezekben a gyűrűkben. Ehhez kulcsfontosságú volt a gyűrűhomomorfizmus fogalmának megismerése, amelynek a segítségével mellesleg igazoltuk a Diffie-Hellman kulcscsere protokoll helyességét. Ezután tetszőleges gyűrűkben azonosítottuk azokat a részhalmazokat, amelyek valamilyen gyűrűhomomorfizmusok magjai lehetnek. Mindeközben megismerkedtünk a kongruenciák, az ideálok és a maradékosztálygyűrűk fogalmával.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A következő részekben az ideálok segítségével végleg lezárjuk a számelmélet alaptételének kérdését. Ennek során megismerkedünk az úgynevezett főideálgyűrűkkel, majd az egész számokon értelmezett kongruenciákat fogjuk tanulmányozni.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A következő részt <a href="https://youproof.hu/kriptografia/19-foidealgyuruk-generalt-ideal-foideal-szamelmelet-alaptetele-halmaz-halmazrendszer-metszet-unio/">itt</a> találod...</em></strong></p>
+<!-- /wp:paragraph -->

@@ -1,0 +1,165 @@
+type: chapter
+name: 16-alice-es-bob-alaptetele
+title: Alice és Bob alaptétele
+
+references:
+  gyuru-test:
+    target:
+      type: definition
+      name: gyuru-test
+  inverz-elem:
+    target:
+      type: definition
+      name: inverz-elem
+  neutralis-elem:
+    target:
+      type: definition
+      name: neutralis-elem
+  peano-axiomarendszer:
+    target:
+      type: definition
+      name: peano-axiomarendszer
+
+abstract:
+  - type: narrative
+    content: |
+      Az előző részekben (a 11., 12., 13., 14. és 15. részekben) betekintést nyertünk abba a gondolkodásmódba,
+      amelyet követve örök érvényű igazságokat tudunk kimondani és bizonyítani a matematikai logika rém egyszerű,
+      ám annál szigorúbb szabályainak betartásával. Mindössze 4 állításból, az úgynevezett Peano-axiómákból
+      ([peano-axiomarendszer]) indultunk ki, amelyek lényegében a természetes számokról alkotott intuitív
+      elképzeléseinket fogalmazzák meg kellő precizitással. Ezekből kiindulva aztán definiáltuk az összeadás és a
+      szorzás műveletét e számok között. Ezután e számkört kibővítettük a negatív számokkal, az így kapott halmazt
+      pedig $\Z$-vel jelöltük és egész számoknak neveztük el őket. Itt már a kivonás is korlátlanul elvégezhető.
+      Végül &ndash; elvonatkoztatva a "szám" fogalmától &ndash; általánosságban is megfogalmaztuk azokat a
+      követelményeket, amelyeket egy tetszőleges halmaznak teljesítenie kell annak érdekében, hogy az elemeivel a
+      "szokásos" módon "számolni" lehessen. Az ilyen konstrukciókat gyűrűknek neveztük el, amelyeknek számos
+      hasznos tulajdonságát mutattuk meg az előző két részben.
+  - type: narrative
+    content: |
+      De vajon mit kezdjünk azzal, hogy az "osztás" művelete általában nem végezhető el gyűrűkben? Mit jelent az
+      "oszthatóság"? Mikor mondjuk egy gyűrű valamely elemére, hogy "felbonthatatlan" és mely elemeket nevezzük
+      "prímeknek"? Miért van ezeknek kitüntetett szerepük bizonyos gyűrűkben? Mit állít a számelmélet alaptétele,
+      és mitől függ, hogy egy gyűrűben teljesül-e vagy nem? Mi a helyzet az egész számok gyűrűjében? Ebben a
+      részben erről lesz szó...
+prerequisite-warning:
+  - type: narrative
+    content: |
+      Figyelem! Ez a rész erőteljesen épít a 14. és 15. részben tárgyalt gyűrű fogalmára, valamint az ezekkel
+      kapcsolatos alábbi definíciókra és tételekre:
+  - type: recall
+    target:
+      type: definition
+      name: gyuru-test
+  - type: recall
+    target:
+      type: definition
+      name: nullosztomentes-gyuru
+  - type: recall
+    target:
+      type: definition
+      name: integritastartomany
+  - type: recall
+    target:
+      type: theorem
+      name: gyuruk-alapveto-tulajdonsagai
+  - type: narrative
+    content: |
+      Ezek kontextusba helyezése miatt erőteljesen ajánlott elolvasni az előző és az azelőtti részt, mivel gyakran
+      hivatkozni fogunk rájuk. A teljes cikksorozat elejét itt találod.
+prologue:
+  - type: narrative
+    content: |
+      Ebben a részben főként az oszthatóság fogalmával fogunk foglalkozni. Számunkra elsősorban az egész számok
+      gyűrűje lesz az érdekes, azonban szeretnénk ezeket a fogalmakat minél általánosabb módon tárgyalni, lehetőleg
+      a gyűrűk szintjén. A továbbiakban az egyszerűség kedvéért a ***kommutatív gyűrűkre*** szorítkozunk. Ezekben
+      ugyanis az oszthatósággal kapcsolatos definíciók és tételek megfogalmazása jóval egyszerűbbé válik azáltal,
+      hogy a szorzás esetén sem kell törődnünk a tényezők sorrendjével. Amennyiben ettől eltérünk, vagy egy
+      tételhez illetve definícióhoz egyéb tulajdonságra is szükség van (például ***egységelem létezése*** vagy
+      ***nullosztómentesség***), úgy azt külön ki fogjuk hangsúlyozni.
+  - type: narrative
+    content: |
+      Ezenkívül egy ***jelölésbeli egyszerűsítést*** is fogunk tenni a továbbiakban. Az előző részekben egy $R$
+      alaphalmazú gyűrű jelölésekor mindig felsoroltuk a gyűrű két műveletének szimbólumát is. Például: $(R,+,\cdot
+      )$. Mostantól &ndash; ha ez félreértést nem okoz &ndash; magát a gyűrűt fogjuk szimplán $R$-rel jelölni. A
+      nullelem és az esetleges egységelem jelölésére rendre a $0$ és az $1$, az "összeadás" műveletre a $+$, a
+      "szorzás" műveletre pedig a $\cdot$ szimbólumot &ndash; vagy az egymás után írást &ndash; használjuk majd.
+      Természetesen ha ettől esetleg eltérünk, azt minden ilyen esetben külön jelezni fogjuk.
+  - type: narrative
+    content: |
+      Végül, ha egy $a$ elemhez hozzáadjuk egy $b$ elem ellentettjét, akkor az $a+(-b)$ kifejezés helyett a
+      rövidebb $a-b$ írásmódot fogjuk használni, és ***kivonásról***, illetve az $a$ és $b$ elem
+      ***különbségéről*** fogunk beszélni.
+  - type: narrative
+    content: |
+      Egy általános gyűrűben tehát korlátlanul elvégezhető a kivonás bármely két gyűrűelem között. Nézzük is meg,
+      hogy pontosan mit értünk azalatt, hogy a kivonás lényegében az összeadás ***megfordítása***. Legyen adva két
+      gyűrűelem, jelöljük őket mondjuk $a$-val és $b$-vel. Annyit tudunk róluk, hogy ha az $a$ elemet összeadjuk
+      egy másik, ismeretlen gyűrűelemmel, akkor az eredmény $b$.
+  - type: figure
+    lead-in: |
+      Feladatunk megtalálni ezt az &ndash; alábbi ábrán $k$-val jelölt &ndash; ismeretlen gyűrűelemet:
+    src: 01-osszeadas-megforditasa.jpg
+    alt: Összeadás megfordítása
+    caption: Összeadás megfordítása
+  - type: narrative
+    content: |
+      Ne feledjük, hogy "összeadás" alatt most a gyűrű $+$ szimbólummal jelölt műveletét értjük, semmi egyebet.
+      Erről mindössze annyit tudunk, hogy teljesíti a rá vonatkozó gyűrűaxiómákat ([gyuru-test]).
+  - type: formula
+    lead-in: |
+      A fenti ábrán látható szituációt az alábbi egyenlettel írhatjuk fel:
+    content: |
+      a+k=b
+  - type: narrative
+    content: |
+      Feladatunk megtalálni a keresett $k$ gyűrűelemet. Szerencsére a ***3. gyűrűaxióma*** hamar a segítségünkre
+      siet, amely kimondja, hogy ***minden gyűrűelemnek létezik ellentettje*** (vagy más szóval ***additív
+      inverze***). Így például az $a$ elemnek is létezik ilyen, $-a$-val jelölt "párja". Az, hogy $-a$ az $a$
+      inverze a $+$ műveletre nézve épp azt jelenti, hogy őket összeadva ugyanezen művelet neutrális elemét kapjuk
+      (lásd a [inverz-elem]t). A $+$ művelet neutrális eleme viszont nem más, mint a gyűrű nulleleme.
+  - type: formula
+    lead-in: |
+      Ha tehát a fenti egyenlet mindkét oldalához $a$ additív inverzét adjuk, akkor a következőt kapjuk:
+    content: |
+      \underbrace{(a+(-a))}_{=0}+k=b+(-a)
+  - type: narrative
+    content: |
+      A baloldalon tehát $0+k$ szerepel, ami a neutrális elem [neutralis-elem]ja alaján $k$-val egyezik meg.
+  - type: formula
+    lead-in: |
+      A végeredmény tehát:
+    content: |
+      k=b-a
+  - type: narrative
+    content: |
+      Az összeadás megfordítása alatt tehát azt értjük, hogy az eredményhez hozzáadva az egyik bemenet additív
+      inverzét, visszakapjuk a másik bemenetet. Vegyük észre, hogy ez épp az általános iskolából ismert kivonással
+      analóg, amikoris a "van 3 forintunk, mennyi kell még ahhoz, hogy épp 5 legyen?" típusú kérdésekre kerestük a
+      választ. A 3. gyűrűaxióma teszi lehetővé, hogy bármilyen számok is szerepeljenek a kérdésben, azt mindig meg
+      tudjuk válaszolni. Nincs más dolgunk ugyanis, mint a második számhoz hozzáadni az első additív inverzét (vagy
+      más szavakkal: a második számból ***kivonni*** az elsőt), pont úgy, ahogyan a fenti képlet is leírja.
+      Természetesen ilyen módon adott esetben negatív számot is kaphatunk eredményül, amelyet a megfelelő módon
+      kell értelmeznünk. Például a "van 5 forintunk, mennyi kell még ahhoz, hogy épp 3 legyen?" kérdésre a fenti
+      képlet $-2$-t ad eredményül, amelyet úgy értelmezhetünk, hogy ***el kell költenünk*** 2 forintot ahhoz, hogy
+      épp 3 legyen.
+sections:
+  - 01-oszthatosag
+  - 02-egysegek
+  - 03-asszocialt-elemek
+  - 04-felbonthatatlanok-es-primek
+  - 05-a-szamelmelet-alaptetele
+
+epilogue:
+  - type: narrative
+    content: |
+      Ebben a részben tehát megismerkedtünk a legfontosabb számelméleti fogalommal, azaz az "oszthatósággal",
+      illetve annak alapvető tulajdonságaival. Ezután bevezettük az "egység", "asszociált", "felbonthatatlan" és
+      "prím" fogalmát, amelyek segítségével a számelmélet alaptételét precízen meg tudtuk fogalmazni. Végül
+      szükséges (de nem elégséges) feltételt mutattunk ahhoz, hogy egy integritástartományban teljesülhessen az
+      alaptétel.
+  - type: narrative
+    content: |
+      A következő részben ugyanerre egy elégséges (de nem szükséges) feltételt is mutatunk. Ennek keretében gyűrűk
+      egy speciális osztályával fogunk megismerkedni, amelyeket euklidészi gyűrűknek nevezünk, és amelyekbe &ndash;
+      nagy szerencsénkre &ndash; az egész számok $\Z$ gyűrűje is beletartozik. Itt fogjuk óriási hasznát venni az
+      előző részben erre a gyűrűre kiterjesztett $\leq$ szimbólummal jelölt rendezési relációnak.

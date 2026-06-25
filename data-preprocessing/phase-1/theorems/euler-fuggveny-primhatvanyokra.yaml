@@ -1,0 +1,20 @@
+type: theorem
+name: euler-fuggveny-primhatvanyokra
+proofs:
+  - euler-fuggveny-primhatvanyokra-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $p\gt 0$ valamilyen ***pozitív prímszám***, $k\gt 1$ pedig tetszőleges, $1$-nél nagyobb ***pozitív
+      egész***.
+  - type: formula
+    lead-in: |
+      Ekkor teljesül az alábbi:
+    content: |
+      \varphi(p^k)=p^k-p^{k-1}
+  - type: formula
+    lead-in: |
+      Speciálisan prímszámokra az Euler-féle $\varphi$-függvény értéke:
+    content: |
+      \varphi(p)=p-1

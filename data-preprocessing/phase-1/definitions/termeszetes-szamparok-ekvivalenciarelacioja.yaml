@@ -1,0 +1,14 @@
+type: definition
+name: termeszetes-szamparok-ekvivalenciarelacioja
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Az $\N \times \N$ halmaz elemei között vezessünk be egy $\sim$ szimbólummal jelölt relációt.
+  - type: ordered-list
+    lead-in: |
+      Tetszőleges $(a;b)$ és $(c;d)$ számpárok esetén $(a;b)\sim (c;d)$ ***akkor és csak akkor***, ha az alábbi két
+      feltétel közül ***legalább az egyik*** teljesül:
+    items:
+      - 'Létezik olyan $n$ természetes szám, hogy $a+n=c$ ***és*** $b+n=d$.'
+      - 'Létezik olyan $k$ természetes szám, hogy $c+k=a$ ***és*** $d+k=b$.'

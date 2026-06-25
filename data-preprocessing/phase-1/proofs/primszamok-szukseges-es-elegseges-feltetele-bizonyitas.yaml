@@ -1,0 +1,150 @@
+type: proof
+name: primszamok-szukseges-es-elegseges-feltetele-bizonyitas
+remarks: []
+references:
+  asszocialtsag-es-egysegek-kapcsolata:
+    target:
+      type: theorem
+      name: asszocialtsag-es-egysegek-kapcsolata
+  asszocialtsag-tulajdonsagai:
+    target:
+      type: theorem
+      name: asszocialtsag-tulajdonsagai
+  egesz-szamok-abszoluterteke:
+    target:
+      type: definition
+      name: egesz-szamok-abszoluterteke
+  egysegek-es-egysegelem-viszonya:
+    target:
+      type: theorem
+      name: egysegek-es-egysegelem-viszonya
+  egysegtenyezo-nullosztomentes-esetben:
+    target:
+      type: theorem
+      name: egysegtenyezo-nullosztomentes-esetben
+  felbonthatatlan-elem:
+    target:
+      type: definition
+      name: felbonthatatlan-elem
+  gyuruk-alapveto-tulajdonsagai:
+    target:
+      type: theorem
+      name: gyuruk-alapveto-tulajdonsagai
+  oszthatosag:
+    target:
+      type: definition
+      name: oszthatosag
+  oszthatosag-es-rendezesi-relacio-kapcsolata:
+    target:
+      type: theorem
+      name: oszthatosag-es-rendezesi-relacio-kapcsolata
+  oszthatosag-tulajdonsagai:
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+  pozitivitastartomany:
+    target:
+      type: definition
+      name: pozitivitastartomany
+content:
+  - type: narrative
+    content: |
+      ***Először nézzük azt az esetet, amikor $n$ pozitív, azaz $n\gt 0$.*** Ekkor ugye $|n|=n$ a
+      [egesz-szamok-abszoluterteke] alapján.
+  - type: narrative
+    content: |
+      Tegyük fel, hogy $n$-nek létezik $1$-nél nagyobb, de $|n|=n$-nél kisebb osztója, amit jelöljünk $k$-val.
+  - type: formula
+    lead-in: |
+      Azaz egyrészt:
+    content: |
+      1\lt k\lt n
+  - type: formula
+    lead-in: |
+      Másrészt:
+    content: |
+      k|n
+  - type: formula
+    lead-in: |
+      Ez az oszthatóság a [oszthatosag] alapján azt jelenti, hogy létezik olyan $l$ egész szám, hogy teljesül az
+      alábbi egyenlet:
+    content: |
+      n=k\cdot l
+  - type: narrative
+    content: |
+      A ***felbonthatatlanság*** [felbonthatatlan-elem]ja alapján azt kell bizonyítani, hogy ez a szorzat $n$-nek
+      egy ***nemtriviális felbontása***, azaz sem $k$, sem pedig $l$ nem egység, és nem is asszociáltja $n$-nek.
+  - type: narrative
+    content: |
+      Egyrészt a [egysegek-es-egysegelem-viszonya] alapján az egész számok $\Z$ gyűrűjében az $1$-en és a $-1$-en
+      kívül nincs más egység. Mivel $1$ pozitív, ezért a [pozitivitastartomany] utáni megjegyzés alapján $-1$
+      negatív. Emiatt $k$ biztosan nem lehet egység, hiszen ő maga pozitív, továbbá határozottan nagyobb $1$-nél.
+  - type: narrative
+    content: |
+      Másrészt a [asszocialtsag-es-egysegek-kapcsolata] alapján $n$-nek mindössze két asszociáltja van, méghozzá
+      önmaga, és az ellentettje, azaz $-n$. Mivel $n$ pozitív, ezért a [pozitivitastartomany] utáni megjegyzés
+      alapján $-n$ negatív. Emiatt viszont $k$ biztosan nem lehet $n$ asszociáltja sem, hiszen ő maga pozitív,
+      továbbá határozottan kisebb $n$-nél.
+  - type: narrative
+    content: |
+      A $k$ egész szám tehát egy olyan osztója $n$-nek, amely se nem egység, se nem asszociáltja $n$-nek. Most
+      ugyanezt kellene megmutatni a fenti szorzat másik tényezőjéről, azaz $l$-ről is. Ez viszont automatikusan
+      teljesül a [egysegtenyezo-nullosztomentes-esetben] miatt. Ha ugyanis $l$ egység lenne, akkor ez alapján $k$
+      szükségképpen $n$-nek asszociáltja lenne. Ha viszont $l$ asszociáltja lenne $n$-nek, akkor $k$ szükségképpen
+      egység lenne. Mindkét esetről láttuk, hogy nem ez a helyzet.
+  - type: narrative
+    content: |
+      Megtaláltuk tehát $n$-nek egy nemtriviális felbontását, így ő a [felbonthatatlan-elem] alapján valóban
+      összetett.
+  - type: narrative
+    content: |
+      ***Visszafelé:*** Tegyük most fel ***indirekt***, hogy $n$ összetett ugyan, ám mégsem létezik olyan osztója,
+      amely $1$-nél nagyobb, de $|n|=n$-nél kisebb. Mivel összetett, így a [felbonthatatlan-elem] alapján létezik
+      valamilyen nemtriviális felbontása.
+  - type: formula
+    lead-in: |
+      Például:
+    content: |
+      n=k\cdot l
+  - type: narrative
+    content: |
+      ***Egyrészt***, mivel $n\eq 0$, ezért a [oszthatosag-tulajdonsagai] 4. pontja alapján $k$ és $l$ egyike sem
+      lehet $0$. ***Másrészt***, mivel a fenti felbontás ugye nemtriviális, ezért egyikük sem lehet egység, továbbá
+      egyikük sem lehet asszociáltja $n$-nek. ***Harmadrészt***, indirekt feltevésünk miatt egyikük sem eshet az
+      $1$ és az $|n|=n$ közötti számtartományba. Végül ***negyedrészt*** a
+      [oszthatosag-es-rendezesi-relacio-kapcsolata] alapján egyikük sem lehet nagyobb $n$-nél. ***Összefoglalva***
+      tehát $k$ és $l$ mindketten negatívak, határozottan kisebbek $-1$-nél, továbbá $-n$-től különbözőek.
+  - type: figure
+    lead-in: |
+      Ezt mutatja az alábbi ábra:
+    src: osztok_elhelyezkedese_2.jpg
+    alt: Osztók elhelyezkedése
+    caption: Osztók elhelyezkedése
+  - type: formula
+    lead-in: |
+      Az $n=k\cdot l$ egyenlet miatt azonban a [gyuruk-alapveto-tulajdonsagai] 4. pontja alapján teljesül az alábbi
+      egyenlet is:
+    content: |
+      n=(-k)\cdot (-l)
+  - type: narrative
+    content: |
+      A $k$ és $l$ egész számok ellentettjei tehát szintén osztói $n$-nek, mindketten pozitívak, határozottan
+      nagyobbak $1$-nél, továbbá $n$-től különbözőek.
+  - type: figure
+    lead-in: |
+      Ezt az alábbi ábra mutatja:
+    src: osztok_elhelyezkedese_1.jpg
+    alt: Osztók ellentettjeinek elhelyezkedése
+    caption: Osztók ellentettjeinek elhelyezkedése
+  - type: narrative
+    content: |
+      A [oszthatosag-es-rendezesi-relacio-kapcsolata] miatt az $n$-nél nagyobb számtartományt ismételten
+      kizárhatjuk. Így végülis indirekt feltételezésünkkel ellentétben mégiscsak találtunk két olyan osztót &ndash;
+      nevezetesen a $-k$ és $-l$ egész számokat &ndash;, amelyek $1$-nél nagyobbak, de $|n|=n$-nél kisebbek.
+  - type: narrative
+    content: |
+      ***Végezetül nézzük most azt az esetet, amikor $n$ negatív, azaz $n\lt 0$.*** Ekkor egyrészt a
+      [pozitivitastartomany] utáni megjegyzés alapján $-n$ pozitív. Másrészt pedig a [asszocialtsag-tulajdonsagai]
+      1. pontja alapján ő $n$-nek asszociáltja, azaz pontosan ugyanazok az osztói, mint $n$-nek. Így $n$ akkor és
+      csak akkor prím, ha $-n$ is, amelyre viszont pozitivitása miatt szóról szóra alkalmazható a fenti
+      gondolatmenet.

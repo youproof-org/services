@@ -1,0 +1,87 @@
+type: section
+name: 03-a-peano-fele-axiomarendszer
+title: A Peano-féle axiómarendszer
+
+body:
+  - type: narrative
+    content: |
+      Vélhetően mindenkinek van valamilyen intuitív elképzelése a számokról, azon belül is az úgynevezett
+      ***természetes számokról***. Ezek a pozitív egész számok és a 0. Megjegyezzük, hogy évszázadok óta megy a
+      hitvita arról, hogy a 0-t is természetes számnak kell-e tekinteni vagy nem. Mi ebben a vitában az igenlők
+      pártjára helyezkedünk &ndash; azaz természetes számnak tekintjük a 0-t &ndash;, ennek azonban pusztán
+      praktikussági okai vannak. Sokak fejében él egy kép valamiféle egyik irányban végtelen &ndash; a negatív
+      számokkal egyelőre nem foglalkozunk &ndash; számegyenesről, amely a 0-val kezdődik, és a többi természetes
+      szám ettől jobbra helyezkedik el szép sorban, egymástól egyenlő távolságokra. Talán még összeadni és szorozni
+      is tudunk ezen a számegyenesen egy valamely korábbi részben leírtakhoz hasonló módon.
+  - type: narrative
+    content: |
+      Azonban ne feledjük: egy matematikai objektum tulajdonságait csak és kizárólag a rá kimondott axiómák
+      határozzák meg, nem holmi intuitív kép, ami a fejünkben van. Mivel most a természetes számokra vonatkozó
+      axiómákat fogjuk ismertetni, ezért átmenetileg töröljünk ki mindent a fejünkből, amit ezekről az
+      objektumokról eddig gondoltunk. Tekintsük őket pusztán "valamiknek", amelyekről ezen a ponton csak annyit
+      tudunk, hogy egy valamilyen ***halmaz*** ("összesség" vagy "sokaság") elemei. Ezt a ***természetes számok
+      halmazának*** nevezzük, és $\N$-nel jelöljük. Az, hogy pontosan miként lehet ezeket a "valamiket" elképzelni,
+      igazából ezen a ponton nem is fontos. Minket pusztán a tulajdonságaik érdekelnek, ezeket pedig kizárólag a
+      rájuk kimondott axiómák fogják meghatározni. És mint azt hamarosan látni fogjuk, ezek pontosan
+      összeegyeztethetők lesznek azzal az intuitív képpel, amit az imént átmenetileg kitöröltünk a fejünkből
+      (ugye?!).
+  - type: narrative
+    content: |
+      Az alábbi definíció ezeket az axiómákat ismerteti szigorúan matematikailag megfogalmazva, az ehhez kapcsolódó
+      intuitív magyarázat a definíció után következik. A definíciók végét a &#x2663; karakterrel fogjuk jelölni
+      mostantól.
+  - type: embed
+    target:
+      type: definition
+      name: peano-axiomarendszer
+  - type: narrative
+    content: |
+      Most vizsgáljuk meg ezeket az axiómákat egyesével.
+  - type: narrative
+    content: |
+      Az első axióma tulajdonképpen azt követeli meg, hogy minden $x$ természetes számhoz létezzen egy olyan
+      természetes szám is, amely $x$ ***"rákövetkezője"***. Ez azt jelenti, hogy bármelyik természetes számból
+      indulunk ki, a "rákövetkezésen" keresztül mindig tovább tudunk lépni egy másik természetes számhoz, azaz
+      utunk soha nem szakad meg.
+  - type: narrative
+    content: |
+      A második axióma lényegében azt mondja ki, hogy egy adott természetes számhoz a "rákövetkezésen" keresztül
+      nem érkezhetünk meg két különböző irányból, bárhonnan is indulunk.
+  - type: figure
+    lead-in: |
+      Ez tehát megakadályozza egy ehhez hasonló "hurok" kialakulását:
+    src: 04-hurok-a-szamegyenesen.jpg
+    alt: Hurok a számegyenesen
+    caption: Hurok a számegyenesen
+  - type: narrative
+    content: |
+      A harmadik axióma kimondja egy és csakis egy olyan speciális természetes szám létezését, amely ***nem
+      rákövetkezője semmilyen más természetes számnak sem***. Ezzel lényegében két nagyon fontos dolgot kapunk.
+      Egyrészt megtudjuk, hogy a "számegyenes" valóban egy egyik irányban végtelen egyenes, amely elkezdődik
+      valahol. Másrészt pedig tulajdonképpen ez az axióma biztosítja, hogy természetes számok egyáltalán léteznek.
+      A másik három axióma ugyanis a szigorúan vett matematikai logika szerint abban az esetben is teljesülne, ha
+      az $\N$ halmaz történetesen üres lenne. Például furcsamód a "minden ismert egyszarvú fehér" állítás igaz. Az
+      persze más kérdés, hogy a "minden" jelen esetben épp 0 darabot jelent, de ettől még az állítás igaz. Akárcsak
+      az az állítás, miszerint "minden ismert egyszarvú fekete". Általánosságban is elmondható, hogy egy üres
+      halmaz elemeire vonatkozó bármilyen állítás szintén igaz. Furcsa dolog ez a logika, nemde?
+  - type: narrative
+    content: |
+      Végül a negyedik axióma azt biztosítja, hogy a 0-ból kiindulva a "rákövetkezésen" keresztül minden
+      természetes számhoz eljutunk.
+  - type: figure
+    lead-in: |
+      Azaz nem léteznek a számegyenestől elszigetelt természetes számok:
+    src: 05-elszigetelt-szamok.jpg
+    alt: Elszigetelt számok
+    caption: Elszigetelt számok
+  - type: narrative
+    content: |
+      Ezen kívül ez az axióma teszi lehetővé az úgynevezett ***teljes indukciós bizonyításokat***. Erre hamarosan
+      néhány remek példát fogunk látni. Lényegét tekintve arról van szó, hogy ha egy állítás igaz 0-ra &ndash;
+      amely alapján őt az axiómában említett $P$ halmazba helyeztük &ndash;, továbbá az állítás igazsága a
+      "rákövetkezésen" keresztül öröklődik, akkor igaz lesz minden természetes számra.
+  - type: narrative
+    content: |
+      Első ránézésre ez egy igencsak szegényesre sikerült axiómarendszer. Azonban lényegében ebből a 4 axiómából
+      következik minden, amit a természetes számokról tudunk. Most vizsgáljuk meg, hogy mennyire sokmindent vagyunk
+      képesek felépíteni ebből a mindössze 4 darab axiómából.

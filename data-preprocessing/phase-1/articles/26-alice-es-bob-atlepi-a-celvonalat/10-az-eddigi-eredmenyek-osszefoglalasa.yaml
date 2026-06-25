@@ -1,0 +1,26 @@
+type: section
+name: 10-az-eddigi-eredmenyek-osszefoglalasa
+title: Az eddigi eredmények összefoglalása
+
+references:
+  miller-rabin-tanuk-szama:
+    target:
+      type: theorem
+      name: miller-rabin-tanuk-szama
+
+body:
+  - type: narrative
+    content: |
+      Így mostmár minden rendelkezésünkre áll a Miller-Rabin-tanúk számára vonatkozó, a
+      [miller-rabin-tanuk-szama]ben igazolt eredeti becslésünk javításához. Foglaljuk is össze ezeket az
+      eredményeket. Megjegyezzük, hogy az alábbi becsléshez némileg szűkíteni kell a kört a $9$-nél nagyobb
+      páratlan összetett számokra, ám ez nyilvánvalóan nem jelent gyakorlati megszorítást, tekintve, hogy
+      Miller-Rabin-prímtesztet ennél jóval nagyobb számtartományban használják.
+  - type: embed
+    target:
+      type: theorem
+      name: miller-rabin-tanuk-szama-javitas
+  - type: embed
+    target:
+      type: proof
+      name: miller-rabin-tanuk-szama-javitas-bizonyitas

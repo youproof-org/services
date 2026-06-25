@@ -1,0 +1,112 @@
+type: proof
+name: osszeg-es-szorzatpolinom-foka-bizonyitas
+remarks: []
+references:
+  egesz-szamok-rendezese:
+    target:
+      type: definition
+      name: egesz-szamok-rendezese
+  polinomok:
+    target:
+      type: definition
+      name: polinomok
+content:
+  - type: formula
+    lead-in: |
+      Legyen $0_R$ az $R$ gyűrű nulleleme, továbbá vezessük be az alábbi jelöléseket:
+    content: |
+      \begin{aligned}\deg(f)&=n \\ \deg(g)&=m\end{aligned}
+  - type: formula
+    lead-in: |
+      Ennek megfelelően $f$ és $g$ az alábbi sorozatokkal reprezentálhatók:
+    content: |
+      \begin{aligned}f&=(a_0,a_1,\ldots,\overbrace{a_n}^{\ eq 0_R}, 0_R, 0_R, \ldots) \\
+      g&=(b_0,b_1,\ldots,\underbrace{b_m}_{\ eq 0_R}, 0_R, 0_R, \ldots)\end{aligned}
+  - type: narrative
+    content: |
+      ***Az 1. állítás:*** Mivel $n=\deg(f)\gt \deg(g)=m$, vagyis az $n$ index nagyobb $g$ fokánál, emiatt
+      $b_n=0_R$, tehát az összegpolinom $n$-edik tagja $a_n+b_n=a_n$. Az $n$ index viszont megegyezik $f$ fokával,
+      így ez az $n$-edik tag biztosan nem $0_R$. Az összegpolinom további tagjai viszont már mind nullák, mivel az
+      $n$-nél nagyobb indexek nagyobbak $f$ és $g$ fokánál is. Ez a [polinomok] alapján azt jelenti, hogy
+      $\deg(f+g)=n=\deg(f)$.
+  - type: narrative
+    content: |
+      ***A 2. állítás:*** Az továbbra is igaz, hogy az $n$-nél nagyobb indexek nagyobbak $f$ és $g$ fokánál is, így
+      az ilyen indexű tagok biztosan nullák mindkét polinomban, ami természetesen az összegükre is igaz, azaz
+      $\deg(f+g)$ legfeljebb akkora lehet, mint $f$ (vagy $g$) foka. Ennél többet viszont nem is mondhatunk, mivel
+      attól még, hogy sem $a_n$ sem pedig $b_n$ nemnulla, az összegük még lehet az &ndash; történetesen ha épp
+      egymás ellentettjei az $R$ gyűrűben.
+  - type: formula
+    lead-in: |
+      ***A 3. állítás:*** Az $f\cdot g$ szorzatpolinom együtthatóira vezessük be az alábbi jelölést:
+    content: |
+      f\cdot g=(c_0,c_1,c_2,\ldots)
+  - type: narrative
+    content: |
+      Azt kell bizonyítani, hogy ennek a szorzatpolinomnak a $\deg(f)+\deg(g)=n+m$-nél nagyobb indexű tagjai mind
+      nullák (hiszen ekkor lesz a szorzatpolinom foka ***legfeljebb*** $n+m$). Legyen ezért $k$ egy tetszőleges
+      ilyen index (azaz $k\geq n+m+1$), és mutassuk meg, hogy ekkor $c_k=0_R$. A [polinomok] alapján a $c_k$
+      együttható olyan $a_ib_j$ szorzatok összegéből áll, ahol $i+j=k$.
+  - type: formula
+    lead-in: |
+      Igaz tehát a következő:
+    content: |
+      \underbrace{i+j}_{=k}\geq n+m+1
+  - type: narrative
+    content: |
+      ***Ha $i\leq n$, akkor*** ez a [egesz-szamok-rendezese] alapján azt jelenti, hogy létezik olyan
+      ***nemnegatív*** $l\geq 0$ egész szám, hogy $i+l=n$.
+  - type: formula
+    lead-in: |
+      Ezt behelyettesítve a fenti egyenlőtlenségbe az alábbit kapjuk:
+    content: |
+      i+j\geq \underbrace{i+l}_{=n}+m+1
+  - type: formula
+    lead-in: |
+      Mindkét oldalból $i$-t levonhatunk:
+    content: |
+      j\geq l+m+1
+  - type: narrative
+    content: |
+      Mivel $l+1$ pozitív &ndash; hiszen $l$ legalább $0$ &ndash;, ezért ez az egyenlőtlenség ugyancsak a
+      [egesz-szamok-rendezese] alapján azt jelenti, hogy $j\gt m$. Ám ekkor az $a_ib_j$ szorzatban a $b_j$ tényező
+      nulla, mivel $m$ a $g$ polinom foka. Ha viszont $i\gt n$, akkor meg az $a_i$ tényező nulla, mivel $n$ viszont
+      az $f$ polinom foka. Azt kaptuk tehát, hogy a szorzatpolinom $c_k$ tagját előállító képletben minden tag
+      nulla, vagyis maga $c_k$ is.
+  - type: narrative
+    content: |
+      ***Végül a 4. és 5. állítás:*** Az előző ponthoz hasonló gondolatmenetet fogunk követni. Azt a ***3.
+      állításban*** már megmutattuk, hogy a szorzatpolinomban az $n+m$-nél nagyobb indexű tagok mind nullák. Legyen
+      most $k=n+m$, és mutassuk meg, hogy ekkor viszont $c_k\eq 0_R$. A $c_k$ együttható olyan $a_ib_j$ szorzatok
+      összegéből áll, ahol $i+j=k$.
+  - type: formula
+    lead-in: |
+      Igaz tehát a következő:
+    content: |
+      \underbrace{i+j}_{=k}=n+m
+  - type: narrative
+    content: |
+      ***Ha $i\lt n$, akkor*** ez a [egesz-szamok-rendezese] alapján azt jelenti, hogy létezik olyan ***pozitív***
+      $l\gt 0$ egész szám, hogy $i+l=n$.
+  - type: formula
+    lead-in: |
+      Ezt behelyettesítve a fenti egyenletbe az alábbit kapjuk:
+    content: |
+      i+j=\underbrace{i+l}_{=n}+m
+  - type: formula
+    lead-in: |
+      Mindkét oldalból $i$-t levonhatunk:
+    content: |
+      j=l+m
+  - type: narrative
+    content: |
+      Létezik tehát olyan ***pozitív*** egész szám, amelyet $m$-hez adva $j$-t kapunk (nevezetesen $l$), ami azt
+      jelenti, hogy $j\gt m$. Ám ekkor az $a_ib_j$ szorzatban a $b_j$ tényező nulla, mivel $m$ a $g$ polinom foka.
+      Ha viszont $i\gt n$, akkor meg az $a_i$ tényező nulla, mivel $n$ viszont az $f$ polinom foka.
+  - type: narrative
+    content: |
+      Egyedül $i=n$ esetben lesz nemnulla az $a_ib_j$ szorzat, hiszen ekkor $j=m$, és sem $a_n$, sem pedig $b_m$
+      nem lehet nulla, mivel az $f$ polinom foka $n$, a $g$ polinom foka pedig $m$. De a tételben szereplő
+      feltételek esetén az ő szorzatuk sem lehet nulla: ha $R$ ***egységelemes*** és $a_n$ vagy $b_m$ az
+      egységelem, akkor azért, ha pedig $R$ ***nullosztómentes***, akkor pedig azért. Vagyis $c_k=a_nb_m\eq 0_R$.
+      Ez viszont azt jelenti, hogy az $f\cdot g$ szorzatpolinom foka épp $k=n+m=\deg(f)+\deg(g)$.

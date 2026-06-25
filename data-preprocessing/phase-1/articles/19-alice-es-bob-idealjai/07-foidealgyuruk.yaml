@@ -1,0 +1,150 @@
+type: section
+name: 07-foidealgyuruk
+title: Főideálgyűrűk
+
+references:
+  halmazrendszer-minimuma-es-maximuma:
+    target:
+      type: definition
+      name: halmazrendszer-minimuma-es-maximuma
+  idealok-metszete-ideal:
+    target:
+      type: theorem
+      name: idealok-metszete-ideal
+  kituntetett-kozos-oszto:
+    target:
+      type: definition
+      name: kituntetett-kozos-oszto
+  kituntetett-kozos-oszto-letezesenek-kovetkezmenye:
+    target:
+      type: theorem
+      name: kituntetett-kozos-oszto-letezesenek-kovetkezmenye
+  szamelmelet-alaptetelenek-szukseges-es-elegseges-feltetele:
+    target:
+      type: theorem
+      name: szamelmelet-alaptetelenek-szukseges-es-elegseges-feltetele
+
+body:
+  - type: narrative
+    content: |
+      Végül megismerkedünk egy számunkra nagyon fontos gyűrűosztállyal, amelybe &ndash; mint látni fogjuk &ndash;
+      az egész számok $\Z$ gyűrűje is beletartozik. Ezeknek a speciális gyűrűknek fontos tulajdonságaik vannak a
+      következő részekben tárgyalt kriptográfiai eljárások szempontjából. Előszöris nézzük meg, mik ezek a
+      speciális gyűrűk.
+  - type: embed
+    target:
+      type: definition
+      name: foidealgyuruk
+  - type: narrative
+    content: |
+      Egy főideálgyűrűben tehát minden ideál valamelyik gyűrűelemből, illetve annak többszöröseiből áll. Minket
+      elsősorban az egész számok $\Z$ gyűrűje fog érdekelni a további részekben. Minden bizonnyal nem túl meglepő,
+      hogy $\Z$ is egy főideálgyűrű. A most következő tételben egy ennél erősebb állítást igazolunk.
+  - type: embed
+    target:
+      type: theorem
+      name: euklideszi-gyuru-foidealgyuru
+  - type: embed
+    target:
+      type: proof
+      name: euklideszi-gyuru-foidealgyuru-bizonyitas
+  - type: narrative
+    content: |
+      Felhívnánk a figyelmet arra, hogy az iménti ***tétel megfordítása nem igaz***. ***Létezik olyan főideálgyűrű,
+      amely nem euklidészi***. Ilyenek bizonyos úgynevezett algebrai egész számokból alkotott gyűrűk, ám ennek a
+      témakörnek a részleteire a szükséges algebrai ismeretek hiányában egyelőre nem tudunk bővebben kitérni.
+  - type: narrative
+    content: |
+      Az euklidészi gyűrűkről szóló 17. részben már igazoltuk, hogy teljesül bennük a ***számelmélet alaptétele***.
+      Most ugyanezt fogjuk igazolni az ennél általánosabb főideálgyűrűkre is, azaz megmutatjuk, hogy minden
+      főideálgyűrű teljesíti az előző szakaszban bizonyított
+      [szamelmelet-alaptetelenek-szukseges-es-elegseges-feltetele] szerinti feltételeket.
+  - type: narrative
+    content: |
+      Az ***1. feltétel*** ugye azt követeli meg, hogy a főideálokból álló halmazrendszer bármely nemüres
+      részhalmazában legyen maximális elem. Ehhez először igazolni fogunk egy segédtételt. A
+      [idealok-metszete-ideal]ben már megmutattuk, hogy ideálok metszete is ideál. De vajon mi a helyzet az olyan
+      halmazokkal, amelyek ideálok ***uniójaként*** állnak elő? Az ilyen halmazok általában nem ideálok. Tekintsük
+      például az egész számok $\Z$ gyűrűjében lévő $(2)$ és $(3)$ főideálokat. Ezek ***uniója*** azokból a
+      számokból áll, amelyek $2$-vel ***VAGY*** $3$-mal oszthatók.
+  - type: narrative
+    content: |
+      Ez a halmaz könnyen láthatóan nem ideál, hiszen még csak nem is részgyűrű, mivel nem zárt az összeadásra.
+      Például a $2$ és a $3$ benne van ebben az unióban, de az összegük nem, mivel az $5$ nem többszöröse sem
+      $2$-nek, sem pedig $3$-nak. Az alábbi segédtétel egy olyan speciális esetről szól, amikor bizonyos ideálok
+      uniója mégis ideál. Felhívjuk a figyelmet, hogy a tétel nem kizárólag integritástartományokra, hanem
+      ***bármilyen gyűrűre*** alkalmazható.
+  - type: embed
+    target:
+      type: theorem
+      name: idealok-unioja-ideal
+  - type: narrative
+    content: |
+      Például az imént említett $(2)$ és $(3)$ főideálokra nem alkalmazható a tétel, mert sem $(2)\sube (3)$, sem
+      pedig $(3)\sube (2)$ nem teljesül. Ezzel szemben a $(8)\sube (4)\sube (2)$ főideálokból álló sorozatra
+      teljesül a feltétel, így a tétel alapján a $(8)\cup (4)\cup (2)$ unióhalmaz is ideál $\Z$-ben. Ez végülis
+      nyilvánvaló, hiszen a $(8)$ és a $(4)$ főideál is részhalmaza a $(2)$ főideálnak, így ezek uniója valójában
+      maga a $(2)$ főideál.
+  - type: narrative
+    content: |
+      Ami már kevésbé nyilvánvaló, hogy a tétel végtelen sok ideálból álló halmazrendszerekre is működik. Sőt, még
+      akkor is, ha ezek között esetleg nincs is a [halmazrendszer-minimuma-es-maximuma] szerinti értelemben vett
+      legbővebb ideál. Ilyen lehet például egy ideálokból álló végtelen $I_1\sube I_2\sube I_3\sube \ldots$
+      sorozat. Nézzük meg, hogy miért.
+  - type: embed
+    target:
+      type: proof
+      name: idealok-unioja-ideal-bizonyitas
+  - type: narrative
+    content: |
+      Most rátérünk annak igazolására, hogy minden főideálgyűrű teljesíti a
+      [szamelmelet-alaptetelenek-szukseges-es-elegseges-feltetele] szerinti ***1. feltételt***. Az alábbi tétel
+      valójában egy ennél erősebb állítást mond ki, és az előző tételhez hasonlóan nem csak
+      integritástartományokra, hanem ***bármilyen gyűrűre*** működik.
+  - type: embed
+    target:
+      type: theorem
+      name: vegesen-generalt-idealok-maximumfeltetele
+  - type: narrative
+    content: |
+      Eszerint tehát ahhoz, hogy egy gyűrű főideáljaira teljesüljön a
+      [szamelmelet-alaptetelenek-szukseges-es-elegseges-feltetele] szerinti ***1. feltétel***, elegendő, ha az
+      ideálok végesen generáltak. Ez speciálisan főideálgyűrűkre nyilván teljesül, hiszen az ezekben lévő ideálok
+      szintén végesen generáltak &ndash; konkrétan egyetlen elem által.
+  - type: embed
+    target:
+      type: proof
+      name: vegesen-generalt-idealok-maximumfeltetele-bizonyitas
+  - type: narrative
+    content: |
+      Ahhoz, hogy főideálgyűrűkre is igazoljuk az alaptétel teljesülését, hátravan még a
+      [szamelmelet-alaptetelenek-szukseges-es-elegseges-feltetele] szerinti ***2. feltétel***. Ez azt követeli meg,
+      hogy ***minden felbonthatatlan elem prímtulajdonságú*** legyen. Szerencsére ehhez a
+      [kituntetett-kozos-oszto-letezesenek-kovetkezmenye] alapján elegendő azt igazolni, hogy egy főideálgyűrűben
+      bármely két elemnek létezik kitüntetett közös osztója ([kituntetett-kozos-oszto]).
+  - type: narrative
+    content: |
+      Nézzük hát meg, hogy milyen összefüggés van a kitüntetett közös osztó, és a gyűrű ideáljai között.
+  - type: embed
+    target:
+      type: theorem
+      name: idealok-es-a-kituntetett-kozos-oszto
+  - type: embed
+    target:
+      type: remark
+      name: idealok-es-a-kituntetett-kozos-oszto-megjegyzes
+  - type: embed
+    target:
+      type: proof
+      name: idealok-es-a-kituntetett-kozos-oszto-bizonyitas
+  - type: narrative
+    content: |
+      Mostmár könnyedén igazolhatjuk az alaptétel teljesülését minden főideálgyűrűre.
+  - type: embed
+    target:
+      type: theorem
+      name: foidealgyurukben-teljesul-a-szamelmelet-alaptetele
+  - type: embed
+    target:
+      type: proof
+      name: foidealgyurukben-teljesul-a-szamelmelet-alaptetele-bizonyitas

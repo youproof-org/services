@@ -1,0 +1,9 @@
+type: theorem
+name: carmichael-szamok-tulajdonsagai
+proofs:
+  - carmichael-szamok-tulajdonsagai-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Minden Carmichael-szám páratlan és legalább 3 prímtényezője van.

@@ -1,0 +1,20 @@
+type: definition
+name: peano-axiomarendszer
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen adott egy $\N$-nel jelölt halmaz, valamint egy $s:\N \to \N$ függvény.
+  - type: ordered-list
+    lead-in: |
+      Az $\N$ halmaz elemeit ***természetes számoknak*** nevezzük, amennyiben teljesülnek a következő axiómák:
+    items:
+      - 'Az $s$ függvény az $\N$ halmaz minden $x$ eleméhez rendeljen hozzá valamilyen szintén $\N$-beli elemet,
+        azaz létezzen az $s(x)$ elem. Ezt az elemet az $x$ ***rákövetkezőjének*** nevezzük.'
+      - 'Ha $x$ és $y$ az $\N$ halmaz két tetszőleges eleme, és $s(x)=s(y)$, akkor $x=y$. Ilyenkor azt mondjuk,
+        hogy a két elem ***egyenlő ***egymással.'
+      - 'Az $\N$ halmazban létezik pontosan egy olyan 0-val jelölt elem, amelyhez nem található olyan $x$ elem,
+        amelyre teljesül, hogy $s(x)=0$. Ezt az elemet ***nullának*** nevezzük.'
+      - 'Tegyük fel, hogy a $P$ halmaz az $\N$ halmaznak egy valamilyen részhalmaza. Ha a 0 a $P$ halmazban van,
+        valamint ha abból, hogy egy tetszőleges $x$ elem a $P$ halmazban van következik, hogy $s(x)$ is a $P$
+        halmazban van, akkor $\N$ összes eleme a $P$ halmazban van &ndash; azaz $P=\N$.'

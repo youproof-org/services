@@ -1,0 +1,9 @@
+type: theorem
+name: peano-szamossag
+proofs:
+  - peano-szamossag-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Végtelen sok természetes szám létezik.

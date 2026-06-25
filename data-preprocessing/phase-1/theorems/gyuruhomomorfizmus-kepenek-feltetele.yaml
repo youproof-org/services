@@ -1,0 +1,10 @@
+type: theorem
+name: gyuruhomomorfizmus-kepenek-feltetele
+proofs:
+  - gyuruhomomorfizmus-kepenek-feltetele-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen adva egy $S$ gyűrű, és annak egy $T$ részhalmaza. A $T$ részhalmaz ***akkor és csak akkor*** képe egy
+      $S$-be mutató gyűrűhomomorfizmusnak, ha részgyűrű $S$-ben.

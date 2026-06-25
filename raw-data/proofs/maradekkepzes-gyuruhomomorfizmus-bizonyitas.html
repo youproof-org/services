@@ -1,0 +1,91 @@
+<!-- wp:paragraph -->
+<p>Azt kell megmutatni, hogy a [latex]\bmod_m[/latex] függvény tartja az eredeti [latex]\Z[/latex] gyűrű mindkét műveletét. Nézzük először az <strong><em>összeadást</em></strong>. Itt az alábbi összefüggést kell igazolni:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\bmod_m(a+b)=\bmod_m(a)\oplus \bmod_m(b)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Fejtsük ki mindkét oldalt a [yp_element slug="modularis-osszeadas-es-szorzas" type="link" /] alapján. A bal- és jobboldalon képződő maradékokat jelöljük [latex]r[/latex]-rel, [latex]q_1[/latex]-gyel, [latex]q_2[/latex]-vel és [latex]q_3[/latex]-mal:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}&amp;\bmod_m(a+b)=r \\ &amp;\underbrace{\bmod_m(a)}_{=q_1}\oplus \underbrace{\bmod_m(b)}_{=q_2}=\bmod_m(q_1+q_2)=q_3\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt kell megmutatnunk, hogy [latex]r=q_3[/latex], azaz mindegy, hogy melyik gyűrűben végezzük el az összeadást, a végeredmény ugyanaz lesz. A [latex]\bmod_m[/latex] függvény szerinti maradékos osztásokat elvégezve négy egyenletet írhatunk fel az [latex]r[/latex], [latex]q_1[/latex], [latex]q_2[/latex] és [latex]q_3[/latex] maradékokra valamilyen [latex]k[/latex], [latex]n_1[/latex], [latex]n_2[/latex] és [latex]n_3[/latex] hányadosokkal:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a+b&amp;=km+r \\ a&amp;=n_1m+q_1  \\ b&amp;=n_2m+q_2 \\ q_1+q_2&amp;=n_3m+q_3\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az első egyenletből kifejezhetjük [latex]r[/latex]-et, amely a [latex]\bmod_m(a+b)[/latex] maradékképzés eredménye:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]r=a+b-km[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A második és harmadik egyenletből kifejezhetjük [latex]q_1[/latex]-et és [latex]q_2[/latex]-t, amely a [latex]\bmod_m(a)\oplus \bmod_m(b)[/latex] moduláris összeg két tagját fogja adni:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}q_1&amp;=a-n_1m  \\ q_2&amp;=b-n_2m\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A kapott [latex]q_1[/latex] és [latex]q_2[/latex] maradékokat a harmadik egyenletbe behelyettesítve ezt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{a-n_1m}_{=q_1}+\underbrace{b-n_2m}_{=q_2}=n_3m+q_3[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezt átrendezve megkapjuk [latex]q_3[/latex]-at:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]q_3=\underbrace{a-n_1m}_{=q_1}+\underbrace{b-n_2m}_{=q_2}-n_3m[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt kell tehát igazolnunk, hogy [latex]r[/latex] és [latex]q_3[/latex] valójában megegyeznek. Ehhez írjuk fel kettejük különbségét:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}r-q_3&amp;=\overbrace{\bcancel{a}+\bcancel{b}-km}^{r}\overbrace{-\bcancel{a}+n_1m-\bcancel{b}+n_2m+n_3m}^{-q_3}=\\&amp;=(n_1+n_2+n_3-k)\cdot m\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt kaptuk tehát, hogy teljesül az [latex]m|r-q_3[/latex] oszthatóság. Mivel [latex]r[/latex] és [latex]q_3[/latex] nemnegatív maradékok, így alkalmazható rájuk a [yp_element slug="maradekok-kulonbsege-oszthato-a-modulussal" type="link" /], amiből [latex]r=q_3[/latex] következik. A [latex]\bmod_m[/latex] függvény tehát valóban <strong><em>tartja az összeadást</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most a <strong><em>szorzás tartását</em></strong> ellenőrizzük nagyjából ugyanezzel a módszerrel. Azt kell megmutatni, hogy [latex]\bmod_m(a\cdot b)=\bmod_m(a)\odot \bmod_m(b)[/latex]. Ismét fejtsük ki mindkét oldalt a kapott maradékokat [latex]r[/latex]-rel, [latex]q_1[/latex]-gyel, [latex]q_2[/latex]-vel és [latex]q_3[/latex]-mal jelölve:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}&amp;\bmod_m(a\cdot b)=r \\ &amp;\underbrace{\bmod_m(a)}_{=q_1}\odot \underbrace{\bmod_m(b)}_{=q_2}=\bmod_m(q_1\cdot q_2)=q_3\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [latex]\bmod_m[/latex] függvény szerinti maradékos osztásokat elvégezve ismét négy egyenletet írhatunk fel az [latex]r[/latex], [latex]q_1[/latex], [latex]q_2[/latex] és [latex]q_3[/latex] maradékokra valamilyen [latex]k[/latex], [latex]n_1[/latex], [latex]n_2[/latex] és [latex]n_3[/latex] hányadosokkal:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a\cdot b&amp;=km+r \\ a&amp;=n_1m+q_1  \\ b&amp;=n_2m+q_2 \\ q_1\cdot q_2&amp;=n_3m+q_3\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az összeadás tartásánál látott módon ismét kifejezhetjük az [latex]r-q_3[/latex] különbséget – a részleteket az Olvasóra bízzuk –, amelyből megint azt fogjuk kapni, hogy teljesül az [latex]m|r-q_3[/latex] oszthatóság. Ebből viszont ugyancsak a [yp_element slug="maradekok-kulonbsege-oszthato-a-modulussal" type="link" /] miatt [latex]r=q_3[/latex] következik, azaz a [latex]\bmod_m[/latex] függvény a <strong><em>szorzást is tartja</em></strong>, és így valóban egy <strong><em>gyűrűhomomorfizmus</em></strong> [latex]\Z[/latex] és [latex]\Z_m[/latex] között.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Azt kell még igazolni, hogy <strong><em>szürjektív</em></strong>, ami itt azt jelenti, hogy minden [latex]\Z_m[/latex]-beli elemhez létezik <strong><em>legalább egy</em></strong> olyan egész szám, amelynek épp ő a modulo [latex]m[/latex] maradéka. Ez viszont nyilvánvalóan következik a [yp_element slug="modularis-osszeadas-es-szorzas" type="link" /] utáni megjegyzés 5. pontjából. Eszerint ugyanis a [latex]0[/latex], [latex]1[/latex], [latex]2[/latex], ..., [latex]|m|-1[/latex] egész számokat a [latex]\bmod_m[/latex] függvény önmagukra képezi le, amelyek viszont pontosan a [latex]\Z_m[/latex] elemei.</p>
+<!-- /wp:paragraph -->

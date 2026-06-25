@@ -1,0 +1,8 @@
+type: definition
+name: ketvaltozos-muvelet
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Egy valamilyen $H$ halmazon értelmezett ***kétváltozós művelet*** egy olyan függvény, amely $H$-beli
+      elemekből alkotott párokhoz szintén a $H$ halmaz elemeit rendeli hozzá.

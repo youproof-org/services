@@ -1,0 +1,26 @@
+type: remark
+name: egesz-szamok-kozotti-kongruencia-megjegyzes
+references:
+  ideal-szerinti-kongruencia:
+    target:
+      type: definition
+      name: ideal-szerinti-kongruencia
+  modularis-osszeadas-es-szorzas:
+    target:
+      type: definition
+      name: modularis-osszeadas-es-szorzas
+content:
+  - type: narrative
+    content: |
+      Az $a\equiv b\pmod m$ jelölés némiképp eltér az ideál szerinti kongruencia [ideal-szerinti-kongruencia]jában
+      szereplő jelöléstől. Történelmileg az előbbi volt hamarabb, és ekkor még kizárólag az osztási maradékokkal
+      kapcsolatos jelentést értették alatta, amelyet épp a tétel 1. állítása fogalmaz meg. Ennek bizonyításában a
+      $\bmod_m$ gyűrűhomomorfizmus szerinti kongruenciához jutottunk, amelynek $a\equiv b\pod{\bmod_m}$ jelölése
+      nagyban hasonlít a gauss-féle $a\equiv b\pmod m$ jelölésre.
+  - type: narrative
+    content: |
+      Megjegyezzük még, hogy a modulusról látszólag feleslegesen kötöttük ki, hogy ***nemnegatív***, hiszen a fenti
+      bizonyítás ezt egyáltalán nem használja ki. A [modularis-osszeadas-es-szorzas] utáni megjegyzés 3. pontja
+      alapján azonban bármilyen egész szám modulo $m$ maradéka megegyezik a modulo $-m$ maradékával, így tehát a
+      modulo $m$ kongruencia pontosan ugyanaz a reláció lenne, mint a modulo $-m$ kongruencia. Ez az oka annak,
+      hogy ***negatív modulusok***at nem használunk, hiszen azok ***helyettesíthetők a pozitív párjukkal***.

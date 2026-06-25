@@ -1,0 +1,534 @@
+<!-- wp:paragraph -->
+<p><strong><em>Az előző részekben (a <a rel="noreferrer noopener" aria-label="11. (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/11-peano-axiomarendszer-termeszetes-szam-muvelet-osszeadas-kommutativitas-asszociativitas-teljes-indukcio/" target="_blank">11.</a>, <a rel="noreferrer noopener" aria-label="12. (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/12-szorzas-disztributivitas-teljes-indukcio-indirekt-bizonyitas-relacio-teljes-rendezes-rendezett-halmaz/" target="_blank">12.</a>, <a rel="noreferrer noopener" aria-label="13. (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/13-adossag-ekvivalenciarelacio-ekvivalencia-osztaly-egesz-szam-homomorfizmus-beagyazas-negativ-szam/" target="_blank">13.</a>, <a rel="noreferrer noopener" aria-label="14. (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/14-egesz-szam-szorzas-absztrakt-algebra-neutralis-elem-inverz-kivonas-gyuru-ferdetest-test/" target="_blank">14.</a> és <a rel="noreferrer noopener" aria-label="15. részekben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/15-rendezett-gyuru-absztrakt-algebra-egesz-szam-rendezesi-relacio-rendezesi-axiomak/" target="_blank">15. részekben</a>) betekintést nyertünk abba a gondolkodásmódba, amelyet követve örök érvényű igazságokat tudunk kimondani és bizonyítani a matematikai logika rém egyszerű, ám annál szigorúbb szabályainak betartásával. Mindössze 4 állításból, az úgynevezett Peano-axiómákból ([yp_element slug="peano-axiomarendszer" type="link" /]) indultunk ki, amelyek lényegében a <a rel="noreferrer noopener" aria-label="természetes számokról (új fülön nyitja meg)" href="https://hu.wikipedia.org/wiki/Term%C3%A9szetes_sz%C3%A1mok" target="_blank">természetes számokról</a> alkotott intuitív elképzeléseinket fogalmazzák meg kellő precizitással. Ezekből kiindulva aztán definiáltuk az összeadás és a szorzás műveletét e számok között. Ezután e számkört kibővítettük a negatív számokkal, az így kapott halmazt pedig [latex]\Z[/latex]-vel jelöltük és egész számoknak neveztük el őket. Itt már a kivonás is korlátlanul elvégezhető. Végül – elvonatkoztatva a „szám” fogalmától – általánosságban is megfogalmaztuk azokat a követelményeket, amelyeket egy tetszőleges halmaznak teljesítenie kell annak érdekében, hogy az elemeivel a „szokásos” módon „számolni” lehessen. Az ilyen konstrukciókat gyűrűknek neveztük el, amelyeknek számos hasznos tulajdonságát mutattuk meg az előző két részben.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>De vajon mit kezdjünk azzal, hogy az „osztás” művelete általában nem végezhető el gyűrűkben? Mit jelent az „oszthatóság”? Mikor mondjuk egy gyűrű valamely elemére, hogy „felbonthatatlan” és mely elemeket nevezzük „prímeknek”? Miért van ezeknek kitüntetett szerepük bizonyos gyűrűkben? Mit állít a számelmélet alaptétele, és mitől függ, hogy egy gyűrűben teljesül-e vagy nem? Mi a helyzet az egész számok gyűrűjében? Ebben a részben erről lesz szó...</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"className":"prerequisite-warning"} -->
+<p class="prerequisite-warning">Figyelem! Ez a rész erőteljesen épít a <a href="https://youproof.hu/kriptografia/14-egesz-szam-szorzas-absztrakt-algebra-neutralis-elem-inverz-kivonas-gyuru-ferdetest-test/" target="_blank" rel="noreferrer noopener" aria-label="14. (új fülön nyitja meg)">14.</a> és <a href="https://youproof.hu/kriptografia/15-rendezett-gyuru-absztrakt-algebra-egesz-szam-rendezesi-relacio-rendezesi-axiomak/" target="_blank" rel="noreferrer noopener" aria-label="15. részben (új fülön nyitja meg)">15. részben</a> tárgyalt gyűrű fogalmára, valamint az ezekkel kapcsolatos alábbi definíciókra és tételekre:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="gyuru-test" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="nullosztomentes-gyuru" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="integritastartomany" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="gyuruk-alapveto-tulajdonsagai" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph {"className":"prerequisite-warning"} -->
+<p class="prerequisite-warning">Ezek kontextusba helyezése miatt erőteljesen ajánlott elolvasni az <a href="https://youproof.hu/kriptografia/15-rendezett-gyuru-absztrakt-algebra-egesz-szam-rendezesi-relacio-rendezesi-axiomak/" target="_blank" rel="noreferrer noopener" aria-label=" (új fülön nyitja meg)">előző</a> és az <a href="https://youproof.hu/kriptografia/14-egesz-szam-szorzas-absztrakt-algebra-neutralis-elem-inverz-kivonas-gyuru-ferdetest-test/" target="_blank" rel="noreferrer noopener" aria-label=" (új fülön nyitja meg)">azelőtti</a> részt, mivel gyakran hivatkozni fogunk rájuk. A teljes cikksorozat elejét&nbsp;<a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/1-alapfogalmak-caesar-vigenere-enigma-kulcsmegosztas/" target="_blank">itt</a>&nbsp;találod.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"dropCap":true} -->
+<p class="has-drop-cap">Ebben a részben főként az oszthatóság fogalmával fogunk foglalkozni. Számunkra elsősorban az egész számok gyűrűje lesz az érdekes, azonban szeretnénk ezeket a fogalmakat minél általánosabb módon tárgyalni, lehetőleg a gyűrűk szintjén. A továbbiakban az egyszerűség kedvéért a <strong><em>kommutatív gyűrűkre</em></strong> szorítkozunk. Ezekben ugyanis az oszthatósággal kapcsolatos definíciók és tételek megfogalmazása jóval egyszerűbbé válik azáltal, hogy a szorzás esetén sem kell törődnünk a tényezők sorrendjével. Amennyiben ettől eltérünk, vagy egy tételhez illetve definícióhoz egyéb tulajdonságra is szükség van (például <strong><em>egységelem létezése</em></strong> vagy <strong><em>nullosztómentesség</em></strong>), úgy azt külön ki fogjuk hangsúlyozni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezenkívül egy <strong><em>jelölésbeli egyszerűsítést</em></strong> is fogunk tenni a továbbiakban. Az előző részekben egy [latex]R[/latex] alaphalmazú gyűrű jelölésekor mindig felsoroltuk a gyűrű két műveletének szimbólumát is. Például: [latex](R,+,\cdot )[/latex]. Mostantól – ha ez félreértést nem okoz – magát a gyűrűt fogjuk szimplán [latex]R[/latex]-rel jelölni. A nullelem és az esetleges egységelem jelölésére rendre a [latex]0[/latex] és az [latex]1[/latex], az „összeadás” műveletre a [latex]+[/latex], a „szorzás” műveletre pedig a [latex]\cdot[/latex] szimbólumot – vagy az egymás után írást – használjuk majd. Természetesen ha ettől esetleg eltérünk, azt minden ilyen esetben külön jelezni fogjuk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Végül, ha egy [latex]a[/latex] elemhez hozzáadjuk egy [latex]b[/latex] elem ellentettjét, akkor az [latex]a+(-b)[/latex] kifejezés helyett a rövidebb [latex]a-b[/latex] írásmódot fogjuk használni, és <strong><em>kivonásról</em></strong>, illetve az [latex]a[/latex] és [latex]b[/latex] elem <strong><em>különbségéről</em></strong> fogunk beszélni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egy általános gyűrűben tehát korlátlanul elvégezhető a kivonás bármely két gyűrűelem között. Nézzük is meg, hogy pontosan mit értünk azalatt, hogy a kivonás lényegében az összeadás <strong><em>megfordítása</em></strong>. Legyen adva két gyűrűelem, jelöljük őket mondjuk [latex]a[/latex]-val és [latex]b[/latex]-vel. Annyit tudunk róluk, hogy ha az [latex]a[/latex] elemet összeadjuk egy másik, ismeretlen gyűrűelemmel, akkor az eredmény [latex]b[/latex]. Feladatunk megtalálni ezt az – alábbi ábrán [latex]k[/latex]-val jelölt – ismeretlen gyűrűelemet:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":4120,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_16_osszeadas_megforditasa.jpg" alt="Összeadás megfordítása" class="wp-image-4120"/><figcaption>Összeadás megfordítása</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Ne feledjük, hogy „összeadás” alatt most a gyűrű [latex]+[/latex] szimbólummal jelölt műveletét értjük, semmi egyebet. Erről mindössze annyit tudunk, hogy teljesíti a rá vonatkozó gyűrűaxiómákat ([yp_element slug="gyuru-test" type="link" /]). A fenti ábrán látható szituációt az alábbi egyenlettel írhatjuk fel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a+k=b[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Feladatunk megtalálni a keresett [latex]k[/latex] gyűrűelemet. Szerencsére a <strong><em>3. gyűrűaxióma</em></strong> hamar a segítségünkre siet, amely kimondja, hogy <strong><em>minden gyűrűelemnek létezik ellentettje</em></strong> (vagy más szóval <strong><em>additív inverze</em></strong>). Így például az [latex]a[/latex] elemnek is létezik ilyen, [latex]-a[/latex]-val jelölt „párja”. Az, hogy [latex]-a[/latex] az [latex]a[/latex] inverze a [latex]+[/latex] műveletre nézve épp azt jelenti, hogy őket összeadva ugyanezen művelet neutrális elemét kapjuk (lásd a [yp_element slug="inverz-elem" type="link" /]t). A [latex]+[/latex] művelet neutrális eleme viszont nem más, mint a gyűrű nulleleme. Ha tehát a fenti egyenlet mindkét oldalához [latex]a[/latex] additív inverzét adjuk, akkor a következőt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{(a+(-a))}_{=0}+k=b+(-a)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A baloldalon tehát [latex]0+k[/latex] szerepel, ami a neutrális elem [yp_element slug="neutralis-elem" type="link" /]ja alaján [latex]k[/latex]-val egyezik meg. A végeredmény tehát:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]k=b-a[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az összeadás megfordítása alatt tehát azt értjük, hogy az eredményhez hozzáadva az egyik bemenet additív inverzét, visszakapjuk a másik bemenetet. Vegyük észre, hogy ez épp az általános iskolából ismert kivonással analóg, amikoris a „van 3 forintunk, mennyi kell még ahhoz, hogy épp 5 legyen?” típusú kérdésekre kerestük a választ. A 3. gyűrűaxióma teszi lehetővé, hogy bármilyen számok is szerepeljenek a kérdésben, azt mindig meg tudjuk válaszolni. Nincs más dolgunk ugyanis, mint a második számhoz hozzáadni az első additív inverzét (vagy más szavakkal: a második számból <strong><em>kivonni</em></strong> az elsőt), pont úgy, ahogyan a fenti képlet is leírja. Természetesen ilyen módon adott esetben negatív számot is kaphatunk eredményül, amelyet a megfelelő módon kell értelmeznünk. Például a „van 5 forintunk, mennyi kell még ahhoz, hogy épp 3 legyen?” kérdésre a fenti képlet [latex]-2[/latex]-t ad eredményül, amelyet úgy értelmezhetünk, hogy <strong><em>el kell költenünk</em></strong> 2 forintot ahhoz, hogy épp 3 legyen.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="divisor"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Oszthatóság</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Most vizsgáljuk meg ugyanezt a kérdést a gyűrű másik műveletére vonatkozóan is. A bevezető szakaszt szóról szóra megismételve, ám a [latex]+[/latex] műveletet a [latex]\cdot[/latex] műveletre lecserélve ezúttal tehát a következő a feladat. Keressük azt az ismeretlen [latex]k[/latex] <strong><em>gyűrűelemet</em></strong>, amellyel az [latex]a[/latex] <strong><em>gyűrűelemet</em></strong> megszorozva a [latex]b[/latex] <strong><em>gyűrűelemet</em></strong> kapjuk eredményül. Az alábbi ábra mutatja ezt a szituációt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":4121,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_16_szorzas_megforditasa.jpg" alt="Szorzás megfordítása" class="wp-image-4121"/><figcaption>Szorzás megfordítása</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Az előző szakaszban ugyan nem hangsúlyoztuk ki, de nagyon fontos, hogy <strong><em>csak a gyűrű elemei között kutakodhatunk</em></strong>, amikor keressük az ismeretlen [latex]k[/latex] elemet. Mondhatnánk, hogy egyszerű a feladatunk, hiszen ugyanazt kell csinálni, mint az összeadás megfordítása esetén, két apró különbségtől eltekintve. Egyrészt ezúttal összeadás helyett <strong><em>szorozni</em></strong> kell [latex]b[/latex]-t, másrészt pedig ezt a szorzást [latex]a[/latex] additív inverze helyett ezúttal a <strong><em>multiplikatív inverzével</em></strong> kell végrehajtani. A [yp_element slug="gyuru-test" type="link" /] multiplikatív inverzre vonatkozó jelölését használva ez így fejezhető ki képlettel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]k=b\cdot a^{-1}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Sajnos azonban az összeadással ellentétben a szorzáshoz <strong><em>nincs olyan gyűrűaxiómánk, amely biztosítja tetszőleges elem multiplikatív inverzének létezését</em></strong>. Ez csak speciális gyűrűkben teljesül, amelyeket a [yp_element slug="gyuru-test" type="link" /] alapján <strong><em>testeknek</em></strong> neveztünk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A számunkra fontos <strong><em>egész számok [latex]\Z[/latex] gyűrűje azonban nem test</em></strong>, mivel kizárólag az egységelemnek és ellentettjének van multiplikatív inverze – mindkettőnek önmaga. Így ott ez a képlet egyetlen gyakorlatilag is hasznos esetben sem használható [latex]k[/latex] „kiszámításához”. Ennek ellenére sok esetben adott [latex]a[/latex] és [latex]b[/latex] gyűrűelemekhez mégis <strong><em>létezik</em></strong> olyan [latex]k[/latex] gyűrűelem, amelyre teljesül, hogy [latex]ak=b[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez elvezet minket a <strong><em>legfontosabb számelméleti fogalomhoz</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="oszthatosag" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="oszthatosag-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most nézzünk néhány példát ennek a fogalomnak a megértéséhez. Az <strong><em>egész számok</em></strong> [latex]\Z[/latex] gyűrűjében például [latex]2|6[/latex], mivel létezik olyan <strong><em>egész szám</em></strong>, amellyel [latex]2[/latex]-t megszorozva [latex]6[/latex]-ot kapunk (nevezetesen a [latex]3[/latex], hiszen [latex]2\cdot 3=6[/latex]). Ugyanakkor például [latex]6\
+mid2[/latex], mivel nem létezik olyan [latex]k[/latex] <strong><em>egész szám</em></strong>, amelyre [latex]6k=2[/latex] teljesülne.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Annak demonstrálására, hogy nagyon nem mindegy, melyik gyűrűben beszélünk oszthatóságról, nézzük például a <strong><em>páros (azaz 2-vel osztható) egész számok</em></strong> halmazát a szokásos összeadással és szorzással. Ezt a halmazt konvencionálisan [latex]2\Z[/latex]-vel szoktuk jelölni, és azonnal látszik, hogy ez egy <strong><em>kommutatív gyűrű</em></strong>, hiszen teljesíti a [yp_element slug="gyuru-test" type="link" /] szerinti gyűrűaxiómákat.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az összeadásról és a szorzásról korábban már láttuk, hogy mindkettő kommutatív és asszociatív, valamint hogy a szorzás disztributív az összeadásra nézve. A nullelem (azaz a [latex]0[/latex] egész szám) szintén páros, valamint egy páros szám ellentettje is páros, így teljesül a 2. és a 3. gyűrűaxióma is. Már csak annyit kell ellenőrizni, hogy az összeadás és a szorzás valóban művelet-e a [latex]2\Z[/latex] halmazon is, azaz nem vezet-e ki belőle. Ez viszont nyilván teljesül, hiszen két páros szám összege és szorzata is páros. Ez a gyűrű viszont <strong><em>nem egységelemes</em></strong>, hiszen a szorzás neutrális eleme az [latex]1[/latex] egész szám, ami nem páros. Ugyanakkor <strong><em>nullosztómentes</em></strong>, hiszen ha semmilyen két nemnulla egész szám szorzata nem lehet [latex]0[/latex], akkor ez speciálisan a páros számokra is nyilván igaz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most vizsgáljuk meg a [latex]2|6[/latex] oszthatóságot a [latex]2\Z[/latex] gyűrűben is. A [latex]\Z[/latex] gyűrűvel ellentétben itt már nem teljesül ez az oszthatóság, hiszen nem létezik olyan <strong><em>páros szám</em></strong>, amellyel a [latex]2[/latex]-t megszorozva [latex]6[/latex]-ot kapnánk. Azaz [latex]2|_{\Z}6[/latex], ugyanakkor [latex]2{\
+mid}_{2\Z}6[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A <a rel="noreferrer noopener" aria-label="13. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/13-adossag-ekvivalenciarelacio-ekvivalencia-osztaly-egesz-szam-homomorfizmus-beagyazas-negativ-szam#equivalence-relations" target="_blank">13. részben</a> az úgynevezett <strong><em>ekvivalenciarelációk</em></strong> kapcsán ismertük meg a <strong><em>szimmetrikus relációk</em></strong> fogalmát (lásd a [yp_element slug="szimmetrikus-relacio" type="link" /]t). Ezek olyan relációk, amelyek ha fennállnak az egyik irányban, akkor fennállnak a másik irányban is. <strong><em>Az oszthatósági reláció tehát</em></strong> a [latex]\Z[/latex] gyűrűben <strong><em>NEM szimmetrikus</em></strong>, hiszen a fentebbi példa alapján [latex]2|6[/latex], de [latex]6\
+mid 2[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A <a rel="noreferrer noopener" aria-label="12. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/12-szorzas-disztributivitas-teljes-indukcio-indirekt-bizonyitas-relacio-teljes-rendezes-rendezett-halmaz#ordered-set" target="_blank">12. részben</a> az úgynevezett <strong><em>rendezési relációk</em></strong> kapcsán pedig az <strong><em>antiszimmetrikus relációk</em></strong> fogalmát (lásd a [yp_element slug="antiszimmetrikus-relacio" type="link" /]) ismertük meg. Ezek olyan relációk, amelyek ha mindkét irányban fennállnak két elem között, akkor a két elem azonos. Korábban már említettük, hogy az antiszimmetria és a szimmetria egymással <strong><em>nem ellentétes</em></strong> fogalmak. <strong><em>A [latex]\Z[/latex] gyűrűben értelmezett oszthatósági reláció</em></strong> például – amellett, hogy nem szimmetrikus – <strong><em>az antiszimmetria tulajdonságát SEM teljesíti</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egyrészt ugyanis teljesül az [latex]1|(-1)[/latex] oszthatóság, hiszen létezik olyan egész szám, amellyel [latex]1[/latex]-et megszorozva [latex]-1[/latex]-et kapunk (nevezetesen a [latex]-1[/latex]). Másrészt teljesül a [latex](-1)|1[/latex] oszthatóság is, hiszen létezik olyan egész szám is, amellyel [latex]-1[/latex]-et megszorozva [latex]1[/latex]-et kapunk (nevezetesen ismét a [latex]-1[/latex]). A reláció tehát fennáll mindkét irányban az [latex]1[/latex] és a [latex]-1[/latex] között, ugyanakkor [latex]1\
+eq -1[/latex]. Ez a reláció tehát valóban nem antiszimmetrikus.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most vizsgáljuk meg az oszthatósági reláció néhány tulajdonságát, amelyek egyszerűen adódnak a [yp_element slug="oszthatosag" type="link" /]ból.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="oszthatosag-tulajdonsagai" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="oszthatosag-tulajdonsagai-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most ismerkedjünk meg egy, a továbbiakban fontos fogalommal.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Egységek</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Az oszthatóság tulajdonságairól szóló imént bizonyított [yp_element slug="oszthatosag-tulajdonsagai" type="link" /] 4. pontja alapján egy gyűrű nulleleme egyfajta szélsőséget képvisel. Ő ugyanis <strong><em>kizárólag saját magának</em></strong> osztója. A másik szélsőséget azok a gyűrűelemek képviselik, amelyek viszont <strong><em>a gyűrű minden elemének</em></strong> osztói. Ezeknek külön nevük is van.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egyseg" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egyseg-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi tétel arra ad választ, hogy mikor létezik egyáltalán egység egy gyűrűben.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egyseg-letezesenek-szukseges-es-elegseges-feltetele" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egyseg-letezesenek-szukseges-es-elegseges-feltetele-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt tehát már tudjuk, hogy egy <strong><em>kommutatív, nullosztómentes gyűrűben pontosan akkor létezik egység, ha egységelem is létezik</em></strong>. Például az előző szakaszban vizsgált [latex]2\Z[/latex] gyűrűben emiatt <strong><em>nem létezik egység</em></strong>, hiszen egységelem sem létezik.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A most következő tétel ahhoz nyújt segítséget, hogy egy <strong><em>kommutatív, egységelemes gyűrűben</em></strong> megtaláljuk az összes egységet. Ehhez mindössze az egységelem ismerete szükséges, a nullosztómentesség nem.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egysegek-es-egysegelem-viszonya" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egysegek-es-egysegelem-viszonya-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Egy <strong><em>kommutatív, egységelemes gyűrűben tehát az egységek pontosan az egységelem osztói</em></strong>. Az egész számok [latex]\Z[/latex] gyűrűjében ez alapján tehát az [latex]1[/latex]-en és a [latex]-1[/latex]-en kívül nincs más egység, hiszen az [latex]1[/latex] egész számnak nincs más osztója.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Megjegyezzük még, hogy az utóbbi két tétel semmit nem mond az egységekről abban az esetben, ha a gyűrű csak kommutatív, de nem egységelemes, és a nullosztómentesség sem teljesül. Az általunk vizsgált esetekben azonban ilyen nem fog előfordulni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Asszociált elemek</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Most az oszthatóság után egy másik relációval fogunk megismerkedni, amely az imént tárgyalt egységekhez kapcsolódik szorosan. Ez a fogalom a <strong><em>számelmélet alaptételének</em></strong> a pontos megfogalmazásában lesz segítségünkre. Azt fejezi ki, hogy két gyűrűelem az oszthatóság szempontjából ugyanúgy viselkedik, vagy más szavakkal megkülönböztethetetlen. Erről szól az alábbi definíció.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="asszocialt" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Például a [latex]\Z[/latex] gyűrűben az [latex]5[/latex] és a [latex](-5)[/latex] egymás asszociáltjai.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="asszocialt-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Először is megmutatjuk, hogy ez a reláció egy <strong><em>ekvivalenciareláció</em></strong> (lásd a [yp_element slug="ekvivalenciarelacio" type="link" /]t) a gyűrű alaphalmazán, és így a [yp_element slug="ekvivalenciarelacio-tulajdonsagai" type="link" /] alapján a gyűrű alaphalmazát úgynevezett <strong><em>ekvivalencia-osztályokra</em></strong> bontja. Erről a fogalomról bővebben a <a rel="noreferrer noopener" aria-label="13. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/13-adossag-ekvivalenciarelacio-ekvivalencia-osztaly-egesz-szam-homomorfizmus-beagyazas-negativ-szam#equivalence-relations" target="_blank">13. részben</a> írtunk, de dióhéjban arról van szó, hogy minden gyűrűelem pontosan egy ekvivalencia-osztályba fog bekerülni. Méghozzá abba, amely az ő asszociáltjait tartalmazza.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="asszocialtsag-ekvivalenciarelacio" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="asszocialtsag-ekvivalenciarelacio-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most vizsgáljuk meg, hogy mit tudunk mondani ezekről az ekvivalencia-osztályokról. Általános esetben – amikor a gyűrűről csak annyit tudunk, hogy <strong><em>kommutatív</em></strong> – az alábbiakat.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="asszocialtsag-tulajdonsagai" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="asszocialtsag-tulajdonsagai-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="asszocialtsag-tulajdonsagai-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most vizsgáljuk meg, hogy <strong><em>egységelemes gyűrűk</em></strong> esetén mennyivel tudunk többet mondani az asszociált elempárokról. Az alábbi tétel ahhoz nyújt segítséget, hogy két tetszőleges elemről könnyen el tudjuk dönteni, hogy egymás asszociáltjai-e vagy sem.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="asszocialtsag-egysegelemes-gyuruben" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Például az egész számok [latex]\Z[/latex] gyűrűjében a [latex]4[/latex] és a [latex](-4)[/latex] egymás asszociáltjai, és mivel egységelemes, ezért egymás osztói is. A páros egész számok [latex]2\Z[/latex] gyűrűjében azonban nem teljesül sem a [latex]4|(-4)[/latex], sem pedig a [latex](-4)|4[/latex] oszthatóság, ennek ellenére ez a két szám ebben a gyűrűben is egymás asszociáltja.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="asszocialtsag-egysegelemes-gyuruben-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Végül az alábbi tétel ahhoz nyújt segítséget, hogy egy adott elem összes asszociáltját meg tudjuk találni, amennyiben ismerjük az egységeket.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="asszocialtsag-es-egysegek-kapcsolata" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Például a [latex]\Z[/latex] gyűrűben az egységek az [latex]1[/latex] és a [latex](-1)[/latex], és rajtuk kívül nincs más egység. A tétel alapján tetszőleges egész számnak megkapjuk az összes asszociáltját, ha megszorozzuk ezzel a két egységgel. Ez alapján például az [latex]5[/latex] asszociáltjai az [latex]5\cdot 1=5[/latex] (azaz önmaga), valamint az [latex]5\cdot (-1)=(-5)[/latex] (azaz az ellentettje), és ezeken kívül nincs is más asszociáltja.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="asszocialtsag-es-egysegek-kapcsolata-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Felbonthatatlanok és prímek</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Az oszthatóságról szóló szakasz elején az volt a feladatunk, hogy egy szorzás [latex]a[/latex] bemenetét és [latex]b[/latex] kimenetét ismerve keressünk egy gyűrűelemet a másik bemenetre. Akkor mondtuk, hogy teljesül az [latex]a|b[/latex] oszthatóság, ha létezett ilyen elem a gyűrűben. Most ennél egy fokkal nehezebb a feladatunk. Képzeljük el azt a szituációt, hogy csak a szorzás kimenetét ismerjük, és mindkét bemenetre keresnünk kell egy-egy gyűrűelemet, amelyek szorzata épp a kimenet. Ezt mutatja az alábbi ábra:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":4123,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_16_gyuruelem_felbontasa.jpg" alt="Gyűrűelem felbontása" class="wp-image-4123"/><figcaption>Gyűrűelem felbontása</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Ezt képlettel kifejezve: [latex]c=a\cdot b[/latex]. Itt tehát az a feladat, hogy a [latex]c[/latex] gyűrűelemnek megtaláljuk valamely osztóját. Algoritmikus szempontból ez egy roppant nehéz feladat, és – mint látni fogjuk a későbbiekben – épp ez biztosítja azt, hogy a modern kriptográfiai eljárások gyakorlatilag feltörhetetlenek. Most azonban tegyük félre az algoritmikus nehézséget, és vizsgáljuk meg ezt a feladatot elméleti szempontból. Egy gyűrűelemet adott esetben sokféleképpen felbonthatunk két másik gyűrűelem szorzatára. Az alábbi példában felsoroltuk az [latex]50[/latex] egész szám összes lehetséges felbontását a [latex]\Z[/latex] gyűrűben (a tényezők sorrendjétől eltekintve):</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}50&amp;=1\cdot 50=\\&amp;=2\cdot 25=\\&amp;=5\cdot 10=\\&amp;=(-1)\cdot (-50)=\\&amp;=(-2)\cdot (-25)=\\&amp;=(-5)\cdot (-10) \end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>De vajon mi a helyzet akkor, ha például a [latex]13[/latex] egész számot szeretnénk két másik egész szám szorzatára bontani? Érdekes módon ezt csak kétféleképpen tehetjük meg (a tényezők sorrendjétől eltekintve):</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]13=1\cdot 13=(-1)\cdot (-13)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Látható, hogy mindkét felbontásban az egyik tényező egy <strong><em>egység</em></strong> volt, a másik tényező pedig az eredeti szám valamely <strong><em>asszociáltja</em></strong> (jelen esetben saját maga vagy az ellentettje). Amennyiben az a célunk, hogy oszthatósággal kapcsolatos újabb információt nyerjünk a felbontandó elemről, úgy az ilyen jellegű felbontásokkal nem sokra megyünk. Az egységtényezőből azért nem tudunk meg semmi újat, mert egy egységnek bármely osztója maga is egység (hiszen az oszthatóság tranzitivitásán keresztül örökli ezt a tulajdonságot). A másik tényezőből pedig azért nem derül ki semmi új, mert neki meg pontosan ugyanazok az osztói, mint a eredeti elemnek.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A [latex]\Z[/latex] gyűrűben a [latex]13[/latex] egész szám emiatt egyfajta „építőkockaként” funkcionál: résztvesz más számok felépítésében, ám ő maga már nem bontható tovább értelmes módon. Az általános iskolában <strong><em>„prímszámoknak”</em></strong> neveztük azokat a számokat, amelyeknek „olyan kevés osztójuk van, amilyen kevés csak lehet”. Elsőre talán zavart okozhat, hogy egyrészt a most következő definícióban teljesen más megnevezést használunk ezekre a kitüntetett gyűrűelemekre, másrészt pedig a <strong><em>"prím"</em></strong> kifejezést teljesen másra fogjuk használni. Ennek oka azonban hamarosan világossá válik.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="felbonthatatlan-elem" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>páros számok [latex]2\Z[/latex] gyűrűjében</em></strong> például felbonthatatlanok a [latex]2[/latex], [latex]6[/latex], [latex]10[/latex], ..., [latex]150[/latex], ..., illetve ezek ellentettjei is. Ezeknek ugyanis egyáltalán nem létezik felbontása ebben a gyűrűben (azaz nem bonthatók fel <strong><em>páros számok</em></strong> szorzatára).</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az <strong><em>egész számok [latex]\Z[/latex] gyűrűjében</em></strong> például felbonthatatlanok a [latex]2[/latex], [latex]3[/latex], [latex]5[/latex], [latex]7[/latex], [latex]13[/latex], ..., [latex]919[/latex], ..., [latex]17180131327[/latex], ..., illetve ezek ellentettjei is. Ezeknek léteznek ugyan felbontásaik, ám azok mind triviális felbontások a fenti értelemben.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Látható, hogy az oszthatósághoz hasonlóan nagyon <strong><em>nem mindegy, hogy melyik gyűrűben</em></strong> beszélünk felbonthatatlanságról. A [latex]6[/latex] például felbonthatatlan a [latex]2\Z[/latex] gyűrűben – hiszen nincs két olyan páros szám, amelyeknek szorzata [latex]6[/latex] lenne –, azonban nem felbonthatatlan a [latex]\Z[/latex] gyűrűben – hiszen [latex]6=2\cdot 3[/latex] egy nemtriviális felbontás.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]1[/latex] és a [latex]-1[/latex] egységek, így a definíció szerint ők nem számítanak felbonthatatlannak. Látszólag semmi nem indokolja, hogy az egységeket önkényesen kizárjuk a felbonthatatlanok közül. Ennek pusztán – mint azt látni fogjuk – praktikussági okai vannak a <strong><em>számelmélet alaptételének</em></strong> megfogalmazásakor. A nullelemet azért nem kellett külön kizárni a definícióban a felbonthatatlanok közül, mivel az amúgyis felbontható nemtriviálisan (például [latex]0\cdot a[/latex] tetszőleges [latex]a\
+eq 0[/latex] elem esetén egy nemtriviális felbontás).</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A továbbiakban főként olyan gyűrűket fogunk vizsgálni, amelyekben a szorzás kommutativitásán kívül a <strong><em>nullosztómentesség</em></strong> is teljesül (azaz két nemnulla elem szorzata nem lehet nulla). Ezeket a gyűrűket <strong><em>integritástartományoknak</em></strong> neveztük (lásd a [yp_element slug="integritastartomany" type="link" /]t), és ezeket tekintettük „normálisan” viselkedő gyűrűknek sok szempontból. Az alábbi tétel alapján például <strong><em>integritástartományok</em></strong> esetén a „triviális felbontás” fogalma némiképp egyszerűbben fogalmazható meg a [yp_element slug="felbonthatatlan-elem" type="link" /]hoz képest.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egysegtenyezo-nullosztomentes-esetben" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez alapján tehát <strong><em>integritástartományok</em></strong> esetén a [yp_element slug="felbonthatatlan-elem" type="link" /]hoz képest a <strong><em>triviális felbontásokra</em></strong> elegendő annyit kikötni, hogy az egyik tényező egység, hiszen a fenti tétel alapján ekkor a másik tényező automatikusan a felbontandó elem asszociáltja lesz. A bizonyításhoz azonban erőteljesen kihasználjuk a <strong><em>nullosztómentességet</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egysegtenyezo-nullosztomentes-esetben-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt tehát már tudjuk, hogy amiket általános iskolában <strong><em>„prímeknek”</em></strong> neveztünk, azok a gyűrűk absztrakciós szintjén a <strong><em>„felbonthatatlan elemeknek”</em></strong> felelnek meg. Jogos lehet a kérdés, hogy akkor ugyanezen az absztrakciós szinten mégis mire használjuk a <strong><em>„prím”</em></strong> kifejezést, ha nem erre. Az alábbi definíció ad erre választ.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="primtulajdonsagu-elem" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="primtulajdonsagu-elem-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ennek a fogalomnak látszólag semmi köze nincs ahhoz, ahogyan az általános iskolában a prímeket szokták meghatározni, ezért talán némi magyarázatra szorul.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Emlékeztetnénk az olvasót az oszthatóság tulajdonságairól szóló [yp_element slug="oszthatosag-tulajdonsagai" type="link" /] 7. pontjára. Ez ugye azt mondja ki, hogyha egy elem osztója egy szorzat valamely tényezőjének, akkor osztója a szorzatnak is. Például az egész számok gyűrűjében [latex]3|6[/latex], ezért nyilván [latex]3|6\cdot 2[/latex] is teljesül.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ennek <strong><em>megfordítása</em></strong> azonban általánosságban nem igaz. Azaz általánosságban nem igaz, hogyha egy elem osztója egy szorzatnak, akkor szükségképpen osztója valamelyik tényezőnek is. Például [latex]8|2\cdot 12[/latex], ugyanakkor [latex]8\
+mid 2[/latex] és [latex]8\
+mid 12[/latex]. A <strong><em>prímtulajdonságú elemek (vagy prímek)</em></strong> éppen azok az elemek egy gyűrűben, amelyeknél a megfordítás is érvényes minden esetben.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A nullelemet a felbonthatatlanság [yp_element slug="felbonthatatlan-elem" type="link" /]jához hasonlóan a prímek közül is szeretnénk kizárni. Mivel azonban az általunk többnyire vizsgált <strong><em>integritástartományokban</em></strong> a nullelem egyébként teljesítené a definíció kritériumait, ezért külön ki kellett kötnünk, hogy őt mégsem tekintjük prímnek. Ha ugyanis valamely [latex]a[/latex] és [latex]b[/latex] elemekre teljesülne, hogy [latex]0|ab[/latex], akkor az oszthatóság tulajdonságairól szóló [yp_element slug="oszthatosag-tulajdonsagai" type="link" /] 4. pontja miatt [latex]ab=0[/latex] következne. Ez viszont az integritástartományok nullosztómentessége miatt csak úgy lehetne, ha [latex]a[/latex] és [latex]b[/latex] közül legalább az egyik [latex]0[/latex] lenne. Ebből viszont következne, hogy a [latex]0|a[/latex] illetve [latex]0|b[/latex] oszthatóságok közül legalább az egyik teljesül. Azaz végsősoron a [latex]0[/latex] prím lenne, ha nem kötnénk ki a definícióban külön, hogy mégsem az.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Jogosan merülhet fel a kérdés az Olvasóban, hogy vajon miért nevezik az általános iskolában „prímnek” azt, amit mi itt „felbonthatatlannak” neveztünk. És vajon miért definiáltuk teljesen másként a prímeket? Nem lehetséges-e, hogy valójában ugyanarról a fogalomról van szó? Általánosságban sajnos nem ennyire egyszerű a helyzet. Például a <strong><em>páros számok</em></strong> [latex]2\Z[/latex] gyűrűjében a [latex]6[/latex] felbonthatatlan, hiszen nem bontható fel két <strong><em>páros szám</em></strong> szorzatára. Ugyanakkor nem prím, hiszen osztója a [latex]2\cdot 18[/latex] szorzatnak, de nem osztója sem a [latex]2[/latex]-nek, sem pedig a [latex]18[/latex]-nak (hiszen nem léteznek olyan <strong><em>páros számok</em></strong>, amelyeket [latex]6[/latex]-tal szorozva [latex]2[/latex]-t vagy [latex]18[/latex]-at kapnánk eredményül).</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egy <strong><em>integritástartományban</em></strong> tehát ez a két fogalom általában nem ugyanazt jelenti. Az imént például láthattuk, hogy adott esetben létezhetnek olyan elemek, amelyek felbonthatatlanok, de nem prímek. De vajon létezhetnek-e olyan prímek, amik viszont nem felbonthatatlanok? Az alábbi tétel azokban az esetekben adja meg a választ erre a kérdésre, amikor az integritástartomány <strong><em>egységelemmel</em></strong> rendelkezik.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="minden-prim-felbonthatatlan" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="minden-prim-felbonthatatlan-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az <strong><em>egységelemes integritástartományokban</em></strong> tehát biztos, hogy a következő a helyzet:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":4124,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_16_primek_es_felbonthatatlanok_viszonya.jpg" alt="Prímek és felbonthatatlanok viszonya" class="wp-image-4124"/><figcaption>Prímek és felbonthatatlanok viszonya</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Érdekes kérdés, hogy mi a helyzet <strong><em>nem egységelemes</em></strong> integritástartományok esetén. Erre a kérdésre a következő szakaszban fogunk visszakanyarodni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Számunkra az olyan integritástartományok lesznek érdekesek, amelyekben azon kívül, hogy minden prím felbonthatatlan még az is teljesül, hogy minden felbonthatatlan prím. Ezekben ugyanis teljesülni fog egy olyan tulajdonság, amely kriptográfiai szempontból alapvető fontosságú.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A számelmélet alaptétele</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Az előző szakasz elején láttuk, hogy a [latex]\Z[/latex] gyűrűben egy egész szám adott esetben többféleképpen bontható fel két egész szám szorzatára. Most képzeljük el, hogy az így kapott egész számokat további egész számokra bontjuk, és ezt a felbontást mindaddig folytatjuk minden ágon, ameddig felbonthatatlan számba nem ütközünk. Az előző szakasz alapján innen már nem érdemes tovább folytatni a felbontást (ha egyáltalán lehetséges), hiszen oszthatóságra vonatkozó újabb információt már nem fogunk kapni. Az alábbi ábrán a [latex]100[/latex] egész szám néhány felbontását láthatjuk a [latex]\Z[/latex] gyűrűben:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":4126,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_16_100_felbontasa_1.jpg" alt="A 100 egész szám felbontása (1. példa)" class="wp-image-4126"/><figcaption>A 100 egész szám felbontása (1. példa)</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:image {"align":"center","id":4127,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_16_100_felbontasa_2.jpg" alt="A 100 egész szám felbontása (2. példa)" class="wp-image-4127"/><figcaption>A 100 egész szám felbontása (2. példa)</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:image {"align":"center","id":4128,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_16_100_felbontasa_3.jpg" alt="A 100 egész szám felbontása (3. példa)" class="wp-image-4128"/><figcaption>A 100 egész szám felbontása (3. példa)</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Nagyon úgy tűnik, hogy furcsamód minden így kapott felbontás – amennyiben a tényezők sorrendjétől és egymással való asszociáltságától eltekintünk – megegyezik. A következő részekben látni fogjuk, a [latex]\Z[/latex] gyűrűben történetesen valóban teljesül, hogy minden [latex]0[/latex]-tól és egységtől különböző elem <strong><em>egyértelműen</em></strong> írható fel felbonthatatlanok szorzataként. Ez azonban egyáltalán nem magától értetődő tulajdonsága egy gyűrűnek. Például a <strong><em>páros számok</em></strong> [latex]2\Z[/latex] gyűrűjében a [latex]100[/latex] egyrészt felírható [latex]2\cdot 50[/latex]-ként, másrészt pedig [latex]10\cdot 10[/latex]-ként, és ez a két felbontás „lényegesen” különbözik egymástól.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az egyértelmű felbonthatóság – azaz a számelmélet alaptételének – teljesülése vagy nem teljesülése egy adott gyűrűben szoros összefüggésben van a prímek és a felbonthatatlanok közötti viszonnyal. Még mielőtt ezt részletesen megvizsgálnánk, először is fogalmazzuk meg mostmár precízen, hogy mikor mondjuk egy integritástartományra azt, hogy teljesül benne a <strong><em>számelmélet alaptétele</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="szamelmelet-alaptetele" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A számelmélet alaptétele tehát tulajdonképpen két dolgot állít. Egyrészt azt állítja, hogy minden nemnulla és nem egység elemnek <strong><em>létezik</em></strong> felbontása. Másrészt pedig azt, hogy ez a felbontás „néhány apróságtól eltekintve” <strong><em>egyértelmű</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most adunk egy <strong><em>szükséges feltételt</em></strong> ahhoz, hogy egy integritástartományban teljesüljön a számelmélet alaptétele. A szükségesség azt jelenti, hogy <strong><em>ha ez a feltétel nem teljesül, akkor az alaptétel sem</em></strong>. Azonban önmagában ebből a feltételből még nem következik, hogy a gyűrű „alaptételes”.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="szamelmelet-alaptetelenek-szukseges-feltetele" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="szamelmelet-alaptetelenek-szukseges-feltetele-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Megjegyezzük azonban, hogy habár a fenti feltétel csak szükséges, de nem elégséges feltétel az alaptételhez, azonban „nem hiányzik sok” hozzá, hogy elégséges legyen. Ugyanis a feltétel csak azt nem garantálja, hogy minden (nem nulla és nem egység) elemnek <strong><em>létezik-e</em></strong> felbontása. Az alábbi tétel szerint ha viszont létezik felbontás, akkor annak <strong><em>egyértelműségét</em></strong> már garantálja.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="felbontas-egyertelmusegenek-elegseges-feltetele" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="felbontas-egyertelmusegenek-elegseges-feltetele-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az előző szakaszban a prímek és a felbonthatatlan elemek viszonyát vizsgáltuk, és megállapítottuk, hogy <strong><em>egységelemes</em></strong> integritástartományokban minden prím felbonthatatlan. Akkor feltettük a kérdést, hogy vajon mi a helyzet az olyan integritástartományokkal, amelyekben <strong><em>nem létezik egységelem</em></strong>?</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tekintve, hogy ez a kérdés a számelmélet alaptételének teljesülése szempontjából fontos, ezért inkább azt érdemes megvizsgálni, hogy teljesülhet-e egyáltalán az alaptétel ilyen integritástartományokban? Erre ad választ a következő tétel.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="szamelmelet-alaptetele-nem-egysegelemes-integritastartomanyokban" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="szamelmelet-alaptetele-nem-egysegelemes-integritastartomanyokban-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A fentiek alapján nem egységelemes integritástartományokban teljesen mindegy, hogy mi a prímek és a felbonthatatlan elemek viszonya, hiszen ezekben amúgysem teljesülhet az alaptétel.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Így már nagyjából teljes a kép azzal kapcsolatban, hogy mikor teljesülhet a számelmélet alaptétele egy integritástartományban. Erre adtunk ebben a szakaszban egy szükséges feltételt. Ez a feltétel a teljes alaptételhez ugyan nem volt elégséges, azonban az egyértelműségi részhez már igen. Létezik olyan feltétel is az alaptétel teljesüléséhez, amely szükséges és egyben elégséges is. Ez azonban túlmutat ennek a résznek a keretein, és az úgynevezett <a rel="noreferrer noopener" aria-label="ideálok (új fülön nyitja meg)" href="https://en.wikipedia.org/wiki/Ideal_(ring_theory)" target="_blank">ideálok</a> elméletéhez vezet, így azt egy későbbi részben fogjuk bemutatni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ebben a részben tehát megismerkedtünk a legfontosabb számelméleti fogalommal, azaz az „oszthatósággal”, illetve annak alapvető tulajdonságaival. Ezután bevezettük az „egység”, „asszociált”, „felbonthatatlan” és „prím” fogalmát, amelyek segítségével a számelmélet alaptételét precízen meg tudtuk fogalmazni. Végül szükséges (de nem elégséges) feltételt mutattunk ahhoz, hogy egy integritástartományban teljesülhessen az alaptétel.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A következő részben ugyanerre egy elégséges (de nem szükséges) feltételt is mutatunk. Ennek keretében gyűrűk egy speciális osztályával fogunk megismerkedni, amelyeket euklidészi gyűrűknek nevezünk, és amelyekbe – nagy szerencsénkre – az egész számok [latex]\Z[/latex] gyűrűje is beletartozik. Itt fogjuk óriási hasznát venni az <a rel="noreferrer noopener" aria-label="előző részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/15-rendezett-gyuru-absztrakt-algebra-egesz-szam-rendezesi-relacio-rendezesi-axiomak/" target="_blank">előző részben</a> erre a gyűrűre kiterjesztett [latex]\leq[/latex] szimbólummal jelölt rendezési relációnak.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A következő részt <a href="https://youproof.hu/kriptografia/17-euklideszi-algoritmus-maradekos-osztas-legnagyobb-kozos-oszto-euklideszi-gyuru/">itt</a> találod...</em></strong></p>
+<!-- /wp:paragraph -->

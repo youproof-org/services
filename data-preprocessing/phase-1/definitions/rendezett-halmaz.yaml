@@ -1,0 +1,13 @@
+type: definition
+name: rendezett-halmaz
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy adott egy $H$ halmaz, és egy rajta értelmezett $R$ reláció. Amennyiben $R$ ***egyszerre
+      reflexív, antiszimmetrikus és tranzitív***, úgy $R$-et $H$ feletti ***részbenrendezésnek ***hívjuk, vagy
+      pedig azt mondjuk, hogy a $H$ egy ***részbenrendezett halmaz*** az $R$ relációval.
+  - type: narrative
+    content: |
+      Az $R$ relációt ***teljes rendezésnek*** nevezzük $H$ felett, ha a fentieken kívül a ***trichotómia is
+      teljesül*** rá. Ilyenkor azt mondjuk, hogy a $H$ egy ***rendezett halmaz*** az $R$ relációval.

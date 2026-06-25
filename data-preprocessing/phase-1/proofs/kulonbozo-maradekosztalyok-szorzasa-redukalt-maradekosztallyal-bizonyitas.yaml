@@ -1,0 +1,53 @@
+type: proof
+name: kulonbozo-maradekosztalyok-szorzasa-redukalt-maradekosztallyal-bizonyitas
+remarks: []
+references:
+  egesz-szamok-kozotti-kongruencia-egyszerusitese:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia-egyszerusitese
+  egesz-szamok-maradekosztalyai:
+    target:
+      type: theorem
+      name: egesz-szamok-maradekosztalyai
+  egesz-szamok-maradekosztalygyurui:
+    target:
+      type: theorem
+      name: egesz-szamok-maradekosztalygyurui
+  redukalt-maradekosztaly-feltetele:
+    target:
+      type: theorem
+      name: redukalt-maradekosztaly-feltetele
+content:
+  - type: formula
+    lead-in: |
+      Tegyük fel ***indirekt***, hogy nem ez a helyzet, vagyis annak ellenére, hogy $[a]_n$ és $[b]_n$ különböznek
+      egymástól, mégiscsak teljesül az alábbi egyenlőség:
+    content: |
+      [c]_n \odot [a]_n = [c]_n \odot [b]_n
+  - type: formula
+    lead-in: |
+      A $\odot$ művelet [egesz-szamok-maradekosztalygyurui]ben ismertetett definíciója alapján ez az alábbit
+      jelenti:
+    content: |
+      [ca]_n = [cb]_n
+  - type: formula
+    lead-in: |
+      Az egész számok maradékosztályainak [egesz-szamok-maradekosztalyai]ben bevezetett definíciója alapján
+      ugyanezt a kongruenciák nyelvén is kifejezhetjük:
+    content: |
+      ca\equiv cb\pmod n
+  - type: narrative
+    content: |
+      Mivel $[c]_n$ egy redukált maradékosztály, ezért a [redukalt-maradekosztaly-feltetele] alapján $c$ relatív
+      prím $n$-hez, és így a kongruencia a [egesz-szamok-kozotti-kongruencia-egyszerusitese] utáni megjegyzés
+      szerint minden további nélkül egyszerűsíthető $c$-vel.
+  - type: formula
+    lead-in: |
+      Ezt kapjuk tehát:
+    content: |
+      a\equiv b\pmod n
+  - type: narrative
+    content: |
+      Ez viszont azt jelenti, hogy indirekt feltételezésünkkel ellentétben $a$ és $b$ mégiscsak ugyanazt a
+      maradékosztályt reprezentálja, ami ellentmondás.

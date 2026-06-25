@@ -1,0 +1,44 @@
+type: theorem
+name: linearis-diofantoszi-egyenlet-osszes-megoldasa
+proofs:
+  - linearis-diofantoszi-egyenlet-osszes-megoldasa-bizonyitas
+remarks:
+  - linearis-diofantoszi-egyenlet-osszes-megoldasa-megjegyzes
+references:
+  bezout-lemma-euklideszi-gyurukben:
+    target:
+      type: theorem
+      name: bezout-lemma-euklideszi-gyurukben
+content:
+  - type: narrative
+    content: |
+      Legyenek $a$, $b$ és $m$ tetszőleges egész számok, és tegyük fel, hogy $a$ és $m$ közül legalább az egyik
+      ***nemnulla***.
+  - type: formula
+    lead-in: |
+      Tegyük fel továbbá, hogy az alábbi lineáris diofantoszi egyenlet ***megoldható***:
+    content: |
+      ax+my=b
+  - type: narrative
+    content: |
+      Ekkor igazak az alábbiak:
+  - type: narrative
+    content: |
+      **1.** Az egyenlet ***egyik*** megoldását magkaphatjuk a [bezout-lemma-euklideszi-gyurukben] bizonyításában
+      ismertetett ***kibővített euklidészi algoritmus*** segítségével.
+  - type: formula
+    lead-in: |
+      **2.** Ha az $x=s$, $y=t$ számpár egy megoldás, akkor ***minden*** $k$ egész szám esetén az alábbi számpár is
+      egy megoldás:
+    content: |
+      \begin{aligned}x&=s+k\cdot \frac{m}{(a,m)} \\ y&=t-k\cdot \frac{a}{(a,m)}\end{aligned}
+  - type: formula
+    lead-in: |
+      **3.** Ha az $x=s_1$, $y=t_1$ számpár valamint az $x=s_2$, $y=t_2$ számpár két tetszőleges megoldás, akkor
+      ***létezik*** olyan $k$ egész szám, amelyre igaz az alábbi:
+    content: |
+      \begin{aligned}s_2&=s_1+k\cdot \frac{m}{(a,m)} \\ t_2&=t_1-k\cdot \frac{a}{(a,m)}\end{aligned}
+  - type: narrative
+    content: |
+      Itt $\frac{m}{(a,m)}$ illetve $\frac{a}{(a,m)}$ alatt azokat az egész számokat értjük, amelyeket az $(a,m)$
+      kitüntetett közös osztóval megszorozva rendre az $m$ illetve az $a$ egész számot kapjuk eredményül.

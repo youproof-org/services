@@ -1,0 +1,155 @@
+type: proof
+name: pozitivitastartomany-szukseges-es-elegseges-feltetele-bizonyitas
+remarks: []
+references:
+  gyuruk-alapveto-tulajdonsagai:
+    target:
+      type: theorem
+      name: gyuruk-alapveto-tulajdonsagai
+  pozitivitastartomany:
+    target:
+      type: definition
+      name: pozitivitastartomany
+  rendezett-gyuru:
+    target:
+      type: definition
+      name: rendezett-gyuru
+content:
+  - type: narrative
+    content: |
+      ***Nézzük először a könnyebbik irányt.*** Azt kell belátnunk, hogy ha valamilyen $P$ részhalmazhoz létezik
+      olyan $\leq$ részbenrendezés, amelynek épp $P$ a pozitivitástartománya, és kielégíti a [rendezett-gyuru]
+      szerinti rendezési axiómákat, akkor $P$ zárt az összeadásra és a szorzásra, valamint nem tartalmazza a
+      nullelemet.
+  - type: narrative
+    content: |
+      Vegyünk két tetszőleges $P$-beli elemet, és jelöljük őket $a$-val és $b$-vel.
+  - type: formula
+    lead-in: |
+      Az, hogy ők $P$-ben vannak, a [pozitivitastartomany] miatt ezt jelenti:
+    content: |
+      \begin{aligned}a&\ eq 0 \\ b&\ eq 0 \\ a&\geq 0 \\ b&\geq 0\end{aligned}
+  - type: narrative
+    content: |
+      Az 1. rendezési axióma miatt az $a\geq 0$ egyenlőtlenség mindkét oldalához $b$-t adva az egyenlőtlenség
+      továbbra is érvényes, azaz $a+b\geq b$.
+  - type: formula
+    lead-in: |
+      De mivel részbenrendezésről van szó, és $b\geq 0$ ugye teljesül, ezért a ***tranzitivitás*** miatt:
+    content: |
+      a+b\geq 0
+  - type: narrative
+    content: |
+      Igaz ugyanakkor az is, hogy $a+b \eq 0$, hiszen máskülönben $a=-b$ lenne a helyzet, azaz a
+      pozitivitástartomány [pozitivitastartomany]ja utáni megjegyzés alapján egyiküknek a $-P$
+      negativitástartományban kéne lennie. Ez ugye ellentmondana annak, hogy mindkettő $P$-ben van, így valóban
+      $a+b$ is benne van $P$-ben, azaz $P$ ***zárt az összeadásra***.
+  - type: narrative
+    content: |
+      Most nézzük, mi a helyzet az $ab$ és a $ba$ szorzatokkal? A 2. rendezési axióma miatt az $a\geq 0$
+      egyenlőtlenség mindkét oldalát megszorozhatjuk a $b\geq 0$ elemmel jobbról is és balról is, azaz egyrészt
+      $ab\geq 0b$, másrészt $ba\geq b0$.
+  - type: formula
+    lead-in: |
+      Mindkét egyenlőtlenség jobboldala a [gyuruk-alapveto-tulajdonsagai] 1. pontja alapján $0$-val egyenlő, ezért:
+    content: |
+      \begin{aligned}ab&\geq 0 \\ ba&\geq 0\end{aligned}
+  - type: narrative
+    content: |
+      Tekintve, hogy a gyűrű a tétel feltétele miatt ***nullosztómentes***, ezért e két szorzat közül egyik sem
+      $0$, és így mindkettő szintén benne van $P$-ben, azaz $P$ ***zárt a szorzásra is***.
+  - type: narrative
+    content: |
+      Végül, mivel $P$-ről azt mondtuk, hogy pozitivitástartománya a $\leq$ rendezési relációnak, ezért a
+      [pozitivitastartomany] miatt ***nem tartalmazza a nullelemet***.
+  - type: narrative
+    content: |
+      ***Most nézzük a nehezebbik irányt.*** Itt azt kell belátnunk, hogy ha valamilyen $P$ részhalmaz zárt az
+      összeadásra és a szorzásra, valamint nem tartalmazza a gyűrű nullelemét, akkor létezik olyan részbenrendezés
+      a gyűrűn, amelynek épp $P$ a pozitivitástartománya, és kielégíti a [rendezett-gyuru] szerinti rendezési
+      axiómákat.
+  - type: narrative
+    content: |
+      ***Definiáljunk hát egy $\lesssim$ szimbólummal jelölt relációt a gyűrű alaphalmazán a következőképpen: $a
+      \lesssim b$ akkor és csak akkor, ha $a=b$ vagy pedig a $b+(-a)$ elem benne van a $P$ halmazban.***
+  - type: narrative
+    content: |
+      A feladatunk tehát megmutatni, hogy a $P$-re vonatkozó feltételek teljesülése esetén $\lesssim$ valóban egy
+      részbenrendezés (azaz reflexív, tranzitív és antiszimmetrikus), és ezen felül még a rendezési axiómákat is
+      teljesíti. A ***reflexivitás*** azonnal látszik, hiszen a $\lesssim$ reláció teljesülésének első feltétele
+      épp $a=b$ volt.
+  - type: narrative
+    content: |
+      A ***tranzitivitás*** megmutatásához tegyük fel, hogy valamilyen $a$, $b$ és $c$ elemekre teljesülnek az
+      $a\lesssim b$ és a $b\lesssim c$ relációk. Feladatunk megmutatni, hogy ekkor az $a\lesssim c$ reláció is
+      teljesül. Feltehetjük, hogy ez a 3 elem páronként különbözik, máskülönben bármelyik kettő egyezése esetén
+      nyilvánvalóan fennáll $a\lesssim c$. Ha viszont páronként különböznek, akkor $a\lesssim b$ és $b\lesssim c$
+      épp azt jelenti, hogy a $b+(-a)$ és a $c+(-b)$ elemek benne vannak a $P$ halmazban. Mivel azonban $P$ zárt az
+      összeadásra, ezért ezek összege is, azaz a $(b+(-a))+(c+(-b))$ elem is benne van a $P$ halmazban. Az
+      összeadásra vonatkozó gyűrűaxiómák miatt azonban ez a kifejezés $c+(-a)$-val egyenlő, amely épp azt jelenti,
+      hogy $a\lesssim c$. A $\lesssim$ reláció tehát valóban tranzitív.
+  - type: narrative
+    content: |
+      Az ***antiszimmetria*** bizonyításához indirekt tegyük fel, hogy léteznek olyan galád $a$ és $b$ elemek,
+      amelyekre $a\lesssim b$ és $b\lesssim a$ is teljesül, ugyanakkor $a\eq b$. Ebben az esetben $a\lesssim b$ és
+      $b\lesssim a$ épp azt jelenti, hogy a $b+(-a)$ és az $a+(-b)$ elemek benne vannak a $P$ halmazban. Mivel
+      azonban $P$ zárt az összeadásra, ezért ezek összege is, azaz a $(b+(-a))+(a+(-b))$ elem is benne van a $P$
+      halmazban. Az összeadásra vonatkozó gyűrűaxiómák miatt azonban ez a kifejezés épp a gyűrű nullelemével
+      egyenlő. Ez ellentmond annak, hogy $P$ nem tartalmazza a nullelemet. A $\lesssim$ reláció tehát szükségképpen
+      antiszimmetrikus kell legyen.
+  - type: narrative
+    content: |
+      Annyi van még hátra, hogy megmutassuk, hogy a $\lesssim$ reláció teljesíti a [rendezett-gyuru] szerinti
+      ***rendezési axiómákat*** is. Nézzük az ***1. rendezési axiómát***. Ehhez tegyük fel, hogy valamilyen $a$ és
+      $b$ elemekre fennáll az $a\lesssim b$ reláció, és legyen $c$ egy tetszőleges gyűrűelem. Meg kell mutatnunk,
+      hogy ekkor fennáll az $a+c\lesssim b+c$ reláció is. Feltehetjük, hogy $a\eq b$, hiszen máskülönben
+      nyilvánvalóan a $\lesssim$ reláció már bizonyított reflexivitása miatt $a+c\lesssim \underbrace{a}_{=b}+c$ is
+      igaz. Ha viszont $a\eq b$, akkor $a\lesssim b$ épp azt jelenti, hogy $b+(-a)$ benne van a $P$ halmazban.
+  - type: formula
+    lead-in: |
+      Ehhez a kifejezéshez hozzáadva a $c$ elemet és annak ellentettjét, a kifejezés eredménye a gyűrűaxiómák miatt
+      nem változik:
+    content: |
+      (b+(-a))+\underbrace{(c+(-c))}_{=0}
+  - type: formula
+    lead-in: |
+      Mivel az összeadás kommutatív és asszociatív, így ez a kifejezés átzárójelezhető és átsorrendezhető:
+    content: |
+      (b+c)+((-a)+(-c))
+  - type: narrative
+    content: |
+      Vegyük azonban észre, hogy a jobboldali $(-a)+(-c)$ tag a [gyuruk-alapveto-tulajdonsagai] 5. pontja miatt így
+      is írható: $-(a+c)$.
+  - type: formula
+    lead-in: |
+      Így tehát azt kapjuk, hogy az alábbi elem szintén benne van a $P$ halmazban:
+    content: |
+      (b+c)+(-(a+c))
+  - type: narrative
+    content: |
+      Ez viszont a $\lesssim$ reláció definíciója miatt épp azt jelenti, hogy $a+c\lesssim b+c$.
+  - type: narrative
+    content: |
+      Végül ellenőrizzük a [rendezett-gyuru] szerinti ***2. rendezési axióma*** teljesülését is. Ehhez tegyük fel,
+      hogy valamilyen $a$ és $b$ elemekre fennáll az $a\lesssim b$ reláció, és legyen adva egy tetszőleges
+      $0\lesssim c$ gyűrűelem. Meg kell mutatnunk, hogy ekkor fennállnak az $ac\lesssim bc$, valamint a $ca\lesssim
+      cb$ relációk is. Feltehetjük egyrészt, hogy $c\eq 0$, hiszen máskülönben nyilvánvalóan a $\lesssim$ reláció
+      már bizonyított reflexivitása miatt $\underbrace{0}_{=a0=0a}\lesssim \underbrace{0}_{=b0=0b}$ is igaz.
+      Másrészt azt is feltehetjük, hogy $a\eq b$, hiszen máskülönben ugyanezen okok miatt $ac\lesssim
+      \underbrace{a}_{=b}c$ és $ca\lesssim c\underbrace{a}_{=b}$ szintén nyilvánvalóan teljesül.
+  - type: narrative
+    content: |
+      Ha viszont $a\eq b$ és $c\eq 0$, akkor egyrészt $a\lesssim b$ épp azt jelenti, hogy $b+(-a)$ benne van a $P$
+      halmazban, másrészt pedig $0\lesssim c$ épp azt jelenti, hogy $c+(-0)=c$ szintén benne van a $P$ halmazban.
+      Mivel azonban $P$ zárt a szorzásra, ezért a $(b+(-a))c$ valamint a $c(b+(-a))$ szorzatok szintén benne vannak
+      a $P$ halmazban.
+  - type: formula
+    lead-in: |
+      E két szorzat viszont a disztributivitási szabályok és a [gyuruk-alapveto-tulajdonsagai] 3. pontja miatt így
+      írható fel:
+    content: |
+      \begin{aligned}(b+(-a))c &= bc+(-a)c = bc+(-(ac)) \\ c(b+(-a)) &= cb+c(-a) = cb + (-(ca)) \end{aligned}
+  - type: narrative
+    content: |
+      Az, hogy ezek a $P$ halmazban vannak, a $\lesssim$ reláció definíciója miatt épp azt jelenti, hogy
+      $ac\lesssim bc$ és $ca\lesssim cb$. ***Valóban teljesül tehát a 2. rendezési axióma is.***

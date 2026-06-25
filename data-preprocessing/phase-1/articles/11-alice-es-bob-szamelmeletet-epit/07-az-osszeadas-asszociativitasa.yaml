@@ -1,0 +1,56 @@
+type: section
+name: 07-az-osszeadas-asszociativitasa
+title: Az összeadás asszociativitása
+
+references:
+  peano-osszeadas:
+    target:
+      type: definition
+      name: peano-osszeadas
+
+body:
+  - type: narrative
+    content: |
+      Az összeadást egy kétváltozós műveletként definiáltuk, de mi van akkor, ha nem kettő, hanem három &ndash;
+      vagy akár ennél több &ndash; számot szeretnénk összeadni? Nagyon jó lenne, ha nem kéne újabb és újabb 2-nél
+      többváltozós műveletet bevezetni a tagok számától függően. Tegyük fel például, hogy az $a+b+c$ összeget kell
+      kiszámítani. Hogyan fogjunk hozzá?
+  - type: figure
+    lead-in: |
+      Számítsuk ki először az első kettő összegét, és ennek eredményéhez adjuk hozzá a harmadikat? Vagy először
+      számítsuk ki az utolsó kettő összegét, és ennek eredményét adjuk hozzá az elsőhöz? Ezt a két lehetőséget
+      mutatja az alábbi két ábra:
+    src: 07-muveleti-sorrend-1-lehetoseg.jpg
+    alt: Műveleti sorrend - 1. lehetőség
+    caption: Műveleti sorrend - 1. lehetőség
+  - type: figure
+    src: 08-muveleti-sorrend-2-lehetoseg.jpg
+    alt: Műveleti sorrend - 2. lehetőség
+    caption: Műveleti sorrend - 2. lehetőség
+  - type: narrative
+    content: |
+      Az olyan műveleteket, amelyek esetén ez mindegy, ***asszociatív műveleteknek*** nevezzük. Kérdésünk tehát,
+      hogy vajon a [peano-osszeadas]ban ismertetett "összeadásnak" nevezett művelet teljesíti-e ezt a kritériumot
+      is? Most megmutatjuk, hogy szintén a Peano-axiómák következménye ennek a teljesülése is.
+  - type: embed
+    target:
+      type: theorem
+      name: peano-osszeadas-asszociativitas
+  - type: embed
+    target:
+      type: proof
+      name: peano-osszeadas-asszociativitas-bizonyitas
+  - type: narrative
+    content: |
+      Látható tehát, hogy a [peano-osszeadas]ban értelmezett "összeadásnak" nevezett művelet azon kívül, hogy
+      kommutatív, teljesíti az asszociativitást is, ahogy azt az általános iskolában már megszokhattuk tőle.
+  - type: narrative
+    content: |
+      Megjegyezzük ugyanakkor, hogy a fentiekben a kommutativitást csak 2 tagú, míg az asszociativitást csak 3 tagú
+      összegekre bizonyítottuk. Nem jelent túl nagy kihívást azonban annak belátása sem, hogy tetszőleges számú
+      tagból álló összegek is hasonló tulajdonsággal rendelkeznek. Sőt, általánosságban érvényes az alábbi állítás,
+      amelynek belátását azonban az Olvasóra bízom.
+  - type: embed
+    target:
+      type: theorem
+      name: asszociativ-kommutativ-tetszoleges-sorrend-zarojelezes

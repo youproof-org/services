@@ -1,0 +1,9 @@
+type: theorem
+name: peano-nullszorzat-tenyezoi
+proofs:
+  - peano-nullszorzat-tenyezoi-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      A természetes számok körében ha $a\cdot b=0$, akkor $a=0$ **vagy** $b=0$.

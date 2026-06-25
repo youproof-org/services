@@ -1,0 +1,40 @@
+type: theorem
+name: csoportok-direkt-szorzata
+proofs:
+  - csoportok-direkt-szorzata-bizonyitas
+remarks: []
+content:
+  - type: formula
+    lead-in: |
+      Legyenek $G_1$, $G_2$, ..., $G_n$ ***tetszőleges csoportok***, és értelmezzünk egy műveletet a $G_1\times
+      G_2\times \ldots \times G_n$ halmaz tetszőleges $(g_1;g_2;\ldots;g_n)$ és $(h_1;h_2;\ldots;h_n)$ elemei
+      között az alábbi módon:
+    content: |
+      (g_1;g_2;\ldots;g_n)\odot (h_1;h_2;\ldots;h_n)=(g_1\cdot h_1;g_2\cdot h_2;\ldots;g_n\cdot h_n)
+  - type: narrative
+    content: |
+      Azaz a $\odot$ műveletet úgy kell elvégezni, hogy az azonos pozícióban lévő komponensek szorzatait képezzük a
+      megfelelő csoportokban.
+  - type: narrative
+    content: |
+      Ekkor a $G_1\times G_2\times \ldots \times G_n$ halmaz ***szintén egy csoportot alkot*** ezzel a művelettel.
+      Ezt a csoportot a $G_1$, $G_2$, ..., $G_n$ csoportok ***direkt szorzatának***, vagy ***szorzatcsoportjának***
+      nevezzük.
+  - type: narrative
+    content: |
+      A szorzatcsoport ***egységeleme*** egy olyan rendezett $n$-es, amelynek minden komponensében a megfelelő
+      csoport egységeleme áll.
+  - type: formula
+    lead-in: |
+      Azaz:
+    content: |
+      e_{G_1\times G_2\times \ldots \times G_n}=(e_{G_1};e_{G_2};\ldots;e_{G_n})
+  - type: narrative
+    content: |
+      A szorzatcsoport egy tetszőleges $(g_1;g_2;\ldots;g_n)$ elemének $(g_1;g_2;\ldots;g_n)^{-1}$-gyel jelölt
+      ***inverzét*** úgy kapjuk meg, hogy vesszük minden komponens inverzét a megfelelő csoportban.
+  - type: formula
+    lead-in: |
+      Azaz:
+    content: |
+      (g_1;g_2;\ldots;g_n)^{-1}=(g_1^{-1};g_2^{-1};\ldots;g_n^{-1})

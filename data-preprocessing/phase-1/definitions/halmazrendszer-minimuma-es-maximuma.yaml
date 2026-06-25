@@ -1,0 +1,16 @@
+type: definition
+name: halmazrendszer-minimuma-es-maximuma
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $H$ egy tetszőleges halmaz, $\mathcal{H}$ pedig egy tetszőleges halmazrendszer $H$ felett. A
+      $\mathcal{H}$ halmazrendszer egy $A$ elemét ***$\mathcal{H}$-ban minimális elemnek*** nevezzük, ha nem
+      létezik olyan $X$ elem a halmazrendszerben, amelyre $X\sub A$ teljesülne, és ***$\mathcal{H}$-ban legszűkebb
+      (vagy legkisebb) elemnek*** nevezzük, ha a halmazrendszer tetszőleges $X$ elemére $A\sube X$ teljesül.
+  - type: narrative
+    content: |
+      Ehhez hasonlóan a $\mathcal{H}$ halmazrendszer egy $A$ elemét ***$\mathcal{H}$-ban maximális elemnek***
+      nevezzük, ha nem létezik olyan $X$ elem a halmazrendszerben, amelyre $A\sub X$ teljesülne, és
+      ***$\mathcal{H}$-ban legbővebb (vagy legnagyobb) elemnek*** nevezzük, ha a halmazrendszer tetszőleges $X$
+      elemére $X\sube A$ teljesül.

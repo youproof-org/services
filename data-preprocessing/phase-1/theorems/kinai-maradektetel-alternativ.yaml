@@ -1,0 +1,24 @@
+type: theorem
+name: kinai-maradektetel-alternativ
+proofs:
+  - kinai-maradektetel-alternativ-bizonyitas
+remarks:
+  - kinai-maradektetel-alternativ-megjegyzes
+content:
+  - type: narrative
+    content: |
+      Legyenek $p\gt 0$ és $q\gt 0$ valamilyen ***pozitív*** egész számok, továbbá tegyük fel, hogy $p$ és $q$
+      egymáshoz ***relatív prímek***. Ekkor ***minden*** $(A;B)\in \Z/p\Z \times \Z/q\Z$ rendezett pár esetén
+      $A\cap B\in \Z/pq\Z$.
+  - type: formula
+    lead-in: |
+      Tegyük fel, hogy az $x_1$ és $x_2$ egész számok kielégítik az alábbi kongruenciákat:
+    content: |
+      \begin{aligned}p\cdot x_1&\equiv 1\pmod q \\ q\cdot x_2&\equiv 1\pmod p\end{aligned}
+  - type: formula
+    lead-in: |
+      Amennyiben az $A$ és $B$ maradékosztályokat rendre valamilyen $a$ és $b$ egész számokkal reprezentáljuk
+      &ndash; azaz $A=[a]_p$ és $B=[b]_q$ &ndash;, akkor az alábbi képlet az $A\cap B$ maradékosztály egy
+      reprezentánselemét szolgáltatja:
+    content: |
+      A\cap B=[a\cdot q\cdot x_2 + b\cdot p\cdot x_1]_{pq}

@@ -1,0 +1,183 @@
+<!-- wp:paragraph -->
+<p>Mivel teljesül az [latex]e\cdot d\equiv 1\pmod{\varphi(m)}[/latex] kongruencia, ezért a [yp_element slug="egesz-szamok-kozotti-kongruencia" type="link" /] 3. pontja alapján teljesül az alábbi oszthatóság:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\varphi(m)|e\cdot d-1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az oszthatóság [yp_element slug="oszthatosag" type="link" /]ja alapján ekkor létezik olyan [latex]k[/latex] egész szám, amelyre teljesül az alábbi egyenlet:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]k\cdot \varphi(m)=e\cdot d-1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mindkét oldalhoz [latex]1[/latex]-et adva:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]k\cdot \varphi(m) + 1=e\cdot d[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt kell tehát bizonyítani, hogy tetszőleges [latex]x[/latex] esetén teljesül az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x^{\overbrace{k\cdot \varphi(m)+1}^{=ed}}\equiv x\pmod m[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Itt két eset lehetséges. Az első (és legvalószínűbb) esetben [latex]x[/latex] <strong><em>relatív prím</em></strong> [latex]m[/latex]-hez. Ekkor közvetlenül alkalmazható az <strong><em>Euler-Fermat tétel</em></strong> ([yp_element slug="euler-fermat-tetel" type="link" /]). Ehhez alakítsuk át a kongruencia baloldalán álló kifejezést a [yp_element slug="hatvanyozas-azonossagai" type="link" /] 2. és 3. pontjának megfelelően:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](x^{\varphi(m)})^k\cdot x\equiv x\pmod m[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az <strong><em>Euler-Fermat tétel</em></strong> miatt az [latex]x^{\varphi(m)}[/latex] kifejezés [latex]1[/latex]-gyel kongruens modulo [latex]m[/latex]. Így a [yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" type="link" /] 5. és 8. pontja alapján a fenti kongruencia egyszerűsíthető:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{1^k\cdot x}_{=x}\equiv x\pmod m[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez a kongruencia viszont nyilvánvalóan teljesül a [yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" type="link" /] 1. pontja alapján.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most nézzük meg, hogy mi a helyzet abban a nem túl gyakori esetben, ha [latex]x[/latex] <strong><em>NEM relatív prím</em></strong> [latex]m[/latex]-hez, azaz [latex]x[/latex]-nek és [latex]m[/latex]-nek van egységtől különböző közös osztója. Mivel az [latex]m=pq[/latex] modulusnak csak két prímtényezője van ([latex]p[/latex] és [latex]q[/latex]), ezért ez csak az alábbi három esetben fordulhat elő:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>1. eset:</em></strong> Az [latex]x[/latex] többszöröse [latex]p[/latex]-nek is és [latex]q[/latex]-nak is, azaz magának az [latex]m=pq[/latex] modulusnak. Ilyenkor tehát teljesül az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x\equiv 0\pmod m[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ekkor a [yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" type="link" /] 8. pontja alapján mindkét oldalt a [latex]k\cdot \varphi(m)+1[/latex]-edik hatványra emelve teljesül az alábbi kongruencia is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x^{k\cdot \varphi(m)+1}\equiv 0\pmod m[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A két kongruenciát összevetve a [yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" type="link" /] 2. és 3. pontjai alapján valóban teljesül a tétel állítása, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x^{k\cdot \varphi(m)+1}\equiv x\pmod m[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>2. eset:</em></strong> Az [latex]x[/latex] többszöröse [latex]p[/latex]-nek, de nem többszöröse [latex]q[/latex]-nak. Azaz teljesül a [latex]p|x[/latex] oszthatóság, de nem teljesül a [latex]q|x[/latex] oszthatóság. Ebben az esetben a [yp_element slug="primhatvanyhoz-relativ-primek" type="link" /] alapján [latex]x[/latex] relatív prím [latex]q[/latex]-hoz. Mivel [latex]\varphi(m)=(p-1)\cdot (q-1)[/latex], ezért teljesül az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x^{k\cdot \varphi(m) +1}=x^{k\cdot \overbrace{(p-1)\cdot (q-1)}^{=\varphi(m)} + 1}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Felhasználva a hatványozás azonosságairól szóló [yp_element slug="hatvanyozas-azonossagai" type="link" /] 2. és 3. pontját, ez a hatványkifejezés az alábbi alakba írható:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](x^{q-1})^{k\cdot (p-1)}\cdot x[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]x[/latex] relatív prím [latex]q[/latex]-hoz, ezért a <strong><em>kis Fermat-tétel</em></strong> ([yp_element slug="kis-fermat-tetel" type="link" /]) miatt teljesül az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x^{q-1}\equiv 1\pmod q[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" type="link" /] 8. pontja alapján mindkét oldalt a [latex]k\cdot (p-1)[/latex]-edik hatványra emelve továbbra is érvényes kongruenciát kapunk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](x^{q-1})^{k\cdot (p-1)}\equiv 1\pmod q[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Így tehát a [latex]x^{k\cdot \varphi(m) +1} = (x^{q-1})^{k\cdot (p-1)}\cdot x[/latex] kifejezésre teljesül az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x^{k\cdot \varphi(m) +1}\equiv x\pmod q[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Továbbá nyilván teljesül az alábbi kongruencia is, mivel [latex]x[/latex] többszöröse [latex]p[/latex]-nek, és így mindkét oldal [latex]0[/latex]-val kongruens modulo [latex]p[/latex]:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x^{k\cdot \varphi(m) +1}\equiv x\pmod p[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>3. eset:</em></strong> Az [latex]x[/latex] többszöröse [latex]q[/latex]-nak, de nem többszöröse [latex]p[/latex]-nek. Azaz teljesül a [latex]q|x[/latex] oszthatóság, de nem teljesül a [latex]p|x[/latex] oszthatóság. Ebben az esetben az [latex]x[/latex] egész szám [latex]q[/latex] helyett [latex]p[/latex]-hez lesz relatív prím. Ekkor az előző gondolatmenet szinte szóról szóra megismételhető, pusztán a [latex]p[/latex] és [latex]q[/latex] szerepét kell felcserélni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]ed=k\cdot \varphi(m)+1[/latex], ezért <strong><em>a 2. és 3. esetben</em></strong> is tulajdonképpen azt kaptuk, hogy teljesül az alábbi két kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}x^{ed}&amp;\equiv x\pmod p \\ x^{ed}&amp;\equiv x\pmod q\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez a [latex]\Z/p\Z[/latex] és a [latex]\Z/q\Z[/latex] maradékosztálygyűrűkben az alábbiakat jelenti:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}[x^{ed}]_p &amp;= [x]_p \\ [x^{ed}]_q &amp;= [x]_q\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ennek megfelelően ezt így írhatjuk fel a [latex]\Z/p\Z \times \Z/q\Z[/latex] direkt szorzat egy elemeként:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]([x^{ed}]_p; [x^{ed}]_q) = ([x]_p; [x]_q)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="kinai-maradektetel-alternativ" type="link" /] és a [yp_element slug="kinai-maradektetel-megforditasa" type="link" /] alapján azonban tudjuk, hogy a [latex]\Z/p\Z \times \Z/q\Z[/latex] elemei kölcsönösen egyértelműen megfeleltethetők a [latex]\Z/pq\Z[/latex] maradékosztálygyűrű elemeivel. Ez a leképezés a fenti egyenlet bal és jobboldalához a [yp_element slug="kinai-maradektetel-megforditasa" type="link" /]ben szereplő képlet alapján az alábbiakat rendeli hozzá:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}([x^{ed}]_p; [x^{ed}]_q) &amp;\to [x^{ed}]_{pq} \\ ([x]_p; [x]_q) &amp;\to [x]_{pq}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mármost ha itt a nyilak baloldalán álló objektumok megegyeznek, akkor a leképezés kölcsönösen egyértelműsége miatt a nyilak jobboldalán álló objektumok is meg kell egyezzenek, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][x^{ed}]_{pq}=[x]_{pq}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ugyanezt kongruenciával megfogalmazva megkapjuk a tétel állítását:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x^{ed}\equiv x\pmod{\underbrace{pq}_{=m}}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p></p>
+<!-- /wp:paragraph -->

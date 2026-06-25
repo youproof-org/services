@@ -1,0 +1,8 @@
+type: definition
+name: negyzetmentes-szam
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Egy $n$ egész számot ***négyzetmentesnek*** nevezünk, ha ***nem létezik*** olyan $k$ egész szám, hogy
+      teljesül a $k^2|n$ oszthatóság.

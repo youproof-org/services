@@ -1,0 +1,109 @@
+type: section
+name: 08-kozos-modulus-valasztasanak-hibaja
+title: Közös modulus választásának hibája
+
+references:
+  bezout-lemma-euklideszi-gyurukben:
+    target:
+      type: theorem
+      name: bezout-lemma-euklideszi-gyurukben
+  egesz-szamok-kozotti-kongruencia-tulajdonsagai:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia-tulajdonsagai
+  hatvanyozas-azonossagai:
+    target:
+      type: theorem
+      name: hatvanyozas-azonossagai
+
+body:
+  - type: narrative
+    content: |
+      Végül egy nagyon súlyos potenciális rendszertervezési hibára hívnánk fel a figyelmet. Mivel az RSA
+      meglehetősen számításigényes, ezért csábító lehet az a gondolat, hogy a teljes rendszer számára egyetlen $m$
+      modulust generálunk, és csak az egyes felhasználókhoz tartozó $e$ publikus és $d$ titkos kitevők lesznek
+      különbözőek a kulcsgenerálás során. Ez látszólag előnyös lehet, hiszen így például előre le tudunk gyártatni
+      egy célhardvert, amely a modulo $m$ maradékosztálygyűrűben való számolásra van optimalizálva.
+  - type: narrative
+    content: |
+      Képzeljük el, hogy az előző szakaszhoz hasonlóan ismét egy közös $x$ üzenet &ndash; például egy körlevél
+      &ndash; érkezik mondjuk két felhasználóhoz. Tegyük fel, hogy e két felhasználóhoz az $e_1$ és $e_2$ publikus
+      kitevők vannak rendelve. Nagy az esély rá, hogy e két kitevő egymáshoz ***relatív prím***, azaz
+      $(e_1,e_2)=1$, és ebben az esetben egy támadó sajnos meg tudja fejteni az $x$ nyílt üzenetet.
+  - type: formula
+    lead-in: |
+      Ő ugyanis az alábbi kongruenciákat írhatja fel:
+    content: |
+      \begin{aligned}y_1&\equiv x^{e_1}\pmod m \\ y_2&\equiv x^{e_2}\pmod m\end{aligned}
+  - type: narrative
+    content: |
+      Ebben a kongruenciarendszerben a támadó számára ismét egyedül az $x$ nyílt üzenet ismeretlen, hiszen az
+      összes többi paraméter a nyilvános kulcstárból, valamint a kommunikációs csatorna lehallgatásával
+      megismerhető. Nézzük, hogy mihez kezd mindezzel a támadó.
+  - type: narrative
+    content: |
+      A ***Bézout-lemmából*** ([bezout-lemma-euklideszi-gyurukben]) tudjuk, hogy bármely két egész szám kitüntetett
+      közös osztója kifejezhető a két szám ***lineáris kombinációjaként***. Ezt jelen esetben az $e_1$ és $e_2$
+      kitevőkre alkalmazhatjuk.
+  - type: formula
+    lead-in: |
+      Mivel róluk azt mondtuk, hogy relatív prímek &ndash; azaz $(e_1,e_2)=1$ &ndash;, ezért a ***Bézout-lemma***
+      alapján léteznek olyan $u$ és $v$ egész számok, amelyekre teljesül az alábbi:
+    content: |
+      (e_1,e_2)=1=u\cdot e_1 + v\cdot e_2
+  - type: narrative
+    content: |
+      Ráadásul a támadó a keresett $u$ és $v$ egész számokat hatékonyan elő tudja állítani a ***kibővített
+      euklidészi algoritmus*** segítségével, amelyről a 21. részben volt szó részletesen.
+  - type: formula
+    lead-in: |
+      Most vizsgáljuk meg, hogy a kiszámított $u$ és $v$ egész számokból, valamint a kommunikációs csatornán
+      elfogott $y_1$ és $y_2$ kódszövegekből képzett alábbi kifejezés mivel kongruens modulo $m$:
+    content: |
+      y_1^u\cdot y_2^v \equiv ?\pmod m
+  - type: narrative
+    content: |
+      Mivel $y_1\equiv x^{e_1}\pmod m$ és $y_2\equiv x^{e_2}\pmod m$ az RSA-kódolás alapján, ezért a ***kongruencia
+      tulajdonságairól*** szóló [egesz-szamok-kozotti-kongruencia-tulajdonsagai] 8. és 5.
+  - type: formula
+    lead-in: |
+      pontjait alkalmazva ezt kapjuk:
+    content: |
+      (\underbrace{x^{e_1}}_{\equiv y_1})^u\cdot (\underbrace{x^{e_2}}_{\equiv y_2})^v \equiv \ ?\pmod m
+  - type: narrative
+    content: |
+      A baloldali kifejezést a ***hatványozás azonosságairól*** szóló [hatvanyozas-azonossagai] 2. és 3.
+  - type: formula
+    lead-in: |
+      pontjai alapján átírhatjuk az alábbi módon:
+    content: |
+      x^{u\cdot e_1 + v\cdot e_2}\equiv \ ?\pmod m
+  - type: formula
+    lead-in: |
+      A Bézout-lemma alapján a kitevőről viszont már tudjuk, hogy az az $(e_1,e_2)=1$ kitüntetett közös osztóval
+      egyezik meg, azaz teljesül az alábbi:
+    content: |
+      x^{\overbrace{u\cdot e_1 + v\cdot e_2}^{=1}}\equiv x\pmod m
+  - type: narrative
+    content: |
+      A támadó tehát pusztán publikusan, illetve a csatorna lehallgatása által megszerezhető információkból ki
+      tudja számítani az $x$ nyílt szöveget anélkül, hogy feltörte volna az RSA-t. A fentiek alapján ugyanis nincs
+      más dolga, mint kiszámítani az $y_1^u\cdot y_2^v$ kifejezést, amely tehát biztosan az $x$ nyílt üzenettel
+      lesz kongruens modulo $m$.
+  - type: narrative
+    content: |
+      Felhívnánk a figyelmet azonban egy apró "csalásra", amelyet a fenti okfejtésben elkövettünk. Vizsgáljuk meg
+      ugyanis jobban a Bézout-lemmából kapott $u\cdot e_1 + v\cdot e_2=1$ egyenletet. Mivel itt az $e_1$ és $e_2$
+      kitevők mindketten pozitívak, ezért ebből következik, hogy $u$ és $v$ közül pontosan az egyik szükségképpen
+      ***negatív***. Ők viszont a fenti $y_1^u\cdot y_2^v$ kifejezésben kitevőkként szerepelnek. Márpedig ebben az
+      esetben elvileg nem használhatnánk a ***hatványozás azonosságairól*** szóló [hatvanyozas-azonossagai]t és a
+      ***kongruencia tulajdonságairól*** szóló [egesz-szamok-kozotti-kongruencia-tulajdonsagai]t, hiszen ezeket
+      csak pozitív kitevőkre bizonyítottuk. Arról már nem is beszélve, hogy az eddigi definícióink alapján negatív
+      kitevőket egyelőre nem is tudunk értelmezni.
+  - type: narrative
+    content: |
+      Ennek a kis hiányosságnak a pótlását a következő részre halasztjuk, mivel ehhez fel kell építeni néhány újabb
+      fontos algebrai fogalmat. Ám elöljáróban megjegyezzük, hogy a hatványozás azonosságai és a kongruenciák
+      tulajdonságai ebben a kibővített értelmezésben is érvényben fognak maradni. Így válik majd a fenti érvelés
+      teljessé. Konklúzióként azonban elmondhatjuk, hogy a közös modulus választását mindenképpen el kell kerülni
+      az RSA-algoritmuson alapuló kriptográfiai rendszerekben.

@@ -1,0 +1,104 @@
+type: proof
+name: normaloszto-szerinti-muvelet-joldefinialtsaga-bizonyitas
+remarks: []
+references:
+  csoport:
+    target:
+      type: definition
+      name: csoport
+  komplexusmuveletek:
+    target:
+      type: definition
+      name: komplexusmuveletek
+  mellekosztalyok:
+    target:
+      type: theorem
+      name: mellekosztalyok
+  normaloszto:
+    target:
+      type: definition
+      name: normaloszto
+content:
+  - type: narrative
+    content: |
+      Előzetesen felhívjuk az Olvasó figyelmét, hogy a bizonyítás leírásában a [komplexusmuveletek]ban szereplő
+      ***komplexusszorzást*** és a $G$ csoport ***szorzásnak nevezett műveletét*** jelölésben is élesen meg fogjuk
+      különböztetni egymástól, mivel ki szeretnénk hangsúlyozni, hogy nagyon nem ugyanarról van szó. Míg előbbit
+      simán egymás után írással, addig utóbbit a $\cdot$ szimbólummal fogjuk jelölni.
+  - type: formula
+    lead-in: |
+      Egyrészt az ***1. feltétel*** &ndash; miszerint $a_1$ ugyanabban az $N$ szerinti baloldali mellékosztályban
+      van, mint $a_2$ &ndash; a [mellekosztalyok] alapján azt jelenti, hogy az $a_1N$ és az $a_2N$ halmazok
+      megegyeznek, azaz:
+    content: |
+      a_1N=a_2N
+  - type: formula
+    lead-in: |
+      Ehhez hasonlóan a ***2. feltétel*** az alábbi halmazegyenlőséget jelenti:
+    content: |
+      b_1N=b_2N
+  - type: narrative
+    content: |
+      Ezek alapján tehát azt kell bizonyítanunk, hogy az $(a_1\cdot b_1)N$ és az $(a_2\cdot b_2)N$ halmazok is
+      megegyeznek. Az $(a_1\cdot b_1)N$ halmaz elemeit ugye a [komplexusmuveletek] alapján úgy kapjuk meg, hogy az
+      $(a_1\cdot b_1)\cdot x$ kifejezésbe $x$ helyére az $N$ normálosztó összes elemét behelyettesítjük.
+  - type: formula
+    lead-in: |
+      Ez a kifejezés viszont a [csoport] alapján a csoportművelet ***asszociativitása*** miatt átzárójelezhető:
+    content: |
+      a_1\cdot (b_1\cdot x)
+  - type: narrative
+    content: |
+      Ha most itt csak a zárójelben lévő kifejezést tekintjük, és ebbe helyettesítjük be $N$ összes elemét, akkor
+      tulajdonképpen a $b_1N$ baloldali mellékosztályt, mint halmazt kapjuk. Ebből következően az $(a_1\cdot b_1)N$
+      halmaz elemeit úgy is megkaphatjuk, hogy az $a_1\cdot y$ kifejezésbe $y$ helyére a $b_1N$ baloldali
+      mellékosztály elemeit helyettesítjük be.
+  - type: formula
+    lead-in: |
+      Vagyis fennáll az alábbi halmazegyenlőség:
+    content: |
+      (a_1\cdot b_1)N=a_1(b_1N)=\ldots
+  - type: formula
+    lead-in: |
+      A ***2. feltételből*** következően viszont a $b_1N$ halmaz megegyezik a $b_2N$ halmazzal, ami viszont &ndash;
+      lévén, hogy $N$ ***normálosztó*** &ndash; a [normaloszto] alapján megegyezik az $Nb_2$ halmazzal, azaz:
+    content: |
+      \ldots=a_1(Nb_2)=\ldots
+  - type: narrative
+    content: |
+      Ennek a halmaznak az elemeit tehát úgy kapjuk meg, hogy az $a_1\cdot y$ kifejezésbe $y$ helyére az $Nb_2$
+      jobboldali mellékosztály elemeit helyettesítjük be, amelynek az elemeit viszont úgy kapjuk, hogy az $x\cdot
+      b_2$ kifejezésbe $x$ helyére az $N$ normálosztó elemeit helyettesítjük be. Azaz lényegében az $a_1\cdot
+      (x\cdot b_2)$ kifejezésbe helyettesítettük be $N$ elemeit, amely kifejezés viszont ismét az
+      ***asszociativitás*** miatt átzárójelezhető, tehát ugyanazt a halmazt kapjuk, ha az $(a_1\cdot x)\cdot b_2$
+      kifejezésbe helyettesítjük be $N$ elemeit.
+  - type: narrative
+    content: |
+      Ha most itt ismét csak a zárójelben lévő kifejezést tekintjük, és ebbe helyettesítjük be $N$ összes elemét,
+      akkor tulajdonképpen az $a_1N$ baloldali mellékosztályt, mint halmazt kapjuk. Ebből következően az
+      $a_1(Nb_2)$ halmaz elemeit úgy is megkaphatjuk, hogy az $y\cdot b_2$ kifejezésbe $y$ helyére az $a_1N$
+      baloldali mellékosztály elemeit helyettesítjük be.
+  - type: formula
+    lead-in: |
+      Vagyis a fenti halmazegyenlőségi sorozatot tovább folytathatjuk:
+    content: |
+      \ldots=(a_1N)b_2=\ldots
+  - type: formula
+    lead-in: |
+      A ***2. feltételből*** következően viszont az $a_1N$ halmaz megegyezik az $a_2N$ halmazzal, ami viszont
+      &ndash; lévén, hogy $N$ ***normálosztó*** &ndash; a [normaloszto] alapján megegyezik az $Na_2$ halmazzal,
+      azaz:
+    content: |
+      \ldots=(Na_2)b_2=\ldots
+  - type: formula
+    lead-in: |
+      A fenti, a csoportművelet ***asszociativitására*** építő gondolatmenetet megismételve ez viszont az
+      $N(a_2\cdot b_2)$ jobboldali mellékosztállyal lesz azonos, ami viszont meg fog egyezni az $(a_2\cdot b_2)N$
+      baloldali mellékosztállyal, hiszen $N$ ugye ***normálosztó***:
+    content: |
+      \ldots=N(a_2\cdot b_2)=(a_2\cdot b_2)N
+  - type: narrative
+    content: |
+      Tehát valóban megkaptuk a tétel állítását, miszerint az $(a_1\cdot b_1)N$ és az $(a_2\cdot b_2)N$ baloldali
+      mellékosztályok megegyeznek, vagy másként fogalmazva az $a_1\cdot b_1$ szorzat valóban ugyanabban a baloldali
+      mellékosztályban van, mint az $a_2\cdot b_2$ szorzat.

@@ -1,0 +1,66 @@
+type: proof
+name: miller-rabin-szorzat-bizonyitas
+remarks: []
+references:
+  gyuru-test:
+    target:
+      type: definition
+      name: gyuru-test
+  gyuruk-alapveto-tulajdonsagai:
+    target:
+      type: theorem
+      name: gyuruk-alapveto-tulajdonsagai
+  hatvanyozas-azonossagai:
+    target:
+      type: theorem
+      name: hatvanyozas-azonossagai
+content:
+  - type: formula
+    lead-in: |
+      Azt a jól ismert azonosságot fogjuk használni, miszerint bármilyen kommutatív gyűrű tetszőleges $x$ és $y$
+      elemeire teljesül az alábbi:
+    content: |
+      x^2-y^2=(x-y)\cdot (x+y)
+  - type: narrative
+    content: |
+      Ez a [gyuru-test]ben szereplő gyűrűaxiómák közvetlen következménye, amelyet most le is ellenőrzünk.
+  - type: formula
+    lead-in: |
+      Rögtön alkalmazhatjuk az 5. pontban lévő első disztributivitási szabályt:
+    content: |
+      (x-y)\cdot (x+y)=(x-y)\cdot x + (x-y)\cdot y=\ldots
+  - type: narrative
+    content: |
+      A kapott összeg két tagjára a második disztributivitási szabályt alkalmazhatjuk.
+  - type: formula
+    lead-in: |
+      Figyelembe véve a [gyuruk-alapveto-tulajdonsagai] 3. pontját valóban a fent szereplő kifejezést kapjuk:
+    content: |
+      \ldots = x^2-yx + xy-y^2 = x^2-y^2
+  - type: narrative
+    content: |
+      Ezek után alkalmazhatjuk ezt az azonosságot az $a^{2^ek}-1$ kifejezésre.
+  - type: formula
+    lead-in: |
+      Ez ugyanis a hatványozás azonosságairól szóló [hatvanyozas-azonossagai] 2. és 3. pontjai alapján a
+      következőképpen alakítható át:
+    content: |
+      a^{2^ek}-1=a^{2^{e-1}\cdot k\cdot 2}-1=(a^{2^{e-1}\cdot k})^2-1
+  - type: formula
+    lead-in: |
+      Erre már alkalmazhatjuk a fenti azonosságot $x=a^{2^{e-1}\cdot k}$ és $y=1$ szereposztással:
+    content: |
+      (\underbrace{a^{2^{e-1}\cdot k}}_{=x})^2-(\underbrace{1}_{=y})^2=(\underbrace{a^{2^{e-1}\cdot
+      k}}_{=x}-\underbrace{1}_{=y})\cdot (\underbrace{a^{2^{e-1}\cdot k}}_{=x}+\underbrace{1}_{=y})=\ldots
+  - type: formula
+    lead-in: |
+      Amennyiben az $e-1$ kitevő még mindig nagyobb $0$-nál, akkor a kapott szorzat első tényezőjére
+      megismételhetjük a fenti eljárást:
+    content: |
+      \ldots=\underbrace{(a^{2^{e-2}\cdot k}-1)\cdot (a^{2^{e-2}\cdot k}+1)}_{=a^{2^{e-1}\cdot k}-1}\cdot
+      (a^{2^{e-1}\cdot k}+1)=\ldots
+  - type: narrative
+    content: |
+      Ha még az $e-2$ kitevő is nagyobb $0$-nál, akkor az első tényezőt ugyanígy tovább bonthatjuk. Minden lépésben
+      tovább fog csökkenni a kitevő, és előbb-utóbb &ndash; egészen pontosan $e$ lépés után &ndash; eléri a $0$-t.
+      Ekkor épp a tételben szereplő szorzatot fogjuk kapni.

@@ -1,0 +1,22 @@
+type: theorem
+name: osszegtarto-lekepezes-nullelem-es-ellentettkepzestarto
+proofs:
+  - osszegtarto-lekepezes-nullelem-es-ellentettkepzestarto-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen adva egy $(R,+,\cdot)$ és egy $(S,\oplus,\odot)$ gyűrű, valamint egy közöttük lévő $f:R\to S$
+      ***összegtartó leképezés***.
+  - type: ordered-list
+    lead-in: |
+      Ekkor igazak az alábbiak:
+    items:
+      - 'Ha rendre $0_R$ és $0_S$ jelöli az $R$ és $S$ gyűrűk nullelemét, akkor $f(0_R)=0_S$.'
+      - 'Ha rendre a $-$ és a $\ominus$ szimbólumok jelölik az $R$-beli és $S$-beli ellentettképzést, akkor
+        tetszőleges $R$-beli $a$ elem esetén $f(-a)=\ominus f(a)$.'
+  - type: narrative
+    content: |
+      ***Szavakkal:*** egy összegtartó leképezés az ellentettképzést és a nullelemet is tartja. Azaz egyrészt az
+      $R$ gyűrű nullelemének képe az $S$ gyűrű nulleleme, másrészt bármely $R$-beli elem $R$-beli ellentettjének
+      képe az elem képének $S$-beli ellentettje.

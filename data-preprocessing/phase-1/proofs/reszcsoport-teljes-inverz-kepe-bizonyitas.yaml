@@ -1,0 +1,90 @@
+type: proof
+name: reszcsoport-teljes-inverz-kepe-bizonyitas
+remarks: []
+references:
+  csoporthomomorfizmus-egysegelem-es-inverzkepzestarto:
+    target:
+      type: theorem
+      name: csoporthomomorfizmus-egysegelem-es-inverzkepzestarto
+  kep-teljes-inverz-kep:
+    target:
+      type: definition
+      name: kep-teljes-inverz-kep
+  reszcsoport-feltetele:
+    target:
+      type: theorem
+      name: reszcsoport-feltetele
+content:
+  - type: narrative
+    content: |
+      Tegyük fel tehát, hogy $L$-nek létezik teljes inverz képe $G$-ben &ndash; hiszen a tétel úgyis csak ezekről
+      az esetekről nyilatkozik &ndash;, és vezessük be a $K=f^{-1}(L)$ jelölést. A $K$ halmaz a
+      [kep-teljes-inverz-kep] alapján nyilván részhalmaza $G$-nek. Ezért csak a [reszcsoport-feltetele]
+      feltételeinek teljesülését kell ellenőrizni $K$-ra, továbbá igazolni a $\ker f\sube K$ tartalmazást.
+  - type: narrative
+    content: |
+      **1. feltétel: $K$ zárt a $G$ csoport műveletére nézve**
+  - type: narrative
+    content: |
+      Legyenek $a$ és $b$ a $K$ halmaz két tetszőleges eleme. Mivel $K=f^{-1}(L)$, ezért a [kep-teljes-inverz-kep]
+      utáni megjegyzés alapján $f(K)=L$, és így ugyanezen definíció alapján $f(a)$ és $f(b)$ is benne van $L$-ben.
+      Ekkor azonban a [reszcsoport-feltetele] 1. pontja miatt az ő $f(a)\cdot f(b)$ szorzatuk is $L$-ben van,
+      hiszen a tétel szövege alapján $L$ részcsoport $H$-ban, azaz zárt a $H$-beli műveletre nézve.
+  - type: formula
+    lead-in: |
+      Ez a szorzat azonban $f$ művelettartó tulajdonsága alapján átírható az alábbi módon:
+    content: |
+      f(a)\cdot f(b)=f(ab)\in L
+  - type: narrative
+    content: |
+      Vagyis az $ab$ szorzat $f$ szerinti képe $L$-ben van. Mivel azonban $K=f^{-1}(L)$, ezért ez a
+      [kep-teljes-inverz-kep] szerint azt is jelenti, hogy az $ab$ szorzat csak $K$-ban lehet. A $K$ halmaz tehát
+      valóban zárt a $G$-beli műveletre nézve.
+  - type: narrative
+    content: |
+      **2. feltétel: $K$ tartalmazza a $G$ csoport egységelemét**
+  - type: narrative
+    content: |
+      Mivel $L$ részcsoport $H$-ban, ezért a [reszcsoport-feltetele] 2. pontja miatt tartalmazza annak
+      egységelemét, amelyet most jelöljünk $e_H$-val. A [csoporthomomorfizmus-egysegelem-es-inverzkepzestarto] 1.
+      pontja alapján azonban tudjuk, hogy a $G$ csoport egységelemének &ndash; amelyet most jelöljünk $e_G$-vel
+      &ndash; $f$ szerinti képe $e_H$, azaz $f(e_G)=e_H$. Mivel azonban $K$ az $L$ halmaz $f$ szerinti teljes
+      inverz képe, ezért a [kep-teljes-inverz-kep] miatt $e_G$ csak $K$-ban lehet. Így tehát $K$ valóban
+      tartalmazza a $G$ csoport egységelemét.
+  - type: narrative
+    content: |
+      **3. feltétel: $K$ zárt a $G$-beli inverzképzésre**
+  - type: narrative
+    content: |
+      Legyen $a$ tetszőleges $K$-beli elem. Ekkor az 1. feltétel bizonyításánál már látott $f(K)=L$ miatt $f(a)$
+      benne van $L$-ben. Mivel azonban $L$ részcsoport $H$-ban, így a [reszcsoport-feltetele] 3. pontja miatt az
+      $(f(a))^{-1}$ inverz is benne van $L$-ben.
+  - type: formula
+    lead-in: |
+      A [csoporthomomorfizmus-egysegelem-es-inverzkepzestarto] 2. pontja alapján azonban tudjuk, hogy $f$ tartja a
+      $G$-beli inverzképzést, így teljesül az alábbi:
+    content: |
+      (f(a))^{-1}=f(a^{-1})\in L
+  - type: narrative
+    content: |
+      Vagyis az $a^{-1}$ inverz $f$ szerinti képe $L$-ben van. Mivel azonban $K=f^{-1}(L)$, ezért ez a
+      [kep-teljes-inverz-kep] szerint azt is jelenti, hogy maga az $a^{-1}$ inverz csak $K$-ban lehet. A $K$ halmaz
+      tehát valóban zárt a $G$-beli inverzképzésre nézve.
+  - type: narrative
+    content: |
+      **Végül a $\ker f\sube K$ tartalmazást igazoljuk.**
+  - type: narrative
+    content: |
+      Legyen $a$ tetszőleges elem $f$ magjában, azaz $a\in \ker f$. Azt kell megmutatni, hogy ekkor $a\in K$ is
+      teljesül. Mivel $a$ benne van $f$ magjában, így az ő $f$ szerinti képe a $H$ csoport egységeleme, amelyet
+      jelöljünk továbbra is $e_H$-val.
+  - type: formula
+    lead-in: |
+      Azaz:
+    content: |
+      f(a)=e_H
+  - type: narrative
+    content: |
+      Az $e_H$-ról azonban tudjuk, hogy benne van $L$-ben, hiszen $L$ ugye részcsoport $H$-ban. Mivel azonban $e_H$
+      az $a$ elem $f$ szerinti képe, ezért $f^{-1}(L)=K$ miatt a [kep-teljes-inverz-kep] alapján maga $a$
+      szükségképpen benne van $K$-ban.

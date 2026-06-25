@@ -1,0 +1,10 @@
+type: theorem
+name: szamelmelet-alaptetelenek-szukseges-feltetele
+proofs:
+  - szamelmelet-alaptetelenek-szukseges-feltetele-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ egy ***integritástartomány***, amelyben ***teljesül a számelmélet alaptétele***. Ekkor minden
+      felbonthatatlan elem prímtulajdonságú $R$-ben.

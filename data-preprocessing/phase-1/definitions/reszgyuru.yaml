@@ -1,0 +1,13 @@
+type: definition
+name: reszgyuru
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Ha egy $R$ gyűrű valamely $S$ részhalmaza maga is gyűrű az $R$ műveleteire nézve, akkor azt mondjuk, hogy $S$
+      ***részgyűrű*** $R$-ben. Ezt így jelöljük: $S\leq R$.
+  - type: narrative
+    content: |
+      A nullgyűrű és maga a teljes $R$ nyilvánvalóan részgyűrűk $R$-ben. Ezeket ***triviális részgyűrűknek***
+      nevezzük. Azt, hogy $S$ részgyűrű $R$-ben, de $S\eq R$ így jelöljük: $S\lt R$. Ilyenkor azt mondjuk, hogy $S$
+      ***valódi részgyűrű*** $R$-ben.

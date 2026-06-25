@@ -1,0 +1,25 @@
+type: proof
+name: egesz-szamok-osszeadasa-joldefinialt-bizonyitas
+remarks: []
+references:
+  termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel:
+    target:
+      type: theorem
+      name: termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel
+content:
+  - type: formula
+    lead-in: |
+      Az $(a_1;b_1)\sim (a_2;b_2)$ valamint a $(c_1;d_1)\sim (c_2;d_2)$ relációkból a
+      [termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel] miatt az alábbi két egyenletet
+      írhatjuk fel:
+    content: |
+      \begin{aligned}a_1+b_2 &= b_1+a_2 \\ c_1+d_2 &= d_1+c_2\end{aligned}
+  - type: formula
+    lead-in: |
+      A két egyenletet összeadva a következőt kapjuk:
+    content: |
+      (a_1+c_1)+(b_2+d_2) = (b_1+d_1)+(a_2+c_2)
+  - type: narrative
+    content: |
+      Ez viszont szintén a [termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel] miatt épp
+      azt jelenti, hogy $(a_1+c_1;b_1+d_1)\sim (a_2+c_2;b_2+d_2)$.

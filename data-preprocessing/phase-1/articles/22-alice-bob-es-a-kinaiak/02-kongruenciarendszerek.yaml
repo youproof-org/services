@@ -1,0 +1,107 @@
+type: section
+name: 02-kongruenciarendszerek
+title: Kongruenciarendszerek
+
+references:
+  halmazelmeleti-alapfogalmak:
+    target:
+      type: definition
+      name: halmazelmeleti-alapfogalmak
+  halmazmuveletek:
+    target:
+      type: definition
+      name: halmazmuveletek
+  linearis-diofantoszi-egyenlet-osszes-megoldasa:
+    target:
+      type: theorem
+      name: linearis-diofantoszi-egyenlet-osszes-megoldasa
+  linearis-kongruenciak:
+    target:
+      type: definition
+      name: linearis-kongruenciak
+  linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga:
+    target:
+      type: theorem
+      name: linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga
+  linearis-kongruenciak-megoldasai-es-megoldasszama:
+    target:
+      type: theorem
+      name: linearis-kongruenciak-megoldasai-es-megoldasszama
+
+body:
+  - type: narrative
+    content: |
+      A 20. részben megismerkedtünk az úgynevezett ***kongruenciaegyenletekkel***. Ezek olyan kongruenciák,
+      amelyekben valamilyen $x$ ismeretlen is szerepel, a feladatunk pedig az egész számok egy olyan részhalmazának
+      (vagy részhalmazainak) meghatározása, amelynek (vagy amelyeknek) elemeit behelyettesítve az $x$ ismeretlen
+      helyére a kongruencia teljesül. E kongruenciaegyenletek legegyszerűbb képviselői az úgynevezett ***lineáris
+      kongruenciák*** voltak, így a továbbiakban elsősorban ezeket fogjuk példaként felhozni.
+  - type: formula
+    lead-in: |
+      Legyen például $a$ és $b$ tetszőleges, $m\gt 0$ pedig valamilyen pozitív egész szám, és tekintsük az alábbi
+      lineáris kongruenciát:
+    content: |
+      a\cdot x\equiv b\pmod m
+  - type: narrative
+    content: |
+      A [linearis-kongruenciak] utáni megjegyzés alapján egy ilyen kongruenciaegyenletnek a megoldásai ***teljes
+      modulo $m$ maradékosztályok*** lesznek &ndash; amennyiben persze létezik megoldás.
+  - type: narrative
+    content: |
+      Most bonyolítsuk meg a dolgot egy kicsit. A hagyományos egyenletekhez hasonlóan a kongruenciaegyenletek
+      esetén is előfordulhat, hogy ugyanarra az ismeretlenre egyidejűleg több, különböző modulus szerinti
+      kongruenciafeltételt is előírunk. Ezeket ***kongruenciarendszereknek*** nevezzük.
+  - type: formula
+    lead-in: |
+      A példa kedvéért továbbra is a lineáris kongruenciáknál maradva tegyük fel, hogy most az egész számoknak azon
+      részhalmát (vagy részhalmazait) keressük, amelynek (vagy amelyeknek) elemei egyszerre elégítik ki az alábbi
+      ***mindkét*** kongruenciát:
+    content: |
+      \begin{aligned}3x&\equiv 2\pmod 5 \\ 6x&\equiv 4\pmod 8\end{aligned}
+  - type: narrative
+    content: |
+      Nyilvánvalóan egy ilyen rendszer megoldhatóságának szükséges feltétele, hogy a benne szereplő kongruenciák
+      külön-külön megolhatók legyenek. Ez ebben a példában természetesen a
+      [linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga] alapján teljesül, mivel a $(3,5)=1$
+      és a $(6,8)=2$ kitüntetett közös osztók osztói a megfelelő kongruenciák jobboldalainak, azaz rendre a $2$ és
+      a $4$ egész számoknak.
+  - type: narrative
+    content: |
+      A [linearis-kongruenciak-megoldasai-es-megoldasszama] 1. pontja alapján az első kongruenciának $(3,5)=1$
+      darab modulo $5$ maradékosztály, míg a másodiknak $(6,8)=2$ darab modulo $8$ maradékosztály lesz a megoldása.
+  - type: formula
+    lead-in: |
+      Ezek megtalálásához előszöris a [linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga]
+      alapján az alábbi két lineáris diofantoszi egyenletet kell megoldani:
+    content: |
+      \begin{aligned}3x+5y&=2 \\ 6x+8y&=4\end{aligned}
+  - type: narrative
+    content: |
+      Ezt a [linearis-diofantoszi-egyenlet-osszes-megoldasa] 1. pontja alapján a ***kibővített euklidészi
+      algoritmussal*** tudjuk megtenni. Az így kapott megoldásokat a
+      [linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga]ben leírtaknak megfelelően
+      visszafordítva a kongruenciák nyelvére azt kapjuk, hogy a $3x\equiv 2\pmod 5$ kongruenciának a $[4]_5$ modulo
+      $5$ maradékosztály, míg a $6x\equiv 4\pmod 8$ kongruenciának a $[6]_8$ modulo $8$ maradékosztály egy-egy
+      megoldása lesz. Előbbinek ugye nincs más megoldása, míg utóbbinak a
+      [linearis-kongruenciak-megoldasai-es-megoldasszama] 2. pontja alapján egy további megoldása lesz a $[2]_8$
+      modulo $8$ maradékosztály.
+  - type: formula
+    lead-in: |
+      A fenti kongruenciarendszerben szereplő két lineáris kongruencia megoldásait az alábbiakban foglaltuk össze a
+      [halmazelmeleti-alapfogalmak]ban és a [halmazmuveletek]ban tanult halmazelméleti jelölésekkel:
+    content: |
+      \begin{aligned}3x\equiv 2\pmod 5 &\to x\in [4]_5 \\ 6x\equiv 4\pmod 8 &\to x\in [6]_8 \cup [2]_8\end{aligned}
+  - type: narrative
+    content: |
+      Olyan egész számokat keresünk tehát, amelyek $5$-tel osztva $4$ maradékot, és $8$-cal osztva $6$ vagy $2$
+      maradékot adnak.
+  - type: formula
+    lead-in: |
+      Azaz tulajdonképpen az alábbi két kongruenciarendszer megoldásait keressük:
+    content: |
+      \begin{array}{c} \boxed{\begin{aligned}x&\equiv 4\pmod 5 \\ x&\equiv 6\pmod 8\end{aligned}} \\ \\
+      \boxed{\begin{aligned}x&\equiv 4\pmod 5 \\ x&\equiv 2\pmod 8\end{aligned}} \end{array}
+  - type: narrative
+    content: |
+      Az ilyen jellegű kérdések megválaszolására siet segítségünkre a most bemutatásra kerülő nagyon fontos
+      összefüggés.

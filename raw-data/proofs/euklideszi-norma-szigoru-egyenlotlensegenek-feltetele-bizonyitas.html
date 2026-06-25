@@ -1,0 +1,53 @@
+<!-- wp:paragraph -->
+<p>Előszöris, mivel [latex]R[/latex] euklidészi gyűrű, így a [yp_element slug="euklideszi-gyuru" type="link" /] alapján <strong><em>létezik egységelem</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ha [latex]b[/latex] egység, akkor a [yp_element slug="egysegek-es-egysegelem-viszonya" type="link" /] tétel értelmében osztója az egységelemnek. Létezik tehát olyan [latex]c[/latex] elem, amelyre [latex]bc=1[/latex] teljesül. Mivel [latex]c\
+eq 0_R[/latex] (máskülönben a [latex]bc[/latex] szorzat a nullelem lenne), ezért a [latex]g[/latex] norma egyenlőtlenségi tulajdonsága miatt [latex]g(ab)\leq g(a\underbrace{bc}_{=1})=g(a)[/latex]. Ugyanakkor szintén az egyenlőtlenségi tulajdonság miatt [latex]g(a)\leq g(ab)[/latex]. Mindkét irányban fennáll tehát a [latex]\leq[/latex] reláció, így az antiszimmetria miatt szükségképpen [latex]g(a)=g(ab)[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Azt tehát már tudjuk, hogy ha [latex]b[/latex] egység, akkor valóban teljesül az egyenlőség. Azt kell még megmutatni, hogy más esetben viszont nem teljesül. Ezért most indirekt tegyük fel, hogy [latex]b[/latex] nem egység, ám ennek ellenére teljesül [latex]g(a)=g(ab)[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]a[/latex]-ról és [latex]b[/latex]-ről tudjuk, hogy egyik sem a nullelem, ezért a nullosztómentesség miatt az [latex]ab[/latex] szorzat sem lehet az. Emiatt az [latex]a[/latex] elem elosztható maradékosan az [latex]ab[/latex] elemmel a [latex]g[/latex] norma szerint. Azaz létezik olyan [latex]k[/latex] hányados és [latex]r[/latex] maradék, hogy teljesülnek az alábbiak:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a&amp;=kab + r \\ g(r)&amp;\lt g(ab)\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az egyenlet mindkét oldalából [latex]kab[/latex]-t levonva ezt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a-kab=r[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A baloldalt a disztributivitási szabályok miatt ([yp_element slug="gyuru-test" type="link" /] 5. pont) így írhatjuk át:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a\cdot (1-kb)=r[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]b[/latex]-ről indirekt azt mondtuk, hogy nem egység, ezért a [yp_element slug="egysegek-es-egysegelem-viszonya" type="link" /] miatt nem lehet osztója az egységelemnek. Emiatt [latex]kb\
+eq 1[/latex], és így [latex]1-kb[/latex] biztosan nem a nullelem. A tétel szövegéből tudjuk ugyanakkor, hogy [latex]a[/latex] sem a nullelem, azaz a nullosztómentesség miatt [latex]r[/latex] az [latex]a[/latex]-nak egy nemnulla többszöröse  (egész konkrétan [latex]1-kb[/latex]-szerese), és így a [latex]g[/latex] norma egyenlőtlenségi tulajdonsága miatt teljesül a következő egyenlőtlenség:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]g(a)\leq g(\underbrace{a\cdot (1-kb)}_{=r})[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt kaptuk tehát, hogy [latex]g(a)\leq g(r)[/latex]. Ugyanakkor indirekt feltételeztük, hogy [latex]g(a)=g(ab)[/latex], így a fentebbi maradékos osztásból kapott [latex]g(r)\lt g(ab)[/latex] szigorú egyenlőtlenségből [latex]g(r)\lt g(a)[/latex] következik.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez <strong><em>ellentmondás</em></strong>, hiszen [latex]g(r)[/latex] nem lehet egyszerre legalább akkora, mint [latex]g(a)[/latex], és határozottan kisebb is nála. Az indirekt feltételezésünk hibás volt, azaz a [latex]g(a)=g(ab)[/latex] egyenlőség nem állhat fenn, amennyiben [latex]b[/latex] nem egység.</p>
+<!-- /wp:paragraph -->

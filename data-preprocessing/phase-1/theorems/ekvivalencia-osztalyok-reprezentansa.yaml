@@ -1,0 +1,21 @@
+type: theorem
+name: ekvivalencia-osztalyok-reprezentansa
+proofs:
+  - ekvivalencia-osztalyok-reprezentansa-bizonyitas
+remarks: []
+references:
+  termeszetes-szamparok-ekvivalenciarelacioja:
+    target:
+      type: definition
+      name: termeszetes-szamparok-ekvivalenciarelacioja
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy $(a;b)$ az $\N \times \N$ egy tetszőleges eleme. Ha $a\geq b$, akkor pontosan egy olyan $n$
+      természetes szám létezik, amelyre teljesül, hogy $(a;b)\sim (n;0)$. Ehhez hasonlóan, ha $a\leq b$ akkor
+      pontosan egy olyan $m$ természetes szám létezik, amelyre teljesül, hogy $(a;b)\sim (0;m)$. Végül $(a;b)\sim
+      (0;0)$ akkor és csak akkor teljesül, ha $a=b$.
+  - type: narrative
+    content: |
+      A fentiekben $\sim$ jelöli a [termeszetes-szamparok-ekvivalenciarelacioja] szerinti ekvivalenciarelációt, $0$
+      pedig a Peano-axiómák szerinti "nulla" természetes számot.

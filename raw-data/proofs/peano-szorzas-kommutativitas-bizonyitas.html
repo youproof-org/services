@@ -1,0 +1,43 @@
+<!-- wp:paragraph -->
+<p>Teljes indukciót alkalmazunk [latex]b[/latex]-re vonatkozóan. Tegyük fel, hogy az állítás igaz valamilyen [latex]b=n[/latex] természetes számra. Az tehát az <strong><em>indukciós feltétel</em></strong>, hogy [latex]a \cdot n=n \cdot a[/latex]. Azt kell bizonyítanunk, hogy ebben az esetben [latex]b=s(n)[/latex]-re is igaz lesz, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a \cdot \underbrace{s(n)}_{=b} = \underbrace{s(n)}_{=b} \cdot a[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="peano-szorzas" type="link" /] 2. pontja miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a\cdot s(n) = (a\cdot n) + a = \ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az indukciós feltétel miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots =(n\cdot a) + a= \ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Végül az imént bizonyított [yp_element slug="peano-szorzas-kommutativitas-lemma" type="link" /] miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots = s(n) \cdot a[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Vagyis azt kaptuk, hogy valóban [latex]a \cdot \underbrace{s(n)}_{=b} = \underbrace{s(n)}_{=b} \cdot a[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Felállítottuk tehát a dominósort, és beláttuk, hogy bármely dominó felborítása esetén a soron következő dominó is fel fog borulni. Az első dominót pedig már fel is borítottuk, ugyanis a [yp_element slug="peano-szorzas-kommutativitas-0-lemma" type="link" /] alapján az állítás igaz&nbsp;[latex]b=0[/latex]-ra.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Borul tehát az első dominó, és vele együtt a teljes dominósor, azaz minden&nbsp;[latex]a[/latex] és [latex]b[/latex] számra igaz, hogy [latex]a\cdot b=b\cdot a[/latex].</p>
+<!-- /wp:paragraph -->

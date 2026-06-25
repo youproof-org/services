@@ -1,0 +1,58 @@
+type: section
+name: 02-kriptografiai-hash-fuggvenyek
+title: Kriptográfiai hash függvények
+
+body:
+  - type: narrative
+    content: |
+      Egy ***hash függvény*** egy olyan művelet, amely egy tetszőleges hosszúságú bemeneti bitsorozatból egy fix
+      méretű &ndash; tipikusan 256 vagy 512 bit hosszúságú &ndash; kimeneti bitsorozatot állít elő. Ezt a kimeneti
+      bitsorozatot a bemenet ***hash értékének*** nevezzük. Amennyiben egy hash függvény teljesít bizonyos
+      kritériumokat, akkor az általa előállított hash értéket a bemeneti bitsorozat eredetiségének ellenőrzésére
+      használhatjuk. Ezeket ***kriptográfiai hash függvényeknek*** nevezzük.
+  - type: narrative
+    content: |
+      Ahhoz hasonlóan, ahogy minket azonosít az ujjlenyomatunk, az adatok hash értéke is egy, az adott adatra
+      jellemző mennyiség. Ha úgy tetszik, egyfajta "digitális ujjlenyomat". Mivel függvényről van szó, ezért
+      ugyanazt a jelölést alkalmazhatjuk, mint amit az előző részben a függvényeknél tanultunk. Például legyen
+      adott egy $x$ üzenet és egy $h$ hash függvény. Ekkor az $x$ üzenet hash értékét &ndash; vagy "lenyomatát" így
+      jelöljük: $h(x)$.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán egy hash függvény látható:
+    src: 05-kriptografiai-hash-fuggveny.jpg
+    alt: Kriptográfiai hash függvény
+    caption: Kriptográfiai hash függvény
+  - type: narrative
+    content: |
+      Vegyük észre, hogy egy hash függvény lehetséges bemeneteinek halmaza végtelen &ndash; hiszen a bemenet
+      bármilyen tetszőleges hosszúságú bitsorozat lehet &ndash;, a lehetséges hash értékek halmaza viszont véges
+      számosságú &ndash; hiszen a kimenet egy fix (például 512 bit) méretű bitsorozat. Emiatt nyilvánvalóan
+      végtelen sok olyan bitsorozat létezik, amelyeknek ugyanaz a hash értéke. Az ilyen eseteket ***ütközéseknek
+      (collision)*** nevezzük. A kriptográfiai alkalmazások esetén fontos, hogy minél kisebb valószínűséggel
+      következzen be ütközés egy adott hash függvény és a szóba jövő üzenetek esetén.
+  - type: unordered-list
+    lead-in: |
+      Egy jó kriptográfiai hash függvénynek ezért az alábbi kritériumokat kell teljesítenie:
+    items:
+      - '***Őskép ellenállóság (pre-image resistance):*** Tetszőleges $x$ üzenet $h(x)$ hash értékét algoritmikusan "könnyű" legyen kiszámítani, de egy adott $y$ hash értékhez algoritmikusan "nehéz" legyen olyan $x$ üzenetet találni, amelynek épp $y$ a hash értéke – azaz amelyre $y=h(x)$ teljesül. Ez a kritérium lényegében azt követeli meg, hogy a $h$ hash függvény legyen egyirányú függvény. Arról, hogy mit nevezünk algoritmikusan "könnyű" vagy "nehéz" feladatnak, a 7. részben volt szó részletesen. Az ilyen tulajdonságú hash függvényeket ***őskép ellenálló hash függvényeknek*** nevezzük.'
+      - '***Második őskép ellenállóság (second pre-image resistance):*** Egy adott $x_1$ üzenethez algoritmikusan "nehéz" legyen olyan $x_2$ üzenetet találni, amelynek ugyanaz a hash értéke – azaz amelyre $h(x_1)=h(x_2)$ teljesül. Az ilyen tulajdonságú hash függvényeket ***gyengén ütközésmentes hash függvényeknek*** nevezzük.'
+      - '***Ütközésellenállóság (collision resistance):*** Algoritmikusan "nehéz" legyen két olyan tetszőleges $x_1$ és $x_2$ egymástól különböző üzenetet találni, amelyeknek ugyanaz a hash értéke – azaz amelyre $h(x_1)=h(x_2)$ teljesül. Az ilyen tulajdonságú hash függvényeket ***erősen ütközésmentes hash függvényeknek*** nevezzük.'
+  - type: narrative
+    content: |
+      A fenti kritériumok miatt egy hash függvényre érvényesülnie kell az úgynevezett ***lavinahatásnak***. Ez
+      lényegében azt jelenti, hogy a bemenet egyetlen bitjének megváltoztatása hatására a "lenyomat" minden
+      bitjének 50-50% eséllyel kell megváltoznia. Ha egy hash függvény nem mutat erőteljes lavinahatást &ndash;
+      azaz gyengén véletlenszerűsít &ndash; akkor nem tekinthető erősnek. Innen ered egyébként a "hash" kifejezés
+      is, amely angolul "zagyvalékot" jelent.
+  - type: narrative
+    content: |
+      Napjainkban kriptográfiai hash függvényt megvalósító eljárásként az ***MD5 (Message-Digest algorithm 5)*** és
+      az ***SHA (Secure Hash Algorithm)*** különböző változatai terjedtek el a legjobban. Ezek részleteire itt nem
+      térünk ki, ám megemlítjük, hogy az MD5 hash algoritmus ma már nem tekinthető biztonságosnak. Ennek okait
+      lentebb fogjuk részletezni. Sőt, 2005 óta már az SHA-1 algoritmus támadhatósága is ismert, ezért rengeteg
+      szervezet az SHA család későbbi változatait ajánlja kriptográfiai alkalmazásra.
+  - type: narrative
+    content: |
+      Előbb azonban vizsgáljuk meg, hogy a kriptográfiai hash függvények hogyan kapcsolódnak a fentebb már említett
+      digitális aláírásokhoz.

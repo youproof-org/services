@@ -1,0 +1,93 @@
+type: section
+name: 01-grafok-szinezese
+title: Gráfok színezése
+
+body:
+  - type: narrative
+    content: |
+      A távoli Kompánia ország lakói között vannak, akik utálják egymást, és vannak, akik nem. Ez az állítás persze
+      minden országra igaz, de mi most szorítkozzunk Kompániára. Feltételezzük, hogy két ember közötti utálat vagy
+      nem utálat kölcsönös, azaz vagy mindkettő utálja a másikat, vagy egyik sem. Az algoritmikus döntési feladat
+      annak eldöntése, hogy felosztható-e az egész ország két pártra úgy, hogy az azonos pártban lévők ne utálják
+      egymást.
+  - type: narrative
+    content: |
+      Ezt ábrázolhatjuk egy úgynevezett "utálatgráffal", amely csúcsokból és élekből áll. A gráfokról bővebben már
+      volt szó korábban a csatornamodellek kapcsán. Ebben a példában a gráf minden csúcsa egy-egy embert jelképez,
+      és két csúcs akkor van összekötve éllel, ha a nekik megfelelő két ember utálja egymást. Jelöljük az egyik
+      pártot 0-val, a másikat pedig 1-gyel. Ekkor a feladat annak eldöntése, hogy az "utálatgráf" csúcsai
+      megjelölhetők-e 1-gyel vagy 0-val úgy, hogy két szomszédos csúcs soha ne kapjon ugyanolyan jelölést. Ezt a
+      gráfelméletben szemléletesen ***színezésnek*** nevezzük. A kérdés tehát így hangzik: kiszínezhetőek-e egy
+      adott gráf csúcsai 2 színnel úgy, hogy a szomszédos csúcsok ne legyenek azonos színűek? Amennyiben ez
+      megtehető egy adott gráfra, akkor azt mondjuk, hogy a gráf ***2-színezhető***.
+  - type: figure
+    lead-in: |
+      Az alábbi gráf például nem 2-színezhető:
+    src: 01-nem-2-szinezheto-graf.jpg
+    alt: Nem 2-színezhető gráf (példa)
+    caption: Nem 2-színezhető gráf (példa)
+  - type: figure
+    lead-in: |
+      Ezzel szemben az alábbi gráf 2-színezhető, a csúcsokhoz rendelt számok pedig egy helyes 2-színezést jelölnek:
+    src: 02-2-szinezheto-graf.jpg
+    alt: 2-színezhető gráf (példa)
+    caption: 2-színezhető gráf (példa)
+  - type: narrative
+    content: |
+      Most próbáljunk meg algoritmust adni a 2-színezhetőség eldöntésére. A könnyebb érthetőség miatt az
+      algoritmust nem egy Turing-gép szabályrendszerének szintjén, hanem természetes nyelven fogjuk leírni.
+  - type: unordered-list
+    lead-in: |
+      Elemi lépéseknek az alábbiakat fogjuk tekinteni:
+    items:
+      - "Tetszőleges csúcs színének olvasása és írása."
+      - "Tetszőleges csúcs szomszédainak lekérdezése."
+  - type: narrative
+    content: |
+      Első ötletünk az lehet, hogy szisztematikusan végigpróbálgatjuk az összes lehetséges színezést. Ha egy
+      színezéssel megvagyunk, akkor leellenőrizzük, hogy a kapott színezés helyes-e, vagy nem. Ezt úgy tudjuk
+      megtenni, hogy minden csúcs színére megvizsgáljuk, hogy különbözik-e a szomszédos csúcsok színeitől.
+      Amennyiben egy adott színezés esetén ez minden csúcsra teljesül, akkor nyilván találtunk egy helyes
+      2-színezést. Ekkor a döntési algoritmus kimenete **"igen"**. Amennyiben ilyen színezést nem találtunk, úgy a
+      kimenet **"nem"**. Ez az algoritmus nyilvánvalóan tetszőleges bemeneti gráf esetén véges sok lépés alatt
+      eldönti a kérdést. A gráf csúcsainak száma ugyanis véges, ezért a lehetséges színezések száma &ndash;
+      amelyeket ugye egyenként ellenőrizni kell &ndash; is véges.
+  - type: narrative
+    content: |
+      Ha most az előző részben ismertetett Turing-gép szintjén vizsgáljuk a kérdést, akkor a bemeneti gráfot egy
+      valamilyen véges ábécé szimbólumaiból alkotott jelsorozat formájában kell a Turing-gép bemeneti szalagjára
+      írni. Miután a Turing-gép végzett, a kimeneti szalagon ott lesz az **"igen"** vagy **"nem"** választ
+      reprezentáló jelsorozat. Nyilvánvalóan szerkeszthető olyan Turing-gép erre a döntési feladatra, amely soha
+      nem kerül végtelen ciklusba. Például a fenti, minden lehetséges színezést kipróbáló buta algoritmusunk
+      "Turing-gépesített" változata. Az előző rész alapján elmondhatjuk tehát, hogy a 2-színezhető gráfok
+      leírásaiból alkotott formális nyelv ***rekurzív***, vagy más néven ***algoritmikusan eldönthető***.
+  - type: narrative
+    content: |
+      Ez mind szép és jó, a gond csak az, hogy viszonylag sokáig tart. Ha például Kompánia lakosainak száma 100
+      (ami azért nem túl sok), akkor 2^100 lehetséges színezés van. Ha brutálisan gyors számítógépünk van, ami
+      másodpercenként 100 milliárd színezést tud megvizsgálni, akkor is több, mint 400 milliárd évig tartana az
+      algoritmus futása. Ennyi időt még akkor sem vagyunk hajlandók várni, ha nagyon nem szeretnénk
+      egypártrendszert. Az algoritmusunk tehát hiába működik elméletben, a gyakorlatban használhatatlan.
+  - type: narrative
+    content: |
+      Egy ennél némileg hatékonyabb eljárást ismertetünk az alábbiakban. Válasszunk ki egy tetszőleges csúcsot, és
+      színezzük ki 0-val. Az már biztos, hogy a kiszínezett csúcs szomszédait 1-gyel kell színeznünk, ezért
+      színezzük is ki őket. És így tovább, az eddig már kiszínezett csúcsok összes, eddig még ki nem színezett
+      szomszédját színezzük mindig ellenkező színnel. Folytassuk ezt az eljárást addig, ameddig minden csúcsot ki
+      nem színeztünk. Ekkor az algoritmus eredménye legyen **"igen"**. Előfordulhat, hogy menet közben találunk egy
+      olyan csúcsot, amelyet ha kiszíneznénk az épp soron következő színnel, akkor megsértenénk a színezési
+      szabályt. Ekkor az algoritmus eredménye legyen **"nem"**. Könnyen belátható, hogy ez az algoritmus is helyes
+      eredményt fog adni. Vizsgáljuk meg az időkomplexitását, amely ugye a szükséges lépések számát jelenti.
+  - type: narrative
+    content: |
+      Az eljárás lépésszáma arányos a gráfban lévő élek számával. A legrosszabb eset nyilván az, amikor minden
+      csúcs minden más csúccsal össze van kötve. Ekkor van ugyanis a gráfban a lehető legtöbb él. Ebben a
+      legrosszabb esetben tehát egy $n$ csúcsú gráfnak egészen pontosan
+  - type: formula
+    content: |
+      \dfrac{n\cdot (n-1)}{2}
+  - type: narrative
+    content: |
+      darab éle van. Azaz az eljárásunk a 100 lakosú Kompánia utálatgráfjára legfeljebb 4950 lépés alatt végez. Egy
+      számítógéppel ez egy pillanat alatt elvégezhető, ezért ez már valóban egy használható algoritmus. Most
+      hasonlítsuk össze az előbbi "buta" és az utóbbi "okos" algoritmus időkomplexitását általánosságban.

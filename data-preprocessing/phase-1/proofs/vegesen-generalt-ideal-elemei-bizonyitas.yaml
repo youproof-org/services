@@ -1,0 +1,123 @@
+type: proof
+name: vegesen-generalt-ideal-elemei-bizonyitas
+remarks: []
+references:
+  halmazrendszer-minimuma-es-maximuma:
+    target:
+      type: definition
+      name: halmazrendszer-minimuma-es-maximuma
+  ideal:
+    target:
+      type: definition
+      name: ideal
+  reszgyuru-feltetele:
+    target:
+      type: theorem
+      name: reszgyuru-feltetele
+content:
+  - type: narrative
+    content: |
+      ***Először is a balideálok elemeire vonatkozó állítást igazoljuk.*** Jelöljük $I$-vel azt a halmazt, amely
+      pontosan az $r_1a_1+r_2a_2+\ldots +r_na_n$ alakban felírható elemeket tartalmazza. Azt kell bizonyítani, hogy
+      $I$ a legszűkebb olyan balideál, amely tartalmazza az $a_1$, $a_2$, ..., $a_n$ elemeket.
+  - type: narrative
+    content: |
+      ***Kezdjük annak igazolásával, hogy $I$ balideál.*** Ehhez a [ideal] alapján azt kell megmutatni, hogy $I$
+      részgyűrű &ndash; amihez a [reszgyuru-feltetele] feltételeit fogjuk felhasználni &ndash;, valamint, hogy
+      tetszőleges elemét balról megszorozva bármelyik $R$-beli elemmel az eredmény benne van $I$-ben.
+  - type: narrative
+    content: |
+      ***Összeadásra való zártság:*** Legyen $r$ és $s$ az $I$ halmaz két tetszőleges eleme.
+  - type: formula
+    lead-in: |
+      Mivel ők $I$ elemei, ezért felírhatók a tételben szereplő alakban:
+    content: |
+      \begin{aligned}r &= r_1a_1+r_2a_2+\ldots +r_na_n \\ s &= s_1a_1+s_2a_2+\ldots +s_na_n\end{aligned}
+  - type: formula
+    lead-in: |
+      Ekkor ezek összege szintén a tételben szereplő alakban írható fel:
+    content: |
+      r+s = (r_1+s_1)a_1+(r_2+s_2)a_2+\ldots +(r_n+s_n)a_n
+  - type: narrative
+    content: |
+      Emiatt az $r+s$ összeg szintén benne van $I$-ben, amely tehát valóban zárt az összeadásra nézve.
+  - type: narrative
+    content: |
+      ***Szorzásra való zártság:*** Legyen $s$ az $I$ halmaz tetszőleges eleme.
+  - type: formula
+    lead-in: |
+      Mivel $s\in I$, ezért ő felírható a tételben szereplő alakban:
+    content: |
+      s=s_1a_1+s_2a_2+\ldots +s_na_n
+  - type: formula
+    lead-in: |
+      Ezt balról megszorozva tetszőleges $r\in R$ elemmel az így kapott szorzat szintén a tételben szereplő alakban
+      írható fel:
+    content: |
+      r\cdot s=r\cdot (s_1a_1+s_2a_2+\ldots +s_na_n)=(rs_1)a_1+(rs_2)a_2+\ldots +(rs_n)a_n
+  - type: narrative
+    content: |
+      Emiatt az $rs$ szorzat szintén benne van $I$-ben. Mivel $r$ tetszőleges $R$-beli elem lehet &ndash; beleértve
+      persze az $I$-beli elemeket is &ndash;, ezért $I$ nemcsak az önmagán belüli szorzásra nézve zárt, hanem a
+      tetszőleges $R$-beli elemekkel való baloldali szorzásokra nézve is.
+  - type: formula
+    lead-in: |
+      ***Tartalmazza a nullelemet:*** Ez nyilvánvaló, hiszen a nullelem felírható a tételben szereplő alakban:
+    content: |
+      0=0\cdot a_1+0\cdot a_2+\ldots +0\cdot a_n
+  - type: narrative
+    content: |
+      ***Ellentettképzésre való zártság:*** Legyen $r$ az $I$ halmaz tetszőleges eleme.
+  - type: formula
+    lead-in: |
+      Mivel $r\in I$, ezért ő felírható a tételben szereplő alakban:
+    content: |
+      r=r_1a_1+r_2a_2+\ldots +r_na_n
+  - type: formula
+    lead-in: |
+      De ekkor ennek ellentettje szintén felírható ilyen alakban:
+    content: |
+      -r=(-r_1)a_1+(-r_2)a_2+\ldots +(-r_n)a_n
+  - type: narrative
+    content: |
+      Emiatt $(-r)$ szintén benne van $I$-ben, amely tehát zárt az ellentettképzésre is.
+  - type: narrative
+    content: |
+      Az $I$ halmaz tehát teljesíti a balideálokra vonatkozó [ideal] szerinti követelményeket, így valóban
+      ***balideál***.
+  - type: formula
+    lead-in: |
+      ***Most azt kell megmutatni, hogy $I$ tartalmazza az $a_1$, $a_2$, ..., $a_n$ generátorelemeket.*** Ez
+      nyilvánvaló, hiszen mindegyikük felírható a tételben szereplő alakban:
+    content: |
+      \begin{aligned}a_1&=1\cdot a_1 + 0\cdot a_2 + 0\cdot a_3 +\ldots +0\cdot a_n \\ a_2&=0\cdot a_1 + 1\cdot a_2
+      + 0\cdot a_3 +\ldots +0\cdot a_n \\ a_3&=0\cdot a_1 + 0\cdot a_2 + 1\cdot a_3 +\ldots +0\cdot a_n \\ &\vdots
+      \\ a_n&=0\cdot a_1 + 0\cdot a_2 + 0\cdot a_3 +\ldots +1\cdot a_n \end{aligned}
+  - type: narrative
+    content: |
+      Azt tehát már tudjuk, hogy $I$ egy olyan balideál, amely tartalmazza az $a_1$, $a_2$, ..., $a_n$
+      generátorelemeket. Annyit kell még igazolni, hogy ő a ***legszűkebb ilyen balideál***.
+  - type: narrative
+    content: |
+      A [halmazrendszer-minimuma-es-maximuma] értelmében ez azt jelenti, hogy ha $J$ egy tetszőleges balideál,
+      amely szintén tartalmazza a generátorelemeket, akkor $I\sube J$. Meg kell tehát mutatni, hogy tetszőleges
+      $t\in I$ esetén $t\in J$ is teljesül.
+  - type: formula
+    lead-in: |
+      Mivel $t\in I$, ezért ő felírható a tételben szereplő alakban:
+    content: |
+      t=t_1a_1+t_2a_2+\ldots +t_na_n
+  - type: narrative
+    content: |
+      Azt ugye tudjuk, hogy $J$ tartalmazza az $a_1$, $a_2$, ..., $a_n$ generátorelemeket. Tekintve, hogy $J$
+      balideál, ezért tartalmazza a $t_1a_1$, $t_2a_2$, ..., $t_na_n$ szorzatokat is, valamint ezek összegét is,
+      azaz valóban teljesül $t\in J$.
+  - type: narrative
+    content: |
+      Az $I$ halmaz tehát ***valóban a legszűkebb olyan balideál, amely tartalmazza az*** $a_1$, $a_2$, ..., $a_n$
+      ***generátorelemeket*** &ndash; épp ahogyan a tétel állítja.
+  - type: narrative
+    content: |
+      A ***jobbideálok elemeire vonatkozó állítás*** a fentiekhez nagyon hasonlóan igazolható, csak épp jobboldali
+      szorzásokat kell alkalmazni. Végül a ***(kétoldali) ideálok elemeire vonatkozó állítás*** automatikusan
+      adódik, hiszen egy (kétoldali) ideál egyszerre jobb- és balideál.

@@ -1,0 +1,849 @@
+<!-- wp:paragraph -->
+<p><strong><em>A <a rel="noreferrer noopener" aria-label="18. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/18-modularis-aritmetika-homomorfizmus-kongruencia-reszgyuru-ideal-maradekosztalygyuru/" target="_blank">18. részben</a> bevezettük a „gyűrűhomomorfizmus” és az ehhez szorosan kapcsolódó „gyűrűhomomorfizmus szerinti kongruencia” fogalmát. Megmutattuk ugyanakkor, hogy egy ilyen reláció nem függ egy konkrét gyűrűhomomorfizmustól, hanem annak csak a „magjától”. Ezeket a részhalmazokat „ideáloknak” neveztük el, definiáltuk az „ideál szerinti kongruenciát”, és igazoltuk, hogy ez a kétféle kongruencia-fogalom valójában egy és ugyanaz. Ennek során ismerkedtünk meg az úgynevezett „maradékosztálygyűrű” vagy „faktorgyűrű” fogalmával, amely ebben a részben kap fontos szerepet. Végül az <a rel="noreferrer noopener" aria-label="előző részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/19-foidealgyuruk-generalt-ideal-foideal-szamelmelet-alaptetele-halmaz-halmazrendszer-metszet-unio/" target="_blank">előző részben</a> az ideálok segítségével megadtunk egy szükséges és elégséges feltételt a számelmélet alaptételének teljesülésére, valamint megismerkedtünk a „főideálgyűrűk” fogalmával.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>De vajon mit jelent a kongruencia és a maradékosztálygyűrű fogalma az egész számok esetén? Mik azok a teljes és redukált maradékrendszerek, és milyen tulajdonságaik vannak? Mit mér az Euler-féle [latex]\varphi[/latex]-függvény? Mit nevezünk lineáris kongruenciának és mikor létezik megoldása? Mit állít az Euler-Fermat tétel és miért olyan fontos? Ebben a részben erről lesz szó...</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"className":"prerequisite-warning"} -->
+<p class="prerequisite-warning">Figyelem! Ez a rész erőteljesen épít a <a href="https://youproof.hu/kriptografia/17-euklideszi-algoritmus-maradekos-osztas-legnagyobb-kozos-oszto-euklideszi-gyuru/" target="_blank" rel="noreferrer noopener" aria-label="17. (új fülön nyitja meg)">17.</a>, <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/18-modularis-aritmetika-homomorfizmus-kongruencia-reszgyuru-ideal-maradekosztalygyuru/" target="_blank">18.</a> és <a rel="noreferrer noopener" aria-label="19. részekben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/19-foidealgyuruk-generalt-ideal-foideal-szamelmelet-alaptetele-halmaz-halmazrendszer-metszet-unio/" target="_blank">19. részekben</a> felépített alábbi definíciókra, valamint a hozzájuk kapcsolódó tételekre:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="kituntetett-kozos-oszto" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="modularis-osszeadas-es-szorzas" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="gyuruhomomorfizmus-szerinti-kongruencia" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="ideal" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="ideal-szerinti-kongruencia" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="maradekosztalygyuruk" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="vegesen-generalt-idealok-es-foidealok" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="foidealgyuruk" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph {"className":"prerequisite-warning"} -->
+<p class="prerequisite-warning">Ezek kontextusba helyezése miatt erőteljesen ajánlott elolvasni a <a href="https://youproof.hu/kriptografia/17-euklideszi-algoritmus-maradekos-osztas-legnagyobb-kozos-oszto-euklideszi-gyuru/" target="_blank" rel="noreferrer noopener" aria-label="17. (új fülön nyitja meg)">17.</a>, <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/18-modularis-aritmetika-homomorfizmus-kongruencia-reszgyuru-ideal-maradekosztalygyuru/" target="_blank">18.</a> és <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/19-foidealgyuruk-generalt-ideal-foideal-szamelmelet-alaptetele-halmaz-halmazrendszer-metszet-unio/" target="_blank">19. részeket</a>, mivel gyakran hivatkozni fogunk rájuk. A teljes cikksorozat elejét <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/1-alapfogalmak-caesar-vigenere-enigma-kulcsmegosztas/" target="_blank">itt</a> találod.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"dropCap":true} -->
+<p class="has-drop-cap">Első körben azt fogjuk megvizsgálni, hogy az egész számok [latex]\Z[/latex] gyűrűjén pontosan mit jelent a [yp_element slug="ideal-szerinti-kongruencia" type="link" /]ban bevezetett, meglehetősen absztrakt <strong><em>ideál szerinti kongruencia</em></strong>. Ehhez előszöris meg kell találnunk e gyűrű <strong><em>ideáljait</em></strong>. A [yp_element slug="euklideszi-gyuru-foidealgyuru" type="link" /] alapján minden euklidészi gyűrű – és így speciálisan maga [latex]\Z[/latex] is – <strong><em>főideálgyűrű</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez a [yp_element slug="foidealgyuruk" type="link" /] szerint azt jelenti, hogy [latex]\Z[/latex] összes ideálja egy-egy elemmel generálható. Ha tehát kiválasztunk egy tetszőleges [latex]m[/latex] egész számot, akkor az [latex]m[/latex]-et tartalmazó legszűkebb [latex]\Z[/latex]-beli ideált úgy kapjuk meg, hogy képezzük [latex]m[/latex] összes többszörösét. Ezt a halmazt a [yp_element slug="vegesen-generalt-idealok-es-foidealok" type="link" /] alapján az [latex]m[/latex] egész szám által generált <strong><em>főideálnak</em></strong> nevezzük, és [latex](m)[/latex]-mel jelöljük. Ha például [latex]m=3[/latex], akkor az ehhez tartozó főideál – az előző részben tanult <a rel="noreferrer noopener" aria-label="halmazjelölésekkel (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/19-foidealgyuruk-generalt-ideal-foideal-szamelmelet-alaptetele-halmaz-halmazrendszer-metszet-unio#set-theory-introduction" target="_blank">halmazjelölésekkel</a> – az alábbi halmaz lesz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](3)=\{\ldots;-9;-6;-3;0;3;6;9;\ldots\}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezután a [yp_element slug="ideal-szerinti-kongruencia" type="link" /]t szó szerint követve már könnyedén megmondhatjuk bármely [latex]a[/latex] és [latex]b[/latex] egész számokról, hogy vajon kongruensek-e a [latex](3)[/latex] főideál szerint vagy nem. Az említett definíció szerint ez a kongruencia pontosan akkor teljesül, ha az [latex]a-b[/latex] különbség eleme ennek az ideálnak, azaz – szintén az előző részben tanult <a rel="noreferrer noopener" aria-label="halmazjelölésekkel (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/19-foidealgyuruk-generalt-ideal-foideal-szamelmelet-alaptetele-halmaz-halmazrendszer-metszet-unio#set-theory-introduction" target="_blank">halmazjelölésekkel</a> – [latex](a-b)\in (3)[/latex]. Például a [latex]13[/latex] és a [latex]7[/latex] között fennál a [latex](3)[/latex] főideál szerinti kongruencia, mivel [latex]13-7=6\in (3)[/latex]. Ezzel szemben a [latex]18[/latex] és a [latex]13[/latex] egész számok inkongruensek a [latex](3)[/latex] főideál szerint, hiszen [latex]18-13=5\
+otin (3)[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez persze nem túl intuitív, és nem is ez volt a kongruencia fogalmának eredeti jelentése. Ezt a relációt <a rel="noreferrer noopener" aria-label="Carl Friedrich Gauss (új fülön nyitja meg)" href="https://hu.wikipedia.org/wiki/Carl_Friedrich_Gauss" target="_blank">Carl Friedrich Gauss</a> német matematikus vezette be a <a rel="noreferrer noopener" aria-label="Disquisitiones Arithmeticae (új fülön nyitja meg)" href="https://hu.wikipedia.org/wiki/Disquisitiones_Arithmeticae" target="_blank">Disquisitiones Arithmeticae</a> című művében, és kizárólag az egész számok között volt értelmezve. Ehhez képest az <strong><em>ideál</em></strong> fogalmának alapjait <a rel="noreferrer noopener" aria-label="Ernst Kummer (új fülön nyitja meg)" href="https://en.wikipedia.org/wiki/Ernst_Kummer" target="_blank">Ernst Kummer</a>, szintén német matematikus fektette le jó 50 évvel később, amikor a mintegy 350 évig megoldatlan <a rel="noreferrer noopener" aria-label="Nagy Fermat-sejtést (új fülön nyitja meg)" href="https://hu.wikipedia.org/wiki/Nagy_Fermat-t%C3%A9tel" target="_blank">Nagy Fermat-sejtést</a> akarta bizonyítani. Ez ugyan végül nem sikerült neki, de jelentős előrehaladást sikerült elérnie, és felfedezései a 20. században kifejlesztett számelméleti eszközöket is megalapozták.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Először tehát azt fogjuk megvizsgálni, hogy mi volt a <strong><em>kongruencia fogalmának eredeti jelentése</em></strong>, és hogyan kapcsolódik ez a [yp_element slug="ideal-szerinti-kongruencia" type="link" /]ban bevezetett <strong><em>ideál szerinti kongruenciákhoz</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Kongruencia az egész számok között</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Gauss eredetileg az osztási maradékokkal kapcsolatban használta a kongruencia fogalmát. Tegyük fel, hogy adva van egy [latex]m\
+eq 0[/latex] <strong><em>nemnulla</em></strong> egész szám, amelyet <strong><em>modulusnak</em></strong> fogunk nevezni. A gauss-féle értelmezésben két tetszőleges [latex]a[/latex] és [latex]b[/latex] egész számot akkor nevezünk kongruensnek az [latex]m[/latex] modulus szerint, ha ugyanazt a <strong><em>nemnegatív</em></strong> maradékot adják [latex]m[/latex]-mel osztva. Ezt – némiképp eltérve a [yp_element slug="ideal-szerinti-kongruencia" type="link" /]ben szereplő általános jelöléstől – így jelöljük:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a\equiv b\pmod m[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A fentebbi példák ugyanúgy igazak maradnak ebben az értelmezésben is. Például a [latex]13[/latex] és a [latex]7[/latex] között fennál a kongruencia a [latex]3[/latex] modulus szerint (vagy <strong><em>„modulo [latex]3[/latex]”</em></strong>), mivel mindkettőnek [latex]1[/latex] lesz a <strong><em>nemnegatív</em></strong> maradéka [latex]3[/latex]-mal osztva. Ezzel szemben a [latex]18[/latex] és a [latex]13[/latex] egész számok inkongruensek modulo [latex]3[/latex], hiszen a [latex]18[/latex]-nak [latex]0[/latex], míg a [latex]13[/latex]-nak [latex]1[/latex] lesz a <strong><em>nemnegatív</em></strong> maradéka [latex]3[/latex]-mal osztva.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Megjegyezzük, hogy a maradék <strong><em>nemnegativitását</em></strong> azért fontos megkövetelni, mivel a [yp_element slug="egesz-szamok-maradekos-osztasa-egyertelmu" type="link" /] ebben az esetben garantálja a maradék <strong><em>egyértelműségét</em></strong>. Ha ezt nem követelnénk meg, akkor például a [latex]13[/latex] kétféle maradékot is adhatna [latex]3[/latex]-mal osztva:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}13&amp;=4\cdot 3+1 \\ 13&amp;=5\cdot 3-2\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Látható, hogy mindkét maradék teljesíti a [yp_element slug="euklideszi-gyuru" type="link" /]ban szereplő <strong><em>euklidészi osztásra</em></strong> vonatkozó kritériumokat, hiszen mind az [latex]1[/latex], mind pedig a [latex]-2[/latex] maradékok abszolútértéke kisebb [latex]3[/latex]-nál. Ha viszont a negatív maradékokat kizárjuk, akkor a [yp_element slug="egesz-szamok-maradekos-osztasa-egyertelmu" type="link" /] szerint az euklidészi osztás már csak <strong><em>egyféleképpen</em></strong> végezhető el.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Visszatérve tehát a kongruencia fogalmának gauss-féle értelmezésére, az látszólag megegyezik a [yp_element slug="ideal-szerinti-kongruencia" type="link" /]ban szereplő ideál szerinti kongruencia-fogalommal. Legalábbis bármely két egész szám vagy mindkét értelmezés szerint kongruens lesz egymással, vagy egyik szerint sem. Az alábbi tételben ezt általánosságban is igazoljuk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-kozotti-kongruencia" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-kozotti-kongruencia-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-kozotti-kongruencia-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Kongruenciák alapvető tulajdonságai</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Az egész számok közötti kongruencia-fogalom tehát az ideál szerinti kongruencia-fogalom egy speciális esete, amelynek az előző szakaszban egy intuitív, osztási maradékokkal kapcsolatos értelmezését kaptuk. Az alábbi tételben összegyűjtöttük ennek a relációnak az alapvető tulajdonságait. Ezek mindegyikét valamilyen általános formában már igazoltuk a <a rel="noreferrer noopener" aria-label="18. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/18-modularis-aritmetika-homomorfizmus-kongruencia-reszgyuru-ideal-maradekosztalygyuru/" target="_blank">18. részben</a>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Eszerint tehát az összeadás, kivonás és szorzás műveletére vonatkozóan a kongruenciák ugyanúgy viselkednek, mint az egyenlőségek. Ha például adva van egy szorzásokból, összeadásokból és kivonásokból felépített kifejezés, és ennek bármilyen összetevőjét lecseréljük egy [latex]m[/latex] modulus szerint vele kongruens kifejezéssel, akkor az így kapott kifejezés kongruens lesz az eredetivel szintén az [latex]m[/latex] modulus szerint. Vegyünk egy egyszerű példát. Tekintsük például az alábbi kifejezést:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]3^{3n+1}\cdot 5^{2n+1}+2^{5n+1}\cdot 11^n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel, hogy valamilyen okból kifolyólag azt kell bizonyítanunk, hogy ez a kifejezés [latex]n[/latex] tetszőleges pozitív egész értéke esetén osztható [latex]17[/latex]-tel – legyen bármi is az az ok. Ez kongruenciával kifejezve az alábbit jelenti:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]3^{3n+1}\cdot 5^{2n+1}+2^{5n+1}\cdot 11^n \equiv 0 \pmod{17}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A hatványozás azonosságairól szóló [yp_element slug="hatvanyozas-azonossagai" type="link" /] 2. és 3. pontjai alapján a baloldali kifejezést átalakítva az alábbit kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]27^n\cdot 25^n\cdot 15 + 32^n\cdot 11^n\cdot 2 \equiv 0 \pmod{17}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Nézzük először a baloldal első tagját, azaz a [latex]27^n\cdot 25^n\cdot 15[/latex] kifejezést. A [latex]15\equiv 15\pmod{17}[/latex] kongruencia nyilván teljesül a [yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" type="link" /] 1. pontja miatt. Továbbá, mivel teljesülnek a [latex]27\equiv -7\pmod{17}[/latex] és a [latex]25\equiv 8\pmod{17}[/latex] kongruenciák, ezért ugyanezen tétel 8. pontja miatt teljesülnek a [latex]27^n\equiv (-7)^n\pmod{17}[/latex] és a [latex]25^n\equiv 8^n\pmod{17}[/latex] kongruenciák is. De ekkor az így kapott 3 kongruenciát az 5. pont miatt összeszorozhatjuk, azaz teljesül az alábbi kongruencia is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]27^n\cdot 25^n\cdot 15 \equiv (-7)^n\cdot 8^n\cdot 15 \pmod{17}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ugyanígy az eredeti kongruencia baloldalának második tagját is lecserélhetjük egy vele kongruens kifejezéssel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]32^n\cdot 11^n\cdot 2 \equiv (-2)^n\cdot (-6)^n\cdot 2 \pmod{17}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az így kapott két kongruenciát a [yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" type="link" /] 4. pontja miatt összeadhatjuk, így az alábbi kongruenciát kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}&amp;27^n\cdot 25^n\cdot 15 + 32^n\cdot 11^n\cdot 2 \equiv \\ \equiv \ &amp;(-7)^n\cdot 8^n\cdot 15 + (-2)^n\cdot (-6)^n\cdot 2 \pmod{17}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>E konguencia jobboldala ismét a hatványozás azonosságairól szóló [yp_element slug="hatvanyozas-azonossagai" type="link" /] 1. pontja miatt így írható fel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}&amp;(-7)^n\cdot 8^n\cdot 15 + (-2)^n\cdot (-6)^n\cdot 2 \equiv \\ \equiv \ &amp;(-56)^n\cdot 15 + 12^n\cdot 2 \pmod{17}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex](-56)\equiv (-5)\pmod{17}[/latex], valamint [latex]12\equiv (-5)\pmod{17}[/latex], ezért ismételten alkalmazva a [yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" type="link" /] 4., 5. és 8. pontjait, ezt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}&amp;(-56)^n\cdot 15 + 12^n\cdot 2 \equiv \\ \equiv \ &amp;(-5)^n\cdot 15 + (-5)^n\cdot 2 \pmod{17}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Erre már alkalmazhatjuk a gyűrűkre érvényes disztributivitási axiómát ([yp_element slug="gyuru-test" type="link" /] 5. pont):</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](-5)^n\cdot 15 + (-5)^n\cdot 2 \equiv (-5)^n\cdot 17 \pmod{17}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Végül, mivel [latex]17\equiv 0\pmod{17}[/latex], ezért teljesül az alábbi kongruencia is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](-5)^n\cdot 17\equiv 0\pmod{17}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Végeredményben tehát a sorozatos átalakításokat elvégezve, és az így kapott kifejezések részeit velük kongruens részkifejezésekkel helyettesítve az alábbi kifejezés valóban tetszőleges [latex]n[/latex] pozitív egész szám esetén osztható [latex]17[/latex]-tel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]3^{3n+1}\cdot 5^{2n+1}+2^{5n+1}\cdot 11^n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Valljuk be, hogy kongruenciák nélkül ennek és az ehhez hasonló kérdéseknek a megválaszolása sokkal nehezebb lenne. Kénytelenek lennénk [latex]n[/latex]-re vonatkozó teljes indukciót alkalmazni, amiből persze az oszthatóságról szóló [yp_element slug="oszthatosag-tulajdonsagai" type="link" /] állításait használva ugyanezt az eredményt kapnánk, csak épp egy sokkal kényelmetlenebb úton. Ehelyett azonos átalakításokat és a kongruenciák tulajdonságait használva egy ilyen kérdés megválaszolása pár sorban megoldható. Most gyakorlásképpen vegyük át mégegyszer a fenti levezetést egyben:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}3^{3n+1}\cdot 5^{2n+1}+2^{5n+1}\cdot 11^n &amp;= \\ = 27^n\cdot 25^n\cdot 15 + 32^n\cdot 11^n\cdot 2 &amp;\equiv \\ \equiv \ (-7)^n\cdot 8^n\cdot 15 + (-2)^n\cdot (-6)^n\cdot 2 &amp;= \\ = (-56)^n\cdot 15 + 12^n\cdot 2 &amp;\equiv \\ \equiv (-5)^n\cdot 15 + (-5)^n\cdot 2 &amp;= \\ = (-5)^n\cdot 17 &amp;\equiv 0\pmod{17}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Kongruenciák osztása</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Ahogyan a fenti példa is mutatja, kongruenciákkal számolni hasonlóan egyszerű, mintha egyenletekkel volna dolgunk. Nagyjából minden ugyanúgy működik. A <a rel="noreferrer noopener" aria-label="18. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/18-modularis-aritmetika-homomorfizmus-kongruencia-reszgyuru-ideal-maradekosztalygyuru#modular-arithmetic-equations" target="_blank">18. részben</a> azonban már láttuk, hogy az ilyen „nagyjából”-jellegű helyzetekben érhetik az embert kellemetlen meglepetések, ha nem kellő odafigyeléssel jár el. Ez a kongruenciák esetén sincs másként. Az összeadás, kivonás és szorzás esetén – mint láttuk – nincs gond. <strong><em>Az „osztással” azonban vigyázni kell!</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az „osztás” szót azért tettük idézőjelbe, mivel osztani általánosságban amúgy sem lehet egy gyűrűben, kivéve persze ha az adott gyűrű egyben test is (lásd a [yp_element slug="gyuru-test" type="link" /] ide vonatkozó részét). Amikor egy általános gyűrűben beszélünk osztásról, akkor ezalatt mindig az alábbi tétel szerinti <strong><em>egyszerűsítést</em></strong> értjük:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="szorzat-egyszerusitese-gyurukben" type="recall-expanded" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez alapján tehát <strong><em>nullosztómentes</em></strong> gyűrűkben – és csak ezekben – bármilyen egyenlet mindkét oldalát lehet tetszőleges <strong><em>nemnulla</em></strong> [latex]c[/latex] gyűrűelemmel „elosztani”. Feltéve persze, hogy a megfelelő oszthatóságok fennállnak a [latex]c[/latex] gyűrűelem és az egyenlet két oldalán lévő kifejezések között. Semmi gond – mondhatnánk –, egyszer már a <a rel="noreferrer noopener" aria-label="18. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/18-modularis-aritmetika-homomorfizmus-kongruencia-reszgyuru-ideal-maradekosztalygyuru#modular-arithmetic-equations" target="_blank">18. részben</a> beleszaladtunk ebbe a hibába, így most majd nagyon oda fogunk figyelni. Le is ellenőrizzük, hogy az <strong><em>egész számok [latex]\Z[/latex] gyűrűje</em></strong> a [yp_element slug="az-egesz-szamok-halmaza-integritastartomany" type="link" /] alapján egy <strong><em>integritástartomány, tehát nullosztómentes</em></strong>, így könnyelműen azt gondoljuk, hogy semmi gond nem lehet a kongruenciákkal.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Jól vigyázzunk azonban!</em></strong> Az egyszerűsíthetőségről szóló [yp_element slug=" szorzat-egyszerusitese-gyurukben" type="link" /] ugyanis <strong><em>EGYENLETEKRŐL, nem pedig kongruenciákról szól</em></strong>. A [yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" type="link" /] 7. pontja ugyan kimondja, hogy ha teljesül az [latex]a\equiv b\pmod m[/latex] kongruencia, akkor mindkét oldalt megszorozhatjuk valamilyen [latex]c[/latex] egész számmal, azaz teljesül az [latex]ac\equiv bc\pmod m[/latex] kongruencia is. Ez tehát ugyanúgy működik, mint az egyenlőségeknél. A kongruenciák esetén azonban ennek megfordítása <strong><em>nem feltétlenül igaz még nullosztómentes gyűrűk esetén sem</em></strong>. Tehát abból, hogy teljesül az [latex]ac\equiv bc\pmod m[/latex] kongruencia, még nem következik, hogy az [latex]a\equiv b\pmod m[/latex] kongruencia is teljesül. Tekintsük az alábbi egyszerű példát:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]28\equiv 46\pmod 6[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez a kongruencia teljesül, hiszen mindkét oldal [latex]4[/latex]-et ad maradékul [latex]6[/latex]-tal osztva. Ráadásul ennek a kongruenciának mindkét oldala osztható [latex]2[/latex]-vel, azaz felírható az alábbi alakban:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]14\cdot 2\equiv 23\cdot 2\pmod 6[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha most könnyelműen azt gondoljuk, hogy ezt a kongruenciát [latex]2[/latex]-vel egyszerűsíthetjük – ahogy mondjuk egy egyenlet esetén minden további nélkül megtehetnénk, hiszen [latex]\Z[/latex] nullosztómentes –, akkor egy végzetes logikai hibát ejtenénk. Az alábbi kongruencia ugyanis <strong><em>NEM teljesül</em></strong>:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]14\equiv 23\pmod 6[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Nyilván, hiszen a [latex]14[/latex] és a [latex]23[/latex] nem ugyanazt a maradékot adja [latex]6[/latex]-tal osztva.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>De mi is volt itt a gond?!</em></strong> Vizsgáljuk meg általánosságban ezt a kérdést. Tegyük fel, hogy teljesül az alábbi, <strong><em>egész számok közötti kongruencia</em></strong> valamilyen [latex]m\gt 0[/latex] modulusra nézve:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]ac\equiv bc\pmod m[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez ugye a [yp_element slug="egesz-szamok-kozotti-kongruencia" type="link" /] 1. pontja alapján pontosan azt jelenti, hogy teljesül a [yp_element slug="modularis-osszeadas-es-szorzas" type="link" /] szerinti [latex]\bmod_m[/latex] maradékképző függvény, mint <strong><em>gyűrűhomomorfizmus szerinti</em></strong> alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]ac\equiv bc\pod{\bmod_m}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [latex]\bmod_m[/latex] az egész számok [latex]\Z[/latex] gyűrűjéből a [yp_element slug="modularis-osszeadas-es-szorzas" type="link" /] szerinti [latex]\Z_m[/latex] gyűrűbe képez. A fenti kongruencia tehát azt jelenti, hogy teljesül az alábbi egyenlet a [latex]\Z_m[/latex] gyűrűben:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\bmod_m(ac)=\bmod_m(bc)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha a [latex]\Z_m[/latex] gyűrű szorzását az [latex]\odot[/latex] szimbólummal jelöljük, akkor [latex]\bmod_m[/latex] művelettartó tulajdonsága miatt ez az egyenlet így írható fel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\bmod_m(a)\odot \bmod_m(c)=\bmod_m(b)\odot \bmod_m(c)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha itt most lehetne az egyenlet mindkét oldalát [latex]\bmod_m(c)[/latex]-vel egyszerűsíteni, akkor azt kapnánk, hogy teljesül a [latex]\bmod_m(a)=\bmod_m(b)[/latex] egyenlőség. Ez más szavakkal valóban az [latex]a\equiv b\pmod m[/latex] egész számok közötti kongruencia teljesülését jelentené. <strong><em>De sajnos általában nem ez a helyzet</em></strong>, hiszen ezt az egyszerűsítést a [yp_element slug="szorzat-egyszerusitese-gyurukben" type="link" /] alapján csak <strong><em>nullosztómentes</em></strong> gyűrűkben lehet elvégezni büntetlenül, márpedig ez a [latex]\Z_m[/latex] gyűrű esetén nem garantált.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Összefoglalva tehát a gondot itt az okozza, hogy ugyan maga a [latex]14\cdot 2\equiv 23\cdot 2\pmod 6[/latex] kongruencia az egész számok [latex]\Z[/latex] gyűrűjének elemein van értelmezve, azonban ez tulajdonképpen az alábbi [latex]\Z_6[/latex] gyűrűben felírt egyenletnek felel meg:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\bmod_6(14)\odot \bmod_6(2)=\bmod_6(23)\odot \bmod_6(2)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Elvégezve a [yp_element slug="modularis-osszeadas-es-szorzas" type="link" /] szerinti maradékos osztásokat ezt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]2\odot 2=5\odot 2[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez az egyenlet valóban teljesül, hiszen a [latex]\Z_6[/latex] gyűrűben mindkét oldal [latex]4[/latex]. <strong><em>Ebben a gyűrűben azonban általánosságban nem szabad egyszerűsíteni</em></strong> egy egyenlet mindkét oldalát ugyanazzal a nemnulla elemmel – jelen esetben [latex]2[/latex]-vel –, hiszen a [latex]6[/latex] nem prímszám, és így a [latex]\Z_6[/latex] gyűrű a [yp_element slug="maradekok-gyuruje-nullosztomentes" type="link" /] alapján <strong><em>nem nullosztómentes</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ebből ugyanakkor az is következik, hogyha viszont a modulus prímszám lett volna, akkor egy hasonló szituációban minden további nélkül lehetne egyszerűsíteni a kongruenciákat is. Az alábbi tétel általánosan is megfogalmazza, hogy pontosan mikor és milyen körülmények szerint lehet egyszerűsíteni egy egész számokon értelmezett kongruenciát.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-kozotti-kongruencia-egyszerusitese" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az előző példára vonatkoztatva ez azt jelenti, hogy a [latex]28\equiv 46\pmod 6[/latex] kongruenciát lehet egyszerűsíteni [latex]2[/latex]-vel, ám ekkor a [latex]6[/latex] modulust is egyszerűsíteni kell a [latex](2,6)=2[/latex] kitüntetett közös osztóval. Valóban, a [latex]14\equiv 23\pmod 3[/latex] kongruencia már tényleg teljesül, hiszen mindkét oldal [latex]2[/latex]-t ad maradékul [latex]3[/latex]-mal osztva.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-kozotti-kongruencia-egyszerusitese-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-kozotti-kongruencia-egyszerusitese-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:html -->
+<div id="integer-residue-class-ring"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Egész számok maradékosztályai és maradékosztálygyűrűi</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Ebben a szakaszban az egész számok [latex]\Z[/latex] gyűrűjének maradékosztályait vizsgáljuk meg. Általánosságban egy [latex]R[/latex] gyűrűben a [yp_element slug="ideal-szerinti-kongruencia" type="link" /] szerinti értelemben vezettük be az ideál szerinti kongruencia fogalmát. </p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>E definíció szerint amennyiben adva van egy [latex]I[/latex] ideál [latex]R[/latex]-ben, úgy az [latex]I[/latex] ideál szerinti [latex]a\equiv b\pod I[/latex] kongruencia pontosan akkor teljesül, ha az [latex]a-b[/latex] különbség benne van az [latex]I[/latex] ideálban. A [yp_element slug="ideal-szerinti-kongruencia-ekvivalenciarelacio" type="link" /] alapján ez egy <strong><em>ekvivalenciareláció</em></strong> [latex]R[/latex] elemei között, amely tehát az [latex]R[/latex] gyűrűt <strong><em>páronként diszjunkt halmazok uniójára</em></strong> ([yp_element slug="halmazmuveletek" type="link" /]) bontja. Ezeket a halmazokat neveztük <strong><em>modulo [latex]I[/latex] maradékosztályoknak</em></strong>. Az [latex]R[/latex] gyűrű minden eleme tehát pontosan egy modulo [latex]I[/latex] maradékosztályba kerül bele.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most vizsgáljuk meg ezt a fogalmat az egész számok [latex]\Z[/latex] gyűrűjére vonatkoztatva. Mivel a [yp_element slug="euklideszi-gyuru-foidealgyuru" type="link" /] alapján [latex]\Z[/latex] egy <strong><em>főideálgyűrű</em></strong> ([yp_element slug="foidealgyuruk" type="link" /]), ezért annak minden [latex]I[/latex] ideáljához található olyan [latex]m[/latex] egész szám, amely egymaga <strong><em>generálja</em></strong> [latex]I[/latex]-t, azaz [latex]I=(m)[/latex]. A [yp_element slug="egesz-szamok-kozotti-kongruencia" type="link" /]ben épp az ilyen [latex]I=(m)[/latex] főideál szerinti kongruenciákra használtuk az [latex]a\equiv b\pmod m[/latex] jelölést. Kérdés tehát, hogy vajon mik lesznek egy ilyen kongruencia által meghatározott maradékosztályok? Erre ad választ az alábbi tétel.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-maradekosztalyai" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-maradekosztalyai-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-maradekosztalyai-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Például modulo [latex]8[/latex] maradékosztályból pontosan 8 darab van. Ezeket, illetve ezek néhány elemét mutatja az alábbi ábra:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":5564,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_20_modulo_8_maradekosztalyok.jpg" alt="Modulo 8 maradékosztályok" class="wp-image-5564"/><figcaption>Modulo 8 maradékosztályok</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Nézzük meg például a [latex]13[/latex]-at tartalmazó maradékosztályt (ezt az ábrán nyíllal jelöltük). A tétel szerint ennek elemei pontosan a [latex]8k+13[/latex] alakban felírható egész számok. Valóban, az ábrán megjelenített elemek például így írhatók fel ebben az alakban:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}-19&amp;=8\cdot (-4)+13 \\ -11&amp;=8\cdot (-3)+13 \\ -3&amp;=8\cdot (-2)+13 \\ 5&amp;=8\cdot (-1)+13 \\ 13&amp;=8\cdot 0+13 \\ 21&amp;=8\cdot 1+13 \\ 29&amp;=8\cdot 2+13\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="maradekosztalygyuruk" type="link" /]ben vezettük be a <strong><em>maradékosztálygyűrű (vagy faktorgyűrű)</em></strong> fogalmát. Ezek olyan gyűrűk, amelyeknek a fenti maradékosztályok voltak az <strong><em>elemei</em></strong>, és ezek között értelmeztünk két műveletet. Eszerint egy [latex]A[/latex] és egy [latex]B[/latex] maradékosztály [latex]A\oplus B[/latex] <strong><em>összege</em></strong> szintén egy maradékosztály lesz. Ezt úgy kapjuk meg, hogy veszünk egy-egy tetszőleges [latex]a\in A[/latex] és [latex]b\in B[/latex] elemet az eredeti gyűrűből, képezzük ezek [latex]a+b[/latex] összegét szintén az eredeti gyűrűben, és azt a maradékosztályt választjuk végeredményként, amelybe ez az [latex]a+b[/latex] összeg esik. Az [latex]A\odot B[/latex] <strong><em>szorzatot</em></strong> ehhez hasonlóan értelmeztük az eredeti gyűrű szorzásának segítségével.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az egész számokon imént bevezetett modulo [latex]m[/latex] maradékosztályokból ugyanígy a [yp_element slug="maradekosztalygyuruk" type="link" /]ben leírt módon alkothatunk egy gyűrűt.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-maradekosztalygyurui" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-maradekosztalygyurui-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Eszerint tehát ha két maradékosztályt szeretnénk összeadni vagy összeszorozni egymással a fenti értelemben, akkor teljesen mindegy, hogy a művelet elvégzéséhez mely reprezentánselemeket használjuk. Tekintsük ismét a modulo [latex]8[/latex] maradékosztályokat:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":5567,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_20_modulo_8_maradekosztalyok_osszeadasa.jpg" alt="Modulo 8 maradékosztályok összeadása" class="wp-image-5567"/><figcaption>Modulo 8 maradékosztályok összeadása</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Az ábrán megjelöltünk két maradékosztályt, illetve ezek összegét is, amely egy harmadik maradékosztály. Látható, hogy bármely elemekkel is reprezentáljuk a két bemeneti maradékosztályt, e reprezentánselemek összege mindenképp a kimeneti maradékosztályt fogja reprezentálni. Például a [latex]-14+19=5[/latex] és a [latex]10+11=21[/latex] összegek ugyanazt a maradékosztályt reprezentálják a fenti tétel miatt.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel most, hogy adva van egy [latex]m\gt 0[/latex] egész szám, és tekintsük a [yp_element slug="egesz-szamok-maradekosztalygyurui" type="link" /] szerinti modulo [latex]m[/latex] maradékosztálygyűrűt. Ebben a gyűrűben ugyanúgy kell számolni, mint a [yp_element slug="modularis-osszeadas-es-szorzas" type="link" /]ban bevezetett [latex]\Z_m[/latex] gyűrűben. Ez a <strong><em>gyűrűk homomorfizmustételének</em></strong> következménye, amelyről a <a rel="noreferrer noopener" aria-label="18. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/18-modularis-aritmetika-homomorfizmus-kongruencia-reszgyuru-ideal-maradekosztalygyuru#ring-homomorphism-theorem" target="_blank">18. részben</a> volt szó bővebben.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A fentebbi példában szereplő modulo [latex]8[/latex] maradékosztálygyűrű műveleti táblái emiatt megegyeznek a [latex]\Z_8[/latex] gyűrű műveleti tábláival. A [latex]\Z_8[/latex] gyűrű szorzótáblája például így néz ki:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{c|cccccccc}\odot &amp;0&amp;1&amp;2&amp;3&amp;4&amp;5&amp;6&amp;7 \\ \hline 0&amp;0&amp;0&amp;0&amp;0&amp;0&amp;0&amp;0&amp;0 \\ 1&amp;0&amp;1&amp;2&amp;3&amp;4&amp;5&amp;6&amp;7 \\ 2&amp;0&amp;2&amp;4&amp;6&amp;0&amp;2&amp;4&amp;6 \\ 3&amp;0&amp;3&amp;6&amp;1&amp;4&amp;7&amp;2&amp;5 \\ 4&amp;0&amp;4&amp;0&amp;4&amp;0&amp;4&amp;0&amp;4 \\ 5&amp;0&amp;5&amp;2&amp;7&amp;4&amp;1&amp;6&amp;3 \\ 6&amp;0&amp;6&amp;4&amp;2&amp;0&amp;6&amp;4&amp;2 \\ 7&amp;0&amp;7&amp;6&amp;5&amp;4&amp;3&amp;2&amp;1 \end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az ezzel a <strong><em>homomorfizmustétel</em></strong> miatt ([yp_element slug="gyuruk-homomorfizmustetele" type="link" /]) <strong><em>izomorf</em></strong> modulo [latex]8[/latex] maradékosztálygyűrű szorzótáblája ezzel gyakorlatilag megegyezik, az egyetlen különbség az elemek jelölésében van:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{c|cccccccc}\odot &amp; [0]_8 &amp; [1]_8 &amp; [2]_8 &amp; [3]_8 &amp; [4]_8 &amp; [5]_8 &amp; [6]_8 &amp; [7]_8  \\ \hline  [0]_8 &amp; [0]_8 &amp; [0]_8 &amp; [0]_8 &amp; [0]_8 &amp; [0]_8 &amp; [0]_8 &amp; [0]_8 &amp; [0]_8  \\  [1]_8 &amp; [0]_8 &amp; [1]_8 &amp; [2]_8 &amp; [3]_8 &amp; [4]_8 &amp; [5]_8 &amp; [6]_8 &amp; [7]_8  \\  [2]_8 &amp; [0]_8 &amp; [2]_8 &amp; [4]_8 &amp; [6]_8 &amp; [0]_8 &amp; [2]_8 &amp; [4]_8 &amp; [6]_8  \\  [3]_8 &amp; [0]_8 &amp; [3]_8 &amp; [6]_8 &amp; [1]_8 &amp; [4]_8 &amp; [7]_8 &amp; [2]_8 &amp; [5]_8  \\  [4]_8 &amp; [0]_8 &amp; [4]_8 &amp; [0]_8 &amp; [4]_8 &amp; [0]_8 &amp; [4]_8 &amp; [0]_8 &amp; [4]_8  \\  [5]_8 &amp; [0]_8 &amp; [5]_8 &amp; [2]_8 &amp; [7]_8 &amp; [4]_8 &amp; [1]_8 &amp; [6]_8 &amp; [3]_8  \\  [6]_8 &amp; [0]_8 &amp; [6]_8 &amp; [4]_8 &amp; [2]_8 &amp; [0]_8 &amp; [6]_8 &amp; [4]_8 &amp; [2]_8  \\  [7]_8 &amp; [0]_8 &amp; [7]_8 &amp; [6]_8 &amp; [5]_8 &amp; [4]_8 &amp; [3]_8 &amp; [2]_8 &amp; [1]_8  \end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="gyuru-test" type="link" /] alapján egy gyűrűben a szorzás általában nem invertálható művelet (lásd a [yp_element slug="inverz-elem" type="link" /]t). Ez azonban nem jelenti azt, hogy egyáltalán ne létezhetne olyan nemnulla elem a gyűrűben, amely a szorzásra nézve invertálható – csupán azt, hogy <strong><em>nem mindegyik</em></strong> elem ilyen. Például az egész számok [latex]\Z[/latex] gyűrűjében mindössze az [latex]1[/latex]-hez és a [latex]-1[/latex]-hez létezik <strong><em>inverz elem</em></strong>. Mindkettő inverze önmaga, hiszen [latex]1\cdot 1=1[/latex] és [latex](-1)\cdot (-1)=1[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezzel szemben a modulo [latex]8[/latex] maradékosztálygyűrűben több invertálható elem is van. A fenti szorzótábla alapján ezek a következő maradékosztályok: [latex][1]_8[/latex], [latex][3]_8[/latex], [latex][5]_8[/latex] és [latex][7]_8[/latex]. Például a [latex][3]_8[/latex] inverze szintén önmaga, mivel [latex][3]_8\odot [3]_8 = [1]_8[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezzel ellentétben a [latex][0]_8[/latex], a [latex][2]_8[/latex], a [latex][4]_8[/latex] és a [latex][6]_8[/latex] maradékosztályok nem ivertálhatók, mivel a szorzótáblában a nekik megfelelő sorokban sehol nem szerepel az [latex][1]_8[/latex] maradékosztály. Azaz nincs olyan maradékosztály, amellyel őket megszorozva [latex][1]_8[/latex]-et kapnánk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A fenti példákban csupa olyan invertálható elem szerepelt, amelyek mindegyikének az inverze önmaga volt. Ez nem feltétlenül van mindig így. Ha például a modulo [latex]10[/latex] maradékosztálygyűrűt vizsgáljuk, ebben a gyűrűben olyan invertálható elem is van, amelynek inverze nem önmaga. Például a [latex][3]_{10}[/latex] maradékosztály inverze a [latex][7]_{10}[/latex] maradékosztály, hiszen őket összeszorozva a [latex]21[/latex] egész szám által reprezentált maradékosztályt kapjuk, ami megegyezik az [latex][1]_{10}[/latex] maradékosztállyal.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az invertálható maradékosztályoknak – fontosságuk miatt – külön nevük is van.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="redukalt-maradekosztaly" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="egesz-szamok-maradekosztalygyurui" type="link" /]ben már láttuk, hogy amennyiben a modulus egy [latex]m\gt 0[/latex] <strong><em>pozitív</em></strong> egész szám, akkor a modulo [latex]m[/latex] maradékosztálygyűrű elemszáma pontosan [latex]m[/latex], vagy más szavakkal pontosan [latex]m[/latex] darab modulo [latex]m[/latex] maradékosztály létezik. Felmerül a kérdés, hogy vajon mi lesz az ugyanezen modulus szerinti <strong><em>redukált maradékosztályok száma</em></strong>? Pontosan ezt méri a számelmélet egyik legfontosabb függvénye, amelyet az alábbi definícióban vezetünk be, és amely <a rel="noreferrer noopener" aria-label="Leonhard Euler (új fülön nyitja meg)" href="https://hu.wikipedia.org/wiki/Leonhard_Euler" target="_blank">Leonhard Euler</a> svájci matematikusról kapta a nevét.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="euler-fuggveny" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az alábbiakban megadjuk a [latex]\varphi[/latex]-függvény értékét az első néhány pozitív egész számra:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}\varphi(1)&amp;=1 \\ \varphi(2)&amp;=1 \\ \varphi(3)&amp;=2 \\ \varphi(4)&amp;=2 \\ \varphi(5)&amp;=4 \\ \varphi(6)&amp;=2 \\ \varphi(7)&amp;=6 \\ \varphi(8)&amp;=4 \\ \varphi(9)&amp;=6 \\ \varphi(10)&amp;=4 \\ &amp;\vdots\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi ábrán a [latex]\varphi[/latex]-függvény grafikonja látható az első 1000 pozitív egész számig bezárólag.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":5559,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_20_euler_fuggveny_grafikon.jpg" alt="Az Euler-függvény grafikonja" class="wp-image-5559"/><figcaption>Az Euler-függvény grafikonja</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Látható, hogy a függvény bizonyos szempontból meglehetősen hektikusan viselkedik. Felmerül a kérdés, hogy vajon hogyan számítható ki az értéke tetszőleges [latex]m\gt 0[/latex] pozitív egész számra? Ehhez ugye a modulo [latex]m[/latex] redukált maradékosztályokat kéne tudnunk megszámolni. Ennek viszont előfeltétele, hogy egy adott maradékosztályról egyáltalán el tudjuk dönteni, hogy redukált-e vagy nem, azaz létezik-e inverze a modulo [latex]m[/latex] maradékosztálygyűrű szorzására nézve vagy nem.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Vizsgáljuk ezért meg, hogy ennek mi a feltétele. Tegyük fel, hogy elénk kerül egy valamilyen [latex]a[/latex] egész számmal reprezentált [latex][a]_m[/latex] maradékosztály, és azt kell eldöntenünk, hogy létezik-e olyan [latex]X[/latex] maradékosztály, amelyre teljesül az alábbi egyenlet a maradékosztálygyűrűben:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][a]_m\odot X=[1]_m[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Itt [latex][1]_m[/latex] jelöli a maradékosztálygyűrű egységelemét, azaz azt a maradékosztályt, amelyben benne van az [latex]1[/latex] egész szám. Ekkor a keresett [latex]X[/latex] maradékosztály lesz az [latex][a]_m[/latex] maradékosztály inverze – amennyiben létezik. A [yp_element slug="egesz-szamok-maradekosztalyai" type="link" /] alapján elegendő [latex]X[/latex] egyetlen elemét megtalálni, hiszen ebből könnyedén megkapható az összes többi. Jelöljük ezt a keresett elemet [latex]x[/latex]-szel, azaz [latex]X=[x]_m[/latex]. Ekkor a fenti egyenlet – követve a [latex]\odot[/latex] művelet [yp_element slug="egesz-szamok-maradekosztalygyurui" type="link" /]beli definícióját – így módosul:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][a]_m\odot [x]_m=[a\cdot x]_m=[1]_m[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Szavakkal megfogalmazva tehát kell keresnünk egy olyan [latex]x[/latex] egész számot, amely esetén az [latex]a\cdot x[/latex] szorzat ugyanabban a maradékosztályban van, mint az [latex]1[/latex] egész szám. A kongruenciák nyelvén ez épp az alábbit jelenti:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]ax\equiv 1\pmod m[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az [latex][a]_m[/latex] maradékosztály inverzének létezése tehát azon áll vagy bukik, hogy létezik-e olyan [latex]x[/latex] egész szám, amely kielégíti a fenti kongruenciát – azaz a fenti úgynevezett kongruenciaegyenlet <strong><em>megoldható-e</em></strong>. A következő szakaszban ennek feltételeit tekintjük át.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="linear-congruences"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Lineáris kongruenciák</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A kongruenciaegyenletek legegyszerűbb képviselői az úgynevezett <strong><em>lineáris kongruenciák</em></strong>, mint amilyen a fenti kongruenciaegyenlet is. Ezeknek kulcsszerepe van a kriptográfiai eljárásokban, ezért ebben a szakaszban fontos tételeket mondunk ki velük kapcsolatban. Előszöris definiáljuk pontosan, hogy mit is értünk lineáris kongruencia, illetve annak megoldásai és megoldásszáma alatt.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="linearis-kongruenciak" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="linearis-kongruenciak-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Egy lineáris kongruencia esetén – hasonlóan egy hagyományos egyenlethez – az alábbi kérdésekre keressük a választ:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} -->
+<ol><li>Mi a megoldhatóság szükséges és elégséges feltétele?</li><li>Hány megoldás létezik (a fenti definíció szerinti értelemben)?</li><li>Hogyan kaphatjuk meg ezeket a megoldásokat?</li></ol>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>Ahhoz, hogy ezeket a kérdéseket megválaszoljuk, először is szükségünk van egy fontos állításra az <a rel="noreferrer noopener" aria-label="előző részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/19-foidealgyuruk-generalt-ideal-foideal-szamelmelet-alaptetele-halmaz-halmazrendszer-metszet-unio#generated-ideals" target="_blank">előző részben</a> tárgyalt, <strong><em>végesen generált ideálok</em></strong> elemeivel kapcsolatban. Az alábbi tétel az <strong><em>egységelemes</em></strong> gyűrűk esetére szorítkozik, és arról szól, hogy hogyan tudjuk megkapni egy ideál <strong><em>összes</em></strong> elemét a generátorelemek segítségével. Általános esetben a helyzet némiképp bonyolultabb, és jelenleg nincs is rá szükségünk, így ennek részleteit most mellőzzük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="vegesen-generalt-ideal-elemei" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="vegesen-generalt-ideal-elemei-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Például tekintsük a [latex](8,6)[/latex] ideált az egész számok gyűrűjében. A tétel alapján ennek összes elemét megkapjuk, ha a [latex]8x+6y[/latex] kifejezésbe az [latex]x[/latex] és [latex]y[/latex] helyére behelyettesítjük az összes lehetséges egész számpárt. Az alábbi táblázatban néhány nemnegatív számpárra számítottuk ki az eredményt, de a táblázat természetesen folytatható lenne a negatív számtartományokban is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":5574,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_20_8_6_ideal_elemei-1.jpg" alt="A (8,6) ideál elemei" class="wp-image-5574"/><figcaption>A (8,6) ideál elemei</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>A kapott számok az ábrán feltüntetett vonalak mentén kettesével követik egymást. Úgy tűnik tehát, hogy a [latex](8,6)[/latex] ideál épp a páros számokat tartalmazza, azaz megegyezik a [latex](2)[/latex] főideállal. A [latex]2[/latex] ráadásul épp a [latex]8[/latex] és a [latex]6[/latex] kitüntetett közös osztója. Az <a rel="noreferrer noopener" aria-label="előző részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/19-foidealgyuruk-generalt-ideal-foideal-szamelmelet-alaptetele-halmaz-halmazrendszer-metszet-unio/" target="_blank">előző részben</a> mutattunk már egy fontos összefüggést egy integritástartomány ideáljai és a kitüntetett közös osztók között:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="idealok-es-a-kituntetett-kozos-oszto" type="recall-expanded" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Eszerint tehát az [latex](a,b)[/latex] és [latex](d)[/latex] ideálok közötti egyenlőségből következik, hogy [latex]d[/latex] kitüntetett közös osztója [latex]a[/latex]-nak és [latex]b[/latex]-nek. <strong><em>Vigyázzunk azonban!</em></strong> Visszafelé ugyanis általánosságban nem igaz az összefüggés. Vagyis abból, hogy [latex]d[/latex] kitüntetett közös osztója [latex]a[/latex]-nak és [latex]b[/latex]-nek még <strong><em>nem következik</em></strong>, hogy az [latex](a,b)[/latex] és a [latex](d)[/latex] ideálok megegyeznek. Ennek a megfordításnak a pontos feltételeit az alábbi tétel fogalmazza meg.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="idealok-es-a-kituntetett-kozos-oszto-megforditas" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="idealok-es-a-kituntetett-kozos-oszto-megforditas-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most alkalmazzuk a fenti példára a tételt. Mivel a [latex]2[/latex] a [latex]8[/latex] és [latex]6[/latex] kitüntetett közös osztója, továbbá [latex]2=1\cdot 8 + (-1)\cdot 6[/latex], ezért a [latex](8,6)[/latex] ideál nem csak látszólag, hanem valóban megegyezik a [latex](2)[/latex] főideállal.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az előző tételnek van egy egyszerű következménye az <a rel="noreferrer noopener" aria-label=" (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/19-foidealgyuruk-generalt-ideal-foideal-szamelmelet-alaptetele-halmaz-halmazrendszer-metszet-unio#principal-ideal-domains" target="_blank">előző részben</a> tárgyalt főideálgyűrűkre nézve, amely <strong><em>Bézout-lemma</em></strong> néven ismeretes. Ez <a rel="noreferrer noopener" aria-label="Étienne Bézout (új fülön nyitja meg)" href="https://en.wikipedia.org/wiki/%C3%89tienne_B%C3%A9zout" target="_blank">Étienne Bézout</a> 18. századi francia matematikusról kapta a nevét, és eredetileg az egész számok körében volt ismeretes, ám az ennél általánosabb főideálgyűrűkre is érvényes.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="bezout-lemma" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="bezout-lemma-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most térjünk vissza az [latex]ax\equiv b\pmod m[/latex] lineáris kongruencia megoldhatóságának kérdésére. Az alábbi tételben megmutatjuk, hogy ez szoros összefüggésben van egy egész számokon értelmezett egyenlet – úgynevezett <strong><em>lineáris diofantoszi egyenlet</em></strong> – megoldhatóságával.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez tehát azt jelenti, hogy az [latex]ax\equiv b\pmod m[/latex] lineáris kongruencia és az [latex]ax+my=b[/latex] lineáris diofantoszti egyenlet kölcsönösen visszavezethetők egymásra. Ennek alapján bármely, a lineáris kongruenciákkal kapcsolatos eredmény felhasználható a lineáris diofantoszi egyenletek vizsgálatánál és viszont.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Felhívjuk azonban a figyelmet, hogy jelentős eltérés van a kettő között!</em></strong> Egy lineáris kongruencia megoldásai modulo [latex]m[/latex] maradékosztályok, és így a megoldások száma véges. Ezzel szemben egy lineáris diofantoszi egyenlet megoldásai egész számpárok, és ezekből végtelen sok lehet.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Amikor egy lineáris kongruenciát kell megoldanunk, akkor általában az iménti tétel alapján visszavezetjük azt egy lineáris diofantoszi egyenletre. Egy ilyen egyenlet megoldására a következő részben fogunk mutatni egy roppant hatékony módszert, amely tulajdonképpen a <a rel="noreferrer noopener" aria-label="17. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/17-euklideszi-algoritmus-maradekos-osztas-legnagyobb-kozos-oszto-euklideszi-gyuru#euclidean-algorithm" target="_blank">17. részben</a> bemutatott <strong><em>euklidészi algoritmusnak</em></strong> egy kibővített változata. Ennek az eljárásnak a segítségével kiszámítjuk a diofantoszi egyenlet egy [latex]x[/latex], [latex]y[/latex] megoldását. Ekkor a [yp_element slug="linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga" type="link" /] alapján az [latex]x[/latex] által reprezentált [latex][x]_m[/latex] maradékosztály épp az eredeti lineáris kongruencia <strong><em>egyik</em></strong> megoldása lesz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Jogosan merül fel a kérdés, hogy <strong><em>mi van akkor, ha egy lineáris kongruenciának több megoldása is létezik? Vajon összesen hány megoldás van? Hogyan kapható meg egy megoldásból az összes többi?</em></strong> Ezt az alábbi tételben válaszoljuk meg, majd a bizonyítás után egy egyszerű példán demonstráljuk ennek alkalmazását.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="linearis-kongruenciak-megoldasai-es-megoldasszama" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="linearis-kongruenciak-megoldasai-es-megoldasszama-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most nézzünk meg egy egyszerű példát az iménti tétel alkalmazására. A <a rel="noreferrer noopener" aria-label="18. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/18-modularis-aritmetika-homomorfizmus-kongruencia-reszgyuru-ideal-maradekosztalygyuru#modular-arithmetic-equations" target="_blank">18. részben</a> szó volt arról, hogy nagyon óvatosan kell eljárnunk, amikor a [yp_element slug="modularis-osszeadas-es-szorzas" type="link" /] szerinti [latex]\Z_m[/latex] gyűrűben akarunk egyenleteket megoldani. Példaként a [latex]\Z_8[/latex] gyűrűben írtuk fel az alábbi egyenletet:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](2\odot x)\oplus 3=7[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az említett példában megmutattuk, hogyha a „szokásos” módon próbáljuk megoldani ezt az egyenletet, akkor elveszhetnek bizonyos megoldások. Ha például mindkét oldalból kivonunk [latex]3[/latex]-at, majd mindkét oldalt „elosztjuk” [latex]2[/latex]-vel, akkor megkapjuk ugyan az [latex]x=2[/latex] megoldást, ám elveszítjük az [latex]x=6[/latex] megoldás. Ennek az oka az volt, hogy a [latex]\Z_8[/latex] gyűrű <strong><em>nem nullosztómentes</em></strong> – hiszen például [latex]2\odot 4=0[/latex], holott egyik tényező sem [latex]0[/latex]. Az imént bizonyított, <strong><em>lináris kongruenciákkal</em></strong> kapcsolatos tétel segítségével azonban már könnyen kezelhetjük az ilyen egyenleteket. Nézzük is meg, hogyan.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mint már említettük, a <strong><em>homomorfizmustétel</em></strong> miatt ([yp_element slug="gyuruk-homomorfizmustetele" type="link" /]) a [latex]\Z_8[/latex] gyűrű <strong><em>izomorf</em></strong> a [latex]\Z/8\Z[/latex] gyűrűvel – azaz a modulo [latex]8[/latex] maradékosztálygyűrűvel –, tehát pontosan ugyanúgy kell benne számolni. Emiatt a [latex]\Z_8[/latex] gyűrűben felírt [latex](2\odot x)\oplus 3=7[/latex] egyenletet áttranszformálhatjuk a [latex]\Z/8\Z[/latex] maradékosztálygyűrűbe:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]([2]_8\odot X)\oplus [3]_8=[7]_8[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [latex][3]_8[/latex] maradékosztály ellentettje az [latex][5]_8[/latex] maradékosztály, mivel ezek összege épp a [latex][0]_8[/latex] maradékosztály. Így mindkét oldalhoz [latex][5]_8[/latex]-öt hozzáadva ezt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][2]_8\odot X=[4]_8[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Keressük tehát azt az [latex]X[/latex] maradékosztályt, amelyet a [latex][2]_8[/latex] maradékosztállyal megszorozva a [latex][4]_8[/latex] maradékosztályt kapjuk eredményül. Ha megnézzük a [latex]\Z/8\Z[/latex] maradékosztálygyűrű alábbi szorzótábláját, akkor látszik, hogy két megoldás van. Nevezetesen az [latex]X=[2]_8[/latex] és az [latex]X=[6]_8[/latex] maradékosztályok:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{c|cccccccc}\odot &amp; [0]_8 &amp; [1]_8 &amp; [2]_8 &amp; [3]_8 &amp; [4]_8 &amp; [5]_8 &amp; [6]_8 &amp; [7]_8  \\ \hline  [0]_8 &amp; [0]_8 &amp; [0]_8 &amp; [0]_8 &amp; [0]_8 &amp; [0]_8 &amp; [0]_8 &amp; [0]_8 &amp; [0]_8  \\  [1]_8 &amp; [0]_8 &amp; [1]_8 &amp; [2]_8 &amp; [3]_8 &amp; [4]_8 &amp; [5]_8 &amp; [6]_8 &amp; [7]_8  \\  [2]_8 &amp; [0]_8 &amp; [2]_8 &amp; [4]_8 &amp; [6]_8 &amp; [0]_8 &amp; [2]_8 &amp; [4]_8 &amp; [6]_8  \\  [3]_8 &amp; [0]_8 &amp; [3]_8 &amp; [6]_8 &amp; [1]_8 &amp; [4]_8 &amp; [7]_8 &amp; [2]_8 &amp; [5]_8  \\  [4]_8 &amp; [0]_8 &amp; [4]_8 &amp; [0]_8 &amp; [4]_8 &amp; [0]_8 &amp; [4]_8 &amp; [0]_8 &amp; [4]_8  \\  [5]_8 &amp; [0]_8 &amp; [5]_8 &amp; [2]_8 &amp; [7]_8 &amp; [4]_8 &amp; [1]_8 &amp; [6]_8 &amp; [3]_8  \\  [6]_8 &amp; [0]_8 &amp; [6]_8 &amp; [4]_8 &amp; [2]_8 &amp; [0]_8 &amp; [6]_8 &amp; [4]_8 &amp; [2]_8  \\  [7]_8 &amp; [0]_8 &amp; [7]_8 &amp; [6]_8 &amp; [5]_8 &amp; [4]_8 &amp; [3]_8 &amp; [2]_8 &amp; [1]_8  \end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Igenám, csakhogy egy sokkal nagyobb – például a kriptográfiai gyakorlatban előforduló többszázjegyű – modulus esetén nem írhatjuk fel a szorzótáblát, mivel az ehhez használt papírlap sokszorosan beborítaná az egész bolygót. Ehelyett a megoldáshoz a fenti tételt fogjuk alkalmazni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="egesz-szamok-maradekosztalyai" type="link" /] alapján elegendő a keresett [latex]X[/latex] maradékosztály(ok) egyetlen elemét megtalálni, hiszen ebből könnyedén megkapható az összes többi. Jelöljük ezt a keresett elemet [latex]x[/latex]-szel, azaz [latex]X=[x]_m[/latex]. Ekkor a fenti egyenlet – követve a [latex]\odot[/latex] művelet [yp_element slug="egesz-szamok-maradekosztalygyurui" type="link" /]beli definícióját – így módosul:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][2]_8\odot [x]_8=[2\cdot x]_8=[4]_8[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Szavakkal megfogalmazva tehát kell keresnünk egy olyan [latex]x[/latex] egész számot, amely esetén a [latex]2\cdot x[/latex] szorzat ugyanabban a maradékosztályban van, mint a [latex]4[/latex] egész szám. Ez épp az alábbi <strong><em>lineáris kongruencia</em></strong> megoldásainak megkeresését jelenti:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]2\cdot x\equiv 4\pmod 8[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga" type="link" /] alapján ez a kongruencia megoldható, mivel a [latex](2,8)=2[/latex] kitüntetett közös osztónak többszöröse a kongruencia jobboldalán szereplő [latex]4[/latex] egész szám. A [yp_element slug="linearis-kongruenciak-megoldasai-es-megoldasszama" type="link" /] alapján ekkor a <strong><em>megoldásszám</em></strong> valóban [latex]2[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel, hogy valahogyan megtaláltuk a [latex][2]_8[/latex] megoldást. Ezt például az úgynevezett <strong><em>kibővített euklidészi algoritmus</em></strong> segítségével tudjuk majd kiszámítani, amelyet a következő részben fogunk bemutatni. Ekkor a [yp_element slug="linearis-kongruenciak-megoldasai-es-megoldasszama" type="link" /] alapján valóban pontosan az alábbi maradékosztályok lesznek a megoldások:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}[2+0\cdot \frac{8}{(2,8)}]_8&amp;=[2]_8 \\ [2+1\cdot \frac{8}{(2,8)}]_8&amp;=[2+4]_8=[6]_8\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Így tehát a [latex]\Z_8[/latex] gyűrű és a [latex]\Z/8\Z[/latex] maradékosztálygyűrű izomorfiája miatt az eredeti [latex](2\odot x)\oplus 3=7[/latex] egyenlet megoldásai az [latex]x=2[/latex] és [latex]x=6[/latex] elemek lesznek a [latex]\Z_8[/latex] gyűrűben.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Teljes és redukált maradékrendszerek</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Most tehát egy lépéssel közelebb kerültünk az <strong><em>Euler-féle [latex]\varphi[/latex]-függvény</em></strong> kiszámításához, ami ugye a [yp_element slug="euler-fuggveny" type="link" /] alapján épp a modulo [latex]m[/latex] redukált maradékosztályok számát adja meg. Az előző szakaszban tanultak felhasználásával ugyanis egy adott maradékosztályról könnyedén el tudjuk dönteni, hogy redukált-e vagy nem, azaz létezik-e inverze a [latex]\Z/m\Z[/latex] maradékosztálygyűrű szorzására nézve vagy nem. Ennek pontos feltételét az alábbi tételben adjuk meg.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="redukalt-maradekosztaly-feltetele" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="redukalt-maradekosztaly-feltetele-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az <strong><em>Euler-féle [latex]\varphi[/latex]-függvény</em></strong> tehát az imént bizonyított feltételnek eleget tevő maradékosztályok számát adja meg. Mi azonban szeretnénk egy olyan alternatív definíciót adni ennek a függvénynek, amely könnyebben kiszámítható. Ehhez szükségünk van néhány további fogalomra és összefüggésre.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="teljes-es-redukalt-maradekrendszer" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi ábrán a [latex]\Z/8\Z[/latex]-vel jelölt modulo [latex]8[/latex] maradékosztályok, illetve egy-egy belőlük képzett teljes és redukált maradékrendszer látható. Előbbit [latex]T[/latex]-vel, utóbbit pedig [latex]R[/latex]-rel jelöltük. Látható, hogy a [latex]T[/latex] halmaz minden maradékosztályból pontosan egy elemet tartalmaz. Ehhez hasonlóan az [latex]R[/latex] halmaz minden redukált maradékosztályból tartalmaz pontosan egy elemet:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":5577,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_20_modulo_8_teljes_es_redukalt_maradekrendszerek-1.jpg" alt="Modulo 8 teljes és redukált maradékrendszerek" class="wp-image-5577"/><figcaption>Modulo 8 teljes és redukált maradékrendszerek</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi tétel abban nyújt segítséget, hogy egy tetszőleges egész számokból álló halmazról könnyen el tudjuk dönteni, hogy az egy teljes illetve redukált maradékrendszer-e vagy sem.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="teljes-es-redukalt-maradekrendszer-feltetele" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="teljes-es-redukalt-maradekrendszer-feltetele-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>E tétel egyik alkalmazásaként most egy alternatív definíciót is adunk az <strong><em>Euler-féle [latex]\varphi[/latex]-függvényre</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="euler-fuggveny-alternativ-definicio" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="euler-fuggveny-alternativ-definicio-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Egy másik alkalmazásként megmutatjuk, hogy egy teljes (illetve redukált) maradékrendszerből hogyan kaphatunk egy újabb teljes (illetve redukált) maradékrendszert. Ennek rettentő fontos következménye lesz számunkra az úgynevezett <strong><em>Euler-Fermat tétel</em></strong>, amelyet a következő szakaszban mutatunk be.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="teljes-es-redukalt-maradekrendszer-kepzese" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="teljes-es-redukalt-maradekrendszer-kepzese-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Az Euler-Fermat tétel</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Végül ebben a szakaszban megismerjük az <strong><em>RSA kriptográfiai eljárás</em></strong> alapját képező <strong><em>Euler-Fermat tételt</em></strong>. Ezt a tételt 1736-ban publikálta <a rel="noreferrer noopener" href="https://hu.wikipedia.org/wiki/Leonhard_Euler" target="_blank">Leonhard Euler</a> egy másik hasonlóan fontos tétel, a <strong><em>kis Fermat-tétel</em></strong> általánosításaként. Ez utóbbi <a rel="noreferrer noopener" aria-label="Pierre de Fermat (új fülön nyitja meg)" href="https://hu.wikipedia.org/wiki/Pierre_de_Fermat" target="_blank">Pierre de Fermat</a> francia műkedvelő matematikustól származik 100 évvel korábbról, 1636-ból, és majd a prímtesztelő eljárások kapcsán lesz róla szó bővebben egy későbbi részben.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="euler-fermat-tetel" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="euler-fermat-tetel-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Alkalmazzuk például az [latex]m=8[/latex] modulusra és hozzá relatív prím [latex]a=5[/latex]-re a tételt. Ekkor a kongruencia baloldala így néz ki:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{\varphi(m)}=5^{\varphi(8)}=5^4=625[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez [latex]8[/latex]-cal osztva valóban [latex]1[/latex]-et ad maradékul.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az, hogy a tételben szereplő [latex]a[/latex] <strong><em>relatív prím</em></strong> a modulushoz más szavakkal azt jelenti, hogy ő egy <strong><em>redukált maradékosztály</em></strong> reprezentánseleme. A tétel tehát tulajdonképpen azt mondja, hogy a [latex]\Z/m\Z[/latex] maradékosztálygyűrűben a redukált maradékosztályok bármelyikét a [latex]\varphi(m)[/latex]-edik hatványra emelve mindig az [latex][1]_m[/latex] maradékosztályt, vagyis a [latex]\Z/m\Z[/latex] gyűrű egységelemét kapjuk eredményül. Ez a tény alapvető fontosságú az <strong><em>RSA kriptográfiai eljárás</em></strong> szempontjából, mint ahogyan azt látni fogjuk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Végül megjegyezzük, hogy az <strong><em>Euler-Fermat tétel megfordítása is igaz</em></strong>. Vagyis az imént említett feltétel – miszerint [latex]a[/latex] relatív prím a modulushoz – az Euler-Fermat tételben szereplő kongruencia teljesülésének nemcsak elégséges, hanem <strong><em>szükséges feltétele</em></strong> is. Sőt, az alábbi tételben egy ennél erősebb állítást is igazolunk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="euler-fermat-tetel-megforditasa" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="euler-fermat-tetel-megforditasa-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ebben a részben tehát megvizsgáltuk, hogy a <a href="https://youproof.hu/kriptografia/18-modularis-aritmetika-homomorfizmus-kongruencia-reszgyuru-ideal-maradekosztalygyuru/" target="_blank" rel="noreferrer noopener" aria-label="18. részben (új fülön nyitja meg)">18. részben</a> bevezetett kongruencia fogalma mit jelent az egész számok [latex]\Z[/latex] gyűrűjére vonatkoztatva. Megmutattuk, hogy a kongruenciákkal nagyjából ugyanúgy kell számolni, mint a hagyományos egyenletekkel, de azért bizonyos esetekben vigyázni kell. Ezután megvizsgáltuk, hogy hogyan néznek ki az egész számok maradékosztályai és maradékosztálygyűrűi, és megismerkedtünk az Euler-féle [latex]\varphi[/latex]-függvénnyel, amely a modulo [latex]m[/latex] redukált maradékosztályok számát adja meg. A lineáris kongruenciák megoldhatóságának feltételei kapcsán erre a függvényre adtunk egy alternatív definíciót is. Végül megismerkedtünk az RSA-eljárás alapját képező Euler-Fermat tétellel.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A következő részekben kibővítjük a <a rel="noreferrer noopener" aria-label="17. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/17-euklideszi-algoritmus-maradekos-osztas-legnagyobb-kozos-oszto-euklideszi-gyuru/" target="_blank">17. részben</a> megismert euklidészi algoritmust, amely így már alkalmas lesz a most tanult lineáris kongruenciák megoldására is. Megvizsgáljuk továbbá, hogy hogyan lehet kiszámítani az Euler-féle [latex]\varphi[/latex]-függvény értékét egy adott számra annak prímtényezőinek ismeretében. Így már minden számelméleti ismeret rendelkezésre áll az RSA-eljárás részleteinek bemutatásához. Végül rátérünk arra a kérdésre, hogy hogyan lehet az RSA biztonságához szükséges óriási – a gyakorlatban többszázjegyű – prímszámokat találni.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A következő részt <a href="https://youproof.hu/kriptografia/21-rsa-algoritmus-kibovitett-euklideszi-algoritmus-euler-fuggveny-kulcsgeneralas-ismetelt-negyzetreemeles-modszere/">itt</a> találod...</em></strong></p>
+<!-- /wp:paragraph -->

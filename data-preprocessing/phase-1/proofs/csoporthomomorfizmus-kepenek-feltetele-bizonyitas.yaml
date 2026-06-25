@@ -1,0 +1,58 @@
+type: proof
+name: csoporthomomorfizmus-kepenek-feltetele-bizonyitas
+remarks: []
+references:
+  csoporthomomorfizmus-egysegelem-es-inverzkepzestarto:
+    target:
+      type: theorem
+      name: csoporthomomorfizmus-egysegelem-es-inverzkepzestarto
+  reszcsoport-feltetele:
+    target:
+      type: theorem
+      name: reszcsoport-feltetele
+content:
+  - type: narrative
+    content: |
+      Tekintsük azt az $f$ csoporthomomorfizmust, amelynek képe $T$. Ez egy valamilyen, számunkra ismeretlen $X$
+      csoport elemein van értelmezve, amelynek egységelemét jelöljük most $e_X$-szel, míg a $H$ csoport
+      egységelemét jelöljük $e_H$-val. Azt kell megmutatnunk, hogy $T$-re teljesülnek a [reszcsoport-feltetele]ben
+      felsorolt feltételek.
+  - type: narrative
+    content: |
+      A [csoporthomomorfizmus-egysegelem-es-inverzkepzestarto] 1. pontja alapján $f(e_X)=e_H$, így tehát a $H$
+      csoport egységeleme valóban benne van $T$-ben.
+  - type: narrative
+    content: |
+      Ha valamilyen $a$ és $b$ elemek benne vannak $T$-ben, akkor léteznek olyan $x_a$ és $x_b$ elemek $X$-ben,
+      amelyeknek épp ő a képük, azaz $f(x_a)=a$ és $f(x_b)=b$.
+  - type: formula
+    lead-in: |
+      A két egyenletet összeszorozva $H$-ban, valamint kihasználva $f$ művelettartó tulajdonságait az alábbit
+      kapjuk:
+    content: |
+      f(x_a)\cdot f(x_b)=f(x_a\cdot x_b)=a\cdot b
+  - type: narrative
+    content: |
+      Létezik tehát olyan elem $X$-ben, amelynek $a\cdot b$ a képe (nevezetesen $x_a\cdot x_b$), emiatt az $a\cdot
+      b$ szorzat is benne van $T$-ben, ami így valóban zárt a $H$ csoport szorzására nézve.
+  - type: narrative
+    content: |
+      Végül ha valamilyen $a$ elem benne van $T$-ben, akkor létezik olyan $x_a$ elem $X$-ben, amelynek épp $a$ a
+      képe, azaz $f(x_a)=a$.
+  - type: formula
+    lead-in: |
+      A [csoporthomomorfizmus-egysegelem-es-inverzkepzestarto] 2. pontja alapján azonban $f$ tartja az
+      inverzképzést is, így teljesül az alábbi:
+    content: |
+      f(x_a^{-1})=(f(x_a))^{-1}=a^{-1}
+  - type: narrative
+    content: |
+      Létezik tehát olyan elem $X$-ben, amelynek $a^{-1}$ a képe (nevezetesen $x_a^{-1}$), emiatt $a^{-1}$ is benne
+      van $T$-ben, ami így zárt az inverzképzésre nézve is. Minthogy a [reszcsoport-feltetele]ben felsorolt minden
+      feltétel teljesül, ezért $T$ valóban részcsoport $H$-ban.
+  - type: narrative
+    content: |
+      ***Visszafelé:*** Tegyük most fel, hogy $T$ részcsoport $H$-ban. Azt kell megmutatnunk, hogy van olyan $H$-ba
+      mutató csoporthomomorfizmus, amelynek képe $T$. Tekintsük például azt az $f:T\to H$ függvényt, amely $T$
+      minden eleméhez önmagát rendeli hozzá. Ez kétségkívül nem egy izgalmas függvény, viszont nyilvánvalóan
+      csoporthomomorfizmus, aminek a képe ráadásul épp a $T$ halmaz.

@@ -1,0 +1,51 @@
+type: proof
+name: reszcsoportok-metszete-reszcsoport-bizonyitas
+remarks: []
+references:
+  normaloszto-feltetele:
+    target:
+      type: theorem
+      name: normaloszto-feltetele
+  reszcsoport-feltetele:
+    target:
+      type: theorem
+      name: reszcsoport-feltetele
+content:
+  - type: narrative
+    content: |
+      ***Nézzük először a részcsoportok metszetére vonatkozó állítást!*** Jelöljük $H$-val a $\mathcal{H}$
+      halmazrendszerben lévő részcsoportok metszetét. Azt kell megmutatni, hogy $H$ részcsoport $G$-ben. Ez a
+      [reszcsoport-feltetele] szerint pontosan akkor teljesül, ha $H$ zárt a $G$-beli műveletre és inverzképzésre
+      nézve, valamint tartalmazza $G$ egységelemét.
+  - type: narrative
+    content: |
+      Mivel $\mathcal{H}$ minden eleme részcsoport, így a [reszcsoport-feltetele] miatt mindegyik tartalmazza $G$
+      egységelemét, amely tehát valóban benne van ezek metszetében, azaz $H$-ban.
+  - type: narrative
+    content: |
+      Legyen most $x$ a $H$ halmaz egy tetszőleges eleme. Mivel $H$ a $\mathcal{H}$-beli részcsoportok metszete,
+      így $x$ e részcsoportok mindegyikének szintén eleme, amelyek viszont ismét a [reszcsoport-feltetele] miatt
+      zártak az inverzképzésre. Így $x^{-1}$ is eleme az összes $\mathcal{H}$-beli részcsoportnak, vagyis valóban
+      benne van ezek metszetében, azaz $H$-ban.
+  - type: narrative
+    content: |
+      Végül legyen $x$ és $y$ a $H$ halmaz két tetszőleges eleme. Mivel $H$ a $\mathcal{H}$-beli részcsoportok
+      metszete, így $x$ és $y$ e részcsoportok mindegyikének szintén eleme, amelyek viszont ismét a
+      [reszcsoport-feltetele] miatt zártak a $G$-beli műveletre nézve. Így az $xy$ szorzat is eleme az összes
+      $\mathcal{H}$-beli részcsoportnak, vagyis valóban benne van ezek metszetében, azaz $H$-ban. A $H$ halmaz
+      tehát ***valóban részcsoport*** $G$-ben, ahogyan a tétel állítja.
+  - type: narrative
+    content: |
+      ***Most nézzük a normálosztók metszetére vonatkozó állítást!*** Jelöljük $N$-nel az $\mathcal{N}$
+      halmazrendszerben lévő normálosztók metszetét. Azt kell megmutatni, hogy $N$ normálosztó $G$-ben. Ez a
+      [normaloszto-feltetele] szerint azt jelenti, hogy egyrészt $N$ részcsoport $G$-ben, másrészt minden $n\in N$
+      és $g\in G$ esetén a $gng^{-1}$ szorzat benne van $N$-ben. Minthogy $\mathcal{N}$ minden eleme részcsoport
+      $G$-ben (hiszen normálosztó), ezért ezek metszete, azaz $N$ is részcsoport $G$-ben. Elegendő tehát csak a
+      második feltételt ellenőrizni.
+  - type: narrative
+    content: |
+      Legyen $g$ tetszőleges $G$-beli, $n$ pedig tetszőleges $N$-beli elem. Mivel $N$ az $\mathcal{N}$
+      halmazrendszerben lévő halmazok metszete, ezért $\mathcal{N}$ minden eleme szintén tartalmazza $n$-et.
+      Továbbá mivel ezek normálosztók, ezért a [normaloszto-feltetele] alapján a $gng^{-1}$ szorzat mindegyiküknek
+      eleme. Ám ekkor ezek metszetének, azaz $N$-nek is eleme a $gng^{-1}$ szorzat. Ez viszont ismét a
+      [normaloszto-feltetele] alapján azt jelenti, hogy $N$ is ***normálosztó*** $G$-ben.

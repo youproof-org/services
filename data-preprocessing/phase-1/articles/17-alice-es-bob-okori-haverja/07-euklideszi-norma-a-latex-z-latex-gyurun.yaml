@@ -1,0 +1,68 @@
+type: section
+name: 07-euklideszi-norma-a-latex-z-latex-gyurun
+title: 'Euklidészi norma a [latex]\Z[/latex] gyűrűn'
+
+references:
+  egesz-szamok-rendezese:
+    target:
+      type: definition
+      name: egesz-szamok-rendezese
+  euklideszi-gyuruben-letezik-kituntetett-kozos-oszto:
+    target:
+      type: theorem
+      name: euklideszi-gyuruben-letezik-kituntetett-kozos-oszto
+  felbontas-egyertelmusegenek-elegseges-feltetele:
+    target:
+      type: theorem
+      name: felbontas-egyertelmusegenek-elegseges-feltetele
+  kituntetett-kozos-oszto-letezesenek-kovetkezmenye:
+    target:
+      type: theorem
+      name: kituntetett-kozos-oszto-letezesenek-kovetkezmenye
+  szamelmelet-alaptetele:
+    target:
+      type: definition
+      name: szamelmelet-alaptetele
+
+body:
+  - type: narrative
+    content: |
+      Előbb azonban megmutatjuk, hogy az egész számok $\Z$ gyűrűje euklidészi gyűrű. Ehhez a 15. részben bevezetett
+      rendezési reláció lesz a kulcs (lásd a [egesz-szamok-rendezese]t). Ennek segítségével egy függvényt fogunk
+      értelmezni a $\Z$ halmazon, majd megmutatjuk, hogy az egy ***euklidészi norma***. Nézzük először a kérdéses
+      függvényt.
+  - type: embed
+    target:
+      type: definition
+      name: egesz-szamok-abszoluterteke
+  - type: narrative
+    content: |
+      Amennyiben az egész számokat a mindkét irányban végtelen számegyenesen ábrázoljuk, akkor ez a függvény
+      intuitív módon valóban a $0$ egész számtól való "távolságot" méri ezen az egyenesen. Ez alapján például az
+      $5$ és a $-5$ egész számok egyaránt $5$ "távolságra" vannak a $0$-tól. Azaz: $|5|=|-5|=5$.
+  - type: figure
+    lead-in: |
+      Ezt a "távolságmérést" szemlélteti az alábbi ábra:
+    src: 03-abszolutertek-a-szamegyenesen.jpg
+    alt: Abszolútérték a számegyenesen
+    caption: Abszolútérték a számegyenesen
+  - type: narrative
+    content: |
+      Az abszolútérték-függvénynek a következő tétel miatt van jelentősége számunkra.
+  - type: embed
+    target:
+      type: theorem
+      name: abszolutertek-euklideszi-norma
+  - type: embed
+    target:
+      type: proof
+      name: abszolutertek-euklideszi-norma-bizonyitas
+  - type: narrative
+    content: |
+      Most tehát már tudjuk, hogy az egész számok $\Z$ gyűrűje egy euklidészi gyűrű. A
+      [euklideszi-gyuruben-letezik-kituntetett-kozos-oszto] miatt ez azt jelenti, hogy bármely két egész számnak
+      létezik kitüntetett közös osztója. Ebből viszont a [kituntetett-kozos-oszto-letezesenek-kovetkezmenye]
+      alapján következik, hogy minden felbonthatatlan egész szám prímtulajdonságú, és így a
+      [felbontas-egyertelmusegenek-elegseges-feltetele] miatt teljesül a számelmélet alaptételének
+      ([szamelmelet-alaptetele]) egyértelműségi állítása. Az utolsó szakaszban megmutatjuk, hogy ennél több is
+      igaz.

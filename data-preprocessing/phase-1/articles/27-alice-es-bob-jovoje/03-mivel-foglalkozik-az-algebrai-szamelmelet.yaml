@@ -1,0 +1,102 @@
+type: section
+name: 03-mivel-foglalkozik-az-algebrai-szamelmelet
+title: Mivel foglalkozik az algebrai számelmélet?
+
+references:
+  gyuru-test:
+    target:
+      type: definition
+      name: gyuru-test
+
+body:
+  - type: narrative
+    content: |
+      Az algebrai számelmélet elsősorban olyan egy- vagy többváltozós egyenletekkel foglalkozik, amelyek felírhatók
+      a négy alapművelet véges sokszori alkalmazásával, és célja ezeknek az egyenleteknek a megoldásait megtalálni
+      egy megadott számhalmazban. Ezeket az egyenleteket ***algebrai egyenleteknek*** nevezzük. Általánosságban
+      ugyanilyen értelemben beszélhetünk egy valamilyen $T$ test feletti algebrai egyenletről is, hiszen a
+      [gyuru-test] alapján egy $T$ testben korlátlanul elvégezhető a négy alapművelet $T$-beli megfelelője (kivéve
+      persze a nullelemmel való osztást). Ilyenkor a megoldásokat a $T$ testben keressük.
+  - type: narrative
+    content: |
+      Ebben a cikksorozatban a szám fogalmát eddig csak az egész számok $\Z$ gyűrűjéig bezárólag építettük fel. Ez
+      azonban nyilván nem test, hiszen a $+1$-en és $-1$-en kívül semmilyen más egész számnak nem létezik inverze a
+      szorzásra nézve, így az osztás ebben a számkörben egyáltalán nem értelmezhető. Ha nagyon precízek akarnánk
+      lenni, akkor ezen a ponton egy ahhoz hasonló számkörbővítést kellene végrehajtanunk, mint amikor a 13., 14.
+      és 15. részekben a természetes számok $\N$ halmazát kibővítettük a negatív számoknak nevezett absztrakt
+      objektumokkal annak érdekében, hogy a kivonást el lehessen végezni korlátlanul. Egy ehhez hasonló
+      számkörbővítést most nem fogunk részletesen végigtárgyalni, ám az Olvasó minden bizonnyal sejti, hogy itt
+      tulajdonképpen a törtszámok bevezetéséről van szó.
+  - type: narrative
+    content: |
+      A törtszámokat tudományosabban ***racionális számoknak*** nevezzük, és az őket tartalmazó halmazt
+      $\mathbb{Q}$-val jelöljük, utalva a latinból származó "quotient" szóra, amely "hányadost" jelent. Ezek tehát
+      azok a számok, amelyek felírhatók $\frac{a}{b}$ alakban, ahol $a$ és $b$ mindketten egész számok. Előbbit
+      ***számlálónak***, utóbbit ***nevezőnek*** hívjuk. A számkörbővítéshez a $\mathbb{Q}$ számhalmazon be kellene
+      vezetni egy összeadásnak és egy szorzásnak nevezett műveletet, valamint egy rendezési relációt. Méghozzá
+      olymódon, hogy az egész számok $\Z$ gyűrűje beágyazható legyen ebbe a bővebb struktúrába ahhoz hasonlóan,
+      mint ahogyan a természetes számok $\N$ halmazát ágyaztuk be a $\Z$ gyűrűbe a 13. részben. Ezt most lazán
+      átugorva kivételesen arra kérjük az Olvasót, hogy ezúttal támaszkodjon az általános iskolai tanulmányaira.
+  - type: formula
+    lead-in: |
+      Könnyen látható, hogy $\mathbb{Q}$ az egész számok $\Z$ gyűrűjével ellentétben ***test***, hiszen bármilyen
+      nemnulla törtszámnak létezik inverze a szorzásra nézve, amelyet úgy kapunk meg, ha felcseréljük a számlálót
+      és a nevezőt:
+    content: |
+      \frac{a}{b} \cdot \frac{b}{a}=\frac{a\cdot b}{b\cdot a}=1
+  - type: narrative
+    content: |
+      Ezek után már beszélhetünk a ***$\mathbb{Q}$ test feletti algebrai egyenletekről***, azon belül is az
+      úgynevezett ***polinomiális egyenletekről***.
+  - type: narrative
+    content: |
+      ***Polinomiális egyenletek*** alatt olyan speciális algebrai egyenleteket értünk, amelyekben csak az
+      ismeretlenek egész kitevőjű hatványai, a $\mathbb{Q}$ test elemei, valamint összeadások, kivonások és
+      szorzások szerepelhetnek. Az osztás tehát ebben az esetben nem megengedett. Ezek közül a legegyszerűbbek az
+      egyismeretlenes $n$-edfokú polinomiális egyenletek.
+  - type: formula
+    lead-in: |
+      Könnyű belátni, hogy ekvivalens átalakításokkal minden ilyen egyenlet az alábbi úgynevezett általános alakra
+      hozható, ahol $a_n\ eq 0$:
+    content: |
+      a_0+a_1x+a_2x^2+a_3x^3+\ldots +a_nx^n=0
+  - type: formula
+    lead-in: |
+      Ehhez nagyon hasonlóval az előző részben lényegében már találkoztunk, hiszen ennek az egyenletnek a
+      baloldalán épp az alábbi polinomnak a polinomfüggvénye szerepel:
+    content: |
+      f=(a_0, a_1, a_2, \ldots, a_n, 0, 0, \ldots)
+  - type: narrative
+    content: |
+      Az egyetlen különbség mindössze annyi, hogy $f$ most nem a $\Z$ gyűrű, hanem a $\mathbb{Q}$ test felett van
+      értelmezve. Tehát az $a_0$, $a_1$, ..., $a_n$ együtthatók most a $\mathbb{Q}$ test elemei, a fenti egyenlet
+      megoldásai pedig az $f$ polinom $\mathbb{Q}$-beli gyökei lesznek.
+  - type: narrative
+    content: |
+      A kérdés tehát, hogy egy ilyen egyismeretlenes polinomiális egyenletnek létezik-e racionális megoldása, és ha
+      igen, akkor hány darab, illetve hogyan lehet megtalálni ezeket. Nos, ezt a nem túl nehéz számelméleti
+      problémát az úgynevezett ***racionális gyökteszt*** (vagy más nevén ***Rolle-féle gyöktétel***) segítségével
+      könnyedén megválaszolhatjuk. Ez egy elemi módszerekkel is nagyon könnyen igazolható tétel, így a részletektől
+      most eltekintünk.
+  - type: unordered-list
+    lead-in: |
+      A tétel azt mondja ki, hogy amennyiben ***minden együttható egész szám***, akkor az összes racionális gyök
+      felírható $\frac{p}{q}$ alakban, ahol $p$ és $q$ egymáshoz relatív prím egész számok, és teljesítik az alábbi
+      feltételeket:
+    items:
+      - 'A $p$ egész szám osztója az $a_0$ konstans tagnak.'
+      - 'A $q$ egész szám osztója az $a_n$ főegyütthatónak.'
+  - type: narrative
+    content: |
+      Azt könnyen elérhetjük, hogy az egyenlet együtthatói egészek legyenek. Ha ugyanis mégsem lennének azok, akkor
+      a nevezőikkel végigszorozva mindkét oldalt egy olyan egyenletet kapunk, amire ez a feltétel már teljesül.
+      Ennek az új egyenletnek nyilván pontosan ugyanazok lesznek a gyökei, mint az eredeti egyenletnek. Ezután már
+      alkalmazhatjuk a tételt, amely tehát egy viszonylag kisméretű véges halmazra szűkíti le a potenciális gyökök
+      körét. Azt persze nem állítja, hogy minden, a fenti feltételeknek megfelelő $\frac{p}{q}$ racionális szám
+      valóban gyök lesz, ám ezeket behelyettesítéssel már könnyedén végigpróbálgathatjuk.
+  - type: narrative
+    content: |
+      A ***Rolle-féle gyöktétel*** alapján tehát az egyismeretlenes esettel kapcsolatban felmerülő kérdéseket le is
+      zárhatjuk, hiszen ez alapján egy ilyen egyenletnek vagy egyáltalán nincs racionális gyöke, vagy pedig csak
+      véges sok van. Ennél némileg izgalmasabbak az egynél több ismeretlent tartalmazó polinomiális egyenletek. A
+      továbbiakban minket a ***kétismeretlenes*** eset érdekel, amelyeket ***algebrai síkgörbéknek*** nevezünk.

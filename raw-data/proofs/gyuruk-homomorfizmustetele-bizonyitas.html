@@ -1,0 +1,47 @@
+<!-- wp:paragraph -->
+<p>Előszöris megjegyezzük, hogy a [yp_element slug="gyuruhomomorfizmus-magjanak-szukseges-feltetele" type="link" /] alapján [latex]\ker f[/latex] ideál [latex]R[/latex]-ben, így a baloldalon álló [latex]R/\ker f[/latex] faktorgyűrű valóban értelmes. Igaz továbbá, hogy a [yp_element slug="gyuruhomomorfizmus-kepenek-feltetele" type="link" /] alapján [latex]\text{im} f[/latex] részgyűrű abban a gyűrűben, ahová [latex]f[/latex] mutat, így a tételben szereplő gyűrűizomorfia jobboldala is értelmes. Most megmutatjuk, hogy az izomorfia valóban teljesül.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]R/\ker f[/latex] faktorgyűrű elemei a [latex]\ker f[/latex], mint ideál szerinti maradékosztályok. Ezek a [yp_element slug="gyuruhomomorfizmus-magja-es-kepe" type="link" /] utáni megjegyzés alapján pontosan ugyanazok a maradékosztályok lesznek, mint a [yp_element slug="gyuruhomomorfizmus-szerinti-kongruencia" type="link" /] által definiált [latex]f[/latex] gyűrűhomomorfizmus szerinti maradékosztályok.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most definiálunk egy [latex]g:R/\ker f\to \text{im} f[/latex] leképezést e faktorgyűrű és az [latex]f[/latex] gyűrűhomomorfizmus képe között. Ennek a leképezésnek a képletét az [latex]R[/latex] gyűrű elemeinek és az [latex]f[/latex] gyűrűhomomomorfizmusnak a segítségével adjuk meg. Az alábbi képlet azt fejezi ki, hogy minden [latex]r[/latex] elem esetén a [latex]g[/latex] leképezés az [latex]r[/latex]-et tartalmazó <strong><em>MARADÉKOSZTÁLYhoz</em></strong> épp azt az elemet rendeli hozzá a célgyűrűből, amelyet az [latex]f[/latex] gyűrűhomomorfizmus is hozzárendel magához az [latex]r[/latex] <strong><em>ELEMhez</em></strong>:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]g(r+\ker f)=f(r)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi ábra mutatja a [latex]g[/latex] leképezés iménti konstrukcióját.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":4863,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_18_faktorgyuru_izomorfizmus.jpg" alt="A faktorgyűrű elemeinek leképezése" class="wp-image-4863"/><figcaption>A faktorgyűrű elemeinek leképezése</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Ez egy értelmes leképezés, ha ugyanis valamely [latex]r_1[/latex] és [latex]r_2[/latex] elemek ugyanabban a maradékosztályban vannak, akkor az ő különbségük benne van [latex]f[/latex] magjában, ami épp azt jelenti, hogy az [latex]f[/latex] szerinti képük megegyezik. Így tehát a [latex]g[/latex] leképezés eredménye nem függ attól, hogy a bemeneti maradékosztály mely reprezentánselemének segítségével számítottuk azt ki a fenti képlettel.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most igazoljuk, hogy a [latex]g[/latex] leképezés <strong><em>kölcsönösen egyértelmű</em></strong>. Előszöris azt mutatjuk meg, hogy két különböző maradékosztály [latex]g[/latex] szerinti képe is különbözik. Tegyük fel ezért indirekt, hogy az [latex]R[/latex] gyűrű [latex]r[/latex] és [latex]s[/latex] elemei két <strong><em>különböző</em></strong> maradékosztályban vannak, ám e két maradékosztálynak ennek ellenére ugyanaz a [latex]g[/latex] szerinti képe, azaz [latex]g(r+\ker f)=g(s+\ker f)[/latex]. Ez a [latex]g[/latex] leképezés definíciója alapján azt jelentené, hogy [latex]f(r)=f(s)[/latex]. De ez <strong><em>ellentmondás</em></strong>, hiszen ez azt jelentené, hogy [latex]r[/latex] és [latex]s[/latex] mégis ugyanabban a maradékosztályban van. Azt tehát már tudjuk, hogy az [latex]\text{im} f[/latex] célgyűrű minden eleme <strong><em>legfeljebb egy</em></strong> maradékosztálynak lehet a [latex]g[/latex] szerinti képe, azaz [latex]g[/latex] <strong><em>injektív</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A kölcsönös egyértelműséghez azt kell még igazolni, hogy a célgyűrűben nincs olyan elem, amely ne lenne képe valamely maradékosztálynak a [latex]g[/latex] függvény szerint (azaz, hogy [latex]g[/latex] <strong><em>szürjektív</em></strong>). Ez viszont természetesen teljesül, hiszen a célgyűrű nem más, mint [latex]\text{im} f[/latex], azaz az [latex]f[/latex] gyűrűhomomorfizmus képe. Következésképp minden itt lévő [latex]s[/latex] elemhez létezik olyan [latex]x[/latex] elem az [latex]R[/latex] gyűrűben, amelynek épp [latex]s[/latex] a képe az [latex]f[/latex] függvény szerint (azaz [latex]f(x)=s[/latex]). Ez az [latex]x[/latex] elem viszont benne van az [latex]x+\ker f[/latex] maradékosztályban, amelyhez viszont a [latex]g[/latex] függvény rendeli hozzá az [latex]s[/latex] elemet a célgyűrűben. A [latex]g[/latex] függvény tehát valóban <strong><em>kölcsönösen egyértelmű</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A [latex]g[/latex] <strong><em>művelettartási tulajdonságai</em></strong> a fenti képletből már könnyen adódnak:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}g((r+\ker f)\oplus (s+\ker f))&amp;=g((r+s)+\ker f)=\\&amp;=f(r+s)=f(r)+f(s)=\\&amp;=g(r+\ker f)+g(s+\ker f) \\ g((r+\ker f)\odot (s+\ker f))&amp;=g((r\cdot s)+\ker f)=\\&amp;=f(r\cdot s)=f(r)\cdot f(s)=\\&amp;=g(r+\ker f)\cdot g(s+\ker f)\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Így tehát [latex]g[/latex] valóban <strong><em>gyűrűizomorfizmus</em></strong> az [latex]R/\ker f[/latex] faktorgyűrű és [latex]f[/latex] képe között.</p>
+<!-- /wp:paragraph -->

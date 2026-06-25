@@ -1,0 +1,124 @@
+type: section
+name: 01-szamolas-maradekokkal
+title: Számolás maradékokkal
+
+references:
+  euklideszi-gyuru:
+    target:
+      type: definition
+      name: euklideszi-gyuru
+
+body:
+  - type: narrative
+    content: |
+      A moduláris hatványozás alapja tehát az iménti példában látott moduláris szorzás. Problémát jelenthet
+      azonban, ha a kitevő túl nagy. Például a $2^{328}$ hatvány óraaritmetikában való kiszámításához nem lenne
+      szerencsés, ha előbb ki kellene számítanunk a $2\cdot 2\cdot 2\cdot \ldots \cdot 2$ szorzatot, amelynek $328$
+      tényezője van. Ilyenkor ugyanis még a maradékképzés előtt egy olyan nagy számot kapnánk részeredményként,
+      amelynek hatására a számítógépünk tárolóregisztereiben úgynevezett "túlcsordulás" következne be.
+  - type: narrative
+    content: |
+      A 2. részben a digitális áramkörökben történő számábrázolás kapcsán már volt szó arról, hogy a számítógépek
+      általában maximum 64 bináris számjegyen tárolják a számokat. Mármost a $2^{328}$ részeredmény egészen
+      pontosan $329$ bináris számjegyen férne el. A számítógép ezt a problémát úgy "oldja meg", hogy jobb esetben
+      elszáll programhibával. Rosszabb esetben pedig az első $265$ darab bináris számjegyet levágja a részeredmény
+      elejéről, és az így kapott hibás részeredménnyel számol tovább. El lehet képzelni, hogy ennek milyen
+      beláthatatlan következményei lennének.
+  - type: narrative
+    content: |
+      Ahhoz, hogy ezt a problémát megoldjuk, előszöris igazolni fogjuk az egész számok közötti maradékos osztás egy
+      fontos tulajdonságát. Az euklidészi norma [euklideszi-gyuru]jában a maradékos osztás során képződő
+      maradékokra csak annyit kötöttünk ki, hogy a ***normájuk*** legyen kisebb, mint az osztó ***normája***. Ez
+      általában nem vonja maga után azt, hogy a maradék egyértelmű lesz.
+  - type: formula
+    lead-in: |
+      Például az $5$ és $3$ egész számok között kétféleképpen is elvégezhetjük a maradékos osztást:
+    content: |
+      \begin{aligned}5&=1\cdot 3 + 2 \\ 5&=2\cdot 3 -1\end{aligned}
+  - type: narrative
+    content: |
+      Első esetben $2$-t, második esetben pedig $-1$-et kaptunk maradékul. Mindkettő helyes, hiszen a $\Z$ gyűrűben
+      az abszolútérték-függvény az euklidészi norma. Márpedig mindkét maradéknak kisebb az abszolútértéke, mint az
+      osztónak, ami ugye jelen esetben $3$. Azt fogjuk megmutatni, hogy amennyiben a maradékra még azt is kikötjük,
+      hogy ***nemnegatív***, úgy a maradékos osztás továbbra is elvégezhető. Ebben az esetben azonban már csak
+      ***egyféleképpen***.
+  - type: narrative
+    content: |
+      Ehhez először szükségünk lesz egy egyszerű segédtételre, amely a továbbiakban is hasznunkra lesz.
+  - type: embed
+    target:
+      type: theorem
+      name: maradekok-kulonbsege-oszthato-a-modulussal
+  - type: embed
+    target:
+      type: proof
+      name: maradekok-kulonbsege-oszthato-a-modulussal-bizonyitas
+  - type: narrative
+    content: |
+      Mostmár igazolhatjuk, hogy az egész számok közötti ***nemnegatív maradékos osztás egyértelmű***.
+  - type: embed
+    target:
+      type: theorem
+      name: egesz-szamok-maradekos-osztasa-egyertelmu
+  - type: embed
+    target:
+      type: proof
+      name: egesz-szamok-maradekos-osztasa-egyertelmu-bizonyitas
+  - type: narrative
+    content: |
+      Ez azért jó hír a számunkra, mivel így minden $a$ egész számhoz hozzá tudunk rendelni egy nemnegatív
+      maradékot, amelyet $a$-nak egy valamilyen $m\ eq 0$ egész számmal képzett maradékos osztása eredményezne. Ez
+      a hozzárendelés ugye az iménti tétel értelmében ***egyértelmű*** lesz, azaz minden egész számhoz ***pontosan
+      egy*** maradékot rendel. Így tulajdonképpen egy ***függvényt*** kapunk. Ennek a függvénynek az értékkészlete
+      ráadásul véges lesz, hiszen pontosan $m$ darab olyan ***nemnegatív*** egész létezik, amely maradékként szóba
+      jöhet, azaz értéke kisebb, mint $m$ ***abszolútértéke***. Például $m=3$ vagy $m=-3$ esetén ezek a $0$, az $1$
+      és a $2$ nemnegatív egész számok.
+  - type: narrative
+    content: |
+      Ezek az osztási maradékok tehát egy véges halmazt alkotnak. Ennek elemei között két műveletet is tudunk
+      értelmezni az imént említett függvény segítségével. Erről szól az alábbi definíció, valamint az alatta
+      szereplő megjegyzések és példák.
+  - type: embed
+    target:
+      type: definition
+      name: modularis-osszeadas-es-szorzas
+  - type: embed
+    target:
+      type: remark
+      name: modularis-osszeadas-es-szorzas-megjegyzes
+  - type: narrative
+    content: |
+      Nézzünk is egy egyszerű példát a fenti definícióban foglaltakra. Legyen például $m=3$. Ekkor ugye a $Z_3$
+      halmazról van szó, amelynek mindössze a $0$, az $1$ és a $2$ lesznek az elemei.
+  - type: formula
+    lead-in: |
+      Az alábbiakban a $\bmod_3$ függvény néhány hozzárendelését tüntettük fel:
+    content: |
+      \begin{aligned}\bmod_3(0)&=0\\\bmod_3(1)&=1\\\bmod_3(2)&=2\\\bmod_3(3)&=0\\\bmod_3(4)&=1\\\bmod_3(5)&=2\\&\vdots\end{aligned}
+  - type: formula
+    lead-in: |
+      Az alábbi két táblázatban pedig a $Z_3$ halmazon értelmezett $\oplus$ és $\odot$ műveletek úgynevezett
+      ***műveleti táblái*** láthatók:
+    content: |
+      \begin{array}{cc}\begin{array}{c|ccc}\oplus &0&1&2\\ \hline 0&0&1&2 \\1&1&2&0\\2&2&0&1\end{array} &
+      \begin{array}{c|ccc}\odot &0&1&2\\ \hline 0&0&0&0 \\1&0&1&2\\2&0&2&1\end{array}\end{array}
+  - type: narrative
+    content: |
+      Például a $2\oplus 1$ művelet eredményét a 2-es sor 1-es oszlopából tudjuk kiolvasni a baloldali táblázatból,
+      ami ugye $0$. A műveletet a fenti definíció szerint elvégezve valóban $0$-t kapunk, hiszen
+      $\bmod_3(2+1)=\bmod_3(3)=0$. Az $1\oplus 2$ eredménye ehhez hasonlóan az 1-es sor 2-es oszlopában szerepel,
+      ami &ndash; hatalmas meglepetésre &ndash; szintén $0$. A moduláris szorzás táblázata ugyanígy értelmezendő.
+      Például $2\odot 2=1$. Nyilván, hiszen ha $2\cdot 2$-t elosztjuk $3$-mal, akkor épp $1$ lesz a maradék.
+  - type: narrative
+    content: |
+      Hamarosan visszatérhetünk a szakasz elején felvetett moduláris hatványozással kapcsolatos problémára. Előbb
+      azonban megmutatjuk, hogy a moduláris összeadás és szorzás pontosan ugyanazokkal a "jól megszokott"
+      tulajdonságokkal rendelkezik, mint a szokásos összeadás és szorzás.
+  - type: embed
+    target:
+      type: theorem
+      name: maradekok-gyuruje
+  - type: embed
+    target:
+      type: proof
+      name: maradekok-gyuruje-bizonyitas

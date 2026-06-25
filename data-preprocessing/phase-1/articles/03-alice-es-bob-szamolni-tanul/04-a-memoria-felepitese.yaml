@@ -1,0 +1,44 @@
+type: section
+name: 04-a-memoria-felepitese
+title: A memória felépítése
+
+body:
+  - type: narrative
+    content: |
+      Egy informatikai rendszerben futó folyamat bemenő adatai, valamint a folyamat által végrehajtandó program
+      utasításai a futás megkezdése előtt egy ***memóriának*** nevezett tárolóba kerülnek. Erre azért van szükség,
+      mert a memóriát sokkal gyorsabban lehet írni és olvasni, mint a hosszútávú tárolásra szolgáló úgynevezett
+      háttértárat (ami a legtöbbször a merevlemez). A folyamat a memóriát használja munkaterületként. Innen olvassa
+      a végrehajtandó utasításokat és a bemenetet, itt tárolja a részeredményeket, valamint a kimenet is itt fog
+      megjelenni, amelyet aztán vissza lehet írni a háttértárra, ha a hosszabb távú tárolás szükséges.
+  - type: narrative
+    content: |
+      A tárolás/adattovábbítás szempontjából a ***byte*** (azaz bitek 8-as csoportja) tekinthető atomi egységnek
+      vagy legalsóbb szintnek. A memória ennek megfelelően kis rekeszekből áll, amelyek mindegyike egy-egy byte-ot
+      tárol. A rekeszek 0-tól kezdődően sorszámozva vannak, egy ilyen sorszámot az adott rekesz
+      ***memóriacímének*** nevezünk. A folyamat ezekkel a címekkel hivatkozik a memóriában lévő rekeszekre, amikor
+      írni vagy olvasni akarja őket.
+  - type: formula
+    lead-in: |
+      Ez a memóriamodell látható az alábbi ábrán:
+    content: |
+      \begin{array}{c}{\begin{array}{cc}\text{c\'\i m} & \text{adat}\end{array}}\\{\begin{array}{|c|c|} \hline 0. &
+      \text{0x13} \\ \hline 1. & \text{0xF1} \\ \hline 2. & \text{0x2A} \\ \hline 3. & \text{0x58} \\ \hline
+      \end{array}}\\\vdots\end{array}
+  - type: narrative
+    content: |
+      Egy informatikai rendszerben azonban egynél több folyamat is futhat párhuzamosan. Ezek mindegyike ugyanazt a
+      ***fizikai memóriát*** használja munkaterületként, ezért biztosítani kell, hogy mindegyik folyamat csak a
+      saját adataihoz férjen hozzá. Nem lenne jó például, ha az egyik folyamat valamely részeredményét egy
+      párhuzamosan futó másik folyamat véletlenül felülírhatná. Ennek biztosítása az operációs rendszer feladata,
+      amely úgy mutatja a memóriát az egyes folyamatok számára, mintha mindegyik kizárólagosan rendelkezne a teljes
+      címtartománnyal. Ezt a mechanizmust ***virtuális memória***kezelésnek nevezzük. A folyamatok tehát
+      ***virtuális címek***et használnak az adataik eléréséhez, és az operációs rendszer képezi le ezeket a valódi,
+      ***fizikai címek***re. Erről bővebben itt lehet olvasni. Számunkra azonban most csak annyi a fontos, hogy egy
+      adott folyamat szempontjából a memória a fenti képen látható módon néz ki.
+  - type: narrative
+    content: |
+      Hasonló mondható el a háttértáron lévő file-ok tartalmáról is, valamint a hálózati kommunikáció során
+      továbbított adatok is lényegében tekinthetők byte-ok sorozatának. A továbbiakban tehát általánosságban
+      byte-sorozatokról lesz szó, függetlenül attól, hogy ezek a memóriában vagy egy file-ban lévő, netán
+      valamilyen kommunikációs csatornán továbbított adatokból származnak.

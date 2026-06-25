@@ -1,0 +1,107 @@
+<!-- wp:paragraph -->
+<p><strong><em>Először a kongruenciarendszer megoldhatóságát igazoljuk.</em></strong> Az első kongruencia a [yp_element slug="linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga" type="link" /] alapján pontosan akkor oldható meg, ha az [latex](1,p)[/latex] kitüntetett közös osztónak többszöröse a jobboldalon álló [latex]a[/latex] egész szám. Ehhez hasonlóan a második kongruencia pontosan akkor oldható meg, ha [latex](1,q)[/latex]-nak többszöröse a [latex]b[/latex] egész szám. A tételben szereplő kongruenciarendszer tehát pontosan akkor oldható meg, ha mindkét alábbi oszthatóság teljesül:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}(1,p)&amp;|a \\ (1,q)&amp;|b\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az oszthatóságok baloldalain álló kitüntetett közös osztók a [yp_element slug="kituntetett-kozos-oszto-tulajdonsagai" type="link" /] 4. pontja miatt [latex]1[/latex]-gyel egyeznek meg. Minthogy az [latex]1[/latex] egész szám egység ([yp_element slug="egyseg" type="link" /]), így ezek az oszthatóságok nyilván teljesülnek, a tételben szereplő kongruenciarendszer tehát valóban megoldható.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Másodszor azt mutatjuk meg, hogy minden megoldás ugyanabból a modulo [latex]pq[/latex] maradékosztályból származik.</em></strong> Legyen ezért [latex]x_1[/latex] és [latex]x_2[/latex] két tetszőleges egész, amelyek mindkét kongruenciát kielégítik. Azaz egyrészt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}x_1&amp;\equiv a\pmod p \\ x_1&amp;\equiv b\pmod q\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Másrészt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}x_2&amp;\equiv a\pmod p \\ x_2&amp;\equiv b\pmod q\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez a [yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" type="link" /] 3. pontja alapján azt jelenti, hogy az [latex]x_1[/latex] és [latex]x_2[/latex] egész számok kongruensek egymással mindkét modulus szerint, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}x_1&amp;\equiv x_2\pmod p \\ x_1&amp;\equiv x_2\pmod q\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez a [yp_element slug="egesz-szamok-kozotti-kongruencia" type="link" /] 3. pontja alapján azt jelenti, hogy az [latex]x_1-x_2[/latex] különbség többszöröse [latex]p[/latex]-nek is és [latex]q[/latex]-nak is, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}p&amp;|x_1-x_2 \\ q&amp;|x_1-x_2\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azaz [latex]x_1-x_2[/latex] prímtényezős felbontásában szerepel [latex]p[/latex] és [latex]q[/latex] összes prímtényezője, valamint esetlegesen egyéb prímtényezők is. Tegyük fel, hogy [latex]p[/latex] és [latex]q[/latex] prímtényezős felbontásai a következők:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}p&amp;=p_1p_2\ldots p_k \\ q&amp;=q_1q_2\ldots q_n\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]p[/latex] és [latex]q[/latex] egymáshoz relatív prímek, ezért nincs két egyforma prímtényezőjük. Azaz [latex]p[/latex] egyetlen prímtényezője sem szerepel [latex]q[/latex] prímtényezői között, valamint [latex]q[/latex] egyetlen prímtényezője sem szerepel [latex]p[/latex] prímtényezői között. Így tehát az [latex]x_1-x_2[/latex] különbség így írható fel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x_1-x_2=\underbrace{p_1p_2\ldots p_k}_{=p}\cdot \underbrace{q_1q_2\ldots q_n}_{=q}\cdot \underbrace{r_1r_2\ldots r_l}_{\text{egyéb}}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt kaptuk tehát, hogy teljesül az alábbi oszthatóság:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]pq|x_1-x_2[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez ismét a [yp_element slug="egesz-szamok-kozotti-kongruencia" type="link" /] 3. pontja alapján az alábbi kongruenciát jelenti:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x_1\equiv x_2\pmod{pq}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Tehát valóban igaz, hogy bármely két, a tételben szereplő kongruenciarendszert kielégítő egész szám ugyanabba a modulo [latex]pq[/latex] maradékosztályba esik.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Végül azt kell igazolni,</em></strong> hogy ennek a bizonyos maradékosztálynak <strong><em>minden</em></strong> eleme kielégíti a kongruenciarendszert. Tegyük fel ezért, hogy [latex]s[/latex] egy olyan egész szám ebben a maradékosztályban, amelyre teljesül a kongruenciarendszer, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}s&amp;\equiv a\pmod p \\ s&amp;\equiv b\pmod q\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel ezenkívül <strong><em>indirekt</em></strong>, hogy létezik olyan [latex]t[/latex] egész szám ugyanebben a maradékosztályban, amelyre viszont nem teljesül legalább az egyik a tételben szereplő kongruenciák közül. Mivel [latex]t[/latex] ugyanabban a modulo [latex]pq[/latex] maradékosztályban van, mint [latex]s[/latex], ezért igaz az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]s\equiv t\pmod{pq}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Minthogy a [latex]p|pq[/latex] valamint a [latex]q|pq[/latex] oszthatóságok nyilvánvalóan teljesülnek, ezért a [yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" type="link" /] 9. pontja miatt teljesülnek az alábbi kongruenciák is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}s&amp;\equiv t\pmod p \\ s&amp;\equiv t\pmod q\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azaz [latex]t[/latex] egyrészt ugyanabba a modulo [latex]p[/latex] maradékosztályba esik, mint [latex]s[/latex], vagyis a [yp_element slug="linearis-kongruenciak" type="link" /] utáni megjegyzés alapján ő megoldása az [latex]x\equiv a\pmod p[/latex] kongruenciának. Másrészt ehhez hasonlóan [latex]t[/latex] ugyanabba a modulo [latex]q[/latex] maradékosztályba is esik, mint [latex]s[/latex], ezért ő megoldása az [latex]x\equiv b\pmod q[/latex] kongruenciának is. Így tehát [latex]t[/latex] mégiscsak megoldása a tételben szereplő kongruenciarendszernek, ami ellentmond az indirekt feltételezésünknek. Az [latex][s]_{pq}[/latex] maradékosztálynak tehát valóban minden eleme megoldás, ahogyan a tétel állítja.</p>
+<!-- /wp:paragraph -->

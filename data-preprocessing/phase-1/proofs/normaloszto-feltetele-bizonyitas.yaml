@@ -1,0 +1,46 @@
+type: proof
+name: normaloszto-feltetele-bizonyitas
+remarks: []
+references:
+  normaloszto:
+    target:
+      type: definition
+      name: normaloszto
+content:
+  - type: narrative
+    content: |
+      Ha $N$ normálosztó, akkor az a [normaloszto] alapján azt jelenti, hogy az $N$ szerinti bal- és jobboldali
+      mellékosztályok megegyeznek.
+  - type: formula
+    lead-in: |
+      Ez az említett definíció utáni megjegyzés alapján az elemek szintjén azt jelenti, hogy tetszőleges $g\in G$
+      és $n\in N$ esetén létezik olyan $m_1\in N$ és $m_2\in N$, hogy teljesülnek az alábbiak:
+    content: |
+      \begin{aligned}g\cdot n&=m_1\cdot g \\ n\cdot g&=g\cdot m_2\end{aligned}
+  - type: formula
+    lead-in: |
+      Az első egyenletet jobbról, a másodikat pedig balról szorozva $g^{-1}$-gyel az alábbiakat kapjuk:
+    content: |
+      \begin{aligned}g\cdot n\cdot g^{-1}&=m_1 \\ g^{-1}\cdot n\cdot g&=m_2\end{aligned}
+  - type: narrative
+    content: |
+      Vagyis a $gng^{-1}$ és a $g^{-1}ng$ szorzatok valóban benne vannak $N$-ben, hiszen előbbi $m_1$-gyel, utóbbi
+      pedig $m_2$-vel egyezik meg.
+  - type: narrative
+    content: |
+      ***Megfordítva:*** Tegyük fel, hogy minden $g\in G$ és $n\in N$ esetén a $gng^{-1}$ szorzat benne van
+      $N$-ben. Ez természetesen $g$ inverzére is igaz, azaz $g^{-1}n(g^{-1})^{-1}=g^{-1}ng$ is benne van $N$-ben.
+  - type: formula
+    lead-in: |
+      Léteznek tehát olyan $m_1$ és $m_2$ elemek $N$-ben, hogy teljesülnek az alábbiak:
+    content: |
+      \begin{aligned}g\cdot n\cdot g^{-1}&=m_1 \\ g^{-1}\cdot n\cdot g&=m_2\end{aligned}
+  - type: formula
+    lead-in: |
+      Az első egyenletet jobbról, a másodikat pedig balról szorozva $g$-vel az alábbiakat kapjuk:
+    content: |
+      \begin{aligned}g\cdot n&=m_1\cdot g \\ n\cdot g&=g\cdot m_2\end{aligned}
+  - type: narrative
+    content: |
+      Ez a [normaloszto] utáni megjegyzés alapján épp azt jelenti, hogy az $N$ szerinti bal- és jobboldali
+      mellékosztályok megegyeznek, azaz $N$ valóban normálosztó.

@@ -1,0 +1,36 @@
+type: remark
+name: egesz-kitevos-hatvany-megjegyzes
+references:
+  hatvanyozas-azonossagai:
+    target:
+      type: theorem
+      name: hatvanyozas-azonossagai
+  oszthatosag:
+    target:
+      type: definition
+      name: oszthatosag
+content:
+  - type: narrative
+    content: |
+      E definíció tehát kiterjeszti a [hatvanyozas-azonossagai]ben bevezetett jelölésmódot a csak pozitív
+      kitevőkről tetszőleges egész kitevőre, beleértve a $0$ és a negatív kitevőket is. Egy $x$ elem $0$ kitevős
+      hatványának természetesen csak abban az esetben van értelme, ha a műveletre nézve létezik neutrális elem.
+      Ehhez hasonlóan a negatív kitevős hatványoknak pedig csak akkor van értelme, ha $x$-nek a műveletre nézve
+      létezik inverze. Ezen túlmenően a definíció a [hatvanyozas-azonossagai]ben szereplő értelmezéssel ellentétben
+      tetszőleges algebrai struktúra tetszőleges ***asszociatív*** műveletére &ndash; tehát nem kizárólag egy gyűrű
+      "szorzás" műveletére &ndash; vonatkoztatható.
+  - type: narrative
+    content: |
+      A hatványkifejezések segítségével tehát tömören tudjuk kifejezni azt, hogy egy műveletet sokszor kell
+      elvégezni. Gyakori a szakirodalomban, hogy amennyiben a műveletet a $+$ szimbólum jelöli &ndash; ez tipikusan
+      kommutatív műveletek esetén szokott így lenni &ndash;, akkor $x^n$ helyett az $nx$ írásmódot alkalmazzuk, és
+      hatvány helyett ***többszörösről*** beszélünk. Ez azonban nem tévesztendő össze az oszthatóság kapcsán a
+      [oszthatosag] megismert "többszörös" fogalmával. Ott ugyanis egy $R$ gyűrű esetén az $ak$ kifejezés alatt az
+      $a$ gyűrűelem $k$ gyűrűelemmel vett többszörösét értettük, ami tehát egy darab "szorzás" az $R$ gyűrűben.
+      Ezzel szemben a most megismert $na$ jelölés azt jelenti, hogy az $a$ elemet $n$-szer kell "összeadni" saját
+      magával az $R$ gyűrűben.
+  - type: formula
+    lead-in: |
+      Azaz:
+    content: |
+      na=\underbrace{a+a+a+\ldots +a}_{\text{n darab}}

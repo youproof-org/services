@@ -1,0 +1,70 @@
+type: proof
+name: fermat-tanu-es-nem-fermat-tanu-szorzata-bizonyitas
+remarks: []
+references:
+  egesz-szamok-kozotti-kongruencia-tulajdonsagai:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia-tulajdonsagai
+  egesz-szamok-maradekosztalygyurui:
+    target:
+      type: theorem
+      name: egesz-szamok-maradekosztalygyurui
+  fermat-tanu:
+    target:
+      type: definition
+      name: fermat-tanu
+  hatvanyozas-azonossagai:
+    target:
+      type: theorem
+      name: hatvanyozas-azonossagai
+  teljes-es-redukalt-maradekrendszer-kepzese:
+    target:
+      type: theorem
+      name: teljes-es-redukalt-maradekrendszer-kepzese
+content:
+  - type: narrative
+    content: |
+      Képezzük e két maradékosztály szorzatát, azaz az $[a]_n \odot [b]_n$ maradékosztályt. A $\odot$ művelet
+      [egesz-szamok-maradekosztalygyurui]ben ismertetett definíciója alapján ez épp az $[ab]_n$ maradékosztály
+      lesz. Először azt kell bizonyítanunk, hogy ez a maradékosztály Fermat-tanú.
+  - type: formula
+    lead-in: |
+      Ez a [fermat-tanu] alapján az alábbit jelenti:
+    content: |
+      (ab)^{n-1} \ \cancel{\equiv} \ 1 \pmod n
+  - type: narrative
+    content: |
+      Az $(ab)^{n-1}$ kifejezés a hatványozás azonosságairól szóló [hatvanyozas-azonossagai] 1. pontja alapján így
+      is írható: $a^{n-1}b^{n-1}$.
+  - type: formula
+    lead-in: |
+      Mivel $b\eq 0$ és $[b]_n$ ***nem Fermat-tanú***, ezért a [fermat-tanu] alapján teljesül az alábbi
+      kongruencia:
+    content: |
+      b^{n-1}\equiv 1\pmod n
+  - type: formula
+    lead-in: |
+      Következésképp a [egesz-szamok-kozotti-kongruencia-tulajdonsagai] 5. pontja miatt teljesül az alábbi
+      kongruencia is:
+    content: |
+      \underbrace{a^{n-1}b^{n-1}}_{=(ab)^{n-1}} \equiv a^{n-1} \pmod n
+  - type: narrative
+    content: |
+      Mivel $[a]_n$ ***Fermat-tanú***, ezért ugyancsak a [fermat-tanu] alapján a jobboldali kifejezés biztosan nem
+      kongruens $1$-gyel modulo $n$.
+  - type: formula
+    lead-in: |
+      Így hát a baloldali kifejezés sem, azaz:
+    content: |
+      (ab)^n \ \cancel{\equiv} \ 1\pmod n
+  - type: narrative
+    content: |
+      Ez tehát azt jelenti, hogy az $[ab]_n=[a]_n\odot [b]_n$ maradékosztály valóban egy ***Fermat-tanú***.
+  - type: narrative
+    content: |
+      Most azt igazoljuk, hogy $[ab]_n$ egy ***redukált maradékosztály***. Mivel az $[a]_n$ egy redukált
+      maradékosztály, ezért $a$ egy redukált maradékrendszer egyik eleme. Továbbá, mivel $[b]_n$ szintén egy
+      redukált maradékosztály, ezért $b$ relatív prím $n$-hez. Így tehát az $ab$ szorzat a
+      [teljes-es-redukalt-maradekrendszer-kepzese] miatt szintén egy redukált maradékrendszer egyik eleme lesz.
+      Ebből következően az $[ab]_n$ maradékosztály egy ***redukált maradékosztály***.

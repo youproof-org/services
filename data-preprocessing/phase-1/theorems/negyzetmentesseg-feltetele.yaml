@@ -1,0 +1,10 @@
+type: theorem
+name: negyzetmentesseg-feltetele
+proofs:
+  - negyzetmentesseg-feltetele-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Az $n$ egész szám ***akkor és csak akkor*** négyzetmentes, ha ***nem létezik*** olyan pozitív $p$
+      prímosztója, amely esetén teljesülne a $p^2|n$ oszthatóság.

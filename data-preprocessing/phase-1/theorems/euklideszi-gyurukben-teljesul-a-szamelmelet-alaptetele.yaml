@@ -1,0 +1,15 @@
+type: theorem
+name: euklideszi-gyurukben-teljesul-a-szamelmelet-alaptetele
+proofs:
+  - euklideszi-gyurukben-teljesul-a-szamelmelet-alaptetele-bizonyitas
+remarks: []
+references:
+  abszolutertek-euklideszi-norma:
+    target:
+      type: theorem
+      name: abszolutertek-euklideszi-norma
+content:
+  - type: narrative
+    content: |
+      Minden ***euklidészi gyűrűben*** &ndash; és így a [abszolutertek-euklideszi-norma] miatt az egész számok $\Z$
+      gyűrűjében is &ndash; ***teljesül a számelmélet alaptétele***.

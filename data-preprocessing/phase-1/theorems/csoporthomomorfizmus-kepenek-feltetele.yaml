@@ -1,0 +1,10 @@
+type: theorem
+name: csoporthomomorfizmus-kepenek-feltetele
+proofs:
+  - csoporthomomorfizmus-kepenek-feltetele-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen adva egy $H$ csoport, és annak egy $T$ részhalmaza. A $T$ részhalmaz ***akkor és csak akkor*** képe
+      egy $H$-ba mutató csoporthomomorfizmusnak, ha részcsoport $H$-ban.

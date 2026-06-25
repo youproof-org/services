@@ -1,0 +1,90 @@
+type: section
+name: 03-a-modularis-hatvanyozas-tulajdonsagai
+title: A moduláris hatványozás tulajdonságai
+
+references:
+  homomorfizmus-izomorfizmus-beagyazas:
+    target:
+      type: definition
+      name: homomorfizmus-izomorfizmus-beagyazas
+
+body:
+  - type: narrative
+    content: |
+      Mostmár visszatérhetünk az eredeti problémánkhoz, és általánosan is megfogalmazhatjuk azt a fentiek alapján.
+      Eszerint tehát a feladat az, hogy adott $a$ és $n\gt 0$ egész számok esetén számítsuk ki azt a maradékot,
+      amelyet az $a^n$ hatvány ad valamilyen $m\ eq 0$ egész számmal osztva. A konkrét feladatban a $2^{328}$
+      hatvány $11$-gyel való osztási maradékát kellett kiszámítani. A probléma ugye az, hogy ezt az $a^n$ hatvány
+      tényleges kiszámítása nélkül kellene megtennünk, máskülönben a modulo $m$ maradékképzés előtt kapott
+      részeredmény kezelhetetlenül nagy lenne.
+  - type: narrative
+    content: |
+      Azt viszont láttuk a előző szakaszban, hogy a $Z_m$ gyűrűben ilyen szempontból sokkal könnyebb számolni,
+      hiszen itt minden részeredmény egy véges számhalmazból kerül ki. Érdemes volna tehát már az elején "áttérni"
+      a $Z_m$ gyűrűre, és a hatványozást már az itteni moduláris szorzással végezni. Ehhez azonban az kell, hogy
+      ez az "áttérés" ne befolyásolja a kapott végeredményt. Azaz ha előbb "áttérünk" a $Z_m$ gyűrűbe és ott
+      végezzük el a moduláris szorzásokat, akkor ugyanazt kell kapnunk, mintha előbb a $\Z$ gyűrűben végeznénk el a
+      hagyományos szorzásokat, majd vennénk az így kapott eredmény $Z_m$-beli megfelelőjét.
+  - type: narrative
+    content: |
+      A 13. részben a természetes számok $\Z$-be való beágyazásánál már volt szó az úgynevezett struktúratartó
+      leképezésekről, amelyeket ***homomorfizmusoknak*** neveztünk (lásd a
+      [homomorfizmus-izomorfizmus-beagyazas]t). Nekünk most a fentiek alapján épp egy ilyen leképezésre lenne
+      szükségünk a $\Z$ és $Z_m$ gyűrűk között. Erről szól az alábbi definíció, amely tehát a
+      [homomorfizmus-izomorfizmus-beagyazas]ban definiált homomorfizmusfogalom speciális esete gyűrűkre, mint
+      algebrai struktúrákra. Kivételesen feltüntettük a gyűrűk műveleti szimbólumait is annak érdekében, hogy
+      világos legyen, mikor melyik gyűrűben kell az adott műveletet elvégezni.
+  - type: embed
+    target:
+      type: definition
+      name: gyuruhomomorfizmus
+  - type: embed
+    target:
+      type: remark
+      name: gyuruhomomorfizmus-megjegyzes
+  - type: narrative
+    content: |
+      Az alábbi tételben meg is adunk egy gyűrűhomomorfizmust az egész számok $\Z$ gyűrűjéből a véges sok elemet
+      tartalmazó $Z_m$ gyűrűbe. Nem lesz túl meglepő a dolog, hiszen ez a leképezés mindvégig itt volt az orrunk
+      előtt.
+  - type: embed
+    target:
+      type: theorem
+      name: maradekkepzes-gyuruhomomorfizmus
+  - type: embed
+    target:
+      type: proof
+      name: maradekkepzes-gyuruhomomorfizmus-bizonyitas
+  - type: narrative
+    content: |
+      A szakasz elején közölt példára alkalmazva az iménti tételt mostmár könnyedén kiszámíthatjuk, hogy a
+      $2^{328}$ hatvány mennyi maradékot ad $11$-gyel osztva.
+  - type: formula
+    lead-in: |
+      Ehhez annyit kell tennünk, hogy a $328$ darab tényezőre alkalmazzuk a $\bmod_{11}$ maradékképző függvényt, és
+      vesszük az így kapott maradékok moduláris szorzatát a $Z_{11}$ gyűrűben:
+    content: |
+      \bmod_{11}(\underbrace{2\cdot 2\cdot \ldots \cdot 2}_{\text{328 darab}})=\underbrace{\bmod_{11}(2)\odot
+      \bmod_{11}(2)\odot \ldots \odot \bmod_{11}(2)}_{\text{328 darab}}
+  - type: narrative
+    content: |
+      Az a probléma tehát megoldódott, hogy a számolgatás közben nem fogunk olyan óriási részeredményeket kapni,
+      amelyek túllépik a számítógép számábrázolási határait. Megjegyezzük ugyanakkor, hogy a gyakorlatban a kitevő
+      nagyságrendje a többszázjegyű számok körében mozog. Ez a módszer tehát ebben a formában továbbra sem
+      alkalmazható, mivel beláthatatlanul sok moduláris szorzást igényel. Egy későbbi részben azonban mutatni
+      fogunk egy olyan módszert, amelynek a segítségével még ezek az óriási kitevős moduláris hatványok is
+      pillanatok alatt kiszámíthatók.
+  - type: narrative
+    content: |
+      Ez az ***ismételt négyzetre emelések módszere*** néven lesz ismeretes, és &ndash; anélkül, hogy most
+      belemennénk a részletekbe &ndash; a moduláris hatványozás azonosságait fogja igen trükkös módon kihasználni.
+      Ezek az azonosságok azonban tetszőleges kommutatív gyűrűben érvényesek, így az alábbi tételben ezt az
+      általános esetet fogjuk igazolni.
+  - type: embed
+    target:
+      type: theorem
+      name: hatvanyozas-azonossagai
+  - type: embed
+    target:
+      type: proof
+      name: hatvanyozas-azonossagai-bizonyitas

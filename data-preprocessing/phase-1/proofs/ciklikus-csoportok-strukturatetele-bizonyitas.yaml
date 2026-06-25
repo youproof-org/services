@@ -1,0 +1,102 @@
+type: proof
+name: ciklikus-csoportok-strukturatetele-bizonyitas
+remarks: []
+references:
+  csoportelem-rendje:
+    target:
+      type: definition
+      name: csoportelem-rendje
+  csoportelem-rendjere-vonatkozo-osszefuggesek:
+    target:
+      type: theorem
+      name: csoportelem-rendjere-vonatkozo-osszefuggesek
+  csoporthomomorfizmus:
+    target:
+      type: definition
+      name: csoporthomomorfizmus
+  csoporthomomorfizmusok-ciklikussagtarto-tulajdonsaga:
+    target:
+      type: theorem
+      name: csoporthomomorfizmusok-ciklikussagtarto-tulajdonsaga
+  egesz-kitevos-hatvanyozas-azonossagai:
+    target:
+      type: theorem
+      name: egesz-kitevos-hatvanyozas-azonossagai
+  egesz-szamok-es-maradekosztalygyuruk-additiv-csoportja-ciklikus:
+    target:
+      type: theorem
+      name: egesz-szamok-es-maradekosztalygyuruk-additiv-csoportja-ciklikus
+  egesz-szamok-maradekosztalygyurui:
+    target:
+      type: theorem
+      name: egesz-szamok-maradekosztalygyurui
+content:
+  - type: narrative
+    content: |
+      A [egesz-szamok-es-maradekosztalygyuruk-additiv-csoportja-ciklikus] alapján a $\Z^+$ illetve a $(\Z/m\Z)^+$
+      csoportok ciklikusak. Ezért ha $G$ izomorf valamelyikükkel, akkor a
+      [csoporthomomorfizmusok-ciklikussagtarto-tulajdonsaga] alapján $G$ is ciklikus, hiszen a csoportizomorfizmus
+      a [csoporthomomorfizmus] alapján egy szürjektív homomorfizmus.
+  - type: narrative
+    content: |
+      ***Megfordítva:*** Tegyük fel, hogy $G$ ciklikus, és legyen $g$ egy generátorelem. Ekkor $G$ minden eleme
+      felírható $g$ egész kitevős hatványaként.
+  - type: narrative
+    content: |
+      ***1. eset &ndash; $g$ rendje (lásd a [csoportelem-rendje]t) végtelen:*** Tekintsük azt az $f:\Z^+\to G$
+      függvényt, amely minden $n$ egész számhoz hozzárendeli a $g^n$ elemet. Mivel a
+      [csoportelem-rendjere-vonatkozo-osszefuggesek] alapján $g$ bármely két hatványa különbözik, ezért ez a
+      függvény injektív lesz, hiszen különböző egész számok képe különböző $G$-beli elem lesz. Továbbá, mivel $G$
+      minden eleme felírható $g$ egész kitevős hatványaként, ezért $f$ egyben szürjektív is. Így már csak a
+      ***művelettartó tulajdonságot*** kell igazolni.
+  - type: formula
+    lead-in: |
+      Ez viszont az egész kitevős hatványozás azonosságaiból ([egesz-kitevos-hatvanyozas-azonossagai] 3. pontja)
+      következik:
+    content: |
+      f(n+k)=g^{n+k}=g^n\cdot g^k=f(n)\cdot f(k)
+  - type: narrative
+    content: |
+      Azaz $G$ ebben az esetben izomorf a $\Z^+$ csoporttal.
+  - type: narrative
+    content: |
+      ***2. eset &ndash; $g$ rendje véges:*** Legyen $g$ rendje $m$, és tekintsük azt az $f:(\Z/m\Z)^+\to G$
+      függvényt, amely minden $[n]_m$ maradékosztályhoz hozzárendeli a $g^n$ elemet.
+  - type: formula
+    lead-in: |
+      Tekintsünk két tetszőleges maradékosztályt, legyenek ezek például $[n]_m$ és $[k]_m$, és tegyük fel, hogy
+      teljesülnek az alábbiak:
+    content: |
+      f([n]_m)=f([k]_m)
+  - type: formula
+    lead-in: |
+      Az $f$ függvény definíciója alapján ez az egyenlet így írható fel:
+    content: |
+      g^n=g^k
+  - type: formula
+    lead-in: |
+      Ám mivel $g$ rendje véges, ezért a [csoportelem-rendjere-vonatkozo-osszefuggesek] 1. pontja alapján ekkor
+      teljesül az alábbi kongruencia:
+    content: |
+      n\equiv k\pmod m
+  - type: formula
+    lead-in: |
+      Ez viszont azt jelenti, hogy $n$ és $k$ ugyanazt a modulo $m$ maradékosztályt reprezentálják, azaz:
+    content: |
+      [n]_m=[k]_m
+  - type: narrative
+    content: |
+      Vagyis különböző maradékosztályok képei nem lehetnek azonosak, így az $f$ függvény injektív. Továbbá, mivel
+      $G$ minden eleme felírható $g$ egész kitevős hatványaként, és bármely egész szám reprezentál valamilyen
+      modulo $m$ maradékosztályt, ezért $f$ egyben szürjektív is. Így már csak a ***művelettartó tulajdonságot***
+      kell igazolni.
+  - type: formula
+    lead-in: |
+      Ez viszont ismét az egész kitevős hatványozás azonosságaiból ([egesz-kitevos-hatvanyozas-azonossagai] 3.
+      pontja), továbbá a maradékosztályok közötti összeadás műveletének definíciójából
+      ([egesz-szamok-maradekosztalygyurui]) következik:
+    content: |
+      f([n]_m+[k]_m)=f([n+k]_m)=g^{n+k}=g^n\cdot g^k=f([n]_m)\cdot f([k]_m)
+  - type: narrative
+    content: |
+      Azaz $G$ ebben az esetben izomorf a $(\Z/m\Z)^+$ csoporttal.

@@ -1,0 +1,35 @@
+<!-- wp:paragraph -->
+<p>Legyen [latex]n[/latex] egy tetszőleges <strong><em>[latex]1[/latex]-nél nagyobb páratlan szám</em></strong>, amelynek legalább két egymástól különböző prímtényezője is van, azaz <strong><em>nem prímhatvány</em></strong>. Képezzük azt az [latex]e\geq 1[/latex] kitevőt és [latex]k\geq 1[/latex] páratlan számot, amelyekre teljesül az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]n-1=2^ek[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten" type="link" /] szövegével megegyező módon legyen [latex]j_{\text{max}}[/latex] a <strong><em>legnagyobb</em></strong> olyan [latex]j[/latex] kitevő a [latex]\{0;1;2;\ldots;e-1\}[/latex] egész számok között, amelyhez léteznek olyan [latex]x[/latex] egész számok, hogy teljesül az [latex]x^{2^j}\equiv -1\pmod n[/latex] kongruencia. <strong><em>Megjegyzés:</em></strong> Az említett [yp_element slug="nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten" type="link" /] alapján legalább egy ilyen [latex]j[/latex] kitevő biztosan létezik, tehát [latex]j_{\text{max}}[/latex] is létezik.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ugyancsak a [yp_element slug="nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten" type="link" /] szövegével megegyezően jelöljük [latex]H_n[/latex]-nel azon [latex][a]_n[/latex] maradékosztályok halmazát, amelyek esetén az [latex]a^{2^{j_{\text{max}}}k}[/latex] hatvány [latex]1[/latex]-gyel <strong><em>vagy</em></strong> [latex]-1[/latex]-gyel kongruens modulo [latex]n[/latex], azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{2^{j_{\text{max}}}k} \equiv \pm 1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Végül jelöljük [latex]F_n[/latex]-nel azokat a modulo [latex]n[/latex] maradékosztályokat, amelyek <strong><em>nem Fermat-tanúi</em></strong> [latex]n[/latex]-nek.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ekkor [latex]H_n[/latex]-hez hasonlóan [latex]F_n[/latex] is részcsoportot alkot a [latex](\Z/n\Z)^{\times}[/latex] multiplikatív csoportban, valamint teljesülnek az alábbiak:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} -->
+<ol><li>Ha [latex]n[/latex] nem Carmichael-szám, akkor [latex]H_n\lt F_n\lt (\Z/n\Z)^{\times}[/latex]</li><li>Ha [latex]n[/latex] Carmichael-szám, akkor [latex]H_n\lt F_n=(\Z/n\Z)^{\times}[/latex].</li></ol>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Szavakkal ez így fogalmazható meg:</em></strong> [latex]H_n[/latex] <strong><em>valódi részcsoport</em></strong> [latex]F_n[/latex]-ben, amely viszont akkor és csak akkor <strong><em>valódi részcsoport</em></strong> [latex](\Z/n\Z)^{\times}[/latex]-ben, ha [latex]n[/latex] nem Carmichael-szám (egyébként megegyezik vele).</p>
+<!-- /wp:paragraph -->

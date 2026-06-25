@@ -1,0 +1,45 @@
+type: section
+name: 06-az-enigma-mukodese
+title: Az Enigma működése
+
+body:
+  - type: narrative
+    content: |
+      Az Enigma egy elektromechanikus rejtjelező gép, amely egy alfanumerikus billentyűzetből, egy kijelzőből,
+      néhány közös tengelyen forgó tárcsából, valamint egy, a billentyűk leütésével működtetett tárcsaléptető
+      mechanizmusból állt. Az egyik tárcsa minden egyes leütés után egyet lépett, míg a többi tárcsa csak adott
+      leütésenként lépett egyet-egyet. Ezek a tárcsaléptetések állandóan változó áramkört hoztak létre, amely a
+      kódolandó betű leütésekor zárult, kivillantva a kódszöveg aktuális betűjének megfelelő lámpát a kijelzőn.
+  - type: figure
+    lead-in: |
+      Az alábbi ábra egy 3 tárcsás Enigma működési alapelvét mutatja:
+    src: 04-enigma-mukodese.jpg
+    alt: Az Enigma működése
+    caption: Az Enigma működése
+
+  - type: narrative
+    content: |
+      Amikor a kezelő leüti a billentyűzeten a nyílt szöveg soron következő betűjét (legyen ez például **a**), az
+      aktuális tárcsaállásoknak megfelelően a tárcsák belső huzalozásán keresztül záródik az áramkör. Ekkor
+      felvillan a kódszöveg következő betűje (a fenti példában **g**), majd a tárcsaléptető mechanizmus megforgat
+      bizonyos tárcsákat. Így a nyílt szöveg következő betűje már egy teljesen más huzalozáson keresztül fogja
+      zárni az áramkört.
+  - type: narrative
+    content: |
+      Látható, hogy önmagában egy tárcsa csupán egy egyszerű monoalfabetikus helyettesítő kódolást állítana elő.
+      Egy betűt kicserél egy másikra a belső huzalozásától függően. Az Enigma bonyolultságát a több tárcsa egyidejű
+      használata, valamint az egyes tárcsák egymáshoz képest eltérő elforgatása adta, így egy polialfabetikus
+      helyettesítő kódolást hozva létre. Az üzenetek megfelelő kódolásához és dekódolásához mindkét kommunikáló
+      félnek azonos módon kellett az Enigmát beállítania. Egyforma tárcsákat kellett ugyanabban a sorrendben és
+      megegyező kezdeti helyzetben használniuk. A németek ezen kívül később újabb és újabb bonyolításokat vezettek
+      be. Például 3 helyett több tárcsa használata, egy kézzel megváltoztatható extra huzalozás, amellyel a tárcsák
+      elé egy fix keverést be lehetett iktatni, stb. E beállítások összessége alkotja a kulcsot az Enigma esetén.
+  - type: narrative
+    content: |
+      A kódfejtés további nehezítése érdekében a németek 1936-tól kezdődően áttértek a napi kulcsok használatára,
+      azaz naponta változtatták az Enigma beállításait. Ezen kívül tilos volt 250 betűnél hosszabb üzeneteket
+      küldeni. Az ennél hosszabb üzeneteket több részre bontották, és minden részt különböző véletlenszerűen
+      választott egyszer használatos kulcsokkal kódoltak. Az első részüzenet kulcsát az Enigma aznapi beállítása
+      alapján kódolták, majd a további részüzenetek kulcsait a megelőző részüzenet végén közölték. A fogadó fél a
+      napi beállításból kiindulva szépen vissza tudta fejteni az üzenet részeit. Ezzel a protokollal a
+      gyakoriságelemzésen alapuló törési kísérletek kudarcra voltak ítélve.

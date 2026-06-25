@@ -1,0 +1,54 @@
+type: section
+name: 07-egesz-szamok-p-adikus-rendje
+title: Egész számok p-adikus rendje
+
+body:
+  - type: narrative
+    content: |
+      E rövid csoportelméleti bevezető után a csoport rendje és a csoportelem rendje mellé a kóbor apácák
+      megtévesztésére most bevezetünk egy harmadik rendfogalmat, amelyet egy hasznos moduláris aritmetikai
+      összefüggés bizonyításához fogunk felhasználni. Az előző részben a Miller-Rabin-prímteszt alapgondolatának
+      ismertetése kapcsán lényegében már találkoztunk vele. Ott arról volt szó, hogy adva volt egy $n$ pozitív
+      páratlan szám, és azt kellett meghatározni, hogy ebben az esetben az $n-1$ páros szám hányszor osztható
+      $2$-vel. Azaz kerestük azt az $e\geq 1$ kitevőt, amely esetén az $n-1$ páros szám még osztható $2^e$-vel,
+      viszont $2^{e+1}$-gyel már nem. Most ezt általánosítjuk $2$ helyett tetszőleges pozitív $p$ prímszámra.
+  - type: embed
+    target:
+      type: definition
+      name: egesz-szam-p-adikus-rendje
+  - type: formula
+    lead-in: |
+      Visszatérve a Miller-Rabin-prímteszt példájára, amennyiben tehát az $n-1$ páratlan szám felírható $2^ek$
+      alakban, ahol $k$ már páratlan, akkor a mostani jelölésünkkel ezt így írhatjuk:
+    content: |
+      v_2(n-1)=e
+  - type: narrative
+    content: |
+      A $2$ prímszám esetén ezt a mennyiséget speciálisan ***diadikus rendnek*** nevezzük.
+  - type: narrative
+    content: |
+      Most egy hasznos segédtételt ismertetünk, amely azzal a kérdéssel foglalkozik, hogyha két egész számnak
+      vesszük valamilyen hatványát, és képezzük ezek különbségét, akkor mi lesz ennek a különbségnek a $p$-adikus
+      rendje, amennyiben a két egész szám első hatványainak különbségére már ismerjük ezt a mennyiséget. Ez az
+      összefüggés "Lifting the exponent lemma" néven ismeretes. Mi ennek most egy speciális esetét ismertetjük,
+      amikoris a hatványkitevő megegyezik a $p$ prímszámmal.
+  - type: embed
+    target:
+      type: theorem
+      name: p-edik-hatvanyok-kulonbsegenek-p-adikus-rendje
+  - type: embed
+    target:
+      type: proof
+      name: p-edik-hatvanyok-kulonbsegenek-p-adikus-rendje-bizonyitas
+  - type: narrative
+    content: |
+      Most az imént bizonyított lemma segítségével egy olyan moduláris aritmetikai összefüggést fogunk igazolni,
+      amely kulcsfontosságú lesz a következő szakaszban.
+  - type: embed
+    target:
+      type: theorem
+      name: prim-modulus-hatvanyozasa
+  - type: embed
+    target:
+      type: proof
+      name: prim-modulus-hatvanyozasa-bizonyitas

@@ -1,0 +1,105 @@
+type: chapter
+name: 13-alice-es-bob-eladosodik
+title: Alice és Bob eladósodik
+
+abstract:
+  - type: narrative
+    content: |
+      Az előző részben tovább folytattuk a számelmélet felépítését a semmiből. A Peano-axiómarendszer és a 11.
+      részből már ismert összeadás műveletének segítségével bevezettünk egy második műveletet is az $\N$ halmazon.
+      Ezt szorzásnak neveztük el, amelyről megmutattuk, hogy valóban teljesíti mindazon tulajdonságokat, amiket az
+      általános iskolában megszokhattunk tőle. Ezután megismerkedtünk a reláció és a rendezett halmaz fogalmával,
+      és definiáltunk egy olyan relációt az $\N$ halmazon, amelynek a segítségével egy egyértelmű sorrendet tudtunk
+      felállítani e halmaz elemei, azaz a természetes számok között. Megemlítettük ugyanakkor, hogy ez a számkör
+      túl szűkös olyan kellőképpen általános számelméleti összefüggések feltárásához, amelyeket a matematika más
+      területein is kamatoztatni tudnánk. De vajon mi volt az az absztrakciós folyamat, amelyet őseink is követtek,
+      amikor elkezdtek a "semminél kevesebb" mennyiségekről elmélkedni? Mit lehet az ilyen mennyiségekkel
+      modellezni? Tulajdonképpen mik azok a negatív számok? Hogyan köthető egy ilyen látszólag értelmetlen fogalom
+      a valósághoz? Ebben a részben erről lesz szó...
+prerequisite-warning:
+  - type: narrative
+    content: |
+      Figyelem! Ez a rész erőteljesen épít az előző és az azelőtti részekben bevezetett alábbi definíciókra:
+  - type: recall
+    target:
+      type: definition
+      name: peano-axiomarendszer
+  - type: recall
+    target:
+      type: definition
+      name: peano-osszeadas
+  - type: recall
+    target:
+      type: definition
+      name: peano-szorzas
+  - type: recall
+    target:
+      type: definition
+      name: termeszetes-szamok-rendezese
+  - type: narrative
+    content: |
+      E definíciók kontextusba helyezése, valamint a hozzájuk kapcsolódó tételek megismerése miatt erőteljesen
+      ajánlott tehát elolvasni a 11. és a 12. részt, mivel gyakran hivatkozni fogunk rájuk. A teljes cikksorozat
+      elejét itt találod.
+prologue:
+  - type: narrative
+    content: |
+      Az általános iskolában vélhetően mindenki megtanulta a négy alapműveletet, illetve azok alapvető
+      tulajdonságait. Mi ezek közül eddig mindössze ***az összeadással és a szorzással*** ismerkedtünk meg. Ezután
+      azonban láthatóan falba ütköztünk, hiszen a természetes számok $\N$ halmazán algebrai értelemben nem
+      értelmezhető sem a ***kivonás***, sem pedig az ***osztás***. Ez alatt azt értjük, hogy ezek a
+      "művelet-szerűségek" általánosságban kivezetnek a természetes számok köréből. Algebrai értelemben az olyan
+      függvényeket neveztük ***műveleteknek***, amelyek $\N$-beli elemekből alkotott párokhoz szintén $\N$-beli
+      elemeket rendelnek hozzá. Például a $+$ szimbólummal jelölt művelet egy olyan függvény, amely a $(3;2)$
+      párhoz &ndash; és a kommutativitása miatt természetesen a $(2;3)$ párhoz is &ndash; az $5$ szimbólummal
+      jelölt $\N$-beli elemet rendeli hozzá.
+  - type: narrative
+    content: |
+      Ilyen értelemben sajnos a szokásos kivonást nem nevezhetjük műveletnek. Az még rendben is lenne, hogy a
+      $(3;2)$ párhoz hozzárendeli az $1$ szimbólummal jelölt természetes számot &ndash; hiszen $3-2=1$. De mit
+      rendeljen hozzá mondjuk a $(2;3)$ párhoz? Az $\N$ halmazban nincs olyan elem, amely ehhez a párhoz
+      rendelhető, mint egy kivonás eredménye. Márpedig a ***művelet*** fogalmának definíciója egyértelműen
+      kimondja, hogy egy ilyen függvénynek ***minden*** elempárhoz hozzá kell rendelnie valamilyen elemet az
+      alaphalmazból.
+  - type: narrative
+    content: |
+      Megtehetjük persze &ndash; hiszen a matematikában mindent szabad mindaddig, míg a logika egyszerű de annál
+      szigorúbb szabályait betartjuk &ndash;, hogy átírjuk a művelet definícióját, és nem kötjük ki, hogy minden
+      elempárra értelmezve legyen. Ám ekkor roppant kényelmetlen dolgunk lenne, hiszen bármilyen olyan definíciót,
+      tételt vagy bizonyítást, amely a művelet fogalmát használja szintén át kellene fogalmaznunk. Meg kellene
+      ugyanis különböztetnünk azokat az eseteket, amelyekben egy művelet értelmezve van egy adott elempárra
+      azoktól, amelyekben nincs. Nem állítom, hogy ez lehetetlen lenne, de semmiképpen sem kényelmes.
+  - type: narrative
+    content: |
+      A matematikusok alapvetően lusták, ezért ilyen esetekben rendszeresen az általánosítás és az absztrakció
+      eszközéhez nyúlnak. Ez azt jelenti, hogy olyan általánosabb fogalmakat és elméleteket dolgoznak ki,
+      amelyekben az adott probléma sokkal kényelmesebben kezelhető. Mi is ezt az utat fogjuk követni. A problémánk
+      tehát az, hogy a természetes számok között általánosságban nem végezhető el a kivonás. Az ezen a halmazon
+      ugyanis nem művelet. Ezért ebben és a következő részben át fogunk térni egy másik számhalmazra, amelyben ez a
+      probléma egy csapásra megszűnik. Ezt azonban nem a szokásos módon fogjuk megtenni, hanem továbbra is
+      szigorúan az eddig felépített fogalmainkra, tételeinkre, valamint a Peano-axiómarendszerre támaszkodva. Így
+      válik ugyanis világossá, hogy a korai gondolkodók számára mennyire nem volt magától értetődő absztrakció a
+      számegyenes 0-tól balra lévő részének felfedezése (vagy megalkotása?).
+  - type: narrative
+    content: |
+      Az eddigiekhez hasonlóan tehát töröljünk most ki mindent a fejünkből, amit a negatív számokról tudunk.
+      Számunkra most kizárólag a természetes számok $\N$ halmaza létezik a rajta értelmezett két művelettel és az
+      előző részben megismert rendezési relációval.
+sections:
+  - 01-kompania-bankarai
+  - 02-a-vagyon-mint-mennyiseg
+  - 03-ekvivalenciarelaciok
+  - 04-az-egesz-szamok-mint-ekvivalencia-osztalyok
+  - 05-a-termeszetes-szamok-beagyazasa-latex-z-latex-be
+  - 06-osszeadas-a-latex-z-latex-halmazon
+  - 07-hol-tartunk-most
+
+epilogue:
+  - type: narrative
+    content: |
+      A következő részekben tovább folytatjuk az egész számok felépítését. Az összeadáshoz hasonlóan a
+      Peano-szorzást, valamint a rendezési relációnkat is intuitív módon ki fogjuk terjeszteni erre a számkörre.
+      Ezzel teljessé fog válni a természetes számok beágyazása a $\Z$ halmazba. Végül általánosságban is
+      megvizsgáljuk, hogy az így kapott új algebrai struktúrával milyen előnyökhöz jutottunk. Ennek keretében
+      további absztrakt algebrai fogalmakkal fogunk megismerkedni, amelyeknek majd a prímszámok elméletének
+      általánosabb tárgyalásakor vesszük hasznát.

@@ -1,0 +1,18 @@
+type: definition
+name: legnagyobb-kozos-oszto
+remarks:
+  - legnagyobb-kozos-oszto-megjegyzes
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy $a$ és $b$ tetszőleges egész számok a $\Z$ gyűrűben.
+  - type: ordered-list
+    lead-in: |
+      Az $a$ és $b$ ***legnagyobb közös osztója*** a $d$ egész szám, ha teljesül az alábbi két tulajdonság:
+    items:
+      - 'Fennállnak a $d|a$ és $d|b$ oszthatóságok.'
+      - 'Tetszőleges $c$ egész szám esetén ha fennállnak a $c|a$ és $c|b$ oszthatóságok, akkor $c\leq d$.'
+  - type: narrative
+    content: |
+      Azaz a legnagyobb közös osztónál nincs nagyobb közös osztó. Az $a$ és $b$ egész számok legnagyobb közös
+      osztójának jelölése: $(a,b)$.

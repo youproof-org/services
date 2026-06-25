@@ -1,0 +1,25 @@
+type: theorem
+name: rendezesek-es-pozitivitastartomanyok-kapcsolata
+proofs:
+  - rendezesek-es-pozitivitastartomanyok-kapcsolata-bizonyitas
+remarks: []
+references:
+  rendezett-gyuru:
+    target:
+      type: definition
+      name: rendezett-gyuru
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy $(R,+,\cdot )$ egy részbenrendezhető gyűrű, valamint legyen $\leq$ és $\lesssim$ két
+      tetszőleges részbenrendezési reláció, amelyek kielégítik a [rendezett-gyuru]ban megfogalmazott rendezési
+      axiómákat.
+  - type: narrative
+    content: |
+      Amennyiben tetszőleges $a$ és $b$ gyűrűelemekre $a\leq b$ pontosan akkor teljesül, amikor $a\lesssim b$ is
+      teljesül, úgy a két rendezés pozitivitástartománya megegyezik &ndash; azaz $P_{\leq}=P_{\lesssim}$.
+  - type: narrative
+    content: |
+      ***Megfordítva:*** amennyiben a két rendezés pozitivitástartománya megegyezik &ndash; azaz
+      $P_{\leq}=P_{\lesssim}$ &ndash;, úgy tetszőleges $a$ és $b$ gyűrűelemekre $a\leq b$ pontosan akkor teljesül,
+      amikor $a\lesssim b$ is teljesül.

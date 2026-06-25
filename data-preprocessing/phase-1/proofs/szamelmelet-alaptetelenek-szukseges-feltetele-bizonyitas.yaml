@@ -1,0 +1,76 @@
+type: proof
+name: szamelmelet-alaptetelenek-szukseges-feltetele-bizonyitas
+remarks: []
+references:
+  asszocialtsag-es-egysegek-kapcsolata:
+    target:
+      type: theorem
+      name: asszocialtsag-es-egysegek-kapcsolata
+  egyseg-letezesenek-szukseges-es-elegseges-feltetele:
+    target:
+      type: theorem
+      name: egyseg-letezesenek-szukseges-es-elegseges-feltetele
+  egysegtenyezo-nullosztomentes-esetben:
+    target:
+      type: theorem
+      name: egysegtenyezo-nullosztomentes-esetben
+  felbonthatatlan-elem:
+    target:
+      type: definition
+      name: felbonthatatlan-elem
+  oszthatosag:
+    target:
+      type: definition
+      name: oszthatosag
+content:
+  - type: narrative
+    content: |
+      Legyen $p$ egy tetszőleges felbonthatatlan elem $R$-ben. Azt tudjuk, hogy $p$ nem a nullelem (hiszen
+      tetszőleges $a$ esetén $0\cdot a$ egy nemtriviális felbontás), valamint a [felbonthatatlan-elem] miatt nem is
+      egység. Azt kell megmutatni, hogy prímtulajdonságú, azaz hogy ha bármilyen $r$ és $s$ elemek esetén teljesül
+      a $p|rs$ oszthatóság, akkor a $p|r$ vagy $p|s$ oszthatóságok közül is legalább az egyik teljesül.
+  - type: formula
+    lead-in: |
+      A $p|rs$ oszthatóság a [oszthatosag] alapján azt jelenti, hogy létezik olyan $t$ elem, amelyre teljesül az
+      alábbi egyenlet:
+    content: |
+      pt=rs
+  - type: narrative
+    content: |
+      Nézzük először, mi lehet a helyzet a jobboldalon. Ha $r$ (vagy $s$) a nullelem, akkor nyilván fennáll a $p|r$
+      (vagy $p|s$) oszthatóság, így ebben az esetben nyilván teljesül a prímtulajdonság.
+  - type: narrative
+    content: |
+      Az általánosság megsértése nélkül tehát feltehetjük, hogy $r\eq 0$ és $s\eq 0$, azaz $rs\eq 0$ (a
+      nullosztómentesség miatt). Ez viszont azt jelenti, hogy az egyenlet baloldalán álló $pt$ sem lehet nulla, és
+      így alkalmazható a [egysegtenyezo-nullosztomentes-esetben]. Nevezetesen: ha $r$ és $s$ közül valamelyik
+      egység, akkor a másik $pt$ asszociáltja, azaz szintén osztható $p$-vel. Így ebben az esetben is teljesül a
+      prímtulajdonság.
+  - type: narrative
+    content: |
+      A speciális esetekből még azt kell megvizsgálni, amikor $t$ egység (nullelem ugye nem lehet, hiszen azt
+      mondtuk, hogy $pt\eq 0$). A [egyseg-letezesenek-szukseges-es-elegseges-feltetele] miatt ilyenkor a gyűrű
+      ***egységelemes***, alkalmazható tehát a [asszocialtsag-es-egysegek-kapcsolata]. Ez alapján a jobboldalon
+      álló $rs$ asszociáltja $p$-nek, hiszen egységszerese. De mivel $p$ felbonthatatlan, ezért $r$ és $s$ közül az
+      egyik $p$-nek asszociáltja, és így osztható vele (hiszen egységelemes gyűrűről van szó). A prímtulajdonság
+      tehát ebben az esetben is teljesül.
+  - type: narrative
+    content: |
+      A fennmaradó esetekben az $r$, $s$ és $t$ elemeket felírhatjuk felbonthatatlan elemek szorzataként, hiszen
+      $R$-ben teljesül a számelmélet alaptétele.
+  - type: formula
+    lead-in: |
+      Így a fenti egyenletből ezt kapjuk:
+    content: |
+      p\cdot \underbrace{t_1\cdot t_2 \cdot \ldots \cdot t_k}_{=t} = \underbrace{r_1\cdot r_2 \cdot \ldots \cdot
+      r_n}_{=r} \cdot \underbrace{s_1\cdot s_2 \cdot \ldots \cdot s_m}_{=s}
+  - type: narrative
+    content: |
+      A számelmélet alaptétele ugyanakkor azt is kimondja, hogy a felbontás asszociáltságtól és a tényezők
+      sorrendjétől eltekintve egyértelmű. Ebből következik, hogy a baloldalon álló felbonthatatlan elemek
+      mindegyikének kell legyen egy asszociált párja a jobboldalon, így $p$-nek is. Ha ez az $r=r_1\cdot \ldots
+      \cdot r_n$ szorzat valamelyik tényezője, akkor teljesül a $p|r$ oszthatóság. Ha pedig az $s=s_1\cdot \ldots
+      \cdot s_m$ szorzat valamelyik tényezője, akkor pedig teljesül a $p|s$ oszthatóság.
+  - type: narrative
+    content: |
+      Minden esetben azt kapjuk, hogy $p$ valóban prímtulajdonságú, ahogy a tétel állítja.

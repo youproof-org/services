@@ -1,0 +1,276 @@
+type: section
+name: 04-egesz-szamok-maradekosztalyai-es-maradekosztalygyurui
+title: Egész számok maradékosztályai és maradékosztálygyűrűi
+
+references:
+  egesz-szamok-kozotti-kongruencia:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia
+  egesz-szamok-maradekosztalyai:
+    target:
+      type: theorem
+      name: egesz-szamok-maradekosztalyai
+  egesz-szamok-maradekosztalygyurui:
+    target:
+      type: theorem
+      name: egesz-szamok-maradekosztalygyurui
+  euklideszi-gyuru-foidealgyuru:
+    target:
+      type: theorem
+      name: euklideszi-gyuru-foidealgyuru
+  foidealgyuruk:
+    target:
+      type: definition
+      name: foidealgyuruk
+  gyuru-test:
+    target:
+      type: definition
+      name: gyuru-test
+  gyuruk-homomorfizmustetele:
+    target:
+      type: theorem
+      name: gyuruk-homomorfizmustetele
+  halmazmuveletek:
+    target:
+      type: definition
+      name: halmazmuveletek
+  ideal-szerinti-kongruencia:
+    target:
+      type: definition
+      name: ideal-szerinti-kongruencia
+  ideal-szerinti-kongruencia-ekvivalenciarelacio:
+    target:
+      type: theorem
+      name: ideal-szerinti-kongruencia-ekvivalenciarelacio
+  inverz-elem:
+    target:
+      type: definition
+      name: inverz-elem
+  maradekosztalygyuruk:
+    target:
+      type: theorem
+      name: maradekosztalygyuruk
+  modularis-osszeadas-es-szorzas:
+    target:
+      type: definition
+      name: modularis-osszeadas-es-szorzas
+
+body:
+  - type: narrative
+    content: |
+      Ebben a szakaszban az egész számok $\Z$ gyűrűjének maradékosztályait vizsgáljuk meg. Általánosságban egy $R$
+      gyűrűben a [ideal-szerinti-kongruencia] szerinti értelemben vezettük be az ideál szerinti kongruencia
+      fogalmát.
+  - type: narrative
+    content: |
+      E definíció szerint amennyiben adva van egy $I$ ideál $R$-ben, úgy az $I$ ideál szerinti $a\equiv b\pod I$
+      kongruencia pontosan akkor teljesül, ha az $a-b$ különbség benne van az $I$ ideálban. A
+      [ideal-szerinti-kongruencia-ekvivalenciarelacio] alapján ez egy ***ekvivalenciareláció*** $R$ elemei között,
+      amely tehát az $R$ gyűrűt ***páronként diszjunkt halmazok uniójára*** ([halmazmuveletek]) bontja. Ezeket a
+      halmazokat neveztük ***modulo $I$ maradékosztályoknak***. Az $R$ gyűrű minden eleme tehát pontosan egy modulo
+      $I$ maradékosztályba kerül bele.
+  - type: narrative
+    content: |
+      Most vizsgáljuk meg ezt a fogalmat az egész számok $\Z$ gyűrűjére vonatkoztatva. Mivel a
+      [euklideszi-gyuru-foidealgyuru] alapján $\Z$ egy ***főideálgyűrű*** ([foidealgyuruk]), ezért annak minden $I$
+      ideáljához található olyan $m$ egész szám, amely egymaga ***generálja*** $I$-t, azaz $I=(m)$. A
+      [egesz-szamok-kozotti-kongruencia]ben épp az ilyen $I=(m)$ főideál szerinti kongruenciákra használtuk az
+      $a\equiv b\pmod m$ jelölést. Kérdés tehát, hogy vajon mik lesznek egy ilyen kongruencia által meghatározott
+      maradékosztályok? Erre ad választ az alábbi tétel.
+  - type: embed
+    target:
+      type: theorem
+      name: egesz-szamok-maradekosztalyai
+  - type: embed
+    target:
+      type: proof
+      name: egesz-szamok-maradekosztalyai-bizonyitas
+  - type: embed
+    target:
+      type: remark
+      name: egesz-szamok-maradekosztalyai-megjegyzes
+  - type: narrative
+    content: |
+      Például modulo $8$ maradékosztályból pontosan 8 darab van.
+  - type: figure
+    lead-in: |
+      Ezeket, illetve ezek néhány elemét mutatja az alábbi ábra:
+    src: 01-modulo-8-maradekosztalyok.jpg
+    alt: Modulo 8 maradékosztályok
+    caption: Modulo 8 maradékosztályok
+  - type: narrative
+    content: |
+      Nézzük meg például a $13$-at tartalmazó maradékosztályt (ezt az ábrán nyíllal jelöltük). A tétel szerint
+      ennek elemei pontosan a $8k+13$ alakban felírható egész számok.
+  - type: formula
+    lead-in: |
+      Valóban, az ábrán megjelenített elemek például így írhatók fel ebben az alakban:
+    content: |
+      \begin{aligned}-19&=8\cdot (-4)+13 \\ -11&=8\cdot (-3)+13 \\ -3&=8\cdot (-2)+13 \\ 5&=8\cdot (-1)+13 \\
+      13&=8\cdot 0+13 \\ 21&=8\cdot 1+13 \\ 29&=8\cdot 2+13\end{aligned}
+  - type: narrative
+    content: |
+      A [maradekosztalygyuruk]ben vezettük be a ***maradékosztálygyűrű (vagy faktorgyűrű)*** fogalmát. Ezek olyan
+      gyűrűk, amelyeknek a fenti maradékosztályok voltak az ***elemei***, és ezek között értelmeztünk két
+      műveletet. Eszerint egy $A$ és egy $B$ maradékosztály $A\oplus B$ ***összege*** szintén egy maradékosztály
+      lesz. Ezt úgy kapjuk meg, hogy veszünk egy-egy tetszőleges $a\in A$ és $b\in B$ elemet az eredeti gyűrűből,
+      képezzük ezek $a+b$ összegét szintén az eredeti gyűrűben, és azt a maradékosztályt választjuk
+      végeredményként, amelybe ez az $a+b$ összeg esik. Az $A\odot B$ ***szorzatot*** ehhez hasonlóan értelmeztük
+      az eredeti gyűrű szorzásának segítségével.
+  - type: narrative
+    content: |
+      Az egész számokon imént bevezetett modulo $m$ maradékosztályokból ugyanígy a [maradekosztalygyuruk]ben leírt
+      módon alkothatunk egy gyűrűt.
+  - type: embed
+    target:
+      type: theorem
+      name: egesz-szamok-maradekosztalygyurui
+  - type: embed
+    target:
+      type: proof
+      name: egesz-szamok-maradekosztalygyurui-bizonyitas
+  - type: narrative
+    content: |
+      Eszerint tehát ha két maradékosztályt szeretnénk összeadni vagy összeszorozni egymással a fenti értelemben,
+      akkor teljesen mindegy, hogy a művelet elvégzéséhez mely reprezentánselemeket használjuk.
+  - type: figure
+    lead-in: |
+      Tekintsük ismét a modulo $8$ maradékosztályokat:
+    src: 02-modulo-8-maradekosztalyok-osszeadasa.jpg
+    alt: Modulo 8 maradékosztályok összeadása
+    caption: Modulo 8 maradékosztályok összeadása
+  - type: narrative
+    content: |
+      Az ábrán megjelöltünk két maradékosztályt, illetve ezek összegét is, amely egy harmadik maradékosztály.
+      Látható, hogy bármely elemekkel is reprezentáljuk a két bemeneti maradékosztályt, e reprezentánselemek
+      összege mindenképp a kimeneti maradékosztályt fogja reprezentálni. Például a $-14+19=5$ és a $10+11=21$
+      összegek ugyanazt a maradékosztályt reprezentálják a fenti tétel miatt.
+  - type: narrative
+    content: |
+      Tegyük fel most, hogy adva van egy $m\gt 0$ egész szám, és tekintsük a [egesz-szamok-maradekosztalygyurui]
+      szerinti modulo $m$ maradékosztálygyűrűt. Ebben a gyűrűben ugyanúgy kell számolni, mint a
+      [modularis-osszeadas-es-szorzas]ban bevezetett $Z_m$ gyűrűben. Ez a ***gyűrűk homomorfizmustételének***
+      következménye, amelyről a 18. részben volt szó bővebben.
+  - type: narrative
+    content: |
+      A fentebbi példában szereplő modulo $8$ maradékosztálygyűrű műveleti táblái emiatt megegyeznek a $Z_8$ gyűrű
+      műveleti tábláival.
+  - type: formula
+    lead-in: |
+      A $Z_8$ gyűrű szorzótáblája például így néz ki:
+    content: |
+      \begin{array}{c|cccccccc}\odot &0&1&2&3&4&5&6&7 \\ \hline 0&0&0&0&0&0&0&0&0 \\ 1&0&1&2&3&4&5&6&7 \\
+      2&0&2&4&6&0&2&4&6 \\ 3&0&3&6&1&4&7&2&5 \\ 4&0&4&0&4&0&4&0&4 \\ 5&0&5&2&7&4&1&6&3 \\ 6&0&6&4&2&0&6&4&2 \\
+      7&0&7&6&5&4&3&2&1 \end{array}
+  - type: formula
+    lead-in: |
+      Az ezzel a ***homomorfizmustétel*** miatt ([gyuruk-homomorfizmustetele]) ***izomorf*** modulo $8$
+      maradékosztálygyűrű szorzótáblája ezzel gyakorlatilag megegyezik, az egyetlen különbség az elemek jelölésében
+      van:
+    content: |
+      \begin{array}{c|cccccccc}\odot & [0]_8 & [1]_8 & [2]_8 & [3]_8 & [4]_8 & [5]_8 & [6]_8 & [7]_8  \\ \hline
+      [0]_8 & [0]_8 & [0]_8 & [0]_8 & [0]_8 & [0]_8 & [0]_8 & [0]_8 & [0]_8  \\  [1]_8 & [0]_8 & [1]_8 & [2]_8 &
+      [3]_8 & [4]_8 & [5]_8 & [6]_8 & [7]_8  \\  [2]_8 & [0]_8 & [2]_8 & [4]_8 & [6]_8 & [0]_8 & [2]_8 & [4]_8 &
+      [6]_8  \\  [3]_8 & [0]_8 & [3]_8 & [6]_8 & [1]_8 & [4]_8 & [7]_8 & [2]_8 & [5]_8  \\  [4]_8 & [0]_8 & [4]_8 &
+      [0]_8 & [4]_8 & [0]_8 & [4]_8 & [0]_8 & [4]_8  \\  [5]_8 & [0]_8 & [5]_8 & [2]_8 & [7]_8 & [4]_8 & [1]_8 &
+      [6]_8 & [3]_8  \\  [6]_8 & [0]_8 & [6]_8 & [4]_8 & [2]_8 & [0]_8 & [6]_8 & [4]_8 & [2]_8  \\  [7]_8 & [0]_8 &
+      [7]_8 & [6]_8 & [5]_8 & [4]_8 & [3]_8 & [2]_8 & [1]_8  \end{array}
+  - type: narrative
+    content: |
+      A [gyuru-test] alapján egy gyűrűben a szorzás általában nem invertálható művelet (lásd a [inverz-elem]t). Ez
+      azonban nem jelenti azt, hogy egyáltalán ne létezhetne olyan nemnulla elem a gyűrűben, amely a szorzásra
+      nézve invertálható &ndash; csupán azt, hogy ***nem mindegyik*** elem ilyen. Például az egész számok $\Z$
+      gyűrűjében mindössze az $1$-hez és a $-1$-hez létezik ***inverz elem***. Mindkettő inverze önmaga, hiszen
+      $1\cdot 1=1$ és $(-1)\cdot (-1)=1$.
+  - type: narrative
+    content: |
+      Ezzel szemben a modulo $8$ maradékosztálygyűrűben több invertálható elem is van. A fenti szorzótábla alapján
+      ezek a következő maradékosztályok: $[1]_8$, $[3]_8$, $[5]_8$ és $[7]_8$. Például a $[3]_8$ inverze szintén
+      önmaga, mivel $[3]_8\odot [3]_8 = [1]_8$.
+  - type: narrative
+    content: |
+      Ezzel ellentétben a $[0]_8$, a $[2]_8$, a $[4]_8$ és a $[6]_8$ maradékosztályok nem ivertálhatók, mivel a
+      szorzótáblában a nekik megfelelő sorokban sehol nem szerepel az $[1]_8$ maradékosztály. Azaz nincs olyan
+      maradékosztály, amellyel őket megszorozva $[1]_8$-et kapnánk.
+  - type: narrative
+    content: |
+      A fenti példákban csupa olyan invertálható elem szerepelt, amelyek mindegyikének az inverze önmaga volt. Ez
+      nem feltétlenül van mindig így. Ha például a modulo $10$ maradékosztálygyűrűt vizsgáljuk, ebben a gyűrűben
+      olyan invertálható elem is van, amelynek inverze nem önmaga. Például a $[3]_{10}$ maradékosztály inverze a
+      $[7]_{10}$ maradékosztály, hiszen őket összeszorozva a $21$ egész szám által reprezentált maradékosztályt
+      kapjuk, ami megegyezik az $[1]_{10}$ maradékosztállyal.
+  - type: narrative
+    content: |
+      Az invertálható maradékosztályoknak &ndash; fontosságuk miatt &ndash; külön nevük is van.
+  - type: embed
+    target:
+      type: definition
+      name: redukalt-maradekosztaly
+  - type: narrative
+    content: |
+      A [egesz-szamok-maradekosztalygyurui]ben már láttuk, hogy amennyiben a modulus egy $m\gt 0$ ***pozitív***
+      egész szám, akkor a modulo $m$ maradékosztálygyűrű elemszáma pontosan $m$, vagy más szavakkal pontosan $m$
+      darab modulo $m$ maradékosztály létezik. Felmerül a kérdés, hogy vajon mi lesz az ugyanezen modulus szerinti
+      ***redukált maradékosztályok száma***? Pontosan ezt méri a számelmélet egyik legfontosabb függvénye, amelyet
+      az alábbi definícióban vezetünk be, és amely Leonhard Euler svájci matematikusról kapta a nevét.
+  - type: embed
+    target:
+      type: definition
+      name: euler-fuggveny
+  - type: formula
+    lead-in: |
+      Az alábbiakban megadjuk a $\varphi$-függvény értékét az első néhány pozitív egész számra:
+    content: |
+      \begin{aligned}\varphi(1)&=1 \\ \varphi(2)&=1 \\ \varphi(3)&=2 \\ \varphi(4)&=2 \\ \varphi(5)&=4 \\
+      \varphi(6)&=2 \\ \varphi(7)&=6 \\ \varphi(8)&=4 \\ \varphi(9)&=6 \\ \varphi(10)&=4 \\ &\vdots\end{aligned}
+  - type: narrative
+    content: |
+      Az alábbi ábrán a $\varphi$-függvény grafikonja látható az első 1000 pozitív egész számig bezárólag.
+  - type: figure
+    src: 03-az-euler-fuggveny-grafikonja.jpg
+    alt: Az Euler-függvény grafikonja
+    caption: Az Euler-függvény grafikonja
+  - type: narrative
+    content: |
+      Látható, hogy a függvény bizonyos szempontból meglehetősen hektikusan viselkedik. Felmerül a kérdés, hogy
+      vajon hogyan számítható ki az értéke tetszőleges $m\gt 0$ pozitív egész számra? Ehhez ugye a modulo $m$
+      redukált maradékosztályokat kéne tudnunk megszámolni. Ennek viszont előfeltétele, hogy egy adott
+      maradékosztályról egyáltalán el tudjuk dönteni, hogy redukált-e vagy nem, azaz létezik-e inverze a modulo $m$
+      maradékosztálygyűrű szorzására nézve vagy nem.
+  - type: narrative
+    content: |
+      Vizsgáljuk ezért meg, hogy ennek mi a feltétele.
+  - type: formula
+    lead-in: |
+      Tegyük fel, hogy elénk kerül egy valamilyen $a$ egész számmal reprezentált $[a]_m$ maradékosztály, és azt
+      kell eldöntenünk, hogy létezik-e olyan $X$ maradékosztály, amelyre teljesül az alábbi egyenlet a
+      maradékosztálygyűrűben:
+    content: |
+      [a]_m\odot X=[1]_m
+  - type: narrative
+    content: |
+      Itt $[1]_m$ jelöli a maradékosztálygyűrű egységelemét, azaz azt a maradékosztályt, amelyben benne van az $1$
+      egész szám. Ekkor a keresett $X$ maradékosztály lesz az $[a]_m$ maradékosztály inverze &ndash; amennyiben
+      létezik. A [egesz-szamok-maradekosztalyai] alapján elegendő $X$ egyetlen elemét megtalálni, hiszen ebből
+      könnyedén megkapható az összes többi. Jelöljük ezt a keresett elemet $x$-szel, azaz $X=[x]_m$.
+  - type: formula
+    lead-in: |
+      Ekkor a fenti egyenlet &ndash; követve a $\odot$ művelet [egesz-szamok-maradekosztalygyurui]beli definícióját
+      &ndash; így módosul:
+    content: |
+      [a]_m\odot [x]_m=[a\cdot x]_m=[1]_m
+  - type: narrative
+    content: |
+      Szavakkal megfogalmazva tehát kell keresnünk egy olyan $x$ egész számot, amely esetén az $a\cdot x$ szorzat
+      ugyanabban a maradékosztályban van, mint az $1$ egész szám.
+  - type: formula
+    lead-in: |
+      A kongruenciák nyelvén ez épp az alábbit jelenti:
+    content: |
+      ax\equiv 1\pmod m
+  - type: narrative
+    content: |
+      Az $[a]_m$ maradékosztály inverzének létezése tehát azon áll vagy bukik, hogy létezik-e olyan $x$ egész szám,
+      amely kielégíti a fenti kongruenciát &ndash; azaz a fenti úgynevezett kongruenciaegyenlet ***megoldható-e***.
+      A következő szakaszban ennek feltételeit tekintjük át.

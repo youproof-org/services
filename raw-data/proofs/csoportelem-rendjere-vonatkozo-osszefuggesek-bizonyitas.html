@@ -1,0 +1,91 @@
+<!-- wp:paragraph -->
+<p>Jelöljük [latex]I[/latex]-vel azt a halmazt, amely olyan [latex]i[/latex] egész számokból áll, amelyekre teljesül az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]g^i=e[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azaz [latex]I[/latex] azon kitevők halmaza, amelyekre a [latex]g[/latex] elemet emelve a [latex]G[/latex] csoport egységelemét kapjuk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]I[/latex] halmaz <strong><em>zárt az egész számok összeadására</em></strong> nézve, hiszen ha [latex]i\in I[/latex] és [latex]j\in I[/latex], akkor [latex]I[/latex] definíciója miatt ugye [latex]g^i=e[/latex] és [latex]g^j=e[/latex]. Ám ekkor a [yp_element slug="egesz-kitevos-hatvanyozas-azonossagai" type="link" /] 3. pontja alapján [latex]g^{i+j}=g^i\cdot g^j=e\cdot e=e[/latex], és így szintén [latex]I[/latex] definíciója miatt [latex]i+j\in I[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Továbbá az [latex]I[/latex] halmaz <strong><em>zárt tetszőleges egész számmal való szorzásra</em></strong> is, hiszen ha [latex]i\in I[/latex] és [latex]s[/latex] tetszőleges – tehát nem feltétlenül [latex]I[/latex]-beli egész szám –, akkor egyrészt [latex]I[/latex] definíciója miatt [latex]g^i=e[/latex]. Másrészt viszont a [yp_element slug="egesz-kitevos-hatvanyozas-azonossagai" type="link" /] 2. pontja alapján [latex]g^{i\cdot s}=(g^i)^s=e^s=e[/latex], és így szintén [latex]I[/latex] definíciója miatt [latex]i\cdot s\in I[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Végül egyrészt [latex]I[/latex] <strong><em>tartalmazza a [latex]0[/latex] egész számot</em></strong>, hiszen a [yp_element slug="egesz-kitevos-hatvany" type="link" /] szerint [latex]g^0=e[/latex]. Másrészt az [latex]I[/latex] halmaz <strong><em>zárt az egész számok ellentettképzésére</em></strong> is, hiszen ha [latex]i\in I[/latex], akkor [latex]I[/latex] definíciója miatt [latex]g^i=e[/latex], ám ekkor a [yp_element slug="egesz-kitevos-hatvanyozas-azonossagai" type="link" /] 4. pontja miatt [latex]g^{-i}=(g^i)^{-1}=e^{-1}=e[/latex], és így szintén [latex]I[/latex] definíciója miatt [latex]-i\in I[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]I[/latex] halmaz tehát a [yp_element slug="reszgyuru-feltetele" type="link" /] és a [yp_element slug="ideal" type="link" /] alapján egy <strong><em>ideál</em></strong> az egész számok [latex]\Z[/latex] gyűrűjében.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezek után tegyük fel, hogy [latex]g^k=g^n[/latex]. Szorozzuk meg az egyenlet mindkét oldalát [latex]g^n[/latex] inverzével, azaz a [yp_element slug="egesz-kitevos-hatvanyozas-azonossagai" type="link" /] 4. pontja alapján [latex]g^{-n}[/latex]-nel. Ekkor az alábbit kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]g^k\cdot g^{-n}=\underbrace{g^n\cdot g^{-n}}_{=e}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez viszont a [yp_element slug="egesz-kitevos-hatvanyozas-azonossagai" type="link" /] 3. pontja miatt az alábbival ekvivalens:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]g^{k-n}=e[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Vagyis [latex]g^k=g^n[/latex] pontosan akkor teljesül, ha [latex]k-n\in I[/latex]. Ez viszont a [yp_element slug="ideal-szerinti-kongruencia" type="link" /] értelmében épp azt jelenti, hogy teljesül az alábbi, [latex]I[/latex] ideál szerinti kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]k\equiv n\pod I[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel a [yp_element slug="abszolutertek-euklideszi-norma" type="link" /] alapján [latex]\Z[/latex] <strong><em>euklidészi gyűrű</em></strong>, ezért a [yp_element slug="euklideszi-gyuru-foidealgyuru" type="link" /] miatt [latex]I[/latex] szükségképpen csak <strong><em>főideál</em></strong> lehet, azaz egyetlen elemmel generálható. Jelöljük ezt a generátorelemet [latex]d[/latex]-vel. Az [latex]I[/latex] ideál tehát a [yp_element slug="vegesen-generalt-ideal-elemei" type="link" /] értelmében [latex]d[/latex] többszöröseiből áll, amelyről az általánosság megsértése nélkül feltehető, hogy <strong><em>nemnegatív</em></strong>. Ha ugyanis [latex]d[/latex] negatív lenne, akkor az ő ellentettje lenne pozitív, és így a [yp_element slug="asszocialtsag-tulajdonsagai" type="link" /] 1. pontja értelmében [latex]d[/latex]-nek asszociáltja lenne. Azaz pontosan ugyanazok lennének a többszörösei, mint [latex]d[/latex]-nek, és így őt választhatnánk [latex]I[/latex] generátorelemének.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Feltételezve tehát, hogy [latex]d[/latex] <strong><em>nemnegatív</em></strong>, a fenti ideál szerinti kongruencia a [yp_element slug="egesz-szamok-kozotti-kongruencia" type="link" /] alapján az alábbi kongruenciával ekvivalens:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]k\equiv n\pmod d[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [latex]g[/latex] csoportelem bármely két hatványa tehát pontosan akkor egyezik meg, ha a két hatványkitevő ugyanabba a modulo [latex]d[/latex] maradékosztályba esik. Másként fogalmazva [latex]g[/latex] rendje épp a modulo [latex]d[/latex] maradékosztályok száma lesz. Két eset lehetséges: [latex]d=0[/latex] vagy [latex]d\gt 0[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Első esetben a [yp_element slug="egesz-szamok-maradekosztalyai" type="link" /] alapján bármely két kitevő különböző maradékosztályba tartozik, tehát [latex]g[/latex] bármely két különböző kitevős hatványa különböző lesz, és így [latex]g[/latex] rendje valóban <strong><em>végtelen</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Második esetben szintén a [yp_element slug="egesz-szamok-maradekosztalyai" type="link" /] miatt a modulo [latex]d[/latex] maradékosztályok száma, és így [latex]g[/latex] rendje [latex]d[/latex], azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]o(g)=d[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezt behelyettesítve a fenti kongruenciába tehát megkaptuk a tétel <strong><em>1. állítását</em></strong>. A <strong><em>2. állítás</em></strong> ennek speciális esete, amikoris [latex]n=0[/latex]. A <strong><em>3. állítás</em></strong> könnyen adódik a [yp_element slug="egesz-szamok-maradekosztalyai" type="link" /]ből. Ez alapján ugyanis ha rögzítünk egy tetszőleges [latex]a[/latex] kitevőt, akkor pontosan az [latex]i\cdot o(g) + a[/latex] alakban felírható kitevők lesznek [latex]a[/latex]-val azonos maradékosztályban – ahol [latex]i[/latex] tetszőleges egész szám –, azaz [latex]g[/latex] hatványai valóban [latex]o(g)[/latex] periódussal ismétlődnek.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>4. állítás</em></strong> a [yp_element slug="oszthatosag-es-rendezesi-relacio-kapcsolata" type="link" /] következménye. Az egységelemet adó kitevők ugyanis épp az [latex]I[/latex] ideál elemei, amelyek – mint láttuk – mindannyian [latex]o(g)[/latex] többszörösei, és így biztosan nem kisebbek [latex]o(g)[/latex]-nél.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Végül az 5. állítás:</em></strong> Ha [latex]o(g)=1[/latex], akkor a [yp_element slug="egesz-szamok-kozotti-kongruencia" type="link" /] 4. pontja alapján a [latex]k\equiv n\pmod{o(g)}[/latex] kongruencia mindig teljesül, és így bármely kitevő esetén az egységelemet kapjuk – beleértve természetesen az [latex]1[/latex]-es kitevőt is. <strong><em>Visszafelé:</em></strong> Ha [latex]g=e[/latex], akkor [latex]g[/latex]-nek már az első hatványa is az egységelem. Mivel az [latex]1[/latex] kitevőnél nincs kisebb pozitív egész kitevő, ezért a már bizonyított <strong><em>4. állítás</em></strong> alapján [latex]o(g)=1[/latex].</p>
+<!-- /wp:paragraph -->

@@ -1,0 +1,42 @@
+type: section
+name: 01-a-termeszetes-szamok-szorzasa
+title: A természetes számok szorzása
+
+body:
+  - type: narrative
+    content: |
+      Képzeljük el azt a szituációt, amikor egy számot önmagával sokszor kell összeadni. Jó volna valamilyen módon
+      rövidíteni az olyan jellegű kifejezéseket, mint például ez: $a+a+a+a+a$. Itt az $a$ számot 5-ször adtuk össze
+      önmagával, ami &ndash; valljuk be &ndash; eléggé kényelmetlen. Ezt elkerülendő, most bevezetünk egy
+      "szorzásnak" nevezett műveletet, amelyet $\cdot$-tal fogunk jelölni. A fenti kifejezést például így
+      rövidíthetjük: $a \cdot 5$.
+  - type: narrative
+    content: |
+      A szorzás műveletével kapcsolatban azonnal rögzíthetünk két megállapodást. Először is állapodjunk meg abban,
+      hogy mi legyen az eredmény akkor, ha valamit 0-val szorzunk meg. Ezt ugye a fenti értelmezés alapján egy 0
+      tagú összegként foghatjuk fel. Természetes tehát, ha rögzítjük, hogy tetszőleges $a$ esetén $a \cdot 0$
+      eredménye 0 legyen. A másik megállapodásunk pedig legyen az, hogy ha egy $a$ számot egy $b$ szám
+      ***rákövetkezőjével*** szorozzuk meg, akkor az ennek megfelelő összegben éppen 1-gyel többször szerepeljen
+      $a$, mintha csak $b$-vel szoroztunk volna.
+  - type: narrative
+    content: |
+      Ennek megfelelően az alábbi definícióval vezetjük be a szorzás műveletét:
+  - type: embed
+    target:
+      type: definition
+      name: peano-szorzas
+  - type: narrative
+    content: |
+      Ez alapján kiszámítható bármely két természetes szám szorzata.
+  - type: formula
+    lead-in: |
+      Amennyiben például $\N$ elemeit a szokásos módon, 10-es számrendszerben jelöljük, akkor a $2 \cdot 3$ szorzat
+      az alábbi lépésekben fejthető ki szigorúan a fenti definíció szerint:
+    content: |
+      \begin{aligned}2 \cdot 0&=0 \\ 2 \cdot 1&=2 \cdot s(0)=(2 \cdot 0) + 2 = 0 + 2 = 2 \\ 2 \cdot 2&=2 \cdot s(1)
+      = (2 \cdot 1) + 2=2+2=4 \\ 2 \cdot 3&=2 \cdot s(2)=(2 \cdot 2) + 2=4 + 2=6 \end{aligned}
+  - type: narrative
+    content: |
+      Értelmeztünk tehát egy műveletet az $\N$ halmazon, amelyet önkényesen "szorzásnak" neveztünk, és a $\cdot$
+      műveleti jellel jelöltünk. Az összeadáshoz hasonlóan vizsgáljuk hát meg, hogy ez valóban teljesíti-e azokat a
+      jól megszokott tulajdonságokat, amelyeket általános iskolai tanulmányaink alapján elvárnánk tőle.

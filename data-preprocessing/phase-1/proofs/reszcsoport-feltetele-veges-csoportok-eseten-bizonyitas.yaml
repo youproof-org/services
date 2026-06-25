@@ -1,0 +1,41 @@
+type: proof
+name: reszcsoport-feltetele-veges-csoportok-eseten-bizonyitas
+remarks: []
+references:
+  csoportelem-rendjere-vonatkozo-osszefuggesek:
+    target:
+      type: theorem
+      name: csoportelem-rendjere-vonatkozo-osszefuggesek
+  egesz-kitevos-hatvanyozas-azonossagai:
+    target:
+      type: theorem
+      name: egesz-kitevos-hatvanyozas-azonossagai
+  reszcsoport-feltetele:
+    target:
+      type: theorem
+      name: reszcsoport-feltetele
+content:
+  - type: narrative
+    content: |
+      Ha $H$ részcsoport, akkor teljesíti a [reszcsoport-feltetele] feltételeit, így a műveleti zártságot is.
+  - type: narrative
+    content: |
+      ***Visszafelé:*** Tegyük fel, hogy $H$ olyan részhalmaz, amely zárt a csoportműveletre nézve, legyen $g$
+      tetszőleges $H$-beli elem, továbbá jelöljük $G$ egységelemét $e$-vel. Mivel $G$ véges, ezért $g$-nek nem
+      lehet végtelen sok különböző hatványa, és így az $o(g)$ rend is véges. Azt tudjuk, hogy $H$ zárt a
+      csoportműveletre nézve, azaz tartalmazza $g$ minden hatványát, így a $g^{o(g)}$ hatványt is. A
+      [csoportelem-rendjere-vonatkozo-osszefuggesek] 4. pontja alapján azonban $g^{o(g)}=e$, így tehát $H$ valóban
+      tartalmazza az egységelemet.
+  - type: narrative
+    content: |
+      Végül szintén a műveleti zártság miatt $H$ tartalmazza a $g^{o(g)-1}$ hatványt is.
+  - type: formula
+    lead-in: |
+      Ez viszont épp $g$ inverze, hiszen a [egesz-kitevos-hatvanyozas-azonossagai] 3. pontja alapján őket
+      összeszorozva épp az egységelemet kapjuk:
+    content: |
+      g\cdot g^{o(g)-1}=g^{1+o(g)-1}=g^{o(g)}=e
+  - type: narrative
+    content: |
+      A $H$ halmaz tehát zárt az inverzképzésre is. Teljesülnek tehát a [reszcsoport-feltetele] feltételei,
+      következésképp $H$ valóban részcsoport.

@@ -1,0 +1,54 @@
+type: proof
+name: csoporthomomorfizmus-egysegelem-es-inverzkepzestarto-bizonyitas
+remarks: []
+references:
+  inverz-elem-egyertelmu:
+    target:
+      type: theorem
+      name: inverz-elem-egyertelmu
+content:
+  - type: formula
+    lead-in: |
+      ***Az 1. állítás:*** Mivel egyrészt $e_G$ a $G$ csoport egységeleme, valamint $f$ tartja a csoportműveletet,
+      ezért a $G$ csoport tetszőleges $a$ elemére felírhatók az alábbiak:
+    content: |
+      \begin{aligned}f(a)&=f(a\cdot e_G)=f(a)\odot f(e_G) \\ f(a)&=f(e_G\cdot a)=f(e_G)\odot f(a)\end{aligned}
+  - type: narrative
+    content: |
+      Másrészt, mivel $e_H$ a $H$ csoport egységeleme, ezért $f(a)=f(a)\odot e_H$ és $f(a)=e_H\odot f(a)$ is igaz.
+  - type: formula
+    lead-in: |
+      Ezt az előző egyenletekkel összevetve az alábbit kapjuk:
+    content: |
+      \begin{aligned}\underbrace{f(a)\odot f(e_G)}_{=f(a)}&=f(a)\odot e_H \\ \underbrace{f(e_G)\odot
+      f(a)}_{=f(a)}&=e_H\odot f(a)\end{aligned}
+  - type: formula
+    lead-in: |
+      Ha az első egyenlet mindkét oldalát balról, vagy a második egyenlet mindkét oldalát jobbról megszorozzuk a
+      $H$ csoportban az $f(a)$ elem $H$-beli inverzével, akkor megkapjuk a tétel 1. állítását:
+    content: |
+      f(e_G)=e_H
+  - type: narrative
+    content: |
+      ***A 2. állítás:*** Legyen $a$ a $G$ csoport valamely tetszőleges eleme, amelynek $G$-beli ellentettjét
+      jelöljük $a^{-1}$-gyel.
+  - type: formula
+    lead-in: |
+      Ekkor az 1. állítás miatt:
+    content: |
+      \begin{aligned}f(a\cdot a^{-1})=f(e_G)&=e_H \\ f(a^{-1}\cdot a)=f(e_G)&=e_H\end{aligned}
+  - type: formula
+    lead-in: |
+      Másrészt viszont $f$ tartja a csoportműveletet, így igaz az alábbi is:
+    content: |
+      \begin{aligned}f(a\cdot a^{-1})&=f(a)\odot f(a^{-1}) \\ f(a^{-1}\cdot a)&=f(a^{-1})\odot f(a)\end{aligned}
+  - type: formula
+    lead-in: |
+      A két-két egyenletet egymással összevetve ezt kapjuk:
+    content: |
+      \begin{aligned}f(a)\odot f(a^{-1})&=e_H \\ f(a^{-1})\odot f(a)&=e_H\end{aligned}
+  - type: narrative
+    content: |
+      Mivel $f(a)$ és $f(a^{-1})$ szorzata mindkét sorrendben épp a $H$ csoport egységeleme, valamint az
+      inverzképzés a [inverz-elem-egyertelmu] alapján egyértelmű, ezért $f(a^{-1})$ valóban az $f(a)$ elem $H$-beli
+      inverzével egyezik meg.

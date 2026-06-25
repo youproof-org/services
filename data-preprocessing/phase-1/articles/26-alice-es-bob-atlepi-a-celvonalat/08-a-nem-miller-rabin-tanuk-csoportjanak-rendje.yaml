@@ -1,0 +1,94 @@
+type: section
+name: 08-a-nem-miller-rabin-tanuk-csoportjanak-rendje
+title: A nem Miller-Rabin-tanúk csoportjának rendje
+
+references:
+  lagrange-tetele:
+    target:
+      type: theorem
+      name: lagrange-tetele
+  miller-rabin-tanuk-szama:
+    target:
+      type: theorem
+      name: miller-rabin-tanuk-szama
+  nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten:
+    target:
+      type: theorem
+      name: nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten
+  nem-miller-rabin-tanuk-csoportja-primhatvanyok-eseten:
+    target:
+      type: theorem
+      name: nem-miller-rabin-tanuk-csoportja-primhatvanyok-eseten
+
+body:
+  - type: narrative
+    content: |
+      A 24. részben csoportelméleti eszközökkel igazoltuk, hogy a Miller-Rabin-prímtesztre nézve nem léteznek a
+      Carmichael-számokhoz hasonló univerzális álprímek, amelyek becsaphatják a tesztet. Ennek keretében
+      megmutattuk, hogy bármilyen $n\gt 1$ páratlan összetett szám esetén a modulo $n$ redukált maradékosztályoknak
+      ***legalább a fele*** Miller-Rabin-tanú (lásd a [miller-rabin-tanuk-szama]t). Most finomabb eszközökkel
+      megjavítjuk ezt a becslésünket, és megmutatjuk, hogy ez a redukált maradékosztályoknak ***legalább a
+      háromnegyedére*** igaz, azaz még sokkal jobb a helyzet, mint gondoltuk.
+  - type: narrative
+    content: |
+      A stratégiánk azt volt, hogy a Miller-Rabin-tanúk helyett a nem Miller-Rabin-tanúkat vizsgáltuk, és
+      megmutattuk, hogy ezek mind a $(\Z/n\Z)^{\times}$ multiplikatív csoport egy valódi részcsoportjának elemei.
+      Így viszont a ***Lagrange-tétel*** ([lagrange-tetele]) miatt legfeljebb feleannyian vannak, mint a redukált
+      maradékosztályok, a többi redukált maradékosztály tehát Miller-Rabin-tanú. Külön kezeltük azt az esetet,
+      amikor $n$ valamilyen ***prímhatvány***, és amikor nem.
+  - type: narrative
+    content: |
+      ***A prímhatvány esetről*** a [nem-miller-rabin-tanuk-csoportja-primhatvanyok-eseten] 3. pontja szólt. Itt
+      igazoltuk, hogy ebben az esetben a nem Miller-Rabin-tanúk egy olyan valódi részcsoportot alkotnak, amelynek
+      rajtuk kívül nincs is más eleme. Most megadjuk ennek a bizonyos részcsoportnak a rendjét, amelyhez először
+      egy segédtételre lesz szükségünk.
+  - type: embed
+    target:
+      type: theorem
+      name: nem-miller-rabin-tanuk-csoportjara-vonatkozo-lemma-primhatvanyok-eseten
+  - type: embed
+    target:
+      type: proof
+      name: nem-miller-rabin-tanuk-csoportjara-vonatkozo-lemma-primhatvanyok-eseten-bizonyitas
+  - type: narrative
+    content: |
+      Az iménti segédtételnek a felhasználásával mostmár igazolhatjuk a nem Miller-Rabin-tanúk csoportjának
+      rendjéről szóló tételünket.
+  - type: embed
+    target:
+      type: theorem
+      name: nem-miller-rabin-tanuk-csoportjanak-rendje-primhatvanyok-eseten
+  - type: narrative
+    content: |
+      Látható, hogy a kérdéses csoport mérete nem függ a $c$ kitevő nagyságától, ezért ***prímhatvány*** esetben ez
+      lesz majd a kulcs a Miller-Rabin-tanúk számára vonatkozó becslésünk javításához.
+  - type: embed
+    target:
+      type: proof
+      name: nem-miller-rabin-tanuk-csoportjanak-rendje-primhatvanyok-eseten-bizonyitas
+  - type: embed
+    target:
+      type: remark
+      name: nem-miller-rabin-tanuk-csoportjanak-rendje-primhatvanyok-eseten-bizonyitas-megjegyzes
+  - type: narrative
+    content: |
+      ***Most nézzük azt az esetet, amikor $n$ nem prímhatvány.*** Erről az esetről a
+      [nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten] szólt. Ebben az esetben a nem Miller-Rabin-tanúk
+      ugyan nem alkotnak részcsoportot $(\Z/n\Z)^{\times}$-ben, azonban sikerült mutatnunk egy olyan valódi
+      részcsoportot, amely minden nem Miller-Rabin-tanút magában foglalt, és így ugyancsak alkalmazni tudtuk a
+      ***Lagrange-tételt*** a Miller-Rabin-tanúk számának becsléséhez. Most ezt a tételt továbbfejleszve tovább
+      szűkítjük ennek a bizonyos valódi részcsoportnak a méretét.
+  - type: embed
+    target:
+      type: theorem
+      name: nem-miller-rabin-tanuk-es-nem-fermat-tanuk-viszonya-nem-primhatvanyok-eseten
+  - type: narrative
+    content: |
+      Ez a tétel nyilván a ***nem Carmichael-számok*** esetén fogja lehetővé tenni a becslésünk javítását, hiszen
+      tovább szűkíti a nem Miller-Rabin-tanúkat tartalmazó $H_n$ részcsoport maximális méretét. Ezzel szemben a
+      Carmichael-számok esetén nem kapunk újabb szűkítési lehetőséget, hiszen a 2. pont szerint ebben az esetben
+      $F_n=(\Z/n\Z)^{\times}$. Ezért erre az esetre a következő szakaszban fogunk kitérni.
+  - type: embed
+    target:
+      type: proof
+      name: nem-miller-rabin-tanuk-es-nem-fermat-tanuk-viszonya-nem-primhatvanyok-eseten-bizonyitas

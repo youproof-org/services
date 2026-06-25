@@ -1,0 +1,69 @@
+type: remark
+name: primitiv-gyok-megjegyzes
+references:
+  ciklikus-csoportok-strukturatetele:
+    target:
+      type: theorem
+      name: ciklikus-csoportok-strukturatetele
+  csoport-rendje:
+    target:
+      type: definition
+      name: csoport-rendje
+  csoportelem-rendje:
+    target:
+      type: definition
+      name: csoportelem-rendje
+  euler-fermat-tetel:
+    target:
+      type: theorem
+      name: euler-fermat-tetel
+  euler-fuggveny:
+    target:
+      type: definition
+      name: euler-fuggveny
+content:
+  - type: narrative
+    content: |
+      A [csoport-rendje]ban bevezettük a ***csoport rendjének*** fogalmát, amely az adott csoport elemeinek a
+      számát adja meg.
+  - type: formula
+    lead-in: |
+      Ez a $(\Z/m\Z)^{\times}$ multiplikatív csoport esetén a [euler-fuggveny] alapján épp az Euler-féle
+      $\varphi$-függvény értékével egyezik meg, azaz:
+    content: |
+      |(\Z/m\Z)^{\times}|=\varphi(m)
+  - type: narrative
+    content: |
+      Ezután a [csoportelem-rendje]ban definiáltuk a ***csoportelem rendjének*** a fogalmát, amely azt mondja meg
+      egy csoportelemről, hogy hány különböző hatványa létezik az adott csoportban.
+  - type: formula
+    lead-in: |
+      Ez egy tetszőleges $[a]_m\in (\Z/m\Z)^{\times}$ redukált maradékosztály esetén tehát az a ***legkisebb***
+      $o([a]_m)$-mel jelölt ***pozitív*** egész kitevő, amelyre fennáll az alábbi kongruencia:
+    content: |
+      a^{o([a]_m)} \equiv 1\pmod m
+  - type: formula
+    lead-in: |
+      Az ***Euler-Fermat-tétel*** ([euler-fermat-tetel]) alapján azonban tudjuk, hogy az alábbi kongruencia minden
+      $[a]_m$ redukált maradékosztályra teljesül:
+    content: |
+      a^{\varphi(m)}\equiv 1\pmod m
+  - type: formula
+    lead-in: |
+      Az $[a]_m$ maradékosztály rendje tehát $\varphi(m)$-nél biztosan nem lehet nagyobb, azaz:
+    content: |
+      o([a]_m)\leq \varphi(m)
+  - type: narrative
+    content: |
+      Az iménti definícióból következik, hogy a ***modulo $m$ primitív gyökök*** pontosan azok a redukált
+      maradékosztályok lesznek, amelyeknél itt történetesen ***egyenlőség*** áll fenn. Nyilván, hiszen épp ez
+      jelenti azt, hogy az adott maradékosztály különböző hatványaiként megkapjuk a $(\Z/m\Z)^{\times}$ csoport
+      összes &ndash; azaz mind a $\varphi(m)$ darab &ndash; elemét, vagy más szavakkal az adott maradékosztály
+      ***generálja*** a teljes $(\Z/m\Z)^{\times}$ csoportot.
+  - type: formula
+    lead-in: |
+      A definícióból és a [ciklikus-csoportok-strukturatetele]ből továbbá az is következik, hogy ha modulo $m$
+      létezik primitív gyök, akkor a $(\Z/m\Z)^{\times}$ ***multiplikatív*** csoport izomorf a
+      $(\Z/\varphi(m)\Z)^+$ ***additív*** csoporttal, azaz:
+    content: |
+      (\Z/m\Z)^{\times} \simeq (\Z/\varphi(m)\Z)^+

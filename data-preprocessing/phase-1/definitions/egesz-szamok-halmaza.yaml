@@ -1,0 +1,15 @@
+type: definition
+name: egesz-szamok-halmaza
+remarks: []
+references:
+  termeszetes-szamparok-ekvivalenciarelacioja:
+    target:
+      type: definition
+      name: termeszetes-szamparok-ekvivalenciarelacioja
+content:
+  - type: narrative
+    content: |
+      Az $\N\times \N$ halmazon értelmezett [termeszetes-szamparok-ekvivalenciarelacioja] szerinti $\sim$ reláció
+      ekvivalencia-osztályainak halmazát az ***egész számok halmazának*** nevezzük, és $\Z$-vel jelöljük. Ha az
+      $(a;b)$ természetes számpár az $\N\times \N$ egy tetszőleges eleme, akkor $[(a;b)]$-vel jelöljük az $(a;b)$
+      ***természetes számpár által reprezentált egész számot***.

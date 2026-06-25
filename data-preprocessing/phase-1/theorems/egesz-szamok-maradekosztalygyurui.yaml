@@ -1,0 +1,35 @@
+type: theorem
+name: egesz-szamok-maradekosztalygyurui
+proofs:
+  - egesz-szamok-maradekosztalygyurui-bizonyitas
+remarks: []
+references:
+  egesz-szamok-maradekosztalyai:
+    target:
+      type: theorem
+      name: egesz-szamok-maradekosztalyai
+content:
+  - type: narrative
+    content: |
+      Legyen $m\geq 0$ egy tetszőleges ***nemnegatív*** egész szám, és jelöljük $\Z/m\Z$-vel azt a halmazt,
+      amelynek elemei a [egesz-szamok-maradekosztalyai]ben definiált modulo $m$ maradékosztályok. Ha $a$ valamilyen
+      egész szám, akkor jelöljük $[a]_m$-mel az $a$-t tartalmazó modulo $m$ maradékosztályt. Ilyenkor azt mondjuk,
+      hogy az $a$ egész szám ***reprezentálja*** az $[a]_m$ maradékosztályt.
+  - type: ordered-list
+    lead-in: |
+      Vezessünk be e maradékosztályok között két műveletet az alábbiak szerint:
+    items:
+      - 'Ha $[a]_m$ és $[b]_m$ két maradékosztály, akkor ezek ***összege*** legyen az $[a]_m\oplus [b]_m=[a+b]_m$
+        maradékosztály.'
+      - 'Ha $[a]_m$ és $[b]_m$ két maradékosztály, akkor ezek ***szorzata*** legyen az $[a]_m\odot [b]_m=[a\cdot
+        b]_m$ maradékosztály.'
+  - type: narrative
+    content: |
+      Ekkor a $\Z/m\Z$ halmaz ezzel a két művelettel egy ***kommutatív és egységelemes gyűrűt*** alkot, amelyet
+      ***modulo $m$ maradékosztálygyűrűnek*** nevezünk. E gyűrű nulleleme a $[0]_m$, egységeleme pedig az $[1]_m$
+      maradékosztály.
+  - type: narrative
+    content: |
+      Tekintsük továbbá azt az $f:\Z\to \Z/m\Z$ függvényt, amely minden $a$ egész számhoz az $[a]_m$
+      maradékosztályt rendeli hozzá. Ekkor $f$ egy ***gyűrűhomomorfizmus*** $\Z$ és $\Z/m\Z$ között, melynek magja
+      az $m$ egész szám többszöröseinek halmaza. Ennek a neve ***természetes gyűrűhomomorfizmus***.

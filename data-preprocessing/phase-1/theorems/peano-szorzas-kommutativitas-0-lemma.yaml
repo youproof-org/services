@@ -1,0 +1,11 @@
+type: theorem
+name: peano-szorzas-kommutativitas-0-lemma
+proofs:
+  - peano-szorzas-kommutativitas-0-lemma-bizonyitas
+remarks: []
+content:
+  - type: formula
+    lead-in: |
+      Az $\N$ halmaz tetszőleges $a$ elemére igaz az alábbi összefüggés:
+    content: |
+      0\cdot a=0

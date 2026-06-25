@@ -1,0 +1,112 @@
+type: section
+name: 05-negativ-kitevos-hatvanyok
+title: Negatív kitevős hatványok
+
+references:
+  bezout-lemma-euklideszi-gyurukben:
+    target:
+      type: theorem
+      name: bezout-lemma-euklideszi-gyurukben
+  egesz-szamok-kozotti-kongruencia-tulajdonsagai:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia-tulajdonsagai
+  hatvanyozas-azonossagai:
+    target:
+      type: theorem
+      name: hatvanyozas-azonossagai
+  redukalt-maradekosztaly-feltetele:
+    target:
+      type: theorem
+      name: redukalt-maradekosztaly-feltetele
+
+body:
+  - type: narrative
+    content: |
+      Az előző rész végén felhívtuk Alice és Bob figyelmét arra, hogy nagyon nem szerencsés, ha több &ndash; vagy
+      akár az összes &ndash; felhasználónak az RSA-kulcsgenerálás során ugyanazokat a prímszámokat, és így ugyanazt
+      a modulust választják. Ezáltal ugyanis egy potenciális támadónak a ***Bézout-lemma***
+      ([bezout-lemma-euklideszi-gyurukben]) felhasználásával lehetősége nyílik arra, hogy kizárólag publikusan
+      elérhető információkból &ndash; tehát az RSA feltörése nélkül &ndash; megfejthessen titkos üzeneteket. Ez
+      abban az esetben lehetséges, ha egy adott felhasználó ugyanazt az $x$ nyílt üzenetet (például egy körlevelet)
+      legalább 2 másik olyan felhasználónak is elküld, akik azonos modulust használnak.
+  - type: narrative
+    content: |
+      Szinte majdnem biztos ugyanis, hogy e két felhasználó $e_1$ és $e_2$ publikus kitevője egymáshoz relatív
+      prím.
+  - type: formula
+    lead-in: |
+      Azaz kitüntetett közös osztójuk $1$, ami a ***Bézout-lemma*** alapján az euklidészi algoritmus segítségével
+      hatékonyan meg tudja találni azokat az $u$ és $v$ egész számokat, amelyekre teljesül az alábbi:
+    content: |
+      u\cdot e_1 + v\cdot e_2=(e_1, e_2)=1
+  - type: formula
+    lead-in: |
+      Mármost ha e két felhasználó azonos modulust használ, akkor a nekik küldött $y_1$ és $y_2$ kódszövegekből,
+      továbbá a támadó által kiszámított $u$ és $v$ egész számokból a ***hatványozás azonosságairól*** szóló
+      [hatvanyozas-azonossagai] valamint a ***kongruencia tulajdonságairól*** szóló
+      [egesz-szamok-kozotti-kongruencia-tulajdonsagai] alapján elvileg könnyedén megkapható az $x$ nyílt üzenet:
+    content: |
+      (\underbrace{x^{e_1}}_{\equiv y_1})^u\cdot (\underbrace{x^{e_2}}_{\equiv y_2})^v = x^{\overbrace{u\cdot e_1 +
+      v\cdot e_2}^{=1}}\equiv x\pmod m
+  - type: narrative
+    content: |
+      Megemlítettük ugyanakkor, hogy mivel a kitevőben szereplő $e_1$ és $e_2$ számok mindketten pozitívak, ezért
+      $u$ és $v$ közül pontosan az egyik szükségképpen ***negatív***, és így az említett két tételt nem
+      használhattuk volna.
+  - type: narrative
+    content: |
+      Ezért ebben a szakaszban kiterjesztjük a hatványozás fogalmát csak pozitív kitevőkről ***tetszőleges egész
+      kitevőkre*** is. Ez olyan esetekben tehető meg, amikor a művelet &ndash; amelynek ugye a többszöri elvégzését
+      értjük a hatványozás alatt &ndash; rendelkezik neutrális elemmel és invertálható. Az alábbi definícióban ezt
+      teljes általánosságban fogalmazzuk meg.
+  - type: embed
+    target:
+      type: definition
+      name: egesz-kitevos-hatvany
+  - type: embed
+    target:
+      type: remark
+      name: egesz-kitevos-hatvany-megjegyzes
+  - type: narrative
+    content: |
+      Most igazoljuk, hogy a pozitív kitevős hatványozás azonosságairól szóló [hatvanyozas-azonossagai]
+      összefüggései érvényben maradnak tetszőleges egész kitevők esetén is.
+  - type: embed
+    target:
+      type: theorem
+      name: egesz-kitevos-hatvanyozas-azonossagai
+  - type: embed
+    target:
+      type: proof
+      name: egesz-kitevos-hatvanyozas-azonossagai-bizonyitas
+  - type: narrative
+    content: |
+      Így tehát a közös modulusokon és a Bézout-lemmán alapuló támadás valóban működik azokban az esetekben, amikor
+      az $x$ üzenet által reprezentált $[x]_m$ maradékosztály invertálható, azaz ő egy redukált maradékosztály.
+      Joggal merülhet fel a kérdés, hogy vajon mi a helyzet akkor, ha $[x]_m$ ***nem redukált*** maradékosztály,
+      hiszen ekkor nem értelmezhetők az ő negatív kitevős hatványai.
+  - type: narrative
+    content: |
+      Nos az a helyzet, hogy ekkor amúgyis sokkal nagyobb a baj, hiszen ha $x$-nek van $1$-től különböző közös
+      osztója az $m$ modulussal, akkor nyilván az $x^{e_1}$ és $x^{e_2}$ hatványoknak is van. Ők viszont a támadó
+      birtokába jutott $y_1$ és $y_2$ kódszövegekkel kongruensek modulo $m$, és így a
+      [redukalt-maradekosztaly-feltetele] alapján $[y_1]_m$ és $[y_2]_m$ sem lehetnek redukált maradékosztályok.
+      Márpedig ekkor a támadó az euklidészi algoritmus segítségével könnyedén megkaphatja $y_1$ (vagy $y_2$) és $m$
+      kitüntetett közös osztóját, tehát végülis $m$ egyik prímtényezőjét. Ebből könnyedén kiszámíthatja a másik
+      prímtényezőt, és ezek birtokában a titkos kulcsot. Sőt, ugyanezt a küldő fél is megteheti, hiszen ugye maga
+      az eredeti $x$ üzenet sem volt relatív prím $m$-hez.
+  - type: narrative
+    content: |
+      ***Akkor ezek szerint mégsem lenne biztonságos az RSA?*** Hiszen ez alapján ha sikerül találni egy ***nem
+      redukált*** modulo $m$ maradékosztályt, akkor lényegében az euklidészi algoritmus lefuttatásával a titkos
+      kulcshoz szükséges prímtényezők is kiszámíthatók. Nos, ez valóban így van, pusztán annyi a gond, hogy ehhez
+      találni kéne egy nem redukált maradékosztályt. Márpedig ez gyakorlatilag olyan, mintha tűt keresnénk a
+      szénakazalban &ndash; ráadásul a szóban forgó számok nagyságrendje miatt hatványozottan. Másként fogalmazva
+      egy euklidészi algoritmusnyi időt leszámítva nem könnyebb ilyen maradékosztályt találni, mintha eleve magukat
+      a prímtényezőket kezdenénk el keresgélni. Tehát nyugodtan feltételezhetjük, hogy a támadóhoz kerülő $y_1$ és
+      $y_2$ kódszövegek relatív prímek a modulushoz, ennek teljesülése ugyanis gyakorlatilag biztos.
+  - type: narrative
+    content: |
+      Most azonban térjünk vissza a csoportelmélethez, és ismerkedjünk meg egy újabb fontos fogalommal, amelyre
+      szükségünk lesz a Miller-Rabin-prímteszttel kapcsolatos bizonyításhoz.

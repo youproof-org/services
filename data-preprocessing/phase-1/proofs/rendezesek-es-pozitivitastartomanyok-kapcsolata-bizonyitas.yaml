@@ -1,0 +1,23 @@
+type: proof
+name: rendezesek-es-pozitivitastartomanyok-kapcsolata-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Ha ***tetszőleges*** $a$ és $b$ gyűrűelemekre $a\leq b$ pontosan akkor teljesül, amikor $a\lesssim b$ is,
+      akkor ez nyilván igaz lesz az $a=0$ speciális esetre is. Azaz ebben a speciális esetben igaz lesz, hogy
+      tetszőleges $b$ gyűrűelemre pontosan akkor teljesül a $0\leq b$ reláció, amikor a $0\lesssim b$ reláció is.
+      Ez viszont azt jelenti, hogy tetszőleges gyűrűelem pontosan akkor van benne a $\leq$ rendezés
+      pozitivitástartományában, amikor a $\lesssim$ rendezés pozitivitástartományában is benne van. A két
+      pozitivitástartománynak tehát pontosan ugyanazok az elemeik, ami épp azt jelenti, hogy megegyeznek.
+  - type: narrative
+    content: |
+      ***Megfordítva:*** az, hogy a két rendezés pozitivitástartománya megegyezik, úgy is megfogalmazható, hogy
+      bármely gyűrűelem pontosan akkor van benne a $P_{\leq}$ halmazban, ha benne van a $P_{\lesssim}$ halmazban
+      is. Ez nyilván igaz lesz minden olyan gyűrűelemre is, amelyet két tetszőleges $a$ és $b$ gyűrűelemből képzünk
+      a $b+(-a)$ összegzéssel &ndash; hacsak nem éppen az $a=b$ esetről van szó, ám ekkor a reflexivitás miatt
+      amúgyis mindkét reláció teljesül. Így tehát pontosan akkor fog teljesülni a $0\leq b+(-a)$ reláció, amikor
+      teljesül a $0\lesssim b+(-a)$ reláció is. Mivel mindkét reláció teljesíti a rendezési axiómákat, ezért
+      mindkettő kompatibilis az összeadás művelettel. Így e két egyenlőtlenség mindkét oldalához $a$-t adva
+      megkapjuk a tétel állítását: $a\leq b$ pontosan akkor teljesül, amikor $a\lesssim b$ is, azaz a két reláció
+      valójában &ndash; jelöléstől eltekintve &ndash; egy és ugyanaz.

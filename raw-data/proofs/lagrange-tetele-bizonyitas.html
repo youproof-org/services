@@ -1,0 +1,91 @@
+<!-- wp:paragraph -->
+<p>A bizonyításban a [yp_element slug="mellekosztalyok" type="link" /]ben definiált <strong><em>baloldali mellékosztályokat</em></strong> fogjuk használni, de értelemszerűen ugyanígy használhatnánk a jobboldali mellékosztályokat is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az említett tételben definiált [latex]\sim[/latex] reláció egy <strong><em>ekvivalenciareláció</em></strong>, melynek ekvivalencia-osztályai a [latex]H[/latex] szerinti baloldali mellékosztályok. Ezek az ekvivalenciarelációkról szóló [yp_element slug="ekvivalenciarelacio-tulajdonsagai" type="link" /] alapján [latex]G[/latex] egy <strong><em>partícióját</em></strong> alkotják. Azaz semelyik két baloldali mellékosztálynak nincs közös eleme, és uniójuk a teljes [latex]G[/latex]. Ez az elrendezés látható az alábbi ábrán:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":6698,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_24_baloldali_mellekosztalyok_particioja.jpg" alt="Baloldali mellékosztályok partíciója" class="wp-image-6698"/><figcaption>Baloldali mellékosztályok partíciója</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Tekintsük most a [latex]G[/latex] csoportnak egy tetszőleges [latex]H[/latex] szerinti baloldali mellékosztályát, és válasszunk ki belőle egy tetszőleges [latex]g[/latex] elemet, amelyet reprezentánselemként fogunk használni a továbbiakban. A kérdéses mellékosztály tehát a [latex]gH[/latex] halmaz lesz. Most egy <strong><em>kölcsönösen egyértelmű megfeleltetést</em></strong> fogunk létesíteni a [latex]gH[/latex] mellékosztály és a [latex]H[/latex] részcsoport elemei között.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="mellekosztalyok" type="link" /] illetve a hozzá tartozó megjegyzés alapján a [latex]gH[/latex] mellékosztály tetszőleges [latex]x[/latex] eleme esetén a [latex]g^{-1}x[/latex] szorzat a [latex]H[/latex] részcsoportnak egy eleme. Definiáljunk tehát egy [latex]f:gH\to H[/latex] függvényt a következőképpen:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f(x)=g^{-1}x[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt kell megmutatni, hogy [latex]f[/latex] kölcsönösen egyértelmű megfeleltetés [latex]gH[/latex] és [latex]H[/latex] között. Ez az alábbi két dolgot jelenti:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} -->
+<ol><li>Tetszőleges [latex]x\in gH[/latex] és [latex]y\in gH[/latex] esetén [latex]f(x)=f(y)[/latex] akkor és csak akkor, ha [latex]x=y[/latex]. Azaz az [latex]f[/latex] függvény [latex]H[/latex] minden elemét <strong><em>legfeljebb egy</em></strong> [latex]gH[/latex]-beli elemhez rendeli hozzá.</li><li>Tetszőleges [latex]h\in H[/latex]-hoz létezik olyan [latex]x\in gH[/latex], amelyre [latex]f(x)=h[/latex] teljesül. Azaz az [latex]f[/latex] függvény [latex]H[/latex] minden elemét <strong><em>legalább egy</em></strong> [latex]gH[/latex]-beli elemhez rendeli hozzá.</li></ol>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Nézzük az 1. állítást!</em></strong> Ha [latex]x=y[/latex], akkor nyilván teljesül az [latex]f(x)=f(y)[/latex] egyenlőség, hiszen:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f(x)=g^{-1}x=g^{-1}y=f(y)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Visszafelé: ha [latex]f(x)=f(y)[/latex], akkor az azt jelenti, hogy teljesül az alábbi egyenlőség:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]g^{-1}x=g^{-1}y[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Szorozzuk meg mindkét oldalt balról [latex]g[/latex]-vel (itt [latex]e[/latex]-vel jelöltük a [latex]G[/latex] csoport egységelemét):</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{gg^{-1}}_{=e}\cdot x=\underbrace{gg^{-1}}_{=e}\cdot y[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez viszont épp a kívánt [latex]x=y[/latex] egyenlőség.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Most nézzük a 2. állítást!</em></strong> Keresnünk kell tehát egy olyan [latex]x[/latex] elemet a [latex]gH[/latex] mellékosztályban, amelyhez az [latex]f[/latex] függvény épp a [latex]H[/latex] részcsoport [latex]h[/latex] elemét rendeli hozzá. Keressük tehát az alábbi egyenlet megoldását:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{g^{-1}x}_{=f(x)}=h[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Szorozzuk meg mindkét oldalt balról [latex]g[/latex]-vel (itt [latex]e[/latex]-vel jelöltük a [latex]G[/latex] csoport egységelemét):</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{gg^{-1}}_{=e}\cdot x=gh[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A baloldalról az egységelem elhagyható, így végülis a keresett [latex]x[/latex] előállításának képletét kapjuk: [latex]x=gh[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Összefoglalva</em></strong> tehát a fenti [latex]f[/latex] függvény mintájára kölcsönösen egyértelmű megfeleltetés létesíthető a [latex]H[/latex] részcsoport, és bármely [latex]H[/latex] szerinti baloldali mellékosztály között. Néhány mellékosztály esetére ez látható az alábbi ábrán:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":6699,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_24_bijekcio_reszcsoport_es_mellekosztalyai_kozott.jpg" alt="Részcsoport és mellékosztályai" class="wp-image-6699"/><figcaption>Részcsoport és mellékosztályai</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Ez azt jelenti, hogy bármely [latex]H[/latex] szerinti baloldali mellékosztálynak pontosan ugyanannyi eleme van, mint magának [latex]H[/latex]-nak. Ha tehát [latex]H[/latex] rendjét megszorozzuk a baloldali mellékosztályok számával, akkor épp [latex]G[/latex] rendjét kapjuk eredményül, hiszen a baloldali mellékosztályok [latex]G[/latex] egy partícióját alkotják. Más szavakkal találtunk egy olyan egész számot – a [latex]H[/latex] szerinti baloldali mellékosztályok számát –, amellyel megszorozva [latex]H[/latex] rendjét épp [latex]G[/latex] rendjét kapjuk. Az oszthatóság [yp_element slug="oszthatosag" type="link" /]ja alapján ez épp azt jelenti, hogy [latex]|H|[/latex] osztója [latex]|G|[/latex]-nek.</p>
+<!-- /wp:paragraph -->

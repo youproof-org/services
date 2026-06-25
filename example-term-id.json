@@ -1,0 +1,9 @@
+{
+  "type": "term",
+  "name": "natural-number",
+  "parent": {
+    "type": "definition",
+    "namespace": "/szamrendszerek/termeszetes-szamok",
+    "name": "peano-axiomarendszer"
+  }
+}

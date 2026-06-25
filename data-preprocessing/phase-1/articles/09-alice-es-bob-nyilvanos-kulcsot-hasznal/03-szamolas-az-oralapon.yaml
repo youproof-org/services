@@ -1,0 +1,79 @@
+type: section
+name: 03-szamolas-az-oralapon
+title: Számolás az óralapon
+
+body:
+  - type: narrative
+    content: |
+      Az általános iskolából jól ismert szokásos ***összeadás és szorzás műveletek*** a mindkét irányban végtelen
+      számegyenesen vannak értelmezve. Vizsgáljuk meg először, hogy ezen a számegyenesen hogyan adunk össze két
+      számot, például a 8-at és a 4-et. Elindulunk az egyik számtól, mondjuk a 8-tól, és a másik számnak megfelelő
+      számú, azaz jelen esetben 4 lépést teszünk jobbra a számegyenesen. Az összeadás eredménye az a szám lesz,
+      ahová megérkeztünk, ez ugye a 12. A hagyományos összeadás esetén tehát $8+4=12$.
+  - type: figure
+    src: 03-hagyomanyos-osszeadas.jpg
+    alt: Hagyományos összeadás
+    caption: Hagyományos összeadás
+  - type: narrative
+    content: |
+      Most átértelmezzük egy kicsit az összeadás műveletét. Vágjunk ki a számegyenesből egy 0-tól kezdődő 11
+      számból álló szakaszt. Az így kapott szakasz két végét képzeletben ragasszuk össze, így egy óra számlapjához
+      hasonló elrendezést kapunk. A különbség pusztán annyi, hogy itt nem 1-től 12-ig futnak a számok, hanem 0-tól
+      10-ig.
+  - type: figure
+    lead-in: |
+      Ez látható az alábbi ábrán:
+    src: 04-modularis-aritmetika.jpg
+    alt: Moduláris aritmetika
+    caption: Moduláris aritmetika
+  - type: narrative
+    content: |
+      Ezen az óralapon egy nagyon hasonló műveletet tudunk definiálni, mint amilyen a hagyományos összeadás volt.
+      Ezt a műveletet ***modulo 11 összeadásnak*** nevezzük, vagy általánosságban &ndash; egy $N$ darab számot
+      tartalmazó óralap esetén &ndash; ***modulo $N$ összeadásról*** beszélünk. Adjuk össze ismét az előző példában
+      szereplő 8 és 4 számokat, de ezúttal a számegyenes helyett ezen az óralapon végezzük a számolást. Induljunk
+      el a 8-as számtól, és tegyünk meg 4 lépést az óramutató járásával megegyező irányban. Az összeadás eredménye
+      az a szám lesz, ahová megérkeztünk, ami jelen esetben az 1.
+  - type: formula
+    lead-in: |
+      A modulo 11 összeadás esetén tehát a 8 és a 4 összege 1, amit így jelölünk:
+    content: |
+      8+4=1 \pmod{11}
+  - type: figure
+    lead-in: |
+      Az óralapon számolva ezt az összeadást az alábbi ábra szerint végezzük el:
+    src: 05-modulo-11-osszeadas.jpg
+    alt: Modulo 11 összeadás
+    caption: Modulo 11 összeadás
+  - type: narrative
+    content: |
+      Az összeadáshoz hasonlóan szorzást is értelmezhetünk ebben a furcsa óraaritmetikában. Legyen például a két
+      összeszorzandó szám a 4 és az 5. Ilyenkor a 0-ról indulunk, és annyiszor lépünk az egyik tényezőnek megfelelő
+      lépést, mint amennyi a másik tényező. A hagyományos számegyenesen jobbra kell lépkedni, így a 20-as számhoz
+      jutunk, azaz $4\cdot 5=20$. Ezzel szemben az óraaritmetikában ismét az óramutató járásával megegyező irányban
+      kell lépkedni, így nem egész két kör megtétele után a 9-es számhoz jutunk, azaz $4\cdot 5=9 \pmod{11}$.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrákon a $4\cdot 5$ szorzás eredményét láthatjuk a kétféle aritmetikában:
+    src: 06-hagyomanyos-szorzas.jpg
+    alt: Hagyományos szorzás
+    caption: Hagyományos szorzás
+  - type: figure
+    src: 07-modulo-11-szorzas.jpg
+    alt: Modulo 11 szorzás
+    caption: Modulo 11 szorzás
+  - type: narrative
+    content: |
+      Most, hogy van már szorzásunk is, nem lesz nehéz értelmezni a modulo 11 hatványozást sem. Egy $x$ szám
+      $n$-edik hatványát &ndash; hasonlóan a hagyományos hatványozáshoz &ndash; úgy kapjuk meg, hogy veszünk egy
+      olyan $n$ darab tényezőből álló szorzatot, amelyben minden tényező $x$.
+  - type: formula
+    lead-in: |
+      A különbség annyi a hagyományos hatványozáshoz képest, hogy a hagyományos szorzás helyett az imént bevezetett
+      modulo 11 szorzást alkalmazzuk:
+    content: |
+      x^n = \underbrace{x \cdot x \cdot \ldots \cdot x}_{\text{n darab}}
+  - type: narrative
+    content: |
+      Most vizsgáljuk meg, hogy mi történik az előző szakaszban bevezetett $f(n) = 2^n$ függvénnyel, ha a
+      hagyományos számegyenes helyett a modulo 11 óraaritmetikában alkalmazzuk.

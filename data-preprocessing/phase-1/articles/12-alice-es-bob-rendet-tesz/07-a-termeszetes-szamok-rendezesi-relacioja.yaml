@@ -1,0 +1,143 @@
+type: section
+name: 07-a-termeszetes-szamok-rendezesi-relacioja
+title: A természetes számok rendezési relációja
+
+references:
+  antiszimmetrikus-relacio:
+    target:
+      type: definition
+      name: antiszimmetrikus-relacio
+  peano-axiomarendszer:
+    target:
+      type: definition
+      name: peano-axiomarendszer
+  peano-nullosszeg-tagjai:
+    target:
+      type: theorem
+      name: peano-nullosszeg-tagjai
+  peano-osszeadas:
+    target:
+      type: definition
+      name: peano-osszeadas
+  peano-osszeg-egyszerusites:
+    target:
+      type: theorem
+      name: peano-osszeg-egyszerusites
+  rendezett-halmaz:
+    target:
+      type: definition
+      name: rendezett-halmaz
+  termeszetes-szamok-rendezese:
+    target:
+      type: definition
+      name: termeszetes-szamok-rendezese
+
+body:
+  - type: narrative
+    content: |
+      A természetes számok $\N$-nel jelölt halmazán definiáljuk az alábbi relációt:
+  - type: embed
+    target:
+      type: definition
+      name: termeszetes-szamok-rendezese
+  - type: narrative
+    content: |
+      Látható, hogy ennek az új fogalomnak a bevezetéséhez közvetett módon kizárólag az előző részben ismertetett
+      ***Peano-axiómákat*** ([peano-axiomarendszer]), közvetlenül pedig az az alapján értelmezett ***összeadás nevű
+      műveletet*** ([peano-osszeadas]) használtuk. Ezt szem előtt tartva tehát egyelőre semmit nem mondhatunk még
+      erről a most bevezetett relációról, kiváltképpen azt nem, hogy ez ***valóban egy rendezési reláció lenne***.
+      Ezt ugyanis először ***bizonyítani kell***.
+  - type: narrative
+    content: |
+      Nézzük először a $\leq$ reláció ***reflexivitását***:
+  - type: embed
+    target:
+      type: theorem
+      name: termeszetes-szamok-rendezesi-relacioja-reflexiv
+  - type: embed
+    target:
+      type: proof
+      name: termeszetes-szamok-rendezesi-relacioja-reflexiv-bizonyitas
+  - type: narrative
+    content: |
+      A ***tranzitivitás*** hasonlóan egyszerűen adódik:
+  - type: embed
+    target:
+      type: theorem
+      name: termeszetes-szamok-rendezesi-relacioja-tranzitiv
+  - type: embed
+    target:
+      type: proof
+      name: termeszetes-szamok-rendezesi-relacioja-tranzitiv-bizonyitas
+  - type: narrative
+    content: |
+      Az ***antiszimmetria*** ([antiszimmetrikus-relacio]) igazolásához először két segédtételre lesz szükségünk.
+      Ezek közül az első egy olyan állítás, amely a későbbiekben is hasznos lesz:
+  - type: embed
+    target:
+      type: theorem
+      name: peano-osszeg-egyszerusites
+  - type: narrative
+    content: |
+      Ne feledjük, hogy csak a már rendelkezésünkre álló fogalmakra és tételekre, valamint az axiómákra
+      hivatkozhatunk. Tekintve, hogy ***"kivonás" egyelőre nem létezik***, más úton kell bizonyítanunk a fenti
+      állítást.
+  - type: embed
+    target:
+      type: proof
+      name: peano-osszeg-egyszerusites-bizonyitas
+  - type: narrative
+    content: |
+      A második segédtétel &ndash; amelyre szükségünk lesz az antiszimmetria igazolásához &ndash; azt mondja ki,
+      hogy mi az az egyetlen eset, amikor egy összeg eredménye 0 lehet.
+  - type: embed
+    target:
+      type: theorem
+      name: peano-nullosszeg-tagjai
+  - type: narrative
+    content: |
+      Ezt egy új bizonyítási módszerrel igazoljuk, amelyet ***indirekt bizonyításnak*** nevezünk. Ilyenkor nem
+      magát az állítást igazoljuk, hanem megmutatjuk, hogy miért nem lehet hamis.
+  - type: embed
+    target:
+      type: proof
+      name: peano-nullosszeg-tagjai-bizonyitas
+  - type: narrative
+    content: |
+      A [peano-osszeg-egyszerusites] és a [peano-nullosszeg-tagjai] felhasználásával mostmár igazolhatjuk a $\leq$
+      reláció ***antiszimmetriáját***.
+  - type: embed
+    target:
+      type: theorem
+      name: termeszetes-szamok-rendezesi-relacioja-antiszimmetrikus
+  - type: embed
+    target:
+      type: proof
+      name: termeszetes-szamok-rendezesi-relacioja-antiszimmetrikus-bizonyitas
+  - type: narrative
+    content: |
+      Már csak a ***trichotómia*** igazolása van hátra. Ez az alábbi segédállításból fog következni:
+  - type: embed
+    target:
+      type: theorem
+      name: termeszetes-szamok-rendezesi-relacioja-lemma
+  - type: embed
+    target:
+      type: proof
+      name: termeszetes-szamok-rendezesi-relacioja-lemma-bizonyitas
+  - type: narrative
+    content: |
+      Ebből már következik a $\leq$ reláció ***trichotómiája***, ezért most ezt mondjuk ki:
+  - type: embed
+    target:
+      type: theorem
+      name: termeszetes-szamok-rendezesi-relacioja-trichotom
+  - type: embed
+    target:
+      type: proof
+      name: termeszetes-szamok-rendezesi-relacioja-trichotom-bizonyitas
+  - type: narrative
+    content: |
+      A $\leq$ reláció tehát teljesíti mindazon követelményeket, amelyeket a [rendezett-halmaz] megkövetel tőle.
+      Ezért mostmár nyugodtan kijelenthetjük, hogy a [termeszetes-szamok-rendezese]ban jogosan neveztük ezt a
+      relációt ***rendezésnek***, és jogosan nevezhetjük az $\N$ halmazt ***rendezett halmaznak***.

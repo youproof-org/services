@@ -1,0 +1,31 @@
+type: definition
+name: halmazok-direkt-szorzata
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyenek $A$ és $B$ tetszőleges halmazok. Ekkor az $A$ és $B$ halmazok ***direkt szorzatának*** (vagy
+      ***Descartes-szorzatának***) nevezzük azt a halmazt, amely az ***összes*** olyan ***rendezett párt***
+      tartalmazza, amelynek első komponense valamilyen $A$-beli, második komponense pedig valamilyen $B$-beli elem.
+      Ezt a halmazt $A\times B$-vel jelöljük (ejtsd: "$A$ kereszt $B$"). Speciálisan ha a két halmaz azonos, akkor
+      $A\times A$ helyett az $A^2$ jelölést is használhatjuk. Ha $a\in A$ és $b\in B$, akkor az $a$-ból és $b$-ből
+      álló rendezett párt $(a;b)$-vel jelöljük.
+  - type: narrative
+    content: |
+      Általánosabban legyenek $A_1$, $A_2$, ..., $A_n$ tetszőleges halmazok. Ekkor ezen halmazok ***direkt
+      szorzatának*** (vagy ***Descartes-szorzatának***) nevezzük azt a halmazt, amely az ***összes*** olyan
+      ***rendezett $n$-est*** tartalmazza, amelynek első komponense valamilyen $A_1$-beli, második komponense
+      valamilyen $A_2$-beli, ..., $n$-edik komponense pedig valamilyen $A_n$-beli elem.
+  - type: formula
+    lead-in: |
+      Ezt a halmazt így jelöljük:
+    content: |
+      A_1\times A_2\times \ldots \times A_n
+  - type: narrative
+    content: |
+      Tegyük fel, hogy $a_1\in A_1$, $a_2\in A_2$, ..., $a_n\in A_n$.
+  - type: formula
+    lead-in: |
+      Ekkor az ezekből az elemekből álló rendezett $n$-est így jelöljük:
+    content: |
+      (a_1;a_2;\ldots;a_n)

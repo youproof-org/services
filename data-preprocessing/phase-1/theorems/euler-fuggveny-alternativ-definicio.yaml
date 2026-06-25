@@ -1,0 +1,10 @@
+type: theorem
+name: euler-fuggveny-alternativ-definicio
+proofs:
+  - euler-fuggveny-alternativ-definicio-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $m\gt 0$ tetszőleges ***pozitív*** egész szám. Ekkor az Euler-féle $\varphi$-függvény a $0$, $1$, $2$,
+      ..., $m-1$ egész számok közül az ***$m$-hez relatív prímek számát*** adja meg.

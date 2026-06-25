@@ -1,0 +1,137 @@
+type: proof
+name: linearis-kongruenciak-megoldasai-es-megoldasszama-bizonyitas
+remarks: []
+references:
+  egesz-szamok-kozotti-kongruencia-egyszerusitese:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia-egyszerusitese
+  egesz-szamok-kozotti-kongruencia-tulajdonsagai:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia-tulajdonsagai
+  egesz-szamok-maradekosztalyai:
+    target:
+      type: theorem
+      name: egesz-szamok-maradekosztalyai
+  kituntetett-kozos-oszto-tulajdonsagai:
+    target:
+      type: theorem
+      name: kituntetett-kozos-oszto-tulajdonsagai
+content:
+  - type: narrative
+    content: |
+      Elegendő a 2. állítást igazolni, abból ugyanis automatikusan következik a megoldásszámra vonatkozó 1.
+      állítás.
+  - type: formula
+    lead-in: |
+      Azt mondtuk, hogy az $s$ egész szám által reprezentált $[s]_m$ maradékosztály megoldása a kongruenciának,
+      azaz:
+    content: |
+      as\equiv b\pmod m
+  - type: narrative
+    content: |
+      Válasszunk most egy tetszőleges $t$ egész számot. Az általa reprezentált $[t]_m$ maradékosztály akkor és csak
+      akkor lesz megoldása a kongruenciának, ha teljesül $at\equiv b\pmod m$.
+  - type: formula
+    lead-in: |
+      Mivel a kongruencia szimmetrikus és tranzitív ([egesz-szamok-kozotti-kongruencia-tulajdonsagai] 2. és 3.
+      pont), ezért ez pontosan az alábbit jelenti:
+    content: |
+      as\equiv at\pmod m
+  - type: narrative
+    content: |
+      A kongruenciák egyszerűsítéséről szóló [egesz-szamok-kozotti-kongruencia-egyszerusitese] alapján mindkét
+      oldalt egyszerűsíthetjük $a$-val, ám eközben a modulust is "el kell osztanunk" az $(a,m)$ kitüntetett közös
+      osztóval, azaz jelen esetben $d$-vel.
+  - type: formula
+    lead-in: |
+      A fenti kongruencia tehát pontosan az alábbi esetben teljesül:
+    content: |
+      s\equiv t\pmod{\frac{m}{d}}
+  - type: formula
+    lead-in: |
+      Vagyis a $t$ által reprezentált $[t]_m$ maradékosztály pontosan akkor lesz megoldás, ha $t$ ugyanabba a
+      modulo $\frac{m}{d}$ maradékosztályba esik, mint $s$, azaz:
+    content: |
+      [s]_{\frac{m}{d}}=[t]_{\frac{m}{d}}
+  - type: formula
+    lead-in: |
+      Ez a [egesz-szamok-maradekosztalyai] alapján épp azt jelenti, hogy $t$ felírható az alábbi alakban valamilyen
+      alkalmasan választott $k$ egész számmal:
+    content: |
+      t=s+k\cdot \frac{m}{d}
+  - type: narrative
+    content: |
+      Azt kaptuk tehát, hogy amennyiben ismerünk egy $[s]_m$ megoldást, akkor az összes többi megoldást
+      előállíthatjuk $[s+k\cdot \frac{m}{d}]_m$ alakban. Így már csak azt kell igazolni, hogy $k$-val végigfutva az
+      összes egész számon épp a tétel 2. állításában szereplő $d$ darab modulo $m$ maradékosztályt kapjuk.
+  - type: formula
+    lead-in: |
+      Nézzük meg ezért, hogy két különböző $k_1$ és $k_2$ esetén az $s+k_1\frac{m}{d}$ és $s+k_2\frac{m}{d}$
+      kifejezések mikor fogják ugyanazt a maradékosztályt reprezentálni, azaz mikor fog teljesülni az alábbi:
+    content: |
+      [s+k_1\frac{m}{d}]_m=[s+k_2\frac{m}{d}]_m
+  - type: formula
+    lead-in: |
+      Ez ugye pontosan akkor teljesül, ha fennáll az alábbi kongruencia:
+    content: |
+      s+k_1\frac{m}{d}\equiv s+k_2\frac{m}{d} \pmod m
+  - type: formula
+    lead-in: |
+      A [egesz-szamok-kozotti-kongruencia-tulajdonsagai] 6. pontja miatt mindkét oldalból kivonhatunk $s$-t:
+    content: |
+      k_1\frac{m}{d}\equiv k_2\frac{m}{d} \pmod m
+  - type: narrative
+    content: |
+      A [egesz-szamok-kozotti-kongruencia-egyszerusitese] alapján mindkét oldalt egyszerűsíthetjük
+      $\frac{m}{d}$-vel.
+  - type: formula
+    lead-in: |
+      ***Vigyáznunk kell azonban, mivel ilyenkor ugye a modulust is egyszerűsíteni kell $\frac{m}{d}$ és $m$
+      kitüntetett közös osztójával!*** Azaz a fenti kongruencia pontosan akkor teljesül, amikor az alábbi
+      kongruencia is:
+    content: |
+      k_1\equiv k_2 \pmod{\frac{m}{(\frac{m}{d}, m)}}
+  - type: narrative
+    content: |
+      Most vizsgáljuk meg, hogy tulajdonképpen mivel egyezik meg az itt szereplő modulus. Ne feledjük, hogy itt nem
+      törtekről van szó, hiszen az egész számok $\Z$ gyűrűjében vagyunk, ahol nem értelmezhető az osztás művelete.
+      Ehelyett például az $\frac{m}{d}$ csak egy ***jelölés***, amely azt az ***egész számot*** jelöli, amellyel a
+      $d$ ***egész számot*** megszorozva az $m$ ***egész számot*** kapjuk eredményül.
+  - type: formula
+    lead-in: |
+      Azaz:
+    content: |
+      \frac{m}{d} \cdot d = m
+  - type: narrative
+    content: |
+      Feltéve persze, ha ilyen létezik, aminek ugye a feltétele az $d|m$ oszthatóság. Ez jelen esetben nyilván
+      fennáll, mivel azt mondtuk, hogy $d$ az $a$ és $m$ kitüntetett közös osztója. Ám ekkor teljesül az
+      $\frac{m}{d}|m$ oszthatóság is, így az $(\frac{m}{d},m)$ kitüntetett közös osztó a
+      [kituntetett-kozos-oszto-tulajdonsagai] 4. pontja miatt $\frac{m}{d}$-vel egyezik meg.
+  - type: formula
+    lead-in: |
+      A fenti kongruenciában tehát a modulus így hozható egyszerűbb formára:
+    content: |
+      \frac{m}{(\frac{m}{d}, m)}=\frac{m}{(\frac{m}{d})}
+  - type: narrative
+    content: |
+      Ez tehát azt az egész számot jelöli, amellyel az $\frac{m}{d}$ egész számot megszorozva az $m$ egész számot
+      kapjuk eredményül. A fentebbi $\frac{m}{d} \cdot d = m$ összefüggés alapján ez épp $d$-vel egyezik meg.
+  - type: formula
+    lead-in: |
+      A fenti kongruencia tehát tulajdonképpen így néz ki:
+    content: |
+      k_1\equiv k_2\pmod d
+  - type: narrative
+    content: |
+      Azt kaptuk tehát, hogy az $[s+k_1\frac{m}{d}]_m$ és $[s+k_2\frac{m}{d}]_m$ modulo $m$ maradékosztályok akkor
+      és csak akkor egyeznek meg, amikor a $[k_1]_d$ és $[k_2]_d$ modulo $d$ maradékosztályok megegyeznek.
+  - type: narrative
+    content: |
+      Ez viszont pontosan azt jelenti, hogy épp annyi megoldása van az $ax\equiv b\pmod m$ lineáris kongurenciának,
+      ahány modulo $d$ maradékosztály létezik, ezek száma viszont a [egesz-szamok-maradekosztalyai] alapján $d$.
+      Így tehát ha $k$ végigfut a $0$, $1$, $2$, ..., $d-1$ egész számokon, akkor épp a 2. állításban szereplő
+      $[s]_m$, $[s+\frac{m}{d}]_m$, $[s+2\frac{m}{d}]_m$, ..., $[s+(d-1)\frac{m}{d}]_m$ maradékosztályokat kapjuk
+      megoldásként.

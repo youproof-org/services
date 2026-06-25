@@ -1,0 +1,22 @@
+type: definition
+name: szamelmelet-alaptetele
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ egy tetszőleges ***integritástartomány***. Azt mondjuk, hogy ***$R$-ben érvényes a számelmélet
+      alaptétele***, ha $R$ minden nemnulla és nem egység eleme ***egyértelműen felbontható*** $R$ felbonthatatlan
+      elemeinek szorzatára. Egy felbonthatatlan elem "felbontása" alatt önmagát, mint "egytényezős szorzatot"
+      értjük.
+  - type: narrative
+    content: |
+      A felbontás ***egyértelműsége*** a következőt jelenti.
+  - type: formula
+    lead-in: |
+      Tekintsük valamely $r$ elem két tetszőleges felbontását:
+    content: |
+      \begin{aligned}r&=p_1\cdot p_2\cdot \ldots \cdot p_n = \\ &= q_1\cdot q_2\cdot \ldots \cdot q_k\end{aligned}
+  - type: narrative
+    content: |
+      Ekkor a tényezők száma ugyanannyi (azaz $n=k$), és a két felbontás tényezői egymással párba állíthatók úgy,
+      hogy a párok tagjai egymásnak asszociáltjai legyenek.

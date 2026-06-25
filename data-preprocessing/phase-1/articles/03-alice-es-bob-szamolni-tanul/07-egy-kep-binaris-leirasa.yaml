@@ -1,0 +1,108 @@
+type: section
+name: 07-egy-kep-binaris-leirasa
+title: Egy kép bináris leírása
+
+body:
+  - type: narrative
+    content: |
+      Most egy példán keresztül bemutatjuk, hogyan kell a fentieket elképzelni a gyakorlatban. Az előző részben
+      megpróbáltunk megnyitni egy MP3 file-t a jól ismert Notepad alkalmazással, és azt tapasztaltuk, hogy egy
+      látszólag értelmetlen adathalmaz van benne. Most egy hasonló példát fogunk megnézni, azonban vizsgálatunk
+      tárgya az egyszerűség kedvéért MP3 helyett egy BMP típusú kép lesz.
+  - type: narrative
+    content: |
+      Ehhez elkészítettem egy tesztképet. Ez mindössze 2x2 képpontból áll, és innen lehet letölteni (jobb klikk,
+      mentés másként). Ha a letöltött képet megnyitjuk a Paint nevű egyszerű képszerkesztőben, és kellőképpen
+      ránagyítunk a képre, akkor láthatjuk, hogy a bal-felső és a jobb-alsó képpont fekete, míg a bal-alsó és a
+      jobb-felső képpont fehér színű.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán ez látható kinagyítva:
+    src: 06-teszkep-nagyitva.png
+    alt: 2x2-es tesztkép nagyítva
+    caption: 2x2-es tesztkép nagyítva
+  - type: narrative
+    content: |
+      Most a fehér képpontokat szürkékre fogjuk cserélni, ám ezt nem a képszerkesztővel, hanem a file-ban szereplő
+      megfelelő byte-ok átírásával fogjuk megtenni. A képszerkesztőt tehát egy időre bezárhatjuk. Ha megnyitnánk a
+      képfile-t Notepad-ban, az MP3-hoz hasonlóan megint egy látszólag értelmetlen ASCII karaktersorozatot látnánk.
+      Ehelyett nyissuk meg a file-t egy olyan programmal, amely a file-ban lévő byte-okat jeleníti meg
+      hexadecimális alakban. Sokféle ilyen szerkesztőt találhatunk a neten, ilyen például a "HxD &ndash; Hexeditor"
+      nevű program. Ezzel láthatóvá válik az a file-ban lévő 70 darab byte, amely ezt az egyszerű 2x2 pixeles képet
+      leírja.
+  - type: figure
+    lead-in: |
+      A byte-ok az alábbi ábrán látható sorrendben sorfolytonosan követik egymást (balról jobbra olvasva):
+    src: 07-teszkep-hexaban.png
+    alt: Tesztkép byte-jai
+    caption: Tesztkép byte-jai
+  - type: narrative
+    content: |
+      Azt, hogy ebből a 70 byte-ból melyik mit jelent, a BMP szabvány írja le. A részletekbe most nem megyünk bele,
+      a számunkra ebből most annyi fontos, hogy a file alapvetően 2 részből áll. Az első rész az úgynevezett
+      ***fejléc***, amely információkat tartalmaz a képpel kapcsolatban, míg a második rész tartalmazza a konkrét
+      ***képpont adatokat***. Ez utóbbi a fenti ábrán a feketével bekeretezett rész.
+  - type: narrative
+    content: |
+      Egy BMP file fejléce minden esetben a **B** és **M** karakterek ASCII-kódjával, azaz a **0x42** és **0x4D**
+      értékű byte-okkal kezdődik (ez az ábrán is látszik). Ez egy előzetes ellenőrzést tesz lehetővé az alkalmazás
+      számára, hogy valóban egy BMP formátumú képpel van-e dolga. A fejléc továbbá &ndash; többek között &ndash;
+      tartalmazza, hogy hány képpont a kép szélessége és magassága, hogy milyen módon van leírva egy-egy képpont
+      színe a képpont adatoknál, illetve hogy hanyadik byte-tól kezdődnek konkrétan ezek a képpont adatok. Ez
+      utóbbi információt a fejlécben a 10. sorszámú pozíciótól (a számozás 0-tól indul) kezdődő 4 byte tartalmazza
+      (**0x36**, **0x00**, **0x00**, **0x00**). Ezeket a szabvány szerint 32-bites little endian byte-sorrendű
+      előjel nélküli egészként kell értelmezni. Ennek értéke tehát 54. Valóban, a feketével bekeretezett pixel
+      adatok kezdete épp az 54. sorszámú byte. A fejléc tartalmát a továbbiakban nem részletezzük, ehelyett
+      ugorjunk a bekeretezett részhez, azaz a képpont adatokhoz.
+  - type: narrative
+    content: |
+      Az egyes képpontok ebben a BMP file-ban 3-3 byte-tal vannak leírva, amelyek rendre az adott képpont színének
+      kék, zöld és vörös színösszetevőit adják meg. A színösszetevők intenzitását a megfelelő byte értéke határozza
+      meg: a **0x00** érték az adott színösszetevő teljes hiányát, míg a **0xFF** érték a maximális intenzitását
+      jelenti. Ezeket ***RGB-színkódoknak*** nevezik, utalva a "red", "green" és "blue" szavak kezdőbetűire.
+  - type: narrative
+    content: |
+      A kép soronként lentről felfelé tárolódik, vagyis a képpont adatok a legalsó sorral kezdődnek. Az első 3 byte
+      (**0xFF**, **0xFF**, **0xFF**) tárolja tehát a bal alsó pixel RGB-színkódját, amely a fehér színnek felel
+      meg. Ha megnézzük a képet, a bal alsó pixel valóban fehér. A következő 3 byte (**0x00**, **0x00**, **0x00**)
+      a következő, azaz a jobb alsó pixel színét tárolja, amely valóban a fekete. Ezzel vége az alsó sornak,
+      azonban van itt még 2 darab **0x00** értékű byte, a szabvány szerint ugyanis minden sort szükség szerint 0
+      bitekkel kell feltölteni oly módon, hogy az egyes sorokhoz 4-gyel osztható számú byte tartozzék. Ez
+      programozástechnikailag megkönnyíti az ilyen file-ok kezelését, ennek részleteire most nem térünk ki.
+  - type: narrative
+    content: |
+      A következő 3 byte (**0x00**, **0x00**, **0x00**) már a következő sor első pixelét, azaz a bal felső fekete
+      pixelt tárolja. Ezután pedig az utolsó, jobb felső fehér pixel RGB-kódja következik (**0xFF**, **0xFF**,
+      **0xFF**). Végül ismét 2 darab **0x00** értékű kitöltő byte következik az előző sorhoz hasonlóan. Ezzel vége
+      a pixel adatoknak, és egyben a BMP file-nak is.
+  - type: narrative
+    content: |
+      Most módosítani fogjuk a bal alsó és a jobb felső pixel színét leíró byte-okat. Azt szeretnénk, hogy ezek
+      szürkék legyenek. A szürke színben a fehérhez hasonlóan mindhárom színösszetevő szerepel, csak éppen nem a
+      maximális (**0xFF**) intenzitással. Egy közepes intenzitású szürke színt kapunk, ha például mindhárom
+      összetevőt **0x80**-ra állítjuk.
+  - type: figure
+    lead-in: |
+      Az alábbi ábra mutatja a módosított byte-okat feketével bekeretezve:
+    src: 08-teszkep-hexa-modositva.png
+    alt: Tesztkép byte-jai módosítva
+    caption: Tesztkép byte-jai módosítva
+  - type: narrative
+    content: |
+      Miután elmentettük a file-t, bezárhatjuk a Hexeditor-t. Ha ezek után Paint-ben megnyitjuk a módosított
+      file-unkat és kellőképpen ránagyítunk a képre, akkor láthatjuk, hogy a bal-alsó és a jobb-felső képpont színe
+      a várakozásoknak megfelelően fehérről szürkére módosult.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán ez látható kinagyítva:
+    src: 09-modositott-teszkep.png
+    alt: Módosított tesztkép
+    caption: Módosított tesztkép
+  - type: narrative
+    content: |
+      Láthatjuk tehát, hogy egy kép egy informatikai eszköz memóriájában vagy egy file-ban semmi más, mint egy
+      bináris számsorozat. A képszerkesztő szoftverek abban segítenek nekünk, hogy értelmezik ezt a számsorozatot,
+      vizuálisan megjelenítik a számunkra az általuk kódolt képet, és lehetővé teszik, hogy szintén vizuális
+      eszközökkel ezen a képen módosítsunk. Egy Adobe Photoshop persze nagyon bonyolult képfeldolgozó
+      algoritmusokat is megvalósít, de valójában a legalacsonyabb szinten nem történik más, mint bináris adatok
+      manipulálása. Pontosan úgy, ahogy mi most azt manuálisan megtettük, képszerkesztő program nélkül.

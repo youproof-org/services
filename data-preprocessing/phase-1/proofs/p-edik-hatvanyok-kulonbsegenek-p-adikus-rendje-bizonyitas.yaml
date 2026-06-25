@@ -1,0 +1,175 @@
+type: proof
+name: p-edik-hatvanyok-kulonbsegenek-p-adikus-rendje-bizonyitas
+remarks: []
+references:
+  egesz-szam-p-adikus-rendje:
+    target:
+      type: definition
+      name: egesz-szam-p-adikus-rendje
+  gyuru-test:
+    target:
+      type: definition
+      name: gyuru-test
+  hatvanyozas-azonossagai:
+    target:
+      type: theorem
+      name: hatvanyozas-azonossagai
+content:
+  - type: narrative
+    content: |
+      Mivel $x\eq y$, ezért $x-y\eq 0$, és így $v_p(x-y)$ a [egesz-szam-p-adikus-rendje] alapján egy véges
+      nemnegatív szám, amiről a tétel szövege alapján tudjuk, hogy ***nemnulla***, tehát $v_p(x-y)\geq 1$.
+  - type: formula
+    lead-in: |
+      Jelöljük ezt a számot $k$-val, azaz vezessük be az alábbi jelölést:
+    content: |
+      k=v_p(x-y)
+  - type: narrative
+    content: |
+      Ez a $p$-adikus rend [egesz-szam-p-adikus-rendje]ja szerint azt jelenti, hogy az $x-y$ különbség prímtényezős
+      felbontásában a $p$ prímtényező a $k$-adik hatványon szerepel.
+  - type: formula
+    lead-in: |
+      Létezik tehát olyan $m$ egész szám, amely tovább már ***nem osztható $p$-vel***, és teljesül rá az alábbi:
+    content: |
+      x-y=p^km
+  - type: formula
+    lead-in: |
+      Az $x$ tehát kifejezhető a következőképpen:
+    content: |
+      x=p^km+y
+  - type: formula
+    lead-in: |
+      Most vizsgáljuk meg, hogyan néz ki $x=p^km+y$-nak a $p$-edik hatványa:
+    content: |
+      x^p=(p^km+y)^p=?
+  - type: narrative
+    content: |
+      Ez ugye egy $p$ darab tényezőből álló kifejezés, amelyben minden tényező egy-egy kéttagú összeg, nevezetesen
+      ez: $(p^km+y)$. Az áttekinthetőség kedvéért a zárójelekben szereplő első tagra átmenetileg vezessük be a
+      $z=p^km$ jelölést.
+  - type: formula
+    lead-in: |
+      Ekkor tulajdonképpen az alábbi szorzást kéne tehát elvégezni:
+    content: |
+      \underbrace{(z+y)\cdot (z+y)\cdot \ldots \cdot (z+y)}_{\text{p darab}}
+  - type: narrative
+    content: |
+      Vizsgáljuk meg, hogy milyen alakot ölt az eredmény, ha felbontjuk ezt a $p$ darab zárójelet. A
+      [gyuru-test]ban szereplő disztributivitási szabályok alapján ezt úgy kell elvégezni, hogy minden zárójelből
+      az összes lehetséges kombinációban kiválasztunk pontosan egy tagot, ezeket összeszorozzuk egymással, és az
+      így kapott szorzatokat összeadjuk.
+  - type: narrative
+    content: |
+      Megtehetjük például, hogy mind a $p$ darab zárójelből a $z$ tagot választjuk, és $0$ darab zárójelből
+      választjuk az $y$ tagot. Ez a választás a $z^py^0=z^p$ szorzatot fogja eredményezni, és nyilván csak
+      egyféleképpen tudjuk megtenni.
+  - type: formula
+    lead-in: |
+      A végeredmény tehát így fog kezdődni:
+    content: |
+      (z+y)^p = z^p + \ldots
+  - type: narrative
+    content: |
+      Egy másik választás lehet, amikor $1$ darab zárójelből választjuk ki az $y$ tagot, és a maradék $p-1$ darab
+      zárójelből továbbra is a $z$ tagot választjuk. Ezek a választások mind a $z^{p-1}y^1$ szorzatot fogják
+      eredményezni. Ilyen szorzatból viszont már $p$ darab van, hiszen azt az egyetlen $y$ tagot választhatjuk az
+      1., a 2., a 3., ..., és végül a $p$-edik zárójelből.
+  - type: formula
+    lead-in: |
+      A végeredmény tehát így folytatódik:
+    content: |
+      \begin{aligned}(z+y)^p &= z^p \\ &+ p\cdot z^{p-1}y \\ &+ \ldots\end{aligned}
+  - type: narrative
+    content: |
+      A következő kombinációk azok lesznek, amelyek esetén $2$ darab zárójel esetén választjuk ki az $y$ tagot.
+      Ekkor a fennmaradó $p-2$ zárójelből a $z$ tagot kell választanunk, tehát ezek a kombinációk mind a
+      $z^{p-2}y^2$ szorzatot fogják eredményezni. Ezért a $z^{p-2}y^2$ szorzatból épp annyi fog szerepelni a
+      végeredményben, ahányféleképpen $p$ darab zárójelből ki tudjuk választani azt a $2$ darabot, amelyek az $y$
+      tényezőt adják az adott szorzathoz. Anélkül, hogy bonyolultabb kombinatorikai fejtegetésbe bonyolódnánk,
+      jelöljük ezt a számot $A_2$-vel.
+  - type: formula
+    lead-in: |
+      A végeredmény tehát így folytatódik:
+    content: |
+      \begin{aligned}(z+y)^p &= z^p \\ &+ p\cdot z^{p-1}y \\ &+ A_2\cdot z^{p-2}y^2 \\ &+ \ldots\end{aligned}
+  - type: narrative
+    content: |
+      Általánosságban ha $0$-tól kezdve sorszámozzuk a végeredmény tagjait, akkor az $i$-edik tag azokat a
+      kombinációkat fogja tartalmazni, amelyek esetén $i$ darab zárójel esetén választjuk ki az $y$ tagot. Ekkor a
+      fennmaradó $p-i$ zárójelből kell a $z$ tagot választanunk, tehát ezek a kombinációk mind a $z^{p-i}y^i$
+      szorzatot fogják eredményezni. Ilyenből épp annyi fog szerepelni a végeredményben, ahányféleképpen $p$ darab
+      zárójelből ki tudjuk választani azt az $i$ darabot, amelyek az $y$ tényezőt adják az adott szorzathoz. Mivel
+      ismét nem szeretnénk kombinatorikával szórakozni, ezért jelöljük ezt a számot nagyvonalúan $A_i$-vel.
+  - type: formula
+    lead-in: |
+      Ezért a végeredmény $i$-edik tagja így néz ki:
+    content: |
+      A_i\cdot z^{p-i}y^i
+  - type: formula
+    lead-in: |
+      Mindent összevetve tehát $(z+y)^p$ teljes kifejtése így néz ki:
+    content: |
+      \begin{aligned}(z+y)^p &= A_0\cdot z^p \\ &+ A_1\cdot z^{p-1}y \\ &+ A_2\cdot z^{p-2}y^2 \\ &\ \vdots \\ &+
+      A_i\cdot z^{p-i}y^i \\ &\ \vdots \\ &+A_{p-1}\cdot zy^{p-1} \\ &+ A_p\cdot y^p\end{aligned}
+  - type: narrative
+    content: |
+      Ahogyan megállapítottuk már, itt $A_0=1$ és $A_1=p$. Továbbá, mivel egyrészt $p$-féleképp lehet $p$ darab
+      zárójelből kiválasztani azt az egyet, amelyből NEM az $y$, hanem a $z$ tagot választottuk ki, ezért
+      természetesen $A_{p-1}=p$. Másrészt pedig egyféleképpen lehet az összes zárójelből az $y$ tagot választani,
+      ezért $A_p=1$. A többi $A_i$ együttható pontos értékét az úgynevezett binomiális tétel alapján lehet
+      kiszámítani, ám a bizonyítás szempontjából ez most nem érdekes számunkra.
+  - type: formula
+    lead-in: |
+      Ha most visszafelé alkalmazzuk a $z=p^km$ jelölést, akkor az $x^p=(\underbrace{p^km}_{=z}+y)^p$ hatványra
+      lényegében ezt a kifejezést kaptuk:
+    content: |
+      \begin{aligned}x^p&=(\underbrace{p^km}_{=z})^p + p\cdot (\underbrace{p^km}_{=z})^{p-1}y + A_2\cdot
+      (\underbrace{p^km}_{=z})^{p-2}y^2 + \ldots \\ &\ldots + A_{p-2}\cdot (\underbrace{p^km}_{=z})^2y^{p-2} +
+      p\cdot (\underbrace{p^km}_{=z})y^{p-1} + y^p\end{aligned}
+  - type: formula
+    lead-in: |
+      Alkalmazva a hatványozás azonosságairól szóló [hatvanyozas-azonossagai] mindhárom pontját:
+    content: |
+      \begin{aligned}x^p&=p^{pk}m^p + p^{(p-1)k+1}m^{p-1}y + A_2\cdot p^{(p-2)k}m^{p-2}y^2 + \ldots \\ &\ldots +
+      A_{p-2}\cdot p^{2k}m^2y^{p-2} + p^{k+1}my^{p-1} + y^p\end{aligned}
+  - type: narrative
+    content: |
+      Minket ugye az $x_p-y_p$ különbség $p$-adikus rendje érdekel.
+  - type: formula
+    lead-in: |
+      Ezt a különbséget megkapjuk, ha a fenti összegzésből elhagyjuk az utolsó, $y^p$ tagot:
+    content: |
+      \begin{aligned}x^p-y^p&=p^{pk}m^p + p^{(p-1)k+1}m^{p-1}y + A_2\cdot p^{(p-2)k}m^{p-2}y^2 + \ldots \\ &\ldots
+      + A_{p-2}\cdot p^{2k}m^2y^{p-2} + p^{k+1}my^{p-1}\end{aligned}
+  - type: narrative
+    content: |
+      Azt kell meghatározni tehát, hogy a fenti kifejezés $p$-nek legfeljebb hányadik hatványával osztható.
+  - type: formula
+    lead-in: |
+      Mivel a bizonyítás elején megállapítottuk, hogy $k\geq 1$, ezért $p^{k+1}$-gyel minden fenti tag osztható,
+      teljesül tehát az alábbi oszthatóság:
+    content: |
+      p^{k+1}|x^p-y^p
+  - type: narrative
+    content: |
+      Most nézzünk ennél 1-gyel magasabb hatványt, azaz $p^{k+2}$-t. Az utolsó előtti tagig bezárólag szintén
+      minden fenti tag osztható $p^{k+2}$-vel. Kérdés, hogy mi a helyzet az utolsó, $p^{k+1}my^{p-1}$ taggal.
+  - type: narrative
+    content: |
+      Az $m$ egész szám biztosan nem tartalmazza a $p$ prímtényezőt, hiszen a bizonyítás elején őt épp így
+      állítottuk elő. Továbbá a tétel szövege szerint $v_p(xy)=0$, ami a [egesz-szam-p-adikus-rendje] alapján épp
+      azt jelenti, hogy az $xy$ szorzat sem tartalmazza a $p$ prímtényezőt, így tehát maga $y$ sem. A
+      $p^{k+1}my^{p-1}$ szorzat prímtényezős felbontásában $p$ így csak a $k+1$-edik hatványon szerepel, azaz nem
+      osztható $p^{k+2}$-vel.
+  - type: formula
+    lead-in: |
+      Így viszont a teljes összeg sem osztható $p^{k+2}$-vel, azaz:
+    content: |
+      p^{k+2}\ mid x^p-y^p
+  - type: formula
+    lead-in: |
+      Ezt összevetve a fentebb megállapított $p^{k+1}|x^p-y^p$ oszthatósággal, a [egesz-szam-p-adikus-rendje]
+      szerint lényegében megkaptuk a tétel állítását:
+    content: |
+      v_p(x^p-y^p)=\underbrace{k}_{=v_p(x-y)}+1

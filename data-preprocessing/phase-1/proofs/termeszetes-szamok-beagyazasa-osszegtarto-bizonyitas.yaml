@@ -1,0 +1,20 @@
+type: proof
+name: termeszetes-szamok-beagyazasa-osszegtarto-bizonyitas
+remarks: []
+references:
+  egesz-szamok-osszeadasa:
+    target:
+      type: definition
+      name: egesz-szamok-osszeadasa
+content:
+  - type: narrative
+    content: |
+      Az $f$ függvény definíciója alapján egyrészt $f(a+b)=[(a+b;0)]$.
+  - type: formula
+    lead-in: |
+      Másrészt az egész számok összedásának definíciója miatt ([egesz-szamok-osszeadasa]) igaz az alábbi:
+    content: |
+      f(a)\oplus f(b)=[(a;0)]\oplus [(b;0)] = [(a+b;0)]
+  - type: narrative
+    content: |
+      Az eredményül kapott két kifejezés megegyezik, tehát valóban $f(a+b)=f(a)\oplus f(b)$.

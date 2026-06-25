@@ -1,0 +1,19 @@
+type: theorem
+name: asszocialtsag-tulajdonsagai
+proofs:
+  - asszocialtsag-tulajdonsagai-bizonyitas
+remarks:
+  - asszocialtsag-tulajdonsagai-megjegyzes
+content:
+  - type: ordered-list
+    lead-in: |
+      Tetszőleges ***kommutatív gyűrű*** esetén igazak az alábbiak:
+    items:
+      - 'A gyűrű minden eleme és az ellentettje egymás asszociáltjai. Azaz minden $a$ elemre fennáll az $a\sim
+        (-a)$ reláció.'
+      - 'Ha fennáll az $a\sim b$ asszociáció, akkor fennállnak az $a\sim (-b)$, $(-a)\sim b$ valamint $(-a)\sim
+        (-b)$ asszociációk is.'
+      - 'A nullelemnek egyetlen asszociáltja van, méghozzá saját maga.'
+      - 'Ha két elem egymásnak osztói, akkor asszociáltak. Azaz ha valamely $a$ és $b$ elemek között fennállnak az
+        $a|b$ és $b|a$ oszthatóságok, akkor teljesül az $a\sim b$ asszociáció.'
+      - 'Bármely $e$ egység akkor és csak akkor asszociáltja valamely $f$ gyűrűelemnek, ha $f$ is egység.'

@@ -1,0 +1,69 @@
+type: section
+name: 07-carmichael-szamok-tulajdonsagai
+title: Carmichael-számok tulajdonságai
+
+references:
+  carmichael-szamok:
+    target:
+      type: definition
+      name: carmichael-szamok
+
+body:
+  - type: narrative
+    content: |
+      A primitív gyökökkel kapcsolatos eredmények felhasználásával ebben a szakaszban igazoljuk a
+      [carmichael-szamok]ban megismert ***Carmichael-számok*** (vagy ***univerzális álprímek***) néhány fontos
+      tulajdonságát. Ezeknek szintén kulcsszerepük lesz a Miller-Rabin-tanúkra vonatkozó becslésünk javításában.
+      Ehhez ismerkedjünk meg egy egyszerű fogalommal.
+  - type: embed
+    target:
+      type: definition
+      name: negyzetmentes-szam
+  - type: narrative
+    content: |
+      Például az $n=12$ nem négyzetmentes, mivel osztható a $2$ második hatványával. Ezzel szemben a $15$
+      négyzetmentes, hiszen semmilyen egész szám második hatványával nem osztható. Most mutatunk egy egyszerű
+      segédtételt, amely alapján elegendő csupán a pozitív prímosztókra ellenőrizni a feltételt.
+  - type: embed
+    target:
+      type: theorem
+      name: negyzetmentesseg-feltetele
+  - type: embed
+    target:
+      type: proof
+      name: negyzetmentesseg-feltetele-bizonyitas
+  - type: narrative
+    content: |
+      Most egy olyan feltételt igazolunk, amely alapján egy adott összetett számról egyértelműen el lehet dönteni,
+      hogy Carmichael-szám-e vagy nem. Ehhez mindössze a szám prímtényezős felbontására van szükség. Ezt a tételt
+      Alwin Reinhold Korselt német matematikus fedezte fel 1899-ben, ő maga azonban nem talált egyetlen, a
+      feltételnek eleget tevő egész számot sem. Ez dokumentáltan először Robert Daniel Carmichaelnek sikerült
+      1910-ben &ndash; innen ered a Carmichael-szám elnevezés. A teljességhez azonban hozzátartozik, hogy ***Václav
+      Šimerka*** cseh matematikus már 25 évvel korábban felsorolta az első 7 univerzális álprímet egy kevésbé
+      közismert cseh matematikai szaklapban, amely azonban akkoriban nem kapott túl nagy figyelmet.
+  - type: embed
+    target:
+      type: theorem
+      name: korselt-kriterium
+  - type: formula
+    lead-in: |
+      Például az $561$ ez alapján Carmichael-szám, hiszen $561=3\cdot 11\cdot 17$ és teljesülnek az alábbi
+      oszthatóságok:
+    content: |
+      \begin{aligned}2&|560 \\ 10&|560 \\ 16&|560\end{aligned}
+  - type: embed
+    target:
+      type: proof
+      name: korselt-kriterium-bizonyitas
+  - type: narrative
+    content: |
+      Most a Korselt-kritérium egy egyszerű következményét ismertetjük, amely a Carmichael-számok paritására és
+      prímtényezőinek számára vonatkozik.
+  - type: embed
+    target:
+      type: theorem
+      name: carmichael-szamok-tulajdonsagai
+  - type: embed
+    target:
+      type: proof
+      name: carmichael-szamok-tulajdonsagai-bizonyitas

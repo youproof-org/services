@@ -1,0 +1,35 @@
+<!-- wp:paragraph -->
+<p>A Fermat-tanú [yp_element slug="fermat-tanu" type="link" /]jához hasonlóan itt is teljes maradékosztályokra célszerű vonatkoztatni ezt a fogalmat. Ha ugyanis egy [latex]b[/latex] egész szám [latex]a[/latex]-val azonos modulo [latex]n[/latex] maradékosztályban van, akkor teljesül az [latex]a\equiv b\pmod n[/latex] kongruencia, és így a [yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" type="link" /] 8. pontja alapján teljesülnek az alábbi kongruenciák is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a^k&amp;\equiv b^k\pmod n \\ a^{2k}&amp;\equiv b^{2k}\pmod n \\ a^{4k}&amp;\equiv b^{4k}\pmod n \\ &amp;\vdots \\ a^{2^{e-1}\cdot k}&amp;\equiv b^{2^{e-1}\cdot k}\pmod n\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mármost ha a baloldal nem kongruens a definícióban szereplő számokkal, akkor a jobboldal sem. Így tehát az [latex][a]_n[/latex] maradékosztálynak vagy minden eleme teljesíti a Miller-Rabin-tanúkkal szemben támasztott kritériumokat, vagy egyik sem.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Szintén a Fermat-tanú [yp_element slug="fermat-tanu" type="link" /]jához hasonlóan itt sem kell kikötni, hogy [latex][a]_n[/latex] egy <strong><em>redukált maradékosztály</em></strong>, hiszen ha van egységtől különböző közös osztója [latex]a[/latex]-nak és [latex]n[/latex]-nek, akkor [latex]n[/latex] nyilván összetett. Nem mellesleg itt is megjegyezzük, hogy a Miller-Rabin-kongruenciák amúgysem teljesülhetnének, amennyiben [latex][a]_n[/latex] nem egy redukált maradékosztály, azaz [latex](a,n)[/latex] nem egység. Ennek indoklása szinte szóról szóra megegyezik a [yp_element slug="fermat-tanu" type="link" /] utáni megjegyzésben leírtakkal.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez tehát azt jelenti, hogy&nbsp;<strong><em>NEM Miller-Rabin-tanú csak redukált maradékosztály lehet</em></strong>. Ezen túlmenően a [yp_element slug="miller-rabin-szorzat" type="link" /] miatt ha egy [latex][a]_n[/latex] redukált maradékosztály <strong><em>NEM Miller-Rabin tanú</em></strong> – azaz teljesül a definícióban szereplő kongruenciák közül legalább az egyik –, akkor <strong><em>Fermat-tanú SEM lehet</em></strong>. Ha ugyanis teljesül legalább az egyik kongruencia, akkor a [yp_element slug="egesz-szamok-kozotti-kongruencia" type="link" /] 3. pontja alapján [latex]n[/latex] osztója az alábbi kifejezések közül legalább az egyiknek:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}&amp;a^k-1 \\ &amp;a^k+1 \\ &amp;a^{2k}+1 \\ &amp;a^{4k}+1 \\ &amp;\vdots \\ &amp;a^{2^{e-1}\cdot k}+1\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ám e kifejezések szorzata a [yp_element slug="miller-rabin-szorzat" type="link" /] alapján épp [latex]a^{n-1}-1[/latex], aminek [latex]n[/latex] a [yp_element slug="oszthatosag-tulajdonsagai" type="link" /] 7. pontja miatt szintén osztója. Azaz teljesül az [latex]a^{n-1}\equiv 1\pmod n[/latex] kongruencia, és így az [latex][a]_n[/latex] redukált maradékosztály valóban nem Fermat-tanú. Másként fogalmazva ez azt jelenti, hogy <strong><em>minden Fermat-tanú egyúttal Miller-Rabin-tanú is</em></strong>, vagyis az új definíció tágítani igyekszik a lehetséges tanúk körét.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi ábrán a <strong><em>NEM Miller-Rabin-tanúk</em></strong> és a <strong><em>NEM Fermat-tanúk</em></strong> elhelyezkedése látható a modulo&nbsp;[latex]n[/latex] maradékosztályok között.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":6471,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_23_nem_miller_rabin_tanuk_elhelyezkedese.jpg" alt="A nem Miller-Rabin-tanúk elhelyezkedése" class="wp-image-6471"/><figcaption>A nem Miller-Rabin-tanúk elhelyezkedése</figcaption></figure></div>
+<!-- /wp:image -->

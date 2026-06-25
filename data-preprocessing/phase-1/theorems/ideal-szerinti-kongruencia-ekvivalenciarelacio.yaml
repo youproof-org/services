@@ -1,0 +1,22 @@
+type: theorem
+name: ideal-szerinti-kongruencia-ekvivalenciarelacio
+proofs:
+  - ideal-szerinti-kongruencia-ekvivalenciarelacio-bizonyitas
+remarks:
+  - ideal-szerinti-kongruencia-ekvivalenciarelacio-megjegyzes
+references:
+  ideal-szerinti-kongruencia:
+    target:
+      type: definition
+      name: ideal-szerinti-kongruencia
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ tetszőleges gyűrű, valamint $I$ valamilyen ideál $R$-ben. Ekkor a [ideal-szerinti-kongruencia]ban
+      bevezetett $I$ szerinti kongruencia egy ***ekvivalenciareláció*** az $R$ gyűrű elemei között. Az ehhez
+      tartozó ekvivalencia-osztályokat ***$I$ szerinti (modulo $I$) kongruenciaosztályoknak*** vagy ***$I$ szerinti
+      (modulo $I$) maradékosztályoknak*** nevezzük.
+  - type: narrative
+    content: |
+      Ha $r$ egy tetszőleges elem az $R$ gyűrűben, akkor az $r$ elemet tartalmazó modulo $I$ maradékosztály épp az
+      $r+I$ halmaz lesz. Ilyenkor azt mondjuk, hogy az $r$ elem ***reprezentálja*** az $r+I$ maradékosztályt.

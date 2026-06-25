@@ -1,0 +1,10 @@
+type: theorem
+name: termeszetes-szamok-rendezesi-relacioja-lemma
+proofs:
+  - termeszetes-szamok-rendezesi-relacioja-lemma-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Tetszőleges $a$ és $b$ természetes számok esetén az $a\leq b$ reláció ***akkor és csak akkor*** teljesül, ha
+      az $s(a)\leq s(b)$ reláció is teljesül.

@@ -1,0 +1,15 @@
+type: theorem
+name: halmazrendszer-legkisebb-es-legnagyobb-eleme-egyertelmu
+proofs:
+  - halmazrendszer-legkisebb-es-legnagyobb-eleme-egyertelmu-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $H$ egy tetszőleges halmaz, $\mathcal{H}$ pedig egy tetszőleges halmazrendszer $H$ felett. Ekkor
+      ***$\mathcal{H}$-ban legfeljebb egy legszűkebb (illetve legbővebb)*** elem létezhet.
+  - type: narrative
+    content: |
+      Ezen túlmenően, ha $A$ a legszűkebb (illetve legbővebb) elem $\mathcal{H}$-ban, akkor egyrészt $A$ minimális
+      (illetve maximális) elem $\mathcal{H}$-ban, másrészt ***ilyenkor ő az egyetlen minimális (illetve maximális)
+      elem***.

@@ -1,0 +1,151 @@
+type: proof
+name: nem-miller-rabin-tanuk-csoportjara-vonatkozo-lemma-primhatvanyok-eseten-bizonyitas
+remarks: []
+references:
+  egesz-szamok-kozotti-kongruencia-egyszerusitese:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia-egyszerusitese
+  egesz-szamok-kozotti-kongruencia-tulajdonsagai:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia-tulajdonsagai
+  egesz-szamok-maradekosztalyai:
+    target:
+      type: theorem
+      name: egesz-szamok-maradekosztalyai
+  korselt-kriterium:
+    target:
+      type: theorem
+      name: korselt-kriterium
+  linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga:
+    target:
+      type: theorem
+      name: linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga
+  linearis-kongruenciak-megoldasai-es-megoldasszama:
+    target:
+      type: theorem
+      name: linearis-kongruenciak-megoldasai-es-megoldasszama
+  miller-rabin-tanu:
+    target:
+      type: definition
+      name: miller-rabin-tanu
+  nem-miller-rabin-tanuk-csoportja-primhatvanyok-eseten:
+    target:
+      type: theorem
+      name: nem-miller-rabin-tanuk-csoportja-primhatvanyok-eseten
+content:
+  - type: narrative
+    content: |
+      A $P_r$ megoldáshalmaz minden eleme kielégíti az első kongruenciát, azaz $r$-rel azonos modulo $p^c$
+      maradékosztályban van.
+  - type: formula
+    lead-in: |
+      Következésképp a [egesz-szamok-maradekosztalyai] alapján minden $x\in P_r$ esetén létezik olyan $y$ egész
+      szám, hogy teljesül az alábbi egyenlet:
+    content: |
+      x=r+p^cy
+  - type: formula
+    lead-in: |
+      Tehát tulajdonképpen azokat az $y$ egész számokat keressük, amelyekre fennáll a második kongruencia is, azaz:
+    content: |
+      (\underbrace{r+p^cy}_{=x})^{p-1}\equiv 1\pmod{p^{c+1}}
+  - type: formula
+    lead-in: |
+      A baloldalon szereplő zárójeles kifejezést felbontva a Korselt-kritérium ([korselt-kriterium]) bizonyításánál
+      látott gondolatmenet alapján az alábbi összeget kapjuk valamilyen $A_2$, $A_3$, ..., $A_{p-1}$
+      együtthatókkal:
+    content: |
+      \begin{aligned}(r+p^cy)^{p-1}&=r^{p-1}+(p-1)r^{p-2}p^cy+\\&+A_2r^{p-3}p^{2c}y^2 + A_3r^{p-4}p^{3c}y^3+\ldots
+      +A_{p-1}p^{(p-1)c}y^{p-1}\end{aligned}
+  - type: narrative
+    content: |
+      Ennek a kifejezésnek az értéke modulo $p^{c+1}$ érdekel minket, emiatt nincs szükségünk az $A_2$, $A_3$, ...,
+      $A_{p-1}$ együtthatók pontos értékére &ndash; amelyeket egyébként a binomiális tétel alapján lehetne
+      kiszámítani. A 3. tagtól kezdve ugyanis minden tag osztható $p^{c+1}$-gyel, vagy másként fogalmazva $0$-val
+      kongruens modulo $p^{c+1}$.
+  - type: formula
+    lead-in: |
+      Azaz tulajdonképpen az alábbi kongruencia megoldásait keressük:
+    content: |
+      \underbrace{r^{p-1}+(p-1)r^{p-2}p^cy}_{\equiv (r+p^cy)^{p-1}}\equiv 1\pmod{p^{c+1}}
+  - type: formula
+    lead-in: |
+      A tétel szövegéből tudjuk, hogy $r$-re teljesül az alábbi kongruencia is:
+    content: |
+      r^{p-1}\equiv 1\pmod{p^c}
+  - type: narrative
+    content: |
+      Azaz az $r^{p-1}$ hatvány ugyanabban a modulo $p^c$ maradékosztályban van, mint az $1$ egész szám.
+  - type: formula
+    lead-in: |
+      Ám ekkor ugyancsak a [egesz-szamok-maradekosztalyai] értelmében létezik olyan $k_r$ egész szám, amelynek a
+      segítségével az $r^{p-1}$ hatvány felírható az alábbi alakban:
+    content: |
+      r^{p-1}=p^ck_r+1
+  - type: formula
+    lead-in: |
+      Ezt behelyettesíthetjük a kongruenciánkba, amelynek tehát a megoldásait keressük:
+    content: |
+      \underbrace{p^ck_r+1}_{=r^{p-1}}+(p-1)r^{p-2}p^cy\equiv 1\pmod{p^{c+1}}
+  - type: formula
+    lead-in: |
+      A [egesz-szamok-kozotti-kongruencia-tulajdonsagai] 6. pontja értelmében mindkét oldalból levonhatunk $1$-et:
+    content: |
+      p^ck_r+(p-1)r^{p-2}p^cy\equiv 0\pmod{p^{c+1}}
+  - type: formula
+    lead-in: |
+      A zárójelet felbontva az alábbit kapjuk, ahol a második tag $0$-val lesz kongruens modulo $p^{c+1}$, így az
+      elhagyható:
+    content: |
+      p^ck_r+\underbrace{\cancel{r^{p-2}p^{c+1}y}}_{\equiv 0}-r^{p-2}p^cy\equiv 0\pmod{p^{c+1}}
+  - type: formula
+    lead-in: |
+      A maradék két tagból a $p^c$ szorzótényezőt kiemelhetjük:
+    content: |
+      p^c\cdot (k_r-r^{p-2}y)\equiv 0\pmod{p^{c+1}}
+  - type: formula
+    lead-in: |
+      Ez a kongruencia viszont a ***kongruenciák egyszerűsítéséről*** szóló
+      [egesz-szamok-kozotti-kongruencia-egyszerusitese] alapján akkor és csak akkor teljesül, amikor az alábbi
+      kongruencia is:
+    content: |
+      k_r-r^{p-2}y\equiv 0\pmod p
+  - type: formula
+    lead-in: |
+      Mindkét oldalhoz $r^{p-2}y$-t adva tehát tulajdonképpen az alábbi ***lineáris kongruencia*** megoldásait
+      keressük:
+    content: |
+      r^{p-2}y\equiv k_r\pmod p
+  - type: narrative
+    content: |
+      Mivel a tétel szövegéből tudjuk, hogy teljesül az $r^{p-1}\equiv 1\pmod{p^c}$ kongruencia, ezért a
+      [nem-miller-rabin-tanuk-csoportja-primhatvanyok-eseten] 1. pontjának értelmében az $[r]_{p^c}$ maradékosztály
+      nem lehet Miller-Rabin-tanúja $p^c$-nek. Így viszont a [miller-rabin-tanu] utáni megjegyzés értelmében
+      $[r]_{p^c}$ egy ***redukált maradékosztály***, azaz $r$ ***relatív prím*** $p^c$-hez. Ez egyben azt is
+      jelenti, hogy $r$ prímtényezős felbontásában biztosan nem szerepel a $p$ prímszám, amely nyilván igaz lesz
+      $r$ bármely hatványára is. Így például az $r^{p-2}$ hatványra &ndash; mint a fenti lineáris kongruencia
+      együtthatójára &ndash; is, amely tehát relatív prím a $p$ modulushoz, azaz $(r^{p-2},p)=1$.
+  - type: narrative
+    content: |
+      Ez biztosan osztója a lineáris kongruencia jobboldalán lévő $k_r$-nek, így tehát a
+      [linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga] értelmében szükségképpen
+      ***létezik*** megoldás. Továbbá a megoldások száma a [linearis-kongruenciak-megoldasai-es-megoldasszama]
+      alapján pontosan $(r^{p-2},p)=1$ darab modulo $p$ maradékosztály.
+  - type: narrative
+    content: |
+      Válasszuk ki ennek az eszerint egyetlen modulo $p$ maradékosztálynak egy tetszőleges elemét, amelyet
+      jelöljünk $y_0$-val. Ekkor tehát az $y=y_0+pm$ képlet segítségével megkapjuk az $(r+p^cy)^{p-1}\equiv
+      1\pmod{p^{c+1}}$ kongruenciát kielégítő ***összes*** egész számot (és csak azokat), amennyiben $m$-mel
+      befutjuk a teljes $\Z$ halmazt.
+  - type: formula
+    lead-in: |
+      Most alkalmazzuk visszafelé az $x$-re bevezetett jelölésünket:
+    content: |
+      x=r+p^c\cdot (\underbrace{y_0+pm}_{=y})=r+p^cy_0+p^{c+1}m
+  - type: narrative
+    content: |
+      Ez tehát azt jelenti, hogy a tételben szereplő kongruenciarendszert kielégítő $P_r$ megoldáshalmaz összes
+      elemét (és csak azokat) megkapjuk, amennyiben a fenti képletben szereplő $m$-mel befutjuk a teljes $\Z$
+      halmazt. Vagyis a [egesz-szamok-maradekosztalyai] értelmében $P_r$ valóban épp egy modulo $p^{c+1}$
+      maradékosztály, melynek egyik reprezentánseleme $r+p^cy_0$.

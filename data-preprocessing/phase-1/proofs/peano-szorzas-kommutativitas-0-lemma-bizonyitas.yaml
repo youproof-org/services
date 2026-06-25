@@ -1,0 +1,51 @@
+type: proof
+name: peano-szorzas-kommutativitas-0-lemma-bizonyitas
+remarks: []
+references:
+  peano-osszeadas:
+    target:
+      type: definition
+      name: peano-osszeadas
+  peano-szorzas:
+    target:
+      type: definition
+      name: peano-szorzas
+content:
+  - type: narrative
+    content: |
+      Az $a$-ra vonatkozó teljes indukciót alkalmazunk. Tegyük fel tehát, hogy valamilyen $a=n$ természetes számra
+      az állítás igaz. Az ***indukciós feltétel*** tehát $0\cdot n=0$.
+  - type: formula
+    lead-in: |
+      Azt kell bizonyítanunk, hogy ekkor $a=s(n)$-re is igaz lesz, azaz:
+    content: |
+      0\cdot \underbrace{s(n)}_{=a}=0
+  - type: formula
+    lead-in: |
+      A Peano-szorzás [peano-szorzas]jának 2. pontja miatt:
+    content: |
+      0\cdot s(n)=(0\cdot n) + 0 = \ldots
+  - type: formula
+    lead-in: |
+      A Peano-összeadás [peano-osszeadas]jának 1. pontja miatt:
+    content: |
+      \ldots =0\cdot n = \ldots
+  - type: formula
+    lead-in: |
+      Végül pedig az indukciós feltétel miatt:
+    content: |
+      \ldots =0
+  - type: narrative
+    content: |
+      Felállítottuk tehát a dominósort, és beláttuk, hogy bármely dominó felborítása esetén a soron következő
+      dominó is fel fog borulni. Ezért most felborítjuk az első dominót, azaz igazoljuk, hogy az állítás igaz
+      $a=0$-ra.
+  - type: formula
+    lead-in: |
+      Ez viszont nyilvánvalóan teljesül a Peano-szorzás [peano-szorzas]jának 1. pontja miatt:
+    content: |
+      0\cdot \underbrace{0}_{=a}=0
+  - type: narrative
+    content: |
+      Borul tehát az első dominó, és vele együtt a teljes dominósor, azaz minden $a$ számra igaz, hogy $0\cdot
+      a=0$.

@@ -1,0 +1,79 @@
+type: section
+name: 05-ko-papir-ollo
+title: Kő-papír-olló
+
+references:
+  ketvaltozos-muvelet:
+    target:
+      type: definition
+      name: ketvaltozos-muvelet
+
+body:
+  - type: narrative
+    content: |
+      A Peano-axiómákkal definiált $\N$ halmaz jelenleg nem több csupán egy "zsáknál", amelyben ott csücsül a
+      végtelen sok természetes szám. E számkör kibővítéséhez azonban szükségünk lesz egy olyan fogalomra, amelynek
+      a segítségével ezeket az objektumokat valamilyen módon sorba tudjuk állítani. Szeretnénk olyan kijelentéseket
+      tenni, miszerint egy $a$ szám "előrébb van" ebben a képzeletbeli sorban, mint egy $b$ szám.
+  - type: narrative
+    content: |
+      A ***kétváltozós műveletekhez*** ([ketvaltozos-muvelet]) hasonlóan szükségünk lesz tehát egy olyan
+      képzeletbeli dobozra, amelybe ha felül bedobunk két tetszőleges számot az $\N$ halmazból, akkor alul
+      kipottyan egy **igen** vagy egy **nem** válasz egy adott eldöntendő kérdésre. Például arra a kérdésre, hogy
+      $a$ "előrébb van-e" a természetes számok halmazában, mint $b$? Ez nagyon hasonló azokhoz a Turing-gépekhez,
+      amelyeket a 6. részben formális nyelvek felismeréséhez használtunk. Jelen esetben azonban a bemenet nem egy
+      szimbólumsorozat, hanem két természetes szám, a kimenet pedig egy **igen** vagy egy **nem** válasz lesz.
+  - type: figure
+    lead-in: |
+      Ezt szemlélteti az alábbi ábra:
+    src: 03-ketvaltozos-relacio.jpg
+    alt: Kétváltozós reláció
+    caption: Kétváltozós reláció
+  - type: narrative
+    content: |
+      Az olyan kétbemenetű dobozokat, amelyek választ adnak valamilyen eldöntendő kérdésre a két felül bedobott
+      szám közötti kapcsolatról, ***kétváltozós relációknak*** nevezzük. A fenti ábrán látható doboz például egy
+      kétváltozós relációt reprezentál, amely relációt önkényesen $R$-rel jelöltünk, de választhattunk volna
+      bármilyen más szimbólumot is. Most nézzük meg, hogyan tudjuk általánosságban megfogalmazni, hogy
+      matematikailag tulajdonképpen mit is nevezünk relációnak.
+  - type: narrative
+    content: |
+      Ennek megértéséhez fontos először tisztázni a ***"rendezett pár"*** fogalmát. Emlékezzünk vissza, hogy egy
+      kétváltozós műveletet egy olyan függvényként definiáltuk ([ketvaltozos-muvelet]), amely az adott művelet
+      alaphalmazából származó elemekből alkotott összes létező ún. ***rendezett párhoz*** hozzárendel egy-egy
+      elemet szintén ebből az alaphalmazból. Vegyük például a már jól ismert $\N$ halmazt, és válasszunk ki belőle
+      két tetszőleges elemet, mondjuk $1$-et és $2$-t. Ebből a két elemből kétféleképpen tudunk egy rendezett párt
+      alkotni, mivel nem mindegy, hogy melyik hol foglal helyet ebben a párban (ezért hívjuk ***rendezett***
+      párnak). Az egyik ilyen párt $(1; 2)$-vel, a másikat pedig $(2; 1)$-gyel jelöljük. Az $(1; 2)$ és a $(2; 1)$
+      rendezett párok tehát ***különbözőek***, mivel nem azonos a bennük szereplő elemek sorrendje.
+  - type: narrative
+    content: |
+      Egy tetszőleges $H$ halmaz elemeiből alkotott összes létező rendezett pár szintén egy halmazt alkot. Ezt a
+      halmazt $H\times H$-val jelöljük (kimondva: $H$ "kereszt" $H$). Tegyük fel például, hogy a $H$ halmaz a
+      $\text{kő}$, a $\text{papír}$ és az $\text{olló}$ szavakat tartalmazza. Ekkor a $H\times H$ halmaz az alábbi
+      9 rendezett párt fogja tartalmazni: $(\text{kő}; \text{kő})$, $(\text{kő}; \text{papír})$, $(\text{kő};
+      \text{olló})$, $(\text{papír}; \text{kő})$, $(\text{papír}; \text{papír})$, $(\text{papír}; \text{olló})$,
+      $(\text{olló}; \text{kő})$, $(\text{olló}; \text{papír})$, és $(\text{olló}; \text{olló})$.
+  - type: narrative
+    content: |
+      Ezek után a kétváltozós reláció fogalmát így definiáljuk:
+  - type: embed
+    target:
+      type: definition
+      name: ketvaltozos-relacio
+  - type: narrative
+    content: |
+      Az előző példánál maradva definiáljunk egy relációt a $\text{kő}$, a $\text{papír}$ és az $\text{olló}$
+      szavakat tartalmazó $H$ halmazon. Jelöljük például a $\succ$ szimbólummal a $H\times H$ halmaznak azt a
+      részhalmazát, amely csak a $(\text{kő}; \text{olló})$, $(\text{olló}; \text{papír})$ és $(\text{papír};
+      \text{kő})$ rendezett párokat tartalmazza. A definícióban szereplő jelöléssel például írhatjuk azt, hogy
+      $\text{kő} \succ \text{olló}$. Ezt szavakkal így mondhatjuk: "$\text{kő}$ üti $\text{olló}$-t". Vegyük észre,
+      hogy az imént épp a matematikai leírását adtuk meg a jól ismert kő-papír-olló játék ütési szabályainak.
+  - type: narrative
+    content: |
+      Amikor egy végtelen halmazon értelmezünk valamilyen relációt, akkor természetesen nem tudjuk megtenni, hogy
+      felsoroljuk az összes olyan párt, amelyek relációban állnak egymással. Ilyen esetekben valamilyen szabályt
+      adunk meg arra vonatkozóan, hogy mikor tekintünk két elemet egymással relációban állónak, és mikor nem.
+      Hamarosan bevezetünk majd egy relációt az $\N$ halmazon, amelynek a segítségével sorba fogjuk tudni rendezni
+      $\N$ elemeit &ndash; azaz a természetes számokat. Előbb azonban vizsgáljuk meg, hogy pontosan mit értünk
+      ***rendezési reláció*** alatt.

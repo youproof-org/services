@@ -1,0 +1,131 @@
+<!-- wp:paragraph -->
+<p>Előszöris megmutatjuk, hogy a [yp_element slug="polinomok" type="link" /]ban bevezetett műveletek nem vezetnek ki az [latex]R[x][/latex] halmazból, azaz algebrai értelemben is műveletek (lásd a [yp_element slug="ketvaltozos-muvelet" type="link" /]t).</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="osszeg-es-szorzatpolinom-foka" type="link" /] 1. és 2. pontjai alapján ugyanis <strong><em>nemnulla</em></strong> polinomok összegének foka legfeljebb a polinomok fokainak maximuma, továbbá ugyanezen tétel 3. pontja alapján <strong><em>nemnulla</em></strong> polinomok szorzatának foka legfeljebb a polinomok fokainak összege, hacsak az eredmény nem maga a nullapolinom. Ezekben az esetekben tehát ha egy összeg tagjainak vagy egy szorzat tényezőinek foka véges, akkor az eredmény foka is véges, vagy az eredmény a nullapolinom. Emiatt [latex]R[x][/latex] valóban <strong><em>zárt a nemnulla polinomok összeadására és szorzására</em></strong> nézve.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az nyilvánvaló, hogy a polinomok <strong><em>összeadása kommutatív és asszociatív</em></strong>, hiszen a [yp_element slug="polinomok" type="link" /] alapján azt tagonként kell elvégezni az [latex]R[/latex] gyűrűben, ahol teljesül ez a két tulajdonság. Ezenkívül ha egy polinomhoz akár jobbról, akár balról a <strong><em>nullapolinomot</em></strong> adjuk, akkor az eredmény nem változik, hiszen a nullapolinom minden tagja az [latex]R[/latex] gyűrű nulleleme, ezért a tagonkénti összeadás egyetlen tagot sem változtat meg. Egyrészt tehát az [latex]R[x][/latex] halmaz a <strong><em>nullapolinommal való összeadásra nézve is zárt</em></strong>, másrészt a nullapolinom valóban <strong><em>neutrális elem</em></strong> az [latex]R[x][/latex]-beli összeadásra nézve. A tételben szereplő [latex]-f[/latex]-fel jelölt polinomra továbbá teljesül az alábbi, amennyiben az [latex]R[/latex] gyűrű nullelemét [latex]0_R[/latex]-rel jelöljük:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f+(-f)=(a_0-a_0, a_1-a_1,\ldots)=(0_R,0_R,\ldots)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A már bizonyított kommutativitás miatt a másik irányú összeadásra ugyanez teljesül. Az [latex]f[/latex]-et [latex]-f[/latex]-fel akár jobbról, akár balról összeadva tehát a nullapolinomot kapjuk, amely emiatt [latex]f[/latex] <strong><em>ellentettje</em></strong> a polinomok összeadására nézve.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Továbbá ha egy polinomot jobbról vagy balról a nullapolinommal szorozzuk, akkor az eredmény tetszőleges [latex]k[/latex]-adik tagja a [yp_element slug="polinomok" type="link" /]ban szereplő képlet alapján az alábbiak szerint alakul:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}&amp;a_0\cdot 0_R+a_1\cdot 0_R+\ldots +a_k\cdot 0_R = 0_R \\ &amp;0_R\cdot a_k + 0_R\cdot a_{k-1} + \ldots + 0_R\cdot a_0 = 0_R\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ilyenkor az eredmény tehát a nullapolinom, és így [latex]R[x][/latex] <strong><em>zárt a nullapolinommal való szorzásra nézve is</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Igazoltuk tehát a műveleti zártságot, továbbá a [yp_element slug="gyuru-test" type="link" /]ban szereplő <strong><em>1., 2. és 3. gyűrűaxiómákat</em></strong>. Így annak igazolásához, hogy [latex]R[x][/latex] gyűrű, már csak a szorzás <strong><em>kommutativitását</em></strong>, <strong><em>asszociativitását</em></strong> és a <strong><em>disztributivitási tulajdonságot</em></strong> kell ellenőrizni. A továbbiakban ezért legyenek [latex]f=(a_0,a_1,\ldots)[/latex], [latex]g=(b_0,b_1,\ldots)[/latex] és [latex]h=(c_0,c_1,\ldots)[/latex] az [latex]R[x][/latex] halmaz tetszőleges elemei. A <strong><em>kommutativitás</em></strong> igazolásához írjuk fel az [latex]f\cdot g[/latex] és a [latex]g\cdot f[/latex] szorzatpolinomok tetszőleges [latex]k[/latex]-adik tagját a [yp_element slug="polinomok" type="link" /]ban szereplő képlettel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}&amp;a_0b_k+a_1b_{k-1}+\ldots +a_kb_0 \\ &amp;b_0a_k + b_1a_{k-1}+ \ldots + b_ka_0\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel az [latex]R[/latex] gyűrűben a szorzás kommutatív, ezért ez a két kifejezés azonos, így tehát az [latex]R[x][/latex]-beli szorzás is <strong><em>kommutatív</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az <strong><em>asszociativitáshoz</em></strong> írjuk fel először az [latex]f\cdot g[/latex] szorzatpolinom tagjait:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{rl}\text{0. tag:} &amp; a_0b_0 \\ \text{1. tag:} &amp; a_0b_1 + a_1b_0 \\ \text{2. tag:} &amp; a_0b_2+a_1b_1+a_2b_0 \\ &amp; \vdots \\ \text{k. tag:} &amp; a_0b_k + a_1b_{k-1} + a_2b_{k-2} +\ldots +a_kb_0 \\ &amp; \vdots \end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha ezt a szorzatpolinomot megszorozzuk jobbról a [latex]h[/latex] polinommal, akkor az [latex](f\cdot g)\cdot h[/latex] szorzatpolinomot kapjuk, amelynek tetszőleges [latex]k[/latex]-adik tagja a [yp_element slug="polinomok" type="link" /] alapján az alábbi összeg lesz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}&amp;a_0b_0c_k + \\ + &amp;a_0b_1c_{k-1} + a_1b_0c_{k-1} + \\ + &amp;a_0b_2c_{k-2} + a_1b_1c_{k-2} + a_2b_0c_{k-2} + \\ &amp;\vdots \\ + &amp;a_0b_kc_0 + a_1b_{k-1}c_0 + a_2k_{k-2}c_0 + \ldots + a_kb_0c_0\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most írjuk fel a [latex]g\cdot h[/latex] szorzatpolinom tagjait fordított sorrendben:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{rl}&amp; \vdots \\ \text{k. tag:} &amp; b_0c_k + b_1c_{k-1}+\ldots +b_kc_0 \\ \text{k-1. tag:} &amp; b_0c_{k-1} + b_1c_{k-2} + \ldots + b_{k-1}c_0 \\ \text{k-2. tag:} &amp; b_0c_{k-2} + b_1c_{k-3} +\ldots + b_{k-2}c_0 \\ &amp; \vdots \\ \text{0. tag:} &amp; b_0c_0 \end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha ezt a szorzatpolinomot megszorozzuk balról az [latex]f[/latex] polinommal, akkor az [latex]f\cdot (g\cdot h)[/latex] szorzatpolinomot kapjuk, amelynek tetszőleges [latex]k[/latex]-adik tagja a [yp_element slug="polinomok" type="link" /] alapján az alábbi összeg lesz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}&amp;a_0b_0c_k + a_0b_1c_{k-1}+\ldots +a_0b_kc_0 + \\ + &amp;a_1b_0c_{k-1} + a_1b_1c_{k-2} + \ldots + a_1b_{k-1}c_0 + \\ + &amp;a_2b_0c_{k-2} + a_2b_1c_{k-3} +\ldots + a_2b_{k-2}c_0 + \\ &amp;\vdots \\ + &amp;a_kb_0c_0 \end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Látható, hogy ennek az összegnek a soraiban pontosan ugyanazok a tagok szerepelnek, mint annak az összegnek az oszlopaiban, amelyet az [latex](f\cdot g)\cdot h[/latex] szorzatpolinom [latex]k[/latex]-adik tagjára kaptunk. A két polinom tehát valóban megegyezik, azaz teljesül az alábbi <strong><em>asszociativitási tulajdonság</em></strong>:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](f\cdot g)\cdot h=f\cdot (g\cdot h)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezután a <strong><em>disztributivitási tulajdonságot</em></strong> igazoljuk. Mivel a szorzás kommutativitását már megmutattuk, ezért elegendő a [yp_element slug="gyuru-test" type="link" /]ban szereplő 5. gyűrűaxiómából csak az egyik diszributivitási szabállyal foglalkozni. Írjuk fel az [latex]f\cdot (g+h)[/latex] polinom tetszőleges [latex]k[/latex]-adik tagját a [yp_element slug="polinomok" type="link" /]ban szereplő képletek alapján:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a_0(b_k+c_k)+a_1(b_{k-1}+c_{k-1})+\ldots +a_k(b_0+c_0)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A zárójeleket felbonthatjuk, hiszen az [latex]R[/latex] gyűrűben teljesülnek a disztributivitási szabályok:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\overbrace{a_0b_k + a_0c_k}^{=a_0(b_k+c_k)} + \overbrace{a_1b_{k-1} + a_1c_{k-1}}^{=a_1(b_{k-1}+c_{k-1})} + \ldots + \overbrace{a_kb_0 + a_kc_0}^{=a_k(b_0+c_0)}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezután írjuk fel az [latex]f\cdot g + f\cdot h[/latex] polinom tetszőleges [latex]k[/latex]-adik tagját is szintén a [yp_element slug="polinomok" type="link" /]ban szereplő képletek alapján:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}&amp;a_0b_k + a_1b_{k-1} +\ldots a_kb_0 + \\ + &amp;a_0c_k + a_1c_{k-1} + \ldots + a_kc_0\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ugyanazokat a tagokat kaptuk, csak épp más sorrendben. Mivel azonban az [latex]R[/latex] gyűrűben az összeadás kommutatív, ezért a két kapott kifejezés megegyezik, azaz valóban teljesül az alábbi <strong><em>disztributivitási szabály</em></strong>:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f\cdot (g + h)=f\cdot g + f\cdot h[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezzel igazoltuk, hogy [latex]R[x][/latex] <strong><em>gyűrű</em></strong> a polinomok közötti műveletekkel. Most tegyük fel, hogy [latex]R[/latex] <strong><em>egységelemes</em></strong>, és nézzük meg, hogy mi a helyzet, ha [latex]f[/latex]-et akár balról, akár jobbról megszorozzuk a tételben szereplő [latex](1_R,0_R,0_R,\ldots)[/latex] polinommal. Mivel a szorzás ugye kommutatív, ezért elegendő csak az egyik, például a jobboldali szorzást ellenőrizni. E szorzat [latex]k[/latex]-adik tagja a [yp_element slug="polinomok" type="link" /]ban szereplő képlet alapján az alábbi lesz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a_0\cdot 0_R + a_1\cdot 0_R + \ldots a_{k-1}\cdot 0_R + a_k\cdot 1_R[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Látható, hogy ebben az összegben a [latex]k[/latex]-adik tagot kivéve minden tag [latex]0_R[/latex] lesz. Azaz az [latex](1_R, 0_R, 0_R, \ldots)[/latex] polinommal való szorzás [latex]f[/latex] minden együtthatóját helybenhagyja, és így [latex]R[x][/latex] valóban <strong><em>egységelemes</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Végül tegyük fel, hogy [latex]R[/latex] <strong><em>nullosztómentes</em></strong>. Ekkor a [yp_element slug="osszeg-es-szorzatpolinom-foka" type="link" /] 4. pontja alapján bármely két nemnulla polinom szorzatának foka pontosan a két polinom fokának összege lesz. Vagyis az eredménynek van foka, és így az semmiképpen sem lehet a nullapolinom, ami ugye a [yp_element slug="nullosztomentes-gyuru" type="link" /] alapján azt jelenti, hogy <strong><em>[latex]R[x][/latex] is nullosztómentes</em></strong>.</p>
+<!-- /wp:paragraph -->

@@ -1,0 +1,31 @@
+type: section
+name: 05-a-church-turing-tezis
+title: A Church-Turing tézis
+
+body:
+  - type: narrative
+    content: |
+      Az úgynevezett ***Church-Turing tézis*** állítása a következő: minden olyan probléma, amely algoritmussal
+      megoldható, arra szerkeszthető alkalmas Turing-gép is. Vegyük észre, hogy ez nem egy matematikai tétel, hanem
+      egy tapasztalati kijelentés, de felfoghatjuk magának ***az "algoritmus" fogalom matematikai definíciójá***nak
+      is. Az olyan problémamegoldási módszereket tekintjük tehát ***algoritmusnak***, amelyekre készíthető
+      Turing-gép. Ennek oka mindössze annyi, hogy számos kísérlet ellenére eddig még senki sem adott meg olyan
+      algoritmus-fogalmat, amely a gyakorlatban megvalósítható lenne, és a ***Turing-kiszámíthatóságnál*** erősebb
+      képességű. Természetesen, ha majd a jövőben képesek leszünk építeni olyan számítógépeket, amelyek működése
+      alapjaiban különbözik a jelenlegi gépektől, akkor ezt a paradigmát át kell majd értékelnünk. Ilyenek lesznek
+      például az úgynevezett kvantumszámítógépek. Az elméleti számítástudomány fejlődése természetesen már elindult
+      ilyen irányokba is, ám ez még csak a jövő. A jelen valóságában a Church-Turing tézist kell elfogadnunk
+      igaznak.
+  - type: narrative
+    content: |
+      Elméleti értelemben mindegy, hogy a gép hány szalaggal rendelkezik. Sőt, elképzelhető, hogy esetleg szalagok
+      helyett négyzetrácsos füzethez hasonló síkokon dolgozik, a fejek pedig nem csak jobbra és balra, hanem fel és
+      lefelé, vagy akár tetszőleges helyre mozoghatnak. Ezekről mind-mind bebizonyítható, hogy ugyanazt a számítási
+      potenciált képviselik. Ami tehát megoldható az egyikkel, az megoldható az összes többivel is. Maximum nagyobb
+      &ndash; de még mindig véges &ndash; szabályrendszerrel tudjuk leírni a gépet. Elméleti szempontból tehát
+      teljesen mindegy, hogy melyiket tekintjük ***"a Turing-gép"*** definíciójának, maximum "kényelmi" szempontból
+      használjuk hol az egyik, hol a másik definíciót. Mi a továbbiakban a fenti többszalagos változatot fogjuk
+      Turing-gépnek tekinteni, hacsak ennek ellenkezőjét nem állítjuk.
+  - type: narrative
+    content: |
+      Most nézzük meg, hogy függvények kiszámításán kívül mire lehet még használni a Turing-gépet.

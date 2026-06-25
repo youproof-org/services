@@ -1,0 +1,16 @@
+type: theorem
+name: primitiv-gyok-modulo-p
+proofs:
+  - primitiv-gyok-modulo-p-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $p\gt 0$ valamilyen pozitív prímszám, $(\Z/p\Z)^{\times}$ a modulo $p$ maradékosztálygyűrű
+      multiplikatív csoportja, $d\gt 0$ pedig tetszőleges pozitív egész szám. Ekkor $d|p-1$ esetén esetén a
+      $(\Z/p\Z)^{\times}$ csoportban pontosan $\varphi(d)$ darab $d$ rendű elem létezik, ha pedig $d\mid p-1$,
+      akkor egyáltalán nincs $d$ rendű elem.
+  - type: narrative
+    content: |
+      Következésképp $d=p-1$ esetén $\varphi(p-1)$ darab $p-1$ rendű elem van &ndash; azaz ***létezik*** primitív
+      gyök modulo $p$.

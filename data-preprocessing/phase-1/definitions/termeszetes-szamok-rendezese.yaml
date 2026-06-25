@@ -1,0 +1,18 @@
+type: definition
+name: termeszetes-szamok-rendezese
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Amennyiben az $\N$ halmaz tetszőleges $a$ és $b$ elemeihez létezik olyan $k$ szintén $\N$-beli elem, amelyre
+      teljesül, hogy $a+k=b$, akkor azt mondjuk, hogy $a\leq b$. Kiolvasva: "$a$ ***legfeljebb*** $b$" vagy "$b$
+      ***legalább*** $a$".
+  - type: narrative
+    content: |
+      Ha ezen kívül $a\eq b$ is teljesül &ndash; azaz $a$ nem azonos $b$-vel &ndash;, akkor azt mondjuk, hogy $a\lt
+      b$. Kiolvasva: "$a$ ***kisebb***, mint $b$" vagy "$b$ ***nagyobb***, mint $a$". Egy ezzel azonos
+      megfogalmazás így hangzik: ha tetszőleges $a$ és $b$ elemekhez létezik olyan $k$ elem, amelyre teljesül, hogy
+      $a+k=b$ ***és*** $k\eq 0$, akkor $a\lt b$.
+  - type: narrative
+    content: |
+      Fordított irányú reláció esetén értelemszerűen használhatjuk a $\geq$ vagy a $\gt$ szimbólumokat is.

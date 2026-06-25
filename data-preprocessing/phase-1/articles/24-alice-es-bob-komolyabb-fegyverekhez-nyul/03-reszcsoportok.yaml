@@ -1,0 +1,70 @@
+type: section
+name: 03-reszcsoportok
+title: Részcsoportok
+
+references:
+  csoport:
+    target:
+      type: definition
+      name: csoport
+  reszgyuru:
+    target:
+      type: definition
+      name: reszgyuru
+  reszgyuru-feltetele:
+    target:
+      type: theorem
+      name: reszgyuru-feltetele
+
+body:
+  - type: narrative
+    content: |
+      A [reszgyuru]ban megismerkedtünk a ***részgyűrű*** fogalmával. Ott arról volt szó, hogy egy gyűrű műveleteit
+      az eredeti alaphalmaz helyett annak egy részhalmazára is leszűkíthetjük. Példaként a páros számok $2\Z$
+      halmazát hoztuk fel. A szokásos összeadás és szorzás ugye a teljes $\Z$ halmazon van értelmezve. Azonban ez a
+      két művelet "nem vezet ki" az ennél szűkebb $2\Z$ halmazból sem, hiszen bármely két páros szám összege és
+      szorzata is páros. Így a $2\Z$ halmaz az eredeti $\Z$ gyűrű műveleteinek szűkített változataival maga is
+      gyűrűt alkot, azaz ***részgyűrűje*** az eredeti $\Z$ gyűrűnek.
+  - type: narrative
+    content: |
+      Hasonló értelemben vett részstruktúrákról természetesen beszélhetünk csoportok esetén is. Itt is ugyanarról
+      van szó azzal a különbséggel, hogy egy csoportban csak egy műveletünk van.
+  - type: embed
+    target:
+      type: definition
+      name: reszcsoport
+  - type: embed
+    target:
+      type: remark
+      name: reszcsoport-megjegyzes
+  - type: formula
+    lead-in: |
+      Például a fentebb már szereplő $(\Z/10\Z)^{\times}$ multiplikatív csoport esetén az alábbi kételemű halmaz
+      egy valódi részcsoportot alkot:
+    content: |
+      G=\{[1]_{10}; [9]_{10}\}
+  - type: formula
+    lead-in: |
+      Ha a $(\Z/10\Z)^{\times}$ szorzótáblájából kihagyjuk a két-két középső sort és oszlopot, akkor megkapjuk
+      ennek a részcsoportnak a szorzótábláját:
+    content: |
+      \begin{array}{c|cc}\odot & [1]_{10} & [9]_{10}  \\ \hline  [1]_{10} & [1]_{10} & [9]_{10} \\ [9]_{10} &
+      [9]_{10} & [1]_{10}  \end{array}
+  - type: narrative
+    content: |
+      Mivel csupán kételemű halmazról van szó, ezért az Olvasó maga is könnyen leellenőrizheti, hogy valóban
+      teljesülnek a [csoport]ban szereplő csoportaxiómák.
+  - type: narrative
+    content: |
+      Ezt azonban nem kell minden olyan alkalommal megtenni, amikor egy részhalmazról el szeretnénk dönteni, hogy
+      részcsoport-e vagy sem. Az alábbi tétel a [reszgyuru-feltetele] mintájára egy sok esetben a csoportaxiómáknál
+      könnyebben ellenőrizhető feltételrendszert ad ehhez. A bizonyítás szinte szóról szóra megegyezik a
+      [reszgyuru-feltetele] bizonyításával.
+  - type: embed
+    target:
+      type: theorem
+      name: reszcsoport-feltetele
+  - type: embed
+    target:
+      type: proof
+      name: reszcsoport-feltetele-bizonyitas

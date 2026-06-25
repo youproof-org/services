@@ -1,0 +1,22 @@
+type: theorem
+name: pozitivitastartomany-szukseges-es-elegseges-feltetele
+proofs:
+  - pozitivitastartomany-szukseges-es-elegseges-feltetele-bizonyitas
+remarks: []
+references:
+  rendezett-gyuru:
+    target:
+      type: definition
+      name: rendezett-gyuru
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy $(R,+,\cdot )$ egy ***nullosztómentes*** gyűrű, valamint $P$ a gyűrű alaphalmazának egy
+      részhalmaza. A $P$ halmaz ***akkor és csak akkor*** pozitivitástartománya valamilyen $R$-en értelmezett, a
+      [rendezett-gyuru] szerinti rendezési axiómákat is kielégítő részbenrendezésnek, ha ***zárt az összeadásra és
+      a szorzásra, valamint nem tartalmazza a gyűrű nullelemét***.
+  - type: narrative
+    content: |
+      Az összeadásra és szorzásra való zártságot úgy értjük, hogy ha $a$ és $b$ benne van a $P$ halmazban, akkor az
+      $a+b$ összeg, valamint az $ab$ és a $ba$ szorzatok is benne vannak a $P$ halmazban. Ne feledjük: nem
+      feltételeztük, hogy a gyűrű kommutatív, ezért mindkét irányú szorzást külön meg kell említeni.

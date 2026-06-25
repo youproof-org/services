@@ -1,0 +1,58 @@
+type: proof
+name: egesz-szamok-maradekosztalyai-bizonyitas
+remarks: []
+references:
+  egesz-szamok-kozotti-kongruencia:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia
+  gyuruhomomorfizmus-szerinti-kongruencia:
+    target:
+      type: definition
+      name: gyuruhomomorfizmus-szerinti-kongruencia
+  ideal-szerinti-kongruencia-ekvivalenciarelacio:
+    target:
+      type: theorem
+      name: ideal-szerinti-kongruencia-ekvivalenciarelacio
+  komplexusmuveletek:
+    target:
+      type: definition
+      name: komplexusmuveletek
+  modularis-osszeadas-es-szorzas:
+    target:
+      type: definition
+      name: modularis-osszeadas-es-szorzas
+content:
+  - type: narrative
+    content: |
+      A [egesz-szamok-kozotti-kongruencia]ben bevezetett modulo $m$ kongruencia ekvivalens az $I=(m)$ főideál
+      szerinti kongruenciával. Ez utóbbi a [ideal-szerinti-kongruencia-ekvivalenciarelacio] alapján valóban egy
+      ekvivalenciareláció, így tehát a modulo $m$ kongruencia is az. Mivel e két kongruencia ekvivalens, ezért
+      pontosan ugyanazok lesznek a maradékosztályaik.
+  - type: narrative
+    content: |
+      Ha $a$ egy tetszőleges egész szám, akkor az $a$-t tartalmazó modulo $I$ maradékosztály épp az $a+I$ halmaz
+      lesz (lásd a [komplexusmuveletek]ban bevezetett komplexusösszeadást). Ez tehát meg fog egyezni az $a$-t
+      tartalmazó modulo $m$ maradékosztállyal, ezért elég meghatároznunk az $a+I$ halmazt. Minthogy az $I=(m)$
+      főideál épp $m$ többszöröseit tartalmazza, ezért az $a+I$ halmaz valóban éppen a $km + a$ alakban felírható
+      egész számokból áll. Speciálisan ha $m=0$, akkor ilymódon minden egész szám külön maradékosztályba kerül, így
+      ezek száma valóban végtelen.
+  - type: narrative
+    content: |
+      Ha $m\gt 0$, akkor az $I=(m)$ szerinti kongruencia ekvivalens a [modularis-osszeadas-es-szorzas]ban
+      bevezetett $\bmod_m$ maradékképző függvény, mint gyűrűhomomorfizmus szerinti kongruenciával, hiszen az
+      $I=(m)$ főideál épp ennek a gyűrűhomomorfizmusnak a magja. Mármost ennek a kongruenciának a maradékosztályai
+      &ndash; amelyek tehát megegyeznek az $I=(m)$ főideál szerinti és így a modulo $m$ kongruencia
+      maradékosztályaival &ndash; a [gyuruhomomorfizmus-szerinti-kongruencia] alapján épp azok a halmazok lesznek
+      $\Z$-ben, amelyeknek az elemeihez a $\bmod_m$ függvény azonos elemet rendel hozzá a
+      [modularis-osszeadas-es-szorzas] szerinti $Z_m$ képhalmazból.
+  - type: figure
+    lead-in: |
+      Ez látható az alábbi ábrán:
+    src: maradekkepzo_fuggveny_es_maradekosztalyok.jpg
+    alt: Maradékképző függvény és maradékosztályok
+    caption: Maradékképző függvény és maradékosztályok
+  - type: narrative
+    content: |
+      Következésképp $m\gt 0$ esetben a modulo $m$ maradékosztályok száma épp meg fog egyezni a $Z_m$ gyűrű
+      elemszámával, amely valóban $m$.

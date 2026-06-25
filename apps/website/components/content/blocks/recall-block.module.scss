@@ -1,0 +1,17 @@
+@use 'variables' as *;
+
+.recall {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid $gray-300;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: $font-light;
+  color: $gray-600;
+  margin: 0.5rem 0;
+}
+
+.type-label {
+  font-weight: $font-normal;
+}

@@ -1,0 +1,114 @@
+type: section
+name: 08-ciklikus-csoportok
+title: Ciklikus csoportok
+
+references:
+  gyuru-additiv-es-multiplikativ-csoportja:
+    target:
+      type: definition
+      name: gyuru-additiv-es-multiplikativ-csoportja
+  vegesen-generalt-idealok-es-foidealok:
+    target:
+      type: definition
+      name: vegesen-generalt-idealok-es-foidealok
+
+body:
+  - type: narrative
+    content: |
+      Végül ebben a szakaszban megismerkedünk a csoportok legegyszerűbb osztályával, az úgynevezett ***ciklikus
+      csoportokkal***, és &ndash; legalábbis izomorfia erejéig &ndash; meg is adjuk az összes, ebbe az osztályba
+      tartozó csoportot. Az ideálok generálása kapcsán a [vegesen-generalt-idealok-es-foidealok]ban külön
+      jelentőséget tulajdonítottunk az olyan ideáloknak, amelyek a szóbanforgó gyűrű kevés számú &ndash; sőt a
+      főideálok esetén mindössze egyetlen &ndash; elemével generálhatók. Ez csoportok esetén elvezet minket egy, a
+      továbbiakban számunkra fontos fogalomhoz.
+  - type: embed
+    target:
+      type: definition
+      name: ciklikus-csoportok
+  - type: embed
+    target:
+      type: remark
+      name: ciklikus-csoportok-megjegyzes
+  - type: narrative
+    content: |
+      Kézenfekvő példaként megmutatjuk, hogy az egész számok $\Z$ gyűrűjének additív csoportja, továbbá bármilyen
+      nemnegatív $m\geq 0$ esetén a $\Z/m\Z$ maradékosztálygyűrű additív csoportja, azaz a
+      [gyuru-additiv-es-multiplikativ-csoportja] alapján $\Z^+$-szal illetve $(\Z/n\Z)^+$-szal jelölt csoportok
+      ciklikusak.
+  - type: embed
+    target:
+      type: theorem
+      name: egesz-szamok-es-maradekosztalygyuruk-additiv-csoportja-ciklikus
+  - type: embed
+    target:
+      type: proof
+      name: egesz-szamok-es-maradekosztalygyuruk-additiv-csoportja-ciklikus-bizonyitas
+  - type: narrative
+    content: |
+      Hamarosan egy fontos csoportelméleti struktúratételt fogunk bizonyítani a ciklikus csoportokra vonatkozóan,
+      amely azt mondja ki, hogy a fenti tételben szereplő $\Z^+$ és $(\Z/m\Z)^+$ csoportokon kívül &ndash;
+      izomorfiától eltekintve &ndash; nem is létezik más ciklikus csoport. Ehhez azonban szükségünk lesz az alábbi
+      segédtételre.
+  - type: embed
+    target:
+      type: theorem
+      name: csoporthomomorfizmusok-ciklikussagtarto-tulajdonsaga
+  - type: embed
+    target:
+      type: proof
+      name: csoporthomomorfizmusok-ciklikussagtarto-tulajdonsaga-bizonyitas
+  - type: embed
+    target:
+      type: remark
+      name: csoporthomomorfizmusok-ciklikussagtarto-tulajdonsaga-megjegyzes
+  - type: narrative
+    content: |
+      Végül ismertetjük a már említett, ciklikus csoportokra vonatkozó struktúratételünket, amely tehát kizárja a
+      $\Z^+$ és a $(\Z/m\Z)^+$ additív csoportokon kívüli további ciklikus csoportok létezését.
+  - type: embed
+    target:
+      type: theorem
+      name: ciklikus-csoportok-strukturatetele
+  - type: embed
+    target:
+      type: proof
+      name: ciklikus-csoportok-strukturatetele-bizonyitas
+  - type: narrative
+    content: |
+      Láthattuk tehát, hogy a $\Z/m\Z$ maradékosztálygyűrűk ***additív csoportjai*** minden nemnegatív $m$ esetén
+      ciklikusak. Jogosan merülhet fel a kérdés, hogy vajon mi a helyzet ugyanezen gyűrűk ***multiplikatív
+      csoportjaival*** ebben a tekintetben. Nézzük meg például a $\Z/8\Z$ maradékosztálygyűrű esetét.
+  - type: formula
+    lead-in: |
+      Ennek multiplikatív csoportja a modulo $8$ redukált maradékosztályokból áll, amelyek az alábbiak:
+    content: |
+      (\Z/8\Z)^{\times}=\{[1]_8; [3]_8; [5]_8; [7]_8\}
+  - type: formula
+    lead-in: |
+      Ezek hatványait az alábbi táblázatban foglaltuk össze, ahol az egyes sorokban e maradékosztályok hatványai
+      szerepelnek az első néhány pozitív kitevőre, amely kitevőknek az egyes oszlopok felelnek meg:
+    content: |
+      \begin{array}{c|cccccc} &1&2&3&4&5&6 \\ \hline [1]_{8} & [1]_{8} & [1]_{8} & [1]_{8} & [1]_{8} & [1]_{8} &
+      [1]_{8} \\ [3]_{8} & [3]_{8} & [1]_{8} & [3]_{8} & [1]_{8} & [3]_{8} & [1]_{8} \\ [5]_{8} & [5]_{8} & [1]_{8}
+      & [5]_{8} & [1]_{8} & [5]_{8} & [1]_{8} \\ [7]_{8} & [7]_{8} & [1]_{8} & [7]_{8} & [1]_{8} & [7]_{8} &
+      [1]_{8} \end{array}
+  - type: narrative
+    content: |
+      Látható, hogy egyetlen csoportelem sem tölti be a generátorelem szerepét, hiszen egyiknek az egész kitevős
+      hatványai sem állítják elő az összes többi redukált maradékosztályt. A $(\Z/8\Z)^{\times}$ ***multiplikatív
+      csoport*** tehát ***NEM ciklikus***.
+  - type: formula
+    lead-in: |
+      Tekintsük most a $(\Z/10\Z)^{\times}$ multiplikatív csoport elemeinek hatványait, amelyet az alábbi
+      táblázatban foglaltunk össze:
+    content: |
+      \begin{array}{c|cccccc} &1&2&3&4&5&6 \\ \hline [1]_{10} & [1]_{10} & [1]_{10} & [1]_{10} & [1]_{10} &
+      [1]_{10} & [1]_{10} \\ [3]_{10} & [3]_{10} & [9]_{10} & [7]_{10} & [1]_{10} & [3]_{10} & [9]_{10} \\ [7]_{10}
+      & [7]_{10} & [9]_{10} & [3]_{10} & [1]_{10} & [7]_{10} & [9]_{10} \\ [9]_{10} & [9]_{10} & [1]_{10} &
+      [9]_{10} & [1]_{10} & [9]_{10} & [1]_{10} \end{array}
+  - type: narrative
+    content: |
+      Látható, hogy ennek a csoportnak két generátoreleme is van, méghozzá a $[3]_{10}$ és a $[7]_{10}$ redukált
+      maradékosztályok, így a $(\Z/10\Z)^{\times}$ csoport bizony ciklikus. A maradékosztálygyűrűk multiplikatív
+      csoportjai esetén tehát a kérdés már nem ennyire egyértelmű, ám ezzel a következő részben fogunk bővebben
+      foglalkozni.

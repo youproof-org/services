@@ -1,0 +1,23 @@
+type: theorem
+name: egesz-szamok-kozotti-kongruencia-tulajdonsagai
+proofs:
+  - egesz-szamok-kozotti-kongruencia-tulajdonsagai-bizonyitas
+remarks:
+  - egesz-szamok-kozotti-kongruencia-tulajdonsagai-megjegyzes
+content:
+  - type: narrative
+    content: |
+      Legyenek $a$, $b$, $c$, $d$ tetszőleges, valamint $m\geq 0$ nemnegatív egész szám.
+  - type: ordered-list
+    lead-in: |
+      Ekkor teljesülnek az alábbiak:
+    items:
+      - 'Teljesül az $a\equiv a\pmod m$ kongruencia, azaz minden egész szám kongruens önmagával modulo $m$.'
+      - 'Ha $a\equiv b\pmod m$, akkor $b\equiv a\pmod m$.'
+      - 'Ha $a\equiv b\pmod m$ és $b\equiv c\pmod m$, akkor $a\equiv c\pmod m$.'
+      - 'Ha $a\equiv b\pmod m$ és $c\equiv d\pmod m$, akkor $a+c\equiv b+d\pmod m$ és $a-c\equiv b-d\pmod m$.'
+      - 'Ha $a\equiv b\pmod m$ és $c\equiv d\pmod m$, akkor $a\cdot c\equiv b\cdot d\pmod m$.'
+      - 'Ha $a\equiv b\pmod m$, akkor $a+c\equiv b+c\pmod m$ és $a-c\equiv b-c\pmod m$.'
+      - 'Ha $a\equiv b\pmod m$, akkor $a\cdot c\equiv b\cdot c\pmod m$.'
+      - 'Ha $a\equiv b\pmod m$, akkor bármilyen pozitív egész $n$ kitevő esetén $a^n\equiv b^n\pmod m$.'
+      - 'Ha $a\equiv b\pmod m$, akkor $m$ bármilyen nemnegatív $k$ osztója esetén $a\equiv b\pmod k$.'

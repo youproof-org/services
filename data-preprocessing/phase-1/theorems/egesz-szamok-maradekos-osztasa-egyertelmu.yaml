@@ -1,0 +1,12 @@
+type: theorem
+name: egesz-szamok-maradekos-osztasa-egyertelmu
+proofs:
+  - egesz-szamok-maradekos-osztasa-egyertelmu-bizonyitas
+remarks: []
+content:
+  - type: formula
+    lead-in: |
+      Tetszőleges $a$ és $b\eq 0$ egész számhoz ***pontosan egy*** olyan $k$ hányados és $r$ maradék létezik,
+      melyekre teljesülnek az alábbiak:
+    content: |
+      \begin{aligned}a&=k\cdot b + r\\0&\leq r\lt |b|\end{aligned}

@@ -1,0 +1,87 @@
+type: section
+name: 06-iii-kovetelmeny-pozitiv-egesz-szam-szorzasa-adossaggal
+title: 'III. követelmény: Pozitív egész szám szorzása adóssággal'
+
+references:
+  peano-osszeg-egyszerusites:
+    target:
+      type: theorem
+      name: peano-osszeg-egyszerusites
+  peano-szorzas-disztributivitas:
+    target:
+      type: theorem
+      name: peano-szorzas-disztributivitas
+  peano-szorzat-egyszerusites:
+    target:
+      type: theorem
+      name: peano-szorzat-egyszerusites
+  termeszetes-szamparok-ekvivalenciarelacioja:
+    target:
+      type: definition
+      name: termeszetes-szamparok-ekvivalenciarelacioja
+  termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel:
+    target:
+      type: theorem
+      name: termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel
+
+body:
+  - type: narrative
+    content: |
+      Szeretnénk, ha a Peano-szorzáshoz hasonlóan a $\odot$ művelet is kommutatív lenne. A pozitív egész számokra
+      ezt már biztosítottuk az I. követelménnyel. Jó volna azonban, ha a kommutativitás a II. követelmény kapcsán
+      felvázolt szituációban is teljesülne, tehát amikor az egyik tényező adósságot, a másik pedig betétet
+      reprezentál.
+  - type: formula
+    lead-in: |
+      Általánosságban tehát a $\odot$ művelettel szembeni harmadik követelményünk, hogy tetszőleges $n$ és $k$
+      természetes számok esetén teljesüljön az alábbi:
+    content: |
+      [(0;n)] \odot [(k;0)] = [(k;0)] \odot [(0;n)]
+  - type: formula
+    lead-in: |
+      Az egyenlet mindkét oldalára felírva az általános képletünket &ndash; és persze a 0 tagokat elhagyva &ndash;
+      a következőt kapjuk:
+    content: |
+      [(C\cdot nk;G\cdot nk)] = [(B\cdot nk;F\cdot nk)]
+  - type: narrative
+    content: |
+      Azt kaptuk tehát, hogy a $(C\cdot nk;G\cdot nk)$ természetes számpárnak ugyanabba a $\sim$ reláció (lásd a
+      [termeszetes-szamparok-ekvivalenciarelacioja]t) szerinti ekvivalencia-osztályba kell esnie, mint a $(B\cdot
+      nk;F\cdot nk)$ számpárnak.
+  - type: formula
+    lead-in: |
+      Ez viszont az előző részben bizonyított
+      [termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel] miatt épp azt jelenti, hogy:
+    content: |
+      C\cdot nk + F\cdot nk=G\cdot nk + B\cdot nk
+  - type: formula
+    lead-in: |
+      Mindkét oldalon a Peano-szorzás disztributivitását ([peano-szorzas-disztributivitas]) kihasználva ez így
+      írható fel:
+    content: |
+      (C+F)\cdot nk=(G+B)\cdot nk
+  - type: narrative
+    content: |
+      Itt feltételezhetjük, hogy $nk\ eq 0$, máskülönben ez az egyenlet $C$, $F$, $G$ és $B$ megválasztásától
+      függetlenül teljesülne.
+  - type: formula
+    lead-in: |
+      Ha viszont $nk\ eq 0$, akkor ismételten a [peano-szorzat-egyszerusites] miatt következik, hogy:
+    content: |
+      C+F=G+B
+  - type: narrative
+    content: |
+      A II.
+  - type: formula
+    lead-in: |
+      követelmény kapcsán viszont már megállapítottuk, hogy $G=C+1$, emiatt:
+    content: |
+      C+F=\underbrace{C+1}_{=G}+B
+  - type: formula
+    lead-in: |
+      Ezt az egyenletet viszont a [peano-osszeg-egyszerusites] miatt egyszerűsíthetjük $C$-vel:
+    content: |
+      F=1+B
+  - type: narrative
+    content: |
+      Végül nézzük az utolsó, $\odot$ műveletre vonatkozó megkötésünket.

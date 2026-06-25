@@ -1,0 +1,13 @@
+type: definition
+name: integritastartomany
+remarks: []
+content:
+  - type: narrative
+    content: |
+      A nullosztómentes és kommutatív gyűrűket ***integritástartományoknak*** nevezzük.
+  - type: narrative
+    content: |
+      Megjegyezzük, hogy ez a definíció ***nem követeli meg egységelem*** &ndash; azaz a szorzásra nézve neutrális
+      elem &ndash; ***létezését***. Sajnos a magyar terminológiában sincs külön neve az egységelemmel is rendelkező
+      integritástartományoknak, ezért a továbbiakban mi is kénytelenek leszünk körülírni az ilyen eseteket,
+      amennyiben az szükséges.

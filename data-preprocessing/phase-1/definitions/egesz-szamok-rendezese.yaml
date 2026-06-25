@@ -1,0 +1,18 @@
+type: definition
+name: egesz-szamok-rendezese
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Amennyiben tetszőleges $a$ és $b$ egész számokhoz létezik olyan $k$ ***természetes szám***, amelyre teljesül,
+      hogy $a+k=b$, akkor azt mondjuk, hogy $a\leq b$. Kiolvasva: "$a$ ***legfeljebb*** $b$" vagy "$b$
+      ***legalább*** $a$".
+  - type: narrative
+    content: |
+      Ha ezen kívül $a\eq b$ is teljesül &ndash; azaz $a$ nem azonos $b$-vel &ndash;, akkor azt mondjuk, hogy $a\lt
+      b$. Kiolvasva: "$a$ ***kisebb***, mint $b$" vagy "$b$ ***nagyobb***, mint $a$". Egy ezzel azonos
+      megfogalmazás így hangzik: ha tetszőleges $a$ és $b$ egész számokhoz létezik olyan $k\eq 0$ természetes szám,
+      amelyre teljesül, hogy $a+k=b$, akkor $a\lt b$.
+  - type: narrative
+    content: |
+      Fordított irányú reláció esetén értelemszerűen használhatjuk a $\geq$ vagy a $\gt$ szimbólumokat is.

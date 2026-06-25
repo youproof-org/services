@@ -1,0 +1,91 @@
+import 'server-only'
+import { loadRawGraphData, buildGraphFromRaw } from './graph'
+import { readRawCache, writeRawCache, deleteRawCache } from './graph-cache'
+import type { ContentGraph } from './types'
+
+// Use a Node.js global so the singleton survives across module re-evaluations
+// within the same webpack context (e.g. the (instrument) context).
+const g = global as typeof global & {
+  __contentGraph?: ContentGraph
+  __reloadListeners?: Set<() => void>
+}
+
+function getReloadListeners(): Set<() => void> {
+  if (!g.__reloadListeners) g.__reloadListeners = new Set()
+  return g.__reloadListeners
+}
+
+export function onGraphReload(listener: () => void): () => void {
+  const listeners = getReloadListeners()
+  listeners.add(listener)
+  return () => listeners.delete(listener)
+}
+
+export function notifyGraphReload(): void {
+  for (const listener of getReloadListeners()) listener()
+}
+
+export async function initContentGraph(): Promise<void> {
+  if (g.__contentGraph) return
+
+  const isDev = process.env.NODE_ENV === 'development'
+
+  // In dev mode: try to restore from the file cache written by a previous
+  // build. This lets the (rsc) webpack context skip the 530+ YAML file reads
+  // that the (instrument) context already performed at startup.
+  if (isDev) {
+    const cached = readRawCache()
+    if (cached) {
+      g.__contentGraph = buildGraphFromRaw(cached)
+      return
+    }
+  }
+
+  console.log('[youproof] Building content graph...')
+  const start = Date.now()
+  const raw = await loadRawGraphData()
+  if (isDev) writeRawCache(raw)
+  g.__contentGraph = buildGraphFromRaw(raw)
+  const elapsed = Date.now() - start
+  console.log(
+    `[youproof] Content graph ready in ${elapsed}ms — ` +
+      `${g.__contentGraph.definitions.size} definitions, ` +
+      `${g.__contentGraph.theorems.size} theorems, ` +
+      `${g.__contentGraph.proofs.size} proofs, ` +
+      `${g.__contentGraph.remarks.size} remarks, ` +
+      `${g.__contentGraph.chapters.size} chapters`
+  )
+}
+
+export function invalidateContentGraph(): void {
+  delete g.__contentGraph
+  if (process.env.NODE_ENV === 'development') deleteRawCache()
+}
+
+export function getContentGraph(): ContentGraph {
+  if (!g.__contentGraph) throw new Error('Content graph has not been initialised. Check instrumentation.ts.')
+  return g.__contentGraph
+}
+
+export type { ContentGraph }
+export type {
+  ThumbnailImage,
+  BookNode,
+  PartNode,
+  ChapterNode,
+  SectionNode,
+  DefinitionNode,
+  TheoremNode,
+  ProofNode,
+  RemarkNode,
+  ContentBlock,
+  NarrativeBlock,
+  FormulaBlock,
+  FigureBlock,
+  EmbedBlock,
+  RecallBlock,
+  ListBlock,
+  TypewriterBlock,
+  RefMap,
+  RefTarget,
+} from './types'

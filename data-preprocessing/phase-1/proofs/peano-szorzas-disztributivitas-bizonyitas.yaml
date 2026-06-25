@@ -1,0 +1,86 @@
+type: proof
+name: peano-szorzas-disztributivitas-bizonyitas
+remarks: []
+references:
+  peano-osszeadas:
+    target:
+      type: definition
+      name: peano-osszeadas
+  peano-osszeadas-asszociativitas:
+    target:
+      type: theorem
+      name: peano-osszeadas-asszociativitas
+  peano-szorzas:
+    target:
+      type: definition
+      name: peano-szorzas
+  peano-szorzas-kommutativitas:
+    target:
+      type: theorem
+      name: peano-szorzas-kommutativitas
+content:
+  - type: narrative
+    content: |
+      Először is megjegyezzük, hogy elegendő csak a baloldali disztributivitást bizonyítani tekintve, hogy a
+      Peano-szorzás kommutatív &ndash; ahogy azt a [peano-szorzas-kommutativitas]ben már bizonyítottuk.
+  - type: narrative
+    content: |
+      Teljes indukciót alkalmazunk $c$-re vonatkozóan. Tegyük fel, hogy az állítás igaz valamilyen $c=n$
+      természetes számra. Az tehát az ***indukciós feltétel***, hogy $a \cdot (b+n)=(a \cdot b) + (a \cdot n)$.
+  - type: formula
+    lead-in: |
+      Azt kell bizonyítanunk, hogy ebben az esetben $c=s(n)$-re is igaz lesz, azaz:
+    content: |
+      a \cdot (b+ \underbrace{s(n)}_{=c})=(a \cdot b) + (a \cdot \underbrace{s(n)}_{=c})
+  - type: formula
+    lead-in: |
+      A [peano-osszeadas] 2. pontja miatt:
+    content: |
+      a \cdot (b+ s(n))=a \cdot s(b+n) = \ldots
+  - type: formula
+    lead-in: |
+      A [peano-szorzas] 2. pontja miatt:
+    content: |
+      \ldots =(a \cdot (b+n)) + a = \ldots
+  - type: formula
+    lead-in: |
+      Az indukciós feltétel miatt:
+    content: |
+      \ldots =((a \cdot b)+(a \cdot n)) + a = \ldots
+  - type: formula
+    lead-in: |
+      Az összeadás asszociativitása miatt ([peano-osszeadas-asszociativitas]):
+    content: |
+      \ldots =(a \cdot b)+((a \cdot n) + a) = \ldots
+  - type: formula
+    lead-in: |
+      Végül ismét a [peano-szorzas] 2. pontja miatt:
+    content: |
+      \ldots =(a \cdot b)+(a \cdot s(n))
+  - type: narrative
+    content: |
+      Vagyis azt kaptuk, hogy valóban $a \cdot (b+ \underbrace{s(n)}_{=c})=(a \cdot b) + (a \cdot
+      \underbrace{s(n)}_{=c})$.
+  - type: narrative
+    content: |
+      Felállítottuk tehát a dominósort, és beláttuk, hogy bármely dominó felborítása esetén a soron következő
+      dominó is fel fog borulni.
+  - type: formula
+    lead-in: |
+      Most felborítjuk az első dominót, tehát igazoljuk, hogy az állítás igaz $c=0$ esetén, azaz:
+    content: |
+      a \cdot (b+ \underbrace{0}_{=c})=(a \cdot b) + (a \cdot \underbrace{0}_{=c})
+  - type: formula
+    lead-in: |
+      A [peano-osszeadas] 1. pontja miatt:
+    content: |
+      a \cdot (b+ 0)=a \cdot b = (a\cdot b) + 0 =\ldots
+  - type: formula
+    lead-in: |
+      Végül a [peano-szorzas] 1. pontja miatt:
+    content: |
+      \ldots = (a\cdot b) + (a\cdot 0)
+  - type: narrative
+    content: |
+      Borul tehát az első dominó, és vele együtt a teljes dominósor, azaz minden $a$, $b$ és $c$ számra igaz, hogy
+      $a\cdot (b+c)=(a\cdot b) + (a\cdot c)$.

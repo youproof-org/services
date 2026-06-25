@@ -1,0 +1,25 @@
+type: theorem
+name: rsa-algoritmus-helyes-mukodese-carmichael-szamok-eseten
+proofs:
+  - rsa-algoritmus-helyes-mukodese-carmichael-szamok-eseten-bizonyitas
+remarks: []
+content:
+  - type: ordered-list
+    lead-in: |
+      Tegyük fel, hogy teljesülnek az alábbi feltételek:
+    items:
+      - 'Legyen adott két tetszőleges ***pozitív***, egymáshoz ***relatív prím*** $p$ és $q$ egész szám, amelyek
+        közül mindkettőre igaz, hogy ***vagy prím, vagy pedig Carmichael-szám***.'
+      - 'Képezzük ezekből az $m=p\cdot q$ modulust.'
+      - 'Képezzük a $(p-1)\cdot (q-1)$ egész számot. Ha $p$ és $q$ mindketten prímek, akkor ez persze
+        $\varphi(m)$-mel fog megegyezni, ám ezt ugye az 1. pont miatt most nem feltételezzük.'
+      - 'Legyen adott egy tetszőleges $e$ egész szám, amely relatív prím $(p-1)\cdot (q-1)$-hez.'
+      - 'Keressünk egy olyan $d$ egész számot, amelyre teljesül az alábbi kongruencia:'
+  - type: formula
+    content: |
+      e\cdot d\equiv 1\pmod{(p-1)\cdot (q-1)}
+  - type: formula
+    lead-in: |
+      Ekkor tetszőleges $x$ egész szám esetén teljesül az alábbi kongruencia is:
+    content: |
+      x^{e\cdot d}\equiv x\pmod m

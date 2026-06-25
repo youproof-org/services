@@ -1,0 +1,47 @@
+type: proof
+name: egesz-szamok-szorzasa-joldefinialt-bizonyitas
+remarks: []
+references:
+  egesz-szamok-szorzasa:
+    target:
+      type: definition
+      name: egesz-szamok-szorzasa
+  ekvivalencia-osztalyok-reprezentansa:
+    target:
+      type: theorem
+      name: ekvivalencia-osztalyok-reprezentansa
+  termeszetes-szamparok-ekvivalenciarelacioja:
+    target:
+      type: definition
+      name: termeszetes-szamparok-ekvivalenciarelacioja
+content:
+  - type: narrative
+    content: |
+      A [ekvivalencia-osztalyok-reprezentansa] tétel szerint minden egész szám felírható $[(x;0)]$ vagy $[(0;x)]$
+      alakban &ndash; ahol $x$ valamilyen természetes szám.
+  - type: formula
+    lead-in: |
+      Ezért elegendő ellenőrizni, hogy tetszőleges $n$, $k$ és $a$ természetes számok esetén teljesülnek az
+      alábbiak:
+    content: |
+      \begin{aligned}\underbrace{[(n;0)]}_{\text{pozitív}} \odot \underbrace{[(k;0)]}_{\text{pozitív}} &= [(n+a;a)]
+      \odot [(k;0)] \\ \underbrace{[(n;0)]}_{\text{pozitív}} \odot \underbrace{[(0;k)]}_{\text{negatív}} &=
+      [(n+a;a)] \odot [(0;k)] \\ \underbrace{[(0;n)]}_{\text{negatív}} \odot \underbrace{[(k;0)]}_{\text{pozitív}}
+      &= [(a;n+a)] \odot [(k;0)] \\ \underbrace{[(0;n)]}_{\text{negatív}} \odot
+      \underbrace{[(0;k)]}_{\text{negatív}} &= [(a;n+a)] \odot [(0;k)] \end{aligned}
+  - type: formula
+    lead-in: |
+      Ez a 4 egyenlet a [egesz-szamok-szorzasa] miatt rendre így írható fel:
+    content: |
+      \begin{aligned}[(nk;0)]&=[(nk +ak;ak)] \\ [(0;nk)]&=[(ak;nk +ak)] \\ [(0;nk)]&=[(ak;nk +ak)] \\
+      [(nk;0)]&=[(nk +ak;ak)] \end{aligned}
+  - type: narrative
+    content: |
+      Mivel a $\sim$ reláció [termeszetes-szamparok-ekvivalenciarelacioja]jának 1. pontja miatt egyrészt
+      $(nk;0)\sim (nk+ak;ak)$, másrészt $(0;nk)\sim (ak;nk+ak)$, ezért az egyenletek bal- és jobboldalai valóban
+      ugyanazokat az egész számokat reprezentálják.
+  - type: narrative
+    content: |
+      A $\odot$ művelet eredménye tehát valóban nem függ attól, hogy a tényezők, mint ekvivalencia-osztályok mely
+      elemeire alkalmazzuk a képletet. Azaz a $\odot$ művelet ***jóldefiniált*** ezen ekvivalencia-osztályok
+      halmazán, tehát végsősoron a $\Z$ halmazon.

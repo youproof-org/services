@@ -1,0 +1,75 @@
+type: section
+name: 06-primitiv-gyokok-es-a-diffie-hellman-kulcscsere-protokoll
+title: Primitív gyökök és a Diffie-Hellman kulcscsere protokoll
+
+references:
+  csoportelem-rendje:
+    target:
+      type: definition
+      name: csoportelem-rendje
+  modularis-osszeadas-es-szorzas:
+    target:
+      type: definition
+      name: modularis-osszeadas-es-szorzas
+  redukalt-maradekosztaly-feltetele:
+    target:
+      type: theorem
+      name: redukalt-maradekosztaly-feltetele
+
+body:
+  - type: narrative
+    content: |
+      Megjegyezzük, hogy a primitív gyököknek a 9. részben már ismertetett ***Diffie-Hellman kulcscsere
+      protokoll*** kapcsán van nagy jelentőségük. Az eljárás részleteit nem ismételjük meg, de a lényeg ugye egy
+      moduláris hatványozáson alapuló $f$ egyirányú függvény, amelyet Alice és Bob használ egy közös titok (vagy ha
+      úgy tetszik kulcs) meghatározásához.
+  - type: formula
+    lead-in: |
+      Ezt a hatványozást a [modularis-osszeadas-es-szorzas] szerinti $Z_m$ gyűrűben, vagy az azzal izomorf
+      $\Z/m\Z$ maradékosztálygyűrűben kell végrehajtani az alábbi képlet alapján, ahol $G$ egy tetszőlegesen
+      választott maradékosztály, amelyet ***generátorelemnek*** nevezünk (az elnevezés oka rövidesen világos lesz):
+    content: |
+      f(n)=G^n
+  - type: narrative
+    content: |
+      Az eljárás biztonsága azon alapszik, hogy a támadónak a nyilvános $G$ generátorelem, a használt gyűrűt
+      azonosító szintén nyilvános $m$ modulus és a kommunikációs csatornán elfogott $G^n$ hatvány ismeretében kéne
+      meghatároznia a titokban tartott $n$ kitevőt. Ez az úgynevezett ***diszkrét logaritmus*** problémájának
+      megoldását jelenti számára, amely algoritmikusan egy belátható időn belül kivitelezhetetlen feladat, feltéve
+      persze, hogy a $G$ maradékosztálynak elegendően sok hatványa létezik a $\Z/m\Z$ gyűrűben.
+  - type: narrative
+    content: |
+      Könnyen látszik, hogy e feltétel teljesítése érdekében generátorelemnek egy ***redukált maradékosztályt***
+      célszerű választani. Ha ugyanis $G=[g]_m$ nem egy redukált maradékosztály, akkor a
+      [redukalt-maradekosztaly-feltetele] alapján a $g$ reprezentánselemnek és az $m$ modulusnak van egységtől
+      különböző közös osztója. Ez viszont igaz lesz bármelyik $G^n$ hatvány reprezentánselemeire is, hiszen
+      $G^k=[g^k]_m$, következésképp ekkor $G$ hatványai szintén a nem redukált maradékosztályok közül kerülnek ki.
+      Márpedig ezekből elenyészően kevés van a $\Z/m\Z$ gyűrűben, és így a támadó akár próbálgatással is könnyedén
+      célt érhet.
+  - type: narrative
+    content: |
+      A ***redukált maradékosztályok*** viszont épp a $(\Z/m\Z)^{\times}$ multiplikatív csoport elemei, amely
+      csoport ugye zárt a szorzásra (és így a hatványozásra) nézve. Ezért Alice és Bob tulajdonképpen ebből a
+      multiplikatív csoportból szeretne választani magának egy olyan elemet, amelynek lehetőleg minél több
+      különböző hatványa van, azaz amelyiknek minél nagyobb a rendje (lásd a [csoportelem-rendje]t).
+      Csoportelméleti terminológiával élve akkor vannak tehát a legnagyobb biztonságban, ha a $(\Z/m\Z)^{\times}$
+      multiplikatív csoport ***ciklikus***, $G$ pedig ennek egy ***generátoreleme***, azaz egy ***modulo $m$
+      primitív gyök***, ekkor ugyanis $G$ hatványai kiadják a teljes $(\Z/m\Z)^{\times}$ csoportot.
+  - type: narrative
+    content: |
+      Az előző szakaszban bizonyított tétel alapján ha Alice és Bob egy $p$ prímszámot használnak modulusként
+      &ndash; amelyet az elmúlt részek fényében könnyedén találhatnak maguknak &ndash;, akkor a $(\Z/p\Z)^{\times}$
+      csoport biztosan ciklikus lesz. Ami a rossz hír, hogy a tétel bizonyítása nem konstruktív, azaz nem
+      szolgáltat konkrét eljárást primitív gyökök megkereséséhez, azoknak csupán a ***létezését*** bizonyítja. Ami
+      még rosszabb hír, hogy erre a feladatra egyáltalán nem ismert (és minden jel arra mutat, hogy nem is várható)
+      hatékony eljárás, így a modulo $p$ primitív gyökök keresgélése nem egy járható út.
+  - type: narrative
+    content: |
+      A gyakorlatban ehelyett egy olyan maradékosztály is megfelel a célnak, amely nem generálja ugyan a teljes
+      $(\Z/p\Z)^{\times}$ csoportot, hanem annak csak egy olyan részcsoportját, amely viszont már "kellően
+      nagyméretű" a kívánt biztonsági szint eléréséhez. Ennek érdekében először ezt a "kellően nagy" méretet
+      szokták meghatározni, majd ebből állítják elő a $p$ modulust olymódon, hogy az egy úgynevezett "biztonságos
+      prím" legyen. A részletek mellőzésével megemlítjük, hogy egy ilyen $p$ biztonságos prímnek számos,
+      kriptográfiai szempontból fontos tulajdonsága van. Többek között az, hogy "majdnem mindegyik" modulo $p$
+      redukált maradékosztály "kellően nagyméretű" részcsoportot generál. Mivel ez hatékonyan ellenőrizhető, ezért
+      Alice és Bob viszonylag gyorsan képes megfelelő biztonságú generátorelemet választani.

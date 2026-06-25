@@ -1,0 +1,159 @@
+type: proof
+name: carmichael-szamok-tulajdonsagai-bizonyitas
+remarks: []
+references:
+  carmichael-szamok:
+    target:
+      type: definition
+      name: carmichael-szamok
+  egesz-szamok-kozotti-kongruencia:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia
+  egesz-szamok-kozotti-kongruencia-tulajdonsagai:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia-tulajdonsagai
+  egysegek-es-egysegelem-viszonya:
+    target:
+      type: theorem
+      name: egysegek-es-egysegelem-viszonya
+  fermat-tanu:
+    target:
+      type: definition
+      name: fermat-tanu
+  gyuru-test:
+    target:
+      type: definition
+      name: gyuru-test
+  korselt-kriterium:
+    target:
+      type: theorem
+      name: korselt-kriterium
+  oszthatosag-es-rendezesi-relacio-kapcsolata:
+    target:
+      type: theorem
+      name: oszthatosag-es-rendezesi-relacio-kapcsolata
+  oszthatosag-tulajdonsagai:
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+  rendezett-gyuru:
+    target:
+      type: definition
+      name: rendezett-gyuru
+content:
+  - type: narrative
+    content: |
+      ***Először a Carmichael-számok paritására vonatkozó állítást igazoljuk.***
+  - type: narrative
+    content: |
+      Legyen $n$ tetszőleges Carmichael-szám. Az $n$ és az $n-1$ egész számok egymáshoz relatív prímek. Ugyanis
+      bármilyen közös osztó a [oszthatosag-tulajdonsagai] 6. pontja alapján osztója e két szám különbségének, azaz
+      $1$-nek, és így a [egysegek-es-egysegelem-viszonya] miatt ez a közös osztó csak egység lehet. Így tehát az
+      $[n-1]_n$ egy redukált maradékosztály, és mivel $n$ Carmichael-szám, ezért ez a maradékosztály a
+      [carmichael-szamok] alapján biztosan nem Fermat-tanú.
+  - type: formula
+    lead-in: |
+      Azaz a [fermat-tanu] értelmében teljesül az alábbi kongruencia:
+    content: |
+      (n-1)^{n-1}\equiv 1\pmod n
+  - type: formula
+    lead-in: |
+      Az $n-1\equiv -1\pmod n$ kongruencia nyilván teljesül, ezért a fenti kongruenciát a
+      [egesz-szamok-kozotti-kongruencia-tulajdonsagai] 8. pontja alapján a következőképpen írhatjuk át:
+    content: |
+      (-1)^{n-1}\equiv 1\pmod n
+  - type: narrative
+    content: |
+      Azt viszont tudjuk, hogy a $-1$ bármilyen hatványa $+1$ vagy $-1$ attól függően, hogy a kitevő páros vagy
+      páratlan. Tegyük fel ***indirekt***, hogy jelen esetben $n-1$ páratlan.
+  - type: formula
+    lead-in: |
+      Ekkor a fenti kongruencia így néz ki:
+    content: |
+      -1\equiv 1\pmod n
+  - type: formula
+    lead-in: |
+      Ez a [egesz-szamok-kozotti-kongruencia] 3. pontja alapján azt jelentené, hogy teljesül az alábbi oszthatóság:
+    content: |
+      n|\underbrace{1-(-1)}_{=2}
+  - type: narrative
+    content: |
+      Ez viszont lehetetlen, hiszen $n$ Carmichael-szám, emiatt pozitív és összetett, következésképp biztosan
+      nagyobb $2$-nél, vagyis nem lehet osztója neki. Indirekt feltevésünk, miszerint $n-1$ páratlan hibás volt,
+      azaz $n-1$ páros, és így $n$ ***valóban páratlan***.
+  - type: narrative
+    content: |
+      ***Most igazoljuk a Carmichael-számok prímtényezőire vonatkozó állítást.***
+  - type: narrative
+    content: |
+      Legyen $n$ továbbra is tetszőleges Carmichael-szám, de tegyük fel ***indirekt***, hogy neki csak két
+      prímtényezője van, azaz felírható $n=pq$ alakban valamilyen alkalmasan választott $p$ és $q$ prímszámokkal. A
+      ***Korselt-kritérium*** ([korselt-kriterium]) alapján $n$ négyzetmentes, így e két prímtényező biztosan
+      különbözik egymástól, azaz $p\eq q$. Ezenkívül az általánosság megsértése nélkül feltehetjük, hogy $p\gt q$,
+      hiszen ha nem így lenne, akkor szerepük felcserélésével az alábbi gondolatmenet ugyanígy végigjátszható.
+      Továbbá azt is feltehetjük, hogy mindkét prímtényező pozitív. Ha ugyanis nem így lenne, akkor az ő
+      ellentettjükre ez már teljesül &ndash; hiszen $n$ Carmichael-szám, és így pozitív &ndash;, és az alábbi
+      gondolatmenetet rájuk alkalmazhatjuk.
+  - type: formula
+    lead-in: |
+      Szintén a ***Korselt-kritérium*** ([korselt-kriterium]) alapján tudjuk, hogy teljesül az alábbi oszthatóság:
+    content: |
+      p-1|n-1
+  - type: formula
+    lead-in: |
+      Azaz létezik olyan $k$ egész szám, amelyre teljesül az alábbi egyenlet:
+    content: |
+      (p-1)\cdot k=n-1
+  - type: formula
+    lead-in: |
+      Mivel azt feltételeztük, hogy $n=pq$, ezért ez így is írható:
+    content: |
+      (p-1)\cdot k=\underbrace{pq}_{=n}-1
+  - type: formula
+    lead-in: |
+      A jobboldal értéke nem változik, ha hozzá is adunk $q$-t és le is vonunk belőle $q$-t:
+    content: |
+      (p-1)\cdot k=pq-q+q-1
+  - type: formula
+    lead-in: |
+      A [gyuru-test]ban szereplő disztributivitási szabályok alapján ez így is írható:
+    content: |
+      (p-1)\cdot k=(p-1)\cdot q+q-1
+  - type: formula
+    lead-in: |
+      Mindkét oldalból levonhatunk $(p-1)q$-t:
+    content: |
+      (p-1)\cdot k - (p-1)\cdot q=q-1
+  - type: formula
+    lead-in: |
+      Most a baloldalra alkalmazhatjuk a disztributivitási szabályt:
+    content: |
+      (p-1)\cdot (k-q)=q-1
+  - type: narrative
+    content: |
+      Azt kaptuk tehát, hogy létezik olyan egész szám &ndash; nevezetesen a $k-q$ &ndash; amellyel $p-1$-et
+      megszorozva $q-1$-et kapunk.
+  - type: formula
+    lead-in: |
+      Teljesül tehát az alábbi oszthatóság:
+    content: |
+      p-1|q-1
+  - type: formula
+    lead-in: |
+      Mivel $q$ egy pozitív prím, így $q-1$ is pozitív, ezért a [oszthatosag-es-rendezesi-relacio-kapcsolata]
+      alapján ő legalább akkora, mint bármely osztója, azaz:
+    content: |
+      p-1\leq q-1
+  - type: formula
+    lead-in: |
+      A [rendezett-gyuru]ban szereplő 1. rendezési axióma alapján mindkét oldalhoz $1$-et adva ezt kapjuk:
+    content: |
+      p\leq q
+  - type: narrative
+    content: |
+      Ez viszont ***ellentmondás***, hiszen azt feltételeztük, hogy $p\gt q$. Ugyanilyen gondolatmenet alapján
+      $p\lt q$-ból $p\geq q$ következne, ami szintén ellentmondás. Indirekt feltételezésünk tehát hibás volt, és
+      így $n$ biztosan nem írható fel $pq$ alakban, azaz szükségképpen valóban ***legalább 3 prímtényezője kell
+      legyen***.

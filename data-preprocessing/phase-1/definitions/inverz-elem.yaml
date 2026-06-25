@@ -1,0 +1,27 @@
+type: definition
+name: inverz-elem
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen adott egy $R$ halmaz egy rajta értelmezett $*$ művelettel. Létezzen továbbá neutrális elem erre a
+      műveletre nézve, amelyet jelöljünk $n$-nel.
+  - type: narrative
+    content: |
+      Ha egy adott $b$ elemhez létezik olyan $b^{-1}$-gyel jelölt elem, amelyre $b*b^{-1}=n$, akkor $b^{-1}$-et a
+      $b$ elem ***jobboldali inverzének*** nevezzük a $*$ műveletre nézve.
+  - type: narrative
+    content: |
+      Ha egy adott $b$ elemhez létezik olyan $b^{-1}$-gyel jelölt elem, amelyre $b^{-1}*b=n$, akkor $b^{-1}$-et a
+      $b$ elem ***baloldali inverzének*** nevezzük a $*$ műveletre nézve.
+  - type: narrative
+    content: |
+      Ha $b^{-1}$ egyszerre jobb- és baloldali inverz, akkor őt a $b$ elem ***kétoldali inverzének***, vagy
+      egyszerűen csak ***inverzének*** nevezzük a $*$ műveletre nézve. Azt mondjuk, hogy a ***$b$ elem
+      invertálható***, amennyiben létezik hozzá inverz elem a $*$ műveletre nézve. Azt mondjuk, hogy a ***$*$
+      művelet invertálható***, ha minden $R$-beli elemhez létezik inverz erre a műveletre nézve.
+  - type: narrative
+    content: |
+      A szakirodalomban sok helyen találkozhatunk még az ***ellentett elem*** vagy a ***reciprok*** kifejezésekkel,
+      valamint a $-b$ illetve az $\frac{1}{b}$ jelölésekkel is. Kontextustól függően mi is felváltva fogjuk
+      használni ezeket a fogalmakat és/vagy jelöléseket, ettől függetlenül ezek mind ugyanazt jelentik.

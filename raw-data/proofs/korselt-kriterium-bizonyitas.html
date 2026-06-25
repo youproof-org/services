@@ -1,0 +1,311 @@
+<!-- wp:paragraph -->
+<p><strong><em>Elsőként</em></strong> azt mutatjuk meg, hogy ha [latex]n[/latex] Carmichael-szám, akkor teljesíti a fenti két kritériumot. Először igazoljuk, hogy [latex]n[/latex] négyzetmentes, ami a [yp_element slug="negyzetmentesseg-feltetele" type="link" /] alapján azt jelenti, hogy nem létezik olyan pozitív prímosztója, amelynek a négyzetével is osztható. Tegyük fel <strong><em>indirekt</em></strong>, hogy nem ez a helyzet, azaz [latex]p[/latex] egy olyan galád pozitív prímosztó, amelynek a négyzete szintén [latex]n[/latex] osztója. Ezt a [yp_element slug="egesz-szam-p-adikus-rendje" type="link" /] alapján úgy is mondhatjuk, hogy az [latex]n[/latex] egész szám [latex]p[/latex]-adikus rendje legalább [latex]2[/latex]. Azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}v_p(n)&amp;=k \\ k&amp;\geq 2\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez azt jelenti, hogy [latex]n[/latex] felírható az alábbi alakban, ahol [latex]m[/latex] tovább már nem osztható [latex]p[/latex]-vel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]n=p^km[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]p[/latex] prím, ezért az, hogy [latex]m[/latex] nem osztható [latex]p[/latex]-vel egyben azt is jelenti, hogy [latex]p^k[/latex] és [latex]m[/latex] <strong><em>relatív prímek</em></strong>, azaz [latex](p^k,m)=1[/latex]. Ekkor érvényes a <strong><em>kínai maradéktétel</em></strong> ([yp_element slug="kinai-maradektetel" type="link" /]), amelynek következményeként a [yp_element slug="maradekosztalygyuruk-dekompozicioja" type="link" /] alapján fennáll az alábbi gyűrűizomorfizmus:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\Z/n\Z \simeq \Z/p^k\Z \times \Z/m\Z[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Következésképp egyértelműen létezik olyan [latex]X[/latex] maradékosztály a baloldali maradékosztálygyűrűben, amelyhez a [yp_element slug="maradekosztalygyuruk-dekompozicioja" type="link" /]ben szereplő [latex]g[/latex] gyűrűizomorfizmus az [latex]([1+p]_{p^k};[1]_m)[/latex] maradékosztálypárt rendeli hozzá a jobboldali szorzatgyűrűből. Legyen [latex]a[/latex] ennek az [latex]X[/latex] maradékosztálynak egy reprezentánseleme. Ekkor tehát az említett [latex]g[/latex] gyűrűizomorfizmus az alábbi hozzárendelést valósítja meg:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][a]_n \xmapsto{g} (\underbrace{[1+p]_{p^k}}_{=[a]_{p^k}};\underbrace{[1]_m}_{=[a]_m})[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azaz fennállnak a jobboldalon szereplő maradékosztályok közötti alábbi egyenlőségek:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}[a]_{p^k}&amp;=[1+p]_{p^k} \\ [a]_m&amp;=[1]_m\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A második egyenlőségből a [yp_element slug="redukalt-maradekosztaly-feltetele" type="link" /] alapján következik, hogy [latex]a[/latex] relatív prím [latex]m[/latex]-hez. Az [latex][a]_m=[1]_m[/latex] maradékosztály ugyanis nyilván invertálható a [latex]\Z/m\Z[/latex] gyűrűben, hiszen ő ennek a gyűrűnek az egységeleme, amelynek inverze önmaga. Az első egyenlőségből szintén a [yp_element slug="redukalt-maradekosztaly-feltetele" type="link" /] alapján következik, hogy [latex]a[/latex] pontosan akkor relatív prím [latex]p^k[/latex]-hoz, ha [latex]1+p[/latex] is az, hiszen ők ugyanannak a modulo [latex]p^k[/latex] maradékosztálynak a reprezentánselemei. Ez viszont nyilván teljesül, hiszen [latex]1+p[/latex] biztosan nem osztható [latex]p[/latex]-vel, így annak semmilyen hatványával sem. Azt kaptuk tehát, hogy [latex]a[/latex]-nak nincs közös prímtényezője sem [latex]m[/latex]-mel, sem pedig [latex]p^k[/latex]-val is, következésképp az ő szorzatukkal, azaz [latex]n[/latex]-nel sem. Az [latex]a[/latex] egész szám tehát relatív prím [latex]n[/latex]-hez, azaz a [yp_element slug="redukalt-maradekosztaly-feltetele" type="link" /] alapján [latex][a]_n[/latex] egy <strong><em>redukált maradékosztály</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ugye [latex]n[/latex]-ről most tudjuk, hogy Carmichael-szám, ami a [yp_element slug="carmichael-szamok" type="link" /] alapján azt jelenti, hogy <strong><em>egyetlen redukált maradékosztály sem lehet Fermat-tanú</em></strong>, ezért nyilván a most megkonstruált [latex][a]_n[/latex] sem az. Azaz a Fermat-tanúkra vonatkozó [yp_element slug="fermat-tanu" type="link" /] alapján teljesül az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{n-1}\equiv 1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel azonban [latex]n=p^km[/latex], ezért nyilván teljesül a [latex]p^k|n[/latex] oszthatóság, és így a [yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" type="link" /] 9. pontja alapján az alábbi kongruencia is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{n-1}\equiv 1\pmod{p^k}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]a[/latex] egész számot viszont úgy választottuk ki, hogy kongruens legyen [latex]1+p[/latex]-vel modulo [latex]p^k[/latex], ezért a [yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" type="link" /] 8. pontja alapján teljesül az alábbi kongruencia is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](1+p)^{n-1}\equiv 1\pmod{p^k}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Viszont <strong><em>indirekt</em></strong> feltételezésünk szerint a [latex]k[/latex] kitevő legalább [latex]2[/latex], és így teljesül a [latex]p^2|p^k[/latex] oszthatóság, és így a [yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" type="link" /] 9. pontja miatt az alábbi kongruencia is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](1+p)^{n-1}\equiv 1\pmod{p^2}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A kongruencia baloldalán tehát egy olyan [latex]n-1[/latex] tényezős szorzat szerepel, amelynek minden tényezője [latex]1+p[/latex]:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](1+p)^{n-1}=\underbrace{(1+p)\cdot (1+p)\cdot \ldots \cdot (1+p)}_{\text{(n-1) darab}}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="p-edik-hatvanyok-kulonbsegenek-p-adikus-rendje" type="link" /] bizonyításának gondolatmenetéhez hasonlóan a [yp_element slug="gyuru-test" type="link" /]ban szereplő disztributivitási szabályok alapján ezt az [latex]n-1[/latex] darab zárójelet úgy kell felbontani, hogy minden zárójelből az összes lehetséges kombinációban kiválasztunk pontosan egy tagot, ezeket összeszorozzuk egymással, és az így kapott szorzatokat összeadjuk. Így az alábbi tagok keletkeznek valamilyen [latex]A_0[/latex], [latex]A_1[/latex], [latex]A_2[/latex], ..., [latex]A_{n-1}[/latex] szorzó tényezőkkel attól függően, hogy melyik kombinációt hányféleképpen lehet előállítani az [latex]n-1[/latex] darab zárójelből:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}(1+p)^{n-1} &amp;= A_0\cdot 1^{n-1}\cdot p^0 \\ &amp;+ A_1\cdot 1^{n-2}\cdot p^1 \\ &amp;+ A_2\cdot 1^{n-3}\cdot p^2 \\ &amp;+ A_3\cdot 1^{n-4}\cdot p^3 \\ &amp;\vdots \\ &amp;+ A_{n-1}\cdot 1^0\cdot p^{n-1}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Itt az [latex]A_0[/latex] együttható nyilván [latex]1[/latex] lesz, hiszen egyféleképpen lehet kiválasztani mind az [latex]n-1[/latex] darab zárójelből az [latex]1[/latex] tagot. Ehhez hasonló okok miatt az [latex]A_1[/latex] együttható [latex]n-1[/latex] lesz, hiszen [latex]n-1[/latex]-féleképpen lehet kiválasztani az [latex]n-1[/latex] darab zárójelből azt az egyet, amiből a [latex]p[/latex] tagot vesszük az adott szorzathoz. A zárójelek felbontása után kapott kifejezés tehát így néz ki:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](1+p)^{n-1} = \underbrace{1}_{=A_0}p^0 + \underbrace{(n-1)}_{=A_1}p^1 + A_2p^2 + A_3p^3 + \ldots + A_{n-1}p^{n-1}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel minket ennek a kifejezésnek az értéke modulo [latex]p^2[/latex] érdekel minket, ezért nincs szükségünk az [latex]A_2[/latex], [latex]A_3[/latex], ..., [latex]A_{n-1}[/latex] együtthatók pontos értékére – amelyeket egyébként a&nbsp;<a rel="noreferrer noopener" href="https://hu.wikipedia.org/wiki/Binomi%C3%A1lis_t%C3%A9tel" target="_blank">binomiális tétel</a>&nbsp;alapján lehetne kiszámítani. Vegyük ugyanis észre, hogy a 3. tagtól kezdve minden tag osztható [latex]p^2[/latex]-tel, vagy másként fogalmazva [latex]0[/latex]-val kongruens modulo [latex]p^2[/latex]. Így az alábbi kongruenciát kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](1+p)^{n-1}\equiv 1+(n-1)p\pmod{p^2}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A baloldalon szereplő [latex](1+p)^{n-1}[/latex] már megmutattuk, hogy [latex]1[/latex]-gyel kongruens modulo [latex]p^2[/latex], emiatt a jobboldal is, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]1\equiv 1+(n-1)p\pmod{p^2}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]n[/latex] osztható [latex]p[/latex]-vel (hiszen egy prímtényezőjéről van szó), így felírható [latex]n=t\cdot p[/latex] alakban valamilyen alkalmasan választott [latex]t[/latex] egész számmal:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]1\equiv 1+(\underbrace{tp}_{=n}-1)p\pmod{p^2}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A jobboldalon szereplő zárójelet felbontva az alábbi adódik:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]1\equiv 1+\underbrace{tp^2}_{\equiv 0}-p\pmod{p^2}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A középső [latex]tp^2[/latex] tag osztható [latex]p^2[/latex]-tel, azaz [latex]0[/latex]-val kongruens modulo [latex]p^2[/latex], így az elhagyható a jobboldalról:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]1\equiv 1-p\pmod{p^2}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez viszont a [yp_element slug="egesz-szamok-kozotti-kongruencia" type="link" /] 3. pontja alapján azt jelentené, hogy teljesül az alábbi oszthatóság:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]p^2|\underbrace{1-(1-p)}_{=p}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez egyértelmű <strong><em>ellentmondás</em></strong>, ami az indirekt feltételezésünkből következne, ha igaz volna. Nem igaz tehát, hogy [latex]n[/latex] osztható [latex]p^2[/latex]-tel, vagy ugyanezen gondolatmenet alapján bármely más prímosztó négyzetével. Következésképp [latex]n[/latex] valóban <strong><em>négyzetmentes</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most a [latex]p-1|n-1[/latex] oszthatóságot igazoljuk. Legyen [latex]p[/latex] továbbra is [latex]n[/latex] tetszőleges pozitív prímtényezője. Az előzőekben tehát beláttuk, hogy az [latex]n[/latex] egész szám [latex]p[/latex]-adikus rendje [latex]1[/latex], azaz [latex]n[/latex] felírható az alábbi alakban, ahol [latex]m[/latex] tovább már nem osztható [latex]p[/latex]-vel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]n=pm[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]p[/latex] prím, ezért az, hogy [latex]m[/latex] nem osztható [latex]p[/latex]-vel egyben azt is jelenti, hogy [latex]p[/latex] és [latex]m[/latex] <strong><em>relatív prímek</em></strong>, azaz [latex](p,m)=1[/latex]. Ismét érvényes tehát a <strong><em>kínai maradéktétel</em></strong> ([yp_element slug="kinai-maradektetel" type="link" /]), így a [yp_element slug="maradekosztalygyuruk-dekompozicioja" type="link" /] alapján fennáll az alábbi gyűrűizomorfizmus:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\Z/n\Z \simeq \Z/p\Z \times \Z/m\Z[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Tekintsük most a jobboldalon szereplő [latex]\Z/p\Z[/latex] gyűrű multiplikatív csoportját, azaz a [latex](\Z/p\Z)^{\times}[/latex] csoportot. Ez a [latex]\Z/p\Z[/latex] gyűrű invertálható elemeiből áll, amelyek épp a modulo [latex]p[/latex] <strong><em>redukált maradékosztályok</em></strong>. Ezek számát a [yp_element slug="euler-fuggveny" type="link" /] alapján az <strong><em>Euler-féle [latex]\varphi[/latex]-függvény</em></strong> adja meg. Mivel [latex]p[/latex] prím, ezért ez a [yp_element slug="euler-fuggveny-primhatvanyokra" type="link" /] alapján jelen esetben épp [latex]p-1[/latex], ami tehát a [latex](\Z/p\Z)^{\times}[/latex] multiplikatív <strong><em>csoport rendje</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="primitiv-gyok-modulo-p" type="link" /] alapján a [latex](\Z/p\Z)^{\times}[/latex] csoportban <strong><em>létezik primitív gyök</em></strong>, hiszen [latex]p[/latex] prím. Azaz a [yp_element slug="primitiv-gyok" type="link" /] utáni megjegyzés szerint létezik olyan [latex]b[/latex] egész szám, hogy az általa reprezentált [latex][b]_p[/latex] redukált maradékosztály rendje épp megegyezik a csoport rendjével, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]o([b]_p)=p-1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A fennálló gyűrűizomorfizmus miatt létezik olyan [latex]X[/latex] maradékosztály a [latex]\Z/n\Z[/latex] gyűrűben, amelyhez a [yp_element slug="maradekosztalygyuruk-dekompozicioja" type="link" /]ben szereplő [latex]g[/latex] gyűrűizomorfizmus a [latex]([b]_p;[1]_m)[/latex] maradékosztálypárt rendeli hozzá a [latex]\Z/p\Z \times \Z/m\Z[/latex] szorzatgyűrűből. Legyen [latex]a[/latex] ennek az [latex]X[/latex] maradékosztálynak egy reprezentánseleme. Ekkor a [latex]g[/latex] gyűrűizomorfizmus az alábbi hozzárendelést valósítja meg:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][a]_n \xmapsto{g} (\underbrace{[b]_p}_{=[a]_p};\underbrace{[1]_m}_{=[a]_m})[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azaz fennállnak a jobboldalon szereplő maradékosztályok közötti alábbi egyenlőségek:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}[a]_p&amp;=[b]_p \\ [a]_m&amp;=[1]_m\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]a[/latex] egész szám tehát egyrészt relatív prím [latex]m[/latex]-hez, mivel az általa reprezentált maradékosztály nyilván redukált, hiszen a [latex]\Z/m\Z[/latex] maradékosztálygyűrű egységeleméről van szó. Másrészt relatív prím [latex]p[/latex]-hez is, ugyanis a vele azonos modulo [latex]p[/latex] maradékosztályban lévő [latex]b[/latex] is az, hiszen ez a maradékosztály a [latex](\Z/p\Z)^{\times}[/latex] multiplikatív csoport egy eleme (konkrétan az egyik primitív gyök), azaz redukált maradékosztály. Következésképp [latex]a[/latex] az [latex]n=pm[/latex] szorzathoz is relatív prím, azaz [latex](a,n)=1[/latex], és így [latex][a]_n[/latex] szintén redukált maradékosztály a [latex]\Z/n\Z[/latex] gyűrűben.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mivel azonban [latex]n[/latex] ugye Carmichael-szám, ezért a [yp_element slug="carmichael-szamok" type="link" /] alapján [latex][a]_n[/latex] biztosan nem Fermat-tanú, azaz teljesül az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{n-1}\equiv 1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="egesz-szamok-maradekosztalygyurui" type="link" /] alapján a maradékosztályok közötti szorzást – és így a hatványozást is – a reprezentánselemeken kell végrehajtani. Ezért a fenti kongruencia baloldalán épp az [latex][a]_n[/latex] maradékosztály [latex]n-1[/latex]-edik hatványának reprezentánseleme áll, amely hatvány tehát nem más, mint az [latex][1]_n[/latex] maradékosztály. Ám ekkor művelettartó tulajdonsága alapján a fenti [latex]g[/latex] gyűrűizomorfizmus az alábbi hozzárendelést valósítja meg:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{[a]^{n-1}_n}_{=[1]_n} \xmapsto{g} ([b]_p;[1]_m)^{n-1}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="gyuruk-direkt-szorzata" type="link" /] alapján a jobboldali szorzatgyűrűben a hatványozást komponensenként kell végrehajtani, így valójában az alábbi hozzárendelésről van szó:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][1]_n \xmapsto{g} (\underbrace{[b]^{n-1}_p}_{=[1]_p};[1]_m)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A jobboldal alapján tehát a [latex]\Z/p\Z[/latex] maradékosztálygyűrűben fennáll az alábbi, maradékosztályok közötti egyenlőség:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][b]^{n-1}_p= [1]_p[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Minthogy [latex][b]_p[/latex] a [latex](\Z/p\Z)^{\times}[/latex] multiplikatív csoport egy eleme, amely csoportnak [latex][1]_p[/latex] épp a neutrális eleme, ezért a [yp_element slug="csoportelem-rendjere-vonatkozo-osszefuggesek" type="link" /] 2. pontja alapján teljesül az alábbi oszthatóság:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]o([b]_p)|n-1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt azonban már korábban láttuk, hogy [latex][b]_p[/latex] rendje épp [latex]p-1[/latex], azaz valóban <strong><em>teljesül a [latex]p-1|n-1[/latex] oszthatóság</em></strong> [latex]n[/latex] bármely pozitív [latex]p[/latex] prímtényezőjére.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Végezetül</em></strong> megmutatjuk, hogy ha egy összetett számra teljesülnek a tételben szereplő kritériumok, akkor ő szükségképpen Carmichael-szám. Legyen ezért [latex]n[/latex] tetszőleges <strong><em>összetett</em></strong> szám, amely <strong><em>négyzetmentes</em></strong>, és tegyük fel, hogy bármely pozitív [latex]p[/latex] prímtényezőjére teljesül a [latex]p-1|n-1[/latex] oszthatóság. Válasszunk egy tetszőleges [latex]a[/latex] egész számot, amely relatív prím [latex]n[/latex]-hez. Mivel [latex]p[/latex] az [latex]n[/latex] egy prímtényezője, ezért [latex]a[/latex] relatív prím [latex]p[/latex]-hez is. Ekkor a <strong><em>kis Fermat-tétel</em></strong> alapján ([yp_element slug="kis-fermat-tetel" type="link" /]) teljesül az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{p-1}\equiv 1\pmod p[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A feltételünk szerint azonban most fennáll a [latex]p-1|n-1[/latex] oszthatóság, azaz létezik olyan [latex]t[/latex] egész szám, amelyre teljesül az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](p-1)t=n-1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A fenti kongruencia mindkét oldalát a [latex]t[/latex]-edik hatványra emelve ezt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](a^{p-1})^t\equiv 1^t\pmod p[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A hatványozás azonosságairól szóló [yp_element slug="hatvanyozas-azonossagai" type="link" /] 2. pontja alapján tehát:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{\overbrace{n-1}^{=(p-1)t}}\equiv 1\pmod p[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez a [yp_element slug="egesz-szamok-kozotti-kongruencia" type="link" /] 3. pontja alapján azt jelenti, hogy teljesül az alábbi oszthatóság:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]p|a^{n-1}-1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt kaptuk tehát, hogy az [latex]n[/latex] egész szám tetszőleges pozitív prímtényezőjére igaz, hogy ő az [latex]a^{n-1}-1[/latex] egész számnak is prímtényezője. Tekintsük most [latex]n[/latex] egy olyan prímtényezős felbontását, amelyben minden tényező pozitív (ilyen nyilván létezik, hiszen maga [latex]n[/latex] is pozitív):</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]n=p_1\cdot p_2\cdot p_3\cdot \ldots \cdot p_r[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A fenti gondolatmenet alapján eszerint a [latex]p_1[/latex], [latex]p_2[/latex], ..., [latex]p_r[/latex] prímek mind az [latex]a^{n-1}-1[/latex] egész szám pozitív prímtényezői. Minthogy [latex]n[/latex]-ről azt mondtuk, hogy <strong><em>négyzetmentes</em></strong>, ezért ezek a prímtényezők páronként különbözőek. Emiatt végülis az ő szorzatuk – azaz maga [latex]n[/latex] – szintén osztója az [latex]a^{n-1}-1[/latex] egész számnak:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{p_1\cdot p_2\cdot p_3\cdot \ldots \cdot p_r}_{=n}|a^{n-1}-1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez a [yp_element slug="egesz-szamok-kozotti-kongruencia" type="link" /] 3. pontja alapján azt jelenti, hogy teljesül az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{n-1}\equiv 1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Így tehát semmilyen tetszőlegesen választott [latex][a]_n[/latex] redukált maradékosztály <strong><em>nem lehet Fermat-tanú</em></strong>, azaz a [yp_element slug="carmichael-szamok" type="link" /] alapján az [latex]n[/latex] összetett szám valóban Carmichael-szám.</p>
+<!-- /wp:paragraph -->

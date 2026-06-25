@@ -1,0 +1,76 @@
+type: proof
+name: kis-fermat-tetel-bizonyitas
+remarks: []
+references:
+  egesz-szamok-kozotti-kongruencia:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia
+  egesz-szamok-kozotti-kongruencia-tulajdonsagai:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia-tulajdonsagai
+  euler-fermat-tetel:
+    target:
+      type: theorem
+      name: euler-fermat-tetel
+  euler-fuggveny-primhatvanyokra:
+    target:
+      type: theorem
+      name: euler-fuggveny-primhatvanyokra
+  primhatvanyhoz-relativ-primek:
+    target:
+      type: theorem
+      name: primhatvanyhoz-relativ-primek
+content:
+  - type: narrative
+    content: |
+      Amennyiben $a$ ***relatív prím*** a $p$ modulushoz, akkor alkalmazható az ***Euler-Fermat tétel***
+      ([euler-fermat-tetel]).
+  - type: formula
+    lead-in: |
+      Eszerint teljesül az alábbi kongruencia:
+    content: |
+      a^{\varphi(p)}\equiv 1\pmod p
+  - type: narrative
+    content: |
+      A [euler-fuggveny-primhatvanyokra] alapján az Euler-féle $\varphi$-függvény értéke ebben az esetben $p-1$.
+  - type: formula
+    lead-in: |
+      Ebből a tétel első állítása adódik:
+    content: |
+      a^{p-1}\equiv 1\pmod p
+  - type: narrative
+    content: |
+      Ám ebben az esetben a [egesz-szamok-kozotti-kongruencia-tulajdonsagai] 7. pontja miatt a kongruencia mindkét
+      oldalát megszorozhatjuk $a$-val.
+  - type: formula
+    lead-in: |
+      Így teljesül az alábbi kongruencia is, amely a tétel második állítása:
+    content: |
+      a^p\equiv a\pmod p
+  - type: narrative
+    content: |
+      Már csak annyit kell megmutatni, hogy ez a második állítás abban az esetben is teljesül, ha $a$ és $p$ ***NEM
+      relatív prímek***. A [primhatvanyhoz-relativ-primek] alapján ebben az esetben teljesül a $p|a$ oszthatóság.
+  - type: formula
+    lead-in: |
+      Ez viszont a [egesz-szamok-kozotti-kongruencia] 3. pontja alapján épp az alábbi kongruenciát jelenti:
+    content: |
+      a\equiv 0\pmod p
+  - type: narrative
+    content: |
+      Ám ekkor a [egesz-szamok-kozotti-kongruencia-tulajdonsagai] 8. pontja alapján a kongruencia mindkét oldalát
+      $p$-edik hatványra emelhetjük.
+  - type: formula
+    lead-in: |
+      Így teljesül az alábbi kongruencia is:
+    content: |
+      a^p\equiv 0\pmod p
+  - type: formula
+    lead-in: |
+      Mivel tehát $a$ is és $a^p$ is $0$-val kongruens modulo $p$, ezért a
+      [egesz-szamok-kozotti-kongruencia-tulajdonsagai] 3. pontja alapján ők egymással is kongruensek modulo $p$,
+      épp ahogyan a tétel állítja:
+    content: |
+      a^p\equiv a\pmod p

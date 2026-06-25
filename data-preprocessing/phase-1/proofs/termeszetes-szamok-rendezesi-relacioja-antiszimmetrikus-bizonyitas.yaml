@@ -1,0 +1,49 @@
+type: proof
+name: termeszetes-szamok-rendezesi-relacioja-antiszimmetrikus-bizonyitas
+remarks: []
+references:
+  peano-nullosszeg-tagjai:
+    target:
+      type: theorem
+      name: peano-nullosszeg-tagjai
+  peano-osszeadas:
+    target:
+      type: definition
+      name: peano-osszeadas
+  peano-osszeadas-asszociativitas:
+    target:
+      type: theorem
+      name: peano-osszeadas-asszociativitas
+  peano-osszeg-egyszerusites:
+    target:
+      type: theorem
+      name: peano-osszeg-egyszerusites
+  termeszetes-szamok-rendezese:
+    target:
+      type: definition
+      name: termeszetes-szamok-rendezese
+content:
+  - type: narrative
+    content: |
+      Ha $a\leq b$, akkor a [termeszetes-szamok-rendezese] miatt létezik olyan természetes szám, amelyet $a$-hoz
+      adva $b$-t kapunk. Jelöljük ezt a számot $k_1$-gyel, így tehát azt kapjuk, hogy $a+k_1=b$.
+  - type: narrative
+    content: |
+      Hasonló okok miatt ha $b\leq a$, akkor létezik olyan természetes szám is, amelyet $b$-hez adva $a$-t kapunk.
+      Jelöljük ezt a számot $k_2$-vel, így tehát azt kapjuk, hogy $b+k_2=a$.
+  - type: narrative
+    content: |
+      Az első egyenlet baloldalát a második egyenletbe $b$ helyére behelyettesítve azt kapjuk, hogy
+      $\underbrace{(a+k_1)}_{=b} + k_2=a$. Tekintve, hogy az összeadás asszociatív
+      ([peano-osszeadas-asszociativitas]), ezért ez a kifejezés átzárójelezhető: $a+(k_1+k_2)=a$.
+  - type: narrative
+    content: |
+      A Peano-összeadás definíciójának ([peano-osszeadas]) 1. pontja miatt az egyenlet jobboldalához hozzáadhatunk
+      0-t: $a+(k_1+k_2)=a+0$. Az egyenlet mindkét oldala egyszerűsíthető $a$-val a [peano-osszeg-egyszerusites]
+      miatt, azaz $k_1+k_2=0$. Ebből viszont a [peano-nullosszeg-tagjai] miatt az következik, hogy $k_1=0$ és
+      $k_2=0$.
+  - type: narrative
+    content: |
+      Helyettesítsük vissza mondjuk $k_1$-et az egyik kiindulási egyenletünkbe: $a+\underbrace{0}_{=k_1}=b$. Végül
+      az egyenlet baloldala a Peano-összeadás definíciójának ([peano-osszeadas]) 1. pontja miatt 0-val
+      egyszerűsíthető, azaz $a=b$.

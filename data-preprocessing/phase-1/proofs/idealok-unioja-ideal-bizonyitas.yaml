@@ -1,0 +1,66 @@
+type: proof
+name: idealok-unioja-ideal-bizonyitas
+remarks: []
+references:
+  ideal:
+    target:
+      type: definition
+      name: ideal
+  reszgyuru-feltetele:
+    target:
+      type: theorem
+      name: reszgyuru-feltetele
+content:
+  - type: narrative
+    content: |
+      ***Nézzük először a részgyűrűk uniójára vonatkozó állítást!*** Jelöljük $S$-sel az $\mathcal{S}$
+      halmazrendszerben lévő részgyűrűk ***unióját***. Azt kell megmutatni, hogy $S$ részgyűrű $R$-ben. Ez a
+      [reszgyuru-feltetele] szerint pontosan akkor teljesül, ha $S$ zárt az $R$-beli összeadásra, szorzásra és
+      ellentettképzésre, valamint tartalmazza az $R$ gyűrű nullelemét.
+  - type: narrative
+    content: |
+      Mivel $\mathcal{S}$ minden eleme részgyűrű, így a [reszgyuru-feltetele] miatt mindegyik tartalmazza az $R$
+      gyűrű nullelemét. A nullelem tehát valóban benne van ezek uniójában, azaz $S$-ben.
+  - type: narrative
+    content: |
+      Legyen most $x$ az $S$ halmaz egy tetszőleges eleme. Mivel $S$ az $\mathcal{S}$-beli részgyűrűk uniója, így
+      ezek között biztosan létezik olyan $X$ részgyűrű, amelynek $x$ szintén eleme. Az $X$ viszont ismét a
+      [reszgyuru-feltetele] miatt zárt az ellentettképzésre. Így $-x$ is eleme $X$-nek, és emiatt $S$-nek is.
+  - type: narrative
+    content: |
+      Végül legyen $x$ és $y$ az $S$ halmaz két tetszőleges eleme. Mivel $S$ az $\mathcal{S}$-beli részgyűrűk
+      uniója, így ezek között biztosan léteznek olyan $X$ és $Y$ részgyűrűk, hogy $x\in X$ és $y\in Y$ teljesül.
+      Mivel az $\mathcal{S}$ halmazrendszerben bármely két részgyűrű között legalább az egyik irányban fennáll a
+      tartalmazási reláció, ezért $X\sube Y$ vagy $Y\sube X$ közül legalább az egyik teljesül.
+  - type: narrative
+    content: |
+      Ha például $X\sube Y$ a helyzet, akkor $x\in X$ miatt $x\in Y$ is teljesül, azaz $x$ és $y$ mindketten benne
+      vannak a $Y$-ban. De ekkor az összegük és a szorzatuk is benne van $Y$-ban &ndash; mivel $Y$ részgyűrű
+      &ndash;, és így $S$-ben is.
+  - type: narrative
+    content: |
+      Ha $X\sube Y$ nem teljesül, akkor teljesül $Y\sube X$, és ekkor a fentivel megegyező gondolatmenet alapján
+      $x$ és $y$ összege és szorzata $X$-ben lesz benne, és így megintcsak $S$-ben is. Az $S$ unióhalmaz tehát
+      ***valóban részgyűrű*** $R$-ben, ahogyan a tétel állítja.
+  - type: narrative
+    content: |
+      ***Most nézzük a balideálok uniójára vonatkozó állítást!*** Jelöljük $I$-vel az $\mathcal{I}$
+      halmazrendszerben lévő balideálok unióját. Azt kell megmutatni, hogy $I$ balideál $R$-ben. Ez a [ideal]
+      szerint azt jelenti, hogy egyrészt $I$ részgyűrű $R$-ben, másrészt akármelyik $a\in I$ elemet balról
+      megszorozva akármelyik $r\in R$ elemmel, az így kapott $r\cdot a$ szorzat szintén benne van $I$-ben. Minthogy
+      $\mathcal{I}$ minden eleme részgyűrű $R$-ben (hiszen balideál), ezért a fentiek alapján $I$ is részgyűrű
+      $R$-ben. Elegendő tehát csak a baloldali szorzásra vonatkozó feltételt ellenőrizni.
+  - type: narrative
+    content: |
+      Tegyük fel, hogy $a$ az $I$ részgyűrű, $r$ pedig az $R$ gyűrű egy tetszőleges eleme. Mivel $I$ az
+      $\mathcal{I}$-beli balideálok uniója, így e balideálok között biztosan létezik olyan $X$ balideál, amelynek
+      $a$ szintén eleme. Minthogy $X$ balideál, emiatt az $r\cdot a$ szorzat is benne van $X$-ben, és így $I$-ben
+      is. Emiatt $I$ ***valóban balideál*** $R$-ben.
+  - type: narrative
+    content: |
+      ***A jobbideálok uniójára vonatkozó állítás*** értelemszerűen ugyanezzel a gondolatmenettel igazolható azzal
+      a különbséggel, hogy ekkor az $r\cdot a$ szorzat helyett az $a\cdot r$ szorzatot kell tekinteni.
+  - type: narrative
+    content: |
+      ***Végül a (kétoldali) ideálok uniójára vonatkozó állítás*** triviálisan adódik, hiszen minden (kétoldali)
+      ideál egyszerre bal- és jobbideál.

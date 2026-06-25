@@ -1,0 +1,87 @@
+<!-- wp:paragraph -->
+<p>A [latex]\varphi(ab)[/latex] tehát azon [latex]ab[/latex]-nél nemnagyobb pozitív egészeknek a számával egyezik meg, amelyek [latex]ab[/latex]-hez relatív prímek. Vegyük észre, hogy tetszőleges egész szám <strong><em>akkor és csak akkor</em></strong> relatív prím [latex]ab[/latex]-hez, ha relatív prím [latex]a[/latex]-hoz is <strong>és</strong> [latex]b[/latex]-hez is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel ugyanis <strong><em>indirekt</em></strong>, hogy egy valamilyen [latex]c[/latex] egész szám relatív prím [latex]ab[/latex]-hez, de nem relatív prím [latex]a[/latex]-hoz. Ez azt jelentené, hogy létezik olyan [latex]n[/latex] egész szám, amely közös osztója [latex]a[/latex]-nak és [latex]c[/latex]-nek, de nem egység. Ekkor a [yp_element slug="oszthatosag-tulajdonsagai" type="link" /] 7. pontja miatt [latex]n[/latex] közös osztója lenne [latex]ab[/latex]-nek és [latex]c[/latex]-nek, és mivel nem egység, ezért [latex]c[/latex] nem lehetne relatív prím az [latex]ab[/latex] szorzathoz. Ilyen [latex]n[/latex] közös osztó tehát nem létezhet, következésképp minden [latex]ab[/latex]-hez relatív prím egész egyben relatív prím [latex]a[/latex]-hoz. Ehhez hasonlóan igazolható, hogy minden [latex]ab[/latex]-hez relatív prím egész egyben relatív prím [latex]b[/latex]-hez is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Visszafelé:</em></strong> Tegyük fel, hogy egy valamilyen [latex]c[/latex] egész szám relatív prím [latex]a[/latex]-hoz is és [latex]b[/latex]-hez is. Ez azt jelenti, hogy sem [latex]a[/latex]-nak, sem pedig [latex]b[/latex]-nek nincs [latex]c[/latex]-vel közös osztója az egységeken kívül. Mivel a [yp_element slug="euklideszi-gyurukben-teljesul-a-szamelmelet-alaptetele" type="link" /] szerint az egész számok [latex]\Z[/latex] gyűrűjében <strong><em>teljesül a számelmélet alaptétele</em></strong>, ezért ez azt is jelenti, hogy [latex]a[/latex] és [latex]b[/latex] prímtényezői mind különböznek [latex]c[/latex] prímtényezőitől, és így a szorzatuknak sincs [latex]c[/latex]-vel közös prímtényezője, tehát osztója sem az egységeken kívül. Azaz [latex]c[/latex] valóban <strong><em>relatív prím</em></strong> [latex]ab[/latex]-hez.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Eddig tehát azt igazoltuk, hogy a [latex]\varphi(ab)[/latex] érték kiszámításához azokat az <strong><em>[latex]ab[/latex]-nél nemnagyobb pozitív egészeket</em></strong> kell megszámlálnunk, amelyek relatív prímek [latex]a[/latex]-hoz is és [latex]b[/latex]-hez is. Ezt a következő lépésekben fogjuk megtenni:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} -->
+<ol><li>Összegyűjtjük az <strong><em>összes</em></strong> [latex]a[/latex]-hoz relatív prím egész számot.</li><li>Ezek közül kiválasztjuk azokat, amelyek [latex]0[/latex] és [latex]ab[/latex] közé esnek.</li><li>Végül a maradékból kiválogatjuk azokat, amelyek [latex]b[/latex]-hez is relatív prímek.</li></ol>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p><strong>Az 1. lépés:</strong> A [yp_element slug="redukalt-maradekosztaly-feltetele" type="link" /] alapján az [latex]a[/latex]-hoz relatív prímek pontosan a modulo [latex]a[/latex] redukált maradékosztályok elemei lesznek. Ilyen maradékosztályból épp [latex]\varphi(a)[/latex] darab van. E [latex]\varphi(a)[/latex] darab modulo [latex]a[/latex] redukált maradékosztály mindegyikéből válasszuk ki a legkisebb pozitív elemet. Az így kapott [latex]r_1[/latex], [latex]r_2[/latex], ..., [latex]r_{\varphi(a)}[/latex] számok tehát reprezentálják az összes modulo [latex]a[/latex] redukált maradékosztályt. A [yp_element slug="egesz-szamok-maradekosztalyai" type="link" /] alapján e maradékosztályok elemei (és csak azok) kifejezhetők az [latex]r_1[/latex], [latex]r_2[/latex], ..., [latex]r_{\varphi(a)}[/latex] reprezentánselemek segítségével az alábbi táblázat szerint (minden oszlop egy-egy redukált maradékosztálynak felel meg):</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{c|c|c|c}[r_1]_a &amp; [r_2]_a &amp; \cdots &amp; [r_{\varphi(a)}]_a \\ \hline \vdots &amp; \vdots &amp; &amp; \vdots \\ r_1-2a &amp; r_2-2a &amp; \cdots &amp; r_{\varphi(a)}-2a \\ r_1-1a &amp; r_2-1a &amp; \cdots &amp; r_{\varphi(a)}-1a \\ r_1+0a &amp; r_2+0a &amp; \cdots &amp; r_{\varphi(a)}+0a \\ r_1+1a &amp; r_2+1a &amp; \cdots &amp; r_{\varphi(a)}+1a \\ r_1+2a &amp; r_2+2a &amp; \cdots &amp; r_{\varphi(a)}+2a \\ r_1+3a &amp; r_2+3a &amp; \cdots &amp; r_{\varphi(a)}+3a \\ \vdots &amp; \vdots &amp; &amp; \vdots \end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong>A 2. lépés:</strong> Most minden olyan számot kidobálunk ebből a táblázatból, amely nem [latex]0[/latex] és [latex]ab[/latex] közé esik. Mivel az [latex]r_1[/latex], [latex]r_2[/latex], ..., [latex]r_{\varphi(a)}[/latex] reprezentánselemeket úgy választottuk ki, hogy minden oszlopban ők legyenek a legkisebb pozitív egészek, ezért a táblázat ezek fölötti részét ki is hajíthatjuk, hiszen ott már csupa negatív szám szerepel. Kérdés, hogy lefelé meddig mehetünk el a [latex]k[/latex] paraméterrel úgy, hogy bármely [latex]i[/latex]-edik oszlopban az [latex]r_i+ka\lt ab[/latex] egyenlőtlenség még éppen teljesüljön? A határvonal épp a [latex]k=b-1[/latex] érték lesz. Ezt ugyanis behelyettesítve az egyenlőtlenségbe, valamint kihasználva a [yp_element slug="rendezett-gyuru" type="link" /] szerinti 1. rendezési axiómát, az alábbi adódik:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}r_i+\overbrace{(b-1)}^{=k}a&amp;\lt ab \\ r_i+\cancel{ba}-a&amp;\lt \cancel{ab}\\_i\lt a\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez viszont nyilvánvalóan teljesül, hiszen [latex]r_i[/latex] az egyik modulo [latex]a[/latex] maradékosztály legkisebb pozitív eleme. Minthogy a [latex]0[/latex], [latex]1[/latex], [latex]2[/latex], ..., [latex]a-1[/latex] számok az összes létező modulo [latex]a[/latex] maradékosztályt reprezentálják, ezért [latex]r_i[/latex] is szükségképpen közöttük van.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Másrészt viszont a [latex]k=b[/latex] érték már nem megfelelő, ha ugyanis ezt helyettesítjük be az egyenlőtlenségbe, akkor az alábbit kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}r_i+\overbrace{b}^{=k}\cdot a&amp;\lt ab \\ r_i&amp;\lt 0\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez az egyenlőtlenség már nem teljesül, hiszen az [latex]r_i[/latex]-t pozitívnak választottuk. Az 1. lépésben keletkezett táblázatból tehát az alábbi rész maradt meg, a többit kidobáltuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{c|c|c|c}[r_1]_a &amp; [r_2]_a &amp; \cdots &amp; [r_{\varphi(a)}]_a \\ \hline r_1+0a &amp; r_2+0a &amp; \cdots &amp; r_{\varphi(a)}+0a \\ r_1+1a &amp; r_2+1a &amp; \cdots &amp; r_{\varphi(a)}+1a \\ r_1+2a &amp; r_2+2a &amp; \cdots &amp; r_{\varphi(a)}+2a \\ \vdots &amp; \vdots &amp; &amp; \vdots \\ r_1+(b-1)a &amp; r_2+(b-1)a &amp; \cdots &amp; r_{\varphi(a)}+(b-1)a \end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez a táblázat tehát tartalmazza az összes olyan [latex]0[/latex] és [latex]ab[/latex] közé eső egész számot, amely relatív prím [latex]a[/latex]-hoz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>A 3. lépés:</strong> Ez tehát egy [latex]\varphi(a)[/latex] oszlopból álló táblázat, és minden oszlopban [latex]b[/latex] darab szám van. Tekintsük például az [latex]i[/latex]-edik oszlopot. Ennek elemei a következők:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}r_i&amp;+0a\\_i&amp;+1a\\_i&amp;+2a\\&amp;\vdots\\_i&amp;+(b-1)a\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Vegyük észre, hogy ezt a számhalmazt úgy kaptuk, hogy a [latex]\{0;1;2;\ldots;b-1\}[/latex] számhalmaz minden elemét megszoroztuk [latex]a[/latex]-val – ami ugye a tétel szövege alapján relatív prím [latex]b[/latex]-hez –, majd az így kapott számokhoz hozzáadtunk [latex]r_i[/latex]-t. Mivel azonban a [latex]\{0;1;2;\ldots;b-1\}[/latex] számhalmaz nem más, mint egy modulo [latex]b[/latex] teljes maradékrendszer, ezért a [yp_element slug="teljes-es-redukalt-maradekrendszer-kepzese" type="link" /] alapján az újonnan kapott számhalmaz is az.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mivel a táblázat minden oszlopa ugyanígy képződött, ezért a táblázat minden oszlopában tulajdonképpen egy-egy modulo [latex]b[/latex] teljes maradékrendszer áll. Minden oszlopban képviselve van tehát az összes modulo [latex]b[/latex] maradékosztály. Mivel ezek közül a redukált maradékosztályok száma az Euler-függvény [yp_element slug="euler-fuggveny" type="link" /]ja alapján [latex]\varphi(b)[/latex], ezért ez egyben azt is jelenti a [yp_element slug="euler-fuggveny-alternativ-definicio" type="link" /] alapján, hogy minden oszlopban [latex]\varphi(b)[/latex] darab olyan elem van, amely relatív prím [latex]b[/latex]-hez. Minthogy a táblázatban az oszlopok száma [latex]\varphi(a)[/latex], így a táblázatnak összesen [latex]\varphi(a)\cdot \varphi(b)[/latex] eleme relatív prím [latex]b[/latex]-hez is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Összefoglalva:</strong> Összesen tehát [latex]\varphi(a)\cdot \varphi(b)[/latex] darab olyan [latex]0[/latex] és [latex]ab[/latex] közötti egész szám létezik, amely relatív prím [latex]a[/latex]-hoz is és [latex]b[/latex]-hez is. Ezek száma a bizonyítás elején közölt észrevétel alapján megegyezik azon [latex]0[/latex] és [latex]ab[/latex] közötti egészek számával, amelyek relatív prímek [latex]ab[/latex]-hez. Ezek száma viszont [latex]\varphi(ab)[/latex], így tehát valóban teljesül a tétel állítása:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\varphi(ab)=\varphi(a)\cdot \varphi(b)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p></p>
+<!-- /wp:paragraph -->

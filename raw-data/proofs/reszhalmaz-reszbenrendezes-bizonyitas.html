@@ -1,0 +1,21 @@
+<!-- wp:paragraph -->
+<p>A [yp_element slug="reszhalmaz" type="link" /] utáni megjegyzés 3. és 5. pontjai alapján a [latex]\sube[/latex] reláció <strong><em>reflexív</em></strong> és <strong><em>antiszimmetrikus</em></strong>. Így már csak azt kell megmutatni, hogy teljesül a <strong><em>tranzitivitás</em></strong> is, azaz a halmazrendszer tetszőleges [latex]A[/latex], [latex]B[/latex] és [latex]C[/latex] elemei esetén <strong><em>ha</em></strong> [latex]A\sube B[/latex] és [latex]B\sube C[/latex], <strong><em>akkor</em></strong> [latex]A\sube C[/latex]. Ez viszont könnyedén adódik a részhalmaz [yp_element slug="reszhalmaz" type="link" /]jából.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Legyen ugyanis [latex]x[/latex] egy tetszőleges elem a [latex]H[/latex] alaphalmazban. Mivel [latex]A\sube B[/latex], ezért ha [latex]x\in A[/latex] teljesül, akkor [latex]x\in B[/latex] is teljesül. Ugyanakkor [latex]B\sube C[/latex] is igaz, ezért egyúttal [latex]x\in C[/latex] is teljesül. Mivel azt kaptuk, hogy [latex]x\in A[/latex]-ból következik [latex]x\in C[/latex], ezért valóban [latex]A\sube C[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most térjünk át a [latex]\sub[/latex] relációra vonatkozó állításokra. Ez nyilvánvalóan <strong><em>nem reflexív</em></strong>, ugyanis [latex]A\sub A[/latex] a [yp_element slug="reszhalmaz" type="link" /] alapján azt jelentené, hogy [latex]A\sube A[/latex] és [latex]A\
+eq A[/latex]. Ez utóbbi nyilván lehetetlen, mivel minden halmaz azonos önmagával. De <strong><em>antiszimmetrikus sem lehet</em></strong>, hiszen akkor a [yp_element slug="antiszimmetrikus-relacio" type="link" /] miatt [latex]A\sub B[/latex] és [latex]B\sub A[/latex] esetén [latex]A=B[/latex] következne. Ez ugye lehetetlen, mert például [latex]A\sub B[/latex] azt jelenti, hogy [latex]A\sube B[/latex] és [latex]A\
+eq B[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Végül megmutatjuk, hogy [latex]\sub[/latex] <strong><em>tranzitív</em></strong>. Tegyük fel, hogy [latex]A\sub B[/latex] és [latex]B\sub C[/latex]. Ezek a feltételek a [yp_element slug="reszhalmaz" type="link" /] alapján azt jelentik, hogy egyrészt [latex]A\sube B[/latex] és [latex]B\sube C[/latex], másrészt pedig [latex]A\
+eq B[/latex] és [latex]B\
+eq C[/latex]. Az első két feltételből a [latex]\sube[/latex] reláció tranzitivitása miatt [latex]A\sube C[/latex] következik, tehát a [latex]\sub[/latex] reláció tranzitivitásához elegendő azt megmutatni, hogy [latex]A\
+eq C[/latex]. A [latex]B\sube C[/latex] tartalmazás miatt egyrészt tudjuk, hogy [latex]B[/latex] minden eleme [latex]C[/latex]-nek is eleme. Másrészt [latex]B\
+eq C[/latex] miatt azt is tudjuk, hogy [latex]C[/latex]-nek van olyan [latex]x[/latex] eleme, ami viszont nem eleme [latex]B[/latex]-nek, azaz [latex]x\in B[/latex] <strong><em>nem teljesül</em></strong>. Azt kell igazolni, hogy [latex]x\in A[/latex] <strong><em>sem teljesül</em></strong>. Ez viszont nyilvánvaló, máskülönben [latex]A\sube B[/latex] miatt [latex]x\in B[/latex] mégiscsak teljesülne, ami ellentmondás. A [latex]\sub[/latex]-val jelölt <strong><em>szigorú tartalmazási reláció</em></strong> tehát valóban <strong><em>tranzitív</em></strong>.</p>
+<!-- /wp:paragraph -->
