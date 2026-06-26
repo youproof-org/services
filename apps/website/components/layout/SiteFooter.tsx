@@ -7,7 +7,7 @@ const FOOTER_LINKS = [
 ]
 
 export default function SiteFooter() {
-  const version = process.env.NEXT_PUBLIC_VERSION ?? '1.0.0'
+  const version = process.env.YOUPROOF_VERSION ?? 'UNDEFINED'
 
   return (
     <footer className={styles.footer}>
