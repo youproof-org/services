@@ -1,0 +1,143 @@
+type: section
+name: 05-a-foidealok-kapcsolata-az-oszthatosaggal
+title: A főideálok kapcsolata az oszthatósággal
+
+references:
+  antiszimmetrikus-relacio:
+    target:
+      type: definition
+      name: antiszimmetrikus-relacio
+  asszocialtsag-ekvivalenciarelacio:
+    target:
+      type: theorem
+      name: asszocialtsag-ekvivalenciarelacio
+  asszocialtsag-es-egysegek-kapcsolata:
+    target:
+      type: theorem
+      name: asszocialtsag-es-egysegek-kapcsolata
+  asszocialtsag-tulajdonsagai:
+    target:
+      type: theorem
+      name: asszocialtsag-tulajdonsagai
+  ekvivalenciarelacio-tulajdonsagai:
+    target:
+      type: theorem
+      name: ekvivalenciarelacio-tulajdonsagai
+  foidealok-es-oszthatosag-kapcsolata-egysegelemes:
+    target:
+      type: theorem
+      name: foidealok-es-oszthatosag-kapcsolata-egysegelemes
+  oszthatosag:
+    target:
+      type: definition
+      name: oszthatosag
+  oszthatosag-tulajdonsagai:
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+
+body:
+  - type: narrative
+    content: |
+      A továbbiakban elsősorban ***kommutatív és nullosztómentes gyűrűket***, más szóval
+      ***integritástartományokat*** fogunk vizsgálni. Az ilyen gyűrűk esetén fontos kapcsolat van a 16. részben
+      tárgyalt oszthatóság ([oszthatosag]), valamint a gyűrű főideáljai között. Ebben a tekintetben egy kicsit
+      másként viselkednek az ***egységelemes*** és a ***nem egységelemes*** gyűrűk. Az alábbi tétel az
+      ***egységelemes esettel*** foglalkozik. Itt nem használjuk ki a ***nullosztómentességet***, ezért ez a tétel
+      nem csak integritástartományokra, hanem bármilyen kommutatív és egységelemes gyűrűre működik.
+  - type: embed
+    target:
+      type: theorem
+      name: foidealok-es-oszthatosag-kapcsolata-egysegelemes
+  - type: embed
+    target:
+      type: proof
+      name: foidealok-es-oszthatosag-kapcsolata-egysegelemes-bizonyitas
+  - type: narrative
+    content: |
+      A most következő tétel az előbbihez hasonló, de nem teljesen azonos kapcsolatot mond ki az oszthatóság és a
+      főideálok között, ám ezúttal a ***NEM egységelemes*** esetben. Itt már kihasználjuk a
+      ***nullosztómentességet*** is, ezért ez a tétel csak integritástartományokra működik.
+  - type: embed
+    target:
+      type: theorem
+      name: foidealok-es-oszthatosag-kapcsolata-nem-egysegelemes
+  - type: narrative
+    content: |
+      A ***NEM egységelemes*** esetben tehát már nem elegendő a sima tartalmazási reláció és a sima asszociáció.
+      Ehelyett az ezeknél speciálisabb ***szigorú tartalmazásra*** van szükség az 1. ponthoz, míg konkrétan
+      ***egyenlőségre*** a 2. ponthoz.
+  - type: embed
+    target:
+      type: proof
+      name: foidealok-es-oszthatosag-kapcsolata-nem-egysegelemes-bizonyitas
+  - type: narrative
+    content: |
+      A következő szakaszban az iménti két tételt felhasználva a főideálok segítségével mutatni fogunk egy olyan
+      feltételrendszert, amely egyszerre ***szükséges és elégséges*** is ahhoz, hogy egy integritástartományban
+      teljesüljön a ***számelmélet alaptétele***. Ezzel végre lezárhatjuk ezt a kérdést, előtte azonban a könnyebb
+      érthetőség kedvéért vizsgáljunk meg egy egyszerű példát.
+  - type: narrative
+    content: |
+      A halmazrendszerek kapcsán szó volt arról, hogy a $\sube$ szimbólummal jelölt tartalmazási reláció
+      tulajdonképpen egy ***részbenrendezés*** bármilyen halmazrendszer elemei között. Mutattunk néhány példát is
+      arra, hogy egy ilyen részbenrendezés hogyan ábrázolható az úgynevezett ***Hasse-diagramokon***. Ezeket a
+      diagramokat azonban nemcsak konkrétan halmazrendszerek tartalmazási relációjának, hanem tetszőleges halmaz
+      részbenrendezési relációjának megjelenítésére is használhatjuk.
+  - type: narrative
+    content: |
+      Most felvázolunk egy szép párhuzamot egy $R$ integritástartomány főideáljai &ndash; mint egy $R$ fölötti
+      halmazrendszer elemei &ndash; közötti ***tartalmazási reláció***, valamint magának az $R$-nek az elemei
+      közötti ***oszthatósági reláció*** között.
+  - type: narrative
+    content: |
+      Az egyszerűség kedvéért szorítkozzunk most arra az esetre, amikor $R$ ***egységelemes***. Ebben az esetben az
+      oszthatósági reláció ***reflexív***, azaz tetszőleges $a$ elem esetén teljesül az $a|a$ oszthatóság (lásd a
+      [oszthatosag-tulajdonsagai] 1. pontját). Ezenkívül ugyanezen tétel 5. pontja alapján ***tranzitív*** is, így
+      már csak az ***antiszimmetria*** ([antiszimmetrikus-relacio]) hiányzik ahhoz, hogy részbenrendezés lehessen.
+      Ez ugye azt jelentené, hogy ha valamilyen $a$ és $b$ elemek között mindkét irányban teljesül az oszthatóság,
+      akkor abból $a=b$-nek kéne következnie. A 16. részben megemlítettük ugyanakkor, hogy sajnos az egyenlőség
+      nem, hanem csak az ennél valamivel gyengébb $a\sim b$ ***asszociáció*** teljesül, az viszont minden esetben
+      (lásd a [asszocialtsag-tulajdonsagai] 4. pontját).
+  - type: narrative
+    content: |
+      Ezt a problémát azonban egy trükkel megkerülhetjük. Minthogy az asszociáció a
+      [asszocialtsag-ekvivalenciarelacio] alapján egy ***ekvivalenciareláció***, így az az $R$ gyűrűt a
+      [ekvivalenciarelacio-tulajdonsagai] alapján ***ekvivalencia-osztályokra*** bontja. Ha mármost minden ilyen
+      ekvivalencia-osztályból ***legfeljebb egy*** elemet választunk ki, akkor ilymódon $R$-nek egy olyan $S$
+      részhalmazára térhetünk át, amelyen már az ***oszthatóság is antiszimmetrikus*** lesz. Ebben az esetben
+      ugyanis bármely $S$-beli $a$ és $b$ elemek közötti kölcsönös oszthatóságból $a=b$ következik, hiszen $S$
+      konstrukciója miatt csak ebben az esetben teljesülhet az $a\sim b$ asszociáció.
+  - type: narrative
+    content: |
+      Például az egész számok $\Z$ gyűrűjéből válasszuk ki a $60$ nemnegatív osztóit, és nevezzük ezt a halmazt
+      $D$-nek. A [asszocialtsag-es-egysegek-kapcsolata] alapján egyik $D$-beli elempár sem asszociált.
+  - type: figure
+    lead-in: |
+      Ezen a halmazon tehát az oszthatóság egy ***részbenrendezési reláció***, és így felrajzolhatjuk a
+      Hasse-diagramját:
+    src: 09-nemnegativ-osztok-hasse-diagramja.jpg
+    alt: Nemnegatív osztók Hasse-diagramja
+    caption: Nemnegatív osztók Hasse-diagramja
+  - type: narrative
+    content: |
+      Most tekintsük azt a $\Z$ fölötti halmazrendszert, amely a $D$-ben lévő elemek által generált főideálokból
+      áll.
+  - type: figure
+    lead-in: |
+      Ezen a halmazrendszeren a főideálok közötti tartalmazási reláció szintén egy ***részbenrendezési reláció***
+      lesz, amelynek a Hasse-diagramja viszont így néz ki:
+    src: 10-nemnegativ-osztok-altal-generalt-foidealok.jpg
+    alt: Nemnegatív osztók által generált főideálok Hasse-diagramja
+    caption: Nemnegatív osztók által generált főideálok Hasse-diagramja
+  - type: narrative
+    content: |
+      Mint látható, a két Hasse-diagram gyakorlatilag megegyezik. Mindössze abban különböznek egymástól, hogy az
+      egyik a másiknak a feje tetejére állított változata. Nos ez nem véletlenül van így, hanem a
+      [foidealok-es-oszthatosag-kapcsolata-egysegelemes] miatt. Ez ugye kimondja, hogy az $a|b$ reláció pontosan
+      akkor teljesül, amikor a $(b)\sube (a)$ reláció is teljesül. A részbenrendezett halmazok nyelvén ezt úgy is
+      meg lehet fogalmazni, hogy az $a$ elem pontosan akkor ***"kisebb"*** $b$-nél ***az oszthatósági reláció
+      szerint***, amikor az $(a)$ főideál ***"nagyobb"*** a $(b)$ főideálnál ***a tartalmazási reláció szerint***.
+      A két részbenrendezési reláció tehát épp egymás fordítottja, és mivel a $D$ halmaz elemei kölcsönösen
+      egyértelműen megfeleltethetők az általuk generált főideálokkal, ezért a két Hasse-diagram csak az
+      irányításban különbözik egymástól.

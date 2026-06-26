@@ -1,0 +1,28 @@
+type: theorem
+name: egesz-szamok-maradekosztalyai
+proofs:
+  - egesz-szamok-maradekosztalyai-bizonyitas
+remarks:
+  - egesz-szamok-maradekosztalyai-megjegyzes
+references:
+  egesz-szamok-kozotti-kongruencia:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia
+content:
+  - type: narrative
+    content: |
+      Legyen adva egy tetszőleges $m\geq 0$ ***nemnegatív*** egész szám. A [egesz-szamok-kozotti-kongruencia]ben
+      bevezetett modulo $m$ kongruencia egy ***ekvivalenciareláció*** az egész számok $\Z$ gyűrűjén. Az ehhez
+      tartozó ekvivalencia-osztályokat ***modulo $m$ kongruenciaosztályoknak*** vagy ***modulo $m$
+      maradékosztályoknak*** nevezzük.
+  - type: narrative
+    content: |
+      Ha $m\gt 0$, akkor pontosan $m$ darab modulo $m$ maradékosztály létezik. Legyen $a$ egy tetszőleges egész
+      szám. Ekkor az $a$-t tartalmazó modulo $m$ maradékosztály bármely eleme felírható $km + a$ alakban valamilyen
+      alkalmas $k$ egész számmal. ***Visszafelé:*** Minden $k$ egész szám esetén a $km + a$ egész szám benne van az
+      $a$-t tartalmazó modulo $m$ maradékosztályban.
+  - type: narrative
+    content: |
+      Ha $m=0$, akkor ***végtelen sok*** modulo $m$ maradékosztály létezik, és minden ilyen maradékosztályban
+      pontosan egy egész szám van.

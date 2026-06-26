@@ -1,0 +1,103 @@
+<!-- wp:paragraph -->
+<p>Legyen [latex]a[/latex] és [latex]b[/latex] az [latex]R[/latex] integritástartomány két tetszőleges eleme, és jelöljük [latex]0_R[/latex]-rel a nullelemet, [latex]1_R[/latex]-rel pedig az egységelemet – amely ugye létezik, hiszen a [yp_element slug="euklideszi-gyuru" type="link" /] alapján minden euklidészi gyűrű <strong><em>egységelemes</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ha [latex]a[/latex] és [latex]b[/latex] közül <strong><em>mindkettő</em></strong> [latex]0_R[/latex], akkor a [yp_element slug="kituntetett-kozos-oszto-tulajdonsagai" type="link" /] 1. pontja miatt a kitüntetett közös osztójuk [latex]0_R[/latex], amely nyilvánvalóan kifejezhető a kívánt alakban, méghozzá tetszőleges [latex]u[/latex] és [latex]v[/latex] gyűrűelemekkel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{0_R}_{=a}\cdot u+\underbrace{0_R}_{=b}\cdot v=\underbrace{0_R}_{=(a,b)}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha [latex]a[/latex] és [latex]b[/latex] közül <strong><em>csak az egyikük</em></strong> [latex]0_R[/latex], akkor viszont ugyanezen tétel 4. pontja miatt a kitüntetett közös osztójuk a másik elem lesz. Ha például [latex]a\
+eq 0_R[/latex] és [latex]b=0_R[/latex], akkor [latex](a,b)=(a,0_R)=a[/latex]. Ez nyilván kifejezhető a kívánt alakban [latex]u=1_R[/latex] és tetszőleges [latex]v[/latex] gyűrűelemekkel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a\cdot \underbrace{1_R}_{=u}+\underbrace{0_R}_{=b}\cdot v=\underbrace{(a,b)}_{=a}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Értelemszerűen ha [latex]a=0_R[/latex] és [latex]b\
+eq 0_R[/latex], akkor pedig [latex]v=1_R[/latex] és [latex]u[/latex] tetszőleges.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Feltételezhetjük tehát, hogy [latex]a\
+eq 0_R[/latex] és [latex]b\
+eq 0_R[/latex]. Ekkor lefuttathatjuk erre a két gyűrűelemre, mint bemenetre a [yp_element slug="euklideszi-gyuruben-letezik-kituntetett-kozos-oszto" type="link" /] bizonyításában ismertetett <strong><em>euklidészi algoritmust</em></strong>. Ez ugye garantáltan befejeződik véges számú lépés után. Tegyük fel, hogy az algoritmus futtatásakor az [latex]n[/latex]-edik maradékos osztás során kapjuk meg az utolsó nemnulla maradékot, amely ugye az [latex](a,b)[/latex] kitüntetett közös osztó lesz. Ez tehát az alábbi [latex]n[/latex] darab maradékos osztást jelenti. Az [latex](n+1)[/latex]-edik maradékos osztást itt nem tüntettük fel, amelynek során végül a [latex]0_R[/latex] maradékot megkapjuk és amely terminálja az algoritmust:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a&amp;=k_1b+r_1\\b&amp;=k_2r_1+r_2\\_1&amp;=k_3r_2+r_3\\_2&amp;=k_4r_3+r_4\\&amp;\vdots\\_{n-2}&amp;=k_nr_{n-1}+\underbrace{r_n}_{=(a,b)}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Célunk tehát, hogy az [latex]n[/latex]-edik lépésben megkapott [latex]r_n[/latex] maradékot kifejezzük [latex]r_n=au+bv[/latex] alakban valamilyen [latex]u[/latex] és [latex]v[/latex] gyűrűelemek segítségével.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Vegyük észre, hogy az első maradékos osztást leíró egyenlet mindkét oldalából [latex]k_1b[/latex]-t kivonva kapunk egy ehhez hasonló kifejezést az [latex]r_1[/latex] maradékra. Jelöljük az így kapott együtthatókat [latex]u_1[/latex]-gyel és [latex]v_1[/latex]-gyel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]r_1=a-k_1b=a\cdot \underbrace{1}_{=u_1}+b\cdot \underbrace{(-k_1)}_{=v_1}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az első lépésben kapott [latex]r_1[/latex] maradékot tehát ilymódon kifejeztük az [latex]a[/latex] és [latex]b[/latex] lineáris kombinációjaként az [latex]u_1=1[/latex] és a [latex]v_1=-k_1[/latex] együtthatók segítségével. Most tegyük meg ugyanezt a második lépésben kapott [latex]r_2[/latex] maradékkal is. Ehhez semmi mást nem kell tennünk, mint a második maradékos osztást leíró egyenlet mindkét oldalából levonnunk [latex]k_2r_1[/latex]-et, majd [latex]r_1[/latex] helyére behelyettesíteni az előző lépésben kapott kifejezést. Jelöljük az így kapott együtthatókat [latex]u_2[/latex]-vel és [latex]v_2[/latex]-vel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}r_2&amp;=b-k_2r_1=b-k_2(\overbrace{a-k_1b}^{=r_1})=\\&amp;=a\cdot \underbrace{(-k_2)}_{=u_2} + b\cdot \underbrace{(1+k_1k_2)}_{=v_2}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A második lépésben kapott [latex]r_2[/latex] maradékot tehát szintén kifejeztük az [latex]a[/latex] és [latex]b[/latex] lineáris kombinációjaként az [latex]u_2=-k_2[/latex] és a [latex]v_2=1+k_1k_2[/latex] együtthatók segítségével.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezt a bizonyítást persze folytathatnánk egészen az [latex]n[/latex]-edik lépésig, amikor végül az [latex]r_n=(a,b)[/latex] kitüntetett közös osztót is megkapnánk [latex]a[/latex] és [latex]b[/latex] lineáris kombinációjaként. Mi azonban lusták vagyunk, ezért adunk egy általános képletet, amely megadja, hogy a soron következő [latex]r_i[/latex] maradékot hogyan lehet előállítani [latex]a[/latex] és [latex]b[/latex] lineáris kombinációjaként, ha egyébként az [latex]r_{i-2}[/latex] és [latex]r_{i-1}[/latex] maradékokra ez az előállítás már ismert. Tegyük fel tehát, hogy az alábbi lineáris kombinációs előállításokat már ismerjük, azaz az alábbi kifejezésekben szereplő [latex]u_{i-2}[/latex] és [latex]v_{i-2}[/latex] valamint [latex]u_{i-1}[/latex] és [latex]v_{i-1}[/latex] együtthatókat már kiszámítottuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}r_{i-2}&amp;=a\cdot u_{i-2} + b\cdot v_{i-2} \\ r_{i-1}&amp;=a\cdot u_{i-1} + b\cdot v_{i-1}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Feladatunk tehát előállítani az [latex]r_i[/latex] maradékot az [latex]a[/latex] és [latex]b[/latex] elemek lineáris kombinációjaként. Ehhez először is tekintsük az euklidészi algoritmus futtatása során kapott [latex]i[/latex]-edik maradékos osztást leíró egyenletet:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]r_{i-2}=k_ir_{i-1}+r_i[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p> Mindkét oldalából vonjunk le [latex]k_ir_{i-1}[/latex]-et:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]r_i=r_{i-2}-k_ir_{i-1}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]i[/latex]-edik lépésben kapott [latex]r_i[/latex] maradékot tehát kifejeztük az [latex]r_{i-2}[/latex] és [latex]r_{i-1}[/latex] lineáris kombinációjaként. Ez utóbbi kettőről viszont azt mondtuk, hogy már előállítottuk őket [latex]a[/latex] és [latex]b[/latex] lineáris kombinációjaként. Helyettesítsük is be a fenti egyenletbe ezeket az előállításokat:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]r_i=(\underbrace{au_{i-2} + bv_{i-2}}_{=r_{i-2}})-k_i\cdot (\underbrace{au_{i-1} + bv_{i-1}}_{=r_{i-1}})[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezt a gyűrűaxiómáknak megfelelően ([yp_element slug="gyuru-test" type="link" /]) átrendezve megkapjuk [latex]r_i[/latex]-t is [latex]a[/latex] és [latex]b[/latex] lineáris kombinációjaként. Jelöljük az így kapott együtthatókat [latex]u_i[/latex]-vel és [latex]v_i[/latex]-vel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]r_i=a\cdot (\underbrace{u_{i-2}-k_iu_{i-1}}_{=u_i}) + b\cdot (\underbrace{v_{i-2}-k_iv_{i-1}}_{=v_i})[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezzel a bizonyításunk teljes, mivel az első két lépésben kapott [latex]r_1[/latex] és [latex]r_2[/latex] maradékokat előállítottuk [latex]a[/latex] és [latex]b[/latex] lineáris kombinációjaként, az imént látott indukció alapján pedig elő tudjuk állítani a további maradékokat is. Ezek közül ugye az [latex]n[/latex]-edik lépés során kapott [latex]r_n=au_n+bv_n[/latex] előállítás épp az [latex](a,b)[/latex] kitüntetett közös osztó előállítása az [latex]a[/latex] és [latex]b[/latex] lineáris kombinációjaként.</p>
+<!-- /wp:paragraph -->

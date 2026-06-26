@@ -1,0 +1,79 @@
+<!-- wp:paragraph -->
+<p>Tekintsük azt az [latex]f[/latex] csoporthomomorfizmust, amelynek [latex]N[/latex] a magja. Ez egy valamilyen, számunkra ismeretlen [latex]X[/latex] csoportba képez, amelynek egységelemét jelöljük most [latex]e_X[/latex]-szel, míg a [latex]G[/latex] csoport egységelemét jelöljük [latex]e_G[/latex]-vel. Az [latex]f[/latex] függvény tehát [latex]N[/latex] minden eleméhez [latex]e_X[/latex]-et rendeli hozzá, hiszen [latex]\ker f=N[/latex]. Ezt a szituációt mutatja az alábbi ábra.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":6943,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_25_homomorfizmus_illusztracio.jpg" alt="" class="wp-image-6943"/><figcaption>Csoporthomomorfizmus magja</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Az <strong><em>1. állítás</em></strong> igazolásához azt kell megmutatni, hogy [latex]N[/latex] részcsoport [latex]G[/latex]-ben. Ez a [yp_element slug="reszcsoport-feltetele" type="link" /] alapján pontosan akkor teljesül, ha [latex]N[/latex] tartalmazza [latex]e_G[/latex]-t, valamint zárt a [latex]G[/latex] csoport műveletére és a [latex]G[/latex]-beli inverzképzésre.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]f[/latex] csoporthomomorfizmus, ezért a [yp_element slug="csoporthomomorfizmus-egysegelem-es-inverzkepzestarto" type="link" /] értelmében tartja az egységelemet és az inverzképzést. Azaz egyrészt [latex]f(e_G)=e_X[/latex], és így [latex]e_G[/latex] valóban benne van [latex]f[/latex] magjában, vagyis [latex]N[/latex]-ben. Másrészt ha valamilyen [latex]a[/latex] benne van [latex]N[/latex]-ben, akkor [latex]f(a)=e_X[/latex], és így az inverzképzés tartása miatt [latex]f(a^{-1})=(f(a))^{-1}=e_X^{-1}=e_X[/latex]. Azaz [latex]a[/latex] inverzének is [latex]e_X[/latex] a képe, következésképp ő is benne van [latex]N[/latex]-ben.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A [latex]G[/latex] csoport műveletére való zártság szintén [latex]f[/latex] művelettartó tulajdonságából ered. Ha ugyanis [latex]a[/latex] és [latex]b[/latex] az [latex]N[/latex] két tetszőleges eleme, akkor egyrészt [latex]f(a)=e_X[/latex] és [latex]f(b)=e_X[/latex]. Másrészt viszont a művelettartás miatt az ő szorzatukra teljesül az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f(a\cdot b)=f(a)\cdot f(b)=\underbrace{e_X}_{=f(a)}\cdot \underbrace{e_X}_{=f(b)}=e_X[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Tehát az [latex]a\cdot b[/latex] szorzat is az [latex]X[/latex] csoport egységelemére képeződik, következésképp ő is benne van [latex]N[/latex]-ben. Mivel teljesül a [yp_element slug="reszcsoport-feltetele" type="link" /] minden feltétele, ezért [latex]N[/latex] valóban részcsoport [latex]G[/latex]-ben.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>2. állítás</em></strong> igazolásához tegyük fel tehát, hogy [latex]f(a)=f(b)[/latex] valamilyen [latex]a\in G[/latex] és [latex]b\in G[/latex] elemek esetén. Vizsgáljuk meg, hogy mi lesz az [latex]a^{-1}b[/latex] szorzat [latex]f[/latex] szerinti képe [latex]X[/latex]-ben. Ehhez kihasználjuk egyrészt [latex]f[/latex] <strong><em>művelettartó</em></strong> és <strong><em>inverzképzéstartó</em></strong> (lásd a [yp_element slug="csoporthomomorfizmus-egysegelem-es-inverzkepzestarto" type="link" /] 2. pontját) tulajdonságát, másrészt pedig azt a tényt, hogy jelen esetben ugye [latex]f(a)=f(b)[/latex]:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f(a^{-1}b)=f(a^{-1})\cdot f(b)=\underbrace{(f(a))^{-1}}_{=f(a^{-1})}\cdot \underbrace{f(a)}_{=f(b)}=e_X[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel tehát az [latex]a^{-1}b[/latex] szorzat épp az [latex]X[/latex] csoport egységelemére képződött, ezért ez a szorzat benne van [latex]f[/latex] magjában, azaz [latex]a^{-1}b\in N[/latex]. Ez viszont azt jelenti, hogy [latex]a[/latex] és [latex]b[/latex] között fennáll a [yp_element slug="mellekosztalyok" type="link" /]ben definiált [latex]\sim[/latex]-vel jelölt ekvivalenciareláció, azaz [latex]a[/latex] és [latex]b[/latex] ugyanabban az ekvivalencia-osztályban vannak. Minthogy az említett tétel alapján ezek az ekvivalencia-osztályok tulajdonképpen az [latex]N[/latex] szerinti baloldali mellékosztályok, ezért valóban [latex]b\in aN[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Visszafelé:</em></strong> Tegyük most fel, hogy [latex]a[/latex] és [latex]b[/latex] ugyanabban az [latex]N[/latex] szerinti baloldali mellékosztályban vannak. Ez a [yp_element slug="mellekosztalyok" type="link" /] alapján azt jelenti, hogy [latex]a^{-1}b\in N[/latex]. De mivel [latex]N[/latex] az [latex]f[/latex] csoporthomomorfizmus magja, ezért ez a szorzat az [latex]X[/latex] csoport egységelemére képződik, azaz [latex]f(a^{-1}b)=e_X[/latex]. Ebből viszont – ismét kihasználva [latex]f[/latex] <strong><em>művelettartó</em></strong> és <strong><em>inverzképzéstartó</em></strong> tulajdonságát – az alábbi következik:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f(a^{-1}b)=f(a^{-1})\cdot f(b)=(f(a))^{-1}\cdot f(b)=e_X[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha most az utolsó egyenlőségjel által leírt egyenlet mindkét oldalát balról megszorozzuk [latex]f(a)[/latex]-val, akkor az alábbit kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{f(a)\cdot (f(a))^{-1}}_{=e_X}\cdot f(b)=f(a)\cdot e_X[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azaz – az egységelemeket elhagyva – valóban [latex]f(b)=f(a)[/latex], és ezzel igazoltuk a tétel <strong><em>2. állítását</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>3. állítás</em></strong> ugyanígy igazolható, csak ebben az esetben az [latex]a^{-1}b[/latex] szorzat helyett a [latex]ba^{-1}[/latex] szorzatot kell tekinteni, és [latex]f(a)[/latex]-val nem balról, hanem jobbról kell szorozni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Végül a 4. állításhoz</em></strong> most tekintsünk egy tetszőleges [latex]a\in G[/latex] elemet, és mutassuk meg, hogy az [latex]aN[/latex] mellékosztály, mint halmaz megegyezik az [latex]Na[/latex] mellékosztállyal. Ehhez a [yp_element slug="reszhalmaz" type="link" /] utáni megjegyzés 5. pontja alapján azt kell igazolni, hogy az alábbi mindkét tartalmazási reláció fennáll:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}aN&amp;\sube Na \\ Na&amp;\sube aN\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Az első tartalmazáshoz</em></strong> azt kell megmutatni, hogy tetszőleges [latex]b\in aN[/latex] esetén [latex]b\in Na[/latex] is teljesül. Mivel [latex]b\in aN[/latex], ezért ez azt jelenti, hogy [latex]b[/latex] ugyanabban a baloldali mellékosztályban van, mint [latex]a[/latex]. Ez viszont a már bizonyított <strong><em>2. állítás</em></strong> alapján azt jelenti, hogy [latex]f(a)=f(b)[/latex], ami azonban a szintén már bizonyított <strong><em>3. állítás</em></strong> miatt azt is jelenti, hogy [latex]b[/latex] ugyanabban a jobboldali mellékosztályban van, mint [latex]a[/latex], azaz valóban [latex]b\in Na[/latex]. A <strong><em>másik irányú tartalmazást</em></strong> ugyanilyen módon lehet megmutatni a <strong><em>2.</em></strong> és <strong><em>3. állítások</em></strong> felhasználásával.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezzel igazoltuk a tétel <strong><em>4. állítását</em></strong>, miszerint az [latex]N[/latex] szerinti bal- és jobboldali mellékosztályok valóban megegyeznek.</p>
+<!-- /wp:paragraph -->

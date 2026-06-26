@@ -1,0 +1,18 @@
+type: theorem
+name: gyuruk-alapveto-tulajdonsagai
+proofs:
+  - gyuruk-alapveto-tulajdonsagai-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $(R, +, \cdot )$ tetszőleges gyűrű a szokásos jelölésekkel.
+  - type: ordered-list
+    lead-in: |
+      Ekkor tetszőleges $a$ és $b$ elemekre teljesülnek az alábbiak:
+    items:
+      - '$0a=a0=0$'
+      - '$-(-a)=a$'
+      - '$a(-b)=(-a)b=-(ab)$'
+      - '$(-a)(-b)=ab$'
+      - '$-(a+b)=(-a)+(-b)$'

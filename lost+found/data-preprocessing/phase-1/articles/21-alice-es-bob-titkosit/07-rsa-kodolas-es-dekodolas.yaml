@@ -1,0 +1,64 @@
+type: section
+name: 07-rsa-kodolas-es-dekodolas
+title: RSA-kódolás és dekódolás
+
+body:
+  - type: narrative
+    content: |
+      Az RSA esetén mind a rejtjelezés, mind pedig a visszafejtés során tulajdonképpen egy-egy ***moduláris
+      hatványozást*** kell elvégezni. Ennek módjáról az ***ismételt négyzetreemelések módszerének*** kapcsán egy
+      fentebbi szakaszban volt szó bővebben. Ha Alice valamilyen üzenetet vagy adathalmazt szeretne küldeni
+      Bob-nak, akkor előszöris kikeresi a nyilvános kulcstárból Bob publikus kulcsát. Az ebben szereplő $m$ modulus
+      fogja kijelölni a $Z_m$ gyűrűt, amiben majd moduláris hatványozást el kell végezni, az $e$ szám pedig a
+      kódoláshoz használandó kitevő lesz.
+  - type: narrative
+    content: |
+      A rejtjelezni kívánt üzenetet Alice valamilyen egyezményes vagy szabványos módon egy, a $Z_m$ gyűrű
+      elemeiből álló számsorozattá alakítja át, amelyet ***előkódolásnak*** nevezünk. Ez sokféleképpen történhet, a
+      technikai részletekre itt nem térünk ki, ám a következő szakaszban fogunk mutatni erre egy egyszerű példát. A
+      lényeg, hogy Bob ebből a számsorozatból egyértelműen tudja majd rekonstruálni az eredeti üzenetet. Az RSA
+      szempontjából tehát a nyílt szöveg tulajdonképpen egy $x_1, x_2, x_3, \ldots$ számsorozat, amelynek tagjai a
+      $Z_m$ gyűrű elemei, azaz $m$-nél kisebb ***nemnegatív*** egész számok.
+  - type: formula
+    lead-in: |
+      Az Alice által használt $E$ ***rejtjelező függvény*** tehát az alábbi moduláris hatványozás lesz:
+    content: |
+      E(x)=\bmod_m(x^e)
+  - type: narrative
+    content: |
+      Itt $x$ jelöli a nyílt szöveget alkotó számsorozat soron következő tagját, az $e$ kitevő és az $m$ modulus
+      pedig Bob publikus kulcsát alkotják.
+  - type: formula
+    lead-in: |
+      Alice tehát a bemeneti $x_1, x_2, x_3, \ldots$ nyílt számsorozatból (***nyíltszövegből***) a Bob $(m;e)$
+      ***publikus kulcsával*** paraméterezett $E$ rejtjelező függvény segítségével előállítja az $y_1, y_2, y_3,
+      \ldots$ rejtjelezett számsorozatot (***kódszöveget***):
+    content: |
+      \begin{aligned}y_1&=\bmod_m({x_1}^e) \\ y_2&=\bmod_m({x_2}^e) \\ y_3&=\bmod_m({x_3}^e) \\ &\vdots
+      \end{aligned}
+  - type: narrative
+    content: |
+      Az így kapott $y_1, y_2, y_3, \ldots$ számsorozatot Alice átküldi a nembiztonságos kommunikációs csatornán
+      Bob-nak. A Bob által használt $D$ dekódolófüggvény nagyon hasonlít a rejtjelező függvényhez.
+  - type: formula
+    lead-in: |
+      Az egyetlen különbség, hogy ezúttal Bob $(m;d)$ privát kulcsával kell paraméterezni a moduláris hatványozást:
+    content: |
+      D(y)=\bmod_m(y^d)
+  - type: formula
+    lead-in: |
+      Bob tehát a bemeneti $y_1, y_2, y_3, \ldots$ rejtjelezett számsorozatból (***kódszövegből***) a saját $(m;d)$
+      ***privát kulcsával*** paraméterezett $D$ visszafejtő függvény segítségével "varázslatos módon" visszakapja
+      az Alice által közölni kívánt $x_1, x_2, x_3, \ldots$ nyílt számsorozatot (***nyíltszöveget***):
+    content: |
+      \begin{aligned}x_1&=\bmod_m({y_1}^d) \\ x_2&=\bmod_m({y_2}^d) \\ x_3&=\bmod_m({y_3}^d) \\ &\vdots
+      \end{aligned}
+  - type: narrative
+    content: |
+      A visszakapott számsorozatból végül Bob az egyezmény vagy szabvány szerinti ***előkódolás megfordításával***
+      megkapja az eredeti üzenetet vagy adathalmazt.
+  - type: narrative
+    content: |
+      ***A következő részben fogjuk igazolni, hogy az imént említett "varázslat" valójában nem a véletlen műve,
+      hanem az eddig megismert számelméleti összefüggések következménye.*** Most azonban nézzünk egy egyszerű
+      példát az RSA-rejtjelező használatára.

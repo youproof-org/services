@@ -1,0 +1,23 @@
+type: section
+name: 04-a-kriptografia-alapelve
+title: A kriptográfia alapelve
+
+body:
+  - type: narrative
+    content: |
+      Általánosságban elmondható, hogy a rejtjelezési rendszerek tervezésekor két okból is célszerű különválasztani
+      magát az eljárást, illetve az eljáráshoz használt kulcsot. Egyrész praktikussági okokból, hiszen ekkor minden
+      olyan esetben, amikor Alice Bob helyett valaki mással szeretne kommunikálni, újabb és újabb eljárások
+      kitalálása helyett elég csak egy másik kulcsban megegyezniük.
+  - type: quote
+    lead-in: |
+      Másrészt biztonsági okokból, ugyanis érdemes mindig fejben tartani a kriptográfia **alapelv**ét, miszerint:
+    quote: Az ellenség ismeri a használt rendszert.
+    author: Claude Shannon
+  - type: narrative
+    content: |
+      Átfogalmazva: egy rejtjelezési rendszer biztonságának sosem szabad az eljárás titokban tartásától függenie.
+      Ehelyett **a biztonságnak egyedül a kulcs titokban tartásán kell múlnia**. Egy kriptográfiai rendszert ezek
+      szerint akkor mondunk biztonságosnak, ha a kódszövegből a kulcs ismerete nélkül akkora erőfeszítésbe kerül a
+      nyíltszöveget előállítani, hogy nem éri meg megkísérelni még abban az esetben sem, ha maga az eljárás ismert
+      a támadó számára.

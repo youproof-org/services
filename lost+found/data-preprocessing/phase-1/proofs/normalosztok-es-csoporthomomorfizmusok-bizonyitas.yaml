@@ -1,0 +1,19 @@
+type: proof
+name: normalosztok-es-csoporthomomorfizmusok-bizonyitas
+remarks: []
+references:
+  csoporthomomorfizmus-magjanak-szukseges-feltetele:
+    target:
+      type: theorem
+      name: csoporthomomorfizmus-magjanak-szukseges-feltetele
+  faktorcsoport:
+    target:
+      type: theorem
+      name: faktorcsoport
+content:
+  - type: narrative
+    content: |
+      Ha $N$ magja egy csoporthomomorfizmusnak, akkor a [csoporthomomorfizmus-magjanak-szukseges-feltetele] alapján
+      normálosztó $G$-ben, azaz $N\triangleleft G$. ***Megfordítva:*** Ha $N$ normálosztó $G$-ben, akkor a
+      [faktorcsoport] alapján a $G$-ből kiinduló és a $G/N$ faktorcsoportba mutató ***természetes
+      csoporthomomorfizmusnak*** éppen $N$ a magja.

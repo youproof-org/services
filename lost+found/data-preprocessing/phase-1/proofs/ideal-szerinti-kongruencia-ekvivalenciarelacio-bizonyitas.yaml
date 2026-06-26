@@ -1,0 +1,61 @@
+type: proof
+name: ideal-szerinti-kongruencia-ekvivalenciarelacio-bizonyitas
+remarks: []
+references:
+  ekvivalenciarelacio:
+    target:
+      type: definition
+      name: ekvivalenciarelacio
+  ideal-szerinti-kongruencia:
+    target:
+      type: definition
+      name: ideal-szerinti-kongruencia
+  komplexusmuveletek:
+    target:
+      type: definition
+      name: komplexusmuveletek
+  reflexiv-relacio:
+    target:
+      type: definition
+      name: reflexiv-relacio
+  reszgyuru-feltetele:
+    target:
+      type: theorem
+      name: reszgyuru-feltetele
+  szimmetrikus-relacio:
+    target:
+      type: definition
+      name: szimmetrikus-relacio
+  tranzitiv-relacio:
+    target:
+      type: definition
+      name: tranzitiv-relacio
+content:
+  - type: narrative
+    content: |
+      A [ekvivalenciarelacio] alapján azt kell tehát bizonyítani, hogy az $I$ ideál szerinti kongruenciareláció
+      reflexív ([reflexiv-relacio]), tranzitív ([tranzitiv-relacio]) és szimmetrikus ([szimmetrikus-relacio]). Az
+      alábbiakban legyenek $a$, $b$ és $c$ az $R$ gyűrű tetszőleges elemei. A bizonyítás során végig arra fogunk
+      támaszkodni, hogy $I$ ideál, tehát egyben részgyűrű is.
+  - type: narrative
+    content: |
+      Mivel nyilván $a-a=0$ teljesül, és az $R$ nulleleme a [reszgyuru-feltetele] 3. pontja alapján benne van
+      $I$-ben, ezért fennáll az $a\equiv a\pod I$ reláció, így az ***reflexív***.
+  - type: narrative
+    content: |
+      Ha $a-b$ és $b-c$ benne vannak $I$-ben, akkor a [reszgyuru-feltetele] 1. pontja alapján az ő összegük, azaz
+      $a-b+b-c=a-c$ is benne van $I$-ben. Így tehát az $a\equiv b\pod I$ és $b\equiv c\pod I$ relációkból
+      következik az $a\equiv c\pod I$ reláció, azaz teljesül a ***tranzitivitás*** is.
+  - type: narrative
+    content: |
+      Végül ha $a-b$ benne van $I$-ben, akkor a [reszgyuru-feltetele] 4. pontja alapján az ő ellentettje, azaz
+      $b-a$ is benne van $I$-ben, vagyis $a\equiv b\pod I$-ből következik $b\equiv a\pod I$, ami épp a
+      ***szimmetriát*** jelenti.
+  - type: narrative
+    content: |
+      Az $I$ szerinti kongruencia tehát valóban egy ekvivalenciareláció, amely az $R$ gyűrű alaphalmazát
+      ekvivalencia-osztályokra bontja. Ezek lesznek a modulo $I$ maradékosztályok. Az $r$ elemet tartalmazó
+      maradékosztály pontosan azokból az $x$ elemekből fog állni, amelyekre teljesül az $x\equiv r\pod I$
+      kongruencia. A [ideal-szerinti-kongruencia] alapján ez pontosan azt jelenti, hogy az $x-r$ különbség benne
+      van $I$-ben. Ez viszont a [komplexusmuveletek]ban bevezetett komplexusműveletek nyelvén pontosan azt jelenti,
+      hogy $x$ benne van az $r+I$ halmazban.

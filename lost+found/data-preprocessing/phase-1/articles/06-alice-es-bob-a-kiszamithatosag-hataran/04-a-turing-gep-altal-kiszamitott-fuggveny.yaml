@@ -1,0 +1,49 @@
+type: section
+name: 04-a-turing-gep-altal-kiszamitott-fuggveny
+title: A Turing-gép által kiszámított függvény
+
+body:
+  - type: narrative
+    content: |
+      Legyen adott egy $M$ ***determinisztikus Turing-gép***, valamint egy $\Sigma$ ábécé, amellyel ez a gép
+      dolgozik. Ekkor a $\Sigma$ feletti jelsorozatok két részre oszthatók. Egyrészt lesznek olyanok, amelyekre
+      &ndash; mint bemenetekre &ndash; az $M$ Turing-gép véges sok lépés után megáll és ad valamilyen kimenetet.
+      Másrészt lesznek olyanok, amelyekre végtelen ciklusba kerül, azaz nem ad kimenetet. Definiálhatunk tehát egy
+      ***függvényt***, amely épp azokra a jelsorozatokra van értelmezve, amelyekre $M$ megáll, és minden ilyen
+      jelsorozathoz épp azt a jelsorozatot rendeli hozzá, amely a megállás után a kimeneti szalagon van. Ezt a
+      függvényt az $M$ ***Turing-gép által kiszámított függvénynek*** nevezzük, és $f_M$-mel jelöljük.
+  - type: narrative
+    content: |
+      Ehhez hasonlóan legyen adott egy $N$ ***nemdeterminisztikus Turing-gép***, valamint szintén egy $\Sigma$
+      ábécé, amellyel ez a gép dolgozik. Ekkor a $\Sigma$ feletti jelsorozatok két részre oszthatók. Lesznek
+      olyanok, amelyekre &ndash; mint bemenetekre &ndash; az $N$ Turing-gép ***legalább 1*** számítási útvonalon
+      véges sok lépés után megáll, és minden ilyen számítási útvonal végén ad valamilyen kimenetet, és lesznek
+      olyan bemenetek is, amelyekre a gép ***mindegyik*** számítási útvonalon végtelen ciklusba kerül, azaz nem ad
+      semmilyen kimenetet. Definiálhatunk tehát egy ***relációt***, amely épp azokra a jelsorozatokra van
+      értelmezve, amelyekre $N$ legalább 1 számítási útvonalon megáll, és minden ilyen bemenethez épp azokat a
+      jelsorozatokat rendeli hozzá, amelyek a megálló számítási útvonalak végén a kimeneti szalagon vannak. Ezt a
+      relációt az $N$ ***Turing-gép által kiszámított relációnak*** nevezzük, és $R_N$-nel jelöljük.
+  - type: narrative
+    content: |
+      Látható, hogy a nemdeterminisztikus Turing-gépek a determinisztikus Turing-gépek általánosításának
+      tekinthetők hasonlóan ahhoz, mint ahogy a relációk a függvények általánosításai. ***A továbbiakban
+      függvényekkel fogunk foglalkozni, és ennek megfelelően Turing-gép alatt mindig determinisztikus Turing-gépet
+      fogunk érteni***, hacsak külön nem jelezzük ennek ellentettjét. A most következő definíciók egyfajta alapvető
+      osztályozását adják az összes lehetséges $\Sigma$ feletti jelsorozatokon értelmezett függvénynek.
+  - type: narrative
+    content: |
+      Egy $f$ függvényt ***parciálisan rekurzív függvénynek*** nevezzük, ha létezik olyan Turing-gép, amely által
+      kiszámított függvény épp $f$. A "parciális" elnevezés arra utal, hogy az $f$ függvénynek nem feltétlenül kell
+      minden bemeneti jelsorozatra értelmezve lennie, de azt elvárjuk, hogy létezzen olyan Turing-gép, amely minden
+      olyan jelsorozatra véges sok lépésben megáll és kiszámolja a függvény értékét, amelyre a függvény értelmezve
+      van. A "rekurzív" elnevezés a matematika egy másik területéről ered, ezt most nem részletezzük.
+  - type: narrative
+    content: |
+      Az olyan parciálisan rekurzív függvényeket, amelyek minden bemeneti jelsorozatra értelmezve vannak,
+      ***rekurzív függvényeknek*** nevezzük. A rekurzív függvényeket fogjuk ***algoritmikus szempontból
+      kezelhető*** függvényeknek tekinteni, mivel ezek azok, amelyeknél a kiszámításukat végző Turing-gép soha nem
+      keveredik végtelen ciklusba. Erre egy remek példa a fenti összeadó Turing-gépünk, amely az összeadás
+      szempontjából értelmezhetetlen bemenetekre is megáll, és az üres jelsorozatot, mint kimenetet produkálja.
+      Kérdés, hogy nem túl szűk-e ez a meghatározás? Nincsenek-e esetleg olyan algoritmusok, amelyek nem
+      valósíthatók meg Turing-géppel? Nem lehet-e valamilyen "hiper-szuper" számítógéppel olyan függvényt is
+      kiszámítani, amit Turing-géppel nem? Most ezekre a kérdésekre adjuk meg a választ.

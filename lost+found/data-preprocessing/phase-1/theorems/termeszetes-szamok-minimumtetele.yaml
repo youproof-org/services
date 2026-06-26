@@ -1,0 +1,16 @@
+type: theorem
+name: termeszetes-szamok-minimumtetele
+proofs:
+  - termeszetes-szamok-minimumtetele-bizonyitas
+remarks: []
+references:
+  termeszetes-szamok-rendezese:
+    target:
+      type: definition
+      name: termeszetes-szamok-rendezese
+content:
+  - type: narrative
+    content: |
+      Ha $P$ a természetes számok $\N$ halmazának tetszőleges nemüres részhalmaza, akkor $P$-nek van ***minimuma***
+      a [termeszetes-szamok-rendezese] szerinti $\leq$ relációra nézve. Minimum alatt egy olyan $p_0$ elem
+      létezését értjük, amelyre tetszőleges $P$-beli $p$ elem esetén teljesül a $p_0\leq p$ reláció.

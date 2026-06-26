@@ -1,0 +1,54 @@
+type: section
+name: 04-csoportok-homomorfizmustetele
+title: Csoportok homomorfizmustétele
+
+references:
+  egesz-szamok-maradekosztalygyurui:
+    target:
+      type: theorem
+      name: egesz-szamok-maradekosztalygyurui
+  gyuruk-homomorfizmustetele:
+    target:
+      type: theorem
+      name: gyuruk-homomorfizmustetele
+  modularis-osszeadas-es-szorzas:
+    target:
+      type: definition
+      name: modularis-osszeadas-es-szorzas
+
+body:
+  - type: narrative
+    content: |
+      A 18. részben ezek után igazoltuk az úgynevezett ***homomorfizmustételt*** gyűrűk esetén (lásd a
+      [gyuruk-homomorfizmustetele]t). Ez abban volt a segítségünkre, hogy felfedjük egy $R$ gyűrűből egy $S$
+      gyűrűbe mutató $f$ gyűrűhomomorfizmus képének pontos szerkezetét. A furcsa az, hogy ezt még akkor is meg
+      tudjuk tenni, ha csupán $f$ magját ismerjük, de sem magáról $f$-ről, sem pedig az $S$ gyűrűről nincs semmi
+      egyéb információnk. Másként fogalmazva $f$ magja minden információt tartalmaz ezekről.
+  - type: narrative
+    content: |
+      Ezen az alapon tehettük meg az elmúlt részekben, hogy gyakorlatilag felváltva használtuk a
+      [modularis-osszeadas-es-szorzas]ban ismertetett $Z_m$ gyűrűt, valamint a
+      [egesz-szamok-maradekosztalygyurui]ben bevezetett $\Z/m\Z$ faktorgyűrűt. E két gyűrűnek látszólag semmi köze
+      egymáshoz. A $Z_m$ gyűrű ugyanis az egész számok $\Z$ gyűrűjén értelmezett, szintén a
+      [modularis-osszeadas-es-szorzas]ban bevezetett $\bmod_m$ maradékképző függvény, mint gyűrűhomomorfizmus képe,
+      melynek elemei ugye a $0$, $1$, $2$, ..., $|m-1|$ egész számok. Ezzel szemben a $\Z/m\Z$ gyűrű az $(m)=m\Z$
+      ideállal képzett faktorgyűrű, amelynek az elemei maradékosztályok, azaz halmazok.
+  - type: narrative
+    content: |
+      A ***homomorfizmustétel*** azonban nagyon szorosan összeköti e két gyűrűt, sőt nem kevesebbet állít, mint
+      hogy a két gyűrű ***izomorf*** egymással &ndash; azaz az elemek és a műveletek jelölésétől eltekintve
+      megegyezik. A $\bmod_m$ maradékképző függvény, mint gyűrűhomomorfizmus magja ugyanis épp az $(m)=m\Z$ ideál.
+      Így az ezzel az ideállal képzett $\Z/m\Z$ faktorgyűrű izomorf $\bmod_m$ képével, ami jelen esetben nem más,
+      mint a $Z_m$ gyűrű.
+  - type: narrative
+    content: |
+      Most ennek mintájára kimondjuk és bizonyítjuk a ***csoportok homomorfizmustételét***, amely egy ugyanilyen
+      összefüggést mond ki csoportok esetére.
+  - type: embed
+    target:
+      type: theorem
+      name: csoportok-homomorfizmustetele
+  - type: embed
+    target:
+      type: proof
+      name: csoportok-homomorfizmustetele-bizonyitas

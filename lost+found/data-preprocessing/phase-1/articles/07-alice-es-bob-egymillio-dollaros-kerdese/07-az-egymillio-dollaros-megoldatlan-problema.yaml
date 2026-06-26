@@ -1,0 +1,39 @@
+type: section
+name: 07-az-egymillio-dollaros-megoldatlan-problema
+title: Az egymillió dolláros megoldatlan probléma
+
+body:
+  - type: narrative
+    content: |
+      Az nyilvánvaló, hogy a $P$ problémaosztály mind az első, mind pedig a második definíció alapján is része az
+      $NP$ problémaosztálynak. Ha ugyanis a bíró maga is meg tudja oldani a feladatot polinomiális időben, akkor
+      nincs más dolga, mint a kapott megoldást összehasonlítani a tanú "vallomásával", és **"igen"**-t ítélni
+      egyezés esetén.
+  - type: narrative
+    content: |
+      Érdekes kérdés viszont, hogy vajon valódi tartalmazásról van-e szó, vagy ***a két problémaosztály valójában
+      egy és ugyanaz lenne?*** Vajon ha egy feladat megoldásának az ellenőrzésére van hatékony eljárás, akkor
+      szükségképpen létezik-e hatékony eljárás magának a megoldásnak a megtalálására is? Amennyiben ez igaz lenne,
+      annak ***rendkívül messzemenő következményei lennének*** nemcsak a matematika számos területén, hanem más
+      tudományokban is.
+  - type: narrative
+    content: |
+      A választ nem tudjuk, de alapos okunk van feltételezni, hogy $P \neq NP$, azaz vannak nemcsak nehéznek tűnő,
+      hanem ***valóban nehezen megoldható***, viszont ***hatékonyan ellenőrizhető*** feladatok. Ez jelenleg a
+      számítástudomány, de talán az egész matematika egyik ***legfontosabb megválaszolatlan kérdése***. A $P \neq
+      NP$-sejtés egyike az úgynevezett Millenniumi Problémáknak is. Ez hét olyan matematikai problémát takar,
+      amelyek megoldására 2000-ben magas pénzjutalommal járó díjat alapított az amerikai Clay Matematikai Intézet.
+      Ezek közül hat még mindig megfejtésre vár &ndash; köztük a $P \neq NP$-sejtés is &ndash;, amelyekért a
+      dicsőségen túl egyenként ***egymillió amerikai dollár*** is jár.
+  - type: figure
+    lead-in: |
+      Az alábbi két ábrán az eddig megismert "bonyolultságtérképünk", valamint az ebben a részben bemutatott
+      2-színezhetőség, 3-színezhetőség és k-függetlenség problémájának elhelyezkedése látható ezen a térképen a $P
+      \neq NP$ sejtésre adható két lehetséges válasz esetére:
+    src: 11-p-nem-egyenlo-np.jpg
+    alt: Bonyolultságtérkép P nem egyenlő NP esetén
+    caption: Bonyolultságtérkép P ≠ NP esetén
+  - type: figure
+    src: 12-p-egyenlo-np.jpg
+    alt: Bonyolultságtérkép P egyenlő NP esetén
+    caption: Bonyolultságtérkép P=NP esetén

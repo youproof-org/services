@@ -1,0 +1,163 @@
+type: proof
+name: maradekok-gyuruje-bizonyitas
+remarks: []
+references:
+  gyuru-test:
+    target:
+      type: definition
+      name: gyuru-test
+  maradekok-kulonbsege-oszthato-a-modulussal:
+    target:
+      type: theorem
+      name: maradekok-kulonbsege-oszthato-a-modulussal
+  modularis-osszeadas-es-szorzas:
+    target:
+      type: definition
+      name: modularis-osszeadas-es-szorzas
+  oszthatosag-tulajdonsagai:
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+content:
+  - type: narrative
+    content: |
+      A [gyuru-test]ban szereplő ***gyűrűaxiómák*** teljesülését kell igazolnunk. Nézzük őket sorban:
+  - type: formula
+    lead-in: |
+      ***A műveletek kommutativitása:*** Ez egyszerűen adódik a [modularis-osszeadas-es-szorzas]ból, valamint a
+      hagyományos összeadás és szorzás kommutativitásából:
+    content: |
+      \begin{aligned}a\oplus b&=\bmod_m(a+b)=\bmod_m(b+a)=b\oplus a \\ a\odot b&=\bmod_m(a\cdot b)=\bmod_m(b\cdot
+      a)=b\odot a\end{aligned}
+  - type: narrative
+    content: |
+      ***Neutrális elem létezése:*** Az $|m|=1$ esetben a [modularis-osszeadas-es-szorzas] utáni megjegyzés 4.
+      pontja alapján $Z_m$ épp a ***nullgyűrű***. Ebben az egyetlen elem a $0$, amely nyilván mindkét műveletre
+      nézve neutrális. Feltehetjük tehát, hogy $|m|\eq 1$. Mivel $Z_m$ elemei épp a modulo $m$ maradékok, ezért
+      rájuk alkalmazható a [modularis-osszeadas-es-szorzas] utáni megjegyzés 5. pontja.
+  - type: formula
+    lead-in: |
+      Ez alapján könnyen adódik, hogy mindkét művelethez létezik ***neutrális elem***, méghozzá a $0$ és az $1$:
+    content: |
+      \begin{aligned}a\oplus 0&=\bmod_m(a+0)=\bmod_m(a)=a \\ a\odot 1&=\bmod_m(a\cdot 1)=\bmod_m(a)=a\end{aligned}
+  - type: narrative
+    content: |
+      ***Ellentett elem létezése:*** Ehhez azt kell megmutatni, hogy tetszőleges $a$ maradékhoz létezik olyan $b$
+      maradék, amelyre $a\oplus b=0$ teljesül. Ha $a=0$, akkor a $b=0$ választás nyilván megfelelő, hiszen az előző
+      pont alapján $0\oplus 0=0$.
+  - type: formula
+    lead-in: |
+      Az $a\eq 0$ esetekben a $b=|m|-a$ választás lesz a megfelelő, hiszen ekkor egyrészt nyilván teljesül a $0\leq
+      b\lt |m|$ egyenlőtlenség (azaz $b$ is egy modulo $m$ maradék), másrészt pedig az $a\oplus b$ moduláris
+      összeadást kifejtve az alábbit kapjuk:
+    content: |
+      a\oplus b=\bmod_m(a+b)=\bmod_m(a+\underbrace{|m|-a}_{=b})=\bmod_m(|m|)
+  - type: narrative
+    content: |
+      Ha $m$ pozitív, akkor $\bmod_m(|m|)=\bmod_m(m)$, ha pedig negatív, akkor $\bmod_m(|m|)=\bmod_m(-m)$. A
+      [oszthatosag-tulajdonsagai] 8. pontja alapján viszont az ellentettképzés nem befolyásolja az oszthatóságot,
+      így mindkét esetben $0$ lesz a maradék, azaz $b$ valóban $a$ ***ellentettje***.
+  - type: narrative
+    content: |
+      ***A moduláris összeadás asszociativitása:*** Azt kell megmutatni, hogy $(a\oplus b)\oplus c=a\oplus (b\oplus
+      c)$. Fejtsük ki mindkét oldalt a [modularis-osszeadas-es-szorzas] alapján.
+  - type: formula
+    lead-in: |
+      A végrehajtás során képződő részeredményeket jelöljük $r_1$-gyel és $q_1$-gyel, a végeredményeket pedig
+      $r_2$-vel és $q_2$-vel:
+    content: |
+      \begin{aligned}(a\oplus b)\oplus c&=\overbrace{\bmod_m(a+b)}^{=r_1}\oplus c=\bmod_m(r_1+c)=r_2 \\ a\oplus
+      (b\oplus c)&=a\oplus \underbrace{\bmod_m(b+c)}_{=q_1}=\bmod_m(a+q_1)=q_2\end{aligned}
+  - type: narrative
+    content: |
+      Azt kell megmutatnunk, hogy $r_2=q_2$, azaz mindegy, hogy milyen sorrendben végezzük el a két moduláris
+      összeadást, a végeredmény ugyanaz lesz.
+  - type: formula
+    lead-in: |
+      A $\bmod_m$ függvény szerinti maradékos osztásokat elvégezve négy egyenletet írhatunk fel az $r_1$ és $q_1$
+      valamint az $r_2$ és $q_2$ maradékokra valamilyen $k_1$ és $n_1$ valamint $k_2$ és $n_2$ hányadosokkal:
+    content: |
+      \begin{aligned}a+b&=k_1m+r_1 \\ b+c&=n_1m+q_1  \\ r_1+c&=k_2m+r_2 \\ a+q_1&=n_2m+q_2\end{aligned}
+  - type: formula
+    lead-in: |
+      Az első két egyenletet átrendezve megkapjuk $r_1$-et és $q_1$-et:
+    content: |
+      \begin{aligned}r_1&=a+b-k_1m \\ q_1&=b+c-n_1m\end{aligned}
+  - type: formula
+    lead-in: |
+      Ezeket behelyettesítve a másik két egyenletbe az alábbiakat kapjuk:
+    content: |
+      \begin{aligned}\overbrace{a+b-k_1m}^{=r_1}+c&=k_2m+r_2 \\
+      a+\underbrace{b+c-n_1m}_{=q_1}&=n_2m+q_2\end{aligned}
+  - type: formula
+    lead-in: |
+      Ezeket megint átrendezve kifejezhetjük az $r_2$ és a $q_2$ maradékokat:
+    content: |
+      \begin{aligned}r_2&=a+b-k_1m+c-k_2m \\ q_2&=a+b+c-n_1m-n_2m\end{aligned}
+  - type: narrative
+    content: |
+      Azt kell megmutatnunk, hogy ezek valójában megegyeznek.
+  - type: formula
+    lead-in: |
+      Írjuk hát fel a kettejük különbségét:
+    content: |
+      \begin{aligned}r_2-q_2&=\overbrace{\bcancel{a}+\bcancel{b}-k_1m+\bcancel{c}-k_2m}^{r_2}\overbrace{-\bcancel{a}-\bcancel{b}-\bcancel{c}+n_1m+n_2m}^{-q_2}=\\&=(n_1+n_2-k_1-k_2)\cdot
+      m\end{aligned}
+  - type: narrative
+    content: |
+      Azt kaptuk tehát, hogy teljesül az $m|r_2-q_2$ oszthatóság. Mivel $r_2$ és $q_2$ nemnegatív maradékok, így
+      alkalmazható rájuk a [maradekok-kulonbsege-oszthato-a-modulussal], amiből $r_2=q_2$ következik. Az $\oplus$
+      művelet tehát valóban ***asszociatív***.
+  - type: narrative
+    content: |
+      ***A moduláris szorzás asszociativitása:*** Azt kell megmutatni, hogy $(a\odot b)\odot c=a\odot (b\odot c)$.
+  - type: formula
+    lead-in: |
+      Ismét fejtsük ki mindkét oldalt a részeredményeket $r_1$-gyel és $q_1$-gyel, a végeredményeket pedig
+      $r_2$-vel és $q_2$-vel jelölve:
+    content: |
+      \begin{aligned}(a\odot b)\odot c&=\overbrace{\bmod_m(ab)}^{=r_1}\odot c=\bmod_m(r_1c)=r_2 \\ a\odot (b\odot
+      c)&=a\odot \underbrace{\bmod_m(bc)}_{=q_1}=\bmod_m(aq_1)=q_2\end{aligned}
+  - type: formula
+    lead-in: |
+      A $\bmod_m$ függvény szerinti maradékos osztásokat elvégezve négy egyenletet írhatunk fel az $r_1$ és $q_1$
+      valamint az $r_2$ és $q_2$ maradékokra valamilyen $k_1$ és $n_1$ valamint $k_2$ és $n_2$ hányadosokkal:
+    content: |
+      \begin{aligned}ab&=k_1m+r_1 \\ bc&=n_1m+q_1  \\ r_1c&=k_2m+r_2 \\ aq_1&=n_2m+q_2\end{aligned}
+  - type: narrative
+    content: |
+      A $\oplus$ művelet asszociativitásánál látott módon ismét kifejezhetjük az $r_2-q_2$ különbséget &ndash; a
+      részleteket az Olvasóra bízzuk &ndash;, amelyből megint azt fogjuk kapni, hogy teljesül az $m|r_2-q_2$
+      oszthatóság. Ebből viszont ugyancsak a [maradekok-kulonbsege-oszthato-a-modulussal] miatt $r_2=q_2$
+      következik, azaz a $\odot$ művelet is ***asszociatív***.
+  - type: narrative
+    content: |
+      ***A disztributivitási szabályok teljesülése:*** Mivel a $\odot$ művelet kommutativitását már igazoltuk,
+      ezért elegendő az egyik oldali disztributivitást megmutatni, azaz hogy $a\odot (b\oplus c)=(a\odot b)\oplus
+      (a\odot c)$ teljesül. A recept a megszokott: ismét a definíció szerint kifejtjük mindkét oldalt, majd
+      megmutatjuk, hogy a különbségük osztható az $m$ modulussal, azaz végsősoron megegyeznek.
+  - type: formula
+    lead-in: |
+      A két oldal definíció szerinti kifejtése:
+    content: |
+      \begin{aligned}a\odot (b\oplus c)&=a\odot \overbrace{\bmod_m(b+c)}^{=r_1}=\bmod_m(ar_1)=r_2 \\ (a\odot
+      b)\oplus (a\odot c)&=\underbrace{\bmod_m(ab)}_{=q_1} \oplus
+      \underbrace{\bmod_m(ac)}_{=q_2}=\bmod_m(q_1+q_2)=q_3\end{aligned}
+  - type: formula
+    lead-in: |
+      Ez tehát az alábbi 5 maradékos osztást jelenti:
+    content: |
+      \begin{aligned}b+c&=k_1m+r_1 \\ ar_1&=k_2m+r_2  \\ ab&=n_1m+q_1 \\ ac&=n_2m+q_2 \\
+      q_1+q_2&=n_3m+q_3\end{aligned}
+  - type: narrative
+    content: |
+      Ebből az $r_2-q_3$ különbséget kell kifejezni &ndash; amelyet ugyancsak az Olvasóra bízunk &ndash;, amelyből
+      az előzőekhez hasonlóan megkapjuk, hogy teljesül az $m|r_2-q_3$ oszthatóság. Ebből megint a
+      [maradekok-kulonbsege-oszthato-a-modulussal] alkalmazásával $r_2=q_3$ adódik, azaz a $\odot$ művelet
+      ***disztributív*** a $\oplus$ műveletre nézve.
+  - type: narrative
+    content: |
+      Minthogy minden gyűrűaxióma teljesül, továbbá a moduláris szorzás is kommutatív, ezért $Z_m$ valóban egy
+      ***kommutatív gyűrű***. Láttuk továbbá, hogy a szorzásra nézve is létezik neutrális elem. Ezért $Z_m$
+      ***egységelemes***, hacsak nem a nullgyűrűről &ndash; az $|m|=1$ esetről &ndash; van szó, amit a [gyuru-test]
+      szerint nem tekintünk annak.

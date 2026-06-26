@@ -1,0 +1,24 @@
+type: definition
+name: egesz-szamok-szorzasa
+remarks: []
+references:
+  peano-osszeadas:
+    target:
+      type: definition
+      name: peano-osszeadas
+  peano-szorzas:
+    target:
+      type: definition
+      name: peano-szorzas
+content:
+  - type: formula
+    lead-in: |
+      A $\Z$ halmazon az alábbi képlet szerint értelmezett $\odot$-tal jelölt kétváltozós műveletet
+      ***szorzásnak*** nevezzük:
+    content: |
+      [(a;b)] \odot [(c;d)] = [(ac+bd; ad+bc)]
+  - type: narrative
+    content: |
+      A fentiekben $+$ a [peano-osszeadas] szerinti Peano-összeadást, az egymás után írás a [peano-szorzas]
+      szerinti Peano-szorzást, $[(x;y)]$ pedig a $\Z$ halmaznak azon elemét jelöli, amelynek &ndash; mint
+      ekvivalencia-osztálynak &ndash; eleme az $(x;y)$ természetes számpár.

@@ -1,0 +1,413 @@
+type: proof
+name: nem-miller-rabin-tanuk-csoportja-primhatvanyok-eseten-bizonyitas
+remarks: []
+references:
+  csoportelem-rendje:
+    target:
+      type: definition
+      name: csoportelem-rendje
+  csoportelem-rendjere-vonatkozo-osszefuggesek:
+    target:
+      type: theorem
+      name: csoportelem-rendjere-vonatkozo-osszefuggesek
+  egesz-szamok-kozotti-kongruencia:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia
+  egesz-szamok-kozotti-kongruencia-tulajdonsagai:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia-tulajdonsagai
+  egesz-szamok-maradekosztalygyurui:
+    target:
+      type: theorem
+      name: egesz-szamok-maradekosztalygyurui
+  euklideszi-lemma:
+    target:
+      type: theorem
+      name: euklideszi-lemma
+  euler-fermat-tetel:
+    target:
+      type: theorem
+      name: euler-fermat-tetel
+  euler-fuggveny-primhatvanyokra:
+    target:
+      type: theorem
+      name: euler-fuggveny-primhatvanyokra
+  fermat-tanu:
+    target:
+      type: definition
+      name: fermat-tanu
+  gyuru-test:
+    target:
+      type: definition
+      name: gyuru-test
+  hatvanyozas-azonossagai:
+    target:
+      type: theorem
+      name: hatvanyozas-azonossagai
+  kis-fermat-tetel:
+    target:
+      type: theorem
+      name: kis-fermat-tetel
+  kituntetett-kozos-oszto:
+    target:
+      type: definition
+      name: kituntetett-kozos-oszto
+  kituntetett-kozos-oszto-kiemelesi-tulajdonsaga:
+    target:
+      type: theorem
+      name: kituntetett-kozos-oszto-kiemelesi-tulajdonsaga
+  miller-rabin-tanu:
+    target:
+      type: definition
+      name: miller-rabin-tanu
+  prim-modulus-hatvanyozasa:
+    target:
+      type: theorem
+      name: prim-modulus-hatvanyozasa
+  primszamnak-nincs-miller-rabin-tanuja:
+    target:
+      type: theorem
+      name: primszamnak-nincs-miller-rabin-tanuja
+  redukalt-maradekosztaly-feltetele:
+    target:
+      type: theorem
+      name: redukalt-maradekosztaly-feltetele
+  reszcsoport-feltetele-veges-csoportok-eseten:
+    target:
+      type: theorem
+      name: reszcsoport-feltetele-veges-csoportok-eseten
+content:
+  - type: narrative
+    content: |
+      Mivel a tételben szereplő $G_n$ halmaz elemei a NEM Miller-Rabin-tanúk, ezért a [miller-rabin-tanu] utáni
+      megjegyzés alapján az biztos, hogy itt csak redukált maradékosztályok lehetnek, azaz $G_n\sube
+      (\Z/n\Z)^{\times}$.
+  - type: narrative
+    content: |
+      ***Ha $c=1$***, akkor $n=p^c=p$ egy prímszám, amelynek a [primszamnak-nincs-miller-rabin-tanuja] értelmében
+      egyáltalán nincsenek Miller-Rabin-tanúi, azaz ebben az esetben $G_n=(\Z/n\Z)^{\times}$. Ezzel $c=1$-re
+      igazoltuk a ***2. és 3. állításokat***. Mivel $n=p$ most egy prímszám, ezért az ***1. állítás*** a kis
+      Fermat-tételből ([kis-fermat-tetel]) azonnal következik, mely szerint bármilyen $n=p$-hez relatív prím $a$
+      egész számra teljesül az $a^{p-1}\equiv 1\pmod p$ kongruencia. A [redukalt-maradekosztaly-feltetele] alapján
+      az $n=p$-hez relatív prím egész számok pontosan a redukált maradékosztályokat, azaz a $(\Z/n\Z)^{\times}$
+      multiplikatív csoport elemeit reprezentálják, ami ugye &ndash; mint láttuk &ndash; megegyezik a NEM
+      Miller-Rabin-tanúk $G_n$ halmazával.
+  - type: narrative
+    content: |
+      Az általánosság megsértése nélkül feltehetjük tehát, hogy $c\geq 2$.
+  - type: formula
+    lead-in: |
+      ***Nézzük az 1. állítást ebben az esetben!*** Azt kell tehát bizonyítani, hogy az $n=p^c$ egész szám NEM
+      Miller-Rabin-tanúinak $a$ reprezentánselemei, és csak azok elégítik ki az alábbi kongruenciát:
+    content: |
+      a^{p-1}\equiv 1\pmod{\underbrace{n}_{=p^c}}
+  - type: narrative
+    content: |
+      Ha az $[a]_n$ maradékosztály nem Miller-Rabin-tanú, akkor ***egyrészt*** a [miller-rabin-tanu] utáni
+      megjegyzés alapján csak redukált maradékosztály lehet, és így a [redukalt-maradekosztaly-feltetele] szerint
+      $a$ és $n=p^c$ relatív prímek.
+  - type: formula
+    lead-in: |
+      Ekkor viszont érvényes az ***Euler-Fermat tétel*** ([euler-fermat-tetel]), miszerint:
+    content: |
+      a^{\varphi(n)}\equiv 1\pmod n
+  - type: narrative
+    content: |
+      ***Másrészt*** viszont ha $[a]_n$ nem Miller-Rabin-tanú, akkor szintén a [miller-rabin-tanu] utáni megjegyzés
+      szerint ***nem lehet Fermat-tanú sem***.
+  - type: formula
+    lead-in: |
+      Ez a [fermat-tanu] alapján azt jelenti, hogy fennáll az alábbi kongruencia is:
+    content: |
+      a^{n-1}\equiv 1\pmod n
+  - type: narrative
+    content: |
+      A [csoportelem-rendjere-vonatkozo-osszefuggesek] 2. pontja alapján tehát a $(\Z/n\Z)^{\times}$ csoportban az
+      $[a]_n$ elem rendje közös osztója $\varphi(n)$-nek és $n-1$-nek.
+  - type: formula
+    lead-in: |
+      Ez viszont a [kituntetett-kozos-oszto] miatt azt jelenti, hogy osztója a $(\varphi(n), n-1)$ ***kitüntetett
+      közös osztónak*** is, azaz teljesül az alábbi oszthatóság:
+    content: |
+      o([a]_n)|(\varphi(n), n-1)
+  - type: formula
+    lead-in: |
+      Alkalmazva az $n=p^c$ helyettesítést a jobboldalon szereplő kitüntetett közös osztóra a
+      [euler-fuggveny-primhatvanyokra] alapján, továbbá a [gyuru-test]ban szereplő 5. gyűrűaxióma szerint a
+      következőt kapjuk:
+    content: |
+      (\underbrace{p^c-p^{c-1}}_{=\varphi(p^c)}, p^c-1)=((p-1)p^{c-1},p^c-1)=\ldots
+  - type: formula
+    lead-in: |
+      Szintén a gyűrűaxiómák következménye, hogy a jobboldalon szereplő $p^c-1$ kifejezésből is kiemelhető a $p-1$
+      tényező, méghozzá az alábbi összefüggés miatt, amelyet az Olvasó maga is leellenőrizhet a zárójelek
+      felbontásával:
+    content: |
+      p^c-1=(p-1)(p^{c-1}+p^{c-2}+\ldots+p+1)
+  - type: formula
+    lead-in: |
+      Alkalmazhatjuk tehát a kitüntetett közös osztó kiemelési tulajdonságát
+      ([kituntetett-kozos-oszto-kiemelesi-tulajdonsaga]), azaz a fenti kitüntetett közös osztóból kiemelhetjük
+      $p-1$-et:
+    content: |
+      \ldots=(p-1)\cdot (p^{c-1},p^{c-1}+p^{c-2}+\ldots+p+1)=\ldots
+  - type: narrative
+    content: |
+      Vegyük észre, hogy az itt szereplő jobboldali $p^{c-1}+p^{c-2}+\ldots+p+1$ összeg minden tagja osztható
+      $p$-vel, kivéve az utolsó. Ez az összeg tehát $p$-vel osztva $1$ maradékot ad, azaz a prímtényezői biztosan
+      mind különböznek $p$-től. Ezzel szemben a baloldali $p^{c-1}$ prímtényezői között csak $p$ szerepel.
+  - type: formula
+    lead-in: |
+      A két mennyiség emiatt egymáshoz relatív prím, azaz:
+    content: |
+      \ldots=(p-1)\cdot \underbrace{1}_{=(p^{c-1},p^{c-1}+p^{c-2}+\ldots+p+1)}
+  - type: narrative
+    content: |
+      Azt kaptuk tehát, hogy ha az $[a]_n$ maradékosztály nem Miller-Rabin-tanú, akkor az ő rendje a
+      $(\Z/n\Z)^{\times}$ csoportban osztója lesz a $(\varphi(n),n-1)=p-1$ kitüntetett közös osztónak.
+  - type: formula
+    lead-in: |
+      Ez viszont a [csoportelem-rendjere-vonatkozo-osszefuggesek] 2. pontja alapján épp azt jelenti, hogy valóban
+      teljesül az alábbi kongruencia, ahogyan a tétel állítja:
+    content: |
+      a^{p-1}\equiv 1\pmod{\underbrace{n}_{=p^c}}
+  - type: narrative
+    content: |
+      ***Most nézzük visszafelé!*** Tegyük fel, hogy teljesül az iménti kongruencia egy $a$ egész számra. Most azt
+      kell bizonyítani, hogy ekkor az $[a]_n$ maradékosztály nem Miller-Rabin-tanú. Mivel $n=p^c$ páratlan, ezért
+      $n-1=p^c-1$ páros, és így valahányszor osztható $2$-vel.
+  - type: formula
+    lead-in: |
+      Azaz létezik olyan $e\geq 1$ kitevő és $k\geq 1$ páratlan egész, hogy:
+    content: |
+      n-1=p^c-1=2^e\cdot k
+  - type: formula
+    lead-in: |
+      Ehhez hasonlóan $p-1$-hez is létezik olyan $f\geq 1$ kitevő és $l\geq 1$ páratlan egész, hogy:
+    content: |
+      p-1=2^f\cdot l
+  - type: formula
+    lead-in: |
+      A korábban már említett $p^c-1=(p-1)(p^{c-1}+p^{c-2}+\ldots+p+1)$ azonosság alapján tudjuk, hogy teljesül az
+      alábbi oszthatóság:
+    content: |
+      \underbrace{2^fl}_{=p-1}|\overbrace{2^ek}^{=p^c-1}
+  - type: narrative
+    content: |
+      Mivel $l$ és $k$ páratlan, így ezek prímtényezői között biztosan nem szerepel a $2$-es.
+  - type: formula
+    lead-in: |
+      Ezért a fenti oszthatóság csak úgy teljesülhet, ha fennáll az alábbi két feltétel:
+    content: |
+      \begin{aligned}f&\leq e \\ l&|k\end{aligned}
+  - type: narrative
+    content: |
+      Ugye abból indultunk ki, hogy teljesül az $a^{p-1}\equiv 1\pmod n$ kongruencia.
+  - type: formula
+    lead-in: |
+      Ez az imént bevezetett $p-1=2^fl$ jelölést alkalmazva így írható:
+    content: |
+      a^{2^fl}\equiv 1\pmod n
+  - type: formula
+    lead-in: |
+      Ez a hatványozás azonosságairól szóló [hatvanyozas-azonossagai] 2. pontja miatt így is írható:
+    content: |
+      (a^l)^{2^f}\equiv 1\pmod n
+  - type: narrative
+    content: |
+      A [csoportelem-rendjere-vonatkozo-osszefuggesek] 2. pontja alapján tehát az $[a^l]_n$ maradékosztály rendje
+      osztója $2^f$-nek. Ez csak úgy lehet, ha ez a rend is valamilyen 2-hatvány egy ***$f$-nél nemnagyobb,
+      nemnegatív*** $j$ kitevővel, azaz $o([a^l]_n)=2^j$.
+  - type: formula
+    lead-in: |
+      ***Ha $j=0$***, akkor ugye $(a^l)^{2^0}=a^l$ és így teljesül az alábbi kongruencia:
+    content: |
+      a^l\equiv 1\pmod n
+  - type: narrative
+    content: |
+      De mivel tudjuk, hogy $l|k$ &ndash; azaz $k$ az $l$-nek többszöröse &ndash;, ezért ekkor teljesül az
+      $a^k\equiv 1\pmod n$ kongruencia is. Ez épp a [miller-rabin-tanu]ban szereplő első kongruencia, amely szerint
+      tehát $[a]_n$ valóban ***nem lehet Miller-Rabin-tanú***.
+  - type: formula
+    lead-in: |
+      ***Ha $j\geq 1$***, akkor ez az elemrend [csoportelem-rendje]ja miatt azt jelenti, hogy $2^j$ a
+      ***legkisebb*** olyan kitevő, amely esetén az alábbi kongruencia teljesül:
+    content: |
+      (a^l)^{2^j}\equiv 1\pmod n
+  - type: formula
+    lead-in: |
+      Az ennél kisebb kitevőkre ez már nem teljesül, tehát például:
+    content: |
+      (a^l)^{2^{j-1}}\ \cancel{\equiv}\ 1\pmod n
+  - type: formula
+    lead-in: |
+      A felső kongruencia baloldala épp az alsó kongruencia baloldalának négyzete, hiszen:
+    content: |
+      ((a^l)^{2^{j-1}})^2=(a^l)^{2^{j-1}\cdot 2}=(a^l)^{2^j}
+  - type: formula
+    lead-in: |
+      Ha most az áttekinthetőség kedvéért bevezetjük az $x=(a^l)^{2^{j-1}}$ jelölést, akkor fenti két kongruencia
+      tulajdonképpen az alábbi két állításnak felel meg:
+    content: |
+      \begin{aligned}x\ &\cancel{\equiv}\ 1\pmod n \\ x^2&\equiv 1\pmod n\end{aligned}
+  - type: formula
+    lead-in: |
+      Az alsó kongruencia a [egesz-szamok-kozotti-kongruencia] 3. pontja alapján az alábbi oszthatóságot jelenti:
+    content: |
+      n|x^2-1
+  - type: formula
+    lead-in: |
+      Ennek az oszthatóságnak a jobboldala a [gyuru-test]ban ismertetett gyűrűaxiómák miatt szorzatba fejthető:
+    content: |
+      \underbrace{n}_{=p^c}|(x+1)\cdot (x-1)
+  - type: narrative
+    content: |
+      Ez az oszthatóság tehát biztosan teljesül. Ugyanakkor az is bizonyos, hogy $x+1$ és $x-1$ közül legfeljebb az
+      egyikük prímtényezői között szerepelhet $p$, hiszen közöttük mindössze 2 a különbség. Más szavakkal az
+      egyikük biztosan relatív prím lesz $n=p^c$-hez, és így az ***euklidészi lemma*** ([euklideszi-lemma]) alapján
+      a másik viszont biztosan osztható lesz $n$-nel.
+  - type: formula
+    lead-in: |
+      Azaz az alábbi oszthatóságok közül pontosan az egyik teljesül:
+    content: |
+      \begin{aligned}n&|x+1 \\ n&|x-1\end{aligned}
+  - type: narrative
+    content: |
+      Azonban a második oszthatóság lehetetlen, hiszen az a [egesz-szamok-kozotti-kongruencia] 3. pontja szerint
+      azt jelentené, hogy mégiscsak teljesülne az $x\equiv 1\pmod n$ kongruencia, amiről már láttuk, hogy nem
+      teljesülhet. Következésképp csak az első oszthatóság teljesülhet.
+  - type: formula
+    lead-in: |
+      Ez viszont ismét a [egesz-szamok-kozotti-kongruencia] 3. pontja miatt épp az alábbi kongruenciát jelenti:
+    content: |
+      x\equiv -1\pmod n
+  - type: formula
+    lead-in: |
+      Azonban emlékezzünk rá, hogy $x$-szel tulajdonképpen az $(a^l)^{2^{j-1}}=a^{2^{j-1}l}$ kifejezést jelöltük,
+      ezért ez a kongruencia ennek felel meg:
+    content: |
+      a^{2^{j-1}l} \equiv -1\pmod n
+  - type: narrative
+    content: |
+      Mivel korábban már láttuk, hogy $k$ többszöröse $l$-nek, azaz létezik olyan $t$ egész szám, amely esetén
+      $lt=k$. Ráadásul mivel a $k$ és $l$ számokról tudjuk, hogy páratlan számok, ezért a $t$ is szükségképpen
+      páratlan.
+  - type: formula
+    lead-in: |
+      Ha tehát a fenti kongruencia mindkét oldalát $t$-edik hatványra emeljük (amelyet ugye a
+      [egesz-szamok-kozotti-kongruencia-tulajdonsagai] 8. pontja alapján tehetünk meg), akkor ezt kapjuk:
+    content: |
+      a^{2^{j-1}\overbrace{lt}^{=k}} \equiv \overbrace{(-1)^t}^{=-1}\pmod n
+  - type: narrative
+    content: |
+      Itt a jobboldal valóban $-1$ marad, hiszen negatív szám páratlanadik hatványa ugyancsak negatív.
+  - type: formula
+    lead-in: |
+      Végeredményben tehát ezt kaptuk:
+    content: |
+      a^{2^{j-1}k} \equiv -1\pmod n
+  - type: formula
+    lead-in: |
+      Tekintve, hogy $j-1$ biztosan kisebb a bevezetett $e$ kitevőnél, ezért az alábbi kongruenciák közül biztosan
+      teljesül az egyik:
+    content: |
+      \begin{aligned}a^k&\equiv -1 \\ a^{2k}&\equiv -1\pmod n \\ a^{4k}&\equiv -1\pmod n \\ &\vdots \\
+      a^{2^{e-1}\cdot k}&\equiv -1\pmod n\end{aligned}
+  - type: narrative
+    content: |
+      Ez viszont a [miller-rabin-tanu] alapján azt jelenti, hogy az $[a]_n$ maradékosztály ebben az esetben ***sem
+      lehet Miller-Rabin-tanú***.
+  - type: formula
+    lead-in: |
+      Ezzel a tétel ***1. állítását*** igazoltuk, miszerint valóban pontosan azok a maradékosztályok nem
+      Miller-Rabin-tanúk &ndash; azaz tartoznak bele a tétel szövegében szereplő $G_n$ halmazba &ndash;, amelyekre
+      teljesül az alábbi kongruencia:
+    content: |
+      a^{p-1}\equiv 1\pmod n
+  - type: narrative
+    content: |
+      ***Most igazoljuk a 2. állítást***, amely azt állítja, hogy $G_n$ részcsoportja a $(\Z/n\Z)^{\times}$
+      multiplikatív csoportnak. Mivel $(\Z/n\Z)^{\times}$ rendje véges, ezért a
+      [reszcsoport-feltetele-veges-csoportok-eseten] szerint elegendő azt ellenőrizni, hogy $G_n$ ***nemüres*** és
+      ***zárt a maradékosztályok közötti szorzásra***, mint műveletre. Az első feltétel nyilván teljesül, hiszen
+      $1^{p-1}\equiv 1\pmod n$, és így az ***1. állítás*** értelmében az $[1]_n$ maradékosztály benne van
+      $G_n$-ben.
+  - type: narrative
+    content: |
+      Legyen most $[a]_n$ és $[b]_n$ két tetszőleges maradékosztály, amelyek a $G_n$ halmaz elemei.
+  - type: formula
+    lead-in: |
+      Ez az imént bizonyított ***1. állítás*** alapján azt jelenti, hogy teljesülnek az alábbi kongruenciák:
+    content: |
+      \begin{aligned}a^{p-1}&\equiv 1\pmod n \\ b^{p-1}&\equiv 1\pmod n\end{aligned}
+  - type: formula
+    lead-in: |
+      A két kongruenciát a [egesz-szamok-kozotti-kongruencia-tulajdonsagai] 5. pontja alapján összeszorozhatjuk
+      egymással, így ezt kapjuk:
+    content: |
+      a^{p-1}b^{p-1}\equiv 1\pmod n
+  - type: formula
+    lead-in: |
+      A baloldalt a hatványozás azonosságairól szóló [hatvanyozas-azonossagai] 1. pontját felhasználva átírhatjuk:
+    content: |
+      (ab)^{p-1}\equiv 1\pmod n
+  - type: narrative
+    content: |
+      Ez viszont ismét az imént bizonyított ***1. állítás*** miatt azt jelenti, hogy az $[ab]_n$ maradékosztály is
+      a $G_n$ halmaz eleme. Az $[ab]_n$ maradékosztály azonban a [egesz-szamok-maradekosztalygyurui]ben szereplő
+      definíciónak megfelelően épp az $[a]_n$ és $[b]_n$ maradékosztályok szorzata. A $G_n$ halmaz tehát valóban
+      részcsoport $(\Z/n\Z)^{\times}$-ban.
+  - type: narrative
+    content: |
+      ***Végül a 3. állítást igazoljuk.*** Azt már láttuk, hogy $c=1$ esetben $G_n=(\Z/n\Z)^{\times}$, így elegendő
+      azt igazolni, hogy $c\geq 2$ esetén viszont valódi részcsoportról van szó. Azaz kell találni egy olyan
+      redukált maradékosztályt, amely ***nincs*** benne a $G_n$ halmazban. Más szavakkal kell találnunk egy olyan
+      $a$ egész számot, amely relatív prím $n=p^c$-hez, de amelyre $a^{p-1}\ \cancel{\equiv}\ 1\pmod{p^c}$. Hiszen
+      ekkor egyrészt a [redukalt-maradekosztaly-feltetele] alapján $[a]_n$ egy redukált maradékosztály, másrészt
+      pedig a már bizonyított ***1. állítás*** alapján $[a]_n\otin G_n$.
+  - type: narrative
+    content: |
+      Nézzük meg először, hogy mi következik abból, ha egy $a$ szám teljesíti a fenti kongruenciát.
+  - type: formula
+    lead-in: |
+      Ekkor ugye a $(\Z/n\Z)^{\times}$ csoportban a [csoportelem-rendjere-vonatkozo-osszefuggesek] 2. pontja
+      alapján az $[a]_n$ maradékosztály rendje osztója $p-1$-nek, azaz teljesül az alábbi oszthatóság:
+    content: |
+      o([a]_n)|p-1
+  - type: formula
+    lead-in: |
+      Ám $p-1$ prímtényezős felbontásában biztosan nem szerepel $p$, így nem szerepelhet $p-1$ egyetlen osztójának
+      prímtényezős felbontásában sem, emiatt $o([a]_n)$ felbontásában sem, azaz:
+    content: |
+      p\ mid o([a]_n)
+  - type: narrative
+    content: |
+      Megfordítva a gondolatmenetet, ha tehát találunk egy olyan $[a]_n$ ***redukált maradékosztályt***, amelynek
+      rendje osztható $p$-vel, akkor az kizárja azt, hogy teljesüljön az $a^{p-1}\equiv 1\pmod{p^c}$ kongruencia,
+      ami a már bizonyított ***1. állítás*** alapján azt jelentené, hogy $[a]_n\otin G_n$.
+  - type: narrative
+    content: |
+      Vegyük észre, hogy a $[p+1]_n$ maradékosztály teljesíti ezt a feltételt.
+  - type: formula
+    lead-in: |
+      Egyrészt ugyanis $p+1$ nyilván relatív prím $p$-hez &ndash; azaz $[p+1]_n$ egy ***redukált maradékosztály***
+      &ndash;, másrészt pedig teljesül az alábbi kongruencia:
+    content: |
+      p+1\equiv 1\pmod p
+  - type: formula
+    lead-in: |
+      Ekkor azonban alkalmazható a [prim-modulus-hatvanyozasa], amely szerint teljesül az alábbi kongruencia is:
+    content: |
+      (p+1)^{p^{c-1}}\equiv 1\pmod{\underbrace{p^c}_{=n}}
+  - type: narrative
+    content: |
+      Ez viszont a [csoportelem-rendjere-vonatkozo-osszefuggesek] 2. pontja alapján azt jelenti, hogy a $[p+1]_n$
+      maradékosztály rendje osztója $p^{c-1}$-nek. Továbbá ugyanezen tétel 5. pontja miatt ez a rend biztosan nem
+      $1$, hiszen $[p+1]_n\eq [1]_n$. Minthogy $p^{c-1}$ prímtényezős felbontásában csak $p$ szerepel, ezért ennek
+      bármilyen $1$-től különböző osztója szükségképpen osztható $p$-vel.
+  - type: narrative
+    content: |
+      A $[p+1]_n$ redukált maradékosztály tehát valóban nincs benne $G_n$-ben, és így $G_n$ tényleg ***valódi
+      részcsoportja*** $(\Z/n\Z)^{\times}$-nek, ahogyan a tétel állítja.

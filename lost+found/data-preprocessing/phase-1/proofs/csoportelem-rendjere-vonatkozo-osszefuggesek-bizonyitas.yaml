@@ -1,0 +1,155 @@
+type: proof
+name: csoportelem-rendjere-vonatkozo-osszefuggesek-bizonyitas
+remarks: []
+references:
+  abszolutertek-euklideszi-norma:
+    target:
+      type: theorem
+      name: abszolutertek-euklideszi-norma
+  asszocialtsag-tulajdonsagai:
+    target:
+      type: theorem
+      name: asszocialtsag-tulajdonsagai
+  egesz-kitevos-hatvany:
+    target:
+      type: definition
+      name: egesz-kitevos-hatvany
+  egesz-kitevos-hatvanyozas-azonossagai:
+    target:
+      type: theorem
+      name: egesz-kitevos-hatvanyozas-azonossagai
+  egesz-szamok-kozotti-kongruencia:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia
+  egesz-szamok-maradekosztalyai:
+    target:
+      type: theorem
+      name: egesz-szamok-maradekosztalyai
+  euklideszi-gyuru-foidealgyuru:
+    target:
+      type: theorem
+      name: euklideszi-gyuru-foidealgyuru
+  ideal:
+    target:
+      type: definition
+      name: ideal
+  ideal-szerinti-kongruencia:
+    target:
+      type: definition
+      name: ideal-szerinti-kongruencia
+  oszthatosag-es-rendezesi-relacio-kapcsolata:
+    target:
+      type: theorem
+      name: oszthatosag-es-rendezesi-relacio-kapcsolata
+  reszgyuru-feltetele:
+    target:
+      type: theorem
+      name: reszgyuru-feltetele
+  vegesen-generalt-ideal-elemei:
+    target:
+      type: theorem
+      name: vegesen-generalt-ideal-elemei
+content:
+  - type: formula
+    lead-in: |
+      Jelöljük $I$-vel azt a halmazt, amely olyan $i$ egész számokból áll, amelyekre teljesül az alábbi:
+    content: |
+      g^i=e
+  - type: narrative
+    content: |
+      Azaz $I$ azon kitevők halmaza, amelyekre a $g$ elemet emelve a $G$ csoport egységelemét kapjuk.
+  - type: narrative
+    content: |
+      Az $I$ halmaz ***zárt az egész számok összeadására*** nézve, hiszen ha $i\in I$ és $j\in I$, akkor $I$
+      definíciója miatt ugye $g^i=e$ és $g^j=e$. Ám ekkor a [egesz-kitevos-hatvanyozas-azonossagai] 3. pontja
+      alapján $g^{i+j}=g^i\cdot g^j=e\cdot e=e$, és így szintén $I$ definíciója miatt $i+j\in I$.
+  - type: narrative
+    content: |
+      Továbbá az $I$ halmaz ***zárt tetszőleges egész számmal való szorzásra*** is, hiszen ha $i\in I$ és $s$
+      tetszőleges &ndash; tehát nem feltétlenül $I$-beli egész szám &ndash;, akkor egyrészt $I$ definíciója miatt
+      $g^i=e$. Másrészt viszont a [egesz-kitevos-hatvanyozas-azonossagai] 2. pontja alapján $g^{i\cdot
+      s}=(g^i)^s=e^s=e$, és így szintén $I$ definíciója miatt $i\cdot s\in I$.
+  - type: narrative
+    content: |
+      Végül egyrészt $I$ ***tartalmazza a $0$ egész számot***, hiszen a [egesz-kitevos-hatvany] szerint $g^0=e$.
+      Másrészt az $I$ halmaz ***zárt az egész számok ellentettképzésére*** is, hiszen ha $i\in I$, akkor $I$
+      definíciója miatt $g^i=e$, ám ekkor a [egesz-kitevos-hatvanyozas-azonossagai] 4. pontja miatt
+      $g^{-i}=(g^i)^{-1}=e^{-1}=e$, és így szintén $I$ definíciója miatt $-i\in I$.
+  - type: narrative
+    content: |
+      Az $I$ halmaz tehát a [reszgyuru-feltetele] és a [ideal] alapján egy ***ideál*** az egész számok $\Z$
+      gyűrűjében.
+  - type: narrative
+    content: |
+      Ezek után tegyük fel, hogy $g^k=g^n$. Szorozzuk meg az egyenlet mindkét oldalát $g^n$ inverzével, azaz a
+      [egesz-kitevos-hatvanyozas-azonossagai] 4. pontja alapján $g^{-n}$-nel.
+  - type: formula
+    lead-in: |
+      Ekkor az alábbit kapjuk:
+    content: |
+      g^k\cdot g^{-n}=\underbrace{g^n\cdot g^{-n}}_{=e}
+  - type: formula
+    lead-in: |
+      Ez viszont a [egesz-kitevos-hatvanyozas-azonossagai] 3. pontja miatt az alábbival ekvivalens:
+    content: |
+      g^{k-n}=e
+  - type: narrative
+    content: |
+      Vagyis $g^k=g^n$ pontosan akkor teljesül, ha $k-n\in I$.
+  - type: formula
+    lead-in: |
+      Ez viszont a [ideal-szerinti-kongruencia] értelmében épp azt jelenti, hogy teljesül az alábbi, $I$ ideál
+      szerinti kongruencia:
+    content: |
+      k\equiv n\pod I
+  - type: narrative
+    content: |
+      Mivel a [abszolutertek-euklideszi-norma] alapján $\Z$ ***euklidészi gyűrű***, ezért a
+      [euklideszi-gyuru-foidealgyuru] miatt $I$ szükségképpen csak ***főideál*** lehet, azaz egyetlen elemmel
+      generálható. Jelöljük ezt a generátorelemet $d$-vel. Az $I$ ideál tehát a [vegesen-generalt-ideal-elemei]
+      értelmében $d$ többszöröseiből áll, amelyről az általánosság megsértése nélkül feltehető, hogy
+      ***nemnegatív***. Ha ugyanis $d$ negatív lenne, akkor az ő ellentettje lenne pozitív, és így a
+      [asszocialtsag-tulajdonsagai] 1. pontja értelmében $d$-nek asszociáltja lenne. Azaz pontosan ugyanazok
+      lennének a többszörösei, mint $d$-nek, és így őt választhatnánk $I$ generátorelemének.
+  - type: formula
+    lead-in: |
+      Feltételezve tehát, hogy $d$ ***nemnegatív***, a fenti ideál szerinti kongruencia a
+      [egesz-szamok-kozotti-kongruencia] alapján az alábbi kongruenciával ekvivalens:
+    content: |
+      k\equiv n\pmod d
+  - type: narrative
+    content: |
+      A $g$ csoportelem bármely két hatványa tehát pontosan akkor egyezik meg, ha a két hatványkitevő ugyanabba a
+      modulo $d$ maradékosztályba esik. Másként fogalmazva $g$ rendje épp a modulo $d$ maradékosztályok száma lesz.
+      Két eset lehetséges: $d=0$ vagy $d\gt 0$.
+  - type: narrative
+    content: |
+      Első esetben a [egesz-szamok-maradekosztalyai] alapján bármely két kitevő különböző maradékosztályba
+      tartozik, tehát $g$ bármely két különböző kitevős hatványa különböző lesz, és így $g$ rendje valóban
+      ***végtelen***.
+  - type: formula
+    lead-in: |
+      Második esetben szintén a [egesz-szamok-maradekosztalyai] miatt a modulo $d$ maradékosztályok száma, és így
+      $g$ rendje $d$, azaz:
+    content: |
+      o(g)=d
+  - type: narrative
+    content: |
+      Ezt behelyettesítve a fenti kongruenciába tehát megkaptuk a tétel ***1. állítását***. A ***2. állítás***
+      ennek speciális esete, amikoris $n=0$. A ***3. állítás*** könnyen adódik a
+      [egesz-szamok-maradekosztalyai]ből. Ez alapján ugyanis ha rögzítünk egy tetszőleges $a$ kitevőt, akkor
+      pontosan az $i\cdot o(g) + a$ alakban felírható kitevők lesznek $a$-val azonos maradékosztályban &ndash; ahol
+      $i$ tetszőleges egész szám &ndash;, azaz $g$ hatványai valóban $o(g)$ periódussal ismétlődnek.
+  - type: narrative
+    content: |
+      A ***4. állítás*** a [oszthatosag-es-rendezesi-relacio-kapcsolata] következménye. Az egységelemet adó kitevők
+      ugyanis épp az $I$ ideál elemei, amelyek &ndash; mint láttuk &ndash; mindannyian $o(g)$ többszörösei, és így
+      biztosan nem kisebbek $o(g)$-nél.
+  - type: narrative
+    content: |
+      ***Végül az 5. állítás:*** Ha $o(g)=1$, akkor a [egesz-szamok-kozotti-kongruencia] 4. pontja alapján a
+      $k\equiv n\pmod{o(g)}$ kongruencia mindig teljesül, és így bármely kitevő esetén az egységelemet kapjuk
+      &ndash; beleértve természetesen az $1$-es kitevőt is. ***Visszafelé:*** Ha $g=e$, akkor $g$-nek már az első
+      hatványa is az egységelem. Mivel az $1$ kitevőnél nincs kisebb pozitív egész kitevő, ezért a már bizonyított
+      ***4. állítás*** alapján $o(g)=1$.

@@ -1,0 +1,57 @@
+type: section
+name: 04-idealok-generalasa
+title: Ideálok generálása
+
+references:
+  komplexusmuveletek:
+    target:
+      type: definition
+      name: komplexusmuveletek
+
+body:
+  - type: narrative
+    content: |
+      Egy gyűrű tulajdonképpen nem más, mint egy $R$ alaphalmaz, amelyen értelmezve van két művelet. Ennek
+      megfelelően $R$ részgyűrűi és ideáljai is halmazok, méghozzá $R$ részhalmazai. Előszöris megmutatjuk, hogy
+      milyen hatása van a metszetképzésnek egy tetszőleges gyűrű részgyűrűi és ideáljai között.
+  - type: embed
+    target:
+      type: theorem
+      name: idealok-metszete-ideal
+  - type: narrative
+    content: |
+      Például az egész számok $\Z$ gyűrűjében a $2$-vel és $3$-mal osztható számok egy-egy ideált alkotnak. Ezeket
+      az előző részben ismertetett komplexusszorzás ismeretében $2\Z$-vel és $3\Z$-vel jelölhetjük (lásd a
+      [komplexusmuveletek] utáni megjegyzés 1. pontját). E két ideál metszetét azok a számok alkotják, amelyek
+      $2$-vel is ***és*** $3$-mal is oszthatók. Ezek épp a $6$-tal osztható számok lesznek, azaz $2\Z \cap
+      3\Z=6\Z$, ami szintén ideál $\Z$-ben, épp ahogyan a tétel állítja. Nézzük meg, hogy miért igaz ez
+      általánosságban is.
+  - type: embed
+    target:
+      type: proof
+      name: idealok-metszete-ideal-bizonyitas
+  - type: narrative
+    content: |
+      Most egy $R$ gyűrűben azokat a részgyűrűket (vagy ideálokat) fogjuk megvizsgálni, amelyek $R$-nek egy adott
+      $X$ részhalmazát tartalmazzák. Ezek a részgyűrűk (vagy ideálok) szintén egy halmazrendszert alkotnak $R$
+      felett, amelynek egy fontos tulajdonságát mondja ki az alábbi tétel.
+  - type: embed
+    target:
+      type: theorem
+      name: generalt-reszgyuru-es-ideal
+  - type: embed
+    target:
+      type: proof
+      name: generalt-reszgyuru-es-ideal-bizonyitas
+  - type: narrative
+    content: |
+      Ez alapján tehát egy adott $R$ gyűrű bármely $X$ részhalmaza ***egyértelműen*** meghatároz egy ideált. Ez
+      lesz az $X$-et tartalmazó ***legszűkebb*** ideál. Ugyanakkor ez a tétel semmit nem mond arról, hogy az $X$
+      által generált $\lang X\ ang$ ideált lehet-e generálni egy $X$-nél szűkebb részhalmazzal is vagy nem. Amikor
+      tehát azt mondjuk, hogy egy ideál "generálható $X$-szel", ez még nem jelenti azt, hogy az adott ideál
+      kizárólag $X$-szel generálható. Számelméleti szempontból rendkívül fontosak azok az ideálok, amelyek a gyűrű
+      kevés számú &ndash; speciálisan akár egyetlen &ndash; eleméből alkotott részhalmazaival generálhatók.
+  - type: embed
+    target:
+      type: definition
+      name: vegesen-generalt-idealok-es-foidealok

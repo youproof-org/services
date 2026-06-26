@@ -1,0 +1,32 @@
+type: remark
+name: mellekosztalyok-megjegyzes
+references:
+  ideal-szerinti-kongruencia-ekvivalenciarelacio:
+    target:
+      type: theorem
+      name: ideal-szerinti-kongruencia-ekvivalenciarelacio
+content:
+  - type: narrative
+    content: |
+      A figyelmes Olvasó észreveheti, hogy ez a bizonyítás szinte szó szerint megegyezik a
+      [ideal-szerinti-kongruencia-ekvivalenciarelacio] bizonyításával. A különbség pusztán annyi, hogy abban a
+      tételben a $G$ csoport szerepét az ott szereplő $R$ gyűrű additív csoportja, míg a $H$ részcsoport szerepét
+      az ott szereplő $I$ ideál, mint részgyűrű, végül a $\sim$ relációt az $I$ ideál szerinti kongruenciareláció
+      tölti be. Az $I$ szerinti maradékosztályok tehát tulajdonképpen az $R$ gyűrű additív csoportjának $I$
+      szerinti mellékosztályai.
+  - type: narrative
+    content: |
+      Ebben az esetben azonban nincs értelme külön bal- illetve jobboldali mellékosztályokról beszélnünk, hiszen az
+      $R$ gyűrűn értelmezett $+$ művelet kommutativitása miatt ezek nyilván megegyeznek. Egy általános csoport
+      esetén azonban nem követeljük meg a csoportművelet kommutativitását, ezért ilyenkor a jobb- és baloldali
+      mellékosztályok is általában különböző halmazok lesznek, azaz általában $gH\eq Hg$.
+  - type: narrative
+    content: |
+      A [ideal-szerinti-kongruencia-ekvivalenciarelacio]ben definiált maradékosztályokhoz &ndash; vagy speciálisan
+      az egész számok maradékosztályaihoz &ndash; hasonlóan a mellékosztályok esetén is beszélhetünk
+      ***reprezentánselemekről***. Tegyük fel például, hogy egy $H$ szerinti baloldali (vagy jobboldali)
+      mellékosztályból a $g$ elemet választottuk reprezentánselemnek. Ekkor egyrészt az iménti tétel alapján az
+      adott mellékosztályt, mint halmazt $gH$ (vagy jobboldali mellékosztály esetén $Hg$) alakban tudjuk leírni.
+      Másrészt pedig tetszőleges $a$ csoportelemről könnyen eldönthető, hogy $g$-vel azonos mellékosztályban van-e,
+      azaz teljesül-e a tételben szereplő $g\sim a$ reláció. Ehhez csak azt kell megvizsgálni, hogy a $g^{-1}a$
+      (vagy jobboldali mellékosztály esetén az $ag^{-1}$) szorzat benne van-e a $H$ részcsoportban.

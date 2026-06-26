@@ -1,0 +1,125 @@
+type: section
+name: 01-a-csoportelmelet-megszuletese
+title: A csoportelmélet megszületése
+
+body:
+  - type: narrative
+    content: |
+      A ***csoportelmélet*** keletkezése a XIX. század első felére tehető Niels Henrik Abel és Évariste Galois
+      úttörő munkásságának köszönhetően. Munkájukat az akkori matematika egyik központi témája inspirálta, amely
+      arról szólt, hogy különféle típusú egyenleteket hogyan lehet megoldani. A kor matematikusai az egyes
+      egyenlettípusokra olyan megoldóképleteket kerestek, amelyekben csak a négy alapművelet és az úgynevezett
+      gyökvonás művelete szerepelhet, méghozzá véges sokszor. Egy ilyen általános megoldóképlet azért jó dolog,
+      mert a segítségével bárki meg tud oldani ***bármilyen***, az adott típusba tartozó egyenletet. Egyszerűen
+      csak annyi a dolga, hogy a képletben szereplő betűk helyére beírja a konkrét egyenlet paramétereit, a
+      megfelelő sorrendben elvégzi a képlet által leírt műveletsorozatot, és varázslatos módon megkapja a
+      végeredményt.
+  - type: narrative
+    content: |
+      Tekintsük például a legegyszerűbb egyenlettípust, az úgynevezett ***elsőfokú egyenleteket***.
+  - type: formula
+    lead-in: |
+      Egy ilyen egyenlet általános formája a következőképpen néz ki:
+    content: |
+      ax+b=0
+  - type: narrative
+    content: |
+      Itt $a\ eq 0$ és $b$ valamilyen konkrét számok, az $x$ pedig azt az ismeretlen számot (vagy esetleg számokat)
+      jelöli, amelyet (vagy amelyeket) keresünk. Minden olyan egyenletet, amely ilyen alakra hozható, ***elsőfokú
+      egyenletnek*** nevezünk. Az "elsőfokú" elnevezés itt azt fejezi ki, hogy egy ilyen egyenletben az $x$
+      ismeretlen az első hatványon szerepel.
+  - type: formula
+    lead-in: |
+      Az elsőfokú egyenlet általános megoldóképlete a következő:
+    content: |
+      x=\frac{-b}{a}
+  - type: narrative
+    content: |
+      Ha például valamilyen konkrét számítási feladat kapcsán mondjuk a $3x-6=0$ egyenletet kell megoldanunk, akkor
+      egy ilyen megoldóképlettel a zsebünkben könnyű dolgunk van. Elsőként meg kell határoznunk, hogy az
+      egyenletben szereplő számok az egyenlet általános formájában melyik betűknek felelnek meg. Itt például $a=3$
+      és $b=-6$.
+  - type: formula
+    lead-in: |
+      Ezután már csak be kell helyettesítenünk a megoldóképletbe ezeket a számokat, és meg is kapjuk a
+      végeredményt:
+    content: |
+      x=\frac{-b}{a}=\frac{-(-6)}{3}=\frac{6}{3}=2
+  - type: narrative
+    content: |
+      Valóban, ha az eredeti $3x-6=0$ egyenletbe az ismeretlen helyére behelyettesítjük az $x=2$ megoldást, akkor
+      tényleg fennáll az egyenlőség a két oldal között. Továbbá a megoldóképlet implicit módon azt is meghatározza,
+      hogy összesen hány megoldás van. Elsőfokú egyenletek esetén mindig egyetlen megoldás létezik.
+  - type: narrative
+    content: |
+      Egy ennél bonyolultabb egyenlettípust alkotnak az úgynevezett ***másodfokú egyenletek***.
+  - type: formula
+    lead-in: |
+      Ezek általános alakja a következő:
+    content: |
+      ax^2+bx+c=0
+  - type: narrative
+    content: |
+      Egy másodfokú egyenletben tehát már az ismeretlen mennyiség második hatványa is szerepel.
+  - type: formula
+    lead-in: |
+      Anélkül, hogy belemennénk az indoklás részleteibe, megadjuk a másodfokú egyenlet megoldóképletét:
+    content: |
+      \begin{aligned}x_1&=\frac{-b+\sqrt{b^2-4ac}}{2a} \\ x_2&=\frac{-b-\sqrt{b^2-4ac}}{2a}\end{aligned}
+  - type: narrative
+    content: |
+      A megoldások száma tehát ebben az esetben 2, 1 vagy 0 lesz attól függően, hogy a gyökjel alatt pozitív, 0
+      vagy negatív szám szerepel.
+  - type: formula
+    lead-in: |
+      Tekintsük például az alábbi másodfokú egyenletet:
+    content: |
+      x^2+2x-3=0
+  - type: narrative
+    content: |
+      Itt ugye $a=1$, $b=2$ és $c=-3$. Ezeket behelyettesítve a megoldóképletbe az $x_1=-3$ és az $x_2=1$
+      megoldásokat kapjuk.
+  - type: narrative
+    content: |
+      Egyenletek egy még bonyolultabb típusait képviselik az úgynevezett ***harmad- és negyedfokú egyenletek***.
+  - type: formula
+    lead-in: |
+      Ezek általános alakjai a következők:
+    content: |
+      \begin{aligned}ax^3+bx^2+cx+d&=0 \\ ax^4+bx^3+cx^2+dx+e&=0\end{aligned}
+  - type: narrative
+    content: |
+      A harmad- és negyedfokú egyenletek megoldóképleteit a XVI. század elején fedezték fel itáliai matematikusok,
+      amelyekről itt és itt olvashatunk bővebben. Ezek a megoldóképletek azonban már annyira bonyolultak, hogy a
+      gyakorlatban az ilyen típusú egyenleteket &ndash; amennyiben szükséges &ndash; közelítő módszerekkel oldjuk
+      meg. A matematikusokat azonban ez egyáltalán nem zavarta abban, hogy kitartóan keressék az ötöd- és
+      magasabbfokú egyenletek megoldóképleteit.
+  - type: narrative
+    content: |
+      A XIX. század elején még mindig nem sikerült ezen a téren semmi eredményt felmutatni, mígnem Niels Henrik
+      Abel 1824-ben egy meglepő cikket publikált. Ebben igazolta, hogy az ***ötöd- és magasabbfokú egyenletekhez
+      nem létezik*** általánosan működő ***megoldóképlet***. Ez persze nem azt jelenti, hogy ***megoldás*** sem
+      létezik, hanem azt, hogy a megoldások nem fejezhetők ki az egyenlet paramétereinek a segítségével egy véges
+      sok műveletet tartalmazó zárt képletben. Nem sokkal ezután Évariste Galois általánosságban is megadta az
+      egyenletek algebrai megoldhatóságának kritériumait. Ezt a korszakalkotó munkát manapság Galois-elmélet néven
+      ismerjük, amely azóta a számelmélet egy jelentős eszközévé vált.
+  - type: narrative
+    content: |
+      Többek között a Galois-elmélet vezetett el a ***csoport*** fogalmának megalkotásához. Időközben aztán
+      kiderült, hogy ez a fogalom rengeteg más matematikai területen is alapvető szerepet játszik. Például az
+      úgynevezett ***szimmetriacsoportok*** segítségével vizsgálni lehet különböző bonyolult alakzatok
+      szimmetriáit, amelyek sokmindent elárulnak magukról az alakzatokról is. Ennek fontos alkalmazásai vannak
+      többek között a kémiában &ndash; kristályrácsok szerkezetének elmélete &ndash; és a fizikában &ndash; a
+      téridő szimmetriáinak vizsgálata. Később Félix Klein a geometriának is alapvető eszközévé tette a
+      csoportokat, de fontos szerepet játszanak a matematika egyik legabsztraktabb területén, az algebrai
+      topológiában is.
+  - type: narrative
+    content: |
+      Minthogy ennyire különböző területeken jelennek meg, a XIX. század végére kiderült, hogy a csoportokat
+      egyszerre, egymáshoz való viszonyaikban célszerű vizsgálni. Megszületett az absztrakt csoport fogalma, és az
+      lett a feladat, hogy az általános csoportoknak minél jobban feltárjuk a szerkezetét, és olyan
+      struktúratételeket bizonyítsunk, amelyek alapján az alkalmazásokban felmerülő kérdésekre válaszolni lehet.
+  - type: narrative
+    content: |
+      Például az olyan kérdésekre is, hogy vajon a Miller-Rabin-prímteszt képes-e kiszűrni minden univerzális
+      álprímet? Ismerkedjünk meg ezért most a csoportelmélet néhány alapvető fogalmával és összefüggésével.

@@ -1,0 +1,47 @@
+<!-- wp:paragraph -->
+<p>A [yp_element slug="euklideszi-gyuruben-letezik-kituntetett-kozos-oszto" type="link" /] alapján egy euklidészi gyűrűben bármely két elemnek létezik kitüntetett közös osztója. Így a [yp_element slug="kituntetett-kozos-oszto-letezesenek-kovetkezmenye" type="link" /] miatt minden felbonthatatlan elem prím. Ebből viszont a [yp_element slug="felbontas-egyertelmusegenek-elegseges-feltetele" type="link" /] szerint következik a számelémélet alaptételének egyértelműségi állítása. Ha tehát valamely elemnek egyáltalán létezik felbontása, akkor az – sorrendtől és asszociáltságtól eltekintve – egyértelmű.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Így már csak azt kell megmutatni, hogy bármely nemnulla és nem egység elemnek ténylegesen <strong><em>létezik</em></strong> felbontása. Tegyük fel, hogy [latex]g:R\to \N[/latex] egy olyan <strong><em>euklidészi norma</em></strong>, amely eleget tesz a [yp_element slug="euklideszi-norma-egyenlotlensegi-tulajdonsaga" type="link" /]ben szereplő <strong><em>egyenlőtlenségi tulajdonságnak</em></strong> is. Ilyen euklidészi norma ugyanezen tétel miatt garantáltan létezik. A bizonyításhoz a [latex]g[/latex] norma értékkészletén, azaz a természetes számok [latex]\N[/latex] halmazán fogunk <strong><em>teljes indukciót</em></strong> alkalmazni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ennek során minden [latex]n[/latex] természetes számra megmutatjuk, hogy az összes olyan nemnulla és nem egység gyűrűelemnek létezik prímtényezős felbontása, amelynek a [latex]g[/latex] norma szerinti „távolsága” a nullelemtől <strong><em>legfeljebb</em></strong> [latex]n[/latex]. Az alábbi ábrán a gyűrű elemeinek azon [latex]A_0[/latex], [latex]A_1[/latex], [latex]A_2[/latex], ... részhalmazai láthatók, amelyek az első néhány természetes számhoz tartoznak ebben az értelemben. Az elemeket pontokkal jelöltük, valamint ábrázoltuk a [latex]g[/latex] norma által hozzájuk rendelt értékeket is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":4395,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_17_teljes_indukcio_vazlat.jpg" alt="A teljes indukció vázlata" class="wp-image-4395"/><figcaption>A teljes indukció vázlata</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Először is <strong><em>indukciós feltételként</em></strong> feltesszük, hogy valamilyen [latex]n[/latex]-re már igaz az állítás, azaz bármely [latex]n[/latex]-nél nemnagyobb normájú nemnulla és nem egység gyűrűelemnek létezik prímtényezős felbontása. Ezt az elemhalmazt a fenti ábrán [latex]A_n[/latex]-nel jelöltük. Azt kell megmutatnunk, hogy ekkor az [latex]A_{n+1}[/latex] halmaz elemeire is teljesülni fog az állítás. Tegyük fel, hogy [latex]a[/latex] egy tetszőleges [latex]A_{n+1}[/latex]-beli elem. Feltételezhetjük, hogy nincs benne [latex]A_n[/latex]-ben, hiszen máskülönben az indukciós feltétel miatt róla már amúgyis tudnánk, hogy létezik prímtényezős felbontása. Így tehát [latex]g(a)=n+1[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ha [latex]a[/latex] felbonthatatlan elem ([yp_element slug="felbonthatatlan-elem" type="link" /]), akkor az ő prímtényezős felbontása alatt a [yp_element slug="szamelmelet-alaptetele" type="link" /] alapján önmagát, mint „egytényezős szorzatot” értjük, így az nyilván létezik. Feltételezhetjük tehát, hogy [latex]a[/latex] nem felbonthatatlan, azaz felírható [latex]a=bc[/latex] alakban úgy, hogy [latex]b[/latex] és [latex]c[/latex] közül egyik sem egység. Ekkor azonban a [latex]g[/latex] normára a [yp_element slug="euklideszi-norma-szigoru-egyenlotlensegenek-feltetele" type="link" /] miatt fennállnak az alábbi szigorú egyenlőtlenségek, hiszen [latex]a[/latex] nem egységszerese sem [latex]b[/latex]-nek, sem pedig [latex]c[/latex]-nek:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}g(b)&amp;\lt g(a) \\ g(c)&amp;\lt g(a)\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez viszont [latex]g(a)=n+1[/latex] miatt azt jelenti, hogy [latex]g(b)\leq n[/latex] és [latex]g(c)\leq n[/latex]. Az indukciós feltételünk alapján azonban emiatt [latex]b[/latex]-nek és [latex]c[/latex]-nek létezik prímtényezős felbontása, hiszen mindketten benne vannak az [latex]A_n[/latex] halmazban. Így ha az [latex]a=bc[/latex] szorzatba [latex]b[/latex] és [latex]c[/latex] helyére beírjuk e két felbontást, akkor épp [latex]a[/latex]-nak a felbontását kapjuk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Eddig tehát azt bizonyítottuk, hogy <strong><em>HA</em></strong> valamilyen [latex]n[/latex]-re az [latex]A_n[/latex] halmaz minden elemének létezik felbontása, <strong><em>AKKOR</em></strong> ez igaz lesz az őt tartalmazó [latex]A_{n+1}[/latex] halmaz elemeire is. Már csak el kell indítani az indukciós „dominósor” ledöntését valahol, azaz kell találni valamilyen [latex]n[/latex]-et, amelyre valóban teljesül a tétel állítása.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez ebben az esetben egyszerű lesz, hiszen az [latex]n=0[/latex] épp megfelelő erre a célra, habár az érvelés némileg szokatlan lesz. Az [latex]n=0[/latex] esethez az [latex]A_0[/latex] halmaz fog tartozni, amely tehát azokat a <strong><em>nemnulla</em></strong> és <strong><em>nem egység</em></strong> gyűrűelemeket tartalmazza, amelyeknek a [latex]g[/latex] szerinti normája <strong><em>legfeljebb</em></strong> [latex]0[/latex]. Minthogy a norma értéke csak természetes (azaz nemnegatív) szám lehet, ezért ez azt jelenti, hogy az [latex]A_0[/latex] minden elemének pontosan [latex]0[/latex] a normája. Igenám, de a norma a [yp_element slug="euklideszi-gyuru" type="link" /] miatt csak a nullelem esetében lehet [latex]0[/latex], és mivel azt mondtuk, hogy [latex]A_0[/latex] nem tartalmazza a nullelemet, ezért ő csak az <a rel="noreferrer noopener" aria-label="üres halmaz (új fülön nyitja meg)" href="https://hu.wikipedia.org/wiki/%C3%9Cres_halmaz" target="_blank">üres halmaz</a> lehet (az a halmaz, amelynek nincs egyetlen eleme sem).</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Viszont az üres halmaz elemeire tett bármilyen univerzális állítás igaz, így az is, hogy e nem létező elemek mindegyikének létezik prímtényezős felbontása. Ezt a furcsaságot a bizonyítás utáni megjegyzésben egy picit részletesebben is kifejtjük, most azonban térjünk vissza a befejezéshez.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Azt kaptuk tehát, hogy az [latex]A_0[/latex] halmazra – furcsamód ugyan, de – igaz lesz a tétel állítása. Ekkor azonban a fentebb bizonyított indukció miatt igaz lesz [latex]A_1[/latex]-re is, majd emiatt [latex]A_2[/latex]-re is, és így tovább, egészen a végtelenségig. Minthogy a [latex]g[/latex] norma összes lehetséges értékét lefedtük, ezért biztosan nem hagytunk ki egyetlen nemnulla és nem egység gyűrűelemet sem a buliból. Mindegyikre igaz tehát a prímtényezős felbontás létezése, és így a számelmélet alaptétele.</p>
+<!-- /wp:paragraph -->

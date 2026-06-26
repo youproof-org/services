@@ -1,0 +1,20 @@
+type: theorem
+name: rsa-dekodolas-gyorsitasa
+proofs:
+  - rsa-dekodolas-gyorsitasa-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $d\gt 0$ egy tetszőleges ***pozitív egész szám***, $p\gt 0$ pedig egy tetszőleges ***pozitív
+      prímszám***.
+  - type: formula
+    lead-in: |
+      Tegyük fel továbbá, hogy $d_p$ egy olyan egész szám, amelyre teljesül az alábbi kongruencia:
+    content: |
+      d_p\equiv d\pmod{p-1}
+  - type: formula
+    lead-in: |
+      Ekkor minden $y$ egész szám esetén teljesül az alábbi kongruencia is:
+    content: |
+      y^d\equiv y^{d_p}\pmod{p}

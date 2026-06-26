@@ -1,0 +1,182 @@
+type: proof
+name: termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel-bizonyitas
+remarks: []
+references:
+  peano-nullosszeg-tagjai:
+    target:
+      type: theorem
+      name: peano-nullosszeg-tagjai
+  peano-osszeadas-asszociativitas:
+    target:
+      type: theorem
+      name: peano-osszeadas-asszociativitas
+  peano-osszeadas-kommutativitas:
+    target:
+      type: theorem
+      name: peano-osszeadas-kommutativitas
+  peano-osszeg-egyszerusites:
+    target:
+      type: theorem
+      name: peano-osszeg-egyszerusites
+  termeszetes-szamok-rendezese:
+    target:
+      type: definition
+      name: termeszetes-szamok-rendezese
+  termeszetes-szamok-rendezesi-relacioja-trichotom:
+    target:
+      type: theorem
+      name: termeszetes-szamok-rendezesi-relacioja-trichotom
+  termeszetes-szamparok-ekvivalenciarelacioja:
+    target:
+      type: definition
+      name: termeszetes-szamparok-ekvivalenciarelacioja
+content:
+  - type: narrative
+    content: |
+      Mivel ez egy ***"akkor és csak akkor"*** típusú állítás, ezért ***mindkét irányú implikációt bizonyítani
+      kell***. Nézzük először az egyik irányt. Ha $(a;b)\sim (c;d)$, akkor e reláció
+      [termeszetes-szamparok-ekvivalenciarelacioja]jának két követelménye közül legalább az egyik teljesül. Nézzük,
+      hogy mi van akkor, ha az első követelmény teljesül.
+  - type: formula
+    lead-in: |
+      Ebben az esetben létezik olyan $n$ természetes szám, amelyre teljesülnek az alábbiak:
+    content: |
+      \begin{aligned}a+n&=c\\b+n&=d\end{aligned}
+  - type: narrative
+    content: |
+      Ekkor megtehetjük, hogy a felső egyenlet mindkét oldalához $b$-t, az alsó egyenlet mindkét oldalához pedig
+      $a$-t adunk hozzá.
+  - type: formula
+    lead-in: |
+      Így ezt kapjuk:
+    content: |
+      \begin{aligned}a+n+b&=c+b\\b+n+a&=d+a\end{aligned}
+  - type: narrative
+    content: |
+      Tekintve, hogy a két egyenlet baloldalain álló kifejezések a Peano-összeadás kommutativitása
+      ([peano-osszeadas-kommutativitas]) és asszociativitása ([peano-osszeadas-asszociativitas]) miatt megegyeznek,
+      ezért az egyenletek jobboldalain szereplő kifejezések is megegyeznek, azaz $c+b=d+a$. Ez viszont szintén az
+      összeadás kommutativitása miatt épp a tételben szereplő kritérium teljesülésének bizonyítéka.
+  - type: narrative
+    content: |
+      Ha a reláció [termeszetes-szamparok-ekvivalenciarelacioja]jának nem teljesül az első követelménye, akkor a
+      második követelmény teljesül (hiszen legalább az egyiknek teljesülnie kell). Ezzel viszont ugyanez a
+      gondolatmenet végigjátszható. Azt kaptuk tehát, hogy ***ha*** $(a;b)\sim (c;d)$, ***akkor*** $a+d=b+c$
+      ***szükségképpen teljesül***.
+  - type: narrative
+    content: |
+      ***Most nézzük meg, hogy vajon az állítás megfordítása is teljesül-e.*** Most azt tudjuk, hogy az $(a;b)$ és
+      $(c;d)$ számpárokra teljesül, hogy $a+d=b+c$, és az a kérdés, hogy ekkor a
+      [termeszetes-szamparok-ekvivalenciarelacioja]ban teljesül-e legalább az egyik kritérium az $(a;b)$ és $(c;d)$
+      számpárokra.
+  - type: narrative
+    content: |
+      Az előző részben bevezetett $\leq$ reláció ([termeszetes-szamok-rendezese]) trichotómiája
+      ([termeszetes-szamok-rendezesi-relacioja-trichotom]) miatt tudjuk, hogy $a\leq c$ és $a \geq c$ közül
+      ***legalább az egyik*** teljesül. Ugyanezen okok miatt $b\leq d$ és $b\geq d$ közül is teljesül ***legalább
+      az egyik***.
+  - type: ordered-list
+    lead-in: |
+      Emiatt az alábbi 4 eset közül ***legalább az egyiknek*** teljesülnie kell $a$ és $c$ valamint $b$ és $d$
+      kisebb-nagyobb viszonyaival kapcsolatban:
+    items:
+      - '$a\leq c$ ***és*** $b\leq d$'
+      - '$a\leq c$ ***és*** $b\geq d$'
+      - '$a\geq c$ ***és*** $b\leq d$'
+      - '$a\geq c$ ***és*** $b\geq d$'
+  - type: narrative
+    content: |
+      Vizsgáljuk meg sorban mind a 4 esetet.
+  - type: narrative
+    content: |
+      ***Első eset:*** $a\leq c$ és $b\leq d$
+  - type: narrative
+    content: |
+      Ez ugye a $\leq$ reláció [termeszetes-szamok-rendezese]ja miatt azt jelenti, hogy léteznek $n_1$ és $n_2$
+      természetes számok, amelyekre teljesül, hogy
+  - type: formula
+    content: |
+      \begin{aligned}a+n_1&=c\\b+n_2&=d\end{aligned}
+  - type: narrative
+    content: |
+      Azt kell belátnunk, hogy valójában $n_1=n_2$, hiszen ekkor épp a $\sim$ reláció
+      [termeszetes-szamparok-ekvivalenciarelacioja]jának 1. pontját kapnánk.
+  - type: formula
+    lead-in: |
+      Azt ugye tudjuk, hogy az $(a;b)$ és $(c;d)$ számpárokra teljesül az $a+d=b+c$ összefüggés, amelybe $c$ és $d$
+      helyére a fenti két egyenlet baloldalát behelyettesítve a következőt kapjuk:
+    content: |
+      a+\underbrace{b+n_2}_{=d}=b+\underbrace{a+n_1}_{=c}
+  - type: narrative
+    content: |
+      Ezt az egyenletet viszont a [peano-osszeg-egyszerusites] miatt egyszerűsíthetjük $(a+b)$-vel, így valóban
+      $n_1=n_2$.
+  - type: narrative
+    content: |
+      ***Második eset:*** $a\leq c$ és $b\geq d$
+  - type: narrative
+    content: |
+      Ez ugye épp azt jelenti, hogy léteznek olyan $n$ és $k$ természetes számok, amelyekre teljesül, hogy
+  - type: formula
+    content: |
+      \begin{aligned}a+n&=c\\d+k&=b\end{aligned}
+  - type: narrative
+    content: |
+      Azt kell belátnunk, hogy ekkor valójában $n=0$ és $k=0$, hiszen ebből $a=c$ és $b=d$ következne, azaz az
+      $(a;b)$ és $(c;d)$ számpárok valójában megegyeznének, így nyilván teljesülne közöttük a $\sim$ reláció.
+  - type: formula
+    lead-in: |
+      Azt ugye tudjuk, hogy az $(a;b)$ és $(c;d)$ számpárokra teljesül az $a+d=b+c$ összefüggés, amelybe $c$ és $b$
+      helyére a fenti két egyenlet baloldalát behelyettesítve a következőt kapjuk:
+    content: |
+      a+d=\underbrace{d+k}_{=b}+\underbrace{a+n}_{=c}
+  - type: narrative
+    content: |
+      Ezt az egyenletet most $(a+d)$-vel egyszerűsíthetjük ismételten a [peano-osszeg-egyszerusites] miatt, azaz
+      azt kapjuk, hogy $0=k+n$. Ebből viszont a [peano-nullosszeg-tagjai] miatt az következik, hogy valóban $k=0$
+      ***és*** $n=0$.
+  - type: narrative
+    content: |
+      ***Harmadik eset:*** $a\geq c$ és $b\leq d$
+  - type: narrative
+    content: |
+      Ez ugye épp azt jelenti, hogy léteznek $k$ és $n$ természetes számok, amelyekre teljesül, hogy
+  - type: formula
+    content: |
+      \begin{aligned}c+k&=a\\b+n&=d\end{aligned}
+  - type: formula
+    lead-in: |
+      Hasonlóan az előző esethez, azt ugye tudjuk, hogy az $(a;b)$ és $(c;d)$ számpárokra teljesül az $a+d=b+c$
+      összefüggés, amelybe $a$ és $d$ helyére a fenti két egyenlet baloldalát behelyettesítve a következőt kapjuk:
+    content: |
+      \underbrace{c+k}_{=a}+\underbrace{b+n}_{=d}=b+c
+  - type: narrative
+    content: |
+      Ezt az egyenletet $(b+c)$-vel egyszerűsíthetjük, azaz $k+n=0$. Ebből viszont ismételten a
+      [peano-nullosszeg-tagjai] miatt az következik, hogy valóban $k=0$ ***és*** $n=0$.
+  - type: narrative
+    content: |
+      ***Végül a negyedik eset:*** $a\geq c$ ***és*** $b\geq d$
+  - type: narrative
+    content: |
+      Ekkor az első esethez hasonlóan léteznek $k_1$ és $k_2$ természetes számok, amelyekre teljesül, hogy
+  - type: formula
+    content: |
+      \begin{aligned}c+k_1&=a\\d+k_2&=b\end{aligned}
+  - type: narrative
+    content: |
+      Azt kell belátnunk, hogy valójában $k_1=k_2$, hiszen ekkor épp a $\sim$ reláció
+      [termeszetes-szamparok-ekvivalenciarelacioja]jának 2. pontját kapnánk.
+  - type: formula
+    lead-in: |
+      Azt ugye tudjuk, hogy az $(a;b)$ és $(c;d)$ számpárokra teljesül az $a+d=b+c$ összefüggés, amelybe $a$ és $b$
+      helyére a fenti két egyenlet baloldalát behelyettesítve a következőt kapjuk:
+    content: |
+      \underbrace{c+k_1}_{=a}+d=\underbrace{d+k_2}_{=b}+c
+  - type: narrative
+    content: |
+      Ezt az egyenletet viszont egyszerűsíthetjük $(c+d)$-vel, így valóban $k_1=k_2$.
+  - type: narrative
+    content: |
+      Mind a 4 esetben bizonyítottuk, hogy a [termeszetes-szamparok-ekvivalenciarelacioja]ban szereplő
+      követelmények közül legalább az egyik teljesül az $(a;b)$ és a $(c;d)$ számpárokra, amennyiben $a+d=b+c$.

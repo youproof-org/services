@@ -1,0 +1,22 @@
+@use 'variables' as *;
+
+.unknown-block {
+  margin: 0.5rem 0;
+  font-size: 0.75rem;
+  color: #f87171;
+}
+
+.typewriter-lead-in {
+  margin-top: 0.75rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.625;
+}
+
+.typewriter-block {
+  text-align: center;
+  font-family: ui-monospace, monospace;
+  font-size: 0.875rem;
+  margin: 0.75rem 0;
+  padding: 0.5rem 0 0.75rem;
+  overflow-x: auto;
+}

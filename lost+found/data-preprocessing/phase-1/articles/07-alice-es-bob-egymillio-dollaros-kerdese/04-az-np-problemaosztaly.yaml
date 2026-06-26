@@ -1,0 +1,97 @@
+type: section
+name: 04-az-np-problemaosztaly
+title: Az NP problémaosztály
+
+body:
+  - type: narrative
+    content: |
+      A ***nemdeterminisztikus Turing-gépek*** mindössze abban különböznek a determinisztikus Turing-gépektől, hogy
+      ezek kerülhetnek olyan helyzetbe, amikor egynél több állapotváltási szabály előfeltétele is teljesül. Így
+      ezekben a helyzetekben a gépünk választhat, hogy melyik szabályt fogja alkalmazni. Innen ered a neve is,
+      ugyanis a gép további sorsa ezekben a helyzetekben ***nem determinált*** (nem egyértelműen meghatározott).
+  - type: figure
+    lead-in: |
+      Az alábbi ábrákon egy-egy olyan determinisztikus és nemdeterminisztikus Turing-gép futása látható, amelyek
+      egy-egy $x$ bemeneti jelsorozat adott nyelvbe tartozását döntik el (azaz az eredményük egy **"igen"** vagy
+      egy **"nem"** válasz):
+    src: 07-determinisztikus-szamitasi-utvonal.jpg
+    alt: Determinisztikus Turing-gép számítási útvonala
+    caption: Determinisztikus Turing-gép számítási útvonala
+  - type: figure
+    src: 08-nemdeterminisztikus-szamitasi-utvonal.jpg
+    alt: Nemdeterminisztikus Turing-gép számítási útvonalai
+    caption: Nemdeterminisztikus Turing-gép számítási útvonalai
+  - type: narrative
+    content: |
+      Az egyes csúcsok az adott Turing-gép különböző helyzeteit jelölik, amelyekbe a döntés meghozatala során
+      kerül. Látható, hogy a determinisztikus Turing-gép mindig csak egy szabályt alkalmazhat, ezért a döntéshez
+      vezető út egyértelmű. A nemdeterminisztikus testvére azonban a fenti példában 2 helyen is kétféle számítási
+      úton folytathatja a futását. Tekintve, hogy a kimeneti szalagon megjelenő **"igen"** vagy egy **"nem"**
+      válasz függhet attól, hogy végül melyik útvonalat választotta, a nemdeterminisztikus Turing-gépeket látszólag
+      nem igazán lehet nyelvek felismerésére használni. Legalábbis nem abban az értelemben, ahogyan az előző
+      részben definiáltuk a Turing-gép által felismert nyelvet. Az ott szereplő definíció determinisztikus
+      Turing-gépekre vonatkozott, ezért most általánosítjuk ezt a definíciót a nemdeterminisztikus esetre is.
+  - type: narrative
+    content: |
+      Tekintsünk most egy $M$ ***nemdeterminisztikus Turing-gépet***.
+  - type: unordered-list
+    lead-in: |
+      Ha $M$ összes lehetséges számítási útvonalát egyszerre vizsgáljuk, akkor kétféle eset lehetséges:
+    items:
+      - 'Van legalább 1 olyan számítási útvonal, amely mentén a Turing-gép nem kerül végtelen ciklusba, és az eredmény **"igen"**.'
+      - 'Ilyen számítási útvonal nincs, azaz a Turing-gép ***minden*** számítási útvonala vagy a **"nem"** válasszal végződik, vagy végtelen ciklusba kerül.'
+  - type: narrative
+    content: |
+      Az első esetben azt mondjuk, hogy ***a nemdeterminisztikus Turing-gép elfogadta*** az $x$ jelsorozatot, míg a
+      második esetben ***elutasította*** azt. Hasonlóan a determinisztikus Turing-gépek esetéhez, azok a bemeneti
+      jelsorozatok, amelyeket a nemdeterminisztikus Turing-gép a fenti értelemben elfogad, egy részhalmazt alkotnak
+      az összes bemeneti jelsorozat között. Ezt a részhalmazt ***a nemdeterminisztikus Turing-gép által felismert
+      nyelvnek*** nevezzük és $L_M$-mel jelöljük.
+  - type: narrative
+    content: |
+      Nyilván a nemdeterminisztikus esetben is csak azokkal a Turing-gépekkel érdemes foglalkoznunk, amelyek ***nem
+      keverednek végtelen ciklusba*** egyetlen lehetséges számítási útvonalon sem. Másként fogalmazva ez azt
+      jelenti, hogy a leghosszabb számítási útvonal hossza is felülről becsülhető valamilyen, a bemenet $n$
+      hosszától függő véges $f(n)$ mennyiséggel. Amennyiben ilyen felső becslésnek megadható egy polinomiális
+      függvény, akkor azt mondjuk, hogy ***a nemdeterminisztikus Turing-gép polinomiális időkomplexitású***.
+  - type: narrative
+    content: |
+      Azokat a rekurzív nyelveket, amelyek eldöntésére létezik polinomiális időkomplexitású ***nemdeterminisztikus
+      Turing-gép***, egy osztályba soroljuk, amelyet $NP$-vel jelölünk, és a ***nemdeterminisztikusan polinomiális
+      időben eldönthető nyelvek osztályának*** nevezzük (innen ered tehát az $NP$ rövidítés). A $P$ nyelvosztály
+      nyilván része $NP$-nek, ha ugyanis egy nyelv determinisztikus Turing-géppel eldönthető polinomiális időben,
+      akkor nemdeterminisztikus Turing-géppel "méginkább" eldönthető.
+  - type: narrative
+    content: |
+      Jogosan vetődhet fel az Olvasóban a kérdés, hogy mi értelme nemdeterminisztikus döntési algoritmusokkal
+      foglalkozni, amikor ez nem egy realisztikus számítási modell. Hiszen a számítási útvonalakat úgyis csak
+      egyenként tudnánk "bejárni" egy valódi számítógéppel?
+  - type: narrative
+    content: |
+      Emlékezzünk azonban, hogy az előző részben a Church-Turing tézis kapcsán már megemlítettük a
+      kvantumszámítógépeket. Ezek egy olyan &ndash; most még többnyire csak elméletben létező &ndash; számítási
+      modellt valósítanak meg, amely kihasználja az elemi részecskék szintjén jelentkező nagyon furcsa
+      jelenségeket. Ezeket a kvantumfizika írja le, és nagyjából arról van szó, hogy egy elemi részecske nem
+      feltétlenül van mindig egy adott állapotban, hanem bizonyos körülmények között egy úgynevezett
+      ***szuperpozíciós állapotba*** kerülhet. Tegyük fel például, hogy egy ilyen részecske valamilyen irányú
+      "pörgése" a bináris **1**, a fordított irányú "pörgése" pedig a bináris **0** szimbólumot jelenti. Ezeket a
+      "kvantumbit" kifejezés alapján ***qubit-eknek*** nevezzük. Amennyiben több qubit-et is sikerül szuperpozíciós
+      állapotba hozni, úgy egy ilyen rendszer ***párhuzamosan*** tud számításokat végezni a qubit-állapotok összes
+      lehetséges kombinációján.
+  - type: narrative
+    content: |
+      Egy ilyen gép tehát nagyon hasonló számítási modellt valósítana meg, mint a ***nemdeterminisztikus
+      Turing-gép***, amelynek rengeteg párhuzamos számítási útvonalat kell ***egyszerre*** vizsgálnia. A fő
+      technikai problémát az okozza, hogy a szuperpozíció egy nagyon érzékeny állapot, és a rendszer a legapróbb
+      külső behatásra egy konkrét állapotba "zuhanhat", véget vetve a kvantumszámításnak. Vannak egészen ígéretes
+      eredmények, azonban ez a technológia még igencsak gyerekcipőben jár.
+  - type: narrative
+    content: |
+      A $P$ problémaosztályról szóló előző szakaszban megemlítettük, hogy a ***3-színezhetőség*** és a
+      ***k-függetlenség*** problémájáról &ndash; sok egyéb más, a gyakorlatban rendkívül fontos probléma mellett
+      &ndash; nem tudjuk, hogy vajon $P$-beliek-e. Azt viszont nemsokára látni fogjuk, hogy ha $P$-be nem is
+      tartoznak bele feltétlenül, az $NP$ problémaosztályba azonban igen. Kérdés, hogy hogyan tudjuk bizonyítani
+      egy döntési problémáról &ndash; pontosabban az őt reprezentáló formális nyelvről &ndash;, hogy $NP$-beli. Ez
+      ugyanis igen nehézkesnek tűnik a fenti, ***nemdeterminisztikus számítási modellre*** építő definíció alapján.
+      Ezért most megismerkedünk az $NP$ nyelvosztály egy másik definíciójával, amely a sokkal könnyebben kezelhető
+      ***determinisztikus Turing-gépekre*** épít.

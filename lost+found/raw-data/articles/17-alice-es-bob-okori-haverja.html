@@ -1,0 +1,588 @@
+<!-- wp:paragraph -->
+<p><strong><em>Az <a rel="noreferrer noopener" aria-label="előző részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/16-oszhatosag-egyseg-asszocialt-felbonthatatlan-prim-szamelmelet-alaptetele/" target="_blank">előző részben</a> megismerkedtünk a legfontosabb számelméleti fogalmakkal: oszthatóság, egység, asszociált, felbonthatatlan és prímtulajdonságú elemek. Ezután ismertettük a számelmélet alaptételét, amely azt biztosítja egy integritástartományban, hogy annak minden elemét egyértelműen elő lehessen állítani felbonthatatlan elemek szorzataként. Láttuk, hogy ez nem minden integritástartományban teljesül. Végül megmutattuk, hogy ha viszont teljesül, akkor a felbonthatatlanok és a prímek fogalma szükségképpen egybe kell essen. Azt is megemlítettük ugyanakkor, hogy ez csupán szükséges, de nem elégséges feltétel az alaptétel teljesüléséhez.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>De vajon milyen elégséges feltételt tudunk mutatni erre vonatkozóan? Az egész számok gyűrűje teljesíti-e ezt a kritériumot? Mit jelent a „legnagyobb közös osztó” fogalma és hogyan lehet villámgyorsan kiszámolni az euklidészi algoritmus segítségével? Mit tudunk mondani erről általános integritástartományokra? Mik azok az euklidészi gyűrűk és mi közük a számelmélet alaptételéhez? Ebben a részben erről lesz szó...</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"className":"prerequisite-warning"} -->
+<p class="prerequisite-warning">Figyelem! Ez a rész erőteljesen épít az <a rel="noreferrer noopener" aria-label="előző részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/16-oszhatosag-egyseg-asszocialt-felbonthatatlan-prim-szamelmelet-alaptetele/" target="_blank">előző részben</a> felépített alábbi definíciókra, valamint a hozzájuk kapcsolódó tételekre:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="oszthatosag" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egyseg" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="asszocialt" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="felbonthatatlan-elem" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="primtulajdonsagu-elem" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="szamelmelet-alaptetele" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph {"className":"prerequisite-warning"} -->
+<p class="prerequisite-warning">Ezek kontextusba helyezése miatt erőteljesen ajánlott elolvasni az <a href="https://youproof.hu/kriptografia/16-oszhatosag-egyseg-asszocialt-felbonthatatlan-prim-szamelmelet-alaptetele/" target="_blank" rel="noreferrer noopener" aria-label="előző részt (új fülön nyitja meg)">előző részt</a>, mivel gyakran hivatkozni fogunk rájuk. A teljes cikksorozat elejét <a href="https://youproof.hu/kriptografia/1-alapfogalmak-caesar-vigenere-enigma-kulcsmegosztas/" target="_blank" rel="noreferrer noopener" aria-label="itt (új fülön nyitja meg)">itt</a> találod.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"dropCap":true} -->
+<p class="has-drop-cap">A modern kriptográfiai eljárások szempontjából alapvető fontosságú, hogy az egész számok [latex]\Z[/latex] gyűrűjében teljesüljön a számelmélet alaptétele. Egyrészt ez teszi lehetővé, hogy minden egész szám <strong><em>egyértelműen</em></strong> előáll prímszámok szorzataként, és így a számelméleti kapcsolatot biztosítja a publikus és a titkos kulcsok között ezekben az eljárásokban. Másrészt a prímfaktorizáció feladatának algoritmikus nehézsége biztosítja azt, hogy egy támadó számára beláthatatlanul sok ideig tartson kiszámítani a titkos kulcsot a hozzá tartozó publikus kulcsból. Ezért ebben a részben alapvető célunk annak igazolása, hogy az egész számok [latex]\Z[/latex] gyűrűjében valóban teljesül a számelmélet alaptétele.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ennek keretében meg fogunk ismerkedni az ókorból származó <strong><em>euklidészi algoritmussal</em></strong>. Ezzel két egész szám úgynevezett <strong><em>legnagyobb közös osztóját</em></strong> fogjuk tudni elképesztően hatékonyan kiszámítani. Ez az eljárás a továbbiakban is fontos lesz számunkra, mivel mind az RSA-ban, mind pedig a prímtesztelési eljárásokban alapvető szerepet játszik. Ezután ezt az eljárást fogjuk általánosítani oly módon, hogy ne csak az egész számok gyűrűjén, hanem minden olyan integritástartományon működjön, amely bizonyos kritériumoknak eleget tesz. Ezeket <strong><em>euklidészi gyűrűknek</em></strong> fogjuk nevezni. Végül megmutatjuk, hogy minden euklidészi gyűrűben – és így speciálisan az egész számok gyűrűjében is – teljesül a számelmélet alaptétele.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A legnagyobb közös osztó</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Először is tisztázzuk, hogy mit értünk két egész szám <strong><em>legnagyobb közös osztóján</em></strong>. Tegyük fel, hogy [latex]a[/latex] és [latex]b[/latex] valamilyen egész számok. Azt mondjuk, hogy a [latex]c[/latex] egész szám [latex]a[/latex] és [latex]b[/latex] <strong><em>közös osztója</em></strong>, ha egyidejűleg teljesülnek a [latex]c|a[/latex] és [latex]c|b[/latex] oszthatóságok. Például a [latex]18[/latex] és [latex]24[/latex] közös osztói az [latex]1[/latex], [latex]2[/latex], [latex]3[/latex] és [latex]6[/latex] egész számok, valamint ezek ellentettjei. A <strong><em>legnagyobb közös osztó</em></strong> alatt értelemszerűen ezek közül a legnagyobbat, azaz a [latex]6[/latex] egész számot értjük. Általánosságban az [latex]a[/latex] és [latex]b[/latex] egész számok legnagyobb közös osztóját [latex](a,b)[/latex]-vel szoktuk jelölni. Az iménti példában tehát [latex](18,24)=6[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A legnagyobb közös osztó definícióját a fentiek alapján tehát megadhatnánk a következőképpen.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="legnagyobb-kozos-oszto" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="legnagyobb-kozos-oszto-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Kérdés, hogy az iménti megjegyzésben közölt eseten kívül vajon minden más esetben létezik-e a legnagyobb közös osztó. Ennek megmutatásához először ismertetünk egy segédtételt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="oszthatosag-es-rendezesi-relacio-kapcsolata" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="oszthatosag-es-rendezesi-relacio-kapcsolata-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ennek a segédtételnek a felhasználásával mostmár könnyen meg tudjuk mutatni, hogy a [latex]\Z[/latex] gyűrűben mindig létezik [latex]a[/latex] és [latex]b[/latex] legnagyobb közös osztója, amennyiben legalább az egyikük nem [latex]0[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="legnagyobb-kozos-oszto-letezese" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="legnagyobb-kozos-oszto-letezese-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A legnagyobb közös osztó definíciójával azonban van egy kis probléma.</em></strong> Nevezetesen: felhasználtuk hozzá az egész számok [latex]\Z[/latex] gyűrűjének rendezési relációját. Mi azonban szeretnénk ezt a fogalmat tetszőleges integritástartományokra kiterjeszteni. Ugyanakkor nem szeretnénk csak a definíció kedvéért megkövetelni valamiféle rendezési reláció létezését. Ráadásul a <a rel="noreferrer noopener" aria-label="15. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/15-rendezett-gyuru-absztrakt-algebra-egesz-szam-rendezesi-relacio-rendezesi-axiomak/" target="_blank">15. részben</a> láthattuk, hogy bizonyos gyűrűk egyáltalán nem, vagy akár végtelen sokféleképpen rendezhetők. Ez utóbbi esetben például nem is lenne egyértelmű, hogy melyik rendezés szerinti legnagyobb közös osztóról beszélünk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A kitüntetett közös osztó</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Ebben a szakaszban tehát általánosítjuk a legnagyobb közös osztó fogalmát. Így már tetszőleges integritástartományra átvihető lesz ez a fogalom rendezési reláció nélkül is. Ezért bevezetjük a <strong><em>kitüntetett közös osztó</em></strong> fogalmát.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="kituntetett-kozos-oszto" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A definícióból azonnal következnek az alábbi egyszerű állítások.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="kituntetett-kozos-oszto-tulajdonsagai" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="kituntetett-kozos-oszto-tulajdonsagai-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A legnagyobb közös osztóval ellentétben <strong><em>kitüntetett közös osztóból létezhet több is</em></strong>. Például az előző szakasz elején közölt példában szereplő [latex]24[/latex] és [latex]18[/latex] egész számoknak a [latex]6[/latex]-on kívül a [latex]-6[/latex] is kitüntetett közös osztója. Szerencsére ez nem fog gondot okozni, mivel az alábbi tétel biztosít egyfajta egyértelműséget a kitüntetett közös osztóra.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="kituntetett-kozos-oszto-egyertelmusege" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="kituntetett-kozos-oszto-egyertelmusege-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Jogosan merülhet fel a kérdés az Olvasóban, hogy miért használtuk ugyanazt a jelölést a kitüntetett és a legnagyobb közös osztó esetén, amikor ezek látszólag teljesen különböző fogalmak. Ennek tisztázása érdekében most megmutatjuk, hogy <strong><em>HA</em></strong> két egész számnak egyáltalán létezik <strong><em>kitüntetett közös osztója</em></strong>, akkor az csak a <strong><em>legnagyobb közös osztó</em></strong> valamelyik asszociáltja lehet. Erről szól az alábbi tétel.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="legnagyobb-kozos-oszto-kituntetett" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="legnagyobb-kozos-oszto-kituntetett-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ez mind szép és jó, azonban vigyázzunk!</em></strong> Ez a tétel csak annyit garantál, hogy <strong><em>HA </em></strong>valamely egész számpárnak létezik kitüntetett közös osztója, <strong><em>AKKOR</em></strong> e számok legnagyobb közös osztója is rendelkezni fog a [yp_element slug="kituntetett-kozos-oszto" type="link" /]ban szereplő kitüntetett tulajdonsággal (azaz, hogy ő többszöröse bármely közös osztónak). A legnagyobb közös osztó a [yp_element slug="legnagyobb-kozos-oszto-letezese" type="link" /] miatt egy esetet leszámítva mindig létezik, ám <strong><em>a kitüntetett közös osztó létezése egyáltalán nem magától értetődő</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Szerencsére a [latex]\Z[/latex] gyűrűben valóban mindig létezik a kitüntetett közös osztó, amelyre hamarosan egy úgynevezett <strong><em>konstruktív bizonyítást</em></strong> adunk. Ez azt jelenti, hogy a bizonyítás egy meglehetősen hatékony eljárást is fog szolgáltatni a kitüntetett közös osztó kiszámításához. Ez az eljárás az ókorból ered, és <strong><em>euklidészi algoritmus</em></strong> néven ismeretes.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mielőtt azonban erre rátérnénk, vizsgáljuk meg, hogy miért is olyan fontos nekünk a kitüntetett közös osztó létezése egy adott integritástartományban.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A kitüntetett közös osztó jelentősége</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Ebben a szakaszban azt fogjuk megmutatni, hogy amennyiben egy [latex]R[/latex] integritástartományban bármely két elemnek létezik kitüntetett közös osztója, akkor [latex]R[/latex] minden felbonthatatlan eleme prímtulajdonságú, következésképp a [yp_element slug="felbontas-egyertelmusegenek-elegseges-feltetele" type="link" /] alapján teljesül a <strong><em>számelmélet alaptételének egyértelműségi része</em></strong> (lásd a [yp_element slug="szamelmelet-alaptetele" type="link" /]t).</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ehhez szükségünk lesz 3 segédtételre. Először az oszthatósági reláció egy újabb egyszerű tulajdonságát igazoljuk, amely nagyon hasonló a [yp_element slug="oszthatosag-tulajdonsagai" type="link" /] 7. pontjában megfogalmazott állításhoz, ám annál egy kicsit többet mond. Ez hasznunkra lesz a továbbiakban.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="oszthatosag-egyszerusitese" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Például az egész számok [latex]\Z[/latex] gyűrűjében teljesül a [latex]6|18[/latex] oszthatóság, és így a tétel alapján teljesül a [latex]3|9[/latex] oszthatóság is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="oszthatosag-egyszerusitese-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az oszthatóságnak ezt a tulajdonságát most fel fogjuk használni egy, a kitüntetett közös osztóval kapcsolatos fontos összefüggés igazolásához.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="kituntetett-kozos-oszto-kiemelesi-tulajdonsaga" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Például a [latex]\Z[/latex] gyűrűben [latex](6,9)=3[/latex], és így [latex](18,27)=(6\cdot 3, 9\cdot 3)=(6,9)\cdot 3=9[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="kituntetett-kozos-oszto-kiemelesi-tulajdonsaga-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Végül igazoljuk az úgynevezett <strong><em>euklidészi lemmát</em></strong>. Ez arra ad feltételt, hogy egy elem mely esetekben osztója egy adott szorzat valamelyik tényezőjének, ha egyébként magának a szorzatnak osztója. Az előző részben már megemlítettük, hogy ez általánosságban nem igaz. Például [latex]8|2\cdot 12[/latex], ugyanakkor sem a [latex]8|2[/latex], sem pedig a [latex]8|12[/latex] oszthatóság nem teljesül. A [yp_element slug="primtulajdonsagu-elem" type="link" /]ban épp azokat az elemeket neveztük <strong><em>prímeknek</em></strong>, amelyek bármely olyan szorzatra teljesítik ezt a kritériumot, amelynek egyébként osztói.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az <strong><em>euklidészi lemma</em></strong> a prímtulajdonságnál gyengébb feltételt határoz meg erre vonatkozóan. Ez alapján egy elemnek nem kell prímnek lennie ahhoz, hogy egy szorzat valamely tényezőjének osztója legyen. Viszont szükséges, hogy a másik tényezőjével a <strong><em>„lehető legkevesebb közös osztójuk legyen”</em></strong>. Először is tisztázzuk, hogy mikor mondjuk két elemről, hogy a <strong><em>„lehető legkevesebb közös osztójuk van”</em></strong>. Ennek az esetnek külön neve is van, amelyet a továbbiakban gyakran fogunk használni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="relativ-primek" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="relativ-primek-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezek után az <strong><em>euklidészi lemma</em></strong> a következőképpen fogalmazható meg.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="euklideszi-lemma" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Például a [latex]\Z[/latex] gyűrűben [latex]4|9\cdot 8[/latex], és mivel [latex]4[/latex] és [latex]9[/latex] relatív prímek, ezért [latex]4|8[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="euklideszi-lemma-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az euklidészi lemma felhasználásával mostmár igazolhatjuk a kitüntetett közös osztó létezésének jelentőségét a számelmélet alaptétele kapcsán.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="kituntetett-kozos-oszto-letezesenek-kovetkezmenye" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="kituntetett-kozos-oszto-letezesenek-kovetkezmenye-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mostmár tehát tudjuk, hogy ha egy integritástartományban bármely két elemnek létezik a kitüntetett közös osztója, akkor minden felbonthatatlan elem prímtulajdonságú. Ebből viszont a [yp_element slug="felbontas-egyertelmusegenek-elegseges-feltetele" type="link" /] miatt következik, hogy <strong><em>teljesül a számelmélet alaptételének egyértelműségi állítása</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az előző szakasz végén a [yp_element slug="legnagyobb-kozos-oszto-kituntetett" type="link" /]ben már láttuk, hogy a kriptográfiai szempontból számunkra fontos [latex]\Z[/latex] gyűrűben <strong><em>HA</em></strong> egy elempárnak létezik kitüntetett közös osztója, <strong><em>AKKOR</em></strong> a legnagyobb közös osztójuk is kitüntetett. Megemlítettük ugyanakkor, hogy ez a tétel még nem garantálja azt, hogy bármely két egész számnak létezik a kitüntetett közös osztója. Ennek igazolására most megismerkedünk egy igen fontos számelméleti algoritmussal.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="euclidean-algorithm"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Az euklidészi algoritmus alapgondolata</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Az euklidészi algoritmus az egyik legősibb, igen gyakran használt számelméleti algoritmus. Nevét az ókori görög matematikusról, <a href="https://hu.wikipedia.org/wiki/Eukleid%C3%A9sz_(matematikus)" target="_blank" rel="noreferrer noopener" aria-label="Euklidészről (új fülön nyitja meg)">Euklidészről</a> kapta, aki Kr.e. 300 körül írta le az <a href="https://hu.wikipedia.org/wiki/Elemek" target="_blank" rel="noreferrer noopener" aria-label="Elemek (új fülön nyitja meg)">Elemek</a> című művében. Ez egy rendkívül hatékony módszert határoz meg két egész szám kitüntetett közös osztójának előállítására.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az általános iskolából nyilván mindenki emlékszik arra a módszerre, amely a két számnak a számelmélet alaptétele szerinti prímtényezős felbontásából indul ki. Mivel egy egész szám és az ellentettje ugyanúgy viselkedik oszthatóság szempontjából (lásd a [yp_element slug="asszocialtsag-tulajdonsagai" type="link" /] 1. pontját), ezért elegendő csak a pozitív egészekre és a pozitív prímtényezőkre szorítkozni. Ha tehát rendelkezésünkre áll a két szám prímtényezős felbontása, akkor a keresett kitüntetett közös osztó prímtényezős felbontása pontosan azokból a prímtényezőkből fog állni, amelyek mindkét szám felbontásában szerepelnek. Így például a [latex]18[/latex] és a [latex]45[/latex] kitüntetett közös osztója [latex]9[/latex], mivel a két eredeti szám felbontása [latex]18=2\cdot 3\cdot 3[/latex] és [latex]45=3\cdot 3\cdot 5[/latex]. A két felbontás közös prímtényezői adják a kitüntetett közös osztót, azaz [latex]3\cdot 3=9[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezzel a módszerrel – bár helyes – két alapvető probléma van. Egyrészt azt még nem bizonyítottuk, hogy a [latex]\Z[/latex] gyűrűben valóban teljesül a számelmélet alaptétele, így azt elméletben még nem használhatnánk. Másrészt viszont – és ez egy jóval nagyobb, gyakorlati probléma – ehhez a módszerhez szükségünk van a két szám prímtényezős felbontására. Ennek meghatározására jelenlegi tudásunk szerint azonban nem létezik hatékony eljárás, habár ez még bizonyításra vár. Hogy mit értünk „hatékony eljárás” alatt, arról a <a rel="noreferrer noopener" aria-label="6. (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/6-turing-gep-formalis-nyelv-rekurzivan-felsorolhato-rekurziv-megallasi-problema/" target="_blank">6.</a>, <a rel="noreferrer noopener" aria-label="7. (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/7-algoritmus-bonyolultsag-problemaosztalyok-polinomialis-exponencialis-p-np-sejtes-tanu-tetel/" target="_blank">7.</a> és <a rel="noreferrer noopener" aria-label="8. részekben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/8-karp-redukcio-np-teljes-np-nehez-cook-levin-tetel-logikai-halozatok-graf-izomorfizmus/" target="_blank">8. részekben</a> volt szó részletesen, így azt nem ismételnénk meg. Azonban saját bőrünkön is érzékelhetjük a problémát, ha megpróbáljuk megtalálni például a [latex]12\space 439\space 705\space 049[/latex] és a [latex]15\space 828\space 713\space 003[/latex] kitüntetett közös osztóját ezzel a módszerrel.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az említett „iskolás” módszert követve persze elkezdhetjük a prímtényezőkre bontást. Hamar beletörik azonban a bicskánk, mivel ezt a két számot szándékosan nagy prímtényezőkből állítottam össze. Nevezetesen:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}12\space 439\space 705\space 049 &amp;= 2797\cdot 2999\cdot 1483 \\ 15\space 828\space 713\space 003 &amp;= 2999\cdot 1483\cdot 3559 \end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Innen persze a közös prímtényezők kiválogatása, és a kitüntetett közös osztó kiszámítása már egyszerű:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](12\space 439\space 705\space 049, 15\space 828\space 713\space 003)=2999\cdot 1483=4\space 447\space 517[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mondhatnánk, hogy számítógéppel pillanatok alatt prímtényezőire bonthatjuk ezt a két számot. Ez minden bizonnyal így is van az ilyen nagyságrendű számok esetén. A problémát az okozza, hogy a bemeneti számjegyek számának növelésével a prímtényezők kiszámításához szükséges idő nagyon meredeken kezd emelkedni. Olyannyira, hogy például egy 500 számjegyből álló szám prímtényezőire bontása még a világ összes számítógépének is beláthatatlanul sok ideig tartana. A kriptográfiában használt RSA-eljárás algoritmikus biztonsága épp a prímtényezős felbontás feladatának e roppant nehézségén alapszik.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az <strong><em>euklidészi algoritmus</em></strong> ezzel szemben egy olyan eljárást ad két egész szám kitüntetett közös osztójának kiszámítására, amelyhez nincs szükség a két szám prímtényezőire. Az algoritmus alapötlete az oszthatóság tulajdonságairól szóló [yp_element slug="oszthatosag-tulajdonsagai" type="link" /] 6. és 7. pontjainak egy egyszerű következményén alapul. Nézzük is meg ezt az összefüggést.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="euklideszi-algoritmus-alapgondolata" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="euklideszi-algoritmus-alapgondolata-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Nézzük is meg, hogy miképpen tudunk profitálni ebből az imént kapott [latex](a,b)=(b, a-kb)[/latex] összefüggésből. Egyelőre tegyük fel, hogy az egész számok [latex]\Z[/latex] gyűrűjében vagyunk, mind [latex]a[/latex], mind pedig [latex]b[/latex] pozitív egészek, valamint [latex]a\gt b[/latex]. Később majd általánosítani fogjuk az algoritmust tetszőleges esetre, sőt tetszőleges integritástartományra, most azonban a működés alapelvének megértése a cél.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Rajzoljunk fel két „rudat”, amelyek méretarányosan tükrözik e két szám nagyságát. Kezdjünk el lenyesegetni [latex]b[/latex]-nek megfelelő hosszúságú darabokat az [latex]a[/latex]-t jelölő rúdból mindaddig, amíg a maradék kisebb nem lesz, mint [latex]b[/latex], vagy akár el nem tűnik teljesen. Ezt a folyamatot láthatjuk az alábbi ábrán, amelyen a maradék rudacska hosszának megfelelő számot [latex]r_1[/latex]-gyel jelöltük:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":4390,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_17_maradekos_osztas_szemleltetese_rudakkal.jpg" alt="Maradékos osztás szemléltetése rudakkal" class="wp-image-4390"/><figcaption>Maradékos osztás szemléltetése rudakkal</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Ha belegondolunk, tulajdonképpen az történt, hogy az [latex]a[/latex] pozitív egész számot sikerült kifejeznünk <strong><em>„valahányszor [latex]b[/latex], meg egy kis maradék”</em></strong> alakban:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a=k_1b+r_1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ráadásul – és ez kulcsfontosságú – az [latex]r_1[/latex] maradékra teljesül, hogy legalább [latex]0[/latex], viszont szigorúan kisebb [latex]b[/latex]-nél:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]b\gt r_1\geq 0[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A fenti egyenletből az [latex]r_1[/latex] maradékot ki tudjuk fejezni [latex]r_1=a-k_1b[/latex] alakban. Ez azért baromi jó, mivel az imént bizonyított tétel alapján az [latex](a,b)[/latex] kitüntetett közös osztó meg fog egyezni a [latex](b,r_1)[/latex] kitüntetett közös osztóval. Az eredeti számok közös osztójának kiszámítását tehát sikerült két kisebb szám közös osztójának kiszámítására visszavezetni. Most folytassuk ugyanezt a lenyesegetős eljárást a [latex]b[/latex] és [latex]r_1[/latex] számokkal. Ez látható az alábbi ábrán kinagyítva:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":4392,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_17_maradekos_osztas_masodik_lepes.jpg" alt="Maradékos osztás (második lépés)" class="wp-image-4392"/><figcaption>Maradékos osztás (második lépés)</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Ekkor tulajdonképpen a [latex]b[/latex] egész számot sikerült kifejeznünk <strong><em>„valahányszor [latex]r_1[/latex], meg egy kis maradék”</em></strong> alakban. Ezt az eljárást folytatva a következő sorozathoz jutunk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a&amp;=k_1b+r_1 \\ b&amp;=k_2r_1+r_2 \\ r_1&amp;=k_3r_2+r_3 \\ r_2&amp;=k_4r_3+r_4 \\ &amp;\vdots \end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A kapott maradékok így alakulnak:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]b\gt r_1\gt r_2\gt r_3\gt r_4\gt \ldots \geq 0[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mindeközben pedig a keresett kitüntetett közös osztóra igaz lesz az alábbi egyenlőségsorozat:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](a,b)=(b,r_1)=(r_1,r_2)=(r_2,r_3)=\ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A maradékok tehát <strong><em>egyre kisebbek és kisebbek lesznek</em></strong>, miközben mindegyikről tudjuk, hogy [latex]0[/latex]-nál semmiképpen sem lehetnek kisebbek. Ezért érezhetően véges számú lépés után valamelyik maradék előbb-utóbb biztosan [latex]0[/latex] lesz. A következő szakaszban megmutatjuk, hogy ez valóban a Peano-axiómarendszer egy következménye. Egyelőre tegyük fel, hogy ez tényleg így van, és az utolsó nemnulla maradék [latex]r_n[/latex]. Ekkor befejezhetjük az eljárást, hiszen [latex]r_n\
+eq 0[/latex] és [latex]r_n|0[/latex] ugye teljesül, így alkalmazhatjuk a [yp_element slug="kituntetett-kozos-oszto-tulajdonsagai" type="link" /] 4. pontjában foglaltakat. Ez alapján megkaptuk a keresett kitüntetett közös osztót:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](a,b)=(r_n,0)=r_n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Maradékos osztásnak</em></strong> nevezzük azt a műveletet, melynek során kiszámítjuk, hogy egy szám egy másikkal osztva mennyi maradékot ad. A maradékos osztás – itt nem részletezett digitális áramköri okok miatt – egy számítógép számára rendkívül hatékonyan elvégezhető. Ráadásul megmutatható – habár erre most nem térünk ki –, hogy az algoritmushoz szükséges maradékos osztások száma a kisebbik bemenet számjegyeinek a számával egyenesen arányos. Ez azt jelenti, hogy még az 500-jegyű számok tartományában is nagyságrendileg pár száz maradékos osztásból megkaphatjuk a kitüntetett közös osztót. Egy átlagos számítógép számára ez egy szemvillanás alatt elvégezhető. Ezzel szemben a prímtényezős módszer az idők végezetéig is eltartana ebben a számtartományban.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>E gyorsaság demonstrálására nézzük is meg, hogy mennyire gyorsan kapjuk meg a fentebbi példában szereplő [latex]12\space 439\space 705\space 049[/latex] és [latex]15\space 828\space 713\space 003[/latex] számok kitüntetett közös osztóját. A maradékos osztás műveletét könnyedén el tudjuk végezni a legegyszerűbb kalkulátorral is. Ezt általában a <strong>mod</strong> (vagy hasonló) feliratú nyomógombbal érhetjük el. Ez egyetlen lépésben képezni fogja nekünk a képződő maradékot. Például a [latex]8\space \text{mod}\space 3[/latex] műveletet elvégezve az eredmény [latex]2[/latex], mivel a [latex]8[/latex]-at [latex]3[/latex]-mal osztva a maradék [latex]2[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az euklideszi algoritmust a két bemeneti számunkon lefuttatva az alábbi lépéseken keresztül jutunk el a keresett kitüntetett közös osztóig:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}&amp;(15828713003,12439705049) = \\ =&amp;(12439705049,3389007954) = \\ =&amp;(3389007954, 2272681187) = \\ =&amp;(2272681187,1116326767) = \\ = &amp;(1116326767, 40027653) = \\ =&amp;(40027653, 35580136) =\\= &amp;(35580136,4447517) =\\=&amp;(4447517, 0)\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A keresett kitüntetett közös osztó tehát [latex]4\space 447\space 517[/latex]. Valóban ugyanazt az eredményt kaptuk, mint a prímtényezős felbontást használó módszerrel, csak épp nem sok ezer (vagy épp millió) osztáspróbával, hanem mindössze 7 maradékos osztással. Úgy gondolom ez eléggé meggyőző, amikor hatékonyságról beszélünk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="infinite-descent"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A végtelen leszállás módszere</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Hamarosan azt fogjuk megvizsgálni, hogy az imént tanult eljárást hogyan tudjuk olyan integritástartományokra is kiterjeszteni, amelyek nem feltétlenül számokat tartalmaznak. Ehhez először megismerkedünk a <a rel="noreferrer noopener" aria-label="végtelen leszállás (új fülön nyitja meg)" href="https://hu.wikipedia.org/wiki/V%C3%A9gtelen_lesz%C3%A1ll%C3%A1s" target="_blank"><strong><em>végtelen leszállás</em></strong></a> néven ismeretes indirekt bizonyítási módszerrel. Ezzel fogjuk tudni igazolni, hogy az euklidészi algoritmus véges számú lépés után valóban befejeződik.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A módszer a természetes számok [latex]\N[/latex] halmazának most következő, fontos tulajdonságán alapszik.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="termeszetes-szamok-minimumtetele" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Eszerint tehát sehogyan sem lehet kiválogatni véges vagy akár végtelen sok természetes számot úgy, hogy ezek között ne lenne legkisebb. Vegyük észre, hogy ez az egész számok [latex]\Z[/latex] halmazára például nem érvényes, mivel bármilyen egész számnál létezik nála kisebb egész szám, hiszen itt a számegyenes mindkét irányban végtelen. De bizonyos számkörökben még csak erre sincs feltétlenül szükség. Habár a törtszámokat még nem építettük fel az axiómák segítségével, de intuitív módon belátható, hogy bármely két törtszám között végtelen sok további törtszám létezik. Következésképp a számegyenes semmilyen véges hosszú szakaszára nem igaz a fenti tétel. Az tehát, hogy a természetes számokra mégis igaz, egyáltalán nem magától értetődő, akármennyire is annak látszik. Nézzük is meg, hogy miért.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="termeszetes-szamok-minimumtetele-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A fenti tételen kívül szükségünk lesz még egy állításra, amely a [latex]\leq[/latex]-nél szigorúbb [latex]\lt[/latex] reláció tranzitivitását garantálja. Az előbbi tranzitivitását (tehát azt, hogy [latex]a\leq b[/latex] és [latex]b\leq c[/latex] esetén [latex]a\leq c[/latex]) már megmutattuk a [yp_element slug="termeszetes-szamok-rendezesi-relacioja-tranzitiv" type="link" /]ben. Nem meglepő módon ez a tulajdonság a szigorú rendezésre is teljesül, ráadásul nem csak a természetes számok között, hanem a teljes [latex]\Z[/latex] halmazon is. Így most ezt mutatjuk meg.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-szigoru-rendezese-tranzitiv" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-szigoru-rendezese-tranzitiv-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezek után már alkalmazhatjuk majd a <strong><em>végtelen leszállás</em></strong> módszerét. Ezt <a rel="noreferrer noopener" aria-label="Pierre de Fermat (új fülön nyitja meg)" href="https://hu.wikipedia.org/wiki/Pierre_de_Fermat" target="_blank">Pierre de Fermat</a> fejlesztette ki a 17. században, és számos fontos eredményhez jutott ennek segítségével. A végtelen leszállás módszere egy indirekt érvelés, melynek során megmutatjuk, hogy ha a szóban forgó állítás hamis, akkor elő lehet állítani egy olyan természetes számokból álló sorozatot, amelynek az imént bizonyított tranzitivitás miatt nincs minimuma. Ez ugye ellentmondana a fenti minimumtételnek, és így a Peano-axiómáknak. A bizonyítandó állítás tehát nem lehet hamis, következésképp igaznak kell lennie. A hátralévő részben ezt a módszert fogjuk felhasználni annak megmutatásához, hogy a számelmélet alaptétele teljesül gyűrűk egy speciális osztályában, az úgynevezett <strong><em>euklidészi gyűrűkben</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="euclidean-domain"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Euklidészi gyűrűk</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Az <strong><em>euklidészi algoritmus</em></strong> alapgondolatának fentebbi ismertetésekor feltételeztük, hogy az [latex]a[/latex] és [latex]b[/latex] bemenet egy-egy pozitív egész szám, amelyeknek tehát a kitüntetett közös osztóját keressük. Az alapötletet a [yp_element slug="euklideszi-algoritmus-alapgondolata" type="link" /] tétel szolgáltatta, mely szerint ha [latex]a[/latex] és [latex]b[/latex] között el tudjuk végezni a <strong><em>maradékos osztást</em></strong>, akkor az [latex](a,b)[/latex] kitüntetett közös osztó – amennyiben egyáltalán létezik – meg fog egyezni a [latex](b,r_1)[/latex] kitüntetett közös osztóval, ahol [latex]r_1[/latex] a maradékos osztás során képződő maradék. Ezek után a [latex]b[/latex] és [latex]r_1[/latex] között kell maradékos osztást végezni, így ha a képződő maradék [latex]r_2[/latex], akkor a [latex](b,r_1)[/latex] kitüntetett közös osztó – amennyiben létezik – meg fog egyezni az [latex](r_1,r_2)[/latex] kitüntetett közös osztóval.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezt az eljárást tovább folytatjuk mindaddig, míg valamelyik lépésben a képződő maradék [latex]0[/latex] nem lesz. Ha az utolsó nemnulla maradék [latex]r_n[/latex], akkor végülis azt kaptuk, hogy az [latex](a,b)[/latex] kitüntetett közös osztó meg fog egyezni az [latex](r_n,0)[/latex] kitüntetett közös osztóval. Ez viszont a [yp_element slug="kituntetett-kozos-oszto-tulajdonsagai" type="link" /] 4. pontja alapján egységelemes gyűrűkben – és csak azokban – biztosan létezik, és [latex]r_n[/latex]-nel egyezik meg.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Már csak azt kell belátni, hogy véges számú lépés után biztosan [latex]0[/latex] lesz a képződő maradék. Ezt fentebb csak feltételeztük, most azonban a végtelen leszállás módszerével könnyedén adódik. Az [latex]a[/latex] és [latex]b[/latex] elemek maradékos osztásánál ugyanis fontos követelmény volt, hogy az [latex]a[/latex] elemet úgy tudjuk kifejezni „valahányszor [latex]b[/latex], meg egy kis maradék” alakban, hogy a maradék mindig <strong><em>szigorúan kisebb</em></strong> legyen, mint [latex]b[/latex]. Ha – feltételezve, hogy a maradékos osztást mindig el tudjuk végezni – az eljárás nem érne véget véges számú lépés után, akkor az [latex]r_1 \gt r_2 \gt r_3 \gt \ldots[/latex] sorozat a [latex]\gt[/latex] reláció [yp_element slug="egesz-szamok-szigoru-rendezese-tranzitiv" type="link" /] szerinti tranzitivitása miatt a természetes számoknak egy olyan részhalmaza lenne, amelynek nem lenne minimuma. Ez viszont, mint azt a [yp_element slug="termeszetes-szamok-minimumtetele" type="link" /]ben láttuk, lehetetlen.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Igenám, csakhogy mi <strong><em>tetszőleges integritástartományra</em></strong> szeretnénk kiterjeszteni ezt az algoritmust. Márpedig például az egész számok [latex]\Z[/latex] gyűrűjére nem érvényes a minimumtétel, más integritástartományok pedig még csak nem is feltétlenül számokból, hanem egyéb objektumokból állhatnak. Vegyük azonban észre, hogy minket nem konkrétan a képződő maradékok érdekelnek, hanem azoknak <strong><em>a gyűrű nullelemétől való</em></strong> – bizonyos absztrakt értelemben vett – <strong><em>„távolsága”</em></strong>. Ha valahogy sikerülne az adott gyűrűben értelmezni egy olyan távolságfogalmat, amely biztosítja, hogy az euklidészi algoritmus során bármely lépésében a képződő maradék nullelemtől mért absztrakt „távolsága” <strong><em>szigorúan kisebb</em></strong> legyen, mint az előző lépésben képződő maradék ugyanilyen értelemben vett nullelemtől való „távolsága”, akkor nyert ügyünk lenne.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A most következő definíció külön nevet ad az olyan integritástartományoknak, amelyekben értelmezhető ilyen absztrakt távolságfogalom.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="euklideszi-gyuru" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="euklideszi-gyuru-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Nem meglepő módon tehát a keresett távolságfogalom egy függvény lesz, amely az [latex]R[/latex] integritástartomány elemeit a természetes számok [latex]\N[/latex] halmazára képezi le. Egy elemhez hozzárendelt szám fogja „mérni” az adott elemnek a nullelemtől való absztrakt „távolságát”. A definícióban szereplő első követelmény logikus módon azt fogalmazza meg, hogy csak és kizárólag a nullelem távolsága legyen [latex]0[/latex]. A második követelmény pedig lényegében a pozitív egész számokon értelmezett maradékos osztás általánosításaként fogható fel.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Fontos megjegyezni még, hogy egy euklidészi gyűrűnek, mint algebrai struktúrának nem része a konkrét euklidészi norma. A fenti definíció szerint elegendő, ha <strong><em>létezik</em></strong> ilyen norma az adott gyűrűn. Sőt, ha egy integritástartomány euklidészi gyűrű, akkor általában több euklidészi norma is értelmezhető rajta. Általában azonban igen nehéz annak eldöntése, hogy egy [latex]R[/latex] integritástartomány euklidészi gyűrű-e vagy sem. Természetesen ha találunk egy olyan függvényt, amely euklidészi norma, akkor [latex]R[/latex] nyilván euklidészi gyűrű. Ha azonban nem találunk ilyen függvényt, akkor ez még önmagában nem elég a nemleges válaszhoz. Ehhez azt kéne igazolni, hogy ilyen függvény <strong><em>egyáltalán nem is létezik</em></strong> az adott [latex]R[/latex]-hez. Ez számos nyitott kérdéshez és sejtéshez vezet, melyek a mai napig bizonyítatlanul várják az utókor ötleteit.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Meg fogjuk ugyanakkor mutatni, hogy az egész számok [latex]\Z[/latex] gyűrűje euklidészi gyűrű. Ehhez a <a rel="noreferrer noopener" aria-label="15. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/15-rendezett-gyuru-absztrakt-algebra-egesz-szam-rendezesi-relacio-rendezesi-axiomak/" target="_blank">15. részben</a> bevezetett rendezési reláció felhasználásával mutatni fogunk egy olyan függvényt, amely [latex]\Z[/latex]-ből [latex]\N[/latex]-be képez, és amely eleget tesz az euklidészi normákra vonatkozó követelményeknek. Előbb azonban azt fogjuk megvizsgálni, hogy miért olyan fontosak az euklidészi gyűrűk a számelmélet alaptételének szempontjából. Például azért, mert ezekben bármely két elemnek létezik kitüntetett közös osztója, és így a [yp_element slug="kituntetett-kozos-oszto-letezesenek-kovetkezmenye" type="link" /] értelmében <strong><em>teljesül bennük a számelmélet alaptételének egyértelműségi állítása</em></strong>. Ezt az alábbi tétel mondja ki.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="euklideszi-gyuruben-letezik-kituntetett-kozos-oszto" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="euklideszi-gyuruben-letezik-kituntetett-kozos-oszto-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Hamarosan látni fogjuk, hogy ennél több is igaz. Nevezetesen: nemcsak a prímtényezős felbontás <strong><em>egyértelműsége</em></strong>, hanem a <strong><em>létezése</em></strong> is garantált euklidészi gyűrűkben.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Euklidészi norma a [latex]\Z[/latex] gyűrűn</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Előbb azonban megmutatjuk, hogy az egész számok [latex]\Z[/latex] gyűrűje euklidészi gyűrű. Ehhez a <a rel="noreferrer noopener" aria-label="15. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/15-rendezett-gyuru-absztrakt-algebra-egesz-szam-rendezesi-relacio-rendezesi-axiomak/" target="_blank">15. részben</a> bevezetett rendezési reláció lesz a kulcs (lásd a [yp_element slug="egesz-szamok-rendezese" type="link" /]t). Ennek segítségével egy függvényt fogunk értelmezni a [latex]\Z[/latex] halmazon, majd megmutatjuk, hogy az egy <strong><em>euklidészi norma</em></strong>. Nézzük először a kérdéses függvényt.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-abszoluterteke" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Amennyiben az egész számokat a mindkét irányban végtelen számegyenesen ábrázoljuk, akkor ez a függvény intuitív módon valóban a [latex]0[/latex] egész számtól való „távolságot” méri ezen az egyenesen. Ez alapján például az [latex]5[/latex] és a [latex]-5[/latex] egész számok egyaránt [latex]5[/latex] „távolságra” vannak a [latex]0[/latex]-tól. Azaz: [latex]|5|=|-5|=5[/latex]. Ezt a „távolságmérést” szemlélteti az alábbi ábra:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":4444,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_17_abszolutertek.jpg" alt="Abszolútérték a számegyenesen" class="wp-image-4444"/><figcaption>Abszolútérték a számegyenesen</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Az abszolútérték-függvénynek a következő tétel miatt van jelentősége számunkra.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="abszolutertek-euklideszi-norma" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="abszolutertek-euklideszi-norma-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most tehát már tudjuk, hogy az egész számok [latex]\Z[/latex] gyűrűje egy euklidészi gyűrű. A [yp_element slug="[yp_element slug="euklideszi-gyuruben-letezik-kituntetett-kozos-oszto" type="link" /] miatt ez azt jelenti, hogy bármely két egész számnak létezik kitüntetett közös osztója. Ebből viszont a [yp_element slug="kituntetett-kozos-oszto-letezesenek-kovetkezmenye" type="link" /] alapján következik, hogy minden felbonthatatlan egész szám prímtulajdonságú, és így a [yp_element slug="felbontas-egyertelmusegenek-elegseges-feltetele" type="link" /] miatt teljesül a számelmélet alaptételének ([yp_element slug="szamelmelet-alaptetele" type="link" /]) egyértelműségi állítása. Az utolsó szakaszban megmutatjuk, hogy ennél több is igaz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A számelmélet alaptétele euklidészi gyűrűkben</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A számelmélet alaptételének egyértelműségi állítása pusztán annyit állít, hogy <strong><em>HA</em></strong> egy elemnek egyáltalán létezik felbontása, <strong><em>AKKOR</em></strong> az a tényezők sorrendjétől és asszociáltságtól eltekintve egyértelmű. Most azt fogjuk igazolni, hogy euklidészi gyűrűkben ezen felül <strong><em>a felbontás LÉTEZÉSE is garantált</em></strong>. Ehhez a kulcsot a következő tétel fogja jelenteni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="euklideszi-norma-egyenlotlensegi-tulajdonsaga" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="euklideszi-norma-egyenlotlensegi-tulajdonsaga-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az iménti tételben szereplő egyenlőtlenségi tulajdonság tehát azt jelenti, hogy egy ilyen euklidészi norma tetszőleges elem bármely nemnulla többszörösére legalább akkora „távolságot” fog mérni, mint magára az elemre. A most következő tétel arra ad választ, hogy mely esetekben teljesül egyenlőség a két oldal között, és mely esetekben nem.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="euklideszi-norma-szigoru-egyenlotlensegenek-feltetele" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="euklideszi-norma-szigoru-egyenlotlensegenek-feltetele-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az utolsó két tételt felhasználva már könnyedén beláthatjuk ennek a résznek a főtételét, amely az euklidészi gyűrűk legfontosabb tulajdonságát mondja ki.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="euklideszi-gyurukben-teljesul-a-szamelmelet-alaptetele" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="euklideszi-gyurukben-teljesul-a-szamelmelet-alaptetele-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="euklideszi-gyurukben-teljesul-a-szamelmelet-alaptetele-bizonyitas-megjegyzes" show_link_to_related="false" custom_title="Megjegyzés a bizonyításhoz" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez a tétel tehát egy elégséges feltételt biztosít ahhoz, hogy egy integritástartományban teljesüljön a számelmélet alaptétele. Megjegyezzük azonban, hogy ez a feltétel nem szükséges az alaptételhez. Léteznek olyan integritástartományok is, amelyekben semmilyen értelemben nem végezhető el a maradékos osztás, és így nem euklidészi gyűrűk, ám mégis teljesül bennük a számelmélet alaptétele.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ebben a részben megismerkedtünk a kitüntetett közös osztó fogalmával, és az euklidészi algoritmussal, amely azt képes hihetetlen sebességgel kiszámítani. A kitüntetett közös osztó létezése azért volt nagyon fontos számunkra, mivel annak fontos következményei vannak a számelmélet alaptételének egyértelműségi állítására nézve. Ezért általánosságban is megvizsgáltuk, mi kell ahhoz, hogy az euklidészi algoritmus valamilyen integritástartományon működhessen. Ezzel eljutottunk a maradékos osztás és az euklidészi gyűrűk fogalmához, és megmutattuk, hogy az ilyen gyűrűkben mindig teljesül a számelmélet alaptételének mindkét állítása. Végül igazoltuk, hogy az egész számok gyűrűje is euklidészi gyűrű – például az abszolútérték-függvényre, mint euklidészi normára nézve.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A <a rel="noreferrer noopener" aria-label="9. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/9-diffie-hellman-protokoll-egyiranyu-fuggveny-modularis-aritmetika-asszimmetrikus-kulcs/" target="_blank">9. részben</a> a Diffie-Hellman kulcscsere protokoll kapcsán már felületesen megismerkedtünk az úgynevezett óra-, vagy becsületesebb nevén moduláris aritmetikával. Ez szintén egy fontos összetevője az aszimmetrikus kulcsú titkosítási eljárásoknak, ezért a következő részben ezt a témakört újra elővesszük. Ám ezt ezúttal a gyűrűk absztrakciós szintjén fogjuk megtenni, melynek keretében megismerkedünk az úgynevezett maradékosztálygyűrűkkel. Ezenkívül minimálisan érinteni fogjuk az ideálok elméletét is.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A következő részt <a href="https://youproof.hu/kriptografia/18-modularis-aritmetika-homomorfizmus-kongruencia-reszgyuru-ideal-maradekosztalygyuru/">itt</a> találod...</em></strong></p>
+<!-- /wp:paragraph -->

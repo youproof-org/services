@@ -1,0 +1,97 @@
+type: section
+name: 05-a-tanu-tetel
+title: A tanú-tétel
+
+body:
+  - type: narrative
+    content: |
+      Képzeljük el, hogy a 3-színezhetőség eldöntését próbáljuk megoldani egy konkrét, viszonylag nagy gráfra.
+      Hatékony algoritmus hiányában helyzetünk reménytelennek tűnik. Tegyük fel azonban, hogy valahonnan
+      hozzájutunk egy olyan ***plusz információhoz, amelynek helyességét már hatékonyan le tudjuk ellenőrizni***.
+      Például támad egy sejtésünk, vagy valaki megsúg nekünk bizonyos információkat a megoldásról. Ezt a plusz
+      információt ***tanúnak (vagy súgásnak)*** nevezzük.
+  - type: unordered-list
+    lead-in: |
+      A tanúval szemben két fontos követelményünk van:
+    items:
+      - "Ne legyen túl hosszú az eredeti bemenet méretéhez képest. Ez pontosabban fogalmazva azt jelenti, hogy ha az eredeti bemeneti jelsorozat $x$, a tanút leíró jelsorozat pedig $t$, akkor megköveteljük, hogy $t$ hossza $x$ hosszának ***legfeljebb polinomiális függvénye*** legyen."
+      - "Megköveteljük továbbá, hogy a tanú helyessége legyen leellenőrizhető ***polinomiális időkomplexitású DETERMINISZTIKUS Turing-géppel***."
+  - type: narrative
+    content: |
+      A "súgás" elnevezés arra utal, hogy e plusz információnak ***csak a létezése*** a feltétel. Annak eredetével
+      kapcsolatosan azonban ***nincs semmilyen kiszámíthatósági feltételezésünk***. Az olyan döntési problémák
+      osztályát szintén $NP$-vel jelöljük, amelyek esetén az **"igen"** válasznak létezik hatékonyan ellenőrizhető
+      tanúja.
+  - type: narrative
+    content: |
+      A ***tanú-tétel*** azt állítja, hogy a ***NEMDETERMINISZTIKUSAN polinomiális eldönthetőségre***, és a
+      ***DETERMINISZTIKUSAN polinomiális ellenőrizhetőségre*** épülő két látszólag teljesen különböző definíció
+      ugyanazt a nyelvosztályt határozza meg, így mindegy, hogy melyiket nevezzük $NP$-nek. Mielőtt a bizonyítás
+      vázlatára rátérnénk, nézzük meg egy konkrét példán, hogy hogyan kell értelmezni a tanú fogalmára épülő
+      definíciót.
+  - type: narrative
+    content: |
+      A már említett ***3-színezhetőség*** eldöntése reménytelenül nehéz feladatnak tűnik, ha csak a bemeneti gráf
+      áll rendelkezésre. Ha azonban kapunk hozzá egy konkrét színezést, mint tanút (vagy más néven súgást), annak
+      helyessége már könnyen leellenőrizhető. Továbbá az is nyilvánvaló, hogy csak a 3-színezhető gráfokhoz létezik
+      helyes színezés, azaz tanú. Végezetül, egy színezés leírható a bemeneti gráf méretéhez képest "nem túl
+      hosszan", hiszen csak az egyes csúcsokhoz rendelt színeket kell felsorolni. Ehhez hasonlóan a
+      ***k-függetlenség*** problémája esetén k darab független csúcs felsorolása szintén megfelelő tanú, hiszen
+      könnyen leellenőrizhető, hogy azok valóban függetlenek-e. A 3-színezhetőség és a k-függetlenség problémája
+      tehát a második definíció alapján mindketten az $NP$ problémaosztályba tartoznak.
+  - type: narrative
+    content: |
+      Egy $NP$-beli $L$ nyelv esetén egy adott $x$ bemeneti jelsorozat $L$-be tartozásának eldöntése felfogható egy
+      ***bírósági analógiával*** is. Képzeljünk el egy ***bírót***, aki elé oda kerül az $x$ jelsorozat, mint
+      ***vádlott***. A vád az, hogy $x$ mondata az $L$ nyelvnek. A kérdés eldöntésére a bírónak ***polinomiális
+      időkorlátja*** van, azaz kissé türelmetlen, és segítségre van szüksége, hogy időben meg tudja hozni az
+      ***ítéletet***. Ekkor jelentkezik egy ***rejtélyes tanú***, aki terhelő vallomást tesz az $x$ vádlottra. A
+      ***bírónak így csak ellenőriznie kell***, hogy a vallomás tényleg bizonyítja-e a vádat. Nem kell azonban
+      foglalkoznia a tanú megkeresésével, amely mai tudásunk szerint sok fontos esetben nem is tehető meg
+      polinomiális időben.
+  - type: narrative
+    content: |
+      Látható, hogy ez a tanú fogalmára építő második definíció igen hasznos, hiszen segítségével lényegesen
+      könnyebben tudjuk bizonyítani adott nyelvekre, hogy $NP$-beliek, mintha a nemdeterminisztikus Turing-gépekkel
+      kellene szórakoznunk. Ahhoz azonban, hogy ezt a piszkos kis trükköt legálisan használhassuk, még
+      bizonyítanunk kell a tanú-tételt.
+  - type: narrative
+    content: |
+      Először azonban ***fogalmazzuk meg újra a tanú-tétel állítását***, de ezúttal a matematika nyelvén.
+      Bonyolultnak fog tűnni, de valójában ugyanarról van szó, mint amiről eddig beszéltünk. Érdemes végigkövetni,
+      hogy szokjuk egy kicsit ezt a szigorú nyelvezetet.
+  - type: narrative
+    content: |
+      Tegyük fel, hogy adva van egy $L$ nyelv, és azt szeretnénk bizonyítani, hogy ez a nyelv $NP$-ben van-e vagy
+      nem. Az $NP$ nyelvosztály első definíciója alapján tehát keresnünk kellene egy olyan ***polinomiális
+      időkomplexitású NEMDETERMINISZTIKUS Turing-gépet***, amely eldönti az $L$-be tartozást, vagy pedig
+      bizonyítani, hogy ilyen Turing-gép nem létezik. Mi nem ezt az utat fogjuk választani az $NP$-beliség
+      eldöntésére, ugyanis nem szeretnénk nemdeterminisztikus Turing-gépekkel bajlódni.
+  - type: narrative
+    content: |
+      Ehelyett $L$-ből konstruálni fogunk egy másik $K$ nyelvet, és azt fogjuk vizsgálni, hogy ez a $K$ nyelv
+      eldönthető-e ***polinomiális időkomplexitású DETERMINISZTIKUS Turing-géppel*** (azaz, hogy $P$-beli-e). Most
+      nézzük meg, hogy milyen jelsorozatokat tartalmazzon ez a $K$ nyelv.
+  - type: narrative
+    content: |
+      Tartalmazzon $K$ olyan $x$ és $t$ ***jelsorozatokból álló párokat***, amelyeknél $t$ hossza az $x$ hosszának
+      ***legfeljebb polinomiális függvénye***, azaz $t$ ne legyen "túl hosszú" $x$-hez képest. Hogy az éppen
+      használt ábécé segítségével hogyan lehet ilyen párokat leírni, az most részletkérdés. A lényeg, hogy a pár
+      összetevőit (tehát az $x$ és $t$ jelsorozatokat) egyértelműen be lehessen azonosítani a $K$-beli szavakban.
+      Mi a továbbiakban az $(x,t)$ jelölést fogjuk használni ezekre a párokra, függetlenül attól, hogy ez konkrétan
+      hogyan néz ki a $K$ nyelv ábécéjével leírva. A $t$ jelsorozatot az $x$ jelsorozat ***tanújának*** fogjuk
+      nevezni.
+  - type: narrative
+    content: |
+      Teljesüljön ezen kívül a $K$ és $L$ nyelvekre a következő: egy tetszőleges $x$ jelsorozat ***akkor és csak
+      akkor*** tartozzon $L$-be, ha ***létezik*** olyan $t$ ***tanú***, amely esetén az $(x,t)$ jelsorozat $K$-ba
+      tartozik. Amennyiben ilyen tanú nem létezik egy adott $x$-hez, akkor $x$ ne tartozzon $L$-be. Mégegyszer
+      hangsúlyozzuk, hogy ***a tanúnak csak a létezése a feltétel***. A megtalálásának mikéntjéről nem
+      feltételezünk semmit, de azt gondoljuk, hogy az "nehéz".
+  - type: narrative
+    content: |
+      A ***tanú-tétel*** ezek után a következőt állítja: az $L$ nyelv ***akkor és csak akkor*** van $NP$-ben,
+      ***ha*** a $K$ nyelv $P$-ben van. Vegyük észre, hogy ha ez igaz, akkor egy ***nemdeterminisztikus***
+      Turing-gép létezésének bizonyítása helyett egy ***determinisztikus*** Turing-gép létezését kell bizonyítanunk
+      egy nyelv $NP$-beliségének eldöntéséhez, ami sok esetben jóval egyszerűbb. Most vizsgáljuk meg, hogy miért
+      igaz ez a tétel.

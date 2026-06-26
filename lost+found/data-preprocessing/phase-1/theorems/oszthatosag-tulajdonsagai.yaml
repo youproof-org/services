@@ -1,0 +1,34 @@
+type: theorem
+name: oszthatosag-tulajdonsagai
+proofs:
+  - oszthatosag-tulajdonsagai-bizonyitas
+remarks: []
+references:
+  tranzitiv-relacio:
+    target:
+      type: definition
+      name: tranzitiv-relacio
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ egy tetszőleges ***kommutatív gyűrű***.
+  - type: ordered-list
+    lead-in: |
+      Ekkor igazak az alábbiak:
+    items:
+      - 'Ha a gyűrű ***egységelemes***, akkor minden elem osztója önmagának.'
+      - 'Ha a gyűrű ***nullosztómentes***, és létezik olyan $a\eq 0$ elem, amely osztója önmagának, akkor a gyűrű
+        egységelemes.'
+      - 'Tetszőleges $a$-ra teljesül, hogy $a|0$. Azaz a nullelemnek minden elem osztója.'
+      - 'A $0|a$ oszthatóság ***akkor és csak akkor teljesül, ha*** $a=0$. Azaz a nullelem csak önmagának osztója.'
+      - 'Ha valamilyen $a$, $b$ és $c$ elemekre teljesülnek az $a|b$ és a $b|c$ oszthatóságok, akkor teljesül az
+        $a|c$ oszthatóság is. Azaz az oszthatósági reláció tranzitív (lásd a [tranzitiv-relacio]t).'
+      - 'Ha valamilyen $a$, $b$ és $c$ elemekre teljesülnek az $a|b$ és az $a|c$ oszthatóságok, akkor teljesülnek
+        az $a|b+c$ és az $a|b-c$ oszthatóságok is. Azaz ha egy gyűrűelem osztója valamely két gyűrűelemnek, akkor
+        osztója az összegüknek és a különbségüknek is.'
+      - 'Ha valamilyen $a$ és $b$ elemekre teljesül az $a|b$ oszthatóság, akkor tetszőleges $c$ elemre teljesül az
+        $a|bc$ oszthatóság is. Azaz ha egy gyűrűelem osztója valamely gyűrűelemnek, akkor osztója a
+        többszöröseinek is.'
+      - 'Ha valamilyen $a$ és $b$ elemekre teljesül az $a|b$ oszthatóság, akkor teljesülnek az $a|(-b)$, a
+        $(-a)|b$ valamint a $(-a)|(-b)$ oszthatóságok is. Azaz az ellentettképzés nem befolyásolja az
+        oszthatósági relációt.'

@@ -1,0 +1,115 @@
+type: chapter
+name: 25-alice-es-bob-fontos-parhuzamokat-talal
+title: Alice és Bob fontos párhuzamokat talál
+
+references:
+  modularis-osszeadas-es-szorzas:
+    target:
+      type: definition
+      name: modularis-osszeadas-es-szorzas
+
+abstract:
+  - type: narrative
+    content: |
+      Az előző részben megismerkedtünk az úgynevezett csoportelmélet néhány alapfogalmával és összefüggésével,
+      amely az absztrakt algebra egy igen hatékony eszköze. Bevezettük a csoport, a részcsoport fogalmát, valamint
+      definiáltuk, hogy mit értünk egy csoport illetve egy csoportelem rendje alatt. Ezután a mellékosztály
+      fogalmának bevezetésével igazoltuk Lagrange tételét, amely egy fontos oszthatósági kapcsolatot mond ki egy
+      csoport és a részcsoportok illetve csoportelemek rendjei között. Végül ezt felhasználva megmutattuk, hogy
+      bármilyen páratlan összetett szám esetén a redukált maradékosztályoknak legalább a fele Miller-Rabin-tanú,
+      így gyakorlatilag szinte nincs esélye annak, hogy a Miller-Rabin-prímteszt tévedjen. Meg fogjuk azonban
+      mutatni, hogy még ennél is jobb a helyzet, és a redukált maradékosztályoknak nemhogy a fele, de legalább a
+      háromnegyede Miller-Rabin-tanú. Ehhez azonban ebben a részben megismerkedünk néhány újabb, fontos
+      csoportelméleti összefüggéssel.
+  - type: narrative
+    content: |
+      Mik azok a csoporthomomorfizmusok, normálosztók és faktorcsoportok? Milyen párhuzam mutatható ki ezek és a
+      korábban már ismertetett gyűrűhomorfizmusok, ideálok és maradékosztálygyűrűk között? Milyen szép
+      struktúratartó tulajdonságai vannak egy csoporthomomorfizmusnak? Mik azok a ciklikus csoportok, és összesen
+      hány ilyen létezik? Ebben a részben erről lesz szó...
+prerequisite-warning:
+  - type: narrative
+    content: |
+      Figyelem! Ez a rész erőteljesen épít a 18. és a 24. részben felépített alábbi definíciókra, valamint a
+      hozzájuk kapcsolódó tételekre:
+  - type: recall
+    target:
+      type: definition
+      name: gyuruhomomorfizmus
+  - type: recall
+    target:
+      type: definition
+      name: gyuruhomomorfizmus-magja-es-kepe
+  - type: recall
+    target:
+      type: definition
+      name: ideal
+  - type: recall
+    target:
+      type: theorem
+      name: maradekosztalygyuruk
+  - type: recall
+    target:
+      type: definition
+      name: csoport
+  - type: recall
+    target:
+      type: definition
+      name: reszcsoport
+  - type: recall
+    target:
+      type: theorem
+      name: mellekosztalyok
+  - type: narrative
+    content: |
+      Ezek kontextusba helyezése miatt erőteljesen ajánlott elolvasni a 18. és a 24. részt, mivel gyakran
+      hivatkozni fogunk rájuk. A teljes cikksorozat elejét itt találod.
+prologue:
+  - type: narrative
+    content: |
+      A 18. részben ismertettük az úgynevezett ***moduláris aritmetika***, azaz a maradékokkal való számolás
+      absztrakt algebrai hátterét. Mint ahogyan azt az Olvasó is látni fogja, az ennek kapcsán felépített fogalmak
+      és tételek szinte egytől egyig párhuzamba állíthatók lesznek az ebben a részben leírtakkal. Ezekre a szép
+      párhuzamokra a tárgyalás során folyamatosan rá fogunk mutatni annak érdekében, hogy lehessen mihez kötni az
+      itt bevezetett, sok esetben meglehetősen absztrakt csoportelméleti fogalmakat. Ettől függetlenül azt
+      javasoljuk az Olvasónak, hogy gyakran lapozzon vissza az említett 18. részhez, mivel ezek a párhuzamok adott
+      esetben egészen más megvilágításba helyezhetik az eddig tanultakat.
+  - type: narrative
+    content: |
+      A 18. részben elsőként egy nagyon fontos, az egész számok $\Z$ gyűrűjén értelmezett függvénnyel, az
+      úgynevezett ***modulo $m$ maradékképző függvénnyel*** ismerkedtünk meg ([modularis-osszeadas-es-szorzas]). Ez
+      a $\bmod_m$-mel jelölt függvény minden egész számhoz az $m$ egész számmal való ***nemnegatív osztási
+      maradékát*** rendeli hozzá. Ennek a függvénynek az értékkészletét $Z_m$-mel jelöltük, amelyen egy
+      összeadásnak és egy szorzásnak nevezett műveletet is értelmeztünk a [modularis-osszeadas-es-szorzas]ban
+      leírtaknak megfelelően.
+  - type: narrative
+    content: |
+      Ezután igazoltuk, hogy a $Z_m$ halmaz ezzel a két művelettel egy kommutatív gyűrűt alkot. Ám ami talán még
+      fontosabb volt számunkra, hogy a $\bmod_m$ maradékképző függvény egy szoros kapcsolatot létesített a $\Z$ és
+      a $Z_m$ gyűrűk között.
+sections:
+  - 01-csoporthomomorfizmusok
+  - 02-csoporthomomorfizmus-magja-es-kepe
+  - 03-normalosztok-es-faktorcsoportok
+  - 04-csoportok-homomorfizmustetele
+  - 05-csoporthomomorfizmusok-strukturatarto-tulajdonsagai
+  - 06-csoportok-direkt-szorzata
+  - 07-reszcsoportok-generalasa
+  - 08-ciklikus-csoportok
+
+epilogue:
+  - type: narrative
+    content: |
+      Ebben a részben tehát némileg kibővítettük csoportelméleti eszköztárunkat. A 18. részben megismert
+      gyűrűhomomorfizmusok mintájára bevezettük a csoporthomomorfizmus fogalmát, valamint pontosan jellemeztük ezek
+      magjait. Fontos párhuzamokat felfedve megmutattuk, hogy ezeknek is &ndash; a gyűrűhomomorfizmusok kapcsán
+      bevezetett ideálokhoz hasonlóan &ndash; bizonyos speciális tulajdonságoknak kell megfelelniük. Így jutottunk
+      el a normálosztó és a faktorcsoport fogalmához, majd ismertettük a csoportok homomorfizmustételét és további
+      struktúratartó tulajdonságokat igazoltunk. Végül megismerkedtünk a generálás és az ehhez kapcsolódó ciklikus
+      csoportok fogalmával.
+  - type: narrative
+    content: |
+      Ezeket a csoportelméleti ismereteket a következő részben a Miller-Rabin-prímteszt
+      hibavalószínűség-becslésének javítására fogjuk felhasználni. A cikksorozat lezárásaként igazolni fogjuk
+      ugyanis, hogy a redukált maradékosztályoknak nemhogy a fele, de legalább a háromnegyede Miller-Rabin-tanú,
+      így a prímteszt még gyorsabban ad majdnem biztos eredményt.

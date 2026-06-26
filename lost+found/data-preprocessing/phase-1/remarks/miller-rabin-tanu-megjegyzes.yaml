@@ -1,0 +1,75 @@
+type: remark
+name: miller-rabin-tanu-megjegyzes
+references:
+  egesz-szamok-kozotti-kongruencia:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia
+  egesz-szamok-kozotti-kongruencia-tulajdonsagai:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia-tulajdonsagai
+  fermat-tanu:
+    target:
+      type: definition
+      name: fermat-tanu
+  miller-rabin-szorzat:
+    target:
+      type: theorem
+      name: miller-rabin-szorzat
+  oszthatosag-tulajdonsagai:
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+content:
+  - type: narrative
+    content: |
+      A Fermat-tanú [fermat-tanu]jához hasonlóan itt is teljes maradékosztályokra célszerű vonatkoztatni ezt a
+      fogalmat.
+  - type: formula
+    lead-in: |
+      Ha ugyanis egy $b$ egész szám $a$-val azonos modulo $n$ maradékosztályban van, akkor teljesül az $a\equiv
+      b\pmod n$ kongruencia, és így a [egesz-szamok-kozotti-kongruencia-tulajdonsagai] 8. pontja alapján
+      teljesülnek az alábbi kongruenciák is:
+    content: |
+      \begin{aligned}a^k&\equiv b^k\pmod n \\ a^{2k}&\equiv b^{2k}\pmod n \\ a^{4k}&\equiv b^{4k}\pmod n \\ &\vdots
+      \\ a^{2^{e-1}\cdot k}&\equiv b^{2^{e-1}\cdot k}\pmod n\end{aligned}
+  - type: narrative
+    content: |
+      Mármost ha a baloldal nem kongruens a definícióban szereplő számokkal, akkor a jobboldal sem. Így tehát az
+      $[a]_n$ maradékosztálynak vagy minden eleme teljesíti a Miller-Rabin-tanúkkal szemben támasztott
+      kritériumokat, vagy egyik sem.
+  - type: narrative
+    content: |
+      Szintén a Fermat-tanú [fermat-tanu]jához hasonlóan itt sem kell kikötni, hogy $[a]_n$ egy ***redukált
+      maradékosztály***, hiszen ha van egységtől különböző közös osztója $a$-nak és $n$-nek, akkor $n$ nyilván
+      összetett. Nem mellesleg itt is megjegyezzük, hogy a Miller-Rabin-kongruenciák amúgysem teljesülhetnének,
+      amennyiben $[a]_n$ nem egy redukált maradékosztály, azaz $(a,n)$ nem egység. Ennek indoklása szinte szóról
+      szóra megegyezik a [fermat-tanu] utáni megjegyzésben leírtakkal.
+  - type: narrative
+    content: |
+      Ez tehát azt jelenti, hogy ***NEM Miller-Rabin-tanú csak redukált maradékosztály lehet***. Ezen túlmenően a
+      [miller-rabin-szorzat] miatt ha egy $[a]_n$ redukált maradékosztály ***NEM Miller-Rabin tanú*** &ndash; azaz
+      teljesül a definícióban szereplő kongruenciák közül legalább az egyik &ndash;, akkor ***Fermat-tanú SEM
+      lehet***.
+  - type: formula
+    lead-in: |
+      Ha ugyanis teljesül legalább az egyik kongruencia, akkor a [egesz-szamok-kozotti-kongruencia] 3. pontja
+      alapján $n$ osztója az alábbi kifejezések közül legalább az egyiknek:
+    content: |
+      \begin{aligned}&a^k-1 \\ &a^k+1 \\ &a^{2k}+1 \\ &a^{4k}+1 \\ &\vdots \\ &a^{2^{e-1}\cdot k}+1\end{aligned}
+  - type: narrative
+    content: |
+      Ám e kifejezések szorzata a [miller-rabin-szorzat] alapján épp $a^{n-1}-1$, aminek $n$ a
+      [oszthatosag-tulajdonsagai] 7. pontja miatt szintén osztója. Azaz teljesül az $a^{n-1}\equiv 1\pmod n$
+      kongruencia, és így az $[a]_n$ redukált maradékosztály valóban nem Fermat-tanú. Másként fogalmazva ez azt
+      jelenti, hogy ***minden Fermat-tanú egyúttal Miller-Rabin-tanú is***, vagyis az új definíció tágítani
+      igyekszik a lehetséges tanúk körét.
+  - type: narrative
+    content: |
+      Az alábbi ábrán a ***NEM Miller-Rabin-tanúk*** és a ***NEM Fermat-tanúk*** elhelyezkedése látható a modulo
+      $n$ maradékosztályok között.
+  - type: figure
+    src: nem_miller_rabin_tanuk_elhelyezkedese.jpg
+    alt: A nem Miller-Rabin-tanúk elhelyezkedése
+    caption: A nem Miller-Rabin-tanúk elhelyezkedése

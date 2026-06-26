@@ -1,0 +1,146 @@
+<!-- wp:paragraph -->
+<p>Mivel [latex]x\
+eq y[/latex], ezért [latex]x-y\
+eq 0[/latex], és így [latex]v_p(x-y)[/latex] a [yp_element slug="egesz-szam-p-adikus-rendje" type="link" /] alapján egy véges nemnegatív szám, amiről a tétel szövege alapján tudjuk, hogy <strong><em>nemnulla</em></strong>, tehát [latex]v_p(x-y)\geq 1[/latex]. Jelöljük ezt a számot [latex]k[/latex]-val, azaz vezessük be az alábbi jelölést:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]k=v_p(x-y)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez a [latex]p[/latex]-adikus rend [yp_element slug="egesz-szam-p-adikus-rendje" type="link" /]ja szerint azt jelenti, hogy az [latex]x-y[/latex] különbség prímtényezős felbontásában a [latex]p[/latex] prímtényező a [latex]k[/latex]-adik hatványon szerepel. Létezik tehát olyan [latex]m[/latex] egész szám, amely tovább már <strong><em>nem osztható [latex]p[/latex]-vel</em></strong>, és teljesül rá az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x-y=p^km[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]x[/latex] tehát kifejezhető a következőképpen:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x=p^km+y[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most vizsgáljuk meg, hogyan néz ki [latex]x=p^km+y[/latex]-nak a [latex]p[/latex]-edik hatványa:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x^p=(p^km+y)^p=?[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez ugye egy [latex]p[/latex] darab tényezőből álló kifejezés, amelyben minden tényező egy-egy kéttagú összeg, nevezetesen ez: [latex](p^km+y)[/latex]. Az áttekinthetőség kedvéért a zárójelekben szereplő első tagra átmenetileg vezessük be a [latex]z=p^km[/latex] jelölést. Ekkor tulajdonképpen az alábbi szorzást kéne tehát elvégezni:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{(z+y)\cdot (z+y)\cdot \ldots \cdot (z+y)}_{\text{p darab}}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Vizsgáljuk meg, hogy milyen alakot ölt az eredmény, ha felbontjuk ezt a [latex]p[/latex] darab zárójelet. A [yp_element slug="gyuru-test" type="link" /]ban szereplő disztributivitási szabályok alapján ezt úgy kell elvégezni, hogy minden zárójelből az összes lehetséges kombinációban kiválasztunk pontosan egy tagot, ezeket összeszorozzuk egymással, és az így kapott szorzatokat összeadjuk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Megtehetjük például, hogy mind a [latex]p[/latex] darab zárójelből a [latex]z[/latex] tagot választjuk, és [latex]0[/latex] darab zárójelből választjuk az [latex]y[/latex] tagot. Ez a választás a [latex]z^py^0=z^p[/latex] szorzatot fogja eredményezni, és nyilván csak egyféleképpen tudjuk megtenni. A végeredmény tehát így fog kezdődni:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](z+y)^p = z^p + \ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Egy másik választás lehet, amikor [latex]1[/latex] darab zárójelből választjuk ki az [latex]y[/latex] tagot, és a maradék [latex]p-1[/latex] darab zárójelből továbbra is a [latex]z[/latex] tagot választjuk. Ezek a választások mind a [latex]z^{p-1}y^1[/latex] szorzatot fogják eredményezni. Ilyen szorzatból viszont már [latex]p[/latex] darab van, hiszen azt az egyetlen [latex]y[/latex] tagot választhatjuk az 1., a 2., a 3., ..., és végül a [latex]p[/latex]-edik zárójelből. A végeredmény tehát így folytatódik:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}(z+y)^p &amp;= z^p \\ &amp;+ p\cdot z^{p-1}y \\ &amp;+ \ldots\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A következő kombinációk azok lesznek, amelyek esetén [latex]2[/latex] darab zárójel esetén választjuk ki az [latex]y[/latex] tagot. Ekkor a fennmaradó [latex]p-2[/latex] zárójelből a [latex]z[/latex] tagot kell választanunk, tehát ezek a kombinációk mind a [latex]z^{p-2}y^2[/latex] szorzatot fogják eredményezni. Ezért a [latex]z^{p-2}y^2[/latex] szorzatból épp annyi fog szerepelni a végeredményben, ahányféleképpen [latex]p[/latex] darab zárójelből ki tudjuk választani azt a [latex]2[/latex] darabot, amelyek az [latex]y[/latex] tényezőt adják az adott szorzathoz. Anélkül, hogy bonyolultabb kombinatorikai fejtegetésbe bonyolódnánk, jelöljük ezt a számot [latex]A_2[/latex]-vel. A végeredmény tehát így folytatódik:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}(z+y)^p &amp;= z^p \\ &amp;+ p\cdot z^{p-1}y \\ &amp;+ A_2\cdot z^{p-2}y^2 \\ &amp;+ \ldots\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Általánosságban ha [latex]0[/latex]-tól kezdve sorszámozzuk a végeredmény tagjait, akkor az [latex]i[/latex]-edik tag azokat a kombinációkat fogja tartalmazni, amelyek esetén [latex]i[/latex] darab zárójel esetén választjuk ki az [latex]y[/latex] tagot. Ekkor a fennmaradó [latex]p-i[/latex] zárójelből kell a [latex]z[/latex] tagot választanunk, tehát ezek a kombinációk mind a [latex]z^{p-i}y^i[/latex] szorzatot fogják eredményezni. Ilyenből épp annyi fog szerepelni a végeredményben, ahányféleképpen [latex]p[/latex] darab zárójelből ki tudjuk választani azt az [latex]i[/latex] darabot, amelyek az [latex]y[/latex] tényezőt adják az adott szorzathoz. Mivel ismét nem szeretnénk kombinatorikával szórakozni, ezért jelöljük ezt a számot nagyvonalúan [latex]A_i[/latex]-vel. Ezért a végeredmény [latex]i[/latex]-edik tagja így néz ki:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]A_i\cdot z^{p-i}y^i[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mindent összevetve tehát [latex](z+y)^p[/latex] teljes kifejtése így néz ki:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}(z+y)^p &amp;= A_0\cdot z^p \\ &amp;+ A_1\cdot z^{p-1}y \\ &amp;+ A_2\cdot z^{p-2}y^2 \\ &amp;\ \vdots \\ &amp;+ A_i\cdot z^{p-i}y^i \\ &amp;\ \vdots \\ &amp;+A_{p-1}\cdot zy^{p-1} \\ &amp;+ A_p\cdot y^p\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ahogyan megállapítottuk már, itt [latex]A_0=1[/latex] és [latex]A_1=p[/latex]. Továbbá, mivel egyrészt [latex]p[/latex]-féleképp lehet [latex]p[/latex] darab zárójelből kiválasztani azt az egyet, amelyből NEM az [latex]y[/latex], hanem a [latex]z[/latex] tagot választottuk ki, ezért természetesen [latex]A_{p-1}=p[/latex]. Másrészt pedig egyféleképpen lehet az összes zárójelből az [latex]y[/latex] tagot választani, ezért [latex]A_p=1[/latex]. A többi [latex]A_i[/latex] együttható pontos értékét az úgynevezett <a rel="noreferrer noopener" href="https://hu.wikipedia.org/wiki/Binomi%C3%A1lis_t%C3%A9tel" target="_blank">binomiális tétel</a> alapján lehet kiszámítani, ám a bizonyítás szempontjából ez most nem érdekes számunkra.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ha most visszafelé alkalmazzuk a [latex]z=p^km[/latex] jelölést, akkor az [latex]x^p=(\underbrace{p^km}_{=z}+y)^p[/latex] hatványra lényegében ezt a kifejezést kaptuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}x^p&amp;=(\underbrace{p^km}_{=z})^p + p\cdot (\underbrace{p^km}_{=z})^{p-1}y + A_2\cdot (\underbrace{p^km}_{=z})^{p-2}y^2 + \ldots \\ &amp;\ldots + A_{p-2}\cdot (\underbrace{p^km}_{=z})^2y^{p-2} + p\cdot (\underbrace{p^km}_{=z})y^{p-1} + y^p\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Alkalmazva a hatványozás azonosságairól szóló [yp_element slug="hatvanyozas-azonossagai" type="link" /] mindhárom pontját:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}x^p&amp;=p^{pk}m^p + p^{(p-1)k+1}m^{p-1}y + A_2\cdot p^{(p-2)k}m^{p-2}y^2 + \ldots \\ &amp;\ldots + A_{p-2}\cdot p^{2k}m^2y^{p-2} + p^{k+1}my^{p-1} + y^p\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Minket ugye az [latex]x_p-y_p[/latex] különbség [latex]p[/latex]-adikus rendje érdekel. Ezt a különbséget megkapjuk, ha a fenti összegzésből elhagyjuk az utolsó, [latex]y^p[/latex] tagot:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}x^p-y^p&amp;=p^{pk}m^p + p^{(p-1)k+1}m^{p-1}y + A_2\cdot p^{(p-2)k}m^{p-2}y^2 + \ldots \\ &amp;\ldots + A_{p-2}\cdot p^{2k}m^2y^{p-2} + p^{k+1}my^{p-1}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt kell meghatározni tehát, hogy a fenti kifejezés [latex]p[/latex]-nek legfeljebb hányadik hatványával osztható. Mivel a bizonyítás elején megállapítottuk, hogy [latex]k\geq 1[/latex], ezért [latex]p^{k+1}[/latex]-gyel minden fenti tag osztható, teljesül tehát az alábbi oszthatóság:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]p^{k+1}|x^p-y^p[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most nézzünk ennél 1-gyel magasabb hatványt, azaz [latex]p^{k+2}[/latex]-t. Az utolsó előtti tagig bezárólag szintén minden fenti tag osztható [latex]p^{k+2}[/latex]-vel. Kérdés, hogy mi a helyzet az utolsó, [latex]p^{k+1}my^{p-1}[/latex] taggal.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]m[/latex] egész szám biztosan nem tartalmazza a [latex]p[/latex] prímtényezőt, hiszen a bizonyítás elején őt épp így állítottuk elő. Továbbá a tétel szövege szerint [latex]v_p(xy)=0[/latex], ami a [yp_element slug="egesz-szam-p-adikus-rendje" type="link" /] alapján épp azt jelenti, hogy az [latex]xy[/latex] szorzat sem tartalmazza a [latex]p[/latex] prímtényezőt, így tehát maga [latex]y[/latex] sem. A [latex]p^{k+1}my^{p-1}[/latex] szorzat prímtényezős felbontásában [latex]p[/latex] így csak a [latex]k+1[/latex]-edik hatványon szerepel, azaz nem osztható [latex]p^{k+2}[/latex]-vel. Így viszont a teljes összeg sem osztható [latex]p^{k+2}[/latex]-vel, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]p^{k+2}\
+mid x^p-y^p[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezt összevetve a fentebb megállapított [latex]p^{k+1}|x^p-y^p[/latex] oszthatósággal, a [yp_element slug="egesz-szam-p-adikus-rendje" type="link" /] szerint lényegében megkaptuk a tétel állítását:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]v_p(x^p-y^p)=\underbrace{k}_{=v_p(x-y)}+1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p></p>
+<!-- /wp:paragraph -->

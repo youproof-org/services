@@ -1,0 +1,20 @@
+type: theorem
+name: kituntetett-kozos-oszto-tulajdonsagai
+proofs:
+  - kituntetett-kozos-oszto-tulajdonsagai-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy $a$ és $b$ valamilyen $R$ integritástartomány tetszőleges elemei.
+  - type: ordered-list
+    lead-in: |
+      Ekkor igazak az alábbiak:
+    items:
+      - 'A $(0,0)$ kitüntetett közös osztó mindig létezik, és $(0,0)=0$.'
+      - 'Ha létezik az $(a,b)$ kitüntetett közös osztó, akkor a $(b,a)$ kitüntetett közös osztó is létezik, és
+        $(a,b)=(b,a)$.'
+      - 'Ha $a$ és $b$ közül legalább az egyik nem $0$, és létezik az $(a,b)$ kitüntetett közös osztó, akkor $R$
+        ***egységelemes***.'
+      - 'Amennyiben $a\eq 0$ és teljesül az $a|b$ oszthatóság, úgy $(a,b)$ ***akkor és csak akkor*** létezik, ha
+        $R$ ***egységelemes***. Ilyenkor $(a,b)=a$. Speciálisan $b=0$ esetén: $(a,0)=a$.'

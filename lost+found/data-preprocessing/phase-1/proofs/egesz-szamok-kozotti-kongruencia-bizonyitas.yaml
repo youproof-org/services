@@ -1,0 +1,84 @@
+type: proof
+name: egesz-szamok-kozotti-kongruencia-bizonyitas
+remarks: []
+references:
+  egyseg:
+    target:
+      type: definition
+      name: egyseg
+  gyuruhomomorfizmus-magja-es-kepe:
+    target:
+      type: definition
+      name: gyuruhomomorfizmus-magja-es-kepe
+  gyuruhomomorfizmus-szerinti-kongruencia:
+    target:
+      type: definition
+      name: gyuruhomomorfizmus-szerinti-kongruencia
+  ideal-szerinti-kongruencia:
+    target:
+      type: definition
+      name: ideal-szerinti-kongruencia
+  idealok-es-gyuruhomomorfizmusok:
+    target:
+      type: theorem
+      name: idealok-es-gyuruhomomorfizmusok
+  maradekkepzes-gyuruhomomorfizmus:
+    target:
+      type: theorem
+      name: maradekkepzes-gyuruhomomorfizmus
+  modularis-osszeadas-es-szorzas:
+    target:
+      type: definition
+      name: modularis-osszeadas-es-szorzas
+  oszthatosag-tulajdonsagai:
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+content:
+  - type: narrative
+    content: |
+      ***Az 1. állítás:*** Minthogy $I$ egy ideál az egész számok $\Z$ gyűrűjében, ezért a
+      [idealok-es-gyuruhomomorfizmusok] miatt ő biztosan ***magja*** egy valamilyen $\Z$-ből kiinduló $f$
+      gyűrűhomomorfizmusnak. Ugyanezen tétel, valamint a [gyuruhomomorfizmus-magja-es-kepe] utáni megjegyzés miatt
+      azonban a [ideal-szerinti-kongruencia]ban definiált $I$ ***ideál szerinti kongruencia*** és a
+      [gyuruhomomorfizmus-szerinti-kongruencia]ban definiált $f$ ***gyűrűhomorfizmus szerinti kongruencia*** két
+      egymással teljesen ekvivalens reláció.
+  - type: formula
+    lead-in: |
+      Ez azt jelenti, hogy az alábbi két kongruencia egyszerre teljesül, vagy nem teljesül:
+    content: |
+      \begin{aligned}a&\equiv b\pod I\\a&\equiv b\pod f\end{aligned}
+  - type: narrative
+    content: |
+      Azaz nincs más dolgunk, mint találni egy olyan $f$ gyűrűhomomorfizmust, amelynek a magja éppen az $I$ ideál.
+      Vegyük észre, hogy mivel most $m\eq 0$, ezért a [modularis-osszeadas-es-szorzas]ban definiált $\bmod_m$-mel
+      jelölt ***modulo m maradékképző függvény*** értelmezhető, és épp megfelel erre a célra. Ez a függvény ugyanis
+      a [maradekkepzes-gyuruhomomorfizmus] szerint egy szürjektív gyűrűhomomorfizmus az egész számok $\Z$ és a
+      ***modulo m maradékok*** $Z_m$ gyűrűje között. Ennek magja ráadásul épp az $I=(m)$ főideál, hiszen ez
+      pontosan az $m$ egész szám többszöröseit tartalmazza, márpedig ezekhez &ndash; és csak ezekhez &ndash; a
+      $\bmod_m$ maradékképző függvény a $0$ maradékot rendeli hozzá.
+  - type: narrative
+    content: |
+      Eszerint tehát az $a\equiv b\pod I$ ideál szerinti kongruencia pontosan akkor teljesül, amikor teljesül az
+      $a\equiv b\pod{\bmod_m}$ gyűrűhomomorfizmus szerinti kongruencia. Ez utóbbi viszont pontosan akkor teljesül,
+      ha a $\bmod_m$ maradékképző függvény $a$-hoz és $b$-hez ugyanazt a maradékot rendeli hozzá.
+  - type: narrative
+    content: |
+      ***A 2. állítás:*** Amennyiben $m=0$, akkor nem értelmezett a $\bmod_m$ maradékképző függvény, így ebben az
+      esetben az ideál szerinti kongruencia [ideal-szerinti-kongruencia]jából kell kiindulnunk. Eszerint az
+      $a\equiv b\pod I$ kongruencia pontosan akkor teljesül, ha az $a-b$ különbség benne van az $I$ ideálban. Ez az
+      ideál azonban nem más, mint az $m=0$ által generált főideál. Minthogy a [oszthatosag-tulajdonsagai] 4. pontja
+      alapján a $0$-nak önmagán kívül nincs más többszöröse, ezért a $(0)$ főideál mindössze a $0$ egész számból
+      fog állni. Eszerint tehát az $a\equiv b\pod I$ pontosan akkor teljesül, ha $a-b=0$, vagy másként fogalmazva
+      $a=b$.
+  - type: narrative
+    content: |
+      A ***3. állítás*** az 1. és a 2. állítások általánosítása. Az $I=(m)$ főideál pontosan az $m$ egész szám
+      többszöröseit tartalmazza. Emiatt az $a-b$ különbség pontosan akkor van benne ebben az ideálban &ndash; azaz
+      teljesül az $a\equiv b\pod I$ kongruencia &ndash;, ha fennáll az $m|a-b$ oszthatóság.
+  - type: narrative
+    content: |
+      Végül a ***4. állítás*** a 3. állítás speciális esete. Ebben az esetben $I=(1)$, de mivel az $1$ egész szám a
+      $\Z$ gyűrű egységeleme, ezért a [egyseg] utáni megjegyzés miatt egyúttal ***egység*** is. Minthogy egy
+      egységnek minden gyűrűelem többszöröse, ezért az $I=(1)$ főideál valójában a teljes $\Z$ gyűrű lesz. Azaz
+      ebben az esetben valóban mindig teljesül az $a\equiv b\pod I$ kongruencia.

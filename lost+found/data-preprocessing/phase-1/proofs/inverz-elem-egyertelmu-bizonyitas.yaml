@@ -1,0 +1,25 @@
+type: proof
+name: inverz-elem-egyertelmu-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy egy $a$ elemnek két inverze is létezik a $*$ műveletre nézve. Jelöljük ezeket $x$-szel és
+      $y$-nal. Egyrészt mivel $x$ inverz, ezért egyben baloldali inverz is.
+  - type: formula
+    lead-in: |
+      Így igaz az alábbi:
+    content: |
+      (x*a)*y = n*y = y
+  - type: narrative
+    content: |
+      Másrészt, mivel $y$ is inverz, ezért egyben jobboldali inverz is.
+  - type: formula
+    lead-in: |
+      Így igaz az alábbi is:
+    content: |
+      x*(a*y) = x*n = x
+  - type: narrative
+    content: |
+      Tekintve, hogy a $*$ művelet asszociatív, ezért a fenti két egyenlet baloldalai megegyeznek, így
+      tulajdonképpen $x=y$. Az $a$ elem inverze tehát valóban egyértelmű, amennyiben létezik.

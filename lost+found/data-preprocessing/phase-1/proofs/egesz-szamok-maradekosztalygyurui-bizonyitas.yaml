@@ -1,0 +1,25 @@
+type: proof
+name: egesz-szamok-maradekosztalygyurui-bizonyitas
+remarks: []
+references:
+  maradekosztalygyuruk:
+    target:
+      type: theorem
+      name: maradekosztalygyuruk
+content:
+  - type: narrative
+    content: |
+      A modulo $m$ maradékosztályok pontosan az $(m)$ főideál szerinti maradékosztályokkal egyeznek meg. Emiatt a
+      $\Z/m\Z$ halmaz a tételben bevezetett $\oplus$ és $\odot$ műveletekkel nem más, mint a $\Z$ gyűrűnek az $(m)$
+      főideál szerinti faktorgyűrűje, azaz a [maradekosztalygyuruk]ben bevezetett jelölésekkel $\Z/(m)$. Innentől
+      kezdve a bizonyítás teljesen megegyezik a [maradekosztalygyuruk] bizonyításával.
+  - type: narrative
+    content: |
+      Mivel $\Z$ kommutatív és egységelemes, ezért a [maradekosztalygyuruk] alapján a $\Z/(m)=\Z/m\Z$ faktorgyűrű
+      is az. A nullelem az említett tételnek megfelelően a $0+(m)$ maradékosztály, ami a $[0]_m$ modulo $m$
+      maradékosztálynak felel meg. Ehhez hasonlóan az egységelem az $1+(m)$ maradékosztály, ami pedig az $[1]_m$
+      modulo $m$ maradékosztálynak felel meg.
+  - type: narrative
+    content: |
+      Végül a természetes gyűrűhomomorfizmus magja az $(m)$ főideál lesz, amely valóban az $m$ egész szám
+      többszöröseit tartalmazza.

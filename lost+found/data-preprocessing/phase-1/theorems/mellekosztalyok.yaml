@@ -1,0 +1,29 @@
+type: theorem
+name: mellekosztalyok
+proofs:
+  - mellekosztalyok-bizonyitas
+remarks:
+  - mellekosztalyok-megjegyzes
+references:
+  komplexusmuveletek:
+    target:
+      type: definition
+      name: komplexusmuveletek
+content:
+  - type: narrative
+    content: |
+      Legyen $G$ tetszőleges csoport, $H$ pedig valamilyen részcsoport $G$-ben. Definiáljunk egy $\sim$
+      szimbólummal jelölt relációt a $G$ csoport elemei között a következőképpen: $a\sim b$ akkor és csak akkor, ha
+      $a^{-1}b\in H$.
+  - type: narrative
+    content: |
+      Ekkor a $\sim$ reláció egy ***ekvivalenciareláció*** a $G$ csoport elemei között. Az ehhez tartozó
+      ekvivalencia-osztályokat a $G$ csoport ***$H$ részcsoportja szerinti baloldali mellékosztályoknak***
+      nevezzük. Ha $g$ egy tetszőleges elem a $G$ csoportban, akkor a $g$ elemet tartalmazó $H$ szerinti baloldali
+      mellékosztály épp a [komplexusmuveletek]ban bevezetett komplexusszorzással képzett $gH$ halmaz lesz.
+  - type: narrative
+    content: |
+      Ehhez hasonlóan, ha az $a\sim b$ relációt úgy definiáljuk, hogy akkor és csak akkor teljesüljön, ha
+      $ba^{-1}\in H$, akkor ugyanígy egy ***ekvivalenciarelációt*** kapunk. Ebben az esetben az
+      ekvivalencia-osztályokat a ***$H$ részcsoport szerinti jobboldali mellékosztályoknak*** nevezzük, a $g$
+      elemet tartalmazó jobboldali mellékosztály pedig a $Hg$ halmaz lesz.

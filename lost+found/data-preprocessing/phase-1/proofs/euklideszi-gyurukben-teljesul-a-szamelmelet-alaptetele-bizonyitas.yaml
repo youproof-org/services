@@ -1,0 +1,117 @@
+type: proof
+name: euklideszi-gyurukben-teljesul-a-szamelmelet-alaptetele-bizonyitas
+remarks:
+  - euklideszi-gyurukben-teljesul-a-szamelmelet-alaptetele-bizonyitas-megjegyzes
+references:
+  euklideszi-gyuru:
+    target:
+      type: definition
+      name: euklideszi-gyuru
+  euklideszi-gyuruben-letezik-kituntetett-kozos-oszto:
+    target:
+      type: theorem
+      name: euklideszi-gyuruben-letezik-kituntetett-kozos-oszto
+  euklideszi-norma-egyenlotlensegi-tulajdonsaga:
+    target:
+      type: theorem
+      name: euklideszi-norma-egyenlotlensegi-tulajdonsaga
+  euklideszi-norma-szigoru-egyenlotlensegenek-feltetele:
+    target:
+      type: theorem
+      name: euklideszi-norma-szigoru-egyenlotlensegenek-feltetele
+  felbontas-egyertelmusegenek-elegseges-feltetele:
+    target:
+      type: theorem
+      name: felbontas-egyertelmusegenek-elegseges-feltetele
+  felbonthatatlan-elem:
+    target:
+      type: definition
+      name: felbonthatatlan-elem
+  kituntetett-kozos-oszto-letezesenek-kovetkezmenye:
+    target:
+      type: theorem
+      name: kituntetett-kozos-oszto-letezesenek-kovetkezmenye
+  szamelmelet-alaptetele:
+    target:
+      type: definition
+      name: szamelmelet-alaptetele
+content:
+  - type: narrative
+    content: |
+      A [euklideszi-gyuruben-letezik-kituntetett-kozos-oszto] alapján egy euklidészi gyűrűben bármely két elemnek
+      létezik kitüntetett közös osztója. Így a [kituntetett-kozos-oszto-letezesenek-kovetkezmenye] miatt minden
+      felbonthatatlan elem prím. Ebből viszont a [felbontas-egyertelmusegenek-elegseges-feltetele] szerint
+      következik a számelémélet alaptételének egyértelműségi állítása. Ha tehát valamely elemnek egyáltalán létezik
+      felbontása, akkor az &ndash; sorrendtől és asszociáltságtól eltekintve &ndash; egyértelmű.
+  - type: narrative
+    content: |
+      Így már csak azt kell megmutatni, hogy bármely nemnulla és nem egység elemnek ténylegesen ***létezik***
+      felbontása. Tegyük fel, hogy $g:R\to \N$ egy olyan ***euklidészi norma***, amely eleget tesz a
+      [euklideszi-norma-egyenlotlensegi-tulajdonsaga]ben szereplő ***egyenlőtlenségi tulajdonságnak*** is. Ilyen
+      euklidészi norma ugyanezen tétel miatt garantáltan létezik. A bizonyításhoz a $g$ norma értékkészletén, azaz
+      a természetes számok $\N$ halmazán fogunk ***teljes indukciót*** alkalmazni.
+  - type: narrative
+    content: |
+      Ennek során minden $n$ természetes számra megmutatjuk, hogy az összes olyan nemnulla és nem egység
+      gyűrűelemnek létezik prímtényezős felbontása, amelynek a $g$ norma szerinti "távolsága" a nullelemtől
+      ***legfeljebb*** $n$. Az alábbi ábrán a gyűrű elemeinek azon $A_0$, $A_1$, $A_2$, ... részhalmazai láthatók,
+      amelyek az első néhány természetes számhoz tartoznak ebben az értelemben.
+  - type: figure
+    lead-in: |
+      Az elemeket pontokkal jelöltük, valamint ábrázoltuk a $g$ norma által hozzájuk rendelt értékeket is:
+    src: teljes_indukcio_vazlat.jpg
+    alt: A teljes indukció vázlata
+    caption: A teljes indukció vázlata
+  - type: narrative
+    content: |
+      Először is ***indukciós feltételként*** feltesszük, hogy valamilyen $n$-re már igaz az állítás, azaz bármely
+      $n$-nél nemnagyobb normájú nemnulla és nem egység gyűrűelemnek létezik prímtényezős felbontása. Ezt az
+      elemhalmazt a fenti ábrán $A_n$-nel jelöltük. Azt kell megmutatnunk, hogy ekkor az $A_{n+1}$ halmaz elemeire
+      is teljesülni fog az állítás. Tegyük fel, hogy $a$ egy tetszőleges $A_{n+1}$-beli elem. Feltételezhetjük,
+      hogy nincs benne $A_n$-ben, hiszen máskülönben az indukciós feltétel miatt róla már amúgyis tudnánk, hogy
+      létezik prímtényezős felbontása. Így tehát $g(a)=n+1$.
+  - type: narrative
+    content: |
+      Ha $a$ felbonthatatlan elem ([felbonthatatlan-elem]), akkor az ő prímtényezős felbontása alatt a
+      [szamelmelet-alaptetele] alapján önmagát, mint "egytényezős szorzatot" értjük, így az nyilván létezik.
+      Feltételezhetjük tehát, hogy $a$ nem felbonthatatlan, azaz felírható $a=bc$ alakban úgy, hogy $b$ és $c$
+      közül egyik sem egység.
+  - type: formula
+    lead-in: |
+      Ekkor azonban a $g$ normára a [euklideszi-norma-szigoru-egyenlotlensegenek-feltetele] miatt fennállnak az
+      alábbi szigorú egyenlőtlenségek, hiszen $a$ nem egységszerese sem $b$-nek, sem pedig $c$-nek:
+    content: |
+      \begin{aligned}g(b)&\lt g(a) \\ g(c)&\lt g(a)\end{aligned}
+  - type: narrative
+    content: |
+      Ez viszont $g(a)=n+1$ miatt azt jelenti, hogy $g(b)\leq n$ és $g(c)\leq n$. Az indukciós feltételünk alapján
+      azonban emiatt $b$-nek és $c$-nek létezik prímtényezős felbontása, hiszen mindketten benne vannak az $A_n$
+      halmazban. Így ha az $a=bc$ szorzatba $b$ és $c$ helyére beírjuk e két felbontást, akkor épp $a$-nak a
+      felbontását kapjuk.
+  - type: narrative
+    content: |
+      Eddig tehát azt bizonyítottuk, hogy ***HA*** valamilyen $n$-re az $A_n$ halmaz minden elemének létezik
+      felbontása, ***AKKOR*** ez igaz lesz az őt tartalmazó $A_{n+1}$ halmaz elemeire is. Már csak el kell indítani
+      az indukciós "dominósor" ledöntését valahol, azaz kell találni valamilyen $n$-et, amelyre valóban teljesül a
+      tétel állítása.
+  - type: narrative
+    content: |
+      Ez ebben az esetben egyszerű lesz, hiszen az $n=0$ épp megfelelő erre a célra, habár az érvelés némileg
+      szokatlan lesz. Az $n=0$ esethez az $A_0$ halmaz fog tartozni, amely tehát azokat a ***nemnulla*** és ***nem
+      egység*** gyűrűelemeket tartalmazza, amelyeknek a $g$ szerinti normája ***legfeljebb*** $0$. Minthogy a norma
+      értéke csak természetes (azaz nemnegatív) szám lehet, ezért ez azt jelenti, hogy az $A_0$ minden elemének
+      pontosan $0$ a normája. Igenám, de a norma a [euklideszi-gyuru] miatt csak a nullelem esetében lehet $0$, és
+      mivel azt mondtuk, hogy $A_0$ nem tartalmazza a nullelemet, ezért ő csak az üres halmaz lehet (az a halmaz,
+      amelynek nincs egyetlen eleme sem).
+  - type: narrative
+    content: |
+      Viszont az üres halmaz elemeire tett bármilyen univerzális állítás igaz, így az is, hogy e nem létező elemek
+      mindegyikének létezik prímtényezős felbontása. Ezt a furcsaságot a bizonyítás utáni megjegyzésben egy picit
+      részletesebben is kifejtjük, most azonban térjünk vissza a befejezéshez.
+  - type: narrative
+    content: |
+      Azt kaptuk tehát, hogy az $A_0$ halmazra &ndash; furcsamód ugyan, de &ndash; igaz lesz a tétel állítása.
+      Ekkor azonban a fentebb bizonyított indukció miatt igaz lesz $A_1$-re is, majd emiatt $A_2$-re is, és így
+      tovább, egészen a végtelenségig. Minthogy a $g$ norma összes lehetséges értékét lefedtük, ezért biztosan nem
+      hagytunk ki egyetlen nemnulla és nem egység gyűrűelemet sem a buliból. Mindegyikre igaz tehát a prímtényezős
+      felbontás létezése, és így a számelmélet alaptétele.

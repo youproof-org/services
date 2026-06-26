@@ -1,0 +1,11 @@
+type: theorem
+name: primhatvanyhoz-relativ-primek
+proofs:
+  - primhatvanyhoz-relativ-primek-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $a$ tetszőleges, $k\gt 0$ pedig valamilyen pozitív egész szám. Ekkor tetszőleges $p$ prímszám esetén
+      az $a$ egész ***akkor és csak akkor*** relatív prím a $p^k$ hatványhoz, ha nem osztható $p$-vel, azaz ***NEM
+      teljesül*** a $p|a$ oszthatóság.

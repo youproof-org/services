@@ -1,0 +1,53 @@
+type: proof
+name: szorzas-rendezesfordito-gyuruben-bizonyitas
+remarks: []
+references:
+  gyuru-reszbenrendezesenek-tulajdonsagai:
+    target:
+      type: theorem
+      name: gyuru-reszbenrendezesenek-tulajdonsagai
+content:
+  - type: narrative
+    content: |
+      Kezdjük az ***1. tulajdonsággal***. Itt a kiindulási feltételünk az, hogy az $a\leq b$ egyenlőtlenség mindkét
+      oldalát egy "legalább" $0$ elemmel megszorozva a ***reláció iránya nem változik***. Azt kell belátni, hogy
+      ebben az esetben egy "legfeljebb" $0$ elemmel való szorzás viszont ***megfordítja a relációt***. A tételben
+      ezt a "legfeljebb" $0$ elemet $d$-vel jelöltük, azaz $d\leq 0$. Ebből viszont a
+      [gyuru-reszbenrendezesenek-tulajdonsagai] 1. pontja miatt következik, hogy $(-d)\geq 0$, azaz $d$ ellentettje
+      "legalább" $0$.
+  - type: narrative
+    content: |
+      A kiindulási feltételünk szerint viszont bármilyen "legalább" $0$ elemmel szorozva az $a\leq b$ relációt,
+      annak iránya nem változik.
+  - type: formula
+    lead-in: |
+      Ez tehát igaz lesz $(-d)$-re is, és így:
+    content: |
+      a(-d)\leq b(-d)
+  - type: formula
+    lead-in: |
+      Ebből viszont a [gyuru-reszbenrendezesenek-tulajdonsagai] 2. pontja miatt megkapjuk az 1. tulajdonságot:
+    content: |
+      ad\geq bd
+  - type: narrative
+    content: |
+      A ***2. tulajdonság*** bizonyítása ehhez nagyon hasonló. Itt a kiindulási feltételünk az, hogy az $a\leq b$
+      egyenlőtlenség mindkét oldalát egy "legalább" $0$ elemmel megszorozva a ***reláció iránya megfordul***. Azt
+      kell belátni, hogy ebben az esetben egy "legfeljebb" $0$ elemmel való szorzás viszont ***nem változtatja meg
+      a reláció irányát***. A tételben ezt a "legfeljebb" $0$ elemet $d$-vel jelöltük, azaz $d\leq 0$. Ebből
+      viszont a [gyuru-reszbenrendezesenek-tulajdonsagai] 1. pontja miatt megintcsak következik, hogy $(-d)\geq 0$,
+      azaz $d$ ellentettje "legalább" $0$.
+  - type: narrative
+    content: |
+      A kiindulási feltételünk szerint viszont bármilyen "legalább" $0$ elemmel szorozva az $a\leq b$ relációt,
+      annak iránya megfordul.
+  - type: formula
+    lead-in: |
+      Ez tehát igaz lesz $(-d)$-re is, és így:
+    content: |
+      a(-d)\geq b(-d)
+  - type: formula
+    lead-in: |
+      Ebből viszont a [gyuru-reszbenrendezesenek-tulajdonsagai] 2. pontja miatt megkapjuk a 2. tulajdonságot:
+    content: |
+      ad\leq bd

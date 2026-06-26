@@ -1,0 +1,39 @@
+type: theorem
+name: faktorcsoport
+proofs:
+  - faktorcsoport-bizonyitas
+remarks: []
+references:
+  mellekosztalyok:
+    target:
+      type: theorem
+      name: mellekosztalyok
+content:
+  - type: narrative
+    content: |
+      Legyen $G$ egy tetszőleges csoport, és tegyük fel, hogy $N$ normálosztó $G$-ben. Jelöljük $G/N$-nel azt a
+      halmazt, amelynek elemei a [mellekosztalyok]ben definiált $N$ szerinti ***baloldali mellékosztályok***.
+  - type: narrative
+    content: |
+      ***Vezessük be ezek között az alábbi műveletet:*** Ha $A=aN$ és $B=bN$ két baloldali mellékosztály, akkor
+      ezek ***szorzata*** legyen az $A\odot B=(a\cdot b)N$ baloldali mellékosztály.
+  - type: narrative
+    content: |
+      Ekkor a $G/N$ halmaz ezzel a művelettel csoportot alkot, amelyet a $G$ csoport ***$N$ normálosztó szerinti
+      faktorcsoportjának*** nevezünk.
+  - type: narrative
+    content: |
+      Ha $e_G$ jelöli a $G$ csoport egységelemét, akkor a $G/N$ faktorcsoport ***egységeleme*** az $e_GN$ baloldali
+      mellékosztály.
+  - type: narrative
+    content: |
+      Ha $a^{-1}$ jelöli a $G$ csoport egy $a$ elemének inverzét, akkor a $G/N$ faktorcsoport $aN$ elemének
+      ***inverze*** az $(a^{-1})N$ baloldali mellékosztály.
+  - type: narrative
+    content: |
+      Ha $G$ ***kommutatív csoport (vagy más néven Abel-csoport)***, akkor $G/N$ is az.
+  - type: narrative
+    content: |
+      Tekintsük továbbá azt az $f:G\to G/N$ függvényt, amely minden $G$-beli $a$ elemhez az $aN$ baloldali
+      mellékosztályt rendeli hozzá a $G/N$ faktorcsoportból. Ekkor $f$ egy ***csoporthomomorfizmus*** $G$ és $G/N$
+      között, melynek magja $N$. Ennek a neve ***természetes csoporthomomorfizmus***.

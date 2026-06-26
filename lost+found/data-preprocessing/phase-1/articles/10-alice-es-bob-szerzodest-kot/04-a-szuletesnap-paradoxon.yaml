@@ -1,0 +1,56 @@
+type: section
+name: 04-a-szuletesnap-paradoxon
+title: A születésnap paradoxon
+
+body:
+  - type: narrative
+    content: |
+      A ***születésnap paradoxon*** egy érdekes furcsaság, amely matematikai értelemben nem, csak a szó hétköznapi
+      értelmében nevezhető paradoxonnak. Azért hívják mégis így, mivel némileg ellentmond a "józan észnek".
+  - type: narrative
+    content: |
+      Tegyük fel, hogy egy szobában véletlenül választott emberek egy csoportja tartózkodik. Ezen kívül feltesszük,
+      hogy ha valakinek nem ismerjük a születésnapját, akkor az a 365 napos év minden napján azonos valószínűséggel
+      születhetett. A kérdés az, hogy mennyi a valószínűsége, hogy legalább két személynek megegyezik a
+      születésnapja. A meglepő válasz az, hogy ennek esélye több mint 50%, ha a csoport létszáma legalább 23. Sőt,
+      legalább 58 személy esetén ez a valószínűség már 99% felett van. A legtöbb ember valószínűleg sokkal kisebb
+      esélyt mondana erre, ha tippelnie kéne, ezért nevezzük paradoxonnak.
+  - type: narrative
+    content: |
+      A jelenség megértéséhez kulcsfontosságú az az észrevétel, hogy noha viszonylag kevés ember van a szobában,
+      már így is nagyon sok párt alkotnak, melyeknél egyenként kell vizsgálni a születésnap egyezést. Nem az a
+      kérdés tehát, hogy a szobában tartózkodó emberek közül legalább az egyiknek a születésnapja egybeesik-e
+      ***egy konkrét emberével*** &ndash; például a miénkével. A születésnap paradoxon esetén ehelyett azt
+      vizsgáljuk, hogy ***bármely két embernek*** egyezik-e a születésnapja. A szóbanforgó valószínűség
+      kiszámításának pontos módja most nem érdekes. Az azonban igen, hogy mit jelent ez a jelenség a kriptográfiai
+      hash függvények esetén.
+  - type: narrative
+    content: |
+      Tegyük fel, hogy egy hash függvény $N$ bit hosszú lenyomatokat állít elő tetszőleges hosszúságú üzenetekből.
+      Az összes létező lenyomatok száma tehát $2^N$. Tegyük fel továbbá, hogy bármilyen üzenetre is alkalmazzuk a
+      hash függvényt, teljesen véletlenszerű, hogy végül melyik lesz az üzenet lenyomata ebből a $2^N$
+      lehetőségből. Ez a feltételezés lényegében azt mondja ki, hogy a hash függvényünkre erőteljesen ***érvényesül
+      a*** fentebb már említett ***lavinahatás***.
+  - type: narrative
+    content: |
+      A születésnap paradoxon terminológiájában az üzenetek a szobában tartózkodó embereknek, a véges számú
+      lehetséges lenyomatok pedig a különböző születésnapoknak felelnek meg. A kérdés tehát az, hogy egy támadónak
+      hány üzenetpárt kell megvizsgálnia ahhoz, hogy elegendően nagy valószínűséggel találjon két olyan üzenetet,
+      amelynek ugyanaz a hash értéke. A születésnap paradoxon-hoz hasonló gondolatmenet miatt előfordulhat, hogy
+      egy megfelelő számítási kapacitással rendelkező támadó számára egy ilyen üzenetpár megtalálása belátható időn
+      belül kivitelezhető, amennyiben a használt hash értékek nem elegendően hosszúak. A fentebb már említett MD5
+      hash függvény 128 bit hosszúságú lenyomatokat képez, amely már több, mint 10 éve &ndash; a mai számítási
+      kapacitásokról már nem is beszélve &ndash; egyáltalán nem nevezhető biztonságosnak.
+  - type: narrative
+    content: |
+      Például 2004 márciusában indult az MD5CRK nevű projekt, amelynek célja az MD5 gyengeségeinek demonstrálása
+      volt. Végül 2004 augusztusának második felében mutatták be a módszert, amellyel egy óra alatt sikerült
+      ütközést találni. Az ehhez használt hardver konfiguráció 32 darab 1.90 GHz-es processzorral és 1 TB
+      memóriával volt felszerelve. Ez akkoriban erősnek számított ugyan, de annyira azért nem volt a valóságtól
+      elrugaszkodott számítási kapacitás. 2006-ban egy olyan módszert publikáltak, amely már mindössze néhány perc
+      alatt képes volt MD5 ütközést előállítani egy akkori átlagos laptopon (1.6 GHz Intel Pentium).
+  - type: narrative
+    content: |
+      Vegyük észre, hogy egy születésnap paradoxonra épülő támadás nem egy adott hash értékhez keres egy üzenetet.
+      Az ugyanis még MD5 esetén is kivitelezhetetlen volna. Ehelyett a támadó olyan üzenet-párokat keres,
+      amelyeknek ugyanaz a hash értéke. Most nézzük meg, hogyan tud ebből anyagi előnyt kovácsolni?

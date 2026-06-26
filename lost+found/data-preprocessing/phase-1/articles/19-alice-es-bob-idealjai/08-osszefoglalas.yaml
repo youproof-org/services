@@ -1,0 +1,57 @@
+type: section
+name: 08-osszefoglalas
+title: Összefoglalás
+
+references:
+  abszolutertek-euklideszi-norma:
+    target:
+      type: theorem
+      name: abszolutertek-euklideszi-norma
+  szamelmelet-alaptetele-nem-egysegelemes-integritastartomanyokban:
+    target:
+      type: theorem
+      name: szamelmelet-alaptetele-nem-egysegelemes-integritastartomanyokban
+
+body:
+  - type: narrative
+    content: |
+      Most tehát már van egy átfogó képünk a különböző típusú gyűrűkről.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán az eddig megismert összes gyűrűosztály, és ezek egymáshoz való viszonya látható:
+    src: 11-az-eddig-megismert-gyuruosztalyok-terkepe.jpg
+    alt: Az eddig megismert gyűrűosztályok térképe
+    caption: Az eddig megismert gyűrűosztályok térképe
+  - type: narrative
+    content: |
+      Az összes gyűrű között 3 nagy gyűrűosztályt határolhatunk el.
+  - type: ordered-list
+    lead-in: |
+      Ezek az alábbiak:
+    items:
+      - '***Kommutatív gyűrűk:*** ezekben az összeadáshoz hasonlóan a szorzás is kommutatív, azaz a tényezők sorrendje felcserélhető.'
+      - '***Egységelemes gyűrűk:*** ezekben az összeadáshoz hasonlóan a szorzásra nézve is létezik neutrális elem.'
+      - '***Nullosztómentes gyűrűk:*** ezekben két elem szorzata garantáltan csak akkor lehet a nullelem, ha legalább az egyik tényező szintén a nullelem.'
+  - type: narrative
+    content: |
+      Azokat a gyűrűket neveztük ***integritástartományoknak***, amelyek egyszerre kommutatívak és
+      nullosztómentesek. Ez a fenti ábrán a zsúfoltság elkerülése érdekében nincs külön megjelenítve. Külön
+      osztályt alkotnak azok az integritástartományok, amelyekben teljesül a számelmélet alaptétele. Ezeket az
+      ábrán ***alaptételes gyűrűknek*** neveztük el. Minthogy a
+      [szamelmelet-alaptetele-nem-egysegelemes-integritastartomanyokban] alapján az ilyen gyűrűkben biztosan
+      létezik egységelem, ezért ezek a fenti 3 nagy gyűrűosztály metszetében helyezkednek el.
+  - type: narrative
+    content: |
+      Az alaptételes gyűrűk alosztályát alkotják az ebben a részben megismert ***főideálgyűrűk***. Ezekben az
+      integritástartományokban bármely két elemnek garantáltan létezik kitüntetett közös osztója, és ez igen fontos
+      lesz számunkra a további részekben. Fontos megjegyezni, hogy léteznek olyan alaptételes gyűrűk, amelyek nem
+      főideálgyűrűk. Ám ilyen példákra a szükséges algebrai ismeretek hiányában egyelőre szintén nem tudunk
+      kitérni.
+  - type: narrative
+    content: |
+      Végül a 17. részben volt szó az ***euklidészi gyűrűkről***, amelyekben nemcsak a kitüntetett közös osztó
+      létezése garantált, hanem a ***maradékos osztás*** elvégezhetősége révén egy gyors algoritmust is kaptunk a
+      kezünkbe ennek kiszámítására. Ezt az eljárást ***euklidészi algoritmusnak*** neveztük el, amely szintén egy
+      fontos összetevője a hamarosan terítékre kerülő kriptográfiai eljárásoknak. A
+      [abszolutertek-euklideszi-norma]ben igazoltuk, hogy az egész számok $\Z$ gyűrűje is ehhez a gyűrűosztályhoz
+      tartozik.

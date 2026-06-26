@@ -1,0 +1,33 @@
+@use 'variables' as *;
+
+.details {
+  margin: 1.5rem 0;
+  border-left: 3px solid $gray-300;
+  padding-left: 1rem;
+}
+
+.summary {
+  cursor: pointer;
+  color: $gray-600;
+  font-weight: 500;
+  font-size: 0.9em;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+
+  &::before {
+    content: '▶';
+    font-size: 0.65em;
+    transition: transform 120ms ease;
+  }
+}
+
+details[open] > .summary::before {
+  transform: rotate(90deg);
+}
+
+.content {
+  margin-top: 0.75rem;
+  font-size: 0.85em;
+}

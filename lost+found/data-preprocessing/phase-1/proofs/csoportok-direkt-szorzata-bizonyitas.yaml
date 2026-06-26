@@ -1,0 +1,47 @@
+type: proof
+name: csoportok-direkt-szorzata-bizonyitas
+remarks: []
+references:
+  csoport:
+    target:
+      type: definition
+      name: csoport
+content:
+  - type: narrative
+    content: |
+      A [csoport]ban felsorolt csoportaxiómákat kell ellenőrizni:
+  - type: formula
+    lead-in: |
+      A $\odot$ művelet ***asszociativitása*** könnyedén adódik a $G_1$, $G_2$, ..., $G_n$ csoportokon értelmezett
+      műveletek ugyanezen tulajdonságából:
+    content: |
+      \begin{aligned}((&a_1;\ldots;a_n)\odot(b_1;\ldots;b_n))\odot(c_1;\ldots;c_n) =\\&= (a_1\cdot
+      b_1;\ldots;a_n\cdot b_n)\odot(c_1;\ldots;c_n) =\\&=((a_1\cdot b_1)\cdot c_1;\ldots;(a_n\cdot b_n)\cdot c_n)
+      =\\&= (a_1\cdot (b_1\cdot c_1);\ldots;a_n\cdot (b_n\cdot c_n)) =\\&=(a_1;\ldots;a_n)\odot(b_1\cdot
+      c_1;\ldots;b_n\cdot c_n)=\\&=(a_1;\ldots;a_n)\odot((b_1;\ldots;b_n)\odot(c_1;\ldots;c_n))\end{aligned}
+  - type: narrative
+    content: |
+      Most igazoljuk az ***egységelemre*** vonatkozó állítást. Legyen $(g_1;\ldots;g_n)$ a $G_1\times \ldots \times
+      G_n$ halmaz egy tetszőleges eleme. Ezt az $(e_{G_1};\ldots;e_{G_n})$ elemmel összeszorozva bármely oldalról
+      az eredmény valóban nem változik, hiszen minden komponensben a megfelelő csoport egységelemével való szorzás
+      fog szerepelni.
+  - type: formula
+    lead-in: |
+      Az alábbiakban a jobbról való szorzás esetét igazoltuk, a másik irányú szorzás esete ehhez nagyon hasonló:
+    content: |
+      \begin{aligned}(&g_1;\ldots;g_n)\odot(e_{G_1};\ldots;e_{G_n})=\\&=(g_1\cdot e_{G_1};\ldots;g_n\cdot
+      e_{G_n})=\\&=(g_1;\ldots;g_n)\end{aligned}
+  - type: narrative
+    content: |
+      Ehhez hasonlóan igazoljuk az ***inverzképzésre*** vonatkozó állítást is.
+  - type: formula
+    lead-in: |
+      A $(g_1;\ldots;g_n)$ elemet a $(g_1^{-1};\ldots;g_n^{-1})$ elemmel jobbról szorozva az eredmény valóban az
+      $(e_{G_1};\ldots;e_{G_n})$ elem lesz, hiszen minden komponensben az adott komponens és annak a megfelelő
+      csoportban vett inverzével való jobbról szorzás fog szerepelni:
+    content: |
+      \begin{aligned}(&g_1;\ldots;g_n)\odot(g_1^{-1};\ldots;g_n^{-1})=\\&=(g_1\cdot g_1^{-1};\ldots;g_n\cdot
+      g_n^{-1})=\\&=(e_{G_1};\ldots;e_{G_n})\end{aligned}
+  - type: narrative
+    content: |
+      A $(g_1^{-1};\ldots;g_n^{-1})$ elemmel való balról szorzás esete ehhez nagyon hasonlóan igazolható.

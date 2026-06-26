@@ -1,0 +1,84 @@
+type: section
+name: 03-a-kinai-maradektetel
+title: A kínai maradéktétel
+
+body:
+  - type: narrative
+    content: |
+      Azt a kérdést szeretnénk tehát megválaszolni, hogy melyek azok az egész számok, amelyek adott modulusokkal
+      osztva adott maradékokat adnak. Itt most csak azzal a számunkra fontos esettel foglalkozunk, amikor ezek a
+      modulusok ***páronként relatív prímek*** egymáshoz &ndash; azaz bármely két modulus egymáshoz relatív prím.
+      Ilyen például az előző szakaszban felmerülő két példa, hiszen az $5$ és $8$ modulusok egymáshoz relatív
+      prímek.
+  - type: narrative
+    content: |
+      Az írásos emlékek alapján az alábbi tételt már mintegy ***2000 évvel ezelőtt*** is ismerte egy bizonyos Szun
+      Cu nevű kínai matematikus, ezért ezt kínai maradéktétel néven szoktuk emlegetni.
+  - type: embed
+    target:
+      type: theorem
+      name: kinai-maradektetel
+  - type: embed
+    target:
+      type: proof
+      name: kinai-maradektetel-bizonyitas
+  - type: narrative
+    content: |
+      Az előző szakaszban közölt példánál maradva keressük tehát két kongruenciarendszer megoldásait.
+  - type: formula
+    lead-in: |
+      Ezek az alábbiak:
+    content: |
+      \begin{array}{c} \boxed{\begin{aligned}x&\equiv 4\pmod 5 \\ x&\equiv 6\pmod 8\end{aligned}} \\ \\
+      \boxed{\begin{aligned}x&\equiv 4\pmod 5 \\ x&\equiv 2\pmod 8\end{aligned}} \end{array}
+  - type: narrative
+    content: |
+      ***Az első kongruenciarendszer*** megoldáshalmaza a $[4]_5$ és a $[6]_8$ maradékosztályok közös része, azaz
+      metszete lesz. Mivel az $5$ és a $8$ modulusok egymáshoz relatív prímek, ezért alkalmazhatjuk a ***kínai
+      maradéktételt***. Eszerint a keresett halmaz épp egy modulo $5\cdot 8=40$ maradékosztály lesz.
+  - type: formula
+    lead-in: |
+      Ellenőrizzük is le, azaz írjuk fel egymás alá a $[4]_5$ és a $[6]_8$ maradékosztályokat, és keretezzük be a
+      közös elemeiket:
+    content: |
+      \begin{aligned}[4]_5&=\{\ldots; 4;9;\boxed{14};19;24;29;34;39;44;49;\boxed{54};59;\ldots\} \\
+      [6]_8&=\{\ldots; 6;\boxed{14};22;30;38;46;\boxed{54};62;\ldots\} \end{aligned}
+  - type: narrative
+    content: |
+      Látható, hogy a felső sorban az elemek &ndash; modulo $5$ maradékosztályról lévén szó &ndash; $5$-ösével
+      követik egymást, és minden $8$-adik elem lett bekeretezve. Ezzel szemben az alsó sorban az elemek &ndash;
+      modulo $8$ maradékosztályról lévén szó &ndash; $8$-asával követik egymást, és minden $5$-ödik elem lett
+      bekeretezve.
+  - type: formula
+    lead-in: |
+      Ha tehát kigyűjtjük a bekeretezett elemeket egy halmazba, akkor azok épp $40$-esével fogják egymást követni,
+      tehát ők valóban egy modulo $40$ maradékosztályt alakotnak, méghozzá a következőt:
+    content: |
+      [14]_{40}=\{\ldots; 14;54;94;134;174;214;\ldots\}
+  - type: narrative
+    content: |
+      Ezek &ndash; és a ***kínai maradéktétel*** alapján csak ezek &ndash; az egész számok elégítik ki tehát az
+      ***első kongruenciarendszert***.
+  - type: narrative
+    content: |
+      ***A második kongruenciarendszer*** esetén a $[4]_5$ és a $[2]_8$ maradékosztályok metszetét keressük.
+  - type: formula
+    lead-in: |
+      Ezt az előzőhöz hasonló módszerrel kaphatjuk meg:
+    content: |
+      \begin{aligned}[4]_5&=\{\ldots; 4;9;14;19;24;29;\boxed{34};39;44;49;54;59;64;69;\boxed{74};\ldots\} \\
+      [2]_8&=\{\ldots; 2;10;18;26;\boxed{34};42;50;58;66;\boxed{74};\ldots\} \end{aligned}
+  - type: formula
+    lead-in: |
+      Ha ismét kigyűjtjük a bekeretezett elemeket egy halmazba, akkor azok szintén $40$-esével fogják egymást
+      követni, tehát ők ugyancsak egy modulo $40$ maradékosztályt alakotnak, méghozzá a következőt:
+    content: |
+      [34]_{40}=\{\ldots; 34;74;114;154;194;234;\ldots\}
+  - type: formula
+    lead-in: |
+      Az alábbiakban összefoglaltuk a két kongruenciarendszer megoldását, amely tehát egy-egy modulo $40$
+      maradékosztály:
+    content: |
+      \begin{array}{ccc} \boxed{\begin{aligned}x&\equiv 4\pmod 5 \\ x&\equiv 6\pmod 8\end{aligned}} & \to &
+      [14]_{40} \\ \\ \boxed{\begin{aligned}x&\equiv 4\pmod 5 \\ x&\equiv 2\pmod 8\end{aligned}} & \to & [34]_{40}
+      \end{array}

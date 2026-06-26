@@ -1,0 +1,47 @@
+<!-- wp:paragraph -->
+<p>Legyen [latex]n[/latex] egy tetszőleges <strong><em>[latex]1[/latex]-nél nagyobb páratlan szám</em></strong>, amelynek [latex]r[/latex] darab különböző prímtényezője van, azaz prímtényezős felbontása az alábbi alakban írható fel valamilyen páronként egymástól különböző <strong><em>pozitív, páratlan [latex]p_1[/latex], [latex]p_2[/latex], ..., [latex]p_r[/latex] prímszámokkal</em></strong> és valamilyen <strong><em>pozitív [latex]c_1[/latex], [latex]c_2[/latex], ..., [latex]c_r[/latex] kitevőkkel</em></strong>:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]n=p_1^{c_1}\cdot p_2^{c_2}\cdot \ldots \cdot p_r^{c_r}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Képezzük azt az [latex]e\geq 1[/latex] kitevőt és [latex]k\geq 1[/latex] páratlan számot, amelyekre teljesül az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]n-1=2^ek[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten" type="link" /] szövegével megegyező módon legyen [latex]j_{\text{max}}[/latex] a <strong><em>legnagyobb</em></strong> olyan [latex]j[/latex] kitevő a [latex]\{0;1;2;\ldots;e-1\}[/latex] egész számok között, amelyhez léteznek olyan [latex]x[/latex] egész számok, hogy teljesül az [latex]x^{2^j}\equiv -1\pmod n[/latex] kongruencia. <strong><em>Megjegyzés:</em></strong> Az említett [yp_element slug="nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten" type="link" /] alapján legalább egy ilyen [latex]j[/latex] kitevő biztosan létezik, tehát [latex]j_{\text{max}}[/latex] is létezik.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ugyancsak a [yp_element slug="nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten" type="link" /] szövegével megegyezően jelöljük [latex]H_n[/latex]-nel azon [latex][a]_n[/latex] maradékosztályok halmazát, amelyek esetén az [latex]a^{2^{j_{\text{max}}}k}[/latex] hatvány [latex]1[/latex]-gyel <strong><em>vagy</em></strong> [latex]-1[/latex]-gyel kongruens modulo [latex]n[/latex], azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{2^{j_{\text{max}}}k} \equiv \pm 1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Végül jelöljük [latex]D_n[/latex]-nel azon [latex][a]_n[/latex] maradékosztályok halmazát, amelyek esetén az alábbi kongruenciák <strong><em>mindegyike</em></strong> teljesül:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a^{2^{j_{\text{max}}}k} &amp;\equiv \pm 1\pmod{p_1^{c_1}} \\ a^{2^{j_{\text{max}}}k} &amp;\equiv \pm 1\pmod{p_2^{c_2}} \\ &amp;\vdots \\ a^{2^{j_{\text{max}}}k} &amp;\equiv \pm 1\pmod{p_r^{c_r}}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ekkor teljesülnek az alábbiak:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} -->
+<ol><li>[latex]H_n\leq D_n\leq (\Z/n\Z)^{\times}[/latex]</li><li>[latex]|D_n:H_n|=2^{r-1}[/latex]</li></ol>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Szavakkal ez így fogalmazható meg:</em></strong> [latex]H_n[/latex] <strong><em>részcsoport</em></strong> [latex]D_n[/latex]-ben, amely viszont <strong><em>részcsoport</em></strong> [latex](\Z/n\Z)^{\times}[/latex]-ben, és a [latex]H_n[/latex] részcsoport [latex]D_n[/latex]-beli indexe [latex]2^{r-1}[/latex]-gyel egyezik meg, ahol [latex]r[/latex] az [latex]n[/latex] egymástól különböző prímtényezőinek számát jelöli.</p>
+<!-- /wp:paragraph -->

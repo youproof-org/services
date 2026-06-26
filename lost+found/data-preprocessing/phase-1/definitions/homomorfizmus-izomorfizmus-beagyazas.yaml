@@ -1,0 +1,33 @@
+type: definition
+name: homomorfizmus-izomorfizmus-beagyazas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy $A$ és $B$ két valamilyen &ndash; műveletekkel és/vagy relációkkal ellátott &ndash; algebrai
+      struktúra alaphalmaza. Egy közöttük lévő $f:A\to B$ struktúratartó leképezést (függvényt)
+      ***homomorfizmusnak*** nevezünk.
+  - type: narrative
+    content: |
+      Amennyiben $B$ minden eleme ***legalább egy*** $A$-beli elemhez hozzá van rendelve, akkor $f$-et
+      ***szürjektív homomorfizmusnak*** vagy ***ráképzésnek*** nevezzük.
+  - type: figure
+    src: szurjektiv_homomorfizmus.jpg
+    alt: Szürjektív homomorfizmus (ráképzés)
+    caption: Szürjektív homomorfizmus (ráképzés)
+  - type: narrative
+    content: |
+      Amennyiben $B$ minden eleme ***legfeljebb egy*** $A$-beli elemhez van hozzárendelve, akkor $f$-et ***injektív
+      homomorfizmusnak*** vagy ***beágyazásnak*** nevezzük.
+  - type: figure
+    src: injektiv_homomorfizmus.jpg
+    alt: Injektív homomorfizmus (beágyazás)
+    caption: Injektív homomorfizmus (beágyazás)
+  - type: narrative
+    content: |
+      Amennyiben $B$ minden eleme ***pontosan egy*** $A$-beli elemhez van hozzárendelve, akkor $f$-et ***bijektív
+      homomorfizmusnak*** vagy ***izomorfizmusnak*** nevezzük.
+  - type: figure
+    src: izomorfizmus.jpg
+    alt: Bijektív homomorfizmus (izomorfizmus)
+    caption: Bijektív homomorfizmus (izomorfizmus)

@@ -1,0 +1,22 @@
+type: theorem
+name: kis-fermat-tetel
+proofs:
+  - kis-fermat-tetel-bizonyitas
+remarks:
+  - kis-fermat-tetel-megjegyzes
+content:
+  - type: narrative
+    content: |
+      Legyen $p\gt 0$ egy tetszőleges ***pozitív*** prím, továbbá $a$ egy tetszőleges egész szám, amely ***relatív
+      prím*** $p$-hez.
+  - type: formula
+    lead-in: |
+      Ekkor teljesül az alábbi kongruencia:
+    content: |
+      a^{p-1}\equiv 1\pmod p
+  - type: formula
+    lead-in: |
+      Az alábbi kongruencia tetszőleges $a$ egész számra &ndash; tehát nem csak a $p$-hez relatív prímekre &ndash;
+      teljesül:
+    content: |
+      a^p\equiv a\pmod p

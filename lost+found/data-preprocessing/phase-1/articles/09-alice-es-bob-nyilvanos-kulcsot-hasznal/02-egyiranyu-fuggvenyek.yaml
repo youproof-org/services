@@ -1,0 +1,63 @@
+type: section
+name: 02-egyiranyu-fuggvenyek
+title: Egyirányú függvények
+
+body:
+  - type: narrative
+    content: |
+      Most térjünk vissza az $f(n)=2^n$ függvényhez, és ennek kapcsán vizsgáljuk meg, hogy mit jelent az
+      ***egyirányú függvény*** fogalma. A pontos matematikai definíció helyett egy gyakorlati példán keresztül
+      mutatjuk meg a fogalom lényegét. Tekintsük az $f(n)=2^n$ függvénynek azt a megszorítását, amely csak az 1, 2,
+      …, 10 számokra van értelmezve. Ezekre az értékekre algoritmikusan könnyű meghatározni a függvény értékét,
+      hiszen csak hatványozni kell. Az értékek rendre a 2, 4, 8, 16, 32, 64, 128, 256, 512 és 1024 számok lesznek.
+  - type: narrative
+    content: |
+      Tegyük fel, hogy ennek a függvénynek a megfordítása a feladat, azaz olyan algoritmust kell készítenünk, amely
+      bemenetként kap egy számot ebből az értékkészletből (legyen ez mondjuk 512), és azt kell kiszámítani, hogy ez
+      melyik $n$ értéknek a képe az $f$ függvény szerint. Keressük tehát azt az $n$ kitevőt, amelyre 2-t emelve épp
+      512-t kapunk. A szemfülesebb olvasók egyből észreveszik, hogy itt az 512-nek a 2-es alapú
+      ***logaritmusának*** a kiszámításáról van szó, de tegyük most félre ezt a fogalmat és szorítkozzunk a "józan
+      paraszti eszünkre".
+  - type: narrative
+    content: |
+      Jobban megvizsgálva észrevehetjük, hogy a függvényünk ad bizonyos támpontokat. Nevezetesen $n$ értékét
+      növelve (illetve csökkentve) az $f(n)$ mennyiség is határozottan növekszik (illetve csökken). Ezt a
+      tulajdonságot okosan kihasználva igen hatékonyan megtalálhatjuk az 512-höz tartozó $n$ értékét megfelelő
+      szisztéma szerinti próbálgatással.
+  - type: narrative
+    content: |
+      Végezzünk például egy próbát az értelmezési tartomány közepe táján lévő $n=5$-re. Ebben az esetben $f(5) =
+      2^5 = 32$. Ez ugyan 512-nél kisebb, viszont a függvényünk fenti tulajdonsága miatt egyből következik, hogy a
+      keresett $n$ csak nagyobb lehet 5-nél. Azaz a lehetőségek felét kizárhatjuk, és a továbbiakban elegendő $n$
+      értékét a 6, 7, 8, 9, 10 halmazban keresnünk. Most végezzünk egy újabb próbát ennek a szűkített halmaznak a
+      közepén lévő $n=8$-ra. Ebben az esetben $f(8) = 2^8 = 256$. Ez még mindig kisebb, mint 512, azaz a keresett
+      $n$ biztos, hogy csak a 9 és 10 számok valamelyike lehet, vagyis újra kizárhattuk a lehetőségek felét. Végül
+      egy utolsó próbával megkapjuk, hogy $f(9) = 2^9 = 512$, azaz a keresett $n$ értéke 9.
+  - type: narrative
+    content: |
+      Általánosságban ***bináris keresésnek*** hívjuk az olyan módszereket, amikor egy véges halmazban kell
+      keresnünk a megoldást, és minden lépésben ki tudjuk zárni a lehetőségek felét. Ez egy rendkívül hatékony
+      algoritmikus módszer, mivel a szükséges lépések száma a halmaz méretének 2-es alapú logaritmusával arányos.
+      Ha például a megoldást egy ezermilliárdszor milliárdszor milliárd nagyságú halmazban kell is keresnünk, a
+      szükséges lépések száma akkor is nagyságrendileg mindössze 100 körül van. Többek között ezért tudunk
+      megtalálni hamar egy keresett szót egy szótárban. Habár nem tudatosul bennünk, de ilyenkor is lényegében egy
+      bináris keresést hajtunk végre a szavak halmazán, csak ebben az esetben a rendezést az ábécé-sorrend
+      határozza meg.
+  - type: narrative
+    content: |
+      Az olyan függvényeket, amelyek esetén az alaphalmaz elemeinek képe algoritmikusan könnyen kiszámítható, de a
+      képhalmaz tetszőleges eleméhez algoritmikusan nehéz olyan alaphalmazbeli elemet találni, amelynek épp ő a
+      képe, ***egyirányú függvényeknek*** nevezzük.
+  - type: narrative
+    content: |
+      Az egyirányú függvényeket egy adott irányban nyíló csapóajtóhoz hasonlíthatjuk. Az egyik irányban (az
+      alaphalmazból a képhalmaz irányába) könnyű áthaladni rajta, azonban ha egyszer bezárult mögöttünk az ajtó,
+      akkor nehezen juthatunk vissza rajta a másik irányba (a képhalmazból az alaphalmazba).
+  - type: narrative
+    content: |
+      A fenti példában szereplő $f$ függvény nyilván nem egyirányú függvény, hiszen a megfordítása egy
+      algoritmikusan könnyű bináris keresési feladathoz vezet, azonban egy aprónak tűnő módosítással ezt a
+      megfordítást reménytelenül nehézzé tehetjük egy potenciális támadó számára. Ehhez teszünk egy kis kitérőt az
+      úgynevezett ***moduláris aritmetika*** irányába, amelyet most az egyszerűség kedvéért csak
+      ***óraaritmetikának*** fogunk nevezni. Az elnevezés mindjárt világossá válik. A későbbi részekben részletesen
+      ki fogunk térni a moduláris aritmetikára, most azonban az elsődleges cél az alapgondolat megértése.

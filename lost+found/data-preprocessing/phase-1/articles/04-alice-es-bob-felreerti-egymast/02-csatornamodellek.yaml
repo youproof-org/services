@@ -1,0 +1,80 @@
+type: section
+name: 02-csatornamodellek
+title: Csatornamodellek
+
+body:
+  - type: narrative
+    content: |
+      A gyakorlatban előforduló csatornákat jól leírja az úgynevezett ***diszkrét memóriamentes csatorna***
+      modellje. Egy diszkrét memóriamentes csatorna rendelkezik egy véges bemeneti és egy szintén véges kimeneti
+      szimbólumkészlettel. Ezt a végességet jelenti a ***diszkrét*** elnevezés. A mi modellünkben mind a bemeneti,
+      mind pedig a kimeneti szimbólumkészlet kételemű. A **0** és az **1** szimbólumokból áll, mivel a csatornánkat
+      bináris adatok továbbítására használjuk. Esetenként a kimeneti szimbólumkészlethez hozzávehetjük még a **?**
+      szimbólumot is, amennyiben a fentihez hasonló törléses bithibákat is modellezni szeretnénk. A csatornáról
+      ebben a modellben feltételezzük továbbá a ***szinkron*** működést. Ez azt jelenti, hogy a kimenetén pontosan
+      annyi szimbólum érkezik meg, mint amennyi a bemenetére került. Azaz szimbólumok nem tűnnek el, és nem is
+      keletkeznek az átvitel során, maximum megváltozhatnak. Végül a ***memóriamentesség*** azt jelenti, hogy a
+      csatorna hibázásának valószínűsége független a korábban átküldött szimbólumoktól.
+  - type: narrative
+    content: |
+      Egy ilyen csatorna jól modellezhető egy úgynevezett ***irányított élsúlyozott gráffal***. Egy gráf bizonyos
+      dolgokat és az ezek közötti kapcsolatokat írja le. A dolgokat a gráf ***csúcs***ai, míg a közöttük lévő
+      kapcsolatokat az őket összekötő ***él***ek reprezentálják. Egy gráfot vizuálisan többféleképpen is
+      megjeleníthetünk. Nem a konkrét megjelenítés számít ugyanis, hanem az, hogy mely csúcsok vannak összekötve
+      éllel és melyek nincsenek.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán például ugyanannak a gráfnak két különböző vizuális megjelenítése látható:
+    src: 04-iranyitatlan-graf.jpg
+    alt: Gráf (példa)
+    caption: Gráf (példa)
+  - type: narrative
+    content: |
+      ***Irányított gráfokat*** akkor használunk, ha a leírni kívánt kapcsolatok nem szimmetrikusak. Ha például
+      valakinek szimpatikus valaki más, attól még nem biztos, hogy ez a szimpátia kölcsönös. Ezt az adott gráf
+      éleinek lerajzolásakor egyszerű vonalak helyett nyilakkal szemléltetjük.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán például egy 5 ember közötti szimpátiagráfot láthatunk:
+    src: 05-iranyitott-graf.jpg
+    alt: Irányított gráf (példa)
+    caption: Irányított gráf (példa)
+  - type: narrative
+    content: |
+      Végül ***élsúlyozott gráfokat*** akkor használunk, ha a kapcsolatokat valamilyen számértékekkel is szeretnénk
+      jellemezni. Ilyenkor ezeket a számokat az adott él fölé írjuk. Például egy várostérképet reprezentáló gráf
+      éleihez rendelt értékek jelenthetik az adott élnek megfelelő útszakasz pillanatnyi leterheltségét. Ez alapján
+      egy útvonaltervező szoftver például el tudja kerülni a dugókat.
+  - type: narrative
+    content: |
+      A diszkrét memóriamentes csatornák modelljét is felfoghatjuk egy olyan irányított élsúlyozott gráfnak,
+      amelynek csúcspontjai két csoportra oszthatók. Az egyik csoport csúcspontjai a bemeneti, a másik csoport
+      csúcspontjai pedig a kimeneti szimbólumoknak felelnek meg. A gráf élei a bemeneti szimbólumokat kötik össze
+      egy vagy több kimeneti szimbólummal. Egy-egy ilyen él azt jelzi, hogy az adott bemeneti szimbólum esetén
+      milyen kimeneti szimbólumok jelenhetnek meg a túloldalon. Végül az élekhez rendelt súlyok azt jelzik, hogy
+      mely "átmenet" milyen valószínűséggel következhet be az adott csatornán.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán egy ilyen csatornamodell látható:
+    src: 06-binaris-szimmetrikus-csatorna.jpg
+    alt: Bináris szimmetrikus csatorna (BSC)
+    caption: Bináris szimmetrikus csatorna (BSC)
+  - type: narrative
+    content: |
+      Ezt ***bináris szimmetrikus csatornának (BSC)*** nevezzük. A BSC esetén csak átállítódásos hibák fordulhatnak
+      elő, azaz valamilyen p valószínűséggel kapunk a bemenethez képest ellentétes bitet a kimeneten.
+  - type: figure
+    lead-in: |
+      Egy másik gyakori csatornamodellt láthatunk az alábbi ábrán:
+    src: 07-binaris-torleses-csatorna.jpg
+    alt: Bináris törléses csatorna
+    caption: Bináris törléses csatorna
+  - type: narrative
+    content: |
+      Ezt ***bináris törléses csatornának*** nevezzük, és ilyenkor a p valószínűségű átállítódásokon kívül a
+      kimeneten a **?** szimbólum is előfordulhat valamilyen q valószínűséggel. Ez azokat az eseteket modellezi,
+      amikor az adott bit a vételi oldalon felismerhetetlen lett, de a hiba ténye nem maradt rejtve.
+  - type: narrative
+    content: |
+      A továbbiakban az egyszerűség kedvéért a BSC modellt fogjuk használni, mivel ez viszonylag jól leírja a
+      gyakorlatban előforduló csatornákat.

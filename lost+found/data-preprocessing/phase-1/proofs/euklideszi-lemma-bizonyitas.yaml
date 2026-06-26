@@ -1,0 +1,60 @@
+type: proof
+name: euklideszi-lemma-bizonyitas
+remarks: []
+references:
+  gyuru-test:
+    target:
+      type: definition
+      name: gyuru-test
+  kituntetett-kozos-oszto-kiemelesi-tulajdonsaga:
+    target:
+      type: theorem
+      name: kituntetett-kozos-oszto-kiemelesi-tulajdonsaga
+  kituntetett-kozos-oszto-tulajdonsagai:
+    target:
+      type: theorem
+      name: kituntetett-kozos-oszto-tulajdonsagai
+  oszthatosag-tulajdonsagai:
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+  relativ-primek:
+    target:
+      type: definition
+      name: relativ-primek
+content:
+  - type: narrative
+    content: |
+      Az általánosság megsértése nélkül feltételezhetjük, hogy $R$ nem a [gyuru-test] szerinti ***nullgyűrű***. Ha
+      ugyanis az lenne, akkor az egyetlen elem a $0$ lenne, így nyilván teljesülne a tétel állítása bármiféle
+      feltétel nélkül is.
+  - type: narrative
+    content: |
+      Ha $R$ ***nem a nullgyűrű***, akkor legalább két eleme van, amelyek közül az egyik nyilván nem a nullelem.
+      Mivel azt mondtuk, hogy bármely két elemnek létezik kitüntetett közös osztója, így ennek a kettőnek is,
+      emiatt a [kituntetett-kozos-oszto-tulajdonsagai] 3. pontja alapján $R$ ***egységelemes***.
+  - type: narrative
+    content: |
+      A tétel szövegének megfelelően tegyük fel, hogy teljesül az $a|bc$ oszthatóság, valamint $a$ és $b$ relatív
+      prímek, azaz a [relativ-primek] utáni megjegyzés miatt $(a,b)\sim 1$.
+  - type: narrative
+    content: |
+      Mivel $R$ egységelemes, ezért a [oszthatosag-tulajdonsagai] 1. pontja miatt teljesül az $a|a$ oszthatóság, és
+      így ugyanezen tétel 7. pontja miatt az $a|ac$ oszthatóság, továbbá a tétel szövegéből tudjuk, hogy teljesül
+      $a|bc$ is. Az $a$ elem tehát közös osztója $ac$-nek és $bc$-nek, így osztója ezek kitüntetett közös
+      osztójának.
+  - type: formula
+    lead-in: |
+      Azaz:
+    content: |
+      a|(ac,bc)
+  - type: formula
+    lead-in: |
+      A [kituntetett-kozos-oszto-kiemelesi-tulajdonsaga] miatt azonban teljesül az $(ac,bc)\sim (a,b)c$
+      asszociáció, így:
+    content: |
+      a|(a,b)c
+  - type: narrative
+    content: |
+      Végül, mivel $(a,b)\sim 1$ &ndash; tehát $(a,b)$ egység &ndash;, ezért teljesül az $(a,b)c\sim c$ asszociáció
+      is, azaz valóban $a|c$, ahogy a tétel állítja.

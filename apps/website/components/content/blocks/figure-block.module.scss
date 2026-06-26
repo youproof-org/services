@@ -1,0 +1,56 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+.figure {
+  margin: 0.75rem 0 2rem;
+}
+
+.lead-in {
+  margin-bottom: 0.75rem;
+}
+
+.image-wrapper {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+.img {
+  max-width: 350px;
+  width: 90%;
+  height: auto;
+  border-style: none;
+
+  &.small {
+    max-width: 150px;
+  }
+
+  &.medium {
+    max-width: 250px;
+  }
+
+  @include tablet {
+    width: 80%;
+    max-width: 400px;
+
+    &.small {
+      max-width: 150px;
+    }
+
+    &.medium {
+      max-width: 300px;
+    }
+  }
+}
+
+.caption {
+  text-align: center;
+  font-size: 0.875rem;
+  font-weight: $font-light;
+  margin-top: 0.5rem;
+  color: $gray-500;
+
+  strong {
+    font-weight: $font-bold;
+  }
+}

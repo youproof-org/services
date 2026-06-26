@@ -1,0 +1,21 @@
+type: theorem
+name: egesz-szamok-teljes-rendezese-egyertelmu
+proofs:
+  - egesz-szamok-teljes-rendezese-egyertelmu-bizonyitas
+remarks: []
+references:
+  pozitiv-es-negativ-egesz-szamok:
+    target:
+      type: definition
+      name: pozitiv-es-negativ-egesz-szamok
+  rendezett-gyuru:
+    target:
+      type: definition
+      name: rendezett-gyuru
+content:
+  - type: narrative
+    content: |
+      Az egész számok $(\Z ,+,\cdot )$ gyűrűjének alaphalmazán ***pontosan egy*** olyan ***teljes rendezés***
+      létezik, amelyre teljesülnek a [rendezett-gyuru]ban megfogalmazott ***rendezési axiómák***. Ennek a
+      rendezésnek a pozitivitástartománya épp a [pozitiv-es-negativ-egesz-szamok] szerinti pozitív,
+      negativitástartománya pedig az ugyanezen definíció szerinti negatív egész számokból áll.

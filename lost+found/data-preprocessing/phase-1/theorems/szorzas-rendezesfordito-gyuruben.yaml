@@ -1,0 +1,24 @@
+type: theorem
+name: szorzas-rendezesfordito-gyuruben
+proofs:
+  - szorzas-rendezesfordito-gyuruben-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy $(R,+,\cdot )$ egy ***kommutatív*** gyűrű, amelynek $R$ alaphalmazán értelmezve van egy
+      részbenrendezési reláció. Jelöljük ezt a relációt a $\leq$ szimbólummal, és tegyük fel, hogy a $\leq$ reláció
+      kompatibilis a gyűrű $+$ műveletével. Tételezzük fel továbbá, hogy a gyűrű valamilyen $a$ és $b$ elemei
+      között fennál az $a\leq b$ egyenlőtlenség.
+  - type: ordered-list
+    lead-in: |
+      Ekkor teljesülnek az alábbiak:
+    items:
+      - 'Ha minden $c\geq 0$ esetén $ac\leq bc$, akkor minden $d\leq 0$ esetén $ad\geq bd$.'
+      - 'Ha minden $c\geq 0$ esetén $ac\geq bc$, akkor minden $d\leq 0$ esetén $ad\leq bd$.'
+  - type: narrative
+    content: |
+      Megjegyezzük, hogy a tétel elején azért korlátozódtunk kommutatív gyűrűkre, hogy ne kelljen a fordított
+      sorrendű szorzásokra is megfogalmazni (és aztán persze bizonyítani) ugyanezt a két tulajdonságot. Az Olvasóra
+      bízzuk annak átgondolását, hogy hogyan lehet ezt a tételt (és bizonyítását) kiterjeszteni a nemkommutatív
+      esetekre is.

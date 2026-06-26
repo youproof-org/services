@@ -1,0 +1,46 @@
+type: proof
+name: generalt-reszcsoport-es-normaloszto-bizonyitas
+remarks: []
+references:
+  halmazrendszer-legkisebb-es-legnagyobb-eleme-egyertelmu:
+    target:
+      type: theorem
+      name: halmazrendszer-legkisebb-es-legnagyobb-eleme-egyertelmu
+  halmazrendszer-minimuma-es-maximuma:
+    target:
+      type: definition
+      name: halmazrendszer-minimuma-es-maximuma
+  reszcsoportok-metszete-reszcsoport:
+    target:
+      type: theorem
+      name: reszcsoportok-metszete-reszcsoport
+content:
+  - type: narrative
+    content: |
+      A [halmazrendszer-legkisebb-es-legnagyobb-eleme-egyertelmu] alapján egy halmazrendszerben ***legfeljebb
+      egy*** legszűkebb elem létezhet. Így elegendő megmutatni, hogy ***létezik*** legszűkebb elem, az ugyanis
+      garantáltan az egyetlen legszűkebb elem lesz.
+  - type: narrative
+    content: |
+      Mivel $X$ a $G$ csoport ***tetszőleges*** részhalmaza lehet, ezért előszöris kérdés, hogy ***létezik-e
+      egyáltalán olyan részcsoport***, amely tartalmazza $X$-et? Erre természetesen igen a válasz, hiszen
+      "legrosszabb esetben" maga a teljes $G$ egy ilyen részcsoport. Az $\mathcal{X}$ halmazrendszer tehát biztosan
+      ***nem üres***.
+  - type: narrative
+    content: |
+      Most képezzük az $\mathcal{X}$ halmazrendszer összes elemének metszetét, és jelöljük ezt a halmazt $H$-val.
+      Minthogy $\mathcal{X}$ elemei részcsoportok $G$-ben, így a [reszcsoportok-metszete-reszcsoport] alapján $H$
+      is részcsoport $G$-ben. Továbbá az $X$-ről azt mondtuk, hogy ő részhalmaza minden $\mathcal{X}$-beli
+      részcsoportnak, emiatt részhalmaza ezek metszetének, azaz $H$-nak is.
+  - type: narrative
+    content: |
+      Ez viszont azt jelenti, hogy $H$ maga is az $\mathcal{X}$ halmazrendszer eleme, hiszen ő is egy $X$-et
+      tartalmazó részcsoport $G$-ben. Ráadásul mivel ő a metszete $\mathcal{X}$ összes elemének, ezért egyben
+      részhalmaza is azoknak. Másként fogalmazva bármilyen $K\in \mathcal{X}$ részcsoportra teljesül, hogy $H\sube
+      K$. Ez a [halmazrendszer-minimuma-es-maximuma] szerint viszont épp azt jelenti, hogy $H$ nem más, mint az
+      $\mathcal{X}$ halmazrendszer ***legszűkebb eleme***. Más szavakkal $H$ a legszűkebb olyan részcsoport
+      $G$-ben, amely tartalmazza az $X$ részhalmazt, azaz a tételbeli jelölést használva $H=\lang X\ang$.
+  - type: narrative
+    content: |
+      A legszűkebb $X$-et tartalmazó ***normálosztó*** létezésére és egyértelműségére vonatkozó állítás a
+      fentiekhez teljesen hasonló módon igazolható.

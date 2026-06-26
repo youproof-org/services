@@ -1,0 +1,663 @@
+<!-- wp:paragraph -->
+<p><strong><em>Az <a href="https://youproof.hu/kriptografia/18-modularis-aritmetika-homomorfizmus-kongruencia-reszgyuru-ideal-maradekosztalygyuru/" target="_blank" rel="noreferrer noopener" aria-label="előző részben (új fülön nyitja meg)">előző részben</a> megvizsgáltuk, hogyan kell osztási maradékokkal műveleteket végezni. Ezeket a műveleteket moduláris összeadásnak és moduláris szorzásnak neveztük, és igazoltuk, hogy az osztási maradékok halmaza ezzel a két művelettel gyűrűt alkot. Ennek során megmutattuk a <a rel="noreferrer noopener" aria-label="9. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/9-diffie-hellman-protokoll-egyiranyu-fuggveny-modularis-aritmetika-asszimmetrikus-kulcs/" target="_blank">9. részben</a> ismertetett Diffie-Hellman kulcscsere protokoll helyességét. Ezután általánosságban is megvizsgáltuk a gyűrűk közötti művelettartó leképezések, azaz a gyűrűhomomorfizmusok tulajdonságait. Ez adta a motivációt a kongruencia fogalmának bevezetéséhez. Megmutattuk, hogy a kongruencia nem függ egy konkrét [latex]f[/latex] gyűrűhomomorfizmustól, hanem csak azoktól az elemektől, amelyekhez [latex]f[/latex] a célgyűrű nullelemét rendeli hozzá. Ezt a részhalmazt [latex]f[/latex] magjának neveztük. Ezzel párhuzamosan definiáltuk az ideál fogalmát, és megmutattuk, hogy egy gyűrűben pontosan az ideálok lehetnek gyűrűhomomorfizmusok magjai. Ehhez meg kellett ismerkednünk a maradékosztálygyűrű (vagy faktorgyűrű) fogalmával. Végül egy egyszerű következményként adódott az úgynevezett homomorfizmustétel.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>De vajon hogyan néznek ki az egész számok gyűrűjének ideáljai? Mi a kapcsolat az ideálok és a <a rel="noreferrer noopener" aria-label="16. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/16-oszhatosag-egyseg-asszocialt-felbonthatatlan-prim-szamelmelet-alaptetele/" target="_blank">16. részben</a> bevezetett oszthatósági alapfogalmak között? Mik azok a főideálgyűrűk, és ezeknek milyen jó tulajdonságaik vannak? Mi közük az euklidészi gyűrűkhöz? Hogyan zárható le a számelmélet alaptételének kérdése végérvényesen az ideálok segítségével? Ebben a részben erről lesz szó...</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"className":"prerequisite-warning"} -->
+<p class="prerequisite-warning">Figyelem! Ez a rész erőteljesen épít a <a rel="noreferrer noopener" aria-label="12. (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/12-szorzas-disztributivitas-teljes-indukcio-indirekt-bizonyitas-relacio-teljes-rendezes-rendezett-halmaz/" target="_blank">12.</a>, <a href="https://youproof.hu/kriptografia/16-oszhatosag-egyseg-asszocialt-felbonthatatlan-prim-szamelmelet-alaptetele/" target="_blank" rel="noreferrer noopener" aria-label="16. (új fülön nyitja meg)">16.</a>, <a href="https://youproof.hu/kriptografia/17-euklideszi-algoritmus-maradekos-osztas-legnagyobb-kozos-oszto-euklideszi-gyuru/" target="_blank" rel="noreferrer noopener" aria-label="17. (új fülön nyitja meg)">17.</a> és <a href="https://youproof.hu/kriptografia/18-modularis-aritmetika-homomorfizmus-kongruencia-reszgyuru-ideal-maradekosztalygyuru/" target="_blank" rel="noreferrer noopener" aria-label="18. részekben (új fülön nyitja meg)">18. részekben</a> felépített alábbi definíciókra, valamint a hozzájuk kapcsolódó tételekre:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="rendezett-halmaz" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="oszthatosag" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egyseg" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="asszocialt" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="szamelmelet-alaptetele" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="euklideszi-gyuru" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="reszgyuru" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="ideal" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph {"className":"prerequisite-warning"} -->
+<p class="prerequisite-warning">Ezek kontextusba helyezése miatt erőteljesen ajánlott elolvasni a <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/12-szorzas-disztributivitas-teljes-indukcio-indirekt-bizonyitas-relacio-teljes-rendezes-rendezett-halmaz/" target="_blank">12.</a>, <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/16-oszhatosag-egyseg-asszocialt-felbonthatatlan-prim-szamelmelet-alaptetele/" target="_blank">16.</a>, <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/17-euklideszi-algoritmus-maradekos-osztas-legnagyobb-kozos-oszto-euklideszi-gyuru/" target="_blank">17.</a> és <a rel="noreferrer noopener" aria-label="18. részeket (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/18-modularis-aritmetika-homomorfizmus-kongruencia-reszgyuru-ideal-maradekosztalygyuru/" target="_blank">18. részeket</a>, mivel gyakran hivatkozni fogunk rájuk. A teljes cikksorozat elejét <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/1-alapfogalmak-caesar-vigenere-enigma-kulcsmegosztas/" target="_blank">itt</a> találod.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"dropCap":true} -->
+<p class="has-drop-cap">Az oszthatósági alapfogalmak kapcsán a <a rel="noreferrer noopener" aria-label="16. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/16-oszhatosag-egyseg-asszocialt-felbonthatatlan-prim-szamelmelet-alaptetele/" target="_blank">16. részben</a> ismerkedtünk meg a felbonthatatlan (vagy prím-) számokkal, és láttuk, hogy ezek bizonyos értelemben az építőkövek szerepét töltik be a számok között. A <a rel="noreferrer noopener" aria-label="17. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/17-euklideszi-algoritmus-maradekos-osztas-legnagyobb-kozos-oszto-euklideszi-gyuru/" target="_blank">17. részben</a> ugyanis igazoltuk, hogy egyrészt minden egész szám előállítható prímszámok szorzataként, másrészt pedig azt, hogy ez lényegében csak egyféleképpen tehető meg. Ezt a két állítást – tehát a prímtényezős felbontás <strong><em>létezését</em></strong> és <strong><em>egyértelműségét</em></strong> – együttesen a <strong><em>számelmélet alaptételének</em></strong> neveztük. Mi azonban nem kimondottan az egész számok körében, hanem ennél általánosabban, a gyűrűk – pontosabban az integritástartományok – absztrakciós szintjén vizsgáltuk a kérdést. Ezen a szinten általánosságban már különválik a felbonthatatlan ([yp_element slug="felbonthatatlan-elem" type="link" /]) és a prím fogalma ([yp_element slug="primtulajdonsagu-elem" type="link" /]). Láttuk, hogy a számelmélet alaptétele bizony nem teljesül minden integritástartományban, ezért megpróbáltuk meghatározni ennek feltételeit. Először ismételjük át ennek főbb lépéseit.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A keresett feltételek megtalálása mindeddig felemásan sikerült. Elsőként a [yp_element slug="szamelmelet-alaptetele-nem-egysegelemes-integritastartomanyokban" type="link" /] és a [yp_element slug="szamelmelet-alaptetelenek-szukseges-feltetele" type="link" /] fogalmazott meg egy-egy szükséges feltételt. E két tétel alapján a számelmélet alaptétele csak <strong><em>egységelemes</em></strong> integritástartományokban teljesülhet, és azok közül is csak azokban, amelyekben <strong><em>minden felbonthatatlan elem prímtulajdonságú</em></strong>. Itt egyrészt megemlítettük, hogy ez a két feltétel <strong><em>szükséges ugyan, de önmagában még nem elégséges</em></strong> az alaptételhez. Másrészt viszont azt is megemlítettük, hogy „nem hiányzik sok”, mivel a második feltétel az alaptétel egyértelműségi állításához már elégséges (azaz a prímtényezős felbontás létezését ugyan nem garantálja, ám ha az mégis létezik, akkor egyértelmű).</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezután a <a rel="noreferrer noopener" aria-label="17. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/17-euklideszi-algoritmus-maradekos-osztas-legnagyobb-kozos-oszto-euklideszi-gyuru/" target="_blank">17. részben</a> megismerkedtünk az úgynevezett <strong><em>euklidészi gyűrűkkel</em></strong> ([yp_element slug="euklideszi-gyuru" type="link" /]), amelyekben bizonyos absztrakt értelemben elvégezhető a <strong><em>maradékos osztás</em></strong>. Ennek két fontos következménye volt. Egyrészt a [yp_element slug="euklideszi-gyuruben-letezik-kituntetett-kozos-oszto" type="link" /] értelmében bármely két elemnek létezik a <strong><em>kitüntetett közös osztója</em></strong> ([yp_element slug="kituntetett-kozos-oszto" type="link" /]), amelyből a [yp_element slug="kituntetett-kozos-oszto-letezesenek-kovetkezmenye" type="link" /] alapján következik, hogy <strong><em>minden felbonthatatlan elem prímtulajdonságú</em></strong> (azaz az alaptétel <strong><em>egyértelműségi</em></strong> állítása).</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Másrészt viszont a [yp_element slug="euklideszi-norma-egyenlotlensegi-tulajdonsaga" type="link" /] és a [yp_element slug="euklideszi-norma-szigoru-egyenlotlensegenek-feltetele" type="link" /] alapján ha egy integritástartományon létezik <strong><em>bármilyen</em></strong> euklidészi norma, akkor létezik olyan is, amely szigorúan nagyobb értéket ad bármilyen kéttényezős szorzatra, mint a tényezőkre külön-külön (kivéve ha valamelyik tényező egység, amikoris egyenlőség áll fenn). Ebből a [yp_element slug="euklideszi-gyurukben-teljesul-a-szamelmelet-alaptetele" type="link" /] alapján már viszonylag egyszerűen következik a <strong><em>prímtényezős felbontás létezéséről</em></strong> szóló állítás.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A maradékos osztás elvégezhetősége tehát egy <strong><em>elégséges feltétel</em></strong> az alaptétel tejesüléséhez, megemlítettük <strong><em>ugyanakkor</em></strong>, hogy sajnos <strong><em>nem szükséges</em></strong>. Léteznek ugyanis olyan integritástartományok, amelyek nem euklidészi gyűrűk, mégis teljesül bennük az alaptétel. Van már tehát <strong><em>szükséges (de nem elégséges)</em></strong>, és <strong><em>elégséges (de nem szükséges)</em></strong> feltételünk. Jó volna mostmár végleg lezárni ezt a kérdést, és találni egy olyan feltételrendszert, amely egyszerre <strong><em>szükséges és elégséges</em></strong> is. Szerencsére az előző részben bevezetett <strong><em>ideálok</em></strong> segítségével ebben a részben képesek leszünk megfogalmazni egy ilyen feltételrendszert.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez szoros összefüggésben fog állni bizonyos ideálok egymáshoz való viszonyával. Minthogy egy gyűrű ideáljai tulajdonképpen halmazok, ezért nem árt először megismerkedni néhány halmazokkal kapcsolatos alapfogalommal és jelöléssel.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="set-theory-introduction"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Halmazelméleti gyorstalpaló</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>halmaz</em></strong> a matematika egyik legalapvetőbb fogalma, melyet leginkább az „összesség” illetve „sokaság” szavakkal tudunk körülírni. Ezt a fogalmat nem definiáljuk, mivel <strong><em>alapfogalom</em></strong>. Ez ahhoz hasonlatos, mint ahogyan a természetes számokat bevezettük a <a rel="noreferrer noopener" aria-label="11. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/11-peano-axiomarendszer-termeszetes-szam-muvelet-osszeadas-kommutativitas-asszociativitas-teljes-indukcio/" target="_blank">11. részben</a>. Ha visszaemlékszünk, ott sem mondtuk meg, hogy konkrétan mik azok a természetes számok. Pusztán annyit állítottunk róluk, hogy egy [latex]\N[/latex]-nel jelölt halmaz elemei, amelyek eleget tesznek 4 egyszerű tulajdonságnak. Ezeket a tulajdonságokat <strong><em>Peano-axiómáknak</em></strong> neveztük és a [yp_element slug="peano-axiomarendszer" type="link" /]ban soroltuk fel őket. Minden, amit az elmúlt részekben tárgyaltunk, ennek a mindössze 4 axiómának a következménye, vagy legalábbis abból eredeztethető.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Míg a természetes és az általánosabb egész számokkal a számelmélet, addig a halmazok tulajdonságaival a <strong><em>halmazelmélet</em></strong> foglalkozik. Végsősoron minden, a matematika által vizsgált objektum halmaz, de legalábbis megadható olyan modellje, amely kizárólag a halmazelmélet alapfogalmait használja. Így annak ellenére, hogy csak a 19. századra fejlődött ki, a halmazelmélet mára a modern matematika minden ágának – a matematikai logika mellett – az alapja lett.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A halmazelmélet korai változatát, az úgynevezett <strong><em>naív halmazelméletet</em></strong> <a rel="noreferrer noopener" aria-label="Georg Cantor (új fülön nyitja meg)" href="https://hu.wikipedia.org/wiki/Georg_Cantor" target="_blank">Georg Cantor</a> és <a rel="noreferrer noopener" aria-label="Richard Dedekind (új fülön nyitja meg)" href="https://hu.wikipedia.org/wiki/Richard_Dedekind" target="_blank">Richard Dedekind</a> úttörő munkásságának köszönhetjük. Mi ebben a részben elsősorban ezzel fogunk foglalkozni a könnyebb érthetőség kedvéért. Ugyanakkor megemlítjük, hogy a 20. század elején a naív halmazelméletben bizonyos szélsőséges esetekben komoly logikai ellentmondásokat fedeztek fel, amely az egész matematikát megrengette, így szükségessé vált a halmazelméletet is axiomatikus alapokra helyezni. Ebben a cikksorozatban azonban erre nem fogunk kitérni bővebben. Az általunk használt halmazelméleti eszköztár ugyanis az axiomatikus halmazelméletben is ugyanaz lenne.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Minden matematikai elmélet valamilyen objektumokkal, illetve azok tulajdonságaival foglalkozik. Például a számelméletben ezek az objektumok lehetnek mondjuk az egész számok, egy tulajdonság pedig a 2-vel való oszthatóság. A halmazelmélet ennél absztraktabb módon tekint a világra: számára csak objektumok és tulajdonságok vannak. <strong><em>Halmaznak</em></strong> nevezzük azon objektumok összességét, amelyekre teljesül valamilyen közös tulajdonság. Ám azzal, hogy konkrétan mik ezek az objektumok és a szóban forgó tulajdonság, a halmazelmélet szintjén már nem foglalkozunk. Ezt úgy is meg lehet fogalmazni, hogy magát a tulajdonságot – bármi legyen is az – egy <strong><em>halmazként</em></strong>, azokat az objektumokat pedig – bármik legyenek is azok –, amelyekre az e halmaz által reprezentált tulajdonság teljesül, a <strong><em>halmaz elemeiként</em></strong> képzeljük el.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi definíció nem határozza meg a most ismertetett <strong><em>„halmaz”</em></strong> és <strong><em>„eleme lenni”</em></strong> fogalmak jelentését, mivel azok formális logikai szempontból <strong><em>alapfogalmak</em></strong>, így ez lehetetlen lenne. Ehelyett csak az ezekre vonatkozó jelöléseket ismerteti, valamint definiál néhány kapcsolódó fogalmat is, amelyek viszont már nem alapfogalmak:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="halmazelmeleti-alapfogalmak" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="halmazelmeleti-alapfogalmak-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az <strong><em>univerzális halmaz</em></strong> definíciójában szerepelő, kissé homályos <strong><em>„minden vizsgált objektum”</em></strong> megfogalmazás talán zavaró lehet. Az, hogy ezalatt pontosan mit értünk, mindig attól függ, hogy pontosan milyen matematikai objektumokat vizsgálunk a halmazelmélet eszközeivel. Vizsgálhatjuk például az egész számokat, amikoris az univerzális halmaz az egész számok [latex]\Z[/latex] halmaza lesz. De vizsgálhatjuk például egy valamilyen [latex]H[/latex] halmaz bizonyos részhalmazait is. Ebben az esetben az univerzális halmaz [latex]H[/latex]-nak a vizsgált részhalmazaiból fog állni. Ilyen úgynevezett <strong><em>halmazrendszerekről</em></strong> lesz szó a következő szakaszban, azután pedig az ott szerzett ismereteket gyűrűk ideáljainak vizsgálatához fogjuk felhasználni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az imént bevezetett halmazelméleti alapfogalmak segítségével most bevezetünk egy fontos relációt két halmaz között.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="reszhalmaz" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Például az egész számok [latex]\Z[/latex] halmazának egy valódi részhalmazát alkotják a páros számok. Részhalmaz, mert minden páros szám egyben egész szám is, és valódi részhalmaz, mert van olyan egész szám, amely nem páros.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="reszhalmaz-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Halmazok között értelmezhetünk kétváltozós műveleteket (lásd a [yp_element slug="ketvaltozos-muvelet" type="link" /]t). Ezek tehát két tetszőleges halmazból képeznek egy újabb halmazt, méghozzá az alábbiak szerint.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="halmazmuveletek" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha például [latex]A=\{1;2;3\}[/latex], [latex]B=\{3;4;5\}[/latex], és az [latex]U[/latex] univerzumnak a pozitív egész számokat tekintjük, akkor az imént definiált halmazműveletek az alábbi halmazokat adják:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}A\cup B&amp;=\{1;2;3;4;5\} \\ A\cap B&amp;=\{3\} \\ A\setminus B&amp;=\{1;2\} \\ B\setminus A&amp;=\{4;5\} \\ \overline{A}&amp;=\{4;5;6;\ldots\} \\ \overline{B}&amp;=\{1;2;6;7;8;\ldots\}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A halmazokat, illetve azok viszonyait az úgynevezett <a rel="noreferrer noopener" aria-label="Venn-diagramok (új fülön nyitja meg)" href="https://hu.wikipedia.org/wiki/Venn-diagram" target="_blank">Venn-diagramok</a> segítségével ábrázolhatjuk. Itt a halmazokat különböző síkidomok (körök, téglalapok, ellipszisek), míg a halmazok elemeit pontok reprezentálják. Az univerzális halmazt legtöbbször az ábrát körülvevő tégalalappal jelöljük. A Venn-diagram általában csak néhány halmaz szemléltetésére alkalmas, mivel sok egymást kölcsönösen metsző halmaz esetén az ábra elbonyolódik, vagy nem is lehetséges az összes metszetet ábrázolni. Az alábbi Venn-diagramokon a fenti példában szereplő halmazműveleteket és a [yp_element slug="reszhalmaz" type="link" /] szerinti tartalmazási relációt szemléltettük:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":5153,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_19_halmazmuveletek.jpg" alt="Halmazműveletek szemléltetése Venn-diagramokon" class="wp-image-5153"/><figcaption>Halmazműveletek szemléltetése Venn-diagramokon</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:image {"align":"center","id":5154,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_19_reszhalmaz.jpg" alt="Tartalmazási reláció szemléltetése Venn-diagramon" class="wp-image-5154"/><figcaption>Tartalmazási reláció szemléltetése Venn-diagramon</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="halmazmuveletek" type="link" /] szerinti halmazműveletekre érvényesek az alábbi tulajdonságok.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="halmazmuveletek-tulajdonsagai" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi bizonyítás gondolatmeneteinek könnyebb megértése érdekében javasoljuk az Olvasónak a fentebb már említett Venn-diagramok használatát.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="halmazmuveletek-tulajdonsagai-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:heading {"level":4} -->
+<h4 id="family-of-sets">Halmazrendszerek</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>E rövid halmazelméleti gyorstalpaló után ebben a szakaszban olyan halmazokkal fogunk megismerkedni, amelyeknek az elemei maguk is halmazok. Ezeknek az első hallásra furcsa halmazoknak külön nevük is van, és kontextustól függően általában jelölésben is megkülönböztetjük őket.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="halmazrendszerek" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel például, hogy az alaphalmazunk az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]H=\{1;2;3\}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ekkor a [latex]\mathcal{P}(H)[/latex] hatványhalmaznak összesen 8 eleme lesz, méghozzá a [latex]H[/latex] halmaz összes lehetséges részhalmaza:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\mathcal{P}(H)=\{ \empty; \{1\};\{2\};\{3\}; \{1;2\}; \{1;3\}; \{2;3\}; \{1;2;3\}\}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Jól vigyázzunk a jelölésekre!</em></strong> Először is a [latex]\empty[/latex] itt nem a „nulla” egész számot, hanem az üres halmazt jelöli. Nagyon nem mindegy továbbá, hogy [latex]1[/latex]-et, vagy pedig [latex]\{1\}[/latex]-et írunk. Az [latex]1[/latex] ugyanis <strong><em>NEM</em></strong> a [latex]\mathcal{P}(H)[/latex] hatványhalmaznak, hanem magának a [latex]H[/latex] <strong><em>alaphalmaznak</em></strong> egy eleme. Ezzel szemben az egyetlen elemből álló [latex]\{1\}[/latex] halmaz már a [latex]\mathcal{P}(H)[/latex] hatványhalmaznak egy eleme. Látható, hogy a [latex]\mathcal{P}(H)[/latex] halmazban valóban benne van [latex]H[/latex] összes részhalmaza elemként. Még a [latex]\empty[/latex]-val jelölt üres halmaz, sőt, maga a [latex]H=\{1;2;3\}[/latex] alaphalmaz is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A definíció szerint tehát [latex]\mathcal{P}(H)[/latex] maga is egy halmazrendszer [latex]H[/latex] felett, méghozzá a lehető legbővebb, ami csak létezik. De tegyük fel, hogy mi [latex]H[/latex]-nak csak a <strong><em>valódi részhalmazait</em></strong> szeretnénk vizsgálni. Ezek szintén egy halmazrendszert alkotnak [latex]H[/latex] felett, amelyet jelöljünk most [latex]\mathcal{H}[/latex]-val. Ekkor a [latex]\mathcal{H}[/latex] halmazrendszer az alábbi 6 elemből fog állni:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\mathcal{H}=\{ \{1\};\{2\};\{3\}; \{1;2\}; \{1;3\}; \{2;3\}\}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mint ahogyan a definícióban már említettük, a [latex]\mathcal{H}[/latex] halmazrendszer [latex]\mathcal{P}(H)[/latex]-nak egy részhalmaza lesz, azaz [latex]\mathcal{H}\sube \mathcal{P}(H)[/latex]. Nyilván, hiszen minden [latex]\mathcal{H}[/latex]-beli elem egyúttal eleme a [latex]\mathcal{P}(H)[/latex] hatványhalmaznak is. Előbbi ugyanis a [latex]H[/latex] alaphalmaznak csak a valódi részhalmazait tartalmazza elemként, utóbbi pedig az összeset.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ha esetleg az Olvasó megpróbálta magát a [latex]H[/latex] alaphalmazt, illetve a fenti [latex]\mathcal{H}[/latex] halmazrendszert ugyanazon a <strong><em>Venn-diagramon</em></strong> ábrázolni, akkor ez a kísérlet minden bizonnyal sikertelenül zárult. Ennek az a nagyon egyszerű oka, hogy teljesen más jellegű matematikai objektumokról van szó. Első esetben ugyanis a vizsgált objektumok tulajdonképpen a [latex]H[/latex] halmaz elemei, azaz az [latex]1[/latex], [latex]2[/latex], és [latex]3[/latex] egész számok, így a tárgyalási univerzumnak a [latex]H[/latex] halmazt tekinthetjük. Ennek megfelelően az alábbi Venn-diagramon a [latex]H[/latex] halmaz részhalmazait ellipszisekkel ábrázolhatjuk, míg a [latex]H[/latex] feletti halmazrendszereket ezen az ábrán nem tudjuk megjeleníteni:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":5156,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_19_halmaz_venn_diagram.jpg" alt="Alaphalmaz részhalmazainak ábrázolása Venn-diagramon" class="wp-image-5156"/><figcaption>Alaphalmaz részhalmazainak ábrázolása Venn-diagramon</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Ezzel szemben a második esetben a vizsgált objektumok a [latex]H[/latex] <strong><em>részhalmazai</em></strong>, a tárgyalási univerzum pedig ebben az esetben a [latex]\mathcal{P}(H)[/latex] hatványhalmaz lesz. Ennek megfelelően az alábbi Venn-diagramon a [latex]H[/latex] halmaz részhalmazait pontokkal jelöljük, és így a [latex]H[/latex] feletti halmazrendszerek már láthatóvá válnak:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":5157,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_19_hatvanyhalmaz_venn_diagram.jpg" alt="Hatványhalmaz ábrázolása Venn-diagramon" class="wp-image-5157"/><figcaption>Hatványhalmaz ábrázolása Venn-diagramon</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Itt például a példában szereplő [latex]\mathcal{H}[/latex] halmazrendszer mellett egy másik, [latex]\mathcal{K}[/latex]-val jelölt halmazrendszert is ábrázoltunk, amely a [latex]H[/latex] alaphalmaznak a pontosan egyelemű részhalmazait tartalmazza elemként.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Halmazrendszerek részbenrendezése</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A <a rel="noreferrer noopener" aria-label="12. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/12-szorzas-disztributivitas-teljes-indukcio-indirekt-bizonyitas-relacio-teljes-rendezes-rendezett-halmaz#ordered-set" target="_blank">12. részben</a> a természetes számok [latex]\leq[/latex] szimbólummal jelölt rendezési relációjának kapcsán általánosságban is szó volt az úgynevezett <strong><em>részbenrendezésekről és részbenrendezett halmazokról</em></strong>. Javasoljuk az Olvasónak, hogy a továbbolvasás előtt ismételje át az ott tanult fogalmakat. A [yp_element slug="rendezett-halmaz" type="link" /]ban részbenrendezésnek hívtuk azokat a relációkat, amelyek egyszerre <strong><em>reflexívek</em></strong> ([yp_element slug="reflexiv-relacio" type="link" /]), <strong><em>antiszimmetrikusak</em></strong> ([yp_element slug="antiszimmetrikus-relacio" type="link" /]) és <strong><em>tranzitívak</em></strong> ([yp_element slug="tranzitiv-relacio" type="link" /]).</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi tétel alapján bármilyen [latex]\mathcal{H}[/latex] halmazrendszer is tulajdonképpen nem más, mint egy részbenrendezett halmaz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="reszhalmaz-reszbenrendezes" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="reszhalmaz-reszbenrendezes-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A részbenrendezett halmazok ábrázolására szolgál az úgynevezett <a rel="noreferrer noopener" aria-label="Hasse-diagram (új fülön nyitja meg)" href="https://hu.wikipedia.org/wiki/Hasse-diagram" target="_blank">Hasse-diagram</a>. Egy ilyen diagramon a halmaz elemeit pontok reprezentálják, és két pont között pontosan akkor megy él, ha ők „közvetlenül egymás után vannak” a vizsgált részbenrendezés szerinti „nagyságrendi sorban”. Azt, hogy melyikük a „kisebb” vagy „nagyobb” úgy ábrázoljuk, hogy a „nagyobb” elemet feljebb rajzoljuk az ábrán. Ez az ábrázolásmód azért működik, mert a részbenrendezés „irányát” követve annak tranzitivitása miatt soha nem fordulhat elő, hogy egy pontból kiindulva oda visszatérnénk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tekintsük például az előző szakaszban fehozott [latex]H=\{1;2;3\}[/latex] alaphalmazt, és képezzük ennek a [latex]\mathcal{P}(H)[/latex] hatványhalmazát. Ez ugye egy halmazrendszer [latex]H[/latex] felett, amelynek a Hasse-diagramja az alábbi ábrán látható:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":5158,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_19_hatvanyhalmaz_hasse_diagram.jpg" alt="Hatványhalmaz Hasse-diagramja" class="wp-image-5158"/><figcaption>Hatványhalmaz Hasse-diagramja</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>A diagramon az is jól látszik, hogy a [latex]\sube[/latex] rendezési relációra nem teljesül a trichotómia ([yp_element slug="trichotom-relacio" type="link" /]). A trichotómia ugye azt követeli meg, hogy bármely két elem összehasonlítható legyen egymással. Az egész számok [latex]\Z[/latex] gyűrűjének vagy a természetes számok [latex]\N[/latex] halmazának rendezése teljesíti ezt az extra tulajdonságot is, ezért neveztük őket teljes rendezésnek. Ezzel szemben a [latex]\sube[/latex] reláció <strong><em>nem egy teljes rendezés</em></strong>, hiszen például az [latex]\{1;2\}[/latex] és a [latex]\{2;3\}[/latex] részhalmazok között egyik irányban sem teljesül a tartalmazás, így ők nem összehasonlíthatók. A fenti diagramon ez úgy mutatkozik meg, hogy egyikből sem tudunk eljutni a másikba az éleken keresztül, amennyiben csak lentről felfelé haladhatunk. De például a [latex]\{2\}[/latex] és az [latex]\{1;2;3\}[/latex] részhalmazok között fennáll a tartalmazási reláció, hiszen [latex]\{2\}[/latex]-ből felfelé kiindulva két lépés után az [latex]\{1;2;3\}[/latex]-hoz érkezünk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A [latex]\mathcal{P}(H)[/latex] halmazrendszer Hasse-diagramját vizsgálva feltűnhet, hogy az egész számok [latex]\Z[/latex] gyűrűjének rendezésével ellentétben itt létezik „legkisebb” és „legnagyobb” elem. A „legkisebb” elem szerepét itt az üres halmaz tölti be, hiszen nincs másik olyan halmaz, amely „szűkebb” lenne nála. Ehhez hasonlóan a „legnagyobb” elem maga a [latex]H[/latex] alaphalmaz, hiszen nincs másik olyan halmaz, amely „bővebb” lenne nála. Az alábbi definíció ezeket a fogalmakat tisztázza.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="halmazrendszer-minimuma-es-maximuma" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Talán egy kicsit furcsa lehet, hogy a definíció megkülönbözteti a „minimális” és a „legkisebb”, valamint a „maximális” és a „legnagyobb” fogalmát. Ennek személtetéséhez vizsgáljunk most két halmazrendszert a [latex]H=\{1;2;3;4\}[/latex] halmaz felett. Az egyik legyen a teljes [latex]\mathcal{P}(H)[/latex] hatványhalmaz, a másikat pedig jelöljük [latex]\mathcal{H}[/latex]-val, és tartalmazza [latex]H[/latex]-nak csak a <strong><em>valódi részhalmazait</em></strong>. Az alábbi ábrákon egymás alatt láthatjuk e két halmazrendszer Hasse-diagramjait.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":5160,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_19_teljes_hatvanyhalmaz_hasse_diagram.jpg" alt="Teljes hatványhalmaz Hasse-diagramja" class="wp-image-5160"/><figcaption>Teljes hatványhalmaz Hasse-diagramja</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:image {"align":"center","id":5161,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_19_valodi_reszhalmazok_hasse_diagram.jpg" alt="Valódi részhalmazokból álló halmazrendszer Hasse-diagramja" class="wp-image-5161"/><figcaption>Valódi részhalmazokból álló halmazrendszer Hasse-diagramja</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Látható, hogy <strong><em>minimuma és maximuma</em></strong> mindkét halmazrendszernek van. A [latex]\mathcal{P}(H)[/latex] halmazrendszer minimuma a [latex]\empty[/latex]-val jelölt üres halmaz, maximuma pedig a teljes [latex]H=\{1;2;3;4\}[/latex] alaphalmaz. A [latex]\mathcal{H}[/latex] halmazrendszernek szintén van minimuma és maximuma is, ráadásul több is. Minimuma például az összes egyelemű részhalmaz, hiszen nincs olyan halmaz [latex]\mathcal{H}[/latex]-ban, amely ezek bármelyikének valódi részhalmaza lenne. Ehhez hasonlóan maximuma az összes háromelemű részhalmaz, hiszen nincs olyan halmaz [latex]\mathcal{H}[/latex]-ban, amelynek ezek bármelyike valódi részhalmaza lenne.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezzel szemben <strong><em>legszűkebb illetve legbővebb</em></strong> eleme csak a [latex]\mathcal{P}(H)[/latex] halmazrendszernek van, méghozzá szintén az üres halmaz és a teljes [latex]H[/latex] alaphalmaz. Előbbi ugyanis a halmazrendszer minden elemének részhalmaza, utóbbinak pedig a halmazrendszer minden eleme részhalmaza. Ezzel szemben a [latex]\mathcal{H}[/latex] halmazrendszerben nem találunk ilyen értelemben legszűkebb és legbővebb elemeket.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A minimum (illetve maximum) esetén tehát csak annyit követelünk meg, hogy ne legyen náluk szűkebb (vagy bővebb) halmaz a rendszerben. De mivel létezhetnek olyan halmazok, amelyek egymással nem összehasonlíthatók a [latex]\sube[/latex] reláció szerint, ezért létezhet több minimum (illetve maximum) is a rendszerben, ahogyan azt a fenti példa mutatja. A legszűkebb (illetve legbővebb) halmaz fogalma ennél szigorúbb feltételt határoz meg, ezektől ugyanis megköveteljük, hogy bármelyik másik halmazzal összehasonlíthatóak legyenek. Most megmutatjuk, hogy ha egyáltalán létezik legszűkebb (illetve legbővebb) halmaz egy rendszerben, akkor az egyértelmű.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="halmazrendszer-legkisebb-es-legnagyobb-eleme-egyertelmu" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="halmazrendszer-legkisebb-es-legnagyobb-eleme-egyertelmu-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az iménti tétel szerint tehát egy halmazrendszerben <strong><em>legfeljebb egy</em></strong> legszűkebb, illetve <strong><em>legfeljebb egy</em></strong> legbővebb elem létezhet. Jogosan teheti fel a kérdést az Olvasó, hogy miféle elvetemült halmazrendszer lehet az, amelyben egyáltalán nem léteznek ilyen tulajdonságú halmazok. Azt még csak-csak el lehet képzelni, hogy nincs legbővebb halmaz. Például az egész számok [latex]\Z[/latex] halmaza felett könnyen találhatunk olyan halmazrendszert, amelynek nincs legbővebb eleme. Ilyen például az alábbi halmazokból álló rendszer:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}A_0&amp;=\empty \\ A_1&amp;=\{1\} \\ A_2&amp;=\{1;2\} \\ A_3&amp;=\{1;2;3\} \\ A_4&amp;=\{1;2;3;4\} \\ &amp;\vdots \end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Látható, hogy ebben a halmazsorozatban minden elem valódi részhalmaza a rákövetkező elemnek, így ebben a [latex]\Z[/latex] feletti halmazrendszerben nem létezik legbővebb elem. Ezzel szemben elsőre nehéz elképzelni egy olyan halmazrendszert [latex]\Z[/latex] felett, amelynek ne lenne legszűkebb eleme. Meglepő módon azonban ilyen is létezik. Vegyük például az alábbi konstrukciót:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}A_0 &amp;=\Z \\ A_1&amp;=\Z\setminus \{1\} \\ A_2&amp;=\Z\setminus\{1;2\} \\ A_3&amp;=\Z\setminus \{1;2;3\} \\ A_4&amp;=\Z\setminus \{1;2;3;4\} \\ &amp;\vdots \end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ennek a sorozatnak az első eleme tehát a teljes [latex]\Z[/latex] halmaz, amelyből szép sorban elkezdünk kidobálni egyre több, de mindig véges számú egész számot. Nyilvánvalóan ebben a sorozatban minden elem valódi részhalmaza a sorozatban előtte lévő elemnek, így ebben a [latex]\Z[/latex] feletti halmazrendszerben nem létezik legszűkebb elem.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>De elképzelhetünk egy olyan halmazrendszert is, amelynek alaphalmazát egy síkra rajzolt szakasz pontjai alkotják, és amely az alábbi [latex]A_0[/latex], [latex]A_1[/latex], [latex]A_2[/latex], [latex]A_3[/latex], ... halmazsorozatból áll:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":5163,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_19_szakasz_feletti_halmazrendszer.jpg" alt="Szakasz feletti halmazrendszer" class="wp-image-5163"/><figcaption>Szakasz feletti halmazrendszer</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Ennek a sorozatnak minden eleme az eredeti szakasz feleakkora részéből áll, mint az őt megelőző elem. Azaz a sorozatban minden elem valódi részhalmaza a sorozatban előtte lévő elemnek, így ebben a rendszerben sincs legszűkebb elem.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A további szakaszokban az eddig szerzett halmazelméleti ismereteinket <strong><em>gyűrűk ideáljainak</em></strong> vizsgálatához fogjuk felhasználni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="generated-ideals"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Ideálok generálása</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Egy gyűrű tulajdonképpen nem más, mint egy [latex]R[/latex] alaphalmaz, amelyen értelmezve van két művelet. Ennek megfelelően [latex]R[/latex] részgyűrűi és ideáljai is halmazok, méghozzá [latex]R[/latex] részhalmazai. Előszöris megmutatjuk, hogy milyen hatása van a metszetképzésnek egy tetszőleges gyűrű részgyűrűi és ideáljai között.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="idealok-metszete-ideal" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Például az egész számok [latex]\Z[/latex] gyűrűjében a [latex]2[/latex]-vel és [latex]3[/latex]-mal osztható számok egy-egy ideált alkotnak. Ezeket az előző részben ismertetett komplexusszorzás ismeretében [latex]2\Z[/latex]-vel és [latex]3\Z[/latex]-vel jelölhetjük (lásd a [yp_element slug="komplexusmuveletek" type="link" /] utáni megjegyzés 1. pontját). E két ideál metszetét azok a számok alkotják, amelyek [latex]2[/latex]-vel is <strong><em>és</em></strong> [latex]3[/latex]-mal is oszthatók. Ezek épp a [latex]6[/latex]-tal osztható számok lesznek, azaz [latex]2\Z \cap 3\Z=6\Z[/latex], ami szintén ideál [latex]\Z[/latex]-ben, épp ahogyan a tétel állítja. Nézzük meg, hogy miért igaz ez általánosságban is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="idealok-metszete-ideal-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most egy [latex]R[/latex] gyűrűben azokat a részgyűrűket (vagy ideálokat) fogjuk megvizsgálni, amelyek [latex]R[/latex]-nek egy adott [latex]X[/latex] részhalmazát tartalmazzák. Ezek a részgyűrűk (vagy ideálok) szintén egy halmazrendszert alkotnak [latex]R[/latex] felett, amelynek egy fontos tulajdonságát mondja ki az alábbi tétel.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="generalt-reszgyuru-es-ideal" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="generalt-reszgyuru-es-ideal-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez alapján tehát egy adott [latex]R[/latex] gyűrű bármely [latex]X[/latex] részhalmaza <strong><em>egyértelműen</em></strong> meghatároz egy ideált. Ez lesz az [latex]X[/latex]-et tartalmazó <strong><em>legszűkebb</em></strong> ideál. Ugyanakkor ez a tétel semmit nem mond arról, hogy az [latex]X[/latex] által generált [latex]\lang X\ang[/latex] ideált lehet-e generálni egy [latex]X[/latex]-nél szűkebb részhalmazzal is vagy nem. Amikor tehát azt mondjuk, hogy egy ideál „generálható [latex]X[/latex]-szel”, ez még nem jelenti azt, hogy az adott ideál kizárólag [latex]X[/latex]-szel generálható. Számelméleti szempontból rendkívül fontosak azok az ideálok, amelyek a gyűrű kevés számú – speciálisan akár egyetlen – eleméből alkotott részhalmazaival generálhatók.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="vegesen-generalt-idealok-es-foidealok" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A főideálok kapcsolata az oszthatósággal</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A továbbiakban elsősorban <strong><em>kommutatív és nullosztómentes gyűrűket</em></strong>, más szóval <strong><em>integritástartományokat</em></strong> fogunk vizsgálni. Az ilyen gyűrűk esetén fontos kapcsolat van a <a rel="noreferrer noopener" aria-label="16. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/16-oszhatosag-egyseg-asszocialt-felbonthatatlan-prim-szamelmelet-alaptetele/" target="_blank">16. részben</a> tárgyalt oszthatóság ([yp_element slug="oszthatosag" type="link" /]), valamint a gyűrű főideáljai között. Ebben a tekintetben egy kicsit másként viselkednek az <strong><em>egységelemes</em></strong> és a <strong><em>nem egységelemes</em></strong> gyűrűk. Az alábbi tétel az <strong><em>egységelemes esettel</em></strong> foglalkozik. Itt nem használjuk ki a <strong><em>nullosztómentességet</em></strong>, ezért ez a tétel nem csak integritástartományokra, hanem bármilyen kommutatív és egységelemes gyűrűre működik.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="foidealok-es-oszthatosag-kapcsolata-egysegelemes" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="foidealok-es-oszthatosag-kapcsolata-egysegelemes-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A most következő tétel az előbbihez hasonló, de nem teljesen azonos kapcsolatot mond ki az oszthatóság és a főideálok között, ám ezúttal a <strong><em>NEM egységelemes</em></strong> esetben. Itt már kihasználjuk a <strong><em>nullosztómentességet</em></strong> is, ezért ez a tétel csak integritástartományokra működik.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="foidealok-es-oszthatosag-kapcsolata-nem-egysegelemes" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>NEM egységelemes</em></strong> esetben tehát már nem elegendő a sima tartalmazási reláció és a sima asszociáció. Ehelyett az ezeknél speciálisabb <strong><em>szigorú tartalmazásra</em></strong> van szükség az 1. ponthoz, míg konkrétan <strong><em>egyenlőségre</em></strong> a 2. ponthoz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="foidealok-es-oszthatosag-kapcsolata-nem-egysegelemes-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A következő szakaszban az iménti két tételt felhasználva a főideálok segítségével mutatni fogunk egy olyan feltételrendszert, amely egyszerre <strong><em>szükséges és elégséges</em></strong> is ahhoz, hogy egy integritástartományban teljesüljön a <strong><em>számelmélet alaptétele</em></strong>. Ezzel végre lezárhatjuk ezt a kérdést, előtte azonban a könnyebb érthetőség kedvéért vizsgáljunk meg egy egyszerű példát.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A halmazrendszerek kapcsán szó volt arról, hogy a [latex]\sube[/latex] szimbólummal jelölt tartalmazási reláció tulajdonképpen egy <strong><em>részbenrendezés</em></strong> bármilyen halmazrendszer elemei között. Mutattunk néhány példát is arra, hogy egy ilyen részbenrendezés hogyan ábrázolható az úgynevezett <strong><em>Hasse-diagramokon</em></strong>. Ezeket a diagramokat azonban nemcsak konkrétan halmazrendszerek tartalmazási relációjának, hanem tetszőleges halmaz részbenrendezési relációjának megjelenítésére is használhatjuk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most felvázolunk egy szép párhuzamot egy [latex]R[/latex] integritástartomány főideáljai – mint egy [latex]R[/latex] fölötti halmazrendszer elemei – közötti <strong><em>tartalmazási reláció</em></strong>, valamint magának az [latex]R[/latex]-nek az elemei közötti <strong><em>oszthatósági reláció</em></strong> között.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az egyszerűség kedvéért szorítkozzunk most arra az esetre, amikor [latex]R[/latex] <strong><em>egységelemes</em></strong>. Ebben az esetben az oszthatósági reláció <strong><em>reflexív</em></strong>, azaz tetszőleges [latex]a[/latex] elem esetén teljesül az [latex]a|a[/latex] oszthatóság (lásd a [yp_element slug="oszthatosag-tulajdonsagai" type="link" /] 1. pontját). Ezenkívül ugyanezen tétel 5. pontja alapján <strong><em>tranzitív</em></strong> is, így már csak az <strong><em>antiszimmetria</em></strong> ([yp_element slug="antiszimmetrikus-relacio" type="link" /]) hiányzik ahhoz, hogy részbenrendezés lehessen. Ez ugye azt jelentené, hogy ha valamilyen [latex]a[/latex] és [latex]b[/latex] elemek között mindkét irányban teljesül az oszthatóság, akkor abból [latex]a=b[/latex]-nek kéne következnie. A <a rel="noreferrer noopener" aria-label="16. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/16-oszhatosag-egyseg-asszocialt-felbonthatatlan-prim-szamelmelet-alaptetele#divisor" target="_blank">16. részben</a> megemlítettük ugyanakkor, hogy sajnos az egyenlőség nem, hanem csak az ennél valamivel gyengébb [latex]a\sim b[/latex] <strong><em>asszociáció</em></strong> teljesül, az viszont minden esetben (lásd a [yp_element slug="asszocialtsag-tulajdonsagai" type="link" /] 4. pontját).</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezt a problémát azonban egy trükkel megkerülhetjük. Minthogy az asszociáció a [yp_element slug="asszocialtsag-ekvivalenciarelacio" type="link" /] alapján egy <strong><em>ekvivalenciareláció</em></strong>, így az az [latex]R[/latex] gyűrűt a [yp_element slug="ekvivalenciarelacio-tulajdonsagai" type="link" /] alapján <strong><em>ekvivalencia-osztályokra</em></strong> bontja. Ha mármost minden ilyen ekvivalencia-osztályból <strong><em>legfeljebb egy</em></strong> elemet választunk ki, akkor ilymódon [latex]R[/latex]-nek egy olyan [latex]S[/latex] részhalmazára térhetünk át, amelyen már az <strong><em>oszthatóság is antiszimmetrikus</em></strong> lesz. Ebben az esetben ugyanis bármely [latex]S[/latex]-beli [latex]a[/latex] és [latex]b[/latex] elemek közötti kölcsönös oszthatóságból [latex]a=b[/latex] következik, hiszen [latex]S[/latex] konstrukciója miatt csak ebben az esetben teljesülhet az [latex]a\sim b[/latex] asszociáció.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Például az egész számok [latex]\Z[/latex] gyűrűjéből válasszuk ki a [latex]60[/latex] nemnegatív osztóit, és nevezzük ezt a halmazt [latex]D[/latex]-nek. A [yp_element slug="asszocialtsag-es-egysegek-kapcsolata" type="link" /] alapján egyik [latex]D[/latex]-beli elempár sem asszociált. Ezen a halmazon tehát az oszthatóság egy <strong><em>részbenrendezési reláció</em></strong>, és így felrajzolhatjuk a Hasse-diagramját:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":5165,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_19_osztok_hasse_diagram.jpg" alt="Nemnegatív osztók Hasse-diagramja" class="wp-image-5165"/><figcaption>Nemnegatív osztók Hasse-diagramja</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Most tekintsük azt a [latex]\Z[/latex] fölötti halmazrendszert, amely a [latex]D[/latex]-ben lévő elemek által generált főideálokból áll. Ezen a halmazrendszeren a főideálok közötti tartalmazási reláció szintén egy <strong><em>részbenrendezési reláció</em></strong> lesz, amelynek a Hasse-diagramja viszont így néz ki:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":5166,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_19_foidealok_hasse_diagram.jpg" alt="Nemnegatív osztók által generált főideálok Hasse-diagramja" class="wp-image-5166"/><figcaption>Nemnegatív osztók által generált főideálok Hasse-diagramja</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Mint látható, a két Hasse-diagram gyakorlatilag megegyezik. Mindössze abban különböznek egymástól, hogy az egyik a másiknak a feje tetejére állított változata. Nos ez nem véletlenül van így, hanem a [yp_element slug="foidealok-es-oszthatosag-kapcsolata-egysegelemes" type="link" /] miatt. Ez ugye kimondja, hogy az [latex]a|b[/latex] reláció pontosan akkor teljesül, amikor a [latex](b)\sube (a)[/latex] reláció is teljesül. A részbenrendezett halmazok nyelvén ezt úgy is meg lehet fogalmazni, hogy az [latex]a[/latex] elem pontosan akkor <strong><em>„kisebb”</em></strong> [latex]b[/latex]-nél <strong><em>az oszthatósági reláció szerint</em></strong>, amikor az [latex](a)[/latex] főideál <strong><em>„nagyobb”</em></strong> a [latex](b)[/latex] főideálnál <strong><em>a tartalmazási reláció szerint</em></strong>. A két részbenrendezési reláció tehát épp egymás fordítottja, és mivel a [latex]D[/latex] halmaz elemei kölcsönösen egyértelműen megfeleltethetők az általuk generált főideálokkal, ezért a két Hasse-diagram csak az irányításban különbözik egymástól.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A főideálok és a számelmélet alaptétele</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Most vizsgáljuk meg, hogy az iménti észrevételeknek mi köze van a <strong><em>számelmélet alaptételéhez</em></strong>. Ahhoz, hogy a számelmélet alaptétele teljesüljön egy integritástartományon alapvetően két dolog kell: a prímtényezős felbontás <strong><em>létezése</em></strong>, illetve annak <strong><em>egyértelműsége</em></strong>. Ezt precízen a [yp_element slug="szamelmelet-alaptetele" type="link" /]ban fogalmaztuk meg.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az <strong><em>egyértelműségi állításra</em></strong> már mutattunk egy olyan feltételt, amely <strong><em>szükséges és egyben elégséges is</em></strong>. A [yp_element slug="szamelmelet-alaptetelenek-szukseges-feltetele" type="link" /] és a [yp_element slug="felbontas-egyertelmusegenek-elegseges-feltetele" type="link" /] alapján az <strong><em>egyértelműségi állítás</em></strong> akkor és csak akkor teljesül egy [latex]R[/latex] integritástartományon, ha [latex]R[/latex] <strong><em>minden felbonthatatlan eleme prímtulajdonságú</em></strong>. Ez tehát biztosan része lesz annak a feltételrendszernek, amely pontosan meghatározza, hogy mikor teljesül az alaptétel és mikor nem. Nem érünk azonban sokat az egyértelműségi garanciával, ha magának a prímtényezős felbontásnak a <strong><em>létezése</em></strong> nem garantált. Ebben a szakaszban arról lesz szó, hogy a <strong><em>létezéshez</em></strong> mire van szükség pontosan.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ehhez elevenítsük fel egy kicsit a <a rel="noreferrer noopener" aria-label="17. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/17-euklideszi-algoritmus-maradekos-osztas-legnagyobb-kozos-oszto-euklideszi-gyuru#euclidean-domain" target="_blank">17. részben</a> definiált <strong><em>euklidészi gyűrű</em></strong> fogalmát. Ezeknek az integritástartományoknak az volt a speciális tulajdonságuk, hogy minden elemükhöz hozzá tudtunk rendelni egy nemnegatív egész mérőszámot, az úgynevezett <strong><em>euklidészi normát</em></strong>. Méghozzá olymódon, hogy egyrészt bármely kéttényezős szorzat tényezőinek a normája <strong><em>legfeljebb akkora</em></strong> legyen, mint magának a szorzatnak normája ([yp_element slug="euklideszi-norma-egyenlotlensegi-tulajdonsaga" type="link" /]), másrészt <strong><em>egyenlőség akkor és csak akkor</em></strong> teljesüljön, ha valamelyik tényező <strong><em>egység</em></strong> ([yp_element slug="euklideszi-norma-szigoru-egyenlotlensegenek-feltetele" type="link" /]). Tulajdonképpen ez garantálja a prímtényezős felbontás létezését, hiszen bármely [latex]a[/latex] elem esetén az alábbi 3 eset lehetséges:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} -->
+<ol><li>Az [latex]a[/latex] elem egyáltalán nem bontható szorzatra.</li><li>Az [latex]a[/latex] elemnek csak triviális felbontása létezik.</li><li>Az [latex]a[/latex] elemnek létezik nemtriviális [latex]a=bc[/latex] felbontása.</li></ol>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>Az 1. és a 2. esetben [latex]a[/latex]-t <strong><em>felbonthatatlan elemnek</em></strong> neveztük ([yp_element slug="felbonthatatlan-elem" type="link" /]), amelynek a prímtényezős felbontása alatt a [yp_element slug="szamelmelet-alaptetele" type="link" /] szerint önmagát, mint egytényezős szorzatot értjük. A probléma a 3. esettel lehet, méghozzá akkor, ha a [latex]bc[/latex] szorzat tényezői a <strong><em>végtelenségig bonthatók</em></strong> tovább <strong><em>nemtriviális módon</em></strong>. A [yp_element slug="szamelmelet-alaptetele-nem-egysegelemes-integritastartomanyokban" type="link" /] bizonyításában mutattunk is egy ilyen példát.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az euklidészi gyűrűkben azonban az euklidészi norma említett tulajdonságai szerencsére ezt megakadályozzák. Ez ugyanis azt jelentené, hogy a „felbontási fában” lefelé haladva egy olyan, gyűrűelemekből álló végtelen sorozatot tudnánk mutatni, amelyben az elemeknek egyre kisebb és kisebb az <strong><em>euklidészi normájuk</em></strong>. Ez viszont lehetetlen, hiszen az euklidészi norma értékkészlete a természetes számok [latex]\N[/latex] halmaza, márpedig a [yp_element slug="termeszetes-szamok-minimumtetele" type="link" /]ben megmutattuk, hogy [latex]\N[/latex] bármely részhalmazának létezik minimuma. Egy idő után tehát a „felbontási fa” minden ágán garantáltan „bele kell ütköznünk” egy olyan elembe, amely tovább már nem bontható nemtriviálisan. Habár megemlítettük, hogy létezik olyan alaptételes gyűrű is, amely nem euklidészi, ám a „felbonthatatlan elembe ütközés garanciájának” alapgondolata talán átmenthető erre az általános esetre is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ehhez a <strong><em>főideálok</em></strong> jelentik a kulcsot. Ugye azt szeretnénk, hogy bármely elem felbontási fájának minden ágán előbb-utóbb garantáltan beleütközzünk egy felbonthatatlan elembe. Ehhez az kell, hogy a gyűrű bármely részhalmazában <strong><em>létezzen „minimális” elem oszthatósági reláció szerint</em></strong>. Az előző szakaszban felvázolt példa alapján ez pontosan akkor fog teljesülni, ha <strong><em>létezik „maximális” főideál a tartalmazási reláció szerint</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ezt fogalmazza meg precízen az alábbi tétel, amely tehát egy szükséges és elégséges feltételrendszert ad a számelmélet alaptételére bármilyen integritástartomány esetén.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="szamelmelet-alaptetelenek-szukseges-es-elegseges-feltetele" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="szamelmelet-alaptetelenek-szukseges-es-elegseges-feltetele-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezzel végérvényesen lezárthatjuk a számelmélet alaptételének kérdését, hiszen az iménti tétel segítségével már bármilyen integritástartományról egyértelműen eldönthető, hogy alaptételes-e vagy sem.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="principal-ideal-domains"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Főideálgyűrűk</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Végül megismerkedünk egy számunkra nagyon fontos gyűrűosztállyal, amelybe – mint látni fogjuk – az egész számok [latex]\Z[/latex] gyűrűje is beletartozik. Ezeknek a speciális gyűrűknek fontos tulajdonságaik vannak a következő részekben tárgyalt kriptográfiai eljárások szempontjából. Előszöris nézzük meg, mik ezek a speciális gyűrűk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="foidealgyuruk" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Egy főideálgyűrűben tehát minden ideál valamelyik gyűrűelemből, illetve annak többszöröseiből áll. Minket elsősorban az egész számok [latex]\Z[/latex] gyűrűje fog érdekelni a további részekben. Minden bizonnyal nem túl meglepő, hogy [latex]\Z[/latex] is egy főideálgyűrű. A most következő tételben egy ennél erősebb állítást igazolunk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="euklideszi-gyuru-foidealgyuru" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="euklideszi-gyuru-foidealgyuru-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Felhívnánk a figyelmet arra, hogy az iménti <strong><em>tétel megfordítása nem igaz</em></strong>. <strong><em>Létezik olyan főideálgyűrű, amely nem euklidészi</em></strong>. Ilyenek bizonyos úgynevezett <a rel="noreferrer noopener" aria-label="algebrai egész számokból (új fülön nyitja meg)" href="https://hu.wikipedia.org/wiki/Algebrai_eg%C3%A9sz_sz%C3%A1m" target="_blank">algebrai egész számokból</a> alkotott gyűrűk, ám ennek a témakörnek a részleteire a szükséges algebrai ismeretek hiányában egyelőre nem tudunk bővebben kitérni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az euklidészi gyűrűkről szóló <a rel="noreferrer noopener" aria-label="17. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/17-euklideszi-algoritmus-maradekos-osztas-legnagyobb-kozos-oszto-euklideszi-gyuru/" target="_blank">17. részben</a> már igazoltuk, hogy teljesül bennük a <strong><em>számelmélet alaptétele</em></strong>. Most ugyanezt fogjuk igazolni az ennél általánosabb főideálgyűrűkre is, azaz megmutatjuk, hogy minden főideálgyűrű teljesíti az előző szakaszban bizonyított [yp_element slug="szamelmelet-alaptetelenek-szukseges-es-elegseges-feltetele" type="link" /] szerinti feltételeket.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az <strong><em>1. feltétel</em></strong> ugye azt követeli meg, hogy a főideálokból álló halmazrendszer bármely nemüres részhalmazában legyen maximális elem. Ehhez először igazolni fogunk egy segédtételt. A [yp_element slug="idealok-metszete-ideal" type="link" /]ben már megmutattuk, hogy ideálok metszete is ideál. De vajon mi a helyzet az olyan halmazokkal, amelyek ideálok <strong><em>uniójaként</em></strong> állnak elő? Az ilyen halmazok általában nem ideálok. Tekintsük például az egész számok [latex]\Z[/latex] gyűrűjében lévő [latex](2)[/latex] és [latex](3)[/latex] főideálokat. Ezek <strong><em>uniója</em></strong> azokból a számokból áll, amelyek [latex]2[/latex]-vel <strong><em>VAGY</em></strong> [latex]3[/latex]-mal oszthatók.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez a halmaz könnyen láthatóan nem ideál, hiszen még csak nem is részgyűrű, mivel nem zárt az összeadásra. Például a [latex]2[/latex] és a [latex]3[/latex] benne van ebben az unióban, de az összegük nem, mivel az [latex]5[/latex] nem többszöröse sem [latex]2[/latex]-nek, sem pedig [latex]3[/latex]-nak. Az alábbi segédtétel egy olyan speciális esetről szól, amikor bizonyos ideálok uniója mégis ideál. Felhívjuk a figyelmet, hogy a tétel nem kizárólag integritástartományokra, hanem <strong><em>bármilyen gyűrűre</em></strong> alkalmazható.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="idealok-unioja-ideal" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Például az imént említett [latex](2)[/latex] és [latex](3)[/latex] főideálokra nem alkalmazható a tétel, mert sem [latex](2)\sube (3)[/latex], sem pedig [latex](3)\sube (2)[/latex] nem teljesül. Ezzel szemben a [latex](8)\sube (4)\sube (2)[/latex] főideálokból álló sorozatra teljesül a feltétel, így a tétel alapján a [latex](8)\cup (4)\cup (2)[/latex] unióhalmaz is ideál [latex]\Z[/latex]-ben. Ez végülis nyilvánvaló, hiszen a [latex](8)[/latex] és a [latex](4)[/latex] főideál is részhalmaza a [latex](2)[/latex] főideálnak, így ezek uniója valójában maga a [latex](2)[/latex] főideál.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ami már kevésbé nyilvánvaló, hogy a tétel végtelen sok ideálból álló halmazrendszerekre is működik. Sőt, még akkor is, ha ezek között esetleg nincs is a [yp_element slug="halmazrendszer-minimuma-es-maximuma" type="link" /] szerinti értelemben vett legbővebb ideál. Ilyen lehet például egy ideálokból álló végtelen [latex]I_1\sube I_2\sube I_3\sube \ldots[/latex] sorozat. Nézzük meg, hogy miért.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="idealok-unioja-ideal-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most rátérünk annak igazolására, hogy minden főideálgyűrű teljesíti a [yp_element slug="szamelmelet-alaptetelenek-szukseges-es-elegseges-feltetele" type="link" /] szerinti <strong><em>1. feltételt</em></strong>. Az alábbi tétel valójában egy ennél erősebb állítást mond ki, és az előző tételhez hasonlóan nem csak integritástartományokra, hanem <strong><em>bármilyen gyűrűre</em></strong> működik.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="vegesen-generalt-idealok-maximumfeltetele" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Eszerint tehát ahhoz, hogy egy gyűrű főideáljaira teljesüljön a [yp_element slug="szamelmelet-alaptetelenek-szukseges-es-elegseges-feltetele" type="link" /] szerinti <strong><em>1. feltétel</em></strong>, elegendő, ha az ideálok végesen generáltak. Ez speciálisan főideálgyűrűkre nyilván teljesül, hiszen az ezekben lévő ideálok szintén végesen generáltak – konkrétan egyetlen elem által.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="vegesen-generalt-idealok-maximumfeltetele-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ahhoz, hogy főideálgyűrűkre is igazoljuk az alaptétel teljesülését, hátravan még a [yp_element slug="szamelmelet-alaptetelenek-szukseges-es-elegseges-feltetele" type="link" /] szerinti <strong><em>2. feltétel</em></strong>. Ez azt követeli meg, hogy <strong><em>minden felbonthatatlan elem prímtulajdonságú</em></strong> legyen. Szerencsére ehhez a [yp_element slug="kituntetett-kozos-oszto-letezesenek-kovetkezmenye" type="link" /] alapján elegendő azt igazolni, hogy egy főideálgyűrűben bármely két elemnek létezik kitüntetett közös osztója ([yp_element slug="kituntetett-kozos-oszto" type="link" /]).</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Nézzük hát meg, hogy milyen összefüggés van a kitüntetett közös osztó, és a gyűrű ideáljai között.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="idealok-es-a-kituntetett-kozos-oszto" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="idealok-es-a-kituntetett-kozos-oszto-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="idealok-es-a-kituntetett-kozos-oszto-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mostmár könnyedén igazolhatjuk az alaptétel teljesülését minden főideálgyűrűre.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="foidealgyurukben-teljesul-a-szamelmelet-alaptetele" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="foidealgyurukben-teljesul-a-szamelmelet-alaptetele-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Összefoglalás</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Most tehát már van egy átfogó képünk a különböző típusú gyűrűkről. Az alábbi ábrán az eddig megismert összes gyűrűosztály, és ezek egymáshoz való viszonya látható:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":5168,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_19_gyuruosztalyok.jpg" alt="Az eddig megismert gyűrűosztályok térképe" class="wp-image-5168"/><figcaption>Az eddig megismert gyűrűosztályok térképe</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Az összes gyűrű között 3 nagy gyűrűosztályt határolhatunk el. Ezek az alábbiak:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} -->
+<ol><li><strong><em>Kommutatív gyűrűk:</em></strong> ezekben az összeadáshoz hasonlóan a szorzás is kommutatív, azaz a tényezők sorrendje felcserélhető.</li><li><strong><em>Egységelemes gyűrűk:</em></strong> ezekben az összeadáshoz hasonlóan a szorzásra nézve is létezik neutrális elem.</li><li><strong><em>Nullosztómentes gyűrűk:</em></strong> ezekben két elem szorzata garantáltan csak akkor lehet a nullelem, ha legalább az egyik tényező szintén a nullelem.</li></ol>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>Azokat a gyűrűket neveztük <strong><em>integritástartományoknak</em></strong>, amelyek egyszerre kommutatívak és nullosztómentesek. Ez a fenti ábrán a zsúfoltság elkerülése érdekében nincs külön megjelenítve. Külön osztályt alkotnak azok az integritástartományok, amelyekben teljesül a számelmélet alaptétele. Ezeket az ábrán <strong><em>alaptételes gyűrűknek</em></strong> neveztük el. Minthogy a [yp_element slug="szamelmelet-alaptetele-nem-egysegelemes-integritastartomanyokban" type="link" /] alapján az ilyen gyűrűkben biztosan létezik egységelem, ezért ezek a fenti 3 nagy gyűrűosztály metszetében helyezkednek el.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az alaptételes gyűrűk alosztályát alkotják az ebben a részben megismert <strong><em>főideálgyűrűk</em></strong>. Ezekben az integritástartományokban bármely két elemnek garantáltan létezik kitüntetett közös osztója, és ez igen fontos lesz számunkra a további részekben. Fontos megjegyezni, hogy léteznek olyan alaptételes gyűrűk, amelyek nem főideálgyűrűk. Ám ilyen példákra a szükséges algebrai ismeretek hiányában egyelőre szintén nem tudunk kitérni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Végül a <a rel="noreferrer noopener" aria-label="17. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/17-euklideszi-algoritmus-maradekos-osztas-legnagyobb-kozos-oszto-euklideszi-gyuru/" target="_blank">17. részben</a> volt szó az <strong><em>euklidészi gyűrűkről</em></strong>, amelyekben nemcsak a kitüntetett közös osztó létezése garantált, hanem a <strong><em>maradékos osztás</em></strong> elvégezhetősége révén egy gyors algoritmust is kaptunk a kezünkbe ennek kiszámítására. Ezt az eljárást <strong><em>euklidészi algoritmusnak</em></strong> neveztük el, amely szintén egy fontos összetevője a hamarosan terítékre kerülő kriptográfiai eljárásoknak. A [yp_element slug="abszolutertek-euklideszi-norma" type="link" /]ben igazoltuk, hogy az egész számok [latex]\Z[/latex] gyűrűje is ehhez a gyűrűosztályhoz tartozik.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ebben a részben tehát végérvényesen lezártuk a számelmélet alaptételének kérdését azáltal, hogy egyszerre szükséges és elégséges feltételrendszert mutattunk a teljesülésére. Ehhez egy rövid halmazelméleti gyorstalpaló után az ideálok elméletének néhány alapvető összefüggésével ismerkedtünk meg. Végül bevezettük az euklidészi gyűrűknél általánosabb főideálgyűrűk fogalmát, és igazoltuk, hogy ezekben is mindig teljesül az alaptétel.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A következő részekben elsősorban a főideálgyűrűk – és speciálisan az egész számok [latex]\Z[/latex] gyűrűjének – ideáljaival, valamint az ezek szerinti kongruenciákkal és faktorgyűrűkkel fogunk foglalkozni. Ennek során az RSA-algoritmus és a különböző prímtesztelő eljárások számelméleti összetevőivel ismerkedünk meg.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A következő részt <a href="https://youproof.hu/kriptografia/20-kongruencia-redukalt-maradekosztaly-euler-fuggveny-linearis-kongruencia-maradekrendszer-euler-fermat-tetel/">itt</a> találod...</em></strong></p>
+<!-- /wp:paragraph -->

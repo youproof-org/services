@@ -1,0 +1,107 @@
+<!-- wp:paragraph -->
+<p>Elegendő a 2. állítást igazolni, abból ugyanis automatikusan következik a megoldásszámra vonatkozó 1. állítás. Azt mondtuk, hogy az [latex]s[/latex] egész szám által reprezentált [latex][s]_m[/latex] maradékosztály megoldása a kongruenciának, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]as\equiv b\pmod m[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Válasszunk most egy tetszőleges [latex]t[/latex] egész számot. Az általa reprezentált [latex][t]_m[/latex] maradékosztály akkor és csak akkor lesz megoldása a kongruenciának, ha teljesül [latex]at\equiv b\pmod m[/latex]. Mivel a kongruencia szimmetrikus és tranzitív ([yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" type="link" /] 2. és 3. pont), ezért ez pontosan az alábbit jelenti:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]as\equiv at\pmod m[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A kongruenciák egyszerűsítéséről szóló [yp_element slug="egesz-szamok-kozotti-kongruencia-egyszerusitese" type="link" /] alapján mindkét oldalt egyszerűsíthetjük [latex]a[/latex]-val, ám eközben a modulust is „el kell osztanunk” az [latex](a,m)[/latex] kitüntetett közös osztóval, azaz jelen esetben [latex]d[/latex]-vel. A fenti kongruencia tehát pontosan az alábbi esetben teljesül:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]s\equiv t\pmod{\frac{m}{d}}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Vagyis a [latex]t[/latex] által reprezentált [latex][t]_m[/latex] maradékosztály pontosan akkor lesz megoldás, ha [latex]t[/latex] ugyanabba a modulo [latex]\frac{m}{d}[/latex] maradékosztályba esik, mint [latex]s[/latex], azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][s]_{\frac{m}{d}}=[t]_{\frac{m}{d}}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez a [yp_element slug="egesz-szamok-maradekosztalyai" type="link" /] alapján épp azt jelenti, hogy [latex]t[/latex] felírható az alábbi alakban valamilyen alkalmasan választott [latex]k[/latex] egész számmal:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]t=s+k\cdot \frac{m}{d}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt kaptuk tehát, hogy amennyiben ismerünk egy [latex][s]_m[/latex] megoldást, akkor az összes többi megoldást előállíthatjuk [latex][s+k\cdot \frac{m}{d}]_m[/latex] alakban. Így már csak azt kell igazolni, hogy [latex]k[/latex]-val végigfutva az összes egész számon épp a tétel 2. állításában szereplő [latex]d[/latex] darab modulo [latex]m[/latex] maradékosztályt kapjuk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Nézzük meg ezért, hogy két különböző [latex]k_1[/latex] és [latex]k_2[/latex] esetén az [latex]s+k_1\frac{m}{d}[/latex] és [latex]s+k_2\frac{m}{d}[/latex] kifejezések mikor fogják ugyanazt a maradékosztályt reprezentálni, azaz mikor fog teljesülni az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][s+k_1\frac{m}{d}]_m=[s+k_2\frac{m}{d}]_m[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez ugye pontosan akkor teljesül, ha fennáll az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]s+k_1\frac{m}{d}\equiv s+k_2\frac{m}{d} \pmod m[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" type="link" /] 6. pontja miatt mindkét oldalból kivonhatunk [latex]s[/latex]-t:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]k_1\frac{m}{d}\equiv k_2\frac{m}{d} \pmod m[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="egesz-szamok-kozotti-kongruencia-egyszerusitese" type="link" /] alapján mindkét oldalt egyszerűsíthetjük [latex]\frac{m}{d}[/latex]-vel. <strong><em>Vigyáznunk kell azonban, mivel ilyenkor ugye a modulust is egyszerűsíteni kell [latex]\frac{m}{d}[/latex] és [latex]m[/latex] kitüntetett közös osztójával!</em></strong> Azaz a fenti kongruencia pontosan akkor teljesül, amikor az alábbi kongruencia is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]k_1\equiv k_2 \pmod{\frac{m}{(\frac{m}{d}, m)}}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most vizsgáljuk meg, hogy tulajdonképpen mivel egyezik meg az itt szereplő modulus. Ne feledjük, hogy itt nem törtekről van szó, hiszen az egész számok [latex]\Z[/latex] gyűrűjében vagyunk, ahol nem értelmezhető az osztás művelete. Ehelyett például az [latex]\frac{m}{d}[/latex] csak egy <strong><em>jelölés</em></strong>, amely azt az <strong><em>egész számot</em></strong> jelöli, amellyel a [latex]d[/latex] <strong><em>egész számot</em></strong> megszorozva az [latex]m[/latex] <strong><em>egész számot</em></strong> kapjuk eredményül. Azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\frac{m}{d} \cdot d = m[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Feltéve persze, ha ilyen létezik, aminek ugye a feltétele az [latex]d|m[/latex] oszthatóság. Ez jelen esetben nyilván fennáll, mivel azt mondtuk, hogy [latex]d[/latex] az [latex]a[/latex] és [latex]m[/latex] kitüntetett közös osztója. Ám ekkor teljesül az [latex]\frac{m}{d}|m[/latex] oszthatóság is, így az [latex](\frac{m}{d},m)[/latex] kitüntetett közös osztó a [yp_element slug="kituntetett-kozos-oszto-tulajdonsagai" type="link" /] 4. pontja miatt [latex]\frac{m}{d}[/latex]-vel egyezik meg. A fenti kongruenciában tehát a modulus így hozható egyszerűbb formára:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\frac{m}{(\frac{m}{d}, m)}=\frac{m}{(\frac{m}{d})}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez tehát azt az egész számot jelöli, amellyel az [latex]\frac{m}{d}[/latex] egész számot megszorozva az [latex]m[/latex] egész számot kapjuk eredményül. A fentebbi [latex]\frac{m}{d} \cdot d = m[/latex] összefüggés alapján ez épp [latex]d[/latex]-vel egyezik meg. A fenti kongruencia tehát tulajdonképpen így néz ki:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]k_1\equiv k_2\pmod d[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt kaptuk tehát, hogy az [latex][s+k_1\frac{m}{d}]_m[/latex] és [latex][s+k_2\frac{m}{d}]_m[/latex] modulo [latex]m[/latex] maradékosztályok akkor és csak akkor egyeznek meg, amikor a [latex][k_1]_d[/latex] és [latex][k_2]_d[/latex] modulo [latex]d[/latex] maradékosztályok megegyeznek.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez viszont pontosan azt jelenti, hogy épp annyi megoldása van az [latex]ax\equiv b\pmod m[/latex] lineáris kongurenciának, ahány modulo [latex]d[/latex] maradékosztály létezik, ezek száma viszont a [yp_element slug="egesz-szamok-maradekosztalyai" type="link" /] alapján [latex]d[/latex]. Így tehát ha [latex]k[/latex] végigfut a [latex]0[/latex], [latex]1[/latex], [latex]2[/latex], ..., [latex]d-1[/latex] egész számokon, akkor épp a 2. állításban szereplő [latex][s]_m[/latex], [latex][s+\frac{m}{d}]_m[/latex], [latex][s+2\frac{m}{d}]_m[/latex], ..., [latex][s+(d-1)\frac{m}{d}]_m[/latex] maradékosztályokat kapjuk megoldásként.</p>
+<!-- /wp:paragraph -->

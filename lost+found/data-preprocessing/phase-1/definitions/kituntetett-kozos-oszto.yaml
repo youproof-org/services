@@ -1,0 +1,18 @@
+type: definition
+name: kituntetett-kozos-oszto
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy $a$ és $b$ egy valamilyen $R$ integritástartomány tetszőleges elemei.
+  - type: ordered-list
+    lead-in: |
+      Az $a$ és $b$ elemek ***kitüntetett közös osztója*** a $d$ elem, ha teljesül az alábbi két tulajdonság:
+    items:
+      - 'Fennállnak a $d|a$ és $d|b$ oszthatóságok.'
+      - 'Tetszőleges $c$ elem esetén ha fennállnak a $c|a$ és $c|b$ oszthatóságok, akkor fennáll a $c|d$
+        oszthatóság is.'
+  - type: narrative
+    content: |
+      Azaz a kitüntetett közös osztó minden közös osztónak többszöröse. Az $a$ és $b$ elemek kitüntetett közös
+      osztójának jelölése: $(a,b)$.

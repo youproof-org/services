@@ -1,0 +1,132 @@
+<!-- wp:paragraph -->
+<p><strong><em>Először a Carmichael-számok paritására vonatkozó állítást igazoljuk.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Legyen [latex]n[/latex] tetszőleges Carmichael-szám. Az [latex]n[/latex] és az [latex]n-1[/latex] egész számok egymáshoz relatív prímek. Ugyanis bármilyen közös osztó a [yp_element slug="oszthatosag-tulajdonsagai" type="link" /] 6. pontja alapján osztója e két szám különbségének, azaz [latex]1[/latex]-nek, és így a [yp_element slug="egysegek-es-egysegelem-viszonya" type="link" /] miatt ez a közös osztó csak egység lehet. Így tehát az [latex][n-1]_n[/latex] egy redukált maradékosztály, és mivel [latex]n[/latex] Carmichael-szám, ezért ez a maradékosztály a [yp_element slug="carmichael-szamok" type="link" /] alapján biztosan nem Fermat-tanú. Azaz a [yp_element slug="fermat-tanu" type="link" /] értelmében teljesül az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](n-1)^{n-1}\equiv 1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]n-1\equiv -1\pmod n[/latex] kongruencia nyilván teljesül, ezért a fenti kongruenciát a [yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" type="link" /] 8. pontja alapján a következőképpen írhatjuk át:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](-1)^{n-1}\equiv 1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt viszont tudjuk, hogy a [latex]-1[/latex] bármilyen hatványa [latex]+1[/latex] vagy [latex]-1[/latex] attól függően, hogy a kitevő páros vagy páratlan. Tegyük fel <strong><em>indirekt</em></strong>, hogy jelen esetben [latex]n-1[/latex] páratlan. Ekkor a fenti kongruencia így néz ki:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]-1\equiv 1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez a [yp_element slug="egesz-szamok-kozotti-kongruencia" type="link" /] 3. pontja alapján azt jelentené, hogy teljesül az alábbi oszthatóság:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]n|\underbrace{1-(-1)}_{=2}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez viszont lehetetlen, hiszen [latex]n[/latex] Carmichael-szám, emiatt pozitív és összetett, következésképp biztosan nagyobb [latex]2[/latex]-nél, vagyis nem lehet osztója neki. Indirekt feltevésünk, miszerint [latex]n-1[/latex] páratlan hibás volt, azaz [latex]n-1[/latex] páros, és így [latex]n[/latex] <strong><em>valóban páratlan</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Most igazoljuk a Carmichael-számok prímtényezőire vonatkozó állítást.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Legyen [latex]n[/latex] továbbra is tetszőleges Carmichael-szám, de tegyük fel <strong><em>indirekt</em></strong>, hogy neki csak két prímtényezője van, azaz felírható [latex]n=pq[/latex] alakban valamilyen alkalmasan választott [latex]p[/latex] és [latex]q[/latex] prímszámokkal. A <strong><em>Korselt-kritérium</em></strong> ([yp_element slug="korselt-kriterium" type="link" /]) alapján [latex]n[/latex] négyzetmentes, így e két prímtényező biztosan különbözik egymástól, azaz [latex]p\
+eq q[/latex]. Ezenkívül az általánosság megsértése nélkül feltehetjük, hogy [latex]p\gt q[/latex], hiszen ha nem így lenne, akkor szerepük felcserélésével az alábbi gondolatmenet ugyanígy végigjátszható. Továbbá azt is feltehetjük, hogy mindkét prímtényező pozitív. Ha ugyanis nem így lenne, akkor az ő ellentettjükre ez már teljesül – hiszen [latex]n[/latex] Carmichael-szám, és így pozitív –, és az alábbi gondolatmenetet rájuk alkalmazhatjuk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Szintén a <strong><em>Korselt-kritérium</em></strong> ([yp_element slug="korselt-kriterium" type="link" /]) alapján tudjuk, hogy teljesül az alábbi oszthatóság:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]p-1|n-1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azaz létezik olyan [latex]k[/latex] egész szám, amelyre teljesül az alábbi egyenlet:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](p-1)\cdot k=n-1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel azt feltételeztük, hogy [latex]n=pq[/latex], ezért ez így is írható:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](p-1)\cdot k=\underbrace{pq}_{=n}-1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A jobboldal értéke nem változik, ha hozzá is adunk [latex]q[/latex]-t és le is vonunk belőle [latex]q[/latex]-t:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](p-1)\cdot k=pq-q+q-1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="gyuru-test" type="link" /]ban szereplő disztributivitási szabályok alapján ez így is írható:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](p-1)\cdot k=(p-1)\cdot q+q-1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mindkét oldalból levonhatunk [latex](p-1)q[/latex]-t:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](p-1)\cdot k - (p-1)\cdot q=q-1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most a baloldalra alkalmazhatjuk a disztributivitási szabályt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](p-1)\cdot (k-q)=q-1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt kaptuk tehát, hogy létezik olyan egész szám – nevezetesen a [latex]k-q[/latex] – amellyel [latex]p-1[/latex]-et megszorozva [latex]q-1[/latex]-et kapunk. Teljesül tehát az alábbi oszthatóság:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]p-1|q-1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]q[/latex] egy pozitív prím, így [latex]q-1[/latex] is pozitív, ezért a [yp_element slug="oszthatosag-es-rendezesi-relacio-kapcsolata" type="link" /] alapján ő legalább akkora, mint bármely osztója, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]p-1\leq q-1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="rendezett-gyuru" type="link" /]ban szereplő 1. rendezési axióma alapján mindkét oldalhoz [latex]1[/latex]-et adva ezt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]p\leq q[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez viszont <strong><em>ellentmondás</em></strong>, hiszen azt feltételeztük, hogy [latex]p\gt q[/latex]. Ugyanilyen gondolatmenet alapján [latex]p\lt q[/latex]-ból [latex]p\geq q[/latex] következne, ami szintén ellentmondás. Indirekt feltételezésünk tehát hibás volt, és így [latex]n[/latex] biztosan nem írható fel [latex]pq[/latex] alakban, azaz szükségképpen valóban <strong><em>legalább 3 prímtényezője kell legyen</em></strong>.</p>
+<!-- /wp:paragraph -->

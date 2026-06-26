@@ -1,0 +1,112 @@
+type: proof
+name: lagrange-tetele-bizonyitas
+remarks: []
+references:
+  ekvivalenciarelacio-tulajdonsagai:
+    target:
+      type: theorem
+      name: ekvivalenciarelacio-tulajdonsagai
+  mellekosztalyok:
+    target:
+      type: theorem
+      name: mellekosztalyok
+  oszthatosag:
+    target:
+      type: definition
+      name: oszthatosag
+content:
+  - type: narrative
+    content: |
+      A bizonyításban a [mellekosztalyok]ben definiált ***baloldali mellékosztályokat*** fogjuk használni, de
+      értelemszerűen ugyanígy használhatnánk a jobboldali mellékosztályokat is.
+  - type: narrative
+    content: |
+      Az említett tételben definiált $\sim$ reláció egy ***ekvivalenciareláció***, melynek ekvivalencia-osztályai a
+      $H$ szerinti baloldali mellékosztályok. Ezek az ekvivalenciarelációkról szóló
+      [ekvivalenciarelacio-tulajdonsagai] alapján $G$ egy ***partícióját*** alkotják. Azaz semelyik két baloldali
+      mellékosztálynak nincs közös eleme, és uniójuk a teljes $G$.
+  - type: figure
+    lead-in: |
+      Ez az elrendezés látható az alábbi ábrán:
+    src: baloldali_mellekosztalyok_particioja.jpg
+    alt: Baloldali mellékosztályok partíciója
+    caption: Baloldali mellékosztályok partíciója
+  - type: narrative
+    content: |
+      Tekintsük most a $G$ csoportnak egy tetszőleges $H$ szerinti baloldali mellékosztályát, és válasszunk ki
+      belőle egy tetszőleges $g$ elemet, amelyet reprezentánselemként fogunk használni a továbbiakban. A kérdéses
+      mellékosztály tehát a $gH$ halmaz lesz. Most egy ***kölcsönösen egyértelmű megfeleltetést*** fogunk
+      létesíteni a $gH$ mellékosztály és a $H$ részcsoport elemei között.
+  - type: narrative
+    content: |
+      A [mellekosztalyok] illetve a hozzá tartozó megjegyzés alapján a $gH$ mellékosztály tetszőleges $x$ eleme
+      esetén a $g^{-1}x$ szorzat a $H$ részcsoportnak egy eleme.
+  - type: formula
+    lead-in: |
+      Definiáljunk tehát egy $f:gH\to H$ függvényt a következőképpen:
+    content: |
+      f(x)=g^{-1}x
+  - type: narrative
+    content: |
+      Azt kell megmutatni, hogy $f$ kölcsönösen egyértelmű megfeleltetés $gH$ és $H$ között.
+  - type: ordered-list
+    lead-in: |
+      Ez az alábbi két dolgot jelenti:
+    items:
+      - 'Tetszőleges $x\in gH$ és $y\in gH$ esetén $f(x)=f(y)$ akkor és csak akkor, ha $x=y$. Azaz az $f$ függvény
+        $H$ minden elemét ***legfeljebb egy*** $gH$-beli elemhez rendeli hozzá.'
+      - 'Tetszőleges $h\in H$-hoz létezik olyan $x\in gH$, amelyre $f(x)=h$ teljesül. Azaz az $f$ függvény $H$
+        minden elemét ***legalább egy*** $gH$-beli elemhez rendeli hozzá.'
+  - type: formula
+    lead-in: |
+      ***Nézzük az 1. állítást!*** Ha $x=y$, akkor nyilván teljesül az $f(x)=f(y)$ egyenlőség, hiszen:
+    content: |
+      f(x)=g^{-1}x=g^{-1}y=f(y)
+  - type: formula
+    lead-in: |
+      Visszafelé: ha $f(x)=f(y)$, akkor az azt jelenti, hogy teljesül az alábbi egyenlőség:
+    content: |
+      g^{-1}x=g^{-1}y
+  - type: formula
+    lead-in: |
+      Szorozzuk meg mindkét oldalt balról $g$-vel (itt $e$-vel jelöltük a $G$ csoport egységelemét):
+    content: |
+      \underbrace{gg^{-1}}_{=e}\cdot x=\underbrace{gg^{-1}}_{=e}\cdot y
+  - type: narrative
+    content: |
+      Ez viszont épp a kívánt $x=y$ egyenlőség.
+  - type: narrative
+    content: |
+      ***Most nézzük a 2. állítást!*** Keresnünk kell tehát egy olyan $x$ elemet a $gH$ mellékosztályban, amelyhez
+      az $f$ függvény épp a $H$ részcsoport $h$ elemét rendeli hozzá.
+  - type: formula
+    lead-in: |
+      Keressük tehát az alábbi egyenlet megoldását:
+    content: |
+      \underbrace{g^{-1}x}_{=f(x)}=h
+  - type: formula
+    lead-in: |
+      Szorozzuk meg mindkét oldalt balról $g$-vel (itt $e$-vel jelöltük a $G$ csoport egységelemét):
+    content: |
+      \underbrace{gg^{-1}}_{=e}\cdot x=gh
+  - type: narrative
+    content: |
+      A baloldalról az egységelem elhagyható, így végülis a keresett $x$ előállításának képletét kapjuk: $x=gh$.
+  - type: narrative
+    content: |
+      ***Összefoglalva*** tehát a fenti $f$ függvény mintájára kölcsönösen egyértelmű megfeleltetés létesíthető a
+      $H$ részcsoport, és bármely $H$ szerinti baloldali mellékosztály között.
+  - type: figure
+    lead-in: |
+      Néhány mellékosztály esetére ez látható az alábbi ábrán:
+    src: bijekcio_reszcsoport_es_mellekosztalyai_kozott.jpg
+    alt: Részcsoport és mellékosztályai
+    caption: Részcsoport és mellékosztályai
+  - type: narrative
+    content: |
+      Ez azt jelenti, hogy bármely $H$ szerinti baloldali mellékosztálynak pontosan ugyanannyi eleme van, mint
+      magának $H$-nak. Ha tehát $H$ rendjét megszorozzuk a baloldali mellékosztályok számával, akkor épp $G$
+      rendjét kapjuk eredményül, hiszen a baloldali mellékosztályok $G$ egy partícióját alkotják. Más szavakkal
+      találtunk egy olyan egész számot &ndash; a $H$ szerinti baloldali mellékosztályok számát &ndash;, amellyel
+      megszorozva $H$ rendjét épp $G$ rendjét kapjuk. Az oszthatóság [oszthatosag]ja alapján ez épp azt jelenti,
+      hogy $|H|$ osztója $|G|$-nek.

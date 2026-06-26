@@ -1,0 +1,25 @@
+type: theorem
+name: euklideszi-norma-egyenlotlensegi-tulajdonsaga
+proofs:
+  - euklideszi-norma-egyenlotlensegi-tulajdonsaga-bizonyitas
+remarks: []
+references:
+  euklideszi-gyuru:
+    target:
+      type: definition
+      name: euklideszi-gyuru
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ tetszőleges ***euklidészi gyűrű***, azaz tegyük fel, hogy $R$-ben létezik valamilyen $f:R \to \N$
+      ***euklidészi norma***.
+  - type: formula
+    lead-in: |
+      Ekkor létezik olyan $g:R \to \N$ euklidészi norma is, amely a [euklideszi-gyuru]ban megfogalmazott
+      tulajdonságokon kívül tetszőleges $a$ és $b\eq 0_R$ elemekre teljesíti az alábbi egyenlőtlenségi
+      tulajdonságot is:
+    content: |
+      g(a)\leq g(ab)
+  - type: narrative
+    content: |
+      A fentiekben $0_R$-rel jelöltük az $R$ gyűrű nullelemét.

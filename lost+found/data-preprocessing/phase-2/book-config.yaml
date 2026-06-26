@@ -1,0 +1,59 @@
+type: book
+name: alice-es-bob
+title: Alice és Bob
+language: hu
+parts:
+  - name: 01-informacioelmelet-es-kriptografia
+    title: Információelmélet és kriptográfia
+    chapters:
+      - 01-alice-es-bob-szinrelep
+      - 02-alice-es-bob-szamitogepezik
+      - 03-alice-es-bob-szamolni-tanul
+      - 04-alice-es-bob-felreerti-egymast
+      - 05-alice-es-bob-ellensegei
+
+  - name: 02-algoritmuselmelet-es-kriptografia
+    title: Algoritmuselmélet és kriptográfia
+    chapters:
+      - 06-alice-es-bob-a-kiszamithatosag-hataran
+      - 07-alice-es-bob-egymillio-dollaros-kerdese
+      - 08-alice-es-bob-biztonsaga
+      - 09-alice-es-bob-nyilvanos-kulcsot-hasznal
+      - 10-alice-es-bob-szerzodest-kot
+
+  - name: 03-a-matematika-epitmenye
+    title: A matematika építménye
+    chapters:
+      - 11-alice-es-bob-szamelmeletet-epit
+      - 12-alice-es-bob-rendet-tesz
+      - 13-alice-es-bob-eladosodik
+      - 14-alice-es-bob-gyuruje
+      - 15-alice-es-bob-az-absztrakcio-utjan
+
+  - name: 04-a-szamelmelet-alapjai
+    title: A számelmélet alapjai
+    chapters:
+      - 16-alice-es-bob-alaptetele
+      - 17-alice-es-bob-okori-haverja
+      - 18-alice-es-bob-felcsavarja-a-szamegyenest
+      - 19-alice-es-bob-idealjai
+      - 20-alice-bob-euler-es-fermat
+
+  - name: 05-az-rsa-algoritmus-es-primteszteles
+    title: Az RSA algoritmus és prímtesztelés
+    chapters:
+      - 21-alice-es-bob-titkosit
+      - 22-alice-bob-es-a-kinaiak
+      - 23-alice-es-bob-primszamok-utan-nyomoz
+
+  - name: 06-csoportelmelet-es-alkalmazasai
+    title: Csoportelmélet és alkalmazásai
+    chapters:
+      - 24-alice-es-bob-komolyabb-fegyverekhez-nyul
+      - 25-alice-es-bob-fontos-parhuzamokat-talal
+      - 26-alice-es-bob-atlepi-a-celvonalat
+
+  - name: 07-kitekintes-es-jovokep
+    title: Kitekintés és jövőkép
+    chapters:
+      - 27-alice-es-bob-jovoje

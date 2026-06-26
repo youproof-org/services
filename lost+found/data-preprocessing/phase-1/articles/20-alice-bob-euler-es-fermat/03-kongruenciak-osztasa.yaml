@@ -1,0 +1,176 @@
+type: section
+name: 03-kongruenciak-osztasa
+title: Kongruenciák osztása
+
+references:
+  az-egesz-szamok-halmaza-integritastartomany:
+    target:
+      type: theorem
+      name: az-egesz-szamok-halmaza-integritastartomany
+  egesz-szamok-kozotti-kongruencia:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia
+  egesz-szamok-kozotti-kongruencia-tulajdonsagai:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia-tulajdonsagai
+  gyuru-test:
+    target:
+      type: definition
+      name: gyuru-test
+  maradekok-gyuruje-nullosztomentes:
+    target:
+      type: theorem
+      name: maradekok-gyuruje-nullosztomentes
+  modularis-osszeadas-es-szorzas:
+    target:
+      type: definition
+      name: modularis-osszeadas-es-szorzas
+  szorzat-egyszerusitese-gyurukben:
+    target:
+      type: theorem
+      name: szorzat-egyszerusitese-gyurukben
+
+body:
+  - type: narrative
+    content: |
+      Ahogyan a fenti példa is mutatja, kongruenciákkal számolni hasonlóan egyszerű, mintha egyenletekkel volna
+      dolgunk. Nagyjából minden ugyanúgy működik. A 18. részben azonban már láttuk, hogy az ilyen
+      "nagyjából"-jellegű helyzetekben érhetik az embert kellemetlen meglepetések, ha nem kellő odafigyeléssel jár
+      el. Ez a kongruenciák esetén sincs másként. Az összeadás, kivonás és szorzás esetén &ndash; mint láttuk
+      &ndash; nincs gond. ***Az "osztással" azonban vigyázni kell!***
+  - type: narrative
+    content: |
+      Az "osztás" szót azért tettük idézőjelbe, mivel osztani általánosságban amúgy sem lehet egy gyűrűben, kivéve
+      persze ha az adott gyűrű egyben test is (lásd a [gyuru-test] ide vonatkozó részét). Amikor egy általános
+      gyűrűben beszélünk osztásról, akkor ezalatt mindig az alábbi tétel szerinti ***egyszerűsítést*** értjük:
+  - type: embed
+    target:
+      type: theorem
+      name: szorzat-egyszerusitese-gyurukben
+  - type: narrative
+    content: |
+      Ez alapján tehát ***nullosztómentes*** gyűrűkben &ndash; és csak ezekben &ndash; bármilyen egyenlet mindkét
+      oldalát lehet tetszőleges ***nemnulla*** $c$ gyűrűelemmel "elosztani". Feltéve persze, hogy a megfelelő
+      oszthatóságok fennállnak a $c$ gyűrűelem és az egyenlet két oldalán lévő kifejezések között. Semmi gond
+      &ndash; mondhatnánk &ndash;, egyszer már a 18. részben beleszaladtunk ebbe a hibába, így most majd nagyon oda
+      fogunk figyelni. Le is ellenőrizzük, hogy az ***egész számok $\Z$ gyűrűje*** a
+      [az-egesz-szamok-halmaza-integritastartomany] alapján egy ***integritástartomány, tehát nullosztómentes***,
+      így könnyelműen azt gondoljuk, hogy semmi gond nem lehet a kongruenciákkal.
+  - type: narrative
+    content: |
+      ***Jól vigyázzunk azonban!*** Az egyszerűsíthetőségről szóló [ szorzat-egyszerusitese-gyurukben] ugyanis
+      ***EGYENLETEKRŐL, nem pedig kongruenciákról szól***. A [egesz-szamok-kozotti-kongruencia-tulajdonsagai] 7.
+      pontja ugyan kimondja, hogy ha teljesül az $a\equiv b\pmod m$ kongruencia, akkor mindkét oldalt
+      megszorozhatjuk valamilyen $c$ egész számmal, azaz teljesül az $ac\equiv bc\pmod m$ kongruencia is. Ez tehát
+      ugyanúgy működik, mint az egyenlőségeknél. A kongruenciák esetén azonban ennek megfordítása ***nem
+      feltétlenül igaz még nullosztómentes gyűrűk esetén sem***. Tehát abból, hogy teljesül az $ac\equiv bc\pmod m$
+      kongruencia, még nem következik, hogy az $a\equiv b\pmod m$ kongruencia is teljesül.
+  - type: formula
+    lead-in: |
+      Tekintsük az alábbi egyszerű példát:
+    content: |
+      28\equiv 46\pmod 6
+  - type: narrative
+    content: |
+      Ez a kongruencia teljesül, hiszen mindkét oldal $4$-et ad maradékul $6$-tal osztva.
+  - type: formula
+    lead-in: |
+      Ráadásul ennek a kongruenciának mindkét oldala osztható $2$-vel, azaz felírható az alábbi alakban:
+    content: |
+      14\cdot 2\equiv 23\cdot 2\pmod 6
+  - type: narrative
+    content: |
+      Ha most könnyelműen azt gondoljuk, hogy ezt a kongruenciát $2$-vel egyszerűsíthetjük &ndash; ahogy mondjuk
+      egy egyenlet esetén minden további nélkül megtehetnénk, hiszen $\Z$ nullosztómentes &ndash;, akkor egy
+      végzetes logikai hibát ejtenénk.
+  - type: formula
+    lead-in: |
+      Az alábbi kongruencia ugyanis ***NEM teljesül***:
+    content: |
+      14\equiv 23\pmod 6
+  - type: narrative
+    content: |
+      Nyilván, hiszen a $14$ és a $23$ nem ugyanazt a maradékot adja $6$-tal osztva.
+  - type: narrative
+    content: |
+      ***De mi is volt itt a gond?!*** Vizsgáljuk meg általánosságban ezt a kérdést.
+  - type: formula
+    lead-in: |
+      Tegyük fel, hogy teljesül az alábbi, ***egész számok közötti kongruencia*** valamilyen $m\gt 0$ modulusra
+      nézve:
+    content: |
+      ac\equiv bc\pmod m
+  - type: narrative
+    content: |
+      Ez ugye a [egesz-szamok-kozotti-kongruencia] 1.
+  - type: formula
+    lead-in: |
+      pontja alapján pontosan azt jelenti, hogy teljesül a [modularis-osszeadas-es-szorzas] szerinti $\bmod_m$
+      maradékképző függvény, mint ***gyűrűhomomorfizmus szerinti*** alábbi kongruencia:
+    content: |
+      ac\equiv bc\pod{\bmod_m}
+  - type: narrative
+    content: |
+      A $\bmod_m$ az egész számok $\Z$ gyűrűjéből a [modularis-osszeadas-es-szorzas] szerinti $Z_m$ gyűrűbe képez.
+  - type: formula
+    lead-in: |
+      A fenti kongruencia tehát azt jelenti, hogy teljesül az alábbi egyenlet a $Z_m$ gyűrűben:
+    content: |
+      \bmod_m(ac)=\bmod_m(bc)
+  - type: formula
+    lead-in: |
+      Ha a $Z_m$ gyűrű szorzását az $\odot$ szimbólummal jelöljük, akkor $\bmod_m$ művelettartó tulajdonsága miatt
+      ez az egyenlet így írható fel:
+    content: |
+      \bmod_m(a)\odot \bmod_m(c)=\bmod_m(b)\odot \bmod_m(c)
+  - type: narrative
+    content: |
+      Ha itt most lehetne az egyenlet mindkét oldalát $\bmod_m(c)$-vel egyszerűsíteni, akkor azt kapnánk, hogy
+      teljesül a $\bmod_m(a)=\bmod_m(b)$ egyenlőség. Ez más szavakkal valóban az $a\equiv b\pmod m$ egész számok
+      közötti kongruencia teljesülését jelentené. ***De sajnos általában nem ez a helyzet***, hiszen ezt az
+      egyszerűsítést a [szorzat-egyszerusitese-gyurukben] alapján csak ***nullosztómentes*** gyűrűkben lehet
+      elvégezni büntetlenül, márpedig ez a $Z_m$ gyűrű esetén nem garantált.
+  - type: formula
+    lead-in: |
+      Összefoglalva tehát a gondot itt az okozza, hogy ugyan maga a $14\cdot 2\equiv 23\cdot 2\pmod 6$ kongruencia
+      az egész számok $\Z$ gyűrűjének elemein van értelmezve, azonban ez tulajdonképpen az alábbi $Z_6$ gyűrűben
+      felírt egyenletnek felel meg:
+    content: |
+      \bmod_6(14)\odot \bmod_6(2)=\bmod_6(23)\odot \bmod_6(2)
+  - type: formula
+    lead-in: |
+      Elvégezve a [modularis-osszeadas-es-szorzas] szerinti maradékos osztásokat ezt kapjuk:
+    content: |
+      2\odot 2=5\odot 2
+  - type: narrative
+    content: |
+      Ez az egyenlet valóban teljesül, hiszen a $Z_6$ gyűrűben mindkét oldal $4$. ***Ebben a gyűrűben azonban
+      általánosságban nem szabad egyszerűsíteni*** egy egyenlet mindkét oldalát ugyanazzal a nemnulla elemmel
+      &ndash; jelen esetben $2$-vel &ndash;, hiszen a $6$ nem prímszám, és így a $Z_6$ gyűrű a
+      [maradekok-gyuruje-nullosztomentes] alapján ***nem nullosztómentes***.
+  - type: narrative
+    content: |
+      Ebből ugyanakkor az is következik, hogyha viszont a modulus prímszám lett volna, akkor egy hasonló
+      szituációban minden további nélkül lehetne egyszerűsíteni a kongruenciákat is. Az alábbi tétel általánosan is
+      megfogalmazza, hogy pontosan mikor és milyen körülmények szerint lehet egyszerűsíteni egy egész számokon
+      értelmezett kongruenciát.
+  - type: embed
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia-egyszerusitese
+  - type: narrative
+    content: |
+      Az előző példára vonatkoztatva ez azt jelenti, hogy a $28\equiv 46\pmod 6$ kongruenciát lehet egyszerűsíteni
+      $2$-vel, ám ekkor a $6$ modulust is egyszerűsíteni kell a $(2,6)=2$ kitüntetett közös osztóval. Valóban, a
+      $14\equiv 23\pmod 3$ kongruencia már tényleg teljesül, hiszen mindkét oldal $2$-t ad maradékul $3$-mal
+      osztva.
+  - type: embed
+    target:
+      type: proof
+      name: egesz-szamok-kozotti-kongruencia-egyszerusitese-bizonyitas
+  - type: embed
+    target:
+      type: remark
+      name: egesz-szamok-kozotti-kongruencia-egyszerusitese-megjegyzes

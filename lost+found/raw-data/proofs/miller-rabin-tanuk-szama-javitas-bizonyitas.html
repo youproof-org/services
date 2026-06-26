@@ -1,0 +1,71 @@
+<!-- wp:paragraph -->
+<p><strong><em>1. eset: [latex]n[/latex] valamilyen prímhatvány</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ekkor tehát [latex]n=p^c[/latex], ahol [latex]p[/latex] valamilyen páratlan prímszám, továbbá [latex]c\geq 2[/latex], máskülönben [latex]n=p[/latex] nem lenne összetett. A modulo [latex]p^c[/latex] redukált maradékosztályok a [latex](\Z/p^c\Z)^{\times}[/latex] multiplikatív csoport elemei, melynek rendjét a [yp_element slug="euler-fuggveny" type="link" /] alapján az Euler-féle [latex]\varphi[/latex]-függvény adja meg. Ennek értéke a [yp_element slug="euler-fuggveny-primhatvanyokra" type="link" /] szerint az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]|(\Z/p^c\Z)^{\times}|=\varphi(p^c)=p^c-p^{c-1}=p^{c-1}\cdot (p-1)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Másrészt a <strong><em>nem Miller-Rabin-tanúk</em></strong> [latex]G_{p^c}[/latex]-vel jelölt csoportjának rendje a [yp_element slug="nem-miller-rabin-tanuk-csoportjanak-rendje-primhatvanyok-eseten" type="link" /] értelmében:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]|G_{p^c}|=p-1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt kell megmutatni, hogy [latex](\Z/p^c\Z)^{\times}[/latex] <strong><em>legalább négyszer annyi elemet tartalmaz</em></strong>, mint [latex]G_{p^c}[/latex], azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{p^{c-1}\cdot (p-1)}_{=|(\Z/p^c\Z)^{\times}|}\geq 4\cdot \underbrace{(p-1)}_{=|G_{p^c}|}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]n=p^c[/latex]-ről ugye tudjuk, hogy ő egy [latex]9[/latex]-nél nagyobb prímhatvány, azaz [latex]p[/latex] legalább [latex]5[/latex] és [latex]c[/latex] legalább [latex]2[/latex]. Az alábbi tehát biztosan teljesül:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]p^{c-1}\geq 4[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mindkét oldalt megszorozva [latex]p-1[/latex]-gyel – ami a fentiek alapján biztosan pozitív – a [yp_element slug="rendezett-gyuru" type="link" /] szerinti 2. rendezési axióma alapján megkapjuk a tétel állítását a prímhatványok esetére:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]p^{c-1}\cdot (p-1)\geq 4\cdot (p-1)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>2. eset: [latex]n[/latex] nem prímhatvány, és nem Carmichael-szám</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ekkor a <strong><em>nem Miller-Rabin-tanúk</em></strong> ugyan nem alkotnak részcsoportot [latex](\Z/n\Z)^{\times}[/latex]-ben, azonban a [yp_element slug="nem-miller-rabin-tanuk-es-nem-fermat-tanuk-viszonya-nem-primhatvanyok-eseten" type="link" /] 1. pontja alapján a nem Fermat-tanúk [latex]F_n[/latex]-nel jelölt csoportja valódi részcsoport [latex](\Z/n\Z)^{\times}[/latex]-ben, továbbá az ugyanezen tételben [latex]H_n[/latex]-nel jelölt csoport <strong><em>valódi részcsoport</em></strong> [latex]F_n[/latex]-ben, amely viszont a [yp_element slug="nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten" type="link" /] 1. pontja alapján minden nem Miller-Rabin-tanút tartalmaz. Azaz a következő a helyzet:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":7352,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_26_reszcsoport_viszonyok.jpg" alt="A Hn és Fn részcsoportok viszonya" class="wp-image-7352"/><figcaption>A [latex]H_n[/latex] és [latex]F_n[/latex] részcsoportok viszonya</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>Lagrange-tétel</em></strong> ([yp_element slug="lagrange-tetele" type="link" /]) miatt azonban a redukált maradékosztályoknak legfeljebb a fele tartozhat [latex]F_n[/latex]-be, amelyeknek legfeljebb a fele – köztük az összes nem Miller-Rabin-tanú – tartozhat [latex]H_n[/latex]-be. Következésképp a redukált maradékosztályoknak ebben az esetben is legalább a háromnegyede Miller-Rabin-tanú.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>3. eset: [latex]n[/latex] nem prímhatvány, és Carmichael-szám</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ekkor a [yp_element slug="nem-miller-rabin-tanuk-es-nem-fermat-tanuk-viszonya-nem-primhatvanyok-eseten" type="link" /] 1. pontja helyett a [yp_element slug="nem-miller-rabin-tanuk-reszcsoportindexe" type="link" /]t kell alkalmaznunk. Eszerint a nem Miller-Rabin-tanúkat tartalmazó [latex]H_n[/latex] részcsoport indexe a tételben szereplő [latex]D_n[/latex] részcsoportban [latex]2^{r-1}[/latex], ahol [latex]r[/latex] az [latex]n[/latex] egész szám egymástól különböző prímtényezőinek számát jelöli. Továbbá, mivel [latex]D_n[/latex] részcsoport [latex](\Z/n\Z)^{\times}[/latex]-ben, ezért a [latex]H_n[/latex] részcsoport indexe [latex](\Z/n\Z)^{\times}[/latex]-ben <strong><em>legalább</em></strong> [latex]2^{r-1}[/latex]. Ez a <strong><em>Lagrange-tétel</em></strong> ([yp_element slug="lagrange-tetele" type="link" /]) alapján azt jelenti, hogy [latex](\Z/n\Z)^{\times}[/latex] rendje legalább [latex]2^{r-1}[/latex]-szerese [latex]H_n[/latex] rendjének, amely ugye a [yp_element slug="nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten" type="link" /] 1. pontja alapján minden nem Miller-Rabin-tanút tartalmaz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mivel azonban [latex]n[/latex] Carmichael-szám, ezért a <strong><em>Korselt-kritérium</em></strong> [yp_element slug="carmichael-szamok-tulajdonsagai" type="link" /]e alapján [latex]r\geq 3[/latex], és így ez a bizonyos [latex]2^{r-1}[/latex] szorzó tényező legalább [latex]4[/latex]. Most is azt kaptuk tehát, hogy a redukált maradékosztályoknak legalább a háromnegyede Miller-Rabin-tanú.</p>
+<!-- /wp:paragraph -->

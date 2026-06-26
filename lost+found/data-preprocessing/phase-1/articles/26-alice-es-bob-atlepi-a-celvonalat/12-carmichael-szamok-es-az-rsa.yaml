@@ -1,0 +1,46 @@
+type: section
+name: 12-carmichael-szamok-es-az-rsa
+title: Carmichael-számok és az RSA
+
+references:
+  carmichael-szamok-tulajdonsagai:
+    target:
+      type: theorem
+      name: carmichael-szamok-tulajdonsagai
+
+body:
+  - type: narrative
+    content: |
+      Végezetül ejtünk még néhány szót arról, hogy miért volt olyan fontos kiküszöbölni az univerzális álprímek
+      okozta kellemetlenséget a prímtesztek esetén. Azt a kérdést fogjuk megvizsgálni, hogy mi a helyzet az
+      RSA-algoritmussal, ha a kulcsgeneráláshoz használt $p$ és $q$ pozitív egész számok közül legalább az egyik
+      egy Carmichael-szám. A ***Fermat-prímteszt*** esetén &ndash; noha kicsi a valószínűsége, de &ndash; ez bizony
+      előfordulhat, hiszen ez a teszt nem szűri ki a Carmichael-számokat. Emlékeztetnénk az Olvasót az RSA helyes
+      működéséről szóló alábbi tételre, és javasoljuk, hogy tekintse át az ehhez kapcsolódó bizonyítást:
+  - type: embed
+    target:
+      type: theorem
+      name: rsa-algoritmus-helyes-mukodese
+  - type: narrative
+    content: |
+      Most egy ehhez nagyon hasonló tételt igazolunk, amelyben azonban a $p$ és $q$ egészekről nem feltételezzük,
+      hogy mindketten prímek. Például azért, mert szerencsétlen módon a Fermat-prímtesztet használtuk a
+      megkeresésükre, és pont beletrafáltunk egy Carmichael-számba.
+  - type: embed
+    target:
+      type: theorem
+      name: rsa-algoritmus-helyes-mukodese-carmichael-szamok-eseten
+  - type: embed
+    target:
+      type: proof
+      name: rsa-algoritmus-helyes-mukodese-carmichael-szamok-eseten-bizonyitas
+  - type: narrative
+    content: |
+      A tétel szerint tehát az RSA algoritmus sajnos ugyanúgy működőképes marad, ha prímek helyett
+      Carmichael-számokat használuk a kulcsgeneráláshoz. Ennek súlyos következményei vannak a biztonságra nézve,
+      hiszen a ***Korselt-kritérium*** [carmichael-szamok-tulajdonsagai]e alapján egy Carmichael-számnak
+      ***legalább*** $3$ prímtényezője van. Ez viszont azt jelenti, hogy a kódoláshoz és dekódoláshoz használt $m$
+      modulust jóval könnyebb prímtényezőire bontani, mintha $p$ és $q$ valóban prímszámok lettek volna, ezek a
+      prímtényezők ugyanis jóval kisebbek lesznek, mint $p$ és $q$. Ráadásul egyéb, itt nem részletezett
+      összefüggések miatt egy Carmichael-szám prímtényezőire bontására létezik hatékony algoritmus, így viszont egy
+      támadó is kiszámíthatja a $d$ titkos kitevőt.

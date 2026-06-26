@@ -1,0 +1,88 @@
+type: proof
+name: asszocialtsag-es-egysegek-kapcsolata-bizonyitas
+remarks: []
+references:
+  asszocialtsag-egysegelemes-gyuruben:
+    target:
+      type: theorem
+      name: asszocialtsag-egysegelemes-gyuruben
+  asszocialtsag-tulajdonsagai:
+    target:
+      type: theorem
+      name: asszocialtsag-tulajdonsagai
+  egysegek-es-egysegelem-viszonya:
+    target:
+      type: theorem
+      name: egysegek-es-egysegelem-viszonya
+  oszthatosag:
+    target:
+      type: definition
+      name: oszthatosag
+  szorzat-egyszerusitese-gyurukben:
+    target:
+      type: theorem
+      name: szorzat-egyszerusitese-gyurukben
+content:
+  - type: narrative
+    content: |
+      ***Nézzük először a tétel második felét.*** Itt csak annyit kell feltételeznünk, hogy a gyűrű kommutatív és
+      egységelemes. Tegyük most fel, hogy valamely $a$ és $b$ elemekhez létezik olyan $e$ egység, hogy $a\cdot e=b$
+      &ndash; azaz a $b$ elem az $a$ elem egységszerese. Feladatunk megmutatni, hogy ekkor $a\sim b$.
+  - type: narrative
+    content: |
+      Az $a\cdot e=b$ egyrészt a [oszthatosag] alapján épp azt jelenti, hogy ***teljesül az $a|b$ oszthatóság***.
+      Másrészt, mivel $e$ egység, ezért a [egysegek-es-egysegelem-viszonya] alapján ő osztója az egységelemnek,
+      azaz teljesül az $e|1$ oszthatóság is.
+  - type: formula
+    lead-in: |
+      Ez szintén a [oszthatosag] miatt épp azt jelenti, hogy létezik olyan $f$ gyűrűelem, amelyre teljesül az
+      alábbi egyenlet:
+    content: |
+      e\cdot f=1
+  - type: formula
+    lead-in: |
+      Ha ezzel az $f$ elemmel megszorozzuk a $b$ gyűrűelemet, ezt kapjuk:
+    content: |
+      b\cdot f=\underbrace{a\cdot e}_{=b}\cdot f
+  - type: formula
+    lead-in: |
+      Mivel azonban $e$ és $f$ szorzata épp az egységelemet adja, ezért végülis:
+    content: |
+      b\cdot f=a\cdot \underbrace{e\cdot f}_{=1}=a
+  - type: narrative
+    content: |
+      Ez a [oszthatosag] miatt épp azt jelenti, hogy ***teljesül a $b|a$ oszthatóság is***. Ebből viszont a
+      [asszocialtsag-egysegelemes-gyuruben] miatt következik, hogy $a\sim b$.
+  - type: narrative
+    content: |
+      ***Most a tétel megfordítását bizonyítjuk.*** Ehhez már fel kell használnunk a ***nullosztómentességet*** is.
+      Most azt tegyük fel, hogy valamely $a$ és $b$ elemek esetén teljesül az $a\sim b$ asszociáció. Azt fogjuk
+      megmutatni, hogy ekkor az $a$ és $b$ elemek egymás egységszeresei. Ha $a=0$, akkor a
+      [asszocialtsag-tulajdonsagai] 3. pontja miatt szükségképpen $b=0$, és ezek nyilván egymás egységszeresei. Így
+      a továbbiakban feltesszük, hogy $a\eq 0$.
+  - type: narrative
+    content: |
+      Mivel teljesül az $a\sim b$ asszociáció, és a gyűrű egységelemes, ezért a
+      [asszocialtsag-egysegelemes-gyuruben] alapján teljesülnek az $a|b$ és a $b|a$ oszthatóságok.
+  - type: formula
+    lead-in: |
+      Ez épp azt jelenti, hogy léteznek olyan $k_1$ és $k_2$ gyűrűelemek, amelyekre teljesülnek az alábbi
+      egyenletek:
+    content: |
+      \begin{aligned}a\cdot k_1&=b \\ b\cdot k_2&=a\end{aligned}
+  - type: formula
+    lead-in: |
+      A második egyenletbe $b$ helyére az elsőt behelyettesítve, valamint a jobboldali $a$-t az egységelemmel
+      megszorozva ezt kapjuk:
+    content: |
+      \underbrace{a\cdot k_1}_{=b}\cdot k_2=a\cdot 1
+  - type: formula
+    lead-in: |
+      Mivel a gyűrű ***nullosztómentes***, ezért a [szorzat-egyszerusitese-gyurukben] alapján mindkét oldalt
+      egyszerűsíthetjük $a$-val (amiről ugye feltettük, hogy nem nulla):
+    content: |
+      k_1\cdot k_2=1
+  - type: narrative
+    content: |
+      A $k_1$ és a $k_2$ tehát mindketten osztói az egységelemnek, és így a [egysegek-es-egysegelem-viszonya]
+      értelmében mindketten egységek. Vagyis az $a$ és $b$ elemek valóban egymás egységszeresei.

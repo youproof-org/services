@@ -1,0 +1,14 @@
+type: theorem
+name: felbontas-egyertelmusegenek-elegseges-feltetele
+proofs:
+  - felbontas-egyertelmusegenek-elegseges-feltetele-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ egy ***integritástartomány***, amelyben minden felbonthatatlan elem prímtulajdonságú. Ekkor
+      $R$-ben teljesül a számelmélet alaptételének ***egyértelműségi*** állítása.
+  - type: narrative
+    content: |
+      Azaz ***amennyiben*** egy nem nulla, nem egység elem felbontható $R$ felbonthatatlan elemeinek szorzatára,
+      úgy ez a felbontás asszociáltságtól és a tényezők sorrendjétől eltekintve egyértelmű.

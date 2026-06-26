@@ -1,0 +1,100 @@
+type: chapter
+name: 22-alice-bob-es-a-kinaiak
+title: Alice, Bob és a kínaiak
+
+abstract:
+  - type: narrative
+    content: |
+      Az előző részben megismerkedtünk napjaink egyik legfontosabb aszimmetrikus kulcsú rejtjelezési eljárásával,
+      az RSA-algoritmussal. Ehhez alapvetően három összetevőre volt szükség. Először is hatékonyan kell tudni
+      megoldani lineáris kongruenciákat, amelyhez bemutattuk az euklidészi algoritmus kibővített változatát.
+      Másodszor hatékonyan kell tudni kiszámítani az Euler-féle $\varphi$-függvény értékét. Láttuk, hogy a bemeneti
+      szám prímtényezőinek ismeretében ez gyerekjáték. Megemlítettük ugyanakkor, hogy a prímtényezők ismerete
+      nélkül jelenlegi tudásunk szerint ez gyakorlatilag kivitelezhetetlen, amennyiben ezek a prímtényezők kellően
+      nagyok. Ez adja az RSA-eljárás biztonságát. Harmadszor a kódoló és dekódoló függvények elvégzéséhez
+      hatékonyan kell tudni moduláris hatványozást végezni, amelyhez az ismételt négyzetreemelések módszerével
+      ismerkedtünk meg. Végül egy konkrét példán ki is próbáltuk az eljárást, és megmutattuk, hogy a kulcspár egyik
+      tagjával kódolt üzenetet varázslatos módon a kulcspár másik tagjával lehet dekódolni.
+  - type: narrative
+    content: |
+      De vajon varázslat helyett valójában mi áll az RSA-algoritmus helyes működésénekhátterében? Mit állít a kis
+      Fermat-tétel és a kínai maradéktétel, és mi közük van ehhez az egészhez? Mit értünk egy maradékosztálygyűrű
+      dekompozíciója alatt? Hogyan lehet ennek segítségével lényegesen felgyorsítani az RSA-dekódolási algoritmust?
+      Ebben a részben erről lesz szó...
+prerequisite-warning:
+  - type: narrative
+    content: |
+      Figyelem! Ez a rész erőteljesen épít a 20., és 21. részekben felépített alábbi definíciókra, valamint a
+      hozzájuk kapcsolódó tételekre:
+  - type: recall
+    target:
+      type: theorem
+      name: egesz-szamok-maradekosztalyai
+  - type: recall
+    target:
+      type: theorem
+      name: egesz-szamok-maradekosztalygyurui
+  - type: recall
+    target:
+      type: definition
+      name: linearis-kongruenciak
+  - type: recall
+    target:
+      type: theorem
+      name: euler-fermat-tetel
+  - type: recall
+    target:
+      type: theorem
+      name: euler-fuggveny-szorzattarto-tulajdonsaga
+  - type: recall
+    target:
+      type: theorem
+      name: euler-fuggveny-primhatvanyokra
+  - type: narrative
+    content: |
+      Ezek kontextusba helyezése miatt erőteljesen ajánlott elolvasni a 20. és 21. részeket, mivel gyakran
+      hivatkozni fogunk rájuk. A teljes cikksorozat elejét itt találod.
+prologue:
+  - type: narrative
+    content: |
+      Az RSA-algoritmus lépéseit tehát már ismerjük. Mutattunk is egy konkrét példát az alkalmazására. Ebben a
+      példában először Bob generált magának egy RSA kulcspárt, amelynek publikus részét elérhetővé tette Alice
+      &ndash; illetve bárki más &ndash; számára, a titkos részét viszont nem adta ki a kezéből. Alice ezután a
+      **sziabobmiahelyzet** üzenetet kódolta Bob publikus kulcsával, a titkosított üzetetet pedig átküldte a
+      nembiztonságos csatornán. Ezt az üzenetet egy támadó, de még maga Alice sem tudja dekódolni. Arra ugyanis
+      csak Bob képes, mivel nála van az ehhez szükséges titkos kulcs.
+  - type: narrative
+    content: |
+      Úgy tűnik tehát, hogyha egy üzenetet egy kulcspár valamelyik tagjával &ndash; legyen az akár a publikus, akár
+      a titkos kulcs &ndash; kódolunk, majd az így kapott eredményt dekódoljuk a kulcspár másik tagjával, akkor
+      varázslatos módon az eredeti üzenetet kapjuk vissza. Most azt fogjuk megmutatni, hogy ez az összefüggés
+      bármilyen, az ismertetett kritériumoknak megfelelő kulcspár, továbbá bármilyen üzenet esetén valóban fennáll.
+      Ehhez azonban szükségünk lesz két nagyon fontos tételre. Ismerkedjünk is meg az elsővel.
+sections:
+  - 01-a-kis-fermat-tetel
+  - 02-kongruenciarendszerek
+  - 03-a-kinai-maradektetel
+  - 04-kongruenciarendszerek-megoldasa
+  - 05-az-rsa-algoritmus-helyes-mukodesenek-bizonyitasa
+  - 06-maradekosztalygyuruk-dekompozicioja
+  - 07-az-rsa-dekodolas-gyorsitasa
+
+epilogue:
+  - type: narrative
+    content: |
+      Ebben a részben tehát megismerkedtünk a kis Fermat-tétellel és a több kongruenciából álló
+      kongruenciarendszerek egyértelmű megoldhatóságát biztosító kínai maradéktétellel. Ezek segítségével
+      igazoltuk, hogy az RSA-algoritmus valóban mindig helyesen működik. Ezután megismerkedtünk egy olyan
+      konstrukcióval, amelynek a segítségével kettő vagy több gyűrűből egy újabb gyűrűt tudunk létrehozni azok
+      direkt szorzataként. A kínai maradéktétel következményeként megmutattuk, hogy ezen a módon bármely összetett
+      modulusú maradékosztálygyűrű felbontható egymáshoz relatív prím modulusú maradékosztálygyűrűk direkt
+      szorzatára, amely ráadásul izomorf lesz az eredeti gyűrűvel. Ezt és a kis Fermat-tétel egy következményét
+      kihasználva Alice és Bob jelentősen gyorsítani tudja az RSA dekódolási eljárást.
+  - type: narrative
+    content: |
+      Történetünk hátralévő néhány részében megtudjuk, hogy hogyan lehet az RSA kulcsokhoz szükséges óriási
+      prímszámokat találni anélkül, hogy az idők végezetéig osztáspróbákat kelljen végezni. Ezenkívül
+      megismerkedünk néhány olyan módszerrel, amellyel a gonosz Eve képes feltörni az RSA-algoritmust, amennyiben
+      Alice és Bob nem kellő körültekintéssel jár el a kulcsgenerálás során. Végezetül elkalandozunk egy kicsit a
+      &ndash; talán nem is olyan távoli &ndash; jövőbe, amikor a kvantumszámítógépek korában az RSA már fabatkát
+      sem fog érni.

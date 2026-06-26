@@ -1,0 +1,23 @@
+type: theorem
+name: egesz-szamok-gyuruje
+proofs:
+  - egesz-szamok-gyuruje-bizonyitas
+remarks: []
+references:
+  egesz-szamok-halmaza:
+    target:
+      type: definition
+      name: egesz-szamok-halmaza
+  egesz-szamok-osszeadasa:
+    target:
+      type: definition
+      name: egesz-szamok-osszeadasa
+  egesz-szamok-szorzasa:
+    target:
+      type: definition
+      name: egesz-szamok-szorzasa
+content:
+  - type: narrative
+    content: |
+      A [egesz-szamok-halmaza]ban bevezetett $\Z$ halmaz egy ***kommutatív, egységelemes gyűrűt*** alkot a
+      [egesz-szamok-osszeadasa] szerinti $\oplus$ és a [egesz-szamok-szorzasa] szerinti $\odot$ műveletekkel.

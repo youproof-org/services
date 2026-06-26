@@ -1,0 +1,79 @@
+type: section
+name: 05-az-rsa-algoritmus-helyes-mukodesenek-bizonyitasa
+title: Az RSA-algoritmus helyes működésének bizonyítása
+
+references:
+  euler-fuggveny:
+    target:
+      type: definition
+      name: euler-fuggveny
+
+body:
+  - type: narrative
+    content: |
+      Az előző részben megismertük napjaink egyik legfontosabb felfedezését, az RSA nevű aszimmetrikus kulcsú
+      rejtjelezési eljárást. Ebben a szakaszban törlesztjük végre az adósságunkat, és igazolni fogjuk, hogy az RSA
+      valóban mindig helyesen működik. Ezért most ismételjük át röviden, hogyan is történik a kulcsok generálása,
+      majd az üzenetek titkosítása és dekódolása.
+  - type: narrative
+    content: |
+      Az RSA biztonsága a nagy számok prímtényezős felbontásának algoritmikus nehézségén alapul. Egy kulcspár
+      generálásához ezért először is választani kell két egymástól különböző óriási prímszámot &ndash; jelöljük
+      ezeket $p$-vel és $q$-val &ndash;, majd képezni kell ezek szorzatából az $m=pq$ modulust, és ki kell
+      számítani a $\varphi(m)$ értéket ([euler-fuggveny]). Ezután választunk egy tetszőleges $\varphi(m)$-hez
+      relatív prím $e$ számot a $Z_{\varphi(m)}$ gyűrűből, amely a kulcspár publikus része lesz, és kiszámítjuk
+      $e$ multiplikatív inverzét ebben a gyűrűben. Az így kapott $d$ szám lesz a kulcspár titkos része. A publikus
+      és titkos kulcsok közötti számelméleti kapcsolatot tehát a $Z_{\varphi(m)}$ gyűrű jelenti, amely gyűrű
+      ismeretlen marad a támadó számára. Ennek oka, hogy $\varphi(m)$ értéke jelenlegi számelméleti ismereteink
+      szerint csak $m$ prímtényezőinek ismeretében számítható ki hatékonyan.
+  - type: narrative
+    content: |
+      Ezután részletesen leírtuk, és egy példával szemléltettük, hogyan történik egy üzenet titkosítása az adó, és
+      dekódolása a vételi oldalon. Ehhez az elküldeni kívánt üzenetet valamilyen szabványos módon a $Z_m$ gyűrű
+      elemeinek sorozatává kell alakítani, majd a sorozat tagjaira külön-külön kell alkalmazni a kódoló és dekódoló
+      függvényeket. Legyen az üzenetet leíró számsorozat következő tagja $x$.
+  - type: formula
+    lead-in: |
+      Ennek titkosítása az alábbi $Z_m$-beli moduláris hatványozás elvégzését jelenti:
+    content: |
+      y=x^e
+  - type: narrative
+    content: |
+      Az így képzett $y$ szám nyugodtan átküldhető a kommunikációs csatornán. Ebből ugyanis csak a $d$ titkos kulcs
+      ismeretében állítható vissza "varázslatos módon" az eredeti $x$ üzenet.
+  - type: formula
+    lead-in: |
+      Ehhez az alábbi, szintén $Z_m$-beli moduláris hatványozást kell elvégezni:
+    content: |
+      x=y^d
+  - type: narrative
+    content: |
+      Most igazolni fogjuk, hogy ez a "varázslat" tényleg mindig teljesül. Az $y$ helyére behelyettesíthetjük az őt
+      képző, kódolófüggvény szerinti kifejezést.
+  - type: formula
+    lead-in: |
+      Ekkor az alábbit kapjuk:
+    content: |
+      x=({\underbrace{x^e}_{=y}})^d=x^{ed}
+  - type: narrative
+    content: |
+      A 20. részben láthattuk, hogy a $Z_m$ gyűrű izomorf a $\Z/m\Z$ maradékosztálygyűrűvel. Így tehát a fenti
+      kifejezést tulajdonképpen úgy is értelmezhetjük, hogy az $x$ egész számnak ugyanabba az $m$ modulus szerinti
+      maradékosztályba kell esnie, mint az $x^{ed}$ egész számnak.
+  - type: formula
+    lead-in: |
+      Ez az alábbi kongruencia teljesülését jelenti:
+    content: |
+      x\equiv x^{ed}\pmod m
+  - type: narrative
+    content: |
+      Most igazolni fogjuk, hogy ez a kongruencia valóban teljesül tetszőleges, a megadott kritériumoknak megfelelő
+      $e$, $d$, $m$ és $x$ egész számokra.
+  - type: embed
+    target:
+      type: theorem
+      name: rsa-algoritmus-helyes-mukodese
+  - type: embed
+    target:
+      type: proof
+      name: rsa-algoritmus-helyes-mukodese-bizonyitas

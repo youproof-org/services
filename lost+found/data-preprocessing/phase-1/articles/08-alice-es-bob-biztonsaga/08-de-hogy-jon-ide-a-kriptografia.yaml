@@ -1,0 +1,40 @@
+type: section
+name: 08-de-hogy-jon-ide-a-kriptografia
+title: De hogy jön ide a kriptográfia?
+
+body:
+  - type: narrative
+    content: |
+      Ahhoz, hogy Alice és Bob biztonságosan tudjanak egymással kommunikálni egy olyan csatornán keresztül, amelyet
+      a gonosz Eve képes lehallgatni, szükségük van valamilyen rejtjelezési eljárásra. Ezen kívül szükségük van egy
+      ***kulcsnak*** nevezett közös titokra is, amellyel az alkalmazott rejtjelezési eljárást paraméterezni fogják.
+      A rejtjelezési eljárással szembeni legfontosabb követelmény, hogy a kulcs ismeretében "könnyű", annak
+      hiányában viszont "nehéz" algoritmikus feladat legyen a rejtjelezett üzenetek dekódolása. Az utóbbi 3 részben
+      felvázolt bonyolultságelméleti fogalmak ismeretében az Olvasónak mostmár remélhetőleg világos, hogy pontosan
+      mit értünk "könnyű" illetve "nehéz" algoritmikus feladat alatt.
+  - type: narrative
+    content: |
+      Ezen túlmenően Alice-nak és Bob-nak azt a problémát is meg kell oldania, hogy hogyan tudnak megállapodni
+      ebben a ***kulcsnak*** nevezett közös titokban anélkül, hogy személyesen találkozniuk kellene egymással. Ezt
+      a ***kulcsmegosztás problémájának*** nevezzük. Ehhez a megállapodáshoz nyilván csak a nembiztonságos
+      csatornát használhatják. De mégis hogyan lehetséges az, hogy a kulcsban való megállapodás érdekében küldött
+      üzeneteket Eve ugyanúgy el tudja olvasni, mint Alice és Bob, mégsem tudja megfejteni magát a kulcsot
+      (pontosabban fogalmazva az egy algoritmikusan roppant "nehéz" feladat a számára)?
+  - type: narrative
+    content: |
+      Erre a látszólagos paradoxonra a ***számelmélet*** fogja megadni a választ a következő részekben. A
+      számelmélet évezredekig a matematikának látszólag egy haszontalan területe volt. A 20. század második felére
+      azonban az információs társadalom alapjává vált. Már most megemlítjük azonban, hogy ebben kulcsfontosságú
+      szerepet játszik az úgynevezett ***prímfaktorizáció*** feladatának látszólagos algoritmikus nehézsége. Ezen
+      áll vagy bukik ugyanis az egész. A prímszámokról és a prímfaktorizációról bőven lesz még szó a következő
+      részekben. Azt azonban mindenképpen fontosnak tartom megemlíteni ezen a ponton, hogy ***a prímfaktorizáció
+      feladatáról még nem bizonyított, hogy NP-teljes lenne***.
+  - type: narrative
+    content: |
+      Babai eredménye után jogosan vetődik fel a kérdés: lehetséges, hogy a prímfaktorizáció problémája is a $P$ és
+      az NP-teljes problémaosztály között helyezkedik el valahol? Netán egyenesen $P$-beli? A választ nem tudjuk,
+      de nagyon reméljük, hogy nem így van. Egy ilyen felfedezés ugyanis alapjaiban változtatná meg a jelenleg
+      használt rejtjelezési eljárások biztonságába vetett hitünket. Ezen a ponton érdemes feltenni a kérdést, hogy
+      ***vajon valóban senki nem tudja a választ***? Vajon ha igenlő lenne a válasz és valaki rájönne egy hatékony
+      prímfaktorizációs algoritmusra, biztosan publikálná-e a tudományos közösség számára? Vagy megpróbálna inkább
+      titokban hasznot húzni belőle? Döntse el az Olvasó...

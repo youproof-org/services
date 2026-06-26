@@ -1,0 +1,45 @@
+type: section
+name: 07-az-enigma-feltorese
+title: Az Enigma feltörése
+
+body:
+  - type: narrative
+    content: |
+      Az Enigma elméleti kulcstere (a lehetséges beállítások száma) óriási, nagyságrendileg 10^23 lehetőség. Ez már
+      összevethető a modern rejtjelezők kulcsterének nagyságával. Egy ekkora kulcstér és a bevezetett
+      óvintézkedések mellett érthetetlennek tűnik, hogy a szövetségeseknek hogyan sikerült mégis feltörniük az
+      Enigmát. Ez több okra vezethető vissza, melynek egyik tényezője, hogy az Enigma biztonsága nagymértékben
+      függött a tárcsák belső huzalozásának titokban tartásától. Mivel ezt a felhasználó nem tudta megváltoztatni,
+      így ez nem a kulcs, hanem az eljárás részének tekinthető. Ez ellentmond a fentebb már említett kriptográfiai
+      alapelvnek, miszerint feltételezni kell, hogy az ellenség részletesen ismeri a rejtjelező eljárást. Ez
+      valóban így is volt, köszönhetően a szövetséges hírszerzés által zsákmányolt Enigma készülékek tüzetes
+      vizsgálatának.
+  - type: narrative
+    content: |
+      Ezeknek a vizsgálatoknak az eredményeképp a kódfejtők rájöttek egy sor tervezési hiányosságra. Ezeket
+      kihasználva az átvizsgálandó kulcstér mérete lényegesen csökkenthető volt. Hogy csak a legfontosabbakat
+      említsük: kényelmi szempontból az Enigma úgy volt kialakítva, hogy az eljárást kétszer alkalmazva az eredeti
+      szöveget kapjuk vissza. Például ha egy **u** betű egy adott helyen **x**-be menne át, akkor, ha ugyanazon a
+      helyen **x** lenne, az **u**-ba menne át. Ezen kívül további fontos tulajdonság volt, hogy egy betű soha nem
+      kódolódott önmagába. Ez látszólag biztonságnövelő hatású, ám valójában további fontos támpontokat adott a
+      kódfejtőknek rengeteg kulcs kizárására. Olyannyira, hogy az átvizsgálandó kulcstér mérete így alig 1 millióra
+      csökkent.
+  - type: narrative
+    content: |
+      Ezt kézzel átvizsgálni még mindig reménytelen lett volna. Azonban a kódfejtők Alan Turing vezetésével egy
+      elektromechanikus gépet építettek erre a célra. Ennek továbbfejlesztett változata &ndash; a **Colossus**
+      &ndash; 1943-ra mindössze pár perc alatt képes volt megtalálni az aznapi kulcsot a "nyers erő" módszerével,
+      azaz a kulcsok végigpróbálgatásával. A Colossus-ból összesen 10 darab készült. A gépeket és leírásaikat
+      megsemmisítették a háború után, egyetlen leírás kivételével. Ennek titkosságát csak 2000 szeptemberében
+      oldotta fel a brit kormány.
+  - type: narrative
+    content: |
+      Végül további logisztikai problémát okozott annak megoldása, hogy a hadsereg minden egysége naponta
+      biztonságosan megkapja az aznapra érvényes kulcsot. A kommunikációs eszközökön keresztül nem küldhették,
+      hiszen akkor ugyanabba a hibába estek volna, mint Alice, amikor Eve sikeresen ellopta a Bob-nak szánt pénzt.
+      Ezért maradt a hagyományos módszer: a futárok alkalmazása. Ennek érthető limitációi miatt kénytelenek voltak
+      egy nagyobb időszak (például egy hét vagy hónap) napi kulcsait egyszerre kiküldeni az egységeknek. Ezek a
+      futárok kiváló célpontjai voltak a szövetséges hírszerzésnek, amely több alkalommal sikeresen lopott el adott
+      időszakra érvényes komplett kódkönyveket. Az ilyen küldetések esetén persze fontos volt, hogy a lopás
+      tényéről a németek ne szerezzenek tudomást. Ekkor ugyanis azonnal lecserélték volna az adott időszakra szánt
+      kulcsokat, és így az ellopott kódkönyvek már semmit sem értek volna.

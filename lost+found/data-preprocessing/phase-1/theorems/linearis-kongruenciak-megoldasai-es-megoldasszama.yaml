@@ -1,0 +1,31 @@
+type: theorem
+name: linearis-kongruenciak-megoldasai-es-megoldasszama
+proofs:
+  - linearis-kongruenciak-megoldasai-es-megoldasszama-bizonyitas
+remarks: []
+references:
+  linearis-kongruenciak:
+    target:
+      type: definition
+      name: linearis-kongruenciak
+content:
+  - type: narrative
+    content: |
+      Legyen $a$ és $b$ tetszőleges, $m\gt 0$ pedig valamilyen ***pozitív*** egész szám. Jelöljük továbbá az $a$ és
+      $m$ egész számok ***pozitív*** kitüntetett közös osztóját $d$-vel, azaz $d=(a,m)$.
+  - type: ordered-list
+    lead-in: |
+      Ekkor igazak az alábbi állítások:
+    items:
+      - 'Ha az $ax\equiv b\pmod m$ kongruencia megoldható, akkor a [linearis-kongruenciak] szerinti értelemben vett megoldásszáma $d$.'
+      - 'Ha egy valamilyen $s$ egész szám által reprezentált $[s]_m$ maradékosztály megoldása az $ax\equiv b\pmod
+        m$ kongruenciának, akkor pontosan az alábbi &ndash; egymástól páronként különböző &ndash;
+        maradékosztályok lesznek a kongruencia megoldásai:'
+  - type: formula
+    content: |
+      \begin{aligned}&[s+0\cdot \frac{m}{d}]_m \\ &[s+1\cdot \frac{m}{d}]_m \\ &[s+2\cdot \frac{m}{d}]_m \\
+      &[s+3\cdot \frac{m}{d}]_m \\ &\vdots \\ &[s+(d-1)\cdot \frac{m}{d}]_m\end{aligned}
+  - type: narrative
+    content: |
+      Itt $\frac{m}{d}$ alatt azt az egész számot értjük, amelyet a $d=(a,m)$ kitüntetett közös osztóval
+      megszorozva az $m$ modulust kapjuk eredményül.

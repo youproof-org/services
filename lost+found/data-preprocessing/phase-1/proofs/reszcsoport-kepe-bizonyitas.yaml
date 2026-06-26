@@ -1,0 +1,92 @@
+type: proof
+name: reszcsoport-kepe-bizonyitas
+remarks: []
+references:
+  csoporthomomorfizmus-egysegelem-es-inverzkepzestarto:
+    target:
+      type: theorem
+      name: csoporthomomorfizmus-egysegelem-es-inverzkepzestarto
+  kep-teljes-inverz-kep:
+    target:
+      type: definition
+      name: kep-teljes-inverz-kep
+  reszcsoport-feltetele:
+    target:
+      type: theorem
+      name: reszcsoport-feltetele
+content:
+  - type: narrative
+    content: |
+      Az $f(K)$ halmaz a [kep-teljes-inverz-kep] alapján nyilván részhalmaza $H$-nak, ezért csak a
+      [reszcsoport-feltetele] feltételeinek teljesülését kell ellenőrizni $f(K)$-ra.
+  - type: narrative
+    content: |
+      **1. feltétel: $f(K)$ zárt a $H$ csoport műveletére nézve**
+  - type: narrative
+    content: |
+      Legyenek $a$ és $b$ az $f(K)$ halmaz két tetszőleges eleme. A [kep-teljes-inverz-kep] alapján minden
+      $f(K)$-beli elemhez létezik olyan elem $K$-ban, amelynek épp ő az $f$ szerinti képe.
+  - type: formula
+    lead-in: |
+      Így $a$-hoz és $b$-hez is léteznek olyan $x_a\in K$ és $x_b\in K$ elemek, amelyekre teljesülnek az alábbiak:
+    content: |
+      \begin{aligned}f(x_a)&=a \\ f(x_b)&=b\end{aligned}
+  - type: narrative
+    content: |
+      Ám ekkor &ndash; mivel $K$ részcsoport $G$-ben &ndash; a [reszcsoport-feltetele] 1. pontja alapján az
+      $x_ax_b$ szorzat is benne van $K$-ban.
+  - type: formula
+    lead-in: |
+      Ez viszont ugyancsak a [kep-teljes-inverz-kep] alapján azt jelenti, hogy e szorzat $f$ szerinti képe viszont
+      benne van $f(K)$-ban, azaz:
+    content: |
+      f(x_ax_b)\in f(K)
+  - type: formula
+    lead-in: |
+      Mivel azonban $f$ csoporthomomorfizmus, ezért igaz az alábbi:
+    content: |
+      f(x_ax_b)=f(x_a)\cdot f(x_b)=a\cdot b\in f(K)
+  - type: narrative
+    content: |
+      Tehát az $a$ és $b$ elemek szorzata is $f(K)$-ban van, ami így valóban zárt a $H$ csoport műveletére nézve.
+  - type: narrative
+    content: |
+      **2. feltétel: $f(K)$ tartalmazza a $H$ csoport egységelemét**
+  - type: narrative
+    content: |
+      Mivel $K$ részcsoport $G$-ben, ezért a [reszcsoport-feltetele] 2. pontja alapján tartalmazza $G$
+      egységelemét, amelyet most jelöljünk $e_G$-vel. A [csoporthomomorfizmus-egysegelem-es-inverzkepzestarto] 1.
+      pontja szerint az $e_G$ egységelem $f$ szerinti képe a $H$ csoport egységeleme, amelyet most jelöljünk
+      $e_H$-val. De mivel $e_H$ egy $K$-beli elem &ndash; nevezetesen $e_G$ &ndash; képe, ezért a
+      [kep-teljes-inverz-kep] szerint szükségképpen benne van $f(K)$-ban.
+  - type: narrative
+    content: |
+      **3. feltétel: $f(K)$ zárt a $H$-beli inverzképzésre**
+  - type: narrative
+    content: |
+      Legyen $a$ az $f(K)$ halmaz tetszőleges eleme. A [kep-teljes-inverz-kep] alapján minden $f(K)$-beli elemhez
+      létezik olyan elem $K$-ban, amelynek épp ő az $f$ szerinti képe.
+  - type: formula
+    lead-in: |
+      Így $a$-hoz is létezik olyan $x_a\in K$ elem, amelyre teljesül az alábbi:
+    content: |
+      f(x_a)=a
+  - type: narrative
+    content: |
+      Ám ekkor &ndash; mivel $K$ részcsoport $G$-ben &ndash; a [reszcsoport-feltetele] 3. pontja alapján az
+      $x_a^{-1}$ inverz is benne van $K$-ban.
+  - type: formula
+    lead-in: |
+      Ez viszont ugyancsak a [kep-teljes-inverz-kep] alapján azt jelenti, hogy ennek $f$ szerinti képe viszont
+      benne van $f(K)$-ban, azaz:
+    content: |
+      f(x_a^{-1})\in f(K)
+  - type: formula
+    lead-in: |
+      Mivel azonban $f$ csoporthomomorfizmus, ezért a [csoporthomomorfizmus-egysegelem-es-inverzkepzestarto] 2.
+      pontja igaz az alábbi:
+    content: |
+      f(x_a^{-1})=(f(x_a))^{-1}=a^{-1}\in f(K)
+  - type: narrative
+    content: |
+      Tehát az $a$ elem $H$-beli inverze is $f(K)$-ban van, ami így valóban zárt a $H$-beli inverzképzésre nézve.

@@ -1,0 +1,100 @@
+type: chapter
+name: 17-alice-es-bob-okori-haverja
+title: Alice és Bob ókori haverja
+
+abstract:
+  - type: narrative
+    content: |
+      Az előző részben megismerkedtünk a legfontosabb számelméleti fogalmakkal: oszthatóság, egység, asszociált,
+      felbonthatatlan és prímtulajdonságú elemek. Ezután ismertettük a számelmélet alaptételét, amely azt
+      biztosítja egy integritástartományban, hogy annak minden elemét egyértelműen elő lehessen állítani
+      felbonthatatlan elemek szorzataként. Láttuk, hogy ez nem minden integritástartományban teljesül. Végül
+      megmutattuk, hogy ha viszont teljesül, akkor a felbonthatatlanok és a prímek fogalma szükségképpen egybe kell
+      essen. Azt is megemlítettük ugyanakkor, hogy ez csupán szükséges, de nem elégséges feltétel az alaptétel
+      teljesüléséhez.
+  - type: narrative
+    content: |
+      De vajon milyen elégséges feltételt tudunk mutatni erre vonatkozóan? Az egész számok gyűrűje teljesíti-e ezt
+      a kritériumot? Mit jelent a "legnagyobb közös osztó" fogalma és hogyan lehet villámgyorsan kiszámolni az
+      euklidészi algoritmus segítségével? Mit tudunk mondani erről általános integritástartományokra? Mik azok az
+      euklidészi gyűrűk és mi közük a számelmélet alaptételéhez? Ebben a részben erről lesz szó...
+prerequisite-warning:
+  - type: narrative
+    content: |
+      Figyelem! Ez a rész erőteljesen épít az előző részben felépített alábbi definíciókra, valamint a hozzájuk
+      kapcsolódó tételekre:
+  - type: recall
+    target:
+      type: definition
+      name: oszthatosag
+  - type: recall
+    target:
+      type: definition
+      name: egyseg
+  - type: recall
+    target:
+      type: definition
+      name: asszocialt
+  - type: recall
+    target:
+      type: definition
+      name: felbonthatatlan-elem
+  - type: recall
+    target:
+      type: definition
+      name: primtulajdonsagu-elem
+  - type: recall
+    target:
+      type: definition
+      name: szamelmelet-alaptetele
+  - type: narrative
+    content: |
+      Ezek kontextusba helyezése miatt erőteljesen ajánlott elolvasni az előző részt, mivel gyakran hivatkozni
+      fogunk rájuk. A teljes cikksorozat elejét itt találod.
+prologue:
+  - type: narrative
+    content: |
+      A modern kriptográfiai eljárások szempontjából alapvető fontosságú, hogy az egész számok $\Z$ gyűrűjében
+      teljesüljön a számelmélet alaptétele. Egyrészt ez teszi lehetővé, hogy minden egész szám ***egyértelműen***
+      előáll prímszámok szorzataként, és így a számelméleti kapcsolatot biztosítja a publikus és a titkos kulcsok
+      között ezekben az eljárásokban. Másrészt a prímfaktorizáció feladatának algoritmikus nehézsége biztosítja
+      azt, hogy egy támadó számára beláthatatlanul sok ideig tartson kiszámítani a titkos kulcsot a hozzá tartozó
+      publikus kulcsból. Ezért ebben a részben alapvető célunk annak igazolása, hogy az egész számok $\Z$
+      gyűrűjében valóban teljesül a számelmélet alaptétele.
+  - type: narrative
+    content: |
+      Ennek keretében meg fogunk ismerkedni az ókorból származó ***euklidészi algoritmussal***. Ezzel két egész
+      szám úgynevezett ***legnagyobb közös osztóját*** fogjuk tudni elképesztően hatékonyan kiszámítani. Ez az
+      eljárás a továbbiakban is fontos lesz számunkra, mivel mind az RSA-ban, mind pedig a prímtesztelési
+      eljárásokban alapvető szerepet játszik. Ezután ezt az eljárást fogjuk általánosítani oly módon, hogy ne csak
+      az egész számok gyűrűjén, hanem minden olyan integritástartományon működjön, amely bizonyos kritériumoknak
+      eleget tesz. Ezeket ***euklidészi gyűrűknek*** fogjuk nevezni. Végül megmutatjuk, hogy minden euklidészi
+      gyűrűben &ndash; és így speciálisan az egész számok gyűrűjében is &ndash; teljesül a számelmélet alaptétele.
+sections:
+  - 01-a-legnagyobb-kozos-oszto
+  - 02-a-kituntetett-kozos-oszto
+  - 03-a-kituntetett-kozos-oszto-jelentosege
+  - 04-az-euklideszi-algoritmus-alapgondolata
+  - 05-a-vegtelen-leszallas-modszere
+  - 06-euklideszi-gyuruk
+  - 07-euklideszi-norma-a-latex-z-latex-gyurun
+  - 08-a-szamelmelet-alaptetele-euklideszi-gyurukben
+
+epilogue:
+  - type: narrative
+    content: |
+      Ebben a részben megismerkedtünk a kitüntetett közös osztó fogalmával, és az euklidészi algoritmussal, amely
+      azt képes hihetetlen sebességgel kiszámítani. A kitüntetett közös osztó létezése azért volt nagyon fontos
+      számunkra, mivel annak fontos következményei vannak a számelmélet alaptételének egyértelműségi állítására
+      nézve. Ezért általánosságban is megvizsgáltuk, mi kell ahhoz, hogy az euklidészi algoritmus valamilyen
+      integritástartományon működhessen. Ezzel eljutottunk a maradékos osztás és az euklidészi gyűrűk fogalmához,
+      és megmutattuk, hogy az ilyen gyűrűkben mindig teljesül a számelmélet alaptételének mindkét állítása. Végül
+      igazoltuk, hogy az egész számok gyűrűje is euklidészi gyűrű &ndash; például az abszolútérték-függvényre, mint
+      euklidészi normára nézve.
+  - type: narrative
+    content: |
+      A 9. részben a Diffie-Hellman kulcscsere protokoll kapcsán már felületesen megismerkedtünk az úgynevezett
+      óra-, vagy becsületesebb nevén moduláris aritmetikával. Ez szintén egy fontos összetevője az aszimmetrikus
+      kulcsú titkosítási eljárásoknak, ezért a következő részben ezt a témakört újra elővesszük. Ám ezt ezúttal a
+      gyűrűk absztrakciós szintjén fogjuk megtenni, melynek keretében megismerkedünk az úgynevezett
+      maradékosztálygyűrűkkel. Ezenkívül minimálisan érinteni fogjuk az ideálok elméletét is.

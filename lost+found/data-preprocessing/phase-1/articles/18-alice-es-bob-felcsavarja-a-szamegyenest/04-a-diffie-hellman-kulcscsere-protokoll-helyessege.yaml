@@ -1,0 +1,42 @@
+type: section
+name: 04-a-diffie-hellman-kulcscsere-protokoll-helyessege
+title: A Diffie-Hellman kulcscsere protokoll helyessége
+
+references:
+  hatvanyozas-azonossagai:
+    target:
+      type: theorem
+      name: hatvanyozas-azonossagai
+
+body:
+  - type: narrative
+    content: |
+      Mivel az iménti tétel tetszőleges kommutatív gyűrűre érvényes, így érvényes a $Z_m$ gyűrűre is. Ez szoros
+      összefüggésben van a 9. részben már részletesen ismertetett ***Diffie-Hellman kulcscsere protokollal***.
+      Ennek helyességét akkor nem igazoltuk, így ezt most fogjuk megtenni. Ott ugye gyakorlatilag a $Z_m$ gyűrűben
+      kell moduláris hatványozást végezni. Ha Alice és Bob titkos kulcsot akarnak megbeszélni, akkor először a
+      nembiztonságos csatornán keresztül megállapodnak egy $x$ egész számban és egy $m\ eq 0$ modulusban, amelyet
+      mindketten majd a moduláris hatványozáshoz fognak használni. Ezután mindketten kitalálnak maguknak egy-egy
+      ***titkos kitevőt***. Tegyük fel, hogy Alice titkos kitevője $a$, Bob-é pedig $b$. Ezeket a kitevőket
+      ***egymásnak sem árulják el***.
+  - type: narrative
+    content: |
+      Ezután Alice a $Z_m$ gyűrűben kiszámítja az $x^a$ moduláris hatványt, és az eredményt átküldi Bobnak. Bob
+      ugyanígy kiszámítja az $x^b$ moduláris hatványt, és az eredményt átküldi Alice-nak. Ezután a kapott számokat
+      mindketten ismét modulárisan hatványozzák a saját titkos kitevőjükkel. Alice a Bob-tól kapott $x^b$ számból
+      kiszámítja az $(x^b)^a$, Bob pedig az Alice-tól kapott $x^a$ számból kiszámítja az $(x^a)^b$ moduláris
+      hatványt. A fenti [hatvanyozas-azonossagai] tétel 2.
+  - type: formula
+    lead-in: |
+      pontja alapján azonban mindketten ugyanazt a számot fogják kapni:
+    content: |
+      \underbrace{(x^b)^a}_{\text{Alice eredménye}}=x^{b\cdot a}=x^{a\cdot b}=\underbrace{(x^a)^b}_{\text{Bob
+      eredménye}}
+  - type: narrative
+    content: |
+      A ***Diffie-Hellman kulcscsere protokoll tehát valóban helyesen működik***, mivel a moduláris hatványozás
+      ugyanazokkal a tulajdonságokkal rendelkezik, mint a hagyományos hatványozás. Már csak azt a problémát kell
+      megoldanunk, hogy ezeket a moduláris hatványokat óriási kitevők esetén is nagyon hatékonyan ki tudjuk
+      számolni. Erre &ndash; mint már említettük &ndash; egy későbbi részben fogunk kitérni ***az ismételt
+      négyzetre emelések módszere*** kapcsán, amely szintén a [hatvanyozas-azonossagai]ben felsorolt
+      tulajdonságokat használja ki.

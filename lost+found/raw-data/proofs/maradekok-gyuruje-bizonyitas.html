@@ -1,0 +1,129 @@
+<!-- wp:paragraph -->
+<p>A [yp_element slug="gyuru-test" type="link" /]ban szereplő <strong><em>gyűrűaxiómák</em></strong> teljesülését kell igazolnunk. Nézzük őket sorban:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A műveletek kommutativitása:</em></strong> Ez egyszerűen adódik a [yp_element slug="modularis-osszeadas-es-szorzas" type="link" /]ból, valamint a hagyományos összeadás és szorzás kommutativitásából:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a\oplus b&amp;=\bmod_m(a+b)=\bmod_m(b+a)=b\oplus a \\ a\odot b&amp;=\bmod_m(a\cdot b)=\bmod_m(b\cdot a)=b\odot a\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Neutrális elem létezése:</em></strong> Az [latex]|m|=1[/latex] esetben a [yp_element slug="modularis-osszeadas-es-szorzas" type="link" /] utáni megjegyzés 4. pontja alapján [latex]\Z_m[/latex] épp a <strong><em>nullgyűrű</em></strong>. Ebben az egyetlen elem a [latex]0[/latex], amely nyilván mindkét műveletre nézve neutrális. Feltehetjük tehát, hogy [latex]|m|\
+eq 1[/latex]. Mivel [latex]\Z_m[/latex] elemei épp a modulo [latex]m[/latex] maradékok, ezért rájuk alkalmazható a [yp_element slug="modularis-osszeadas-es-szorzas" type="link" /] utáni megjegyzés 5. pontja. Ez alapján könnyen adódik, hogy mindkét művelethez létezik <strong><em>neutrális elem</em></strong>, méghozzá a [latex]0[/latex] és az [latex]1[/latex]:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a\oplus 0&amp;=\bmod_m(a+0)=\bmod_m(a)=a \\ a\odot 1&amp;=\bmod_m(a\cdot 1)=\bmod_m(a)=a\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ellentett elem létezése:</em></strong> Ehhez azt kell megmutatni, hogy tetszőleges [latex]a[/latex] maradékhoz létezik olyan [latex]b[/latex] maradék, amelyre [latex]a\oplus b=0[/latex] teljesül. Ha [latex]a=0[/latex], akkor a [latex]b=0[/latex] választás nyilván megfelelő, hiszen az előző pont alapján [latex]0\oplus 0=0[/latex]. Az [latex]a\
+eq 0[/latex] esetekben a [latex]b=|m|-a[/latex] választás lesz a megfelelő, hiszen ekkor egyrészt nyilván teljesül a [latex]0\leq b\lt |m|[/latex] egyenlőtlenség (azaz [latex]b[/latex] is egy modulo [latex]m[/latex] maradék), másrészt pedig az [latex]a\oplus b[/latex] moduláris összeadást kifejtve az alábbit kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a\oplus b=\bmod_m(a+b)=\bmod_m(a+\underbrace{|m|-a}_{=b})=\bmod_m(|m|)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha [latex]m[/latex] pozitív, akkor [latex]\bmod_m(|m|)=\bmod_m(m)[/latex], ha pedig negatív, akkor [latex]\bmod_m(|m|)=\bmod_m(-m)[/latex]. A [yp_element slug="oszthatosag-tulajdonsagai" type="link" /] 8. pontja alapján viszont az ellentettképzés nem befolyásolja az oszthatóságot, így mindkét esetben [latex]0[/latex] lesz a maradék, azaz [latex]b[/latex] valóban [latex]a[/latex] <strong><em>ellentettje</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A moduláris összeadás asszociativitása:</em></strong> Azt kell megmutatni, hogy [latex](a\oplus b)\oplus c=a\oplus (b\oplus c)[/latex]. Fejtsük ki mindkét oldalt a [yp_element slug="modularis-osszeadas-es-szorzas" type="link" /] alapján. A végrehajtás során képződő részeredményeket jelöljük [latex]r_1[/latex]-gyel és [latex]q_1[/latex]-gyel, a végeredményeket pedig [latex]r_2[/latex]-vel és [latex]q_2[/latex]-vel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}(a\oplus b)\oplus c&amp;=\overbrace{\bmod_m(a+b)}^{=r_1}\oplus c=\bmod_m(r_1+c)=r_2 \\ a\oplus (b\oplus c)&amp;=a\oplus \underbrace{\bmod_m(b+c)}_{=q_1}=\bmod_m(a+q_1)=q_2\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt kell megmutatnunk, hogy [latex]r_2=q_2[/latex], azaz mindegy, hogy milyen sorrendben végezzük el a két moduláris összeadást, a végeredmény ugyanaz lesz. A [latex]\bmod_m[/latex] függvény szerinti maradékos osztásokat elvégezve négy egyenletet írhatunk fel az [latex]r_1[/latex] és [latex]q_1[/latex] valamint az [latex]r_2[/latex] és [latex]q_2[/latex] maradékokra valamilyen [latex]k_1[/latex] és [latex]n_1[/latex] valamint [latex]k_2[/latex] és [latex]n_2[/latex] hányadosokkal:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a+b&amp;=k_1m+r_1 \\ b+c&amp;=n_1m+q_1  \\ r_1+c&amp;=k_2m+r_2 \\ a+q_1&amp;=n_2m+q_2\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az első két egyenletet átrendezve megkapjuk [latex]r_1[/latex]-et és [latex]q_1[/latex]-et:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}r_1&amp;=a+b-k_1m \\ q_1&amp;=b+c-n_1m\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezeket behelyettesítve a másik két egyenletbe az alábbiakat kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}\overbrace{a+b-k_1m}^{=r_1}+c&amp;=k_2m+r_2 \\ a+\underbrace{b+c-n_1m}_{=q_1}&amp;=n_2m+q_2\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezeket megint átrendezve kifejezhetjük az [latex]r_2[/latex] és a [latex]q_2[/latex] maradékokat:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}r_2&amp;=a+b-k_1m+c-k_2m \\ q_2&amp;=a+b+c-n_1m-n_2m\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt kell megmutatnunk, hogy ezek valójában megegyeznek. Írjuk hát fel a kettejük különbségét:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}r_2-q_2&amp;=\overbrace{\bcancel{a}+\bcancel{b}-k_1m+\bcancel{c}-k_2m}^{r_2}\overbrace{-\bcancel{a}-\bcancel{b}-\bcancel{c}+n_1m+n_2m}^{-q_2}=\\&amp;=(n_1+n_2-k_1-k_2)\cdot m\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt kaptuk tehát, hogy teljesül az [latex]m|r_2-q_2[/latex] oszthatóság. Mivel [latex]r_2[/latex] és [latex]q_2[/latex] nemnegatív maradékok, így alkalmazható rájuk a [yp_element slug="maradekok-kulonbsege-oszthato-a-modulussal" type="link" /], amiből [latex]r_2=q_2[/latex] következik. Az [latex]\oplus[/latex] művelet tehát valóban <strong><em>asszociatív</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A moduláris szorzás asszociativitása:</em></strong> Azt kell megmutatni, hogy [latex](a\odot b)\odot c=a\odot (b\odot c)[/latex]. Ismét fejtsük ki mindkét oldalt a részeredményeket [latex]r_1[/latex]-gyel és [latex]q_1[/latex]-gyel, a végeredményeket pedig [latex]r_2[/latex]-vel és [latex]q_2[/latex]-vel jelölve: </p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}(a\odot b)\odot c&amp;=\overbrace{\bmod_m(ab)}^{=r_1}\odot c=\bmod_m(r_1c)=r_2 \\ a\odot (b\odot c)&amp;=a\odot \underbrace{\bmod_m(bc)}_{=q_1}=\bmod_m(aq_1)=q_2\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [latex]\bmod_m[/latex] függvény szerinti maradékos osztásokat elvégezve négy egyenletet írhatunk fel az [latex]r_1[/latex] és [latex]q_1[/latex] valamint az [latex]r_2[/latex] és [latex]q_2[/latex] maradékokra valamilyen [latex]k_1[/latex] és [latex]n_1[/latex] valamint [latex]k_2[/latex] és [latex]n_2[/latex] hányadosokkal:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}ab&amp;=k_1m+r_1 \\ bc&amp;=n_1m+q_1  \\ r_1c&amp;=k_2m+r_2 \\ aq_1&amp;=n_2m+q_2\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [latex]\oplus[/latex] művelet asszociativitásánál látott módon ismét kifejezhetjük az [latex]r_2-q_2[/latex] különbséget – a részleteket az Olvasóra bízzuk –, amelyből megint azt fogjuk kapni, hogy teljesül az [latex]m|r_2-q_2[/latex] oszthatóság. Ebből viszont ugyancsak a [yp_element slug="maradekok-kulonbsege-oszthato-a-modulussal" type="link" /] miatt [latex]r_2=q_2[/latex] következik, azaz a [latex]\odot[/latex] művelet is <strong><em>asszociatív</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A disztributivitási szabályok teljesülése:</em></strong> Mivel a [latex]\odot[/latex] művelet kommutativitását már igazoltuk, ezért elegendő az egyik oldali disztributivitást megmutatni, azaz hogy [latex]a\odot (b\oplus c)=(a\odot b)\oplus (a\odot c)[/latex] teljesül. A recept a megszokott: ismét a definíció szerint kifejtjük mindkét oldalt, majd megmutatjuk, hogy a különbségük osztható az [latex]m[/latex] modulussal, azaz végsősoron megegyeznek. A két oldal definíció szerinti kifejtése:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a\odot (b\oplus c)&amp;=a\odot \overbrace{\bmod_m(b+c)}^{=r_1}=\bmod_m(ar_1)=r_2 \\ (a\odot b)\oplus (a\odot c)&amp;=\underbrace{\bmod_m(ab)}_{=q_1} \oplus \underbrace{\bmod_m(ac)}_{=q_2}=\bmod_m(q_1+q_2)=q_3\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez tehát az alábbi 5 maradékos osztást jelenti:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}b+c&amp;=k_1m+r_1 \\ ar_1&amp;=k_2m+r_2  \\ ab&amp;=n_1m+q_1 \\ ac&amp;=n_2m+q_2 \\ q_1+q_2&amp;=n_3m+q_3\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ebből az [latex]r_2-q_3[/latex] különbséget kell kifejezni – amelyet ugyancsak az Olvasóra bízunk –, amelyből az előzőekhez hasonlóan megkapjuk, hogy teljesül az [latex]m|r_2-q_3[/latex] oszthatóság. Ebből megint a [yp_element slug="maradekok-kulonbsege-oszthato-a-modulussal" type="link" /] alkalmazásával [latex]r_2=q_3[/latex] adódik, azaz a [latex]\odot[/latex] művelet <strong><em>disztributív</em></strong> a [latex]\oplus[/latex] műveletre nézve.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Minthogy minden gyűrűaxióma teljesül, továbbá a moduláris szorzás is kommutatív, ezért [latex]\Z_m[/latex] valóban egy <strong><em>kommutatív gyűrű</em></strong>. Láttuk továbbá, hogy a szorzásra nézve is létezik neutrális elem. Ezért [latex]\Z_m[/latex] <strong><em>egységelemes</em></strong>, hacsak nem a nullgyűrűről – az [latex]|m|=1[/latex] esetről – van szó, amit a [yp_element slug="gyuru-test" type="link" /] szerint nem tekintünk annak.</p>
+<!-- /wp:paragraph -->

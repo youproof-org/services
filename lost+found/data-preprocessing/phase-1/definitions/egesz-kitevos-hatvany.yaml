@@ -1,0 +1,44 @@
+type: definition
+name: egesz-kitevos-hatvany
+remarks:
+  - egesz-kitevos-hatvany-megjegyzes
+references:
+  inverz-elem:
+    target:
+      type: definition
+      name: inverz-elem
+  neutralis-elem:
+    target:
+      type: definition
+      name: neutralis-elem
+content:
+  - type: narrative
+    content: |
+      Legyen $H$ tetszőleges halmaz, amelyen értelmezve van egy $*$-gal jelölt ***asszociatív*** művelet.
+  - type: formula
+    lead-in: |
+      Ha $x$ a $H$ halmaz valamely eleme, $n$ pedig tetszőleges ***pozitív egész***, akkor az $x^n$ hatványon az
+      alábbi kifejezést értjük:
+    content: |
+      x^n=\underbrace{x*x*x*\ldots *x}_{\text{n darab}}
+  - type: narrative
+    content: |
+      Tegyük fel, hogy a $*$ műveletre nézve létezik ***neutrális elem*** ([neutralis-elem]), amelyet jelöljünk
+      $e$-vel.
+  - type: formula
+    lead-in: |
+      Ekkor az $x^0$ hatványon az alábbit értjük:
+    content: |
+      x^0=e
+  - type: narrative
+    content: |
+      Végül tegyük fel, hogy az $x$ elem ***invertálható*** ([inverz-elem]), és jelöljük az ő (kétoldali) inverzét
+      $x^{-1}$-gyel.
+  - type: formula
+    lead-in: |
+      Ekkor az $x^{-n}$ hatványon az alábbit értjük:
+    content: |
+      x^{-n}=\underbrace{x^{-1}*x^{-1}*\ldots *x^{-1}}_{\text{n darab}}=(x^{-1})^n
+  - type: narrative
+    content: |
+      Azaz $x$-nek a $-n$-edik hatványa alatt $x$ inverzének az $n$-edik hatványát értjük.

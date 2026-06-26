@@ -1,0 +1,46 @@
+type: proof
+name: generalt-reszgyuru-es-ideal-bizonyitas
+remarks: []
+references:
+  halmazrendszer-legkisebb-es-legnagyobb-eleme-egyertelmu:
+    target:
+      type: theorem
+      name: halmazrendszer-legkisebb-es-legnagyobb-eleme-egyertelmu
+  halmazrendszer-minimuma-es-maximuma:
+    target:
+      type: definition
+      name: halmazrendszer-minimuma-es-maximuma
+  idealok-metszete-ideal:
+    target:
+      type: theorem
+      name: idealok-metszete-ideal
+content:
+  - type: narrative
+    content: |
+      A [halmazrendszer-legkisebb-es-legnagyobb-eleme-egyertelmu] alapján egy halmazrendszerben ***legfeljebb
+      egy*** legszűkebb elem létezhet. Így elegendő megmutatni, hogy ***létezik*** legszűkebb elem, az ugyanis
+      garantáltan az egyetlen legszűkebb elem lesz.
+  - type: narrative
+    content: |
+      Mivel $X$ az $R$ gyűrű ***tetszőleges*** részhalmaza lehet, ezért előszöris kérdés, hogy ***létezik-e
+      egyáltalán olyan részgyűrű***, amely tartalmazza $X$-et? Erre természetesen igen a válasz, hiszen
+      "legrosszabb esetben" maga a teljes $R$ egy ilyen részgyűrű. Az $\mathcal{X}$ halmazrendszer tehát biztosan
+      ***nem üres***.
+  - type: narrative
+    content: |
+      Most képezzük az $\mathcal{X}$ halmazrendszer összes elemének metszetét, és jelöljük ezt a halmazt $S$-sel.
+      Minthogy $\mathcal{X}$ elemei részgyűrűk $R$-ben, így a [idealok-metszete-ideal] alapján $S$ is részgyűrű
+      $R$-ben. Továbbá az $X$-ről azt mondtuk, hogy ő részhalmaza minden $\mathcal{X}$-beli részgyűrűnek, emiatt
+      részhalmaza ezek metszetének, azaz $S$-nek is.
+  - type: narrative
+    content: |
+      Ez viszont azt jelenti, hogy $S$ maga is az $\mathcal{X}$ halmazrendszer eleme, hiszen ő is egy $X$-et
+      tartalmazó részgyűrű $R$-ben. Ráadásul mivel ő a metszete $\mathcal{X}$ összes elemének, ezért egyben
+      részhalmaza is azoknak. Másként fogalmazva bármilyen $T\in \mathcal{X}$ részgyűrűre teljesül, hogy $S\sube
+      T$. Ez a [halmazrendszer-minimuma-es-maximuma] szerint viszont épp azt jelenti, hogy $S$ nem más, mint az
+      $\mathcal{X}$ halmazrendszer ***legszűkebb eleme***. Más szavakkal $S$ a legszűkebb olyan részgyűrű $R$-ben,
+      amely tartalmazza az $X$ részhalmazt, azaz a tételbeli jelölést használva $S=\lang X\ang$.
+  - type: narrative
+    content: |
+      A legszűkebb $X$-et tartalmazó ***bal-, jobb-, illetve kétoldali ideál*** létezésére és egyértelműségére
+      vonatkozó állítás a fentiekhez teljesen hasonló módon igazolható.

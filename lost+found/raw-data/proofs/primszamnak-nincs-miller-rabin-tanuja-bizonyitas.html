@@ -1,0 +1,59 @@
+<!-- wp:paragraph -->
+<p>Legyen [latex]n\gt 1[/latex] egy tetszőleges páratlan prímszám, továbbá legyen adva egy tetszőleges [latex][a]_n[/latex] redukált maradékosztály. Képezzük azt az [latex]e\geq 1[/latex] kitevőt és [latex]k\geq 1[/latex] páratlan számot, amelyekre teljesülnek az alábbiak:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]n-1=2^e\cdot k[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt kell igazolni, hogy [latex][a]_n[/latex] nem lehet Miller-Rabin-tanú, azaz az alábbi kongruenciák közül legalább az egyiknek teljesülnie kell:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a^k&amp;\equiv +1\pmod n \\ a^k&amp;\equiv -1 \\ a^{2k}&amp;\equiv -1\pmod n \\ a^{4k}&amp;\equiv -1\pmod n \\ &amp;\vdots \\ a^{2^{e-1}\cdot k}&amp;\equiv -1\pmod n\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]n[/latex] prím, továbbá [latex](a,n)=1[/latex] – hiszen [latex][a]_n[/latex] egy redukált maradékosztály –, ezért a <strong><em>kis Fermat-tétel</em></strong> ([yp_element slug="kis-fermat-tetel" type="link" /]) miatt teljesül rá az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{\overbrace{2^e\cdot k}^{=n-1}}\equiv 1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez a [yp_element slug="egesz-szamok-kozotti-kongruencia" type="link" /] 3. pontja alapján azt jelenti, hogy teljesül az alábbi oszthatóság:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]n|a^{2^e\cdot k}-1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az oszthatóságban szereplő jobboldali kifejezést a [yp_element slug="miller-rabin-szorzat" type="link" /] alapján szorzatba fejthetjük:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]n|(a^k-1)\cdot (a^k+1)\cdot (a^{2k}+1)\cdot (a^{4k}+1)\cdot \ldots \cdot (a^{2^{e-1}k}+1)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]n[/latex] <strong><em>prím</em></strong>, ezért a [yp_element slug="primtulajdonsagu-elem" type="link" /] utáni megjegyzés szerint legalább az egyik jobboldali tényezőnek osztója kell legyen. Azaz az alábbi oszthatóságok közül legalább az egyiknek teljesülnie kell:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}n&amp;|a^k-1 \\ n&amp;|a^k+1 \\ n&amp;|a^{2k}+1 \\ n&amp;|a^{4k}+1 \\ &amp;\vdots \\ n&amp;|a^{2^{e-1}k}+1 \end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="egesz-szamok-kozotti-kongruencia" type="link" /] 3. pontja alapján ez tehát azt jelenti, hogy <strong><em>legalább az egyik</em></strong> kongruenciának teljesülnie kell az alábbiak közül:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a^k\equiv +1\pmod n \\ a^k\equiv -1\pmod n \\ a^{2k}\equiv -1\pmod n \\ a^{4k}\equiv -1\pmod n \\ &amp;\vdots \\ a^{2^{e-1}k}\equiv -1\pmod n \end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez viszont a [yp_element slug="miller-rabin-tanu" type="link" /] szerint épp azt jelenti, hogy az [latex][a]_n[/latex] maradékosztály <strong><em>nem Miller-Rabin-tanú</em></strong>.</p>
+<!-- /wp:paragraph -->

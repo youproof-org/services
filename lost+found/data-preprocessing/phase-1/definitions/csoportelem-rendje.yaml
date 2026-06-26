@@ -1,0 +1,10 @@
+type: definition
+name: csoportelem-rendje
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $G$ tetszőleges csoport, $g$ pedig ennek valamely eleme. Ekkor $g$ egymástól különböző hatványainak a
+      számát $g$ ***rendjének*** nevezzük, és az angol "order" kifejezésre utalva $o(g)$-vel jelöljük. Ha $g$-nek
+      végtelen sok különböző hatványa létezik a $G$ csoportban, akkor azt mondjuk, hogy $g$ ***rendje végtelen***.
+      Jelekkel: $o(g)=\infty$.

@@ -1,0 +1,44 @@
+type: section
+name: 03-csatornakapacitas
+title: Csatornakapacitás
+
+body:
+  - type: narrative
+    content: |
+      Bármilyen csatornamodellt is alkalmazunk, az érezhető, hogy a csatorna "zaját" tulajdonképpen az éleken lévő
+      valószínűségekkel jellemezhetjük. A gyakorlatban ezeket mérésekkel lehet meghatározni. Ha a csatornán nincs
+      zaj, akkor a bemeneti szimbólum egyértelműen meghatározza a kimeneti szimbólumot. Ekkor minden
+      átmenetvalószínűség 0 vagy 1 értékű. Ahogy a zaj növekszik, a valószínűségek ettől egyre jobban eltérnek,
+      azaz a kimeneti szimbólumsorozatból egyre kisebb bizonyossággal tudjuk meghatározni a bemeneti sorozatot.
+      Végsősoron tehát egyre kevesebb a csatornán átvihető információ mennyisége átlagosan.
+  - type: narrative
+    content: |
+      Ha az átvitt információ mennyiségét nem kötjük egy konkrét bemeneti szimbólumsorozathoz, akkor definiálhatjuk
+      az úgynevezett ***csatornakapacitást***. Ez a szimbólumonként átlagosan átvihető maximális
+      információmennyiséget méri tetszőleges bemeneti valószínűségeloszlás esetén. A matematikai részleteket itt
+      mellőzzük, de egy hasonlattal élve a csatorna kapacitása hasonló egy út szélességéhez. Csak a csatorna
+      műszaki konstrukciójától függ, nem pedig az éppen rajta továbbított információ jellegétől. Ugyanígy egy út
+      szélessége sem függ attól, hogy éppen milyen forgalom halad rajta keresztül, a maximális áteresztőképességét
+      azonban meghatározza.
+  - type: narrative
+    content: |
+      A csatornakapacitás elméleti meghatározása az átmenetvalószínűségek ismeretében általában nem egyszerű
+      feladat, de létezik rá tetszőlegesen pontos eredményt szolgáltató numerikus eljárás. A csatornakapacitás
+      mértékegysége ***bit/szimbólum***, ami azt fejezi ki, hogy a csatorna bemeneti szimbólumonként hány bit
+      információt képes továbbitani átlagosan.
+  - type: figure
+    lead-in: |
+      A fentebbi BSC modell csatornakapacitása látható az alábbi ábrán a p átállítódásos bithibavalószínűség
+      függvényében:
+    src: 08-csatornakapacitas-bsc.jpg
+    alt: BSC csatornakapacitása
+    caption: BSC csatornakapacitása
+  - type: narrative
+    content: |
+      Látható, hogy a legrosszabb eset az, amikor a csatorna 50-50% valószínűséggel hibázik. Ilyenkor a kimeneti
+      szimbólumsorozat statisztikailag teljesen független a bemeneti szimbólumsorozattól, azaz a csatornakapacitás
+      0, információ nem vihető át rajta. Ezzel szemben a soha nem hibázó, illetve a mindig hibázó csatorna egyaránt
+      zajmentesnek tekinthető. Ilyenkor ugyanis a kimeneti szimbólumból mindig egyértelműen meghatározható a
+      bemeneti szimbólum. Az utóbbi eset hasonló a mindig hazudozó politikushoz: bármit is mond, annak mindig az
+      ellenkezője lesz az igazság. A valódi csatornák kapacitása a teljesen zajmentes, illetve a teljesen zajos
+      végletek között helyezkedik el valahol.

@@ -1,0 +1,30 @@
+type: remark
+name: linearis-kongruenciak-megjegyzes
+references:
+  egesz-szamok-kozotti-kongruencia-tulajdonsagai:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia-tulajdonsagai
+content:
+  - type: narrative
+    content: |
+      Nyilvánvaló, hogyha egy $s$ egész számot $x$ helyére behelyettesítve a kongruencia teljesül &ndash; azaz
+      $a\cdot s\equiv b\pmod m$ &ndash;, akkor ez igaz lesz az $s$ által reprezentált $[s]_m$ maradékosztály összes
+      többi elemére is.
+  - type: formula
+    lead-in: |
+      Ha ugyanis egy $t$ egész szám benne van ebben a maradékosztályban, az pontosan azt jelenti, hogy teljesül az
+      alábbi kongruencia:
+    content: |
+      s\equiv t\pmod m
+  - type: formula
+    lead-in: |
+      Ekkor azonban a [egesz-szamok-kozotti-kongruencia-tulajdonsagai] 7. pontja miatt teljesül az alábbi
+      kongruencia is:
+    content: |
+      a\cdot s\equiv a\cdot t\pmod m
+  - type: narrative
+    content: |
+      Ha tehát $a\cdot s\equiv b\pmod m$ fennáll, akkor ugyanezen tétel 2. és 3. pontjai miatt $a\cdot t\equiv
+      b\pmod m$ is fennáll. Ez az oka annak, hogy egy ***lineáris kongruencia megoldása alatt*** nem egy-egy egész
+      számot, hanem ***teljes maradékosztályokat értünk***.

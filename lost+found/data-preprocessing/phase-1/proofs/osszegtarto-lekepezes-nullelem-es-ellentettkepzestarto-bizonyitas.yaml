@@ -1,0 +1,55 @@
+type: proof
+name: osszegtarto-lekepezes-nullelem-es-ellentettkepzestarto-bizonyitas
+remarks: []
+references:
+  inverz-elem-egyertelmu:
+    target:
+      type: theorem
+      name: inverz-elem-egyertelmu
+content:
+  - type: narrative
+    content: |
+      Jelöljük az $R$ gyűrű összeadását a $+$, míg az $S$ gyűrű összeadását a $\oplus$ szimbólummal.
+  - type: formula
+    lead-in: |
+      ***Az 1. állítás:*** Mivel egyrészt $0_R$ az $R$ gyűrű nulleleme, valamint $f$ tartja az összeadást, ezért az
+      $R$ gyűrű tetszőleges $a$ elemére felírható az alábbi:
+    content: |
+      f(a)=f(a+0_R)=f(a)\oplus f(0_R)
+  - type: narrative
+    content: |
+      Másrészt, mivel $0_S$ az $S$ gyűrű nulleleme, ezért $f(a)=f(a)\oplus 0_S$ is igaz.
+  - type: formula
+    lead-in: |
+      Ezt az előző egyenlettel összevetve az alábbit kapjuk:
+    content: |
+      \underbrace{f(a)\oplus f(0_R)}_{=f(a)}=f(a)\oplus 0_S
+  - type: formula
+    lead-in: |
+      Ha mindkét oldalhoz hozzáadjuk az $f(a)$ elem $S$-beli ellentettjét, akkor megkapjuk a tétel 1. állítását:
+    content: |
+      f(0_R)=0_S
+  - type: narrative
+    content: |
+      ***A 2. állítás:*** Legyen $a$ az $R$ gyűrű valamely tetszőleges eleme, amelynek $R$-beli ellentettjét
+      jelöljük $-a$-val.
+  - type: formula
+    lead-in: |
+      Ekkor az 1. állítás miatt:
+    content: |
+      f(a+(-a))=f(0_R)=0_S
+  - type: formula
+    lead-in: |
+      Másrészt viszont $f$ tartja az összeadást, így igaz az alábbi is:
+    content: |
+      f(a+(-a))=f(a)\oplus f(-a)
+  - type: formula
+    lead-in: |
+      A két egyenletet egymással összevetve ezt kapjuk:
+    content: |
+      f(a)\oplus f(-a)=0_S
+  - type: narrative
+    content: |
+      Mivel $f(a)$ és $f(-a)$ összege épp az $S$ gyűrű nulleleme, valamint az ellentettképzés a
+      [inverz-elem-egyertelmu] alapján egyértelmű, ezért $f(-a)$ valóban az $f(a)$ elem $S$-beli ellentettjével
+      egyezik meg. Azaz $f(-a)=\ominus f(a)$, ahogyan a tétel állítja.

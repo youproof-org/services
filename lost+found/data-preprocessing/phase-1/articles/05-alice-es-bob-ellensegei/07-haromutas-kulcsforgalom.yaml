@@ -1,0 +1,65 @@
+type: section
+name: 07-haromutas-kulcsforgalom
+title: Háromutas kulcsforgalom
+
+body:
+  - type: narrative
+    content: |
+      Egy remek megoldás lehetne azonban a következő: tegyük fel, hogy Alice-nak és Bob-nak is van egy-egy lakatja
+      a hozzá tartozó kulcsokkal. Amikor Alice üzenetet szeretne küldeni Bob-nak, akkor azt beteszi egy ládába,
+      ráteszi a saját lakatját, és elküldi a lezárt ládát Bob-nak, de a kulcsot megtartja magának. Bob ezt a lezárt
+      ládát nem tudja ugyan kinyitni, mivel nem rendelkezik az Alice lakatját nyitó kulccsal, azt azonban
+      megteheti, hogy ő is ráteszi a saját lakatját, és így visszaküldi a ládát Alice-nak, de a kulcsot ő is
+      megtartja magának. Alice ezután leveszi a saját lakatját a ládáról, amelyen így már csak Bob lakatja marad,
+      és megint visszaküldi a ládát Bob-nak. Végül Bob is leveszi a saját lakatját, kinyitja a ládát, és elolvassa
+      az üzenetet.
+  - type: narrative
+    content: |
+      Figyeljük meg, hogy ebben az esetben nem történt semmiféle kulcs küldözgetés Alice és Bob között, és Eve sem
+      tud hozzáférni a láda tartalmához, mivel akárhányszor elfogja a ládát, azon minden alkalommal van legalább
+      egy lakat. A lakatokat nyitó kulcsok pedig mindvégig Alice-nál és Bob-nál maradtak biztonságban.
+  - type: figure
+    lead-in: |
+      Ezt a folyamatot szemlélteti az alábbi ábra:
+    src: 04-haromutas-kulcsforgalom.jpg
+    alt: Háromutas kulcsforgalom
+    caption: Háromutas kulcsforgalom
+  - type: narrative
+    content: |
+      Kérdés azonban, hogy ami működik lakatokkal, az vajon működik-e matematikai függvényekkel. Tegyük fel, hogy
+      Alice kulcsa a, Bob kulcsa pedig b. Ennek megfelelően Alice kódoló és dekódoló függvényei E^a^ és D^a^, míg
+      Bob kódoló és dekódoló függvényei E^b^ és D^b^. Miután mindketten rátették a "lakatot" az x üzenetre, az
+      E^b^(E^a^(x)) üzenet érkezik vissza Alice-hoz. Alice leveszi a "lakatot", azaz erre az üzenetre alkalmazza a
+      D^a^ dekódoló függvényt, és az eredményül kapott D^a^(E^b^(E^a^(x))) üzenetet visszaküldi Bob-nak. Amennyiben
+      ez megegyezik az E^b^(x) értékkel &ndash; azaz amikor már csak Bob "lakatja" van rajta az x üzeneten &ndash;,
+      akkor Bob gond nélkül leveheti erről a saját "lakatját" és visszakapja az x üzenetet.
+  - type: formula
+    lead-in: |
+      A feltétel tehát, hogy tetszőleges x üzenetre és a, b kulcsokra teljesüljön az alábbi összefüggés:
+    content: |
+      D_a(E_b(E_a(x))) = E_b(x)
+  - type: narrative
+    content: |
+      Az ilyen rejtjelezőket ***kommutatív rejtjelezőknek*** nevezzük. A "kommutatív" kifejezés általánosságban a
+      felcserélhetőséget jelenti, ami ebben az esetben arra utal, hogy a "lakatok" felhelyezési és levételi
+      sorrendje ilyen rejtjelező függvények használata esetén felcserélhető.
+  - type: narrative
+    content: |
+      A 20. század második felében tehát megindult a kutatás az ilyen tulajdonságú függvények keresésére. Ez ugyan
+      nem oldja meg a kulcsmegosztás problémáját, viszont megkerüli azt, ami hatalmas előrelépés. Az első
+      kommutatív rejtjelezőt Adi Shamir izraeli kriptográfus találta meg 1980-ban. Ennek az alapja egy nagyon
+      fontos számelméleti összefüggés, az 1636-ban &ndash; tehát sokkal korábban &ndash; felfedezett úgynevezett
+      kis Fermat-tétel. E tételre egy későbbi részben még részletesen vissza fogunk térni, amikor már kellő
+      eszköztárunk lesz a megértéséhez. Ezen kívül Adi Shamir nevét se felejtsük el, hiszen hamarosan nagyon fontos
+      szerephez fog jutni ebben a cikksorozatban.
+  - type: narrative
+    content: |
+      A fenti "lakatos" megoldást ***háromutas kulcsforgalom***nak nevezzük, ami egy kicsit megtévesztő, hiszen
+      valójában nem a kulcsok utaznak, hanem a "lezárt ládák". Van azonban két probléma ezzel a megoldással. Az
+      első egy gyakorlati probléma, nevezetesen: Alice-nak és Bob-nak online kell lenniük, hiszen oda-vissza kell
+      üzengetniük egymásnak ahhoz, hogy egy üzenet biztonságosan megérkezzen Bob-hoz. Ezért például titkosított
+      email-ek küldésére a módszer nem igazán alkalmas, mivel egy email elküldése és annak a címzetthez való
+      megérkezése között hosszabb idő is eltelhet. A másik &ndash; és egyben nagyobb &ndash; probléma az, hogy
+      Mallory ellen nem alkalmazható. Ugyanis sem Alice, sem pedig Bob nem lehet biztos abban, hogy egymással, és
+      nem pedig a közéjük beékelődött Mallory-vel kommunikálnak. Vagyis ***a partner- és üzenethitelesítés nincs
+      biztosítva***.

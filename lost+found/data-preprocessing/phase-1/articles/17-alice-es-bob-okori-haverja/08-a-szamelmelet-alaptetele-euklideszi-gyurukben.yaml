@@ -1,0 +1,55 @@
+type: section
+name: 08-a-szamelmelet-alaptetele-euklideszi-gyurukben
+title: A számelmélet alaptétele euklidészi gyűrűkben
+
+body:
+  - type: narrative
+    content: |
+      A számelmélet alaptételének egyértelműségi állítása pusztán annyit állít, hogy ***HA*** egy elemnek
+      egyáltalán létezik felbontása, ***AKKOR*** az a tényezők sorrendjétől és asszociáltságtól eltekintve
+      egyértelmű. Most azt fogjuk igazolni, hogy euklidészi gyűrűkben ezen felül ***a felbontás LÉTEZÉSE is
+      garantált***. Ehhez a kulcsot a következő tétel fogja jelenteni.
+  - type: embed
+    target:
+      type: theorem
+      name: euklideszi-norma-egyenlotlensegi-tulajdonsaga
+  - type: embed
+    target:
+      type: proof
+      name: euklideszi-norma-egyenlotlensegi-tulajdonsaga-bizonyitas
+  - type: narrative
+    content: |
+      Az iménti tételben szereplő egyenlőtlenségi tulajdonság tehát azt jelenti, hogy egy ilyen euklidészi norma
+      tetszőleges elem bármely nemnulla többszörösére legalább akkora "távolságot" fog mérni, mint magára az
+      elemre. A most következő tétel arra ad választ, hogy mely esetekben teljesül egyenlőség a két oldal között,
+      és mely esetekben nem.
+  - type: embed
+    target:
+      type: theorem
+      name: euklideszi-norma-szigoru-egyenlotlensegenek-feltetele
+  - type: embed
+    target:
+      type: proof
+      name: euklideszi-norma-szigoru-egyenlotlensegenek-feltetele-bizonyitas
+  - type: narrative
+    content: |
+      Az utolsó két tételt felhasználva már könnyedén beláthatjuk ennek a résznek a főtételét, amely az euklidészi
+      gyűrűk legfontosabb tulajdonságát mondja ki.
+  - type: embed
+    target:
+      type: theorem
+      name: euklideszi-gyurukben-teljesul-a-szamelmelet-alaptetele
+  - type: embed
+    target:
+      type: proof
+      name: euklideszi-gyurukben-teljesul-a-szamelmelet-alaptetele-bizonyitas
+  - type: embed
+    target:
+      type: remark
+      name: euklideszi-gyurukben-teljesul-a-szamelmelet-alaptetele-bizonyitas-megjegyzes
+  - type: narrative
+    content: |
+      Ez a tétel tehát egy elégséges feltételt biztosít ahhoz, hogy egy integritástartományban teljesüljön a
+      számelmélet alaptétele. Megjegyezzük azonban, hogy ez a feltétel nem szükséges az alaptételhez. Léteznek
+      olyan integritástartományok is, amelyekben semmilyen értelemben nem végezhető el a maradékos osztás, és így
+      nem euklidészi gyűrűk, ám mégis teljesül bennük a számelmélet alaptétele.

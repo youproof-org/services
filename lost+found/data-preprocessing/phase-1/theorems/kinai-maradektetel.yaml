@@ -1,0 +1,20 @@
+type: theorem
+name: kinai-maradektetel
+proofs:
+  - kinai-maradektetel-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $a$ és $b$ tetszőleges, $p\gt 0$ és $q\gt 0$ pedig valamilyen ***pozitív*** egész számok. Tegyük fel
+      továbbá, hogy $p$ és $q$ egymáshoz ***relatív prímek***.
+  - type: formula
+    lead-in: |
+      Ekkor az alábbi kongruenciarendszer megoldható, és a megoldás egyetlen modulo $pq$ maradékosztály lesz:
+    content: |
+      \begin{aligned}x&\equiv a\pmod p \\ x&\equiv b\pmod q\end{aligned}
+  - type: narrative
+    content: |
+      Más megfogalmazásban minden, a fenti két kongruenciát egyszerre kielégítő egész szám ugyanabba az egyetlen
+      modulo $pq$ maradékosztályba esik, továbbá ennek a bizonyos maradékosztálynak minden eleme kielégíti a fenti
+      két kongruenciát.

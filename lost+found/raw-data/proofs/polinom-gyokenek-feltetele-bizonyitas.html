@@ -1,0 +1,135 @@
+<!-- wp:paragraph -->
+<p>Tegyük fel, hogy az [latex]F[/latex] polinomfüggvény olyan, hogy tetszőleges [latex]x\in R[/latex] gyűrűelemhez az alábbi kifejezés eredményét rendeli hozzá:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]F(x)=a_nx^n+a_{n-1}x^{n-1}+\ldots+a_1x+a_0[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ennek értékét [latex]x=r[/latex] esetén tehát az alábbi kifejezés kiértékelésével számíthatjuk ki:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]F(r)=a_nr^n+a_{n-1}r^{n-1}+\ldots+a_1r+a_0[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Emeljük ki [latex]r[/latex]-et minden olyan tagból, amelyikből lehet:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]F(r)=(a_nr^{n-1}+a_{n-1}r^{n-2}+\ldots+a_2r+a_1)r+a_0[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ismételgessük ezt a képződő zárójelekre mindaddig, ameddig lehetséges:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}F(r)&amp;=((a_nr^{n-2}+a_{n-1}r^{n-3}+\ldots+a_3r+a_2)r+a_1)r+a_0=\\&amp;=(((a_nr^{n-3}+a_{n-1}r^{n-4}+\ldots+a_4r+a_3)r+a_2)r+a_1)r+a_0=\\&amp;\vdots\\&amp;=((\ldots (a_nr+a_{n-1})r+a_{n-2})r+a_{n-3})r+\ldots +a_1)r+a_0\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az így kapott [latex]n-1[/latex] darab egymásba ágyazott zárójelből álló kifejezést kezdjük el kiértékelni „bentről kifelé” haladva zárójelenként, és a kapott részeredményekre sorban vezessük be a [latex]q_{n-1}[/latex], [latex]q_{n-2}[/latex], ..., [latex]q_0[/latex] jelöléseket az alábbi szisztéma szerint:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}q_{n-1}&amp;=a_n \\ q_{n-2}&amp;=q_{n-1}r+a_{n-1} \\ q_{n-3}&amp;=q_{n-2}r+a_{n-2} \\ &amp;\vdots \\ q_i&amp;=q_{i+1}r+a_{i+1} \\ &amp;\vdots \\ q_1&amp;=q_2r+a_2 \\ q_0&amp;=q_1r+a_1\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Végül az utolsó lépést is elvégezve megkapjuk az [latex]F(r)[/latex] értékét:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]F(r)=q_0r+a_0[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Vegyük észre, hogy az eljárással épp a keresett [latex]Q[/latex] polinomfüggvény együtthatóit számítottuk ki. Ezt könnyen ellenőrizhetjük, ha felbontjuk az alábbi zárójelet:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](x-r)\cdot (\underbrace{q_{n-1}x^{n-1}+q_{n-2}x^{n-2}+\ldots+q_1x+q_0}_{=Q(x)})=\ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Itt a baloldali zárójelben lévő mindkét tagot a jobboldali zárójelben lévő minden taggal meg kell szorozni. E beszorzás után az alábbi tagokat kapjuk, amelyek egy hiányzó [latex]a_0[/latex] tagot és egy felesleges [latex]-q_0r[/latex] tagot leszámítva épp az [latex]F(x)[/latex] polinomfüggvény tagjaival egyeznek meg:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}\ldots &amp;=\underbrace{q_{n-1}}_{=a_n}x^n+\\&amp;+\underbrace{(q_{n-2}-q_{n-1}r)}_{=a_{n-1}}x^{n-1}+\\&amp;+\underbrace{(q_{n-3}-q_{n-2}r)}_{=a_{n-2}}x^{n-2}+\\ &amp;\vdots \\&amp;+\underbrace{(q_0-q_1r)}_{=a_1}x-q_0r\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Összefoglalva:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](x-r)\cdot Q(x)=F(x)-a_0-q_0r[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha most mindkét oldalhoz hozzáadunk [latex]a_0+q_0r[/latex]-t, akkor megkapjuk <strong><em>a tétel első állítását</em></strong>:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](x-r)\cdot Q(x)+\underbrace{a_0+q_0r}_{=F(r)}=F(x)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A második állításhoz</em></strong> tegyük fel először, hogy teljesül az [latex]f_r|f[/latex] oszthatóság az [latex]R[x][/latex] polinomgyűrűben. A polinomok közötti szorzást [latex]\odot[/latex]-tal jelölve ezt azt jelenti, hogy létezik olyan [latex]q\in R[x][/latex] polinom, hogy teljesül az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f=f_r\odot q[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="polinomok-osszegenek-es-szorzatanak-polinomfuggvenye" type="link" /] alapján az [latex]f_r\odot q[/latex] szorzatpolinomhoz tartozó polinomfüggvény az [latex]F_r[/latex] és [latex]Q[/latex] polinomfüggvények pontonkénti szorzata lesz. A polinomfüggvények szintjén tehát felírható az alábbi egyenlet:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]F(x)=\underbrace{(x-r)}_{=F_r(x)}\cdot Q(x)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ám ekkor az [latex]F(x)[/latex] polinomfüggvény az [latex]R[/latex] gyűrű nullelemét rendeli [latex]r[/latex]-hez, hiszen ebben az esetben az [latex]F_r(r)[/latex] tényező épp nulla lesz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]F(r)=\underbrace{(r-r)}_{=F_r(r)}\cdot Q(r)=0_R\cdot Q(r)=0_R[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Vagyis ha fennáll az [latex]f_r|f[/latex] oszthatóság az [latex]R[x][/latex] polinomgyűrűben, akkor [latex]r[/latex] valóban <strong><em>gyöke</em></strong> [latex]f[/latex]-nek az [latex]R[/latex] gyűrűben.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Megfordítva:</em></strong> Tegyük most fel, hogy [latex]r[/latex] <strong><em>gyöke</em></strong> az [latex]f[/latex] polinomnak az [latex]R[/latex] gyűrűben. A <strong><em>tétel első állítása</em></strong> alapján létezik olyan [latex]q\in R[x][/latex] polinom, hogy a polinomfüggvények szintjén teljesül az alábbi egyenlet:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]F(x)=\underbrace{(x-r)}_{=F_r(x)}\cdot Q(x)+F(r)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Itt viszont a jobboldalon szereplő [latex]F(r)[/latex] tag az [latex]R[/latex] gyűrű nulleleme lesz, hiszen azt mondtuk, hogy [latex]r[/latex] gyöke az [latex]f[/latex] polinomnak. Azaz a fenti egyenlet az alábbira egyszerűsödik:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]F(x)=F_r(x)\cdot Q(x)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez viszont a [yp_element slug="polinomok-osszegenek-es-szorzatanak-polinomfuggvenye" type="link" /] alapján a polinomok szintjén az alábbit jelenti:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f=f_r\odot q[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Vagyis valóban teljesül az [latex]f_r|f[/latex] <strong><em>oszthatóság</em></strong> az [latex]R[x][/latex] polinomgyűrűben.</p>
+<!-- /wp:paragraph -->

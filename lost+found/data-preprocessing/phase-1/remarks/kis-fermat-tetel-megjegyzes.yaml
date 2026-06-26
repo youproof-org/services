@@ -1,0 +1,25 @@
+type: remark
+name: kis-fermat-tetel-megjegyzes
+references:
+  euler-fermat-tetel:
+    target:
+      type: theorem
+      name: euler-fermat-tetel
+content:
+  - type: narrative
+    content: |
+      Ez a tétel magától Fermat-tól származik 1636-ból. A bizonyításban felhasználtuk, hogy a kis Fermat-tétel az
+      ***Euler-Fermat tétel*** ([euler-fermat-tetel]) egy ***speciális esete***, amikoris a modulus egy $p$
+      prímszám, és így a $\varphi(p)$ kitevő $p-1$-gyel egyezik meg. Megemlítjük azonban, hogy az Euler-Fermat
+      tételt Leonhard Euler mintegy 100 évvel a kis Fermat-tétel felfedezése után publikálta, méghozzá éppen annak
+      tetszőleges &ndash; tehát nem csak prím &ndash; kitevőkre történő általánosításaként. A kis Fermat-tétel
+      közvetlenül &ndash; tehát az Euler-Fermat tétel felhasználása nélkül &ndash; is viszonylag könnyen
+      bizonyítható. Erre vonatkozóan itt találhatunk további részleteket.
+  - type: narrative
+    content: |
+      ***Vigyázat!*** Attól még, hogy valamely $a$ és $n$ egész számokra teljesülnek a tételben szereplő
+      kongruenciák, még nem biztos, hogy $n$ prímszám. Ez azonban elsőre nem látszik. Például $a=2$ esetén a
+      $2^n\equiv 2\pmod n$ kongruenciák ***látszólag*** csak azokban az esetekben teljesülnek, amikor az $n$ kitevő
+      prím. Az első ellenpéldára csak az $n=341$ kitevőnél bukkanunk rá. Ekkor teljesül ugyan a $2^{341}\equiv
+      2\pmod{341}$ kongruencia, a $341$ azonban nem prím, hiszen $341=11\cdot 31$. A következő ellenpélda
+      $n=561=3\cdot 11\cdot 17$-nél következik. Néhány továbbit találunk ebben a listában.

@@ -1,0 +1,29 @@
+type: theorem
+name: normaloszto-szerinti-muvelet-joldefinialtsaga
+proofs:
+  - normaloszto-szerinti-muvelet-joldefinialtsaga-bizonyitas
+remarks: []
+references:
+  normaloszto:
+    target:
+      type: definition
+      name: normaloszto
+content:
+  - type: narrative
+    content: |
+      Legyen $G$ tetszőleges csoport, $N$ pedig ***normálosztó*** $G$-ben.
+  - type: ordered-list
+    lead-in: |
+      Tegyük fel továbbá, hogy a $G$ csoport valamilyen $a_1$ és $a_2$ valamint $b_1$ és $b_2$ elemeire teljesülnek
+      az alábbiak:
+    items:
+      - 'Az $a_1$ elem ugyanabban az $N$ szerinti baloldali mellékosztályban van, mint az $a_2$ elem.'
+      - 'A $b_1$ elem ugyanabban az $N$ szerinti baloldali mellékosztályban van, mint a $b_2$ elem.'
+  - type: narrative
+    content: |
+      Ekkor az $a_1\cdot b_1$ szorzat is ugyanabban az $N$ szerinti baloldali mellékosztályban van, mint az
+      $a_2\cdot b_2$ szorzat.
+  - type: narrative
+    content: |
+      Minthogy a [normaloszto] alapján az $N$ szerinti bal- és jobboldali mellékosztályok megegyeznek, ezért
+      ugyanez az állítás természetesen a jobboldali mellékosztályokra is érvényes.

@@ -1,0 +1,24 @@
+type: theorem
+name: hatvanyozas-azonossagai
+proofs:
+  - hatvanyozas-azonossagai-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ egy ***tetszőleges kommutatív*** gyűrű, amelynek "szorzás" műveletét jelöljük a szokásos $\cdot$
+      szimbólummal vagy egymás után írással.
+  - type: formula
+    lead-in: |
+      Tegyük fel továbbá, hogy ha $x$ a gyűrű valamely eleme, $n$ pedig tetszőleges pozitív egész, akkor az $x^n$
+      ***hatványon*** az alábbi $n$ tényezős "szorzatot" értjük:
+    content: |
+      x^n=\underbrace{x\cdot x\cdot x\cdot \ldots \cdot x}_{\text{n darab}}
+  - type: ordered-list
+    lead-in: |
+      Ekkor tetszőleges $a$ és $b$ gyűrűelemek, valamint tetszőleges $n$ és $k$ pozitív egész számok esetén
+      teljesülnek az alábbi tulajdonságok:
+    items:
+      - '$(a\cdot b)^n=a^n\cdot b^n$'
+      - '$(a^n)^k=a^{n\cdot k}$'
+      - '$a^n\cdot a^k=a^{n+k}$'

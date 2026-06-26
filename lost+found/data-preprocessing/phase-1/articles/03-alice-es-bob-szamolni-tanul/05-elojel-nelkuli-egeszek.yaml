@@ -1,0 +1,48 @@
+type: section
+name: 05-elojel-nelkuli-egeszek
+title: Előjel nélküli egészek
+
+body:
+  - type: narrative
+    content: |
+      Az, hogy egy byte-sorozatban az egyes byte-ok mit jelentenek, az adott alkalmazástól függ, vagy valamilyen
+      szabványban van leírva. Ennek a résznek a végén mutatunk erre egy példát, amikoris megvizsgáljuk egy képet
+      leíró file szerkezetét. Az azonban általánosságban elmondható, hogy van néhány alap adattípus, ami a legtöbb
+      alkalmazásban előfordul.
+  - type: narrative
+    content: |
+      A legegyszerűbb példa az úgynevezett ***előjel nélküli egész számok (unsigned integer)*** ábrázolása. Ez
+      tipikusan 1, 2, 4 vagy 8 byte-on (azaz rendre 8, 16, 32 vagy 64 biten) szokott történni attól függően, hogy
+      milyen értéktartományra van szükségünk, és mennyi memóriát szánunk egy-egy érték tárolására. Ezek azonban
+      csak a "beépített" típusok. Ha ennél nagyobb számokkal akarunk dolgozni, annak természetesen nincs elvi
+      akadálya. Viszont ekkor ezek aritmetikáját (az egyes műveletek végrehajtásának módját) magunknak kell
+      leprogramozni. A legtöbb alkalmazáshoz azonban a 64 bit (azaz 8 byte) bőven elegendő, hiszen ennyi
+      helyiértékkel 2^64^=18446744073709551616 különböző egész számot tudunk leírni. Az előjel nélküli egész
+      számokat leíró byte-ok sorrendje általában kétféle szokott lenni. ***Little endian***nak nevezzük azt a
+      sorrendet, amikor a kisebb helyiértékű byte-ok vannak elöl, és ezt követik az egyre nagyobb helyiértékűek. Az
+      ezzel ellentétes sorrendet ***big endian***nak nevezzük.
+  - type: narrative
+    content: |
+      Tekintsük például a 18365-ös számot, és nézzük meg, hogy ez 32-bites little endian byte-sorrendű előjel
+      nélküli egészként ábrázolva hogyan nézne ki egy byte-sorozatban. A 18365-ös szám bináris alakja 32 biten
+      **00000000000000000100011110111101**. Ezt byte-okra osztjuk és felsoroljuk ezeket a byte-okat a legkisebb
+      helyiértéktől kezdve. Ekkor a következő byte-sorozatot kapjuk: **0xBD**, **0x47**, **0x00**, **0x00**.
+      Ugyanezt a számot 64 biten ábrázolva további 4 darab **0x00** byte is szerepelne a fenti 4 byte után.
+  - type: formula
+    lead-in: |
+      Az alábbi ábrán a 18365-ös számot leíró byte-ok láthatók 32-bites little endian ábrázolásban az n-edik
+      memóriacímtől kezdve:
+    content: |
+      \begin{array}{c}\vdots\\{\begin{array}{|c|c|} \hline (n+0). & \text{0xBD} \\ \hline (n+1). & \text{0x47} \\
+      \hline (n+2). & \text{0x00} \\ \hline (n+3). & \text{0x00} \\ \hline \end{array}}\\\vdots\end{array}
+  - type: formula
+    lead-in: |
+      Ugyanez a szám 32-bites big endian ábrázolásban:
+    content: |
+      \begin{array}{c}\vdots\\{\begin{array}{|c|c|} \hline (n+0). & \text{0x00} \\ \hline (n+1). & \text{0x00} \\
+      \hline (n+2). & \text{0x47} \\ \hline (n+3). & \text{0xBD} \\ \hline \end{array}}\\\vdots\end{array}
+  - type: narrative
+    content: |
+      Úgy tűnik, nincs jelentős előnye egyik ábrázolási módnak sem a másikkal szemben, és használatuk az adott
+      számítógép-architektúrától függ. A legtöbb szabvány mindenesetre a little endian módot írja elő. Ennek oka
+      talán abban keresendő, hogy az ezt használó Intel x86/x64 processzor-architektúra a legelterjedtebb.

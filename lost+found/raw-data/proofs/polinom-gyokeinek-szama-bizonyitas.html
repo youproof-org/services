@@ -1,0 +1,47 @@
+<!-- wp:paragraph -->
+<p>Tekintsük elsőként az [latex]f_{r_1}[/latex] <strong><em>gyöktényezőt</em></strong>. A [yp_element slug="polinom-gyokenek-feltetele" type="link" /] alapján [latex]f[/latex] felírható az alábbi alakban valamilyen alkalmas [latex]q_1\in R[x][/latex] polinommal:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f=f_{r_1}\odot q_1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]R[/latex] <strong><em>egységelemes</em></strong>, továbbá az [latex]f_{r_1}[/latex] gyöktényező <strong><em>főegyütthatója az egységelem</em></strong> – hiszen az ugye a [yp_element slug="polinomfuggveny" type="link" /] alapján megegyezik a hozzátartozó [latex]F_{r_1}(x)=x-r_1[/latex] polinomfüggvény elsőfokú tagjának, azaz [latex]x[/latex]-nek az együtthatójával –, ezért a [yp_element slug="osszeg-es-szorzatpolinom-foka" type="link" /] 5. pontja alapján [latex]\deg(f)=\deg(f_{r_1})+\deg(q_1)[/latex]. Miután [latex]f_{r_1}[/latex] egy gyöktényező, és így [latex]\deg(f_{r_1})=1[/latex], ezért a [latex]q_1[/latex] polinom foka <strong><em>eggyel kisebb</em></strong> [latex]f[/latex] fokánál.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Továbbá a [yp_element slug="polinom-gyokenek-feltetele" type="link" /] alapján a polinomfüggvények szintjén az alábbi teljesül:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]F(x)=(x-r_1)\cdot Q_1(x)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>De ugye [latex]r_2[/latex] is gyöke az [latex]f[/latex] polinomnak, ezért őt behelyettesítve ebbe a polinomfüggvénybe az [latex]R[/latex] gyűrű nullelemét kell kapnunk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]0_R=F(r_2)=(r_2-r_1)\cdot Q_1(r_2)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A jobboldali első tényező biztosan nemnulla, ezért a <strong><em>nullosztómentesség</em></strong> miatt szükségképpen [latex]Q_1(r_2)=0_R[/latex], azaz [latex]r_2[/latex] gyöke a [latex]q_1[/latex] polinomnak. Ám ekkor a [yp_element slug="polinom-gyokenek-feltetele" type="link" /] alapján [latex]q_1[/latex]-ből kiemelhető az [latex]f_{r_2}[/latex] gyöktényező, azaz [latex]f[/latex] felírható az alábbi alakban valamilyen alkalmas [latex]q_2\in R[x][/latex] polinommal, ahol [latex]q_2[/latex] foka a fentebb már ismertetett okok miatt már <strong><em>kettővel kisebb</em></strong> [latex]f[/latex] fokánál:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f=f_{r_1}\odot f_{r_2}\odot q_2[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ugyanilyen gondolatmenet alapján [latex]f[/latex]-ből kiemelhető mind a [latex]k[/latex] darab gyöktényező, és a fennmaradó [latex]q[/latex] polinom foka [latex]k[/latex]-val kisebb [latex]f[/latex] fokánál:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f=f_{r_1}\odot f_{r_2}\odot \ldots \odot f_{r_k}\odot q[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel a fokszám nullánál nem lehet kisebb, ezért [latex]k[/latex] valóban legfeljebb [latex]f[/latex] foka lehet.</p>
+<!-- /wp:paragraph -->

@@ -1,0 +1,70 @@
+type: section
+name: 01-kongruencia-az-egesz-szamok-kozott
+title: Kongruencia az egész számok között
+
+references:
+  egesz-szamok-maradekos-osztasa-egyertelmu:
+    target:
+      type: theorem
+      name: egesz-szamok-maradekos-osztasa-egyertelmu
+  euklideszi-gyuru:
+    target:
+      type: definition
+      name: euklideszi-gyuru
+  ideal-szerinti-kongruencia:
+    target:
+      type: definition
+      name: ideal-szerinti-kongruencia
+
+body:
+  - type: narrative
+    content: |
+      Gauss eredetileg az osztási maradékokkal kapcsolatban használta a kongruencia fogalmát. Tegyük fel, hogy adva
+      van egy $m\ eq 0$ ***nemnulla*** egész szám, amelyet ***modulusnak*** fogunk nevezni. A gauss-féle
+      értelmezésben két tetszőleges $a$ és $b$ egész számot akkor nevezünk kongruensnek az $m$ modulus szerint, ha
+      ugyanazt a ***nemnegatív*** maradékot adják $m$-mel osztva.
+  - type: formula
+    lead-in: |
+      Ezt &ndash; némiképp eltérve a [ideal-szerinti-kongruencia]ben szereplő általános jelöléstől &ndash; így
+      jelöljük:
+    content: |
+      a\equiv b\pmod m
+  - type: narrative
+    content: |
+      A fentebbi példák ugyanúgy igazak maradnak ebben az értelmezésben is. Például a $13$ és a $7$ között fennál a
+      kongruencia a $3$ modulus szerint (vagy ***"modulo $3$"***), mivel mindkettőnek $1$ lesz a ***nemnegatív***
+      maradéka $3$-mal osztva. Ezzel szemben a $18$ és a $13$ egész számok inkongruensek modulo $3$, hiszen a
+      $18$-nak $0$, míg a $13$-nak $1$ lesz a ***nemnegatív*** maradéka $3$-mal osztva.
+  - type: narrative
+    content: |
+      Megjegyezzük, hogy a maradék ***nemnegativitását*** azért fontos megkövetelni, mivel a
+      [egesz-szamok-maradekos-osztasa-egyertelmu] ebben az esetben garantálja a maradék ***egyértelműségét***.
+  - type: formula
+    lead-in: |
+      Ha ezt nem követelnénk meg, akkor például a $13$ kétféle maradékot is adhatna $3$-mal osztva:
+    content: |
+      \begin{aligned}13&=4\cdot 3+1 \\ 13&=5\cdot 3-2\end{aligned}
+  - type: narrative
+    content: |
+      Látható, hogy mindkét maradék teljesíti a [euklideszi-gyuru]ban szereplő ***euklidészi osztásra*** vonatkozó
+      kritériumokat, hiszen mind az $1$, mind pedig a $-2$ maradékok abszolútértéke kisebb $3$-nál. Ha viszont a
+      negatív maradékokat kizárjuk, akkor a [egesz-szamok-maradekos-osztasa-egyertelmu] szerint az euklidészi
+      osztás már csak ***egyféleképpen*** végezhető el.
+  - type: narrative
+    content: |
+      Visszatérve tehát a kongruencia fogalmának gauss-féle értelmezésére, az látszólag megegyezik a
+      [ideal-szerinti-kongruencia]ban szereplő ideál szerinti kongruencia-fogalommal. Legalábbis bármely két egész
+      szám vagy mindkét értelmezés szerint kongruens lesz egymással, vagy egyik szerint sem. Az alábbi tételben ezt
+      általánosságban is igazoljuk.
+  - type: embed
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia
+  - type: embed
+    target:
+      type: proof
+      name: egesz-szamok-kozotti-kongruencia-bizonyitas
+  - type: embed
+    target:
+      type: remark
+      name: egesz-szamok-kozotti-kongruencia-megjegyzes

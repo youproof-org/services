@@ -1,0 +1,79 @@
+type: section
+name: 03-a-nemdeterminisztikus-turing-gep
+title: A nemdeterminisztikus Turing-gép
+
+body:
+  - type: narrative
+    content: |
+      Az előző szakasz elején azt mondtuk, hogy egy probléma matematikai értelemben nem más, mint egy
+      ***függvény***. Méghozzá egy olyan függvény, amely az adott $\Sigma$ ábécé feletti jelsorozatokhoz
+      hozzárendel valamilyen szintén $\Sigma$ feletti jelsorozatot. Elképzelhető, hogy a függvény bizonyos bemeneti
+      jelsorozatokra egyáltalán nincs értelmezve, azaz ezekhez a jelsorozatokhoz nem rendel hozzá semmit. Azonban
+      azokon a helyeken, ahol értelmezve van, egyértelmű kell legyen. Ez azt jelenti, hogy egy adott bemeneti
+      jelsorozathoz a függvény minden esetben ***legfeljebb egy*** kimeneti jelsorozatot rendelhet hozzá.
+  - type: narrative
+    content: |
+      Máskülönben nem függvényről, hanem egy úgynevezett ***relációról*** beszélnénk. A relációk mindössze annyiban
+      különböznek a függvényektől, hogy egy bemeneti jelsorozathoz ***tetszőleges számú*** &ndash; tehát akár
+      végtelen sok &ndash; kimeneti jelsorozatot is hozzárendelhetnek. Ilyen értelemben egy függvény egy olyan
+      speciális relációként fogható fel, amelynél ez a "tetszőleges szám" legfeljebb 1.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán a függvény és a reláció fogalma közötti különbség látható:
+    src: 04-fuggvenyek-es-relaciok.jpg
+    alt: Függvények és relációk
+    caption: Függvények és relációk
+  - type: narrative
+    content: |
+      De mi köze ennek a két fogalomnak a Turing-gépekhez? Az előző szakaszban említettük, hogy egy Turing-gépnél
+      előfordulhat, hogy egy adott helyzetben ***egynél több állapotváltási szabály is végrehajtható***. Ilyenkor a
+      Turing-gépnek ugye ***választania kell***, hogy ezek közül konkrétan melyiket hajtja végre a következő
+      lépésben. Arra azonban nem tettünk semmilyen megkötést, hogy mi alapján válasszon. Ilyen helyzetekben azt
+      mondjuk, hogy a Turing-gép következő lépése ***nem determinált***. Az olyan Turing-gépeket, amelyek a
+      szabályrendszerük alapján ilyen választási helyzetbe kényszerül**hetnek**, ***nemdeterminisztikus
+      Turing-gépek***nek nevezzük. Ezzel szemben ha minden esetben legfeljebb 1 szabály hajtható végre, akkor
+      ***determinisztikus Turing-gépek***ről beszélünk.
+  - type: narrative
+    content: |
+      Vegyük észre, hogy a ***függvény és reláció*** fogalma közötti különbség párhuzamba hozható a
+      ***determinisztikus és nemdeterminisztikus*** Turing-gépek lehetséges számítási útvonalai közötti
+      különbséggel. Egy determinisztikus Turing-gépnek egy adott bemenetre egyetlen lehetséges számítási útvonala
+      létezik, hiszen minden helyzetben legfeljebb 1 szabály lesz végrehajtható. Ez az egyetlen számítási útvonal
+      vagy végtelen hosszú lesz, vagy pedig véges attól függően, hogy az adott bemenetre a gép végtelen ciklusba
+      kerül-e vagy nem. Előbbi esetben a bemenetre nem érkezik semmilyen kimenet (azaz válasz), utóbbi esetben
+      pedig a megállás után a kimenet ott lesz az utolsó szalagon.
+  - type: figure
+    lead-in: |
+      Az alábbi ábra mutatja ezt a két lehetőséget ***determinisztikus Turing-gép*** esetén:
+    src: 05-determinisztikus-turing-gep.jpg
+    alt: Determinisztikus Turing-gép számítási útvonalai
+    caption: Determinisztikus Turing-gép számítási útvonalai
+  - type: narrative
+    content: |
+      Az első esetben az $x_1$ bemenetre nem kaptunk kimenet, míg a második esetben az $x_2$ bemenetre megkaptuk az
+      egyértelmű $y$ kimenetet. Épp úgy, mintha egy ***függvény*** az $x_1$ jelsorozathoz nem rendelt volna hozzá
+      semmit, de az $x_2$ jelsorozathoz az $y$ jelsorozatot rendelte volna hozzá.
+  - type: narrative
+    content: |
+      Ezzel szemben egy nemdeterminisztikus Turing-gépnek egy adott bemenetre 1-nél több &ndash; amely lehet akár
+      végtelen sok &ndash; számítási útvonala létezik, hiszen bizonyos helyzetekben 1-nél több szabály lesz
+      végrehajtható. E végtelen sok számítási útvonal között bizonyára lesznek végtelen és véges hosszúak is attól
+      függően, hogy az adott bemenetre az adott útvonalon a gép végtelen ciklusba kerül-e vagy nem. Amennyiben
+      ***minden*** lehetséges számítási útvonal végtelen hosszú, akkor a bemenetre nem érkezik semmilyen kimenet
+      (azaz válasz). Amennyiben léteznek véges hosszú útvonalak is, akkor ezeknek az útvonalaknak a kimenete a
+      megállás után ott lesz az utolsó szalagon.
+  - type: figure
+    lead-in: |
+      Az alábbi ábra mutatja ezt a két lehetőséget ***nemdeterminisztikus Turing-gép*** esetén:
+    src: 06-nemdeterminisztikus-turing-gep.jpg
+    alt: Nemdeterminisztikus Turing-gép számítási útvonalai
+    caption: Nemdeterminisztikus Turing-gép számítási útvonalai
+  - type: narrative
+    content: |
+      Az első esetben az $x_1$ bemenetre nem kaptunk kimenet, míg a második esetben az $x_2$ bemenetre megkaptuk az
+      $y_1, y_2, y_3, \dots$ kimeneteket. Épp úgy, mintha egy ***reláció*** az $x_1$ jelsorozathoz nem rendelt
+      volna hozzá semmit, de az $x_2$ jelsorozathoz az $y_1, y_2, y_3, \dots$ jelsorozatokat rendelte volna hozzá.
+  - type: narrative
+    content: |
+      A ***determinisztikus*** és ***nemdeterminisztikus*** Turing-gépek által reprezentált számítási modellek
+      közötti viszonynak érezhetően köze van a ***függvények*** és ***relációk*** fogalma közötti viszonyhoz.

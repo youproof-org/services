@@ -1,0 +1,16 @@
+type: theorem
+name: oszthatosag-egyszerusitese
+proofs:
+  - oszthatosag-egyszerusitese-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ egy tetszőleges ***integritástartomány***. Ekkor tetszőleges $a$, $b$ és $c\eq 0$ elemekre az
+      $a|b$ oszthatóság ***akkor és csak akkor*** teljesül, amikor az $ac|bc$ oszthatóság is. Egy
+      ***integritástartományban*** tehát egy oszthatóság mindkét oldalát szabad egyrészt megszorozni bármilyen
+      elemmel, másrészt egyszerűsíteni bármilyen ***nemnulla*** elemmel.
+  - type: narrative
+    content: |
+      Ha a gyűrű csak ***kommutatív, de a nullosztómentesség nem teljesül***, akkor csak annyi igaz, hogy az $a|b$
+      oszthatóságból tetszőleges (tehát akár $0$) $c$ esetén következik az $ac|bc$ oszthatóság.

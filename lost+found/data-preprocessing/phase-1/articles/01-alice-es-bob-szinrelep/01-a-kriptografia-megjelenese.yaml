@@ -1,0 +1,23 @@
+type: section
+name: 01-a-kriptografia-megjelenese
+title: A kriptográfia megjelenése
+
+body:
+  - type: narrative
+    content: |
+      Minden rosszban van valami jó, hiszen ezáltal Alice és Bob rájöttek, hogy a posta nem megbízható, ha bizalmas
+      üzenetváltásokról van szó. Megbeszéltek hát egy személyes találkozót, hogy együtt kitalálják, mihez kezdjenek
+      ezzel a problémával. Azt tudták, hogy a továbbiakban is kénytelenek lesznek a nem megbízható postát használni
+      a közöttük lévő nagy távolság miatt. Ugyanakkor nem szerették volna, ha az üzenetekben lévő bizalmas
+      információk illetéktelen kezekbe kerülnének.
+  - type: narrative
+    content: |
+      Ezért azt találták ki, hogy a küldő fél minden üzenet elküldése előtt lecseréli az üzenet betűit más betűkre
+      egy adott szisztéma szerint. Ezt a szisztémát titokban tartják, a fogadó fél pedig a cserélgetést ugyanazon
+      szisztéma szerint visszafelé elvégzi, miután megkapta az üzenetet. Így biztonságosan használhatják a postát
+      az üzenetküldésre, hiszen a postán garázdálkodó Eve (vagy bárki más) hiába bontja fel a borítékot, abban csak
+      egy számára értelmetlen betűhalmazt fog találni. Eve ugyanis nem ismeri Alice és Bob közös titkát, így nem
+      tudja visszacserélgetni a betűket és megismerni a bizalmas üzenetek tartalmát.
+  - type: narrative
+    content: |
+      Alice és Bob tehát megegyeztek abban, hogy ***rejtjelezni*** fogják az üzeneteiket.

@@ -1,0 +1,9 @@
+type: theorem
+name: peano-osszeg-egyszerusites
+proofs:
+  - peano-osszeg-egyszerusites-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Tetszőleges $a$, $b$ és $c$ természetes számok esetén ha $a+c = b+c$, akkor $a=b$.

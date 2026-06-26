@@ -1,0 +1,61 @@
+type: proof
+name: foidealok-es-oszthatosag-kapcsolata-nem-egysegelemes-bizonyitas
+remarks: []
+references:
+  foidealok-es-oszthatosag-kapcsolata-egysegelemes:
+    target:
+      type: theorem
+      name: foidealok-es-oszthatosag-kapcsolata-egysegelemes
+  oszthatosag-tulajdonsagai:
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+  reszhalmaz:
+    target:
+      type: definition
+      name: reszhalmaz
+content:
+  - type: narrative
+    content: |
+      Ennek a tételnek a bizonyítása nagyon fog hasonlítani a [foidealok-es-oszthatosag-kapcsolata-egysegelemes]
+      bizonyításához. Arra azonban figyelnünk kell, hogy az ***egységelem hiánya*** miatt ezúttal ***nem teljesül
+      az $a|a$ oszthatóság***, mivel a ***nullosztómentesség*** miatt ez ellentmondana a
+      [oszthatosag-tulajdonsagai] 2. pontjának.
+  - type: narrative
+    content: |
+      ***Az 1. állítás:*** ***Egyrészt*** azt kell bizonyítani, hogy ha teljesül az $a|b$ oszthatóság, akkor
+      bármilyen $c\in (b)$ esetén $c\in (a)$ is teljesül, azaz fennáll a $(b)\sube (a)$ tartalmazási reláció. A
+      $c\in (b)$ ugye azt jelenti, hogy $c$ vagy megegyezik $b$-vel &ndash; és ekkor nyilván teljesül az
+      $a|\underbrace{c}_{=b}$ oszthatóság &ndash;, vagy pedig annak többszöröse &ndash; és ekkor pedig a $b|c$
+      oszthatóság teljesül. De mivel azt mondtuk, hogy teljesül az $a|b$ oszthatóság, ezért ez utóbbi esetben az
+      oszthatóság tranzitivitása miatt ([oszthatosag-tulajdonsagai] 5. pont) ugyancsak teljesül az $a|c$
+      oszthatóság. Mindkét eset azt jelenti, hogy $c$ egyike az $a$ elem többszöröseinek is, azaz $c\in (a)$. Mivel
+      megmutattuk, hogy a $(b)$ főideál bármely eleme egyúttal eleme az $(a)$ főideálnak is, így a [reszhalmaz]
+      alapján valóban $(b)\sube (a)$.
+  - type: narrative
+    content: |
+      ***Másrészt*** azt kell még megmutatni, hogy ***NEM egységelemes*** gyűrű esetén ez valójában egy ***szigorú
+      tartalmazási reláció***. Mutatnunk kell tehát egy olyan elemet, amely benne van az $(a)$ főideálban, viszont
+      nincs benne a $(b)$ főideálban. Vegyük észre, hogy az $a$ elem pont ilyen, hiszen egyrészt ő nyilvánvalóan
+      benne van a saját maga által generált $(a)$ főideálban. Másrészt viszont a $(b)$ főideálban nem lehet benne,
+      máskülönben vagy a $b=a$ egyenlőség, vagy pedig a $b|a$ oszthatóság teljesülne. De mivel azt mondtuk, hogy
+      teljesül az $a|b$ oszthatóság, ezért $b=a$ esetén nyilvánvalóan, míg $b|a$ esetén pedig az oszthatóság
+      tranzitivitása miatt ([oszthatosag-tulajdonsagai] 5. pont) teljesülne az $a|a$ oszthatóság is, ami ugye
+      ellentmondás.
+  - type: narrative
+    content: |
+      ***Visszafelé:*** Tegyük most fel, hogy teljesül a $(b)\sub (a)$ ***szigorú tartalmazási reláció***. A
+      $(b)\sub (a)$ tartalmazás többek között azt jelenti, hogy a $(b)$ főideál bármely eleme egyúttal eleme az
+      $(a)$ főideálnak is. Ez természetesen magára $b$-re is igaz, azaz $b\in (a)$. Így tehát $b$ vagy $a$-nak
+      többszöröse (azaz teljesül az $a|b$ oszthatóság), vagy pedig megegyezik vele. De ez utóbbi lehetetlen, hiszen
+      ebben az esetben az $(a)$ és $(b)$ főideálok megegyeznének, és így a közöttük lévő tartalmazási reláció nem
+      lehetne szigorú. Így tehát valóban csak $a|b$ lehet a helyzet.
+  - type: narrative
+    content: |
+      ***A 2. állítás:*** Az $(a)=(b)$ azt jelenti, hogy a két főideálnak pontosan ugyanazok az elemeik. Mivel $a$
+      nyilván benne van a saját maga által generált főideálban, ezért ő a $(b)$ főideálnak is eleme. Ugyanezen okok
+      miatt $b$ is eleme az $(a)$ főideálnak. Így tehát ők vagy megegyeznek egymással, vagy pedig egymás osztói,
+      azaz $a|b$ és $b|a$ is teljesül. Ez utóbbi esetben azonban az oszthatóság tranzitivitása miatt teljesülne az
+      $a|a$ oszthatóság is, ami ugye ***nem egységelemes gyűrűk*** esetén lehetetlen. Így tehát $(a)=(b)$-ből
+      valóban csak $a=b$ következhet. ***Visszafelé:*** ha $a=b$, akkor az általuk generált főideálok nyilvánvalóan
+      megegyeznek.

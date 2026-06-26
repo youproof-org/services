@@ -1,0 +1,83 @@
+type: section
+name: 06-teljes-es-redukalt-maradekrendszerek
+title: Teljes és redukált maradékrendszerek
+
+references:
+  euler-fuggveny:
+    target:
+      type: definition
+      name: euler-fuggveny
+
+body:
+  - type: narrative
+    content: |
+      Most tehát egy lépéssel közelebb kerültünk az ***Euler-féle $\varphi$-függvény*** kiszámításához, ami ugye a
+      [euler-fuggveny] alapján épp a modulo $m$ redukált maradékosztályok számát adja meg. Az előző szakaszban
+      tanultak felhasználásával ugyanis egy adott maradékosztályról könnyedén el tudjuk dönteni, hogy redukált-e
+      vagy nem, azaz létezik-e inverze a $\Z/m\Z$ maradékosztálygyűrű szorzására nézve vagy nem. Ennek pontos
+      feltételét az alábbi tételben adjuk meg.
+  - type: embed
+    target:
+      type: theorem
+      name: redukalt-maradekosztaly-feltetele
+  - type: embed
+    target:
+      type: proof
+      name: redukalt-maradekosztaly-feltetele-bizonyitas
+  - type: narrative
+    content: |
+      Az ***Euler-féle $\varphi$-függvény*** tehát az imént bizonyított feltételnek eleget tevő maradékosztályok
+      számát adja meg. Mi azonban szeretnénk egy olyan alternatív definíciót adni ennek a függvénynek, amely
+      könnyebben kiszámítható. Ehhez szükségünk van néhány további fogalomra és összefüggésre.
+  - type: embed
+    target:
+      type: definition
+      name: teljes-es-redukalt-maradekrendszer
+  - type: narrative
+    content: |
+      Az alábbi ábrán a $\Z/8\Z$-vel jelölt modulo $8$ maradékosztályok, illetve egy-egy belőlük képzett teljes és
+      redukált maradékrendszer látható. Előbbit $T$-vel, utóbbit pedig $R$-rel jelöltük. Látható, hogy a $T$ halmaz
+      minden maradékosztályból pontosan egy elemet tartalmaz.
+  - type: figure
+    lead-in: |
+      Ehhez hasonlóan az $R$ halmaz minden redukált maradékosztályból tartalmaz pontosan egy elemet:
+    src: 05-modulo-8-teljes-es-redukalt.jpg
+    alt: Modulo 8 teljes és redukált maradékrendszerek
+    caption: Modulo 8 teljes és redukált maradékrendszerek
+  - type: narrative
+    content: |
+      Az alábbi tétel abban nyújt segítséget, hogy egy tetszőleges egész számokból álló halmazról könnyen el tudjuk
+      dönteni, hogy az egy teljes illetve redukált maradékrendszer-e vagy sem.
+  - type: embed
+    target:
+      type: theorem
+      name: teljes-es-redukalt-maradekrendszer-feltetele
+  - type: embed
+    target:
+      type: proof
+      name: teljes-es-redukalt-maradekrendszer-feltetele-bizonyitas
+  - type: narrative
+    content: |
+      E tétel egyik alkalmazásaként most egy alternatív definíciót is adunk az ***Euler-féle
+      $\varphi$-függvényre***.
+  - type: embed
+    target:
+      type: theorem
+      name: euler-fuggveny-alternativ-definicio
+  - type: embed
+    target:
+      type: proof
+      name: euler-fuggveny-alternativ-definicio-bizonyitas
+  - type: narrative
+    content: |
+      Egy másik alkalmazásként megmutatjuk, hogy egy teljes (illetve redukált) maradékrendszerből hogyan kaphatunk
+      egy újabb teljes (illetve redukált) maradékrendszert. Ennek rettentő fontos következménye lesz számunkra az
+      úgynevezett ***Euler-Fermat tétel***, amelyet a következő szakaszban mutatunk be.
+  - type: embed
+    target:
+      type: theorem
+      name: teljes-es-redukalt-maradekrendszer-kepzese
+  - type: embed
+    target:
+      type: proof
+      name: teljes-es-redukalt-maradekrendszer-kepzese-bizonyitas

@@ -1,0 +1,73 @@
+<!-- wp:paragraph -->
+<p>Az [latex]ac\equiv bc\pmod m[/latex] kongruencia a [yp_element slug="egesz-szamok-kozotti-kongruencia" type="link" /] 3. pontja alapján akkor és csak akkor teljesül, ha fennáll az [latex]m|ac-bc[/latex], azaz a disztributivitási szabály miatt az alábbi oszthatóság:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]m|(a-b)c[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ugye [latex]\frac{m}{d}[/latex]-vel jelöltük azt az egész számot, amelyet a [latex]d[/latex] kitüntetett közös osztóval megszorozva az [latex]m[/latex] modulust kapjuk. Ehhez hasonlóan jelöljük [latex]\frac{c}{d}[/latex]-vel azt az egész számot, amelyet ugyancsak [latex]d[/latex]-vel megszorozva a [latex]c[/latex] egész számot kapjuk. Azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}m&amp;=\frac{m}{d}\cdot d \\ c&amp;=\frac{c}{d}\cdot d\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Nyilván az [latex]\frac{m}{d}[/latex] és a [latex]\frac{c}{d}[/latex] egész számok léteznek, hiszen [latex]d[/latex] osztója [latex]m[/latex]-nek is és [latex]c[/latex]-nek is, mivel ő épp kettejük kitüntetett közös osztója. Ezek után a fenti oszthatóság így néz ki:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{\frac{m}{d}\cdot d}_{=m}|(a-b)\underbrace{\frac{c}{d}\cdot d}_{=c}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="oszthatosag-egyszerusitese" type="link" /] alapján egy integritástartományban – mint amilyen a [yp_element slug="az-egesz-szamok-halmaza-integritastartomany" type="link" /] alapján az egész számok [latex]\Z[/latex] gyűrűje is – egy oszthatóság mindkét oldalát szabad egyszerűsíteni bármilyen <strong><em>nemnulla</em></strong> elemmel. A [latex]d\
+eq 0[/latex] feltétel teljesül, hiszen ő nem más, mint [latex]c[/latex] és [latex]m[/latex] kitüntetett közös osztója, amely az [latex]m\
+eq 0[/latex] feltétel és a [yp_element slug="oszthatosag-tulajdonsagai" type="link" /] 4. pontja miatt biztosan nem lehet [latex]0[/latex]. A fenti oszthatóság tehát az egyszerűsítési szabály miatt pontosan akkor teljesül, amikor teljesül az alábbi oszthatóság:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\frac{m}{d}|(a-b)\frac{c}{d}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Nézzük most meg, hogy mit tudunk elmondani a [latex](\frac{c}{d},\frac{m}{d})[/latex] kitüntetett közös osztóról. Azt ugye tudjuk, hogy [latex](c,m)=d[/latex], így tehát igaz az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](\underbrace{\frac{c}{d}\cdot d}_{=c},\underbrace{\frac{m}{d}\cdot d}_{=m})=d[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>kitüntetett közös osztó kiemelési tulajdonsága</em></strong> miatt (lásd a [yp_element slug="kituntetett-kozos-oszto-kiemelesi-tulajdonsaga" type="link" /]t) teljesül az alábbi asszociáció:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{(\frac{c}{d}\cdot d,\frac{m}{d}\cdot d)}_{=d}\sim d\cdot (\frac{c}{d},\frac{m}{d})[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Minthogy a [yp_element slug="asszocialtsag-es-egysegek-kapcsolata" type="link" /] alapján egy egységelemes integritástartományban valamely elem asszociáltjai pontosan az egységszeresei, emiatt a [latex](\frac{c}{d},\frac{m}{d})[/latex] kitüntetett közös osztó szükségképpen <strong><em>egység</em></strong> kell legyen. Ez a [yp_element slug="relativ-primek" type="link" /] utáni megjegyzés alapján pontosan azt jelenti, hogy a [latex]\frac{c}{d}[/latex] és az [latex]\frac{m}{d}[/latex] egész számok egymáshoz <strong><em>relatív prímek</em></strong>. Mindeközben azonban – ahogyan fentebb már láttuk – teljesül az alábbi oszthatóság:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\frac{m}{d}|(a-b)\frac{c}{d}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mármost ez az oszthatóság egyrészt a [yp_element slug="oszthatosag-tulajdonsagai" type="link" /] 7. pontja miatt <strong><em>akkor</em></strong>, másrészt pedig – mivel [latex]\frac{m}{d}[/latex] relatív prím [latex]\frac{c}{d}[/latex]-hez – az <strong><em>euklidészi lemma</em></strong> miatt ([yp_element slug="euklideszi-lemma" type="link" /]) <strong><em>csak akkor</em></strong> teljesül, amikor teljesül az alábbi oszthatóság is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\frac{m}{d}|(a-b)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez viszont a [yp_element slug="egesz-szamok-kozotti-kongruencia" type="link" /] 3. pontja alapján pontosan azt jelenti, hogy – a tétel állításának megfelelően – teljesül az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a\equiv b\pmod{\frac{m}{d}}[/latex]
+<!-- /wp:shortcode -->

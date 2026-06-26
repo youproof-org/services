@@ -1,0 +1,63 @@
+type: proof
+name: euler-fermat-tetel-bizonyitas
+remarks: []
+references:
+  egesz-szamok-kozotti-kongruencia-egyszerusitese:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia-egyszerusitese
+  egesz-szamok-kozotti-kongruencia-tulajdonsagai:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia-tulajdonsagai
+  teljes-es-redukalt-maradekrendszer-kepzese:
+    target:
+      type: theorem
+      name: teljes-es-redukalt-maradekrendszer-kepzese
+content:
+  - type: narrative
+    content: |
+      Tekintsünk egy tetszőleges $R=\{r_1; r_2; \ldots; r_{\varphi(m)}\}$ modulo $m$ ***redukált
+      maradékrendszert***. Mivel $a$ relatív prím $m$-hez, ezért a [teljes-es-redukalt-maradekrendszer-kepzese]
+      alapján az $S=\{ar_1; ar_2; \ldots; ar_{\varphi(m)}\}$ számhalmaz is egy modulo $m$ ***redukált
+      maradékrendszert*** alkotnak.
+  - type: narrative
+    content: |
+      Ez azt jelenti, hogy mindkét számhalmaz tartalmaz egy-egy reprezentánselemet az összes létező redukált
+      maradékosztályból. Tehát az $S$ halmazban minden $ar_i$ elemnek van egy $r_j$ párja az $R$ halmazban, amely
+      ugyanannak a redukált maradékosztálynak a reprezentánseleme, vagyis vele kongruens modulo $m$. Most
+      átmenetileg nevezzük át az $R$ elemeit úgy, hogy az $ar_i$ ilyen értelemben vett párját jelöljük $s_i$-vel.
+  - type: formula
+    lead-in: |
+      Ebből tehát $\varphi(m)$ darab kongruenciát lehet felírni, ahol a baloldalon az $S$, míg a jobboldalon
+      &ndash; a most bevezetett jelölésekkel &ndash; az $R$ halmaz elemei szerepelnek:
+    content: |
+      \begin{aligned}ar_1&\equiv s_1\pmod m \\ ar_2&\equiv s_2\pmod m \\ ar_3&\equiv s_3\pmod m \\ &\vdots \\
+      ar_{\varphi(m)}&\equiv s_{\varphi(m)}\pmod m\end{aligned}
+  - type: formula
+    lead-in: |
+      A [egesz-szamok-kozotti-kongruencia-tulajdonsagai] 5. pontja alapján ez a $\varphi(m)$ darab kongruencia
+      összeszorozható:
+    content: |
+      \underbrace{aa \ldots a}_{\varphi(m)\ \text{darab}} \cdot r_1r_2\ldots r_{\varphi(m)} \equiv s_1s_2\ldots
+      s_{\varphi(m)} \pmod m
+  - type: narrative
+    content: |
+      A jobboldalon tehát az $R$ halmaz elemei szerepelnek, csak épp átmenetileg az $s_1$, $s_2$, ...,
+      $s_{\varphi(m)}$ nevekkel láttuk el őket.
+  - type: formula
+    lead-in: |
+      Az eredeti neveikkel szerepeltetve és az eszerinti indexelés alapján sorbarendezve őket a fenti kongruencia
+      tulajdonképpen így néz ki:
+    content: |
+      a^{\varphi(m)} \cdot r_1r_2\ldots r_{\varphi(m)} \equiv r_1r_2\ldots r_{\varphi(m)} \pmod m
+  - type: narrative
+    content: |
+      Mivel az $R=\{r_1; r_2; \ldots; r_{\varphi(m)}\}$ számhalmaz egy modulo $m$ ***redukált maradékrendszer***,
+      ezért minden eleme relatív prím $m$-hez.
+  - type: formula
+    lead-in: |
+      Emiatt a fenti kongruenciát a [egesz-szamok-kozotti-kongruencia-egyszerusitese] utánis megjegyzés alapján
+      ezekkel az elemekkel mind egyszerűsíthetjük, megkapva így a tétel állítását:
+    content: |
+      a^{\varphi(m)} \equiv 1\pmod m

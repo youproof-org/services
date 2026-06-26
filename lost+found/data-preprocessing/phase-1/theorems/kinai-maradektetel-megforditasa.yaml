@@ -1,0 +1,22 @@
+type: theorem
+name: kinai-maradektetel-megforditasa
+proofs:
+  - kinai-maradektetel-megforditasa-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyenek $p\gt 0$ és $q\gt 0$ valamilyen ***pozitív*** egész számok, továbbá tegyük fel, hogy $p$ és $q$
+      egymáshoz ***relatív prímek***.
+  - type: formula
+    lead-in: |
+      Ekkor minden $X\in \Z/pq\Z$ maradékosztályhoz ***pontosan egy*** olyan $(A;B)\in \Z/p\Z\times \Z/q\Z$
+      maradékosztálypár létezik, amelynek $X$ a metszete, azaz amelyre teljesül az alábbi:
+    content: |
+      X=A\cap B
+  - type: formula
+    lead-in: |
+      Amennyiben az $X$ maradékosztályt egy valamilyen $s$ egész számmal reprezentáljuk &ndash; azaz $X=[s]_{pq}$
+      &ndash;, akkor $s$ egyúttal a keresett $A$ és $B$ maradékosztályok reprezentánseleme is:
+    content: |
+      \begin{aligned}A&=[s]_p \\ B&=[s]_q\end{aligned}

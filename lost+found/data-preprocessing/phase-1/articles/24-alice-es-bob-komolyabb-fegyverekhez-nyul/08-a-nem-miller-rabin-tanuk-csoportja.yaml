@@ -1,0 +1,67 @@
+type: section
+name: 08-a-nem-miller-rabin-tanuk-csoportja
+title: A nem Miller-Rabin-tanúk csoportja
+
+references:
+  carmichael-szamok:
+    target:
+      type: definition
+      name: carmichael-szamok
+  gyuru-additiv-es-multiplikativ-csoportja:
+    target:
+      type: definition
+      name: gyuru-additiv-es-multiplikativ-csoportja
+  miller-rabin-tanu:
+    target:
+      type: definition
+      name: miller-rabin-tanu
+
+body:
+  - type: narrative
+    content: |
+      Most használjuk fel az eddig tanultakat ahhoz, hogy igazolni tudjunk egy alsó becslést a Miller-Rabin-tanúk
+      számára. Ezzel egyúttal az is világossá válik, hogy erre a prímtesztre nézve nem léteznek a
+      Carmichael-számokhoz ([carmichael-szamok]) hasonló univerzális álprímek.
+  - type: narrative
+    content: |
+      A [gyuru-additiv-es-multiplikativ-csoportja] utáni megjegyzésben megmutattuk, hogy bármilyen gyűrűben a
+      szorzásra nézve invertálható elemek halmaza csoportot alkot. Így például egy adott $n\gt 1$ páratlan egész
+      szám esetén a modulo $n$ redukált maradékosztályok is csoportot alkotnak, amelyet $(\Z/n\Z)^{\times}$-vel
+      jelöltünk. Érdekes kérdés, hogyha $n$ összetett, akkor vajon a redukált maradékosztályok csoportjában a
+      ***nem Miller-Rabin-tanúk*** részcsoportot alkotnak-e.
+  - type: narrative
+    content: |
+      Nos általában nem ez a helyzet. Nézzük például az $n=65$ esetét. Az Olvasó maga is leellenőrizheti a
+      [miller-rabin-tanu] alapján, hogy például a $[8]_{65}$ és a $[18]_{65}$ redukált maradékosztályok nem
+      Miller-Rabin-tanúk. Kiszámítva a definícióban szereplő $e$ kitevőt és $k$ páratlan számot $e=6$ és $k=1$
+      adódik, hiszen $65-1=2^6\cdot 1$.
+  - type: formula
+    lead-in: |
+      Ezekkel ellenőrizve a Miller-Rabin-kongruenciákat, azok közül mind a $[8]_{65}$, mind pedig a $[18]_{65}$
+      maradékosztály esetén valóban teljesül a harmadik:
+    content: |
+      \begin{array}{cc}\begin{aligned}8\ \cancel{\equiv}\ 1 &\pmod{65} \\ 8\ \cancel{\equiv}\ -1 &\pmod{65} \\
+      8^2\equiv -1&\pmod{65} \\ &\vdots\end{aligned} & \begin{aligned}18\ \cancel{\equiv}\ 1 &\pmod{65} \\ 18\
+      \cancel{\equiv}\ -1 &\pmod{65} \\ 18^2\equiv -1&\pmod{65} \\ &\vdots \end{aligned}\end{array}
+  - type: formula
+    lead-in: |
+      Ugyanakkor kettejük szorzata, azaz a $[8]_{65}\cdot [18]_{65}=[14]_{65}$ maradékosztály már
+      Miller-Rabin-tanú, hiszen a $[14]_{65}$-re a Miller-Rabin-kongruenciák közül egyik sem teljesül:
+    content: |
+      \begin{aligned}14\ &\cancel{\equiv}\ 1 \pmod{65} \\ 14\ &\cancel{\equiv}\ -1 \pmod{65} \\ 14^2\
+      &\cancel{\equiv}\ -1\pmod{65} \\ 14^{2^2}\ &\cancel{\equiv}\ -1\pmod{65} \\ 14^{2^3}\ &\cancel{\equiv}\
+      -1\pmod{65} \\ 14^{2^4}\ &\cancel{\equiv}\ -1\pmod{65} \\ 14^{2^5}\ &\cancel{\equiv}\
+      -1\pmod{65}\end{aligned}
+  - type: narrative
+    content: |
+      Azaz a nem Miller-Rabin-tanúk halmazára nem teljesül a műveleti zártság, és így részcsoport sem lehet. Van
+      azonban egy speciális eset, amikor a nem Miller-Rabin-tanúk mégiscsak részcsoportot alkotnak. Nevezetesen
+      amikor $n$ valamilyen prímhatvány. Az alábbi tételben ennél még többet is igazolunk.
+  - type: embed
+    target:
+      type: theorem
+      name: nem-miller-rabin-tanuk-csoportja-primhatvanyok-eseten
+  - type: embed
+    target:
+      type: proof
+      name: nem-miller-rabin-tanuk-csoportja-primhatvanyok-eseten-bizonyitas

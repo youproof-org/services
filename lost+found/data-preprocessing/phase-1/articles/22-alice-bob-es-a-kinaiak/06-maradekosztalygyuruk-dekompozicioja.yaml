@@ -1,0 +1,166 @@
+type: section
+name: 06-maradekosztalygyuruk-dekompozicioja
+title: Maradékosztálygyűrűk dekompozíciója
+
+body:
+  - type: narrative
+    content: |
+      Az RSA-algoritmussal főként az a probléma, hogy szimmetrikus kulcsú társaihoz képest relatíve lassú. Ezt
+      elsősorban a moduláris hatványozás okozza. Ez némileg ellentmond annak, amit az előző részben állapítottunk
+      meg erről a műveletről. Akkor ugyanis azt mondtuk, hogy az ***ismételt négyzetreemelések módszerével***
+      rendkívül gyorsan elvégezhető a moduláris hatványozás. Ez algoritmuselméleti értelemben valóban így van,
+      hiszen láttuk, hogy az elvégzendő moduláris szorzások száma legfeljebb a kitevő bináris számjegyei számának a
+      kétszerese lehet. Márpedig egy ilyen jellegű skálázódás a 7. részben leírtak fényében bőven hatékony
+      algoritmusnak tekinthető.
+  - type: narrative
+    content: |
+      Igenám, csakhogy hiába a megfelelő skálázódás, amennyiben eleve nagyméretű bemenetekről van szó. A
+      gyakorlatban ugyanis több ezer bites számokon kell több ezer moduláris szorzást elvégezni. Az ***ismételt
+      négyzetreemelések módszerét*** vizsgálva megállapítottuk, hogy a szükséges moduláris szorzások száma attól
+      függ, hogy a kitevő bináris számábrázolásában hány $1$-es bit szerepel. Az RSA esetén a ***publikus
+      kulcsban*** szereplő, kódoláshoz használt $e$ kitevő megválasztásától nem függ az eljárás biztonsága. Emiatt
+      általában olyan publikus $e$ kitevőt választanak a kulcsgeneráláskor, amelyben minimális számú $1$-es
+      számjegy van. Célszerű például valamilyen 2-hatványnál 1-gyel nagyobb számot választani, hiszen ebben az
+      esetben csak az első és az utolsó számjegy nem $0$. Következésképp a kódoláskor elvégzendő moduláris
+      hatványozás mindössze egy-két moduláris szorzásból megúszható.
+  - type: narrative
+    content: |
+      A probléma érezhetően a dekódoláskor, vagy digitális aláírások képzésekor jön elő, amikor is a titkos $d$
+      kitevőt kell használni. Ez ugyanis az $e$ publikus kitevő multiplikatív inverze a $Z_{\varphi(m)}$ gyűrűben.
+      Itt $m$ ugye a kulcsgeneráláskor véletlenszerűen választott $p$ és $q$ prímszámok szorzata. Mivel emiatt a
+      $\varphi(m)$ is gyakorlatilag véletlenszerű lesz, ezért nemigazán lehet szabályozni, hogy a $Z_{\varphi(m)}$
+      gyűrűben az $e$ multiplikatív inverzének éppenséggel milyen számjegyei lesznek. Emiatt pedig a fogadó oldal
+      által elvégzendő RSA-dekódolás általában sokkal lassabb művelet, mint a küldő által elvégzett kódolás.
+  - type: narrative
+    content: |
+      Ezért most a ***kínai maradéktétel*** egy nagyon praktikus alkalmazását mutatjuk be, amelynek a segítségével
+      Alice és Bob a nekik küldött üzenetek ***dekódolását*** az előző részben leírtakhoz képest ***sokkal
+      gyorsabban*** is el tudja végezni. Ehhez a kulcspár generálásakor választott titkos $p$ és $q$ prímszámokat
+      is fel kell használni, így ezt a módszert ***csak a titkos kulcs birtokában*** lehet alkalmazni. Az
+      eljárásban kulcsszerepe lesz a fentebb már sokat emlegetett $\Z/p\Z \times \Z/q\Z$ halmaznak.
+  - type: narrative
+    content: |
+      Most e halmaz elemei között fogunk két műveletet értelmezni. Az egyiket "összeadásnak", a másikat pedig
+      "szorzásnak" fogjuk nevezni, és rendre a $\oplus$ és a $\odot$ szimbólumokkal fogjuk őket jelölni. A $\Z/p\Z
+      \times \Z/q\Z$ halmaz elemei ugye olyan maradékosztálypárok, amelyeknek első komponense egy modulo $p$,
+      második komponense pedig egy modulo $q$ maradékosztály.
+  - type: formula
+    lead-in: |
+      Adja magát a kérdés, hogy vajon mi legyen két ilyen maradékosztálypár "összege" és "szorzata":
+    content: |
+      \begin{aligned}(A;B)\oplus (C;D)&=\text{???} \\ (A;B)\odot (C;D)&=\text{???}\end{aligned}
+  - type: narrative
+    content: |
+      Az ötletet a fentebb már említett síkbeli pontok derékszögű koordinátáit leíró számpárok adhatják. Amennyiben
+      a koordinátarendszer kezdőpontjából egy $(a;b)$ számpárral megadott pontba képzeletben egy "nyilacskát"
+      rajzolunk, akkor mondhatjuk azt is, hogy az $(a;b)$ számpár tulajdonképpen ezt a "nyilacskát", vagy
+      tudományosabb nevén ***vektort*** reprezentálja. E vektorok között az alábbi kézenfekvő módon értelmezhető az
+      összeadás művelete: ***két vektor "összege"*** legyen az a vektor, amelynek koordinátáit úgy kapjuk, hogy az
+      eredeti két vektor megfelelő koordinátáit egymással összeadjuk.
+  - type: formula
+    lead-in: |
+      Azaz:
+    content: |
+      (a;b)\oplus (c;d)=(a+c;b+d)
+  - type: narrative
+    content: |
+      Itt a vektorok közötti összeadást a $\oplus$, míg az egyes koordináták közötti összeadást a $+$ szimbólummal
+      jelöltük. Ezzel azt próbáljuk kihangsúlyozni, hogy ez a két művelet nagyon nem ugyanaz. Nyilván, hiszen
+      teljesen más halmazokon vannak értelmezve: a $\oplus$ művelet az $\R\times\R$, míg a $+$ művelet az $\R$
+      halmazon.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán az imént definiált vektorok közötti összeadás intuitív értelmezése látható:
+    src: 04-vektorok-osszeadasa.jpg
+    alt: Vektorok összeadása
+    caption: Vektorok összeadása
+  - type: narrative
+    content: |
+      Eszerint tehát a két vektor összege épp abba a pontba mutat, amelybe úgy juthatunk el, hogy az egyik vektor
+      végpontjába toljuk a másik vektor kezdőpontját, majd a koordinátarendszer kezdőpontjából végigmegyünk az így
+      kijelölt útvonalon.
+  - type: narrative
+    content: |
+      Visszatérve a $\Z/p\Z \times \Z/q\Z$ halmazhoz, adja magát az ötlet, hogy ezen a halmazon is hasonlóképpen,
+      azaz "koordinátánkénti" műveletvégzésként definiáljuk a két kérdéses műveletet.
+  - type: formula
+    lead-in: |
+      Nevezetesen:
+    content: |
+      \begin{aligned}(A;B)\oplus (C;D)&=(A+C;B+D) \\ (A;B)\odot (C;D)&=(A\cdot C;B\cdot D)\end{aligned}
+  - type: narrative
+    content: |
+      A vektorok között definiált összeadáshoz képest itt mindössze annyi a különbség, hogy az egyes "koordináták"
+      ***nem feltétlenül azonos gyűrűkből*** származnak. Például jelen esetben az eredmény első "koordinátáját" adó
+      $A+C$ összeadást a modulo $p$, míg a második "koordinátát" adó $B+D$ összeadást a modulo $q$
+      maradékosztálygyűrűben kell elvégezni. A szorzásokra természetesen ugyanez vonatkozik.
+  - type: narrative
+    content: |
+      Ezután minden bizonnyal nem lesz túl meglepő, hogy a $\Z/p\Z \times \Z/q\Z$ halmaz az imént értelmezett
+      $\oplus$ és $\odot$ műveletekkel egy ***gyűrűt*** alkot. Az alábbi tételben ezt ennél általánosabban
+      igazoljuk.
+  - type: embed
+    target:
+      type: theorem
+      name: gyuruk-direkt-szorzata
+  - type: embed
+    target:
+      type: proof
+      name: gyuruk-direkt-szorzata-bizonyitas
+  - type: narrative
+    content: |
+      E tételből következően ***a $\Z/p\Z \times \Z/q\Z$ halmaz a komponensenkénti moduláris összeadásra és
+      szorzásra nézve valóban egy gyűrűt alkot***.
+  - type: formula
+    lead-in: |
+      Például a fentebbi példákban szereplő $([4]_5;[6]_8)$ és $([4]_5;[2]_8)$ maradékosztálypárok "összegét" és
+      "szorzatát" az alábbiak módon kapjuk meg:
+    content: |
+      \begin{aligned}([4]_5;[6]_8)\oplus ([4]_5;[2]_8) &= ([4]_5+[4]_5; [6]_8+[2]_8) = ([3]_5; [0]_8) \\
+      ([4]_5;[6]_8)\odot ([4]_5;[2]_8) &= ([4]_5\cdot [4]_5; [6]_8\cdot [2]_8) = ([1]_5; [4]_8) \end{aligned}
+  - type: narrative
+    content: |
+      A szakasz elején említett RSA-dekódolást gyorsító eljárás működésének a kulcsa az a tény, hogy szoros
+      kapcsolat áll fenn a $\Z/p\Z \times \Z/q\Z$ és a $\Z/pq\Z$ gyűrűk között. Olyannyira szoros, hogy az alábbi
+      tétel szerint lényegében ugyanannak a gyűrűnek csupán két megjelenési formájáról van szó.
+  - type: embed
+    target:
+      type: theorem
+      name: maradekosztalygyuruk-dekompozicioja
+  - type: embed
+    target:
+      type: proof
+      name: maradekosztalygyuruk-dekompozicioja-bizonyitas
+  - type: narrative
+    content: |
+      Tekintsük ismét példaként a már sokat emlegetett $([4]_5;[6]_8)$ és $([4]_5;[2]_8)$ maradékosztálypárokat a
+      $\Z/5\Z\times \Z/8\Z$ gyűrűben.
+  - type: formula
+    lead-in: |
+      Ezek összege és szorzata ebben a gyűrűben az alábbiak voltak:
+    content: |
+      \begin{aligned}([4]_5;[6]_8)\oplus ([4]_5;[2]_8) &= ([3]_5; [0]_8) \\ ([4]_5;[6]_8)\odot ([4]_5;[2]_8) &=
+      ([1]_5; [4]_8) \end{aligned}
+  - type: narrative
+    content: |
+      Fentebb már láttuk, hogy az imént tanult gyűrűizomorfizmusok &ndash; és persze az ezek hátterében lévő
+      ***kínai maradéktétel*** &ndash; alapján az ő párjaik a $\Z/40\Z$ gyűrűben rendre a $[14]_{40}$ és a
+      $[34]_{40}$ maradékosztályok.
+  - type: formula
+    lead-in: |
+      Most nézzük meg ezek összegét és szorzatát a $\Z/40\Z$ gyűrűben:
+    content: |
+      \begin{aligned}[14]_{40}\boxplus [34]_{40} &= [48]_{40}=[8]_{40} \\ [14]_{40}\boxdot [34]_{40} &=
+      [476]_{40}=[36]_{40}\end{aligned}
+  - type: narrative
+    content: |
+      Valóban, a fenti tételben szereplő $g$ gyűrűizomorfizmus a $[8]_{40}$ maradékosztályhoz a
+      $([8]_5;[8]_8)=([3]_5;[0]_8)$, míg a $[36]_{40}$ maradékosztályhoz a $([36]_5;[36]_8)=([1]_5;[4]_8)$
+      maradékosztálypárt rendeli hozzá. Azaz tényleg egy művelettartó leképezésről van szó a $\Z/40\Z$ és a $\Z/5\Z
+      \times \Z/8\Z$ gyűrűk között.
+  - type: narrative
+    content: |
+      Tulajdonképpen az történt, hogy a $\Z/40\Z$ gyűrűt felbontottuk két kisebb gyűrű direkt szorzatára. A két
+      algebrai struktúra izomorfiája miatt bármelyikben elvégezhetjük a szükséges számításokat, és az egyikben
+      kapott eredményt könnyedén áttranszformálhatjuk a másik struktúrába a gyűrűizomorfizmusok segítségével. Az
+      utolsó szakaszban megvizsgáljuk, hogy mégis miért jó ez Alice és Bob számára.

@@ -1,0 +1,16 @@
+type: definition
+name: egesz-szam-p-adikus-rendje
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $a\eq 0$ egy tetszőleges ***nemnulla egész szám***, $p\gt 0$ pedig valamilyen ***pozitív prímszám***.
+  - type: formula
+    lead-in: |
+      Azt mondjuk, hogy az $a$ egész szám ***$p$-adikus rendje*** $k$ (ennek jele: $v_p(a)=k$), amennyiben igazak
+      az alábbiak:
+    content: |
+      \begin{aligned}p^k&|a \\ p^{k+1}&\ mid a\end{aligned}
+  - type: narrative
+    content: |
+      A $0$ egész szám $p$-adikus rendjét végtelennek definiáljuk, azaz $v_p(0)=\infty$.

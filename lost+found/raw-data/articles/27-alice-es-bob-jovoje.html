@@ -1,0 +1,826 @@
+<!-- wp:paragraph -->
+<p><strong><em>Az <a href="https://youproof.hu/kriptografia/26-polinom-primitiv-gyok-carmichael-szam-korselt-kriterium-miller-rabin-primteszt/" target="_blank" rel="noreferrer noopener">előző részben</a> a Miller-Rabin-prímteszt hibázási valószínűségére vonatkozó becslésünket lényegesen megjavítottuk. Ennek során megismerkedtünk a primitív gyökök, a polinomok és a polinomfüggvények fogalmával, valamint az ezekhez kapcsolódó kulcsfontosságú tételekkel. Ezután említést tettünk az úgynevezett AKS-prímtesztről. Ez az elsőként felfedezett olyan hatékony prímteszt volt, amely minden esetben determinisztikus – tehát 100%-os valószínűségű – választ ad, és nem függ semmilyen, eddig nem bizonyított sejtéstől. Ezen elméleti jelentőségű eredmény alapján tehát a prímség vagy összetettség eldöntése furcsamód a [latex]P[/latex] problémaosztályba tartozik (bővebben lásd a <a href="https://youproof.hu/kriptografia/7-algoritmus-bonyolultsag-problemaosztalyok-polinomialis-exponencialis-p-np-sejtes-tanu-tetel/" target="_blank" rel="noreferrer noopener">7. részt</a>), ugyanakkor a konkrét prímtényezők megtalálása egy ennél sokkal nehezebb feladatnak tűnik. Végül azt a kérdést vizsgáltuk meg, hogy mi történik akkor, ha az RSA-kulcsok generálásához prímek helyett véletlenül Carmichael-számokat használunk. Ezzel lezártuk számelméleti vizsgálatainkat, és a sorozat utolsó részében egy képzeletbeli időutazás keretében arra keressük a választ, hogy milyen kihívásokkal kell szembenéznie hőseinknek – és persze a kriptográfia tudományának – a jövőben.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Mi a probléma az RSA-algoritmussal, és miért fog elavulni a közeljövőben? Mik azok az elliptikus görbék, és mit állít róluk az egymillió dollárt érő Birch és Swinnerton-Dyer sejtés? Hogyan lehet az elliptikus görbékre újfajta titkosítási eljárásokat építeni? Mik azok a kvantumszámítógépek, és ha tényleg megvalósíthatók, akkor mire lesznek képesek a jövőben? Kell-e miattuk aggódnia Alice-nak és Bob-nak? Vajon a kriptográfusok, vagy a kiberbűnözők kerülnek ki győztesen ebből az emberiség egész történelmét végigkísérő kíméletlen háborúból? Az utolsó részben erről lesz szó...</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"dropCap":true} -->
+<p class="has-drop-cap">Az elmúlt 26 részben az Olvasó vélhetően igen részletes képet kapott arról, hogy ez a bizonyos háború meglehetősen szokatlan természetű. Ez ugyanis a hagyományos háborúktól eltérően az elméleti matematika harcmezején zajlik, és olyan fegyverekkel vívják, amelyek csak a fejünkben léteznek. Ne legyenek kétségeink azonban afelől, hogy paradox módon ezeknek a képzeletbeli fegyvereknek bizony sokkal pusztítóbb hatásuk lehet a való világban, mint bármilyen hagyományos fegyvernek, legyen szó akár a legmodernebb termonukleáris robbanótöltetek kíméletlen arzenáljáról.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mai világunkban ugyanis a legfontosabb erőforrás az a mérhetetlen mennyiségű adat, amelyet a legkülönfélébb elektronikus eszközeink megállás nélkül ontanak magukból a nap huszonnégy órájában az év minden napján. Aki ennek az erőforrásnak a birtokába kerül, és ki is tudja aknázni azt, az olyan elképesztő hatalomra tesz szert a világ felett, amilyenre talán még a legvadabb álmainkban sem mernénk gondolni, és amelyre az egész eddigi történelem során még nem volt példa.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Gondoljunk csak például a nagy techcégekre: a Google és a Facebook bizony többet tud rólunk, mint a saját családunk. Pontosan tudja, hogy mi az érdeklődési körünk, hogy mikor, hol és kivel találkozunk, hogy merre járunk, miket és hol vásárolunk, merre barangolunk az Interneten, mik a legféltettebb titkaink. Ezeknek az információknak a birtokában választások kimenetelét lehet befolyásolni még olyan nagyhatalmú országoknál is, mint az Egyesült Államok. Vagy akár gondoljunk csak arra, hogy lépten-nyomon egyre több és több intelligens eszköz vesz minket körbe, amelyek ráadásul az Interneten keresztül kommunikálnak egymással annak érdekében, hogy minket minél jobban kiszolgáljanak.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az úgynevezett IoT (Internet of Things) technológiáknak köszönhetően rövidesen az életünk legalapvetőbb területein is a számítógépek fogják átvenni az irányítást. Okos otthonok, okos városok, önvezető autók, amelyek a közlekedési infrastruktúrától kapott információk alapján lesznek képesek döntéseket hozni a másodperc törtrésze alatt. A számítógép-hálózatok ma már teljes országok villamosenergia és egyéb ellátórendszereit képesek vezérelni. A világ pénzügyi folyamatait meghatározó döntéshozók a legkorszerűbb adatbányászati eszközökre támaszkodnak.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezek után nem nehéz elképzelni, hogy mekkora – akár világméretű – katasztrófákat lehet előidézni azáltal, ha bizonyos adatok vagy bizonyos rendszerekhez való hozzáférési jogosultságok illetéktelen kezekbe kerülnek. Az adatok és a kommunikációs csatornák kriptográfiai védelme tehát napjainkban fontosabbá vált, mint valaha a világtörténelemben. Sőt, talán nem túlzás azt állítani, hogy az egész emberi civilizáció törékeny léte többek között ezen áll vagy bukik.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Mi a probléma az RSA-val?</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A korábbi részekben az <strong><em>RSA rejtjelezési eljárásról</em></strong> tanultak fényében talán egy kicsit félelmetes belegondolni abba, hogy a világ biztonsága – eléggé lesarkítva – mindössze olyan dolgokon múlik, minthogy például egy kellően nagy összetett szám prímtényezőit jelenlegi ismereteink alapján beláthatatlanul sok ideig tart megtalálni. Ráadásul nincs bizonyítva, hogy valóban <strong><em>nem is létezhet</em></strong> hatékony prímfaktorizációs eljárás, mint ahogy az sem, hogy az RSA feltöréséhez egyáltalán <strong><em>szükség van-e</em></strong> a prímtényezők kiszámítására. Mindazonáltal az RSA eddig kiállta az idők próbáját, ugyanakkor nincs kizárva, hogy valamikor a jövőben egy új számelméleti felfedezés végzetes csapást mér majd rá.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Azonban sajnos nem ez az egyetlen gond vele!</em></strong> A <a href="https://youproof.hu/kriptografia/21-rsa-algoritmus-kibovitett-euklideszi-algoritmus-euler-fuggveny-kulcsgeneralas-ismetelt-negyzetreemeles-modszere/" target="_blank" rel="noreferrer noopener">21. részben</a> ismertettük az RSA algoritmus részleteit, és láttuk, hogy a titkos kulcs kiszámításához elegendő a publikus kulcsban szereplő [latex]m[/latex] modulus prímtényezőit megtalálni. Ezenkívül azt is megemlítettük, hogy erre a problémára jelenleg nem ismerünk polinomiális időkomplexitású algoritmust, és éppen ez adja az RSA biztonságát. Az persze igaz, hogy az úgynevezett <a href="https://en.wikipedia.org/wiki/Moore%27s_law" target="_blank" rel="noreferrer noopener">Moore-törvény</a> alapján a számítógépeink teljesítménye a hetvenes évek óta exponenciális növekedést mutat (a teljesítményük nagyjából kétévente megduplázódik). Ezért ami 10 évvel ezelőtt még elegendően nagy RSA-modulusnak számított, az ma már korántsem az. De semmi gond – mondhatnánk –, hiszen mindössze annyit kell tennünk, hogy megnöveljük az RSA-modulust, és újból biztosítva vannak az adataink jónéhány évig a prímfaktorizáció feladatának algoritmikus bonyolultsága miatt.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez kétségkívül így van, azonban a számelmélet fejlődésével sajnos napvilágot láttak olyan prímfaktorizációs algoritmusok, amelyek ugyan továbbra sem polinomiális időkomplexitásúak, viszont az exponenciális időkomplexitásnál lényegesen jobbak. Ezeket <strong><em>szubexponenciális időkomplexitású algoritmusoknak</em></strong> nevezzük. A jelenleg ismert legjobb prímfaktorizációs algoritmus az úgynevezett <a href="https://en.wikipedia.org/wiki/General_number_field_sieve" target="_blank" rel="noreferrer noopener">általános számtest-szita</a>. Ez messze hatékonyabb, mint a <a href="https://youproof.hu/kriptografia/23-primteszteles-fermat-primteszt-miller-rabin-primteszt-carmichael-szam-univerzalis-alprim-fermat-faktorizacio#naive-primality-test" target="_blank" rel="noreferrer noopener">23. részben</a> ismertetett osztáspróbákon alapuló iskolás módszer, amely – mint láttuk – exponenciális időkomplexitású. Ez azt jelenti, hogy egy-egy teljesítményduplázódás kiküszöböléséhez egyre nagyobb és nagyobb mértékben kell megnövelnünk az RSA-kulcsok bitjeinek számát. Ez viszont a dekódolás sebességére nincs túl jó hatással, mint ahogyan azt a <a href="https://youproof.hu/kriptografia/22-kinai-maradektetel-konguenciarendszerek-kis-fermat-tetel-rsa-bizonyitas-gyuruk-direkt-szorzata-rsa-dekodolas#residue-class-ring-decomposition" target="_blank" rel="noreferrer noopener">22. rész</a> végén már megemlítettük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel például, hogy folytatódik a Moore-törvény által leírt tendencia, és két év múlva a számítógépek teljesítménye ismét megduplázódik a jelenlegihez képest. Így a bűnözők kezében is kétszer akkora számítási kapacitás lesz, mint ma. A szubexponenciális prímfaktorizációs algoritmus miatt ahhoz, hogy a jelenlegivel megegyező biztonsági szintet el tudjuk érni az RSA-val, nagyobb mértékben kell megnövelnünk a kulcsok hosszát, mint amennyivel a két évvel ezelőtti állapothoz képest kellett megnövelnünk, és ez a mérték az évek előrehaladtával egyre nagyobb és nagyobb lesz. A teljesítménynövekedés nyilván pozitív hatással van a dekódoláshoz szükséges időre is, azonban az egyre gyorsuló kulcshossznövekedés miatt az RSA a jövőben egyre kevésbé lesz hatékony. Ha ehhez még hozzávesszük, hogy az információs társadalom hihetetlen mértékű fejlődése következtében a világban lévő érzékeny adatok mennyisége szintén exponenciálisan növekszik, akkor a nem is olyan távoli jövőben könnyen egy fenntarthatatlan szituációban találhatjuk magunkat. Annak érzékeltetésére, hogy mennyire valós problémáról van szó megemlítjük, hogy az RSA-dekódolás számításigénye már most problémát okoz az olyan eszközök esetén, amelyek kisebb memóriával és számítási kapacitással rendelkeznek.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A cikksorozat eddigi részeiben ismertetett kriptográfiai eljárások mind-mind egy-egy úgynevezett <strong><em>egyirányú függvényen</em></strong> alapultak. Ezek olyan függvények, amelyeket viszonylag könnyű kiszámítani az egyik irányban, azonban gyakorlatilag lehetetlen a másik irányban. Az RSA esetén például a kulcsgenerálás során lényegében két óriási prímszámot szorzunk össze egymással, és az így kapott [latex]m[/latex] modulus, illetve egy ehhez szabadon választott relatív prím [latex]e[/latex] kitevő adja a publikus kulcsot. Ahhoz, hogy a [latex]d[/latex] titkos kitevőt meghatározza egy támadó, a műveletet visszafelé kéne végrehajtania, vagyis meg kéne határoznia az [latex]m[/latex] modulus prímtényezőit. Mint említettük, erre létezik szubexponenciális algoritmus, amely ugyan még mindig nem elég hatékony, de arra elegendő, hogy hosszútávon fenntarthatatlanná tegye az RSA-t.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezért manapság egyre inkább kezd elterjedni egy ennél hatékonyabb egyirányú függvény, amelyet a következő szakaszokban vázlatosan ismertetünk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A diszkrét logaritmus problémájának általánosítása</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/9-diffie-hellman-protokoll-egyiranyu-fuggveny-modularis-aritmetika-asszimmetrikus-kulcs#discrete-logarithm" target="_blank">9. részben</a> ismertetett <strong><em>Diffie-Hellman kulcscsere protokoll</em></strong> esetén az egyirányú függvényt az <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/26-polinom-primitiv-gyok-carmichael-szam-korselt-kriterium-miller-rabin-primteszt#primitive-root-and-diffie-hellman" target="_blank">előző rész</a> alapján lényegében egy speciális ciklikus csoportban, nevezetesen a [latex](\Z/m\Z)^{\times}[/latex] csoportban történő hatványozás jelenti, ahol a függvény megfordításaként a használt kitevő meghatározását kellene kiszámítania a támadónak. Ezt <strong><em>diszkrét logaritmus problémának (DLP)</em></strong> neveztük, és megemlítettük, hogy ez is egy roppant nehéz algoritmikus feladat. Vegyük észre, hogy a DLP megfogalmazható úgy is, hogy elvonatkoztatunk a konkrétan használt [latex](\Z/m\Z)^{\times}[/latex] csoporttól. Eszerint legyen [latex]G[/latex] egy tetszőleges <strong><em>csoport</em></strong>, [latex]g[/latex] pedig ennek egy tetszőleges <strong><em>eleme</em></strong> (lásd a [yp_element slug="ciklikus-csoportok" type="link" /]t), valamint tegyük fel, hogy ismerjük a [latex]g^k[/latex] hatványt. A DLP ebben az általános esetben a [latex]k[/latex] kitevő meghatározását jelenti.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ennek a feladatnak az algoritmikus bonyolultsága nyilván erősen összefügg azzal, hogy konkrétan milyen csoportot használunk, vagy annak elemeit hogyan reprezentáljuk. Tekintsünk azonban most egy úgynevezett általános csoportot, azaz egyelőre vonatkoztassunk el az adott csoport konkrét reprezentációjától. Ezt úgy tudjuk <a rel="noreferrer noopener" href="https://en.wikipedia.org/wiki/Generic_group_model" target="_blank">modellezni</a>, hogy feltételezzük egy olyan úgynevezett „orákulum” létezését, amely képes elvégezni a csoportműveletet, illetve két elemről el tudja dönteni, hogy megegyeznek-e vagy sem, azonban ennek az „orákulumnak” a válaszain kívül nincs semmilyen egyéb információnk a csoportról. <a rel="noreferrer noopener" href="https://en.wikipedia.org/wiki/Victor_Shoup" target="_blank">Victor Shoup</a> amerikai matematikus 1997-ben igazolta, hogy véges csoport esetén amennyiben [latex]p[/latex] a csoport rendjének legnagyobb prímosztója, akkor <strong><em>legalább</em></strong> [latex]c\cdot \sqrt{p}[/latex]-szer kell elvégezni a csoportműveletet a keresett kitevő kiszámításához, ahol [latex]c[/latex] egy valamilyen alkalmasan választott konstans mennyiség. Ez a lépésszám nyilvánvalóan a csoport rendjének bináris hosszától exponenciálisan függ.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez persze nem azt jelenti, hogy egy konkrét csoport esetén ne lehetne ennél akár lényegesen jobb eredményt elérni, kihasználva annak speciális tulajdonságait. Gondoljunk csak például az alábbi lineáris kongruenciára, ahol keressük az [latex]n[/latex] ismeretlent:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a\cdot n\equiv b\pmod m[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/21-rsa-algoritmus-kibovitett-euklideszi-algoritmus-euler-fuggveny-kulcsgeneralas-ismetelt-negyzetreemeles-modszere#linear-diophantine-equation-solution" target="_blank">21. részben</a> megmutattuk, hogy egy ilyen kongruencia rendkívül hatékonyan megoldható a <strong><em>kibővített euklidészi algoritmus</em></strong> segítségével. Ez a hatékonyság kulcsfontosságú is, hiszen az RSA-hoz használt titkos kitevőt épp emiatt tudja kiszámítani az, aki birtokában van a modulus prímtényezőinek. Habár ez elsőre nem feltétlenül látszik, de tulajdonképpen itt is a DLP-ről van szó, csak éppenséggel a [latex](\Z/m\Z)^+[/latex] <strong><em>additív csoportban</em></strong>. Valóban, hiszen a kérdés most is tulajdonképpen az, hogy az [latex][a]_m[/latex] maradékosztályt hányszor kell „összeműveleteznünk” önmagával ebben a csoportban ahhoz, hogy a [latex][b]_m[/latex] maradékosztályt kapjuk eredményül. Vagyis a [latex](\Z/m\Z)^+[/latex] csoportban az alábbi egyenletet írhatjuk fel, ahol keressük az [latex]n[/latex] „kitevőt”, csak épp ebben az esetben a [yp_element slug="egesz-kitevos-hatvany" type="link" /] utáni megjegyzés szerinti <strong><em>additív irásmódot</em></strong> alkalmaztuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]n[a]_m=[b]_m[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az additív csoporttal ellentétben szerencsére a [latex](\Z/m\Z)^{\times}[/latex] <strong><em>multiplikatív csoportban</em></strong> ennél lényegesen nehezebb ez a feladat. Sőt, ebben a csoportban jelenleg nem is ismeretes szubexponenciális időkomplexitású algoritmus a DLP-re, amely így alkalmasabbnak tűnik kriptográfiai primitívek képzésére, mint a prímfaktorizáció nehézségén alapuló módszerek. A kisteljesítményű eszközök számára azonban továbbra is problémát jelent, hogy a [latex](\Z/m\Z)^{\times}[/latex] csoportot használó eljárásokhoz nagy kulcsokat kell használni a kívánt biztonsági szint eléréséhez.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezért <a rel="noreferrer noopener" href="https://en.wikipedia.org/wiki/Neal_Koblitz" target="_blank">Neal Koblitz</a> amerikai matematikus egy 1987-ben megjelent publikációjában a [latex](\Z/m\Z)^{\times}[/latex] helyett olyan csoportok használatát javasolta, amelyek esetén a DLP várhatóan jóval nagyobb komplexitású a hagyományos változathoz képest, és így kisebb méretű kulcsokkal is ugyanolyan biztonsági szintet lehet elérni. Egy-egy ilyen csoport elemei azonban nem számok, hanem a számelméletben az utóbbi évtizedekben intenzíven kutatott furcsa képződményeknek, az úgynevezett <strong><em>elliptikus görbéknek</em></strong> a „pontjai”.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az elliptikus görbék elmélete az algebrai számelmélet egyik központi területe, melyhez számos jelentős és mély megoldatlan sejtés kapcsolódik. Mivel ez a témakör messze túlmutat e cikksorozat keretein, ezért itt csak vázlatosan tekintjük át az elliptikus görbékhez kapcsolódó alapfogalmakat. Előbb azonban vizsgáljuk meg, hogy tulajdonképpen mivel is foglalkozik az algebrai számelmélet.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Mivel foglalkozik az algebrai számelmélet?</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Az algebrai számelmélet elsősorban olyan egy- vagy többváltozós egyenletekkel foglalkozik, amelyek felírhatók a négy alapművelet véges sokszori alkalmazásával, és célja ezeknek az egyenleteknek a megoldásait megtalálni egy megadott számhalmazban. Ezeket az egyenleteket <strong><em>algebrai egyenleteknek</em></strong> nevezzük. Általánosságban ugyanilyen értelemben beszélhetünk egy valamilyen [latex]T[/latex] test feletti algebrai egyenletről is, hiszen a [yp_element slug="gyuru-test" type="link" /] alapján egy [latex]T[/latex] testben korlátlanul elvégezhető a négy alapművelet [latex]T[/latex]-beli megfelelője (kivéve persze a nullelemmel való osztást). Ilyenkor a megoldásokat a [latex]T[/latex] testben keressük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ebben a cikksorozatban a szám fogalmát eddig csak az egész számok [latex]\Z[/latex] gyűrűjéig bezárólag építettük fel. Ez azonban nyilván nem test, hiszen a [latex]+1[/latex]-en és [latex]-1[/latex]-en kívül semmilyen más egész számnak nem létezik inverze a szorzásra nézve, így az osztás ebben a számkörben egyáltalán nem értelmezhető. Ha nagyon precízek akarnánk lenni, akkor ezen a ponton egy ahhoz hasonló számkörbővítést kellene végrehajtanunk, mint amikor a <a href="https://youproof.hu/kriptografia/13-adossag-ekvivalenciarelacio-ekvivalencia-osztaly-egesz-szam-homomorfizmus-beagyazas-negativ-szam/" target="_blank" rel="noreferrer noopener">13.</a>, <a href="https://youproof.hu/kriptografia/14-egesz-szam-szorzas-absztrakt-algebra-neutralis-elem-inverz-kivonas-gyuru-ferdetest-test/" target="_blank" rel="noreferrer noopener">14.</a> és <a href="https://youproof.hu/kriptografia/15-rendezett-gyuru-absztrakt-algebra-egesz-szam-rendezesi-relacio-rendezesi-axiomak/" target="_blank" rel="noreferrer noopener">15. részekben</a> a természetes számok [latex]\N[/latex] halmazát kibővítettük a negatív számoknak nevezett absztrakt objektumokkal annak érdekében, hogy a kivonást el lehessen végezni korlátlanul. Egy ehhez hasonló számkörbővítést most nem fogunk részletesen végigtárgyalni, ám az Olvasó minden bizonnyal sejti, hogy itt tulajdonképpen a törtszámok bevezetéséről van szó.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A törtszámokat tudományosabban <strong><em>racionális számoknak</em></strong> nevezzük, és az őket tartalmazó halmazt [latex]\mathbb{Q}[/latex]-val jelöljük, utalva a latinból származó „quotient” szóra, amely „hányadost” jelent. Ezek tehát azok a számok, amelyek felírhatók [latex]\frac{a}{b}[/latex] alakban, ahol [latex]a[/latex] és [latex]b[/latex] mindketten egész számok. Előbbit <strong><em>számlálónak</em></strong>, utóbbit <strong><em>nevezőnek</em></strong> hívjuk. A számkörbővítéshez a [latex]\mathbb{Q}[/latex] számhalmazon be kellene vezetni egy összeadásnak és egy szorzásnak nevezett műveletet, valamint egy rendezési relációt. Méghozzá olymódon, hogy az egész számok [latex]\Z[/latex] gyűrűje beágyazható legyen ebbe a bővebb struktúrába ahhoz hasonlóan, mint ahogyan a természetes számok [latex]\N[/latex] halmazát ágyaztuk be a [latex]\Z[/latex] gyűrűbe a <a href="https://youproof.hu/kriptografia/13-adossag-ekvivalenciarelacio-ekvivalencia-osztaly-egesz-szam-homomorfizmus-beagyazas-negativ-szam#injective-homomorphism" target="_blank" rel="noreferrer noopener">13. részben</a>. Ezt most lazán átugorva kivételesen arra kérjük az Olvasót, hogy ezúttal támaszkodjon az általános iskolai tanulmányaira.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Könnyen látható, hogy [latex]\mathbb{Q}[/latex] az egész számok [latex]\Z[/latex] gyűrűjével ellentétben <strong><em>test</em></strong>, hiszen bármilyen nemnulla törtszámnak létezik inverze a szorzásra nézve, amelyet úgy kapunk meg, ha felcseréljük a számlálót és a nevezőt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\frac{a}{b} \cdot \frac{b}{a}=\frac{a\cdot b}{b\cdot a}=1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezek után már beszélhetünk a <strong><em>[latex]\mathbb{Q}[/latex] test feletti algebrai egyenletekről</em></strong>, azon belül is az úgynevezett <strong><em>polinomiális egyenletekről</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Polinomiális egyenletek</em></strong> alatt olyan speciális algebrai egyenleteket értünk, amelyekben csak az ismeretlenek egész kitevőjű hatványai, a [latex]\mathbb{Q}[/latex] test elemei, valamint összeadások, kivonások és szorzások szerepelhetnek. Az osztás tehát ebben az esetben nem megengedett. Ezek közül a legegyszerűbbek az egyismeretlenes [latex]n[/latex]-edfokú polinomiális egyenletek. Könnyű belátni, hogy ekvivalens átalakításokkal minden ilyen egyenlet az alábbi úgynevezett általános alakra hozható, ahol [latex]a_n\
+eq 0[/latex]:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a_0+a_1x+a_2x^2+a_3x^3+\ldots +a_nx^n=0[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ehhez nagyon hasonlóval az <a href="https://youproof.hu/kriptografia/26-polinom-primitiv-gyok-carmichael-szam-korselt-kriterium-miller-rabin-primteszt#polinomial-functions" target="_blank" rel="noreferrer noopener">előző részben</a> lényegében már találkoztunk, hiszen ennek az egyenletnek a baloldalán épp az alábbi polinomnak a polinomfüggvénye szerepel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f=(a_0, a_1, a_2, \ldots, a_n, 0, 0, \ldots)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az egyetlen különbség mindössze annyi, hogy [latex]f[/latex] most nem a [latex]\Z[/latex] gyűrű, hanem a [latex]\mathbb{Q}[/latex] test felett van értelmezve. Tehát az [latex]a_0[/latex], [latex]a_1[/latex], ..., [latex]a_n[/latex] együtthatók most a [latex]\mathbb{Q}[/latex] test elemei, a fenti egyenlet megoldásai pedig az [latex]f[/latex] polinom [latex]\mathbb{Q}[/latex]-beli gyökei lesznek.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A kérdés tehát, hogy egy ilyen egyismeretlenes polinomiális egyenletnek létezik-e racionális megoldása, és ha igen, akkor hány darab, illetve hogyan lehet megtalálni ezeket. Nos, ezt a nem túl nehéz számelméleti problémát az úgynevezett <strong><em><a href="https://hu.wikipedia.org/wiki/Rolle-f%C3%A9le_gy%C3%B6kt%C3%A9tel" target="_blank" rel="noreferrer noopener">racionális gyökteszt</a></em></strong> (vagy más nevén <strong><em>Rolle-féle gyöktétel</em></strong>) segítségével könnyedén megválaszolhatjuk. Ez egy elemi módszerekkel is nagyon könnyen igazolható tétel, így a részletektől most eltekintünk. A tétel azt mondja ki, hogy amennyiben <strong><em>minden együttható egész szám</em></strong>, akkor az összes racionális gyök felírható [latex]\frac{p}{q}[/latex] alakban, ahol [latex]p[/latex] és [latex]q[/latex] egymáshoz relatív prím egész számok, és teljesítik az alábbi feltételeket:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li>A [latex]p[/latex] egész szám osztója az [latex]a_0[/latex] konstans tagnak.</li><li>A [latex]q[/latex] egész szám osztója az [latex]a_n[/latex] főegyütthatónak.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>Azt könnyen elérhetjük, hogy az egyenlet együtthatói egészek legyenek. Ha ugyanis mégsem lennének azok, akkor a nevezőikkel végigszorozva mindkét oldalt egy olyan egyenletet kapunk, amire ez a feltétel már teljesül. Ennek az új egyenletnek nyilván pontosan ugyanazok lesznek a gyökei, mint az eredeti egyenletnek. Ezután már alkalmazhatjuk a tételt, amely tehát egy viszonylag kisméretű véges halmazra szűkíti le a potenciális gyökök körét. Azt persze nem állítja, hogy minden, a fenti feltételeknek megfelelő [latex]\frac{p}{q}[/latex] racionális szám valóban gyök lesz, ám ezeket behelyettesítéssel már könnyedén végigpróbálgathatjuk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>Rolle-féle gyöktétel</em></strong> alapján tehát az egyismeretlenes esettel kapcsolatban felmerülő kérdéseket le is zárhatjuk, hiszen ez alapján egy ilyen egyenletnek vagy egyáltalán nincs racionális gyöke, vagy pedig csak véges sok van. Ennél némileg izgalmasabbak az egynél több ismeretlent tartalmazó polinomiális egyenletek. A továbbiakban minket a <strong><em>kétismeretlenes</em></strong> eset érdekel, amelyeket <strong><em>algebrai síkgörbéknek</em></strong> nevezünk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Algebrai síkgörbék</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Az <strong><em>algebrai síkgörbék</em></strong> olyan polinomiális egyenletekkel írhatók le, amelyekben két ismeretlen szerepel. Ezeket [latex]x[/latex]-szel és [latex]y[/latex]-nal fogjuk jelölni. Egy ilyen egyenlet általános alakjában tehát [latex]ax^ny^k[/latex] alakú tagok szerepelnek a baloldalon, ahol [latex]n[/latex] és [latex]k[/latex] nemnegatív egész kitevők, az [latex]a[/latex] együtthatók pedig valamilyen <strong><em>racionális számok</em></strong> (vagy általánosabban egy [latex]T[/latex] test elemei), míg a jobboldalon [latex]0[/latex] (vagy általánosabban a [latex]T[/latex] test nulleleme) szerepel. Az együtthatókra – a matematikai részletek mellőzésével – mindössze annyi megkötést teszünk, hogy a görbe bizonyos „simasági” feltételeknek eleget tegyen, azaz ne legyenek rajta törések, önmetszések, izolált pontok, stb. Egy tag fokszáma alatt az [latex]n+k[/latex] összeget, míg az egyenlet (vagy görbe) fokszáma alatt a legnagyobb fokú tag ilyen értelemben vett fokszámát értjük. Ennek megfelelően például egy első-, egy másod-, illetve egy harmadfokú algebrai síkgörbe egyenletének általános alakjai az alábbiak:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}ax+by+c&amp;=0 \\ ax^2+bxy+cy^2+dx+ey+f&amp;=0 \\ ax^3+bx^2y+cxy^2+dy^3+ex^2+fxy+gy^2+hx+iy+j&amp;=0\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Egy ilyen [latex]\mathbb{Q}[/latex] felett értelmezett kétismeretlenes egyenlet megoldásai (vagy más szavakkal a <strong><em>görbe pontjai</em></strong>) alatt azokat az [latex](x;y)[/latex] <strong><em>racionális számpárokat</em></strong> értjük, amelyeket az egyenletbe behelyettesítve az egyenlőség fennáll a két oldal között.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A görbéket némi „csalással” ábrázolhatjuk is egy kétdimenziós koordináta-rendszerben, ahol a vízszintes tengely értelemszerűen az [latex]x[/latex], míg a függőleges tengely az [latex]y[/latex] változónak felel meg. Tekintsük például az alábbi [latex]\mathbb{Q}[/latex] feletti első- és másodfokú görbéket:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}\frac{1}{2}x-y+1&amp;=0 \\ x^2+y^2-1&amp;=0\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha most a koordináta-rendszerünkben bejelöljük azokat és csakis azokat a pontokat, amelyeknek koordinátái kielégítik ezeket az egyenleteket, akkor a két görbe láthatóvá válik:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":7716,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_27_algebrai_sikgorbek.jpg" alt="Algebrai síkgörbék (példa)" class="wp-image-7716"/><figcaption>Algebrai síkgörbék (példa)</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Általánosságban az elsőfokú görbék képe mindig valamilyen egyenes, míg a másodfokú görbék képe az együtthatóktól függően lehet kör, ellipszis, parabola vagy hiperbola, amelyeket összefoglaló néven <a href="https://hu.wikipedia.org/wiki/K%C3%BApszelet" target="_blank" rel="noreferrer noopener">kúpszeleteknek</a> nevezünk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A fenti ábrán a már említett „csalást” ott követtük el, hogy valójában nem ábrázolhattuk volna ezeket a görbéket folytonos vonallal, mivel ezeket a görbéket a racionális számok [latex]\mathbb{Q}[/latex] teste felett értelmeztük, és így a megoldások (a görbe pontjainak koordinátái) is ebből a testből kell származzanak. Márpedig a koordináta-tengelyek pontjainak „nagyrésze” bizony nem racionális, azaz nem írható fel két egész szám hányadosaként. Ha például az egységoldalú négyzet átlójának hosszát (ami a <a href="https://hu.wikipedia.org/wiki/Pitagorasz-t%C3%A9tel" target="_blank" rel="noreferrer noopener">pitagorasz-tétel</a> alapján [latex]\sqrt{2}[/latex] hosszúságú) felmérjük a számegyenesre, akkor kétségkívül egy létező távolságot kapunk, amely azonban nem írható fel tört alakban:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":7718,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_27_gyok2_a_szamegyenesen.jpg" alt="Egységnégyzet átlója a számegyenesen" class="wp-image-7718"/><figcaption>Egységnégyzet átlója a számegyenesen</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>A koordináta-tengelyeken, és így a fenti görbéinken tehát „hézagok” vannak, azaz olyan pontok, amelyekhez nem lehet racionális koordinátákat rendelni. Ráadásul ez annak ellenére így van, hogy a racionális számok végtelenül sűrűn helyezkednek el a számegyenesen, azaz bármely két racionális szám között végtelen sok további található. Ha ez még nem lenne elég, az ilyen „hézagokról” elmondható, hogy „sokkal többen” vannak, mint a racionális számok. Úgy is fogalmazhatunk, hogy a számegyenes pontjai és a racionális számok között nem lehet kölcsönösen egyértelmű megfeleltetést létesíteni, azaz ilyen értelemben előbbiek „magasabb rendben” vannak végtelen sokan, mint a racionális számok. Ez egyrészt elvezet a <a rel="noreferrer noopener" href="https://hu.wikipedia.org/wiki/Sz%C3%A1moss%C3%A1g" target="_blank"><strong><em>számosság</em></strong></a> fogalmához, amelyet itt nem részletezünk. Másrészt pedig felveti annak szükségességét, hogy ezeket a „hézagokat” a számfogalom további bővítésével „betömködjük”, és a számegyenes minden pontját „számnak” tekintsük, ne pedig csak azt a „néhány” racionális számot, amelyek csak „elvétve” fordulnak elő közöttük. Így válna legálissá az, hogy a fenti görbéket folytonos vonallal rajzoltuk fel. Ez az úgynevezett <strong><em><a rel="noreferrer noopener" href="https://hu.wikipedia.org/wiki/Val%C3%B3s_sz%C3%A1mok" target="_blank">valós számok</a></em></strong> bevezetéséhez vezet, amelyet szintén nem részletezünk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mindenesetre jogosan merül fel a kérdés, hogy vajon a fenti görbéink „eltalálnak-e” akárcsak egyetlen egy <strong><em>racionális pontot</em></strong> is – azaz olyan pontot, amelynek mindkét koordinátája racionális – a síkon? És ha igen, akkor mennyi van belőlük? Véges vagy végtelen sok? Hogyan lehet mindegyiket megtalálni? Az algebrai számelmélet elsősorban ezekkel a kérdésekkel foglalkozik. Az <strong><em>elsőfokú</em></strong> [latex]\mathbb{Q}[/latex] feletti görbék (azaz az egyenesek) esetén a kérdés roppant egyszerű. Egy ilyen görbe ugyanis mindig végtelen sok racionális pontot tartalmaz. Az összes ilyen pontot megkaphatjuk, ha a görbe egyenletébe [latex]x[/latex] helyére behelyettesítünk egy tetszőleges racionális számot, és az így kapott – immár egyismeretlenes – egyenletet megoldjuk [latex]y[/latex]-ra. Általános iskolai módszerekkel könnyedén belátható, hogy minden ilyen esetben kapunk pontosan egy racionális megoldást, azaz bármilyen racionális [latex]x[/latex] koordinátához pontosan egy racionális [latex]y[/latex] koordináta tartozik. A [latex]\mathbb{Q}[/latex] számtest elemei tehát kölcsönösen egyértelmű megfeleltetésben állnak az egyenes racionális pontjaival.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>másodfokú</em></strong> görbék, azaz a kúpszeletek esetén a helyzet egy fokkal bonyolultabb. Itt már két eset lehetséges: a görbének vagy egyáltalán nincs racionális pontja, vagy pedig végtelen sok van. De vajon hogyan lehet eldönteni, hogy a két eset közül melyikben vagyunk? Meglepő módon erre létezik hatékony eljárás, amelynek elméleti hátterét az úgynevezett <strong><em><a href="https://en.wikipedia.org/wiki/Hasse%E2%80%93Minkowski_theorem" target="_blank" rel="noreferrer noopener">Hasse-Minkowski tétel</a></em></strong> adja, ennek részletei azonban szintén túlmutatnak e cikksorozat keretein. Ha azonban ebből azt kaptuk, hogy végtelen sok racionális pont van, akkor egyetlen racionális pontból könnyen előállítható az összes többi. Az eljárást az egységkör esetére vázoljuk fel, de minden kúpszeletre nagyjából ugyanígy kell elképzelni:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":7719,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_27_egysegkor_racionalis_pontjai.jpg" alt="Egységkör racionális pontjainak előállítása" class="wp-image-7719"/><figcaption>Egységkör racionális pontjainak előállítása</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Ebben a példában a [latex]P=(-1;0)[/latex] pontból indultunk ki, amelyről nyilvánvalóan látszik, hogy racionális. Válasszunk ki egy tetszőleges <strong><em>racionális</em></strong> koordinátát az [latex]y[/latex] tengelyen – a fenti ábrán ezt [latex]a[/latex]-val jelöltük –, és kössük össze ezzel a kiindulási [latex]P[/latex] pontunkat. Az így kapott egyeneseket <strong><em>racionális meredekségű egyeneseknek</em></strong> nevezzük. Középiskolás módszerekkel viszonylag könnyen belátható, hogy egy racionális [latex]P[/latex] ponton áthaladó racionális meredekségű egyenes egy szintén racionális [latex]Q[/latex] pontban fogja metszeni az egységkört. Még könnyebben látható, hogy ennek megfordítása is igaz: ha az egységkör tetszőleges [latex]P[/latex]-től különböző racionális pontját összekötjük [latex]P[/latex]-vel, akkor az így kapott egyenes racionális meredekségű lesz, azaz az [latex]y[/latex] tengelyt egy racionális koordinátánál fogja metszeni. Ebből következik, hogy az egységkörön elhelyezkedő racionális pontok a [latex]P[/latex] pont kivételével kölcsönösen egyértelmű megfeleltetésbe hozhatók az [latex]y[/latex] tengelyen elhelyezkedő racionális koordinátákkal, vagyis tulajdonképpen a [latex]\mathbb{Q}[/latex] számtest elemeivel. Az egységkör azonban nem speciális ilyen értelemben, tehát a fenti eljáráshoz nagyon hasonlóan minden kúpszelet esetén található ilyen megfeleltetés a racionális pontok és [latex]\mathbb{Q}[/latex] között.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>másodfokúnál magasabbfokú</em></strong> görbék racionális pontjainak kérdése az első- és másodfokú esetekhez képest jóval bonyolultabb, és jelenleg is csak részben tisztázott. Nagy meglepetést okozott, amikor <a rel="noreferrer noopener" href="https://en.wikipedia.org/wiki/Gerd_Faltings" target="_blank">Gerd Faltings</a> német matematikus 1984-ben igazolta, hogy a <strong><em>legalább negyedfokú görbéknek</em></strong> csak véges sok racionális pontjuk lehet (beleértve azt az esetet is, amikor egyáltalán nincs racionális pont). Ez a nagyszerű eredmény <a href="https://hu.wikipedia.org/wiki/Faltings-t%C3%A9tel" target="_blank" rel="noreferrer noopener">Faltings-tétel</a> néven ismeretes. Mindazonáltal jelenleg nem ismerünk olyan eljárást, amely ezeket a pontokat meg tudja határozni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Összefoglalva az eddigieket:</em></strong> Az első- és másodfokú, valamint a legalább negyedfokú görbék esetén tehát a racionális pontok számára vonatkozó kérdést meg tudjuk válaszolni:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li>Az <strong><em>elsőfokú görbéknek</em></strong> mindig végtelen sok racionális pontjuk van, amely általános iskolás módszerekkel is könnyen látható.</li><li>A <strong><em>másodfokú görbéknek</em></strong> vagy egyáltalán nincs, vagy pedig végtelen sok racionális pontjuk van. Ennek eldöntésére ad módszert a <strong><em>Hasse-Minkowski tétel</em></strong>.</li><li>A <strong><em>legalább negyedfokú görbéknek</em></strong> legfeljebb véges sok racionális pontjuk van a <strong><em>Faltings-tétel</em></strong> alapján.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p><strong><em>De vajon mi a helyzet a harmadfokú görbékkel?</em></strong> Ezeket <strong><em>elliptikus görbéknek</em></strong> nevezzük, és az ő esetükben mindhárom lehetséges eset – nulla, véges illetve végtelen sok racionális pont – előfordulhat. Sajnos az a helyzet, hogy a harmadfokú esetben nem ismerünk olyan eljárást, amelynek segítségével el lehetne dönteni, hogy egy adott görbe melyik kategóriába tartozik, illetve amelynek segítségével meg lehetne határozni az összes racionális pontot egy görbén. Épp erről szól a számelmélet egyik mély és központi jelentőségű sejtése, amely egyrészt – ha igaznak bizonyul – választ ad ezekre a kérdésekre, másrészt messzemenő következményei vannak az egész számelméletben. Ez a <strong><em><a rel="noreferrer noopener" href="https://hu.wikipedia.org/wiki/Birch_%C3%A9s_Swinnerton-Dyer-sejt%C3%A9s" target="_blank">Birch és Swinnerton-Dyer sejtés</a></em></strong>, amelyet az 1960-as évek első felében elliptikus görbéken végzett gépi számításaik alapján két brit matematikus, <a rel="noreferrer noopener" href="https://en.wikipedia.org/wiki/Bryan_John_Birch" target="_blank">Bryan John Birch</a> és <a rel="noreferrer noopener" href="https://en.wikipedia.org/wiki/Peter_Swinnerton-Dyer" target="_blank">Peter Swinnerton-Dyer</a> vetett fel.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>Birch és Swinnerton-Dyer sejtés</em></strong> jelentőségét mi sem bizonyítja jobban, minthogy – a <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/7-algoritmus-bonyolultsag-problemaosztalyok-polinomialis-exponencialis-p-np-sejtes-tanu-tetel#p-np-conjecture" target="_blank">7. részben</a> ismertetett [latex]P\
+eq NP[/latex]-sejtés mellett – ez is szerepel a <a rel="noreferrer noopener" href="https://hu.wikipedia.org/wiki/Millenniumi_probl%C3%A9m%C3%A1k" target="_blank">Millenniumi Problémák</a> között, amelyek megoldásáért egyenként <strong><em>egymillió amerikai dollár</em></strong> jutalom jár. A sejtés állítását némi előkészület után hamarosan ismertetjük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ehhez azonban előbb meg kell ismernünk az <strong><em>elliptikus görbék</em></strong> egy másik, kriptográfiai szempontból is fontos tulajdonságát, amely megkülönbözteti őket más algebrai görbéktől. Nevezetesen: az elliptikus görbék pontjai között egyedülálló módon egy olyan műveletet is lehet értelmezni, amellyel ezek a pontok egy kis kiegészítést követően <strong><em>csoportot</em></strong> (lásd a [yp_element slug="csoport" type="link" /]t) alkotnak. Ilyen csoportot más fokszámú görbék esetén nem lehet létrehozni, és ez az a bizonyos csoport, amelyet <a rel="noreferrer noopener" href="https://en.wikipedia.org/wiki/Neal_Koblitz" target="_blank">Neal Koblitz</a> a már említett 1987-es publikációjában kriptográfiai felhasználásra javasolt. Ahhoz azonban, hogy ezt a kis kiegészítést megtehessük, az elliptikus görbéket a szokásos kétdimenziós sík helyett az úgynevezett <strong><em>projektív síkra</em></strong> kell kiterjesztenünk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A projektív sík</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A hagyományos kétdimenziós síkkal az a probléma, hogy algebrailag nehezen kezelhető. Gondoljunk csak például arra az egyszerű esetre, amikor két elsőfokú görbe, azaz két egyenes metszéspontját szeretnénk meghatározni. Ez a látszattal ellentétben nem egy geometriai, hanem egy algebrai feladat, hiszen az egyenesek nyilván az egyenleteikkel vannak megadva. Nekünk pedig tulajdonképpen olyan [latex](x;y)[/latex] pontpárokat kell keresünk, amelyek mindkét egyenesen rajta vannak, következésképp <strong><em>mindkét egyenletet</em></strong> kielégítik. Ha egy olyan egyenletrendszer-megoldó algoritmust szeretnénk írni, amely a szokásos kétdimenziós síkon számol, akkor kapásból az alábbi három esetre kell felkészülnünk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li>Ha a két egyenes épp egybeesik, akkor végtelen sok metszéspont van.</li><li>Ha a két egyenes nem esik egybe, viszont egymással párhuzamosak, akkor nincs metszéspont.</li><li>Egyéb esetekben pontosan egy metszéspont van.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>Márpedig egy algoritmus esetén nagyon nem szeretjük az esetszétválasztásokat, hiszen minél több van belőlük, annál valószínűbb, hogy valamire nem gondoltunk, és az algoritmusunk éles helyzetben elhasal. Ráadásul a helyzet tovább bonyolódhat, ha az egyeneseken kívül egyéb görbék is bejöhetnek a képbe. Kényelmesebb lenne tehát, ha ezeket a fentiekhez hasonló „elfajuló” eseteket a normál esetekkel azonos módon, algebrailag egységesen tudnánk kezelni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Maradva az egyenesek metszéspontszámításáról szóló példánál, mondhatjuk például azt, hogy két egymástól különböző egyenesnek mindig pontosan egy metszéspontja van, csak épp párhuzamos egyenesek esetén ez a bizonyos metszéspont a „végtelenben” helyezkedik el. Az ilyen „végtelen távoli” pontokat <strong><em>ideális pontoknak</em></strong> nevezzük, és ezekkel kiegészítve a hagyományos kétdimenziós síkot egy olyan szerkezetű sík absztrakt modelljét kapjuk, amelyben a fentiekhez hasonló geometriai kérdések algebrailag sokkal kényelmesebben kezelhetők. Ezt az ideális pontokkal kiegészített síkot <strong><em>projektív síknak</em></strong> nevezzük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi ábrán látható [latex]e[/latex] és [latex]f[/latex] egyenesek például párhuzamosak egymással, így a hagyományos síkra felrajzolva őket azt kéne mondanunk, hogy ezek nem metszik egymást. Ezzel szemben a projektív sík esetén azt mondjuk, hogy ők egy [latex]P[/latex]-vel jelölt ideális (végtelen távoli) pontban igenis metszik egymást. Ehhez hasonlóan az ábrán lévő [latex]g[/latex] és [latex]h[/latex] egyenesek is egy ideális [latex]Q[/latex] pontban metszik egymást:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":7720,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_27_idealis_pont_es_egyenes.jpg" alt="Párhuzamos egyenesek metszéspontja a projektív síkon" class="wp-image-7720"/><figcaption>Párhuzamos egyenesek metszéspontja a projektív síkon</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Természetesen továbbra is fenntartjuk azt a „játékszabályt” (vagy ha úgy tetszik axiómát), hogy két egymástól különböző egyenes nem metszheti egymást kétszer. Következésképp a [latex]P[/latex] és [latex]Q[/latex] pontoknak – noha mindkettőt a végtelenben elhelyezkedő ideális pontnak tekintjük – egymástól különbözőnek kell lenniük. Ha ugyanis nem így lenne – azaz [latex]P=Q[/latex] lenne –, akkor például a [latex]g[/latex] egyenes kétszer is metszené az [latex]e[/latex] egyenest. Egyrészt a fenti ábrán jelölt hagyományos [latex]A[/latex] pontban, másrészt pedig a [latex]P=Q[/latex] ideális pontban.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Így tehát azt mondhatjuk, hogy a projektív sík ideális pontjai és a hagyományos síkon elképzelhető irányok között kölcsönösen egyértelmű megfeleltetés létesíthető. Sőt, a projektív sík geometriájának itt nem részletezett axiómarendszeréből következik, hogy az összes ideális pont tulajdonképpen egy „egyenesre” illeszkedik, amely azonban végtelen távol helyezkedik el. Ezt az ábrán szaggatott vonallal ábrázolt [latex]i[/latex] „egyenest” <strong><em>ideális egyenesnek</em></strong> nevezzük. Az ilyen ideális objektumok bevezetésének nyilván akkor van értelme, ha nemcsak a képzeletünkben léteznek intuitív módon, hanem algebrailag is képesek vagyunk velük számolni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezért most a projektív síknak egy olyan reprezentációját mutatjuk be, amelynek segítségével ezeket az ideális objektumokat is véges mennyiségekkel tudjuk leírni. Ennek alapötlete a következő: ha beágyazzuk a kétdimenziós síkot a háromdimenziós térbe úgy, hogy az ne illeszkedjen az origóra, akkor az origón átmenő térbeli egyenesek kölcsönösen egyértelműen megfeleltethetők lesznek egyrészt a beágyazott sík pontjaival (ezek lesznek a projektív sík hagyományos pontjai), valamint az ideális pontokkal. Ez azért jó, mert az origón átmenő térbeli egyeneseket tulajdonképpen egy-egy irányvektorral tudjuk leírni, amely már véges mennyiségeket tartalmaz. Ezt az ötletet mutatja az alábbi ábra:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":7810,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_27_projektiv_geometria.jpg" alt="A projektív sík" class="wp-image-7810"/><figcaption>A projektív sík</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>A négyzetráccsal ellátott [latex]E[/latex] síkot tipikusan úgy szokták elhelyezni, hogy párhuzamos legyen a beágyazótér [latex]x[/latex] és [latex]y[/latex] tengelyei által kifeszített síkkal, és a [latex]z=1[/latex] magasságban helyezkedjen el. Ennek a választásnak mindössze praktikussági okai vannak, mint azt hamarosan látni fogjuk. Ekkor a beágyazótér origóján átmenő egyenesek két diszjunkt halmazra oszthatók:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li>Azok az egyenesek, amelyek nem párhuzamosak az [latex]E[/latex] síkkal, egyértelműen meghatároznak egy metszéspontot az [latex]E[/latex] síkon. Ez egy <strong><em>hagyományos pont</em></strong> lesz az [latex]E[/latex] által reprezentált projektív síkon.</li><li>Azok az egyenesek, amelyek párhuzamosak az [latex]E[/latex] síkkal, noha nem metszik azt, de egyértelműen meghatároznak egy irányt ezen a síkon. Ez egy <strong><em>ideális pont</em></strong> lesz az [latex]E[/latex] által reprezentált projektív síkon.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>Például az ábrán látható [latex]P[/latex] pont a projektív sík egy <strong><em>hagyományos pontja</em></strong>, amely a hagyományos pontokat tartalmazó [latex]E[/latex] síkon a [latex](2;3)[/latex] hagyományos koordinátákkal írható le. Ezt a pontot a beágyazótérben a [latex]\vec{p}=(2;3;1)[/latex] irányvektorra illeszkedő térbeli egyenes jelöli ki ezen a síkon, így tehát a [latex]P[/latex] pontot a [latex](2;3;1)[/latex] <strong><em>projektív koordinátákkal</em></strong> is leírhatjuk. Természetesen ugyanezt a [latex]P[/latex] pontot kapjuk, ha a [latex]\vec{p}[/latex] irányvektor mindhárom térbeli koordinátáját megszorozzuk egy tetszőleges [latex]c\
+eq 0[/latex] számmal. Vagyis a [latex](2c;3c;c)[/latex] projektív koordináták ugyanúgy a [latex]P[/latex] pontot azonosítják minden [latex]c\
+eq 0[/latex] esetén.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az ábrán látható [latex]\vec{q}=(1;4;0)[/latex] irányvektor azonban párhuzamos a projektív sík hagyományos pontjait tartalmazó [latex]E[/latex] síkkal, tehát nem metszi azt. Ez felfogható egyfajta határesetnek is, amikoris az [latex](1;4;z)[/latex] irányvektor harmadik koordinátájával egyre jobban és jobban közeledünk a [latex]z=0[/latex]-hoz valamelyik irányból. Pozitív irányból közeledve a [latex]\bullet[/latex]-tal, míg negatív irányból közeledve a [latex]\times[/latex]-tel jelölt pontsorozatot kapjuk az [latex]E[/latex] síkon, a [latex]z=0[/latex] koordinátát elérve pedig e pontsorozatok vonalában „kiszaladunk a végtelenbe”. Így az [latex](1;4;0)[/latex] projektív koordináták a projektív síknak azt az <strong><em>ideális pontját</em></strong> írják le, amely a kapott pontsorozat által kijelölt iránynak felel meg. Természetesen ugyanezt az irányt, azaz ideális pontot kapjuk, ha a [latex]\vec{q}[/latex] irányvektor mindhárom térbeli koordinátáját megszorozzuk egy tetszőleges [latex]c\
+eq 0[/latex] számmal.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A fenti koncepciót továbbgondolva tehát tulajdonképpen arról van szó, hogy a projektív sík különböző objektumait a beágyazótér eggyel magasabb dimenziós objektumainak az [latex]E[/latex] síkra vetített „árnyékaként” képzeljük el, de az algebrai feladatokban ezekkel a magasabb dimenziós objektumokkal számolunk. Így tehát a projektív sík pontjait (beleértve az ideális pontokat) a beágyazótérben egy-egy origón átmenő egyenesnek feleltetjük meg a fentiek szerint. Ehhez hasonlóan a projektív sík egyeneseihez (beleértve az ideális egyenest is) a beágyazótérben az origón átmenő síkokat rendeljük hozzá. Egy, az [latex]E[/latex] síkon fekvő hagyományos egyenesnek az a sík fog megfelelni a beágyazótérben, amely az adott egyenesben metszi az [latex]E[/latex] síkot, míg az ideális egyenest az [latex]x[/latex] és [latex]y[/latex] tengelyre illeszkedő síkkal azonosítjuk, amely tehát nem metszi az [latex]E[/latex] síkot.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A fenti konstrukció természetesen <strong><em>magasabb dimenziókra</em></strong> is kiterjeszthető, ám ezt itt nem részletezzük. A kétdimenziós projektív sík helyett beszélhetünk például a háromdimenziós <strong><em>projektív térről</em></strong> is. Az persze igaz, hogy ekkor a fenti modell szerinti beágyazótér már négydimenziós, amelyet nemigazán tudunk elképzelni. Azonban algebrailag ugyanazok a szabályok fognak vonatkozni rá, mint a projektív síkra, csak épp a projektív térben három helyett már négy koordinátával kell dolgoznunk. Hogy ez mennyire nem elrugaszkodott a valóságtól, azt mi sem mutatja jobban, minthogy például a számítógépes grafikában használt hardverek is ilyen négydimenziós projektív koordinátákkal dolgoznak, és az ezekkel való műveletvégzésekre vannak optimalizálva.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Az elliptikus görbék csoportstruktúrája</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Az elliptikus görbéknek mindössze az elnevezésükben van közük az ellipszisekhez, eredetileg ugyanis ellipszisek ívhosszának kiszámításához használtak hozzájuk hasonló egyenleteket. A matematikai részletek kidolgozását továbbra is mellőzve <strong><em>elliptikus görbének</em></strong> nevezünk tehát minden olyan harmadfokú algebrai görbét a projektív síkon, amely a már említett „símasági” feltételeknek eleget tesz. Ebben a szakaszban végig a [latex]\mathbb{Q}[/latex] számtest feletti, tehát <strong><em>racionális elliptikus görbékről</em></strong> lesz szó. Egy ilyen görbe pontjai alatt mindig a <strong><em>racionális pontokat</em></strong> fogjuk érteni egy apró kiegészítéssel, amelyre hamarosan kitérünk. A harmadfokúságot már tisztáztuk az algebrai síkgörbék esetén. Eszerint egy elliptikus görbe egyenletének általános alakja az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]ax^3+bx^2y+cxy^2+dy^3+ex^2+fxy+gy^2+hx+iy+j=0[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mint már említettük, „símasági” feltételek alatt nem túl precízen azt értjük, hogy a görbe bizonyos értelemben „szép folytonos”, és „folytonosan is görbül”. Ezeket egészen pontosan a matematika analízis eszközeivel lehetne megfogalmazni, amitől most szintén eltekintünk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Belátható, hogy egy ilyen görbének mindig van egy nyílt komponense, amely „végtelen távolról érkezik” egy jól meghatározott irányból, tesz néhány kanyart, majd az érkezésivel ellentétes irányban „távozik a végtelenbe”. Mivel a projektív síkon vagyunk, ezért ez az előző szakasz fényében azt jelenti, hogy a görbe mindig „áthalad” egy <strong><em>ideális ponton</em></strong> is, amelyet szintén a görbe egy pontjának, azaz racionális pontnak tekintünk. A paraméterektől függően továbbá a görbének lehet még egy különálló komponense is, ami egy zárt görbe.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A [latex]\mathbb{Q}[/latex] számtest feletti elliptikus görbék egyenlete egy úgynevezett koordináta-transzformációval a fenti általános alakról minden esetben az alábbi jóval egyszerűbb, úgynevezett <strong><em>Weierstrass-féle normálalakra</em></strong> hozható, amelynek hatására a görbe szimmetrikus lesz az [latex]x[/latex] tengelyre:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]y^2=x^3+ax+b[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Természetesen egy ilyen átalakítás során a görbe formája teljesen megváltozik, viszont az alapvető struktúrája – amelyre hamarosan rátérünk – lényegében azonos marad az eredeti görbe struktúrájával. Az alábbi ábrákon két elliptikus görbe látható különböző [latex]a[/latex] és [latex]b[/latex] paraméterekkel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":7723,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_27_elliptikus_gorbe_pelda_1.jpg" alt="Elliptikus görbe (a=-1, b=2)" class="wp-image-7723"/><figcaption>Elliptikus görbe ([latex]a=-1[/latex], [latex]b=2[/latex])</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:image {"align":"center","id":7724,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_27_elliptikus_gorbe_pelda_2.jpg" alt="Elliptikus görbe (a=-2, b=1)" class="wp-image-7724"/><figcaption>Elliptikus görbe ([latex]a=-2[/latex], [latex]b=1[/latex])</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>A másodfokú görbék esetén ha a görbének egy [latex]P[/latex] racionális pontját már ismerjük, akkor ebből könnyen megtalálhatjuk az összes többit, ugyanis bármely [latex]P[/latex]-re illeszkedő racionális meredekségű egyenes garantáltan egy másik racionális pontban metszi a görbét. Ezzel szemben egy elliptikus görbe racionális pontjainak megtalálása azért sokkal nehezebb, mivel egy adott racionális pontra illeszkedő egyenes két másik pontban is metszheti a görbét, és egyáltalán nem biztos, hogy bármelyikük is racionális pont lesz. Némi számolgatással belátható viszont, hogy amennyiben egy egyenes a görbét két racionális pontban is metszi, akkor a harmadik metszéspont szintén racionális lesz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez elvezet minket egy furcsa, „összeadásnak” nevezett művelethez, amelyet az elliptikus görbe <strong><em>racionális pontjain</em></strong> fogunk értelmezni. Mint már említettük, ezek közé soroljuk azt az <strong><em>ideális pontot</em></strong> is, amelyen a görbe áthalad. Ez a Weierstrass-féle normálalak esetén a függőleges irányhoz tartozó ideális pont lesz. A pontok közötti <strong><em>„összeadást”</em></strong> a [latex]\oplus[/latex] szimbólummal fogjuk jelölni annak érdekében, hogy megkülönböztessük a szokásos összeadástól, amelyhez természetesen nincs semmi köze. E művelet definíciójához szükségünk lesz a görbe egy tetszőlegesen választott [latex]\mathcal{O}[/latex] pontjára, amelyet <strong><em>referenciapontnak</em></strong> fogunk nevezni. Ez tipikusan a görbe ideális pontja szokott lenni, és ebben az esetben egy [latex]P[/latex] és [latex]Q[/latex] pont <strong><em>összegén</em></strong> azt a [latex]P\oplus Q[/latex]-val jelölt pontot értjük, amelyet az alábbi módon kapunk meg:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} -->
+<ol><li>Kössük össze egymással a [latex]P[/latex] és [latex]Q[/latex] pontot egy egyenessel. Ha [latex]Q=\mathcal{O}[/latex], akkor értelemszerűen ez a [latex]P[/latex] ponton átmenő függőleges egyenes lesz. Ha [latex]P=Q[/latex], akkor az egyenes legyen a görbe érintője a [latex]P=Q[/latex] pontnál.</li><li>Az előző lépésben kapott egyenes egy további [latex]R[/latex] pontban fogja metszeni a görbét, amely a fentebb leírtak alapján szintén egy racionális pont – vagy függőleges egyenes esetén az [latex]\mathcal{O}[/latex] ideális pont – lesz.</li><li>Az előző lépésben kapott [latex]R[/latex] pont [latex]x[/latex] tengelyre vetített tükörképét nevezzük a [latex]P[/latex] és [latex]Q[/latex] pontok <strong><em>összegének</em></strong>. Ennek jele: [latex]P\oplus Q[/latex].</li></ol>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi ábrákon két egymástól különböző pont összeadása, valamint egy úgynevezett „pontduplázás”, azaz egy pont önmagával való összeadása látható:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":7818,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_27_elliptikus_gorbe_pontosszeadas.jpg" alt="Két pont összeadása" class="wp-image-7818"/><figcaption>Két pont összeadása</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:image {"align":"center","id":7819,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_27_elliptikus_gorbe_pontduplazas.jpg" alt="Pontduplázás" class="wp-image-7819"/><figcaption>Pontduplázás</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Ha az [latex]\mathcal{O}[/latex] referenciapontnak nem a görbe ideális pontját választjuk, akkor a 3. lépést egy kicsit bonyolultabban kéne megfogalmazni. Ilyenkor ugyanis az [latex]R[/latex] és [latex]\mathcal{O}[/latex] által kijelölt egyenes és a görbe harmadik metszéspontja lenne a [latex]P\oplus Q[/latex] összeg. Természetesen ha [latex]\mathcal{O}[/latex] ideális pont, akkor ez az egyenes épp függőleges, és mivel a görbe szimmetrikus az [latex]x[/latex] tengelyre, ezért ez valóban tükrözést jelent. Mi a továbbiakban az [latex]\mathcal{O}[/latex] referenciapont alatt mindig a görbe ideális pontját fogjuk érteni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az nyilvánvaló, hogy a [latex]\oplus[/latex] művelet <strong><em>kommutatív</em></strong>, hiszen teljesen mindegy, hogy az 1. lépésben a [latex]P[/latex] pontot kötjük össze a [latex]Q[/latex] ponttal, vagy fordítva, eredményként ugyanazt az [latex]R[/latex] metszéspontot kapjuk, amelynek tükörképe – azaz [latex]P\oplus Q[/latex] – ugyanaz lesz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ugyan elsőre nem látszik, de az [latex]\mathcal{O}[/latex] referenciapont <strong><em>neutrális elemként</em></strong> viselkedik a [latex]\oplus[/latex] műveletre nézve. Ezenkívül az is igaz, hogy a görbe bármely pontját összeadva az [latex]x[/latex] tengelyre vetített tükörképével, eredményül az [latex]\mathcal{O}[/latex] neutrális elemet kapjuk. Azaz minden pontnak van <strong><em>ellentettje</em></strong> a [latex]\oplus[/latex] műveletre nézve:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":7729,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_27_elliptikus_gorbe_neutralis_elem.jpg" alt="Neutrális elem" class="wp-image-7729"/><figcaption>Neutrális elem</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:image {"align":"center","id":7730,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_27_elliptikus_gorbe_ellentett.jpg" alt="Pont ellentettje" class="wp-image-7730"/><figcaption>Pont ellentettje</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>A [latex]\oplus[/latex] pontösszeadás tehát egy olyan kommutatív művelet, amelyre nézve létezik neutrális elem, és minden elemnek létezik ellentettje. Ezek a tulajdonságok a [yp_element slug="csoport" type="link" /]ben szereplő <strong><em>csoportaxiómákra</em></strong> emlékeztetnek minket, habár az asszociativitást még nem igazoltuk. Mivel ez egyáltalán nem magától értetődő, ezért ezt most nem is fogjuk megtenni. Mindenesetre a [latex]\oplus[/latex] művelet valóban teljesíti az <strong><em>asszociativitást</em></strong> is, azaz a görbe tetszőleges [latex]A[/latex], [latex]B[/latex] és [latex]C[/latex] pontjaira teljesül az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]A\oplus (B\oplus C)=(A\oplus B)\oplus C[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Így tehát elmondható, hogy minden racionális elliptikus görbe pontjainak halmaza a fent bevezetett [latex]\oplus[/latex] műveletre nézve egy <strong><em>Abel-csoportot</em></strong> alkot. Természetesen egy olyan elliptikus görbén is szinte ugyanígy be lehetne vezetni a [latex]\oplus[/latex] műveletet, amely a szakasz elején szereplő teljesen általános alakban van megadva. Az így kapott Abel-csoport azonban izomorf (lásd a [yp_element slug="csoporthomomorfizmus" type="link" /]t) lenne azzal az Abel-csoporttal, amit akkor kapunk, ha a görbét a Weierstrass-féle normálalakba transzformáljuk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Így tehát bármilyen elliptikus görbe vizsgálata visszavezethető egy Weierstrass-féle normálalakban megadott elliptikus görbe vizsgálatára. Ráadásul ez nem csak a racionális számtest, hanem – néhány kivételes esettől eltekintve – tetszőleges [latex]T[/latex] test felett értelmezett elliptikus görbékre igaz. Kriptográfiai szempontból számunkra a véges testek feletti görbék lesznek érdekesek. Előbb azonban maradjunk még egy kicsit a racionális számtest feletti görbéknél, és ismerkedjünk meg a fentebb már említett egymillió dollárt érő <strong><em>Birch és Swinnerton-Dyer sejtés</em></strong> állításával egy kicsit részletesebben.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Mit állít a Birch és Swinnerton-Dyer sejtés?</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Mint már említettük, továbbra is nyitott kérdés annak eldöntése, hogy egy adott [latex]E[/latex] racionális elliptikus görbe vajon véges vagy végtelen sok racionális pontot tartalmaz-e. Ez a kérdés az előző szakasz fényében úgy is megfogalmazható, hogy a görbe által meghatározott [latex]E(\mathbb{Q})[/latex]-val jelölt Abel-csoportnak véges vagy végtelen sok eleme van-e. Ez összefüggésben van az elliptikus görbe egy fontos tulajdonságával, amelyet [latex]E[/latex] <strong><em>rangjának</em></strong> nevezünk. De mit is jelent ez pontosan?</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mint minden csoport esetében, így az [latex]E(\mathbb{Q})[/latex] csoport kapcsán is beszélhetünk a <strong><em>generálás</em></strong> fogalmáról. Ezt a fogalmat [yp_element slug="generalt-reszcsoport-es-normaloszto" type="link" /]ben vezettük be, amikoris azt mondtuk, egy bármilyen [latex]G[/latex] csoport tetszőleges [latex]X[/latex] részhalmaza egyértelműen meghatároz egy olyan legszűkebb részcsoportot [latex]G[/latex]-ben, amely tartalmazza [latex]X[/latex] összes elemét. Ezt a részcsoportot <strong><em>az [latex]X[/latex] által generált részcsoportnak</em></strong> neveztük, és [latex]\lang X\ang[/latex]-szel jelöltük. Amennyiben [latex]\lang X\ang = G[/latex], akkor azt mondjuk, hogy az [latex]X[/latex] részhalmaz <strong><em>generálja</em></strong> a teljes [latex]G[/latex] csoportot. Speciálisan <strong><em>végesen generált csoportoknak</em></strong> nevezzük az olyan csoportokat, amelyek generálhatók egy véges elemszámú részhalmazzal. Ennek egy még speciálisabb esetét a [yp_element slug="ciklikus-csoportok" type="link" /]ban <strong><em>ciklikus csoportoknak</em></strong> neveztük, amikoris ez a véges elemszám konkrétan [latex]1[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Sokáig nyitott volt a kérdés, hogy vajon létezik-e olyan [latex]E[/latex] racionális elliptikus görbe, amely esetén az [latex]E(\mathbb{Q})[/latex] csoport nem generálható végesen. Ezt a kérdést <a rel="noreferrer noopener" href="https://en.wikipedia.org/wiki/Louis_J._Mordell" target="_blank">Louis Mordell</a> brit matematikus 1922-ben tisztázta a racionális számtest feletti elliptikus görbékre, amelyet <a rel="noreferrer noopener" href="https://en.wikipedia.org/wiki/Andr%C3%A9_Weil" target="_blank">Andé Weil</a> francia matematikus 1928-ban megjelent doktori dolgozatában általánosított tetszőleges [latex]\mathbb{Q}[/latex]-nál bővebb számtestekre is. Ez egy kiemelkedő eredmény volt a számelméletben, amely manapság <a rel="noreferrer noopener" href="https://hu.wikipedia.org/wiki/Mordell%E2%80%93Weil-t%C3%A9tel" target="_blank">Mordell-Weil tétel</a> néven ismeretes. A tétel nemleges választ a fenti kérdésre, azaz kimondja, hogy <strong><em>minden racionális elliptikus görbe végesen generált</em></strong>. Ez azt jelenti, hogy mindig található véges sok olyan racionális pont a görbén, amelyekből a [latex]\oplus[/latex] csoportművelet segítségével előállítható az összes többi – még ha azok végtelen sokan is vannak.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>Mordell-Weil tétel</em></strong> értelmében tehát a görbének mindig létezik véges generátorrendszere. Ekkor azonban nyilván létezik ezek között olyan is, amely minimális méretű. Ezeket <strong><em>független generátorrendszereknek</em></strong> nevezzük, utalva arra, hogy a csoportművelet segítségével egyik elemük sem kapható meg a többiből, vagyis független azoktól. Ha ugyanis nem így volna, akkor ezeket a nem független elemeket elhagyva a maradék rendszer továbbra is generálná a teljes csoportot, és így az eredeti generátorrendszer nem lett volna minimális méretű. Az [latex]E(\mathbb{Q})[/latex] csoport végessége nyilván attól függ, hogy egy ilyen független generátorrendszerben <strong><em>van-e végtelen rendű elem</em></strong>. A [yp_element slug="csoportelem-rendje" type="link" /] alapján a görbe egy racionális pontja akkor végtelen rendű, ha önmagával akárhányszor összeadva mindig újabb és újabb pontokat kapunk a görbén.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egy elliptikus görbe valamely <strong><em>független generátorrendszerében lévő végtelen rendű elemek száma</em></strong> egy olyan mennyiség, amely nem függ attól, hogy melyik generátorrendszert választottuk. Ezt a mennyiséget <strong><em>az elliptikus görbe rangjának</em></strong> nevezzük, amely tehát a Mordell-Weil tételből következően <strong><em>mindig véges</em></strong>. Egy racionális elliptikus görbe tehát pontosan akkor tartalmaz véges sok racionális pontot, ha a rangja 0 – hiszen ekkor a generátorrendszerben csak véges rendű elemek vannak –, és minden más esetben végtelen sok racionális pont van a görbén. Fontos lenne tehát, hogy ki tudjuk számolni a görbe rangját, azonban sajnos erre jelenleg nem ismert általános eljárás. Épp itt jön a képbe a <strong><em>Birch és Swinnerton-Dyer sejtés</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az 1960-as években Bryan Birch és Peter Swinnerton-Dyer egy rendkívül érdekes felfedezésre jutottak, amikor elliptikus görbéket kezdtek el vizsgálni számítógéppel a [latex]\mathbb{Q}[/latex] racionális számtest helyett különböző véges testek felett. Vegyük példának az alábbi racionális elliptikus görbét, amelynek a rangja ismert, történetesen 1, azaz végtelen sok racionális pontot tartalmaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]y^2=x^3-5x[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ugyanezt a görbét tekintsük most a [yp_element slug="modularis-osszeadas-es-szorzas" type="link" /]ban ismertetett [latex]\Z_p[/latex] testek fölött különböző [latex]p[/latex] prímszámokra. Könnyű belátni, hogy ezekben az esetekben [latex]\Z_p[/latex] valóban nem csak gyűrű, hanem test is. Ekkor ugyanis a szorzásra nézve invertálható elemek száma a [yp_element slug="euler-fuggveny-primhatvanyokra" type="link" /] alapján [latex]\varphi(p)=p-1[/latex], vagyis a nullán kívül minden elem invertálható, és így tényleg testet kapunk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Vegyük példaként a fenti görbét a [latex]\Z_{17}[/latex] test felett. Ilyenkor tehát a görbe pontjai olyan [latex](x;y)[/latex] számpárok lesznek, amelyeknek mindkét komponense a [latex]\Z_{17}[/latex] testből való, és amelyeket behelyettesítve a görbe egyenletébe az egyenlet fennáll. Természetesen ilyenkor a hagyományos összeadások, szorzások és hatványozások helyett modulo 17 összeadásokat, szorzásokat és hatványozásokat kell érteni. Ezenkívül továbbra is a görbe pontjának tekintjük a „végtelen távol” lévő [latex]\mathcal{O}[/latex] pontot, mint a görbe által meghatározott csoport egységelemét.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A pontokat – az [latex]\mathcal{O}[/latex] pont kivételével – természetesen grafikonon is ábrázolhatjuk. Például a fenti [latex]y^2=x^3-5x[/latex] elliptikus görbe grafikonja a [latex]\Z_{17}[/latex] test felett így néz ki:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":7636,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_27_elliptikus_gorbe_veges_test_felett.png" alt="" class="wp-image-7636"/><figcaption>Elliptikus görbe [latex]\Z_{17}[/latex] felett</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]\mathcal{O}[/latex] ponttal együtt tehát összesen 26 pontja van ennek a görbének. De ugyanígy megvizsgálhatjuk a pontok számát más és más [latex]\Z_p[/latex] test felett különböző [latex]p[/latex] prímekre. Az <a rel="noreferrer noopener" href="https://graui.de/code/elliptic2/" target="_blank">itt</a> lévő oldalon minden ilyen görbének megtekinthetjük a grafikonját és a műveleti tábláját, valamint az adott görbe minden pontjának megnézhetjük az inverzét, a rendjét és az általa generált ciklikus részcsoportot is. Minket elsősorban a [latex]\Z_p[/latex] feletti görbe pontjainak száma érdekel, amit jelöljünk [latex]N_p[/latex]-vel. Az alábbi táblázat ezeket, valamint az [latex]\frac{N_p}{p}[/latex] arányokat tartalmazza az első néhány [latex]p[/latex] prímre:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{c|c|c}p &amp; N_p &amp; \frac{N_p}{p} \\ \hline 2 &amp; 3 &amp; 1.5 \\ \hline 3 &amp; 4 &amp; 1.33 \\ \hline 5 &amp; 6 &amp; 1.2 \\ \hline 7 &amp; 8 &amp; 1.14 \\ \hline 11 &amp; 12 &amp; 1.09 \\ \hline 13 &amp; 18 &amp; 1.38 \\ \hline 17 &amp; 26 &amp; 1.52 \\ \hline 19 &amp; 20 &amp; 1.05 \\ \hline &amp; \vdots &amp;\end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most a táblázat minden sorához képezzük a harmadik oszlopban lévő arányszámok szorzatait az adott sorig bezárólag. Például a fenti első néhány prímre az alábbi szorzatok képződnek:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}p=2 &amp;\to \frac{N_2}{2}=1.5 \\ p=3 &amp;\to \frac{N_2}{2}\cdot \frac{N_3}{3}=2 \\ p=5 &amp;\to \frac{N_2}{2}\cdot \frac{N_3}{3} \cdot \frac{N_5}{5}=2.4 \\ p=7 &amp;\to \frac{N_2}{2}\cdot \frac{N_3}{3} \cdot \frac{N_5}{5} \cdot \frac{N_7}{7}=2.74 \\ p=11 &amp;\to \frac{N_2}{2}\cdot \frac{N_3}{3} \cdot \frac{N_5}{5} \cdot \frac{N_7}{7}\cdot \frac{N_{11}}{11}=2.99 \\ p=13 &amp;\to \frac{N_2}{2}\cdot \frac{N_3}{3} \cdot \frac{N_5}{5} \cdot \frac{N_7}{7}\cdot \frac{N_{11}}{11}\cdot \frac{N_{13}}{13}=4.14 \\ &amp;\vdots \end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez eddig látszólag pusztán játék a számokkal. A dolog akkor válik <strong><em>megdöbbentően érdekessé</em></strong>, amikor az így kapott értékeket elkezdjük felrajzolni egy megfelelően skálázott grafikonra:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":7625,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_27_birch_swinnerton_dyer_grafikon.png" alt="Birch és Swinnerton-Dyer sejtés" class="wp-image-7625"/><figcaption>Birch és Swinnerton-Dyer sejtés</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Ez a grafikon a fent leírt módon kiszámított szorzatokat tartalmazza az első 100000 prímszámra. A vízszintes tengely egy duplán, míg a függőleges tengely egy egyszeresen logaritmikus skálával van ellátva. Látható, hogy a kiszámított szorzatok eléggé hektikusan alakulnak, ahogy újabb és újabb [latex]p[/latex] értékre számoljuk ki őket. A tapasztalat azonban azt mutatja, hogy ezen a furcsa logaritmikus skálán a felrajzolt pontok előbb-utóbb egy jól meghatározott egyenes körül kezdenek el egyre szorosabban csoportosulni. Ha megvizsgálnánk ennek a képzeletbeli egyenesnek a meredekségét, akkor 1-et kapnánk eredményül. <strong><em>Furcsamód ez épp megegyezik az eredeti racionális elliptikus görbe rangjával, ami szintén 1!</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ami még furcsább, hogy azóta rengeteg más, ismert rangú elliptikus görbére megvizsgálták ezt a jelenséget, és eddig minden egyes esetben azt tapasztalták, hogy a kapott egyenes meredeksége megegyezett a görbe rangjával. Az egymillió dollárt érő <strong><em>Birch és Swinnerton-Dyer sejtés</em></strong> némileg komplikáltabb megfogalmazásban lényegében azt állítja, hogy ez minden racionális elliptikus görbére igaz, vagyis tulajdonképpen egy <strong><em>eljárást ad a rang kiszámítására</em></strong>. Mintha valami nagyon mélyen gyökerező titokzatos kapcsolat lenne az eredeti racionális görbe és annak a [latex]\Z_p[/latex] testek feletti változatai között. Az utóbbi évtizedek során rengeteg numerikus bizonyíték gyűlt össze, amely arra utal, hogy a sejtés igaz lehet. Ennek ellenére nagyrészt a mai napig fogalmunk sincsen, hogy mi állhat a háttérben, az állítás ugyanis csak a 0 és 1 rangú elliptikus görbékre van bizonyítva. Az 1-nél magasabb rangú görbékről semmit sem tudunk, noha a numerikus vizsgálatok eddig egyetlen ellenpéldát sem mutattak ki ezek közül.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Továbbá az sem ismert, hogy vajon van-e valamilyen felső korlát a rangra vonatkozóan, vagy az tetszőlegesen nagy is lehet. A vizsgálatok azt mutatják, hogy „majdnem minden” görbe rangja 0 vagy 1, méghozzá nagyjából 50-50% valószínűséggel, és ennél magasabb rangú görbék csak „elvétve” fordulnak elő. Ettől függetlenül persze ezekből is végtelen sok van, habár kimondottan nehéz magas rangú görbét találni. Az eddigi rekordot <a href="https://en.wikipedia.org/wiki/Noam_Elkies" target="_blank" rel="noreferrer noopener">Noam Elkies</a> amerikai matematikus tartja, aki 2006-ban az alábbi görbét fedezte fel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]y^2 + xy + y = x^3-x^2-20067762415575526585033208209338542750930230312178956502x + 34481611795030556467032985690390720374855944359319180361266008296291939448732243429[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ennek a görbének a pontos rangja nem ismert, mindössze annyit tudunk róla, hogy az <strong><em>legalább 28</em></strong>. A legfrissebb eredmény 2020-ból származik szintén Noam Elkies-től és Zev Klagsbrun-tól. Ennek a görbének a rangja <strong><em>pontosan 20</em></strong>:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]y^2 + xy + y = x^3-x^2-244537673336319601463803487168961769270757573821859853707x + 961710182053183034546222979258806817743270682028964434238957830989898438151121499931[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Látható, hogy ezek a rekordnak számító értékek sem túl magasak, bár a fenti első Elkies-féle görbe rangja lehet akármilyen magas is, hiszen arról csak annyit tudunk, hogy legalább 28. Ennek ellenére a legtöbben úgy gondolják, hogy nincs felső korlát a rangra vonatkozóan, ám a kérdés továbbra is nyitott.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Elliptikus görbék és kriptográfia</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A Birch és Swinnerton-Dyer sejtéssel kapcsolatos kitérő után röviden ismertetjük, hogy hogyan lehet az elliptikus görbéket a kriptográfiában hasznosítani. Ehhez a szokásos racionális elliptikus görbék helyett <strong><em>véges testek feletti elliptikus görbéket</em></strong> kell használnunk. Véges testekre az előző szakaszban már láttunk példát. Ilyen véges test például a [yp_element slug="modularis-osszeadas-es-szorzas" type="link" /] szerinti [latex]\Z_p[/latex] gyűrű, amennyiben [latex]p[/latex] prímszám. Ebben a testben gyakorlatilag a <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/9-diffie-hellman-protokoll-egyiranyu-fuggveny-modularis-aritmetika-asszimmetrikus-kulcs#modular-arithmetic" target="_blank">9. részben</a> bemutatott <strong><em>óraaritmetika</em></strong> alapján kell számolni, és szerkezetileg teljesen megegyezik a [yp_element slug="egesz-szamok-maradekosztalygyurui" type="link" /]ben ismertetett [latex]\Z/p\Z[/latex] maradékosztálygyűrűvel.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Lehet találni azonban olyan véges testet is, amelynek mérete nem prímszám, hanem valamilyen prímhatvány. Itt viszont már nem működik az óraaritmetika, ezért ebben az esetben egy némileg komplikáltabb konstrukcióra van szükség, amelynek részleteitől most eltekintünk. Továbbá azt is meg lehet mutatni, hogy minden véges test prím vagy prímhatvány méretű, sőt, minden azonos méretű véges test izomorf egymással. Ez tehát azt jelenti, hogy az elemek száma egyértelműen meghatározza a testet. Így például nincs értelme <em>erről</em> vagy <em>arról</em> a 8 elemet tartalmazó testről beszélni, hiszen ezek lényegében – izomorfiától eltekintve – ugyanazok.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Általánosságban ha [latex]q[/latex] valamilyen prím vagy prímhatvány, akkor <strong><em>a [latex]q[/latex] elemű testet</em></strong> [latex]\mathbb{F}_q[/latex]-val jelöljük. Ennek megfelelően egy [latex]\mathbb{F}_q[/latex] feletti [latex]E[/latex] elliptikus görbe által meghatározott csoport jele [latex]E(\mathbb{F}_q)[/latex]. Az [latex]E(\mathbb{F}_q)[/latex] csoport tehát egyrészt tartalmaz egy [latex]\mathcal{O}[/latex]-val jelölt „végtelen távoli” pontot, amely a csoport neutrális eleme. Másrészt pedig azokat az [latex](x;y)[/latex] rendezett párokat tartalmazza, amelyeknek [latex]x[/latex] és [latex]y[/latex] komponensei az [latex]\mathbb{F}_q[/latex] test elemei, és amelyek teljesítik az alábbi Weierstrass-egyenletet:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]y^2=x^3+ax+b[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Itt [latex]a[/latex] és [latex]b[/latex] a görbe paraméterei, amelyek szintén az [latex]\mathbb{F}_q[/latex] test elemei, továbbá a képletben szereplő összeadások, szorzások és hatványozások alatt e test műveleteit kell érteni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egy ilyen véges test feletti elliptikus görbe pontjai között ugyanúgy értelmezni lehet a [latex]\oplus[/latex] szimbólummal jelölt összeadást, mint a racionális elliptikus görbék esetén. A racionális esetben a koordinátáikkal adott [latex]P=(x_p;y_p)[/latex] és [latex]Q=(x_q;y_q)[/latex] pontok összegének kiszámítása egy egyszerű koordináta-geometriai feladat, amelynek itt csak a vázlatát ismertetjük. Az alábbi ábrán látható, hogy ehhez ki kell számítani a [latex]P[/latex] és [latex]Q[/latex] pontokra illeszkedő [latex]f[/latex] egyenes és az elliptikus görbe [latex]R[/latex] metszéspontját, majd ezt tükrözni kell az [latex]x[/latex] tengelyre:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":7732,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_27_elliptikus_gorbe_pontosszeadas_geometria.jpg" alt="Pontok összegének kiszámítása" class="wp-image-7732"/><figcaption>Pontok összegének kiszámítása</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Előszöris fel kell írnunk az [latex]f[/latex] egyenes egyenletét. Ez ugye egy elsőfokú síkgörbe, amely az alábbi alakban írható fel valamilyen [latex]c[/latex], [latex]d[/latex] és [latex]e[/latex] együtthatókkal:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]cx+dy+e=0[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [latex]c[/latex] és [latex]d[/latex] együtthatók közül az egyik biztosan nemnulla, máskülönben a görbe nem lenne elsőfokú. Tegyük fel, hogy [latex]c\
+eq 0[/latex]. Ha nem ez lenne a helyzet, akkor értelemszerűen a [latex]d\
+eq 0[/latex]-val kell hasonlóan számolnunk. Az egyenlet mindkét oldalát [latex]c[/latex]-vel elosztva az alábbit kapjuk, ahol [latex]D=\frac{d}{c}[/latex] és [latex]E=\frac{e}{c}[/latex]:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x+Dy+E=0[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel a [latex]P[/latex] és [latex]Q[/latex] pontok rajta vannak az egyenesen, ezért ezek koordinátái kielégítik ezt az egyenletet. Így őket behelyettesítve egy két egyenletből álló kétismeretlenes egyenletrendszert kapunk, amelyet megoldva megkapjuk a [latex]D[/latex] és [latex]E[/latex] együtthatókat. Az [latex]f[/latex] egyenes és az elliptikus görbe keresett [latex]R[/latex] metszéspontja egyrészt szintén kielégíti ezt az egyenletet, másrészt pedig kielégíti az elliptikus görbe egyenletét is. Ez ismét egy kétismeretlenes, két egyenletből álló rendszer, amelyet megoldva megkapjuk az [latex]R=(x_r;y_r)[/latex] pont koordinátáit. Ezt kell tükröznünk az [latex]x[/latex] tengelyre ahhoz, hogy megkapjuk a [latex]P\oplus Q[/latex] pontot, ami annyit jelent, hogy vesszük az [latex]y_r[/latex] koordináta ellentettjét.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Szokásos iskolás módszerekkel könnyen belátható, hogy az eljárás során végig olyan kifejezéseket kapunk, amelyekben csak a négy alapművelet szerepel. Még akkor is ez a helyzet, amikor [latex]P=Q[/latex], azaz amikor a görbe érintőjével kell számolnunk. További szélsőséges eset, amikor a kapott egyenes függőleges, mivel ekkor az ideális [latex]\mathcal{O}[/latex] pontban fogja metszeni a görbét. Mindenesetre a [latex]P\oplus Q[/latex] pontra kapott képletben minden esetben csak a négy alapművelet szerepel. Ha most elvonatkoztatunk a geometriai tartalomtól, valamint attól, hogy a racionális számok [latex]\mathbb{Q}[/latex] testében számoltunk, akkor ezek a képletek nyilván átvihetők tetszőleges test feletti elliptikus görbékre is. Így az [latex]\mathbb{F}_q[/latex] véges test feletti elliptikus görbék pontjai közötti összeadás képletét is megkaptuk, csak ilyenkor az adott test műveleteivel kell számolnunk. Ha például [latex]q[/latex] prím – azaz [latex]\mathbb{F}_q\simeq \Z_q[/latex] –, akkor az összeadásokat, és szorzásokat modulo [latex]q[/latex] kell elvégeznünk, továbbá a kivonások és osztások alatt modulo [latex]q[/latex] ellentett- és inverzképzést kell értenünk. Ha [latex]q[/latex] nem prím, hanem valamilyen prímhatvány, akkor persze némileg bonyolultabb a helyzet, de a képletünk akkor is ugyanúgy működik.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>E képlettel tehát tulajdonképpen az [latex]E(\mathbb{F}_q)[/latex] csoport műveletének elvégzésére kaptunk egy eljárást. Ezt a csoportot <strong><em>kriptográfiai primitívek</em></strong> képzésére szeretnénk használni, ezért szükségünk lesz egy egyirányú függvényre, amely e csoport elemein, azaz a csoportot meghatározó elliptikus görbe pontjain van értelmezve. Ez az egyirányú függvény a következő: tegyük fel, hogy adva van egy [latex]P[/latex] pont az elliptikus görbén, amelyet önmagával [latex]n[/latex]-szer összeadunk, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{P\oplus P\oplus \ldots \oplus P}_{\text{n darab}}=nP[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Vegyük észre, hogy ez a [yp_element slug="egesz-kitevos-hatvany" type="link" /] alapján tulajdonképpen a [latex]P[/latex] pont [latex]n[/latex]-edik „hatványa” az [latex]E(\mathbb{F}_q)[/latex] csoportban, csak épp a definíció utáni megjegyzésben említett <strong><em>additív írásmódot</em></strong> alkalmaztuk, amikoris nem „hatványról”, hanem „többszörösről” beszélünk. Ha egy támadó csak a [latex]P[/latex] és [latex]nP[/latex] pontokat ismeri, akkor az [latex]n[/latex] „kitevő” kiszámításához tulajdonképpen a <strong><em>diszkrét logaritmus problémájával (DLP)</em></strong> kell szembenéznie, ami – mint láttuk – reménytelen feladat, ha kellően nagy a csoport.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/9-diffie-hellman-protokoll-egyiranyu-fuggveny-modularis-aritmetika-asszimmetrikus-kulcs#diffie-hellman-protocol" target="_blank">9. részben</a> ismertettük a <strong><em>Diffie-Hellman kulcscsere protokollt</em></strong>, amelynek biztonságát tulajdonképpen a [latex]\Z_p[/latex] test multiplikatív csoportján értelmezett DLP nehézsége adta. Most nézzük meg, hogyan néz ki ugyanez az eljárás, ha azt az [latex]E(\mathbb{F}_q)[/latex] csoporton értelmezzük. Ezt az eljárást <strong><em>ECDH (Elliptic Curve Diffie-Hellman) protokollnak</em></strong> nevezzük:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} -->
+<ol><li>Alice és Bob szeretnének egy nembiztonságos csatornán keresztül megállapodni egy közös titokban, amelyet egy titkosítási eljárás szimmetrikus kulcsaként használhatnának. Ez a közös titok egy véges test feletti elliptikus görbe egy pontja lesz. Először tehát megbeszélik, hogy pontosan melyik elliptikus görbét és melyik testet használják, továbbá megegyeznek egy kiindulási [latex]P[/latex] pontban. Ezeket nem kell titokban tartaniuk, így ezt nyugodtan megtárgyalhatják a nembiztonságos csatornán keresztül is.</li><li>Mindketten választanak maguknak egy-egy egész számot, amelyet <strong><em>titokban tartanak</em></strong>, még egymással sem közlik azt. Tegyük fel, hogy Alice az [latex]n[/latex], Bob pedig az [latex]m[/latex] egész számot választotta magának.</li><li>Alice kiszámítja az [latex]nP[/latex] pontot a görbén, és az eredményt átküldi Bobnak. Bob ehhez hasonlóan kiszámítja az [latex]mP[/latex] pontot, és az eredményt átküldi Alice-nak.</li><li>Alice a kapott [latex]mP[/latex] pontból a titkos [latex]n[/latex] szám ismeretében kiszámítja az [latex]n(mP)[/latex] pontot. Ehhez hasonlóan Bob a kapott [latex]nP[/latex] pontból a titkos [latex]m[/latex] szám ismeretében kiszámítja az [latex]m(nP)[/latex] pontot.</li><li>Az <strong><em>egész kitevős hatványozás azonosságairól</em></strong> szóló [yp_element slug="egesz-kitevos-hatvanyozas-azonossagai" type="link" /] 2. pontja miatt az előző lépésben kapott két pont meg fog egyezni, és ez lesz a <strong><em>közös titok</em></strong>. Persze itt az additív irásmód miatt hatvány helyett többszörösről beszélünk, de a [yp_element slug="egesz-kitevos-hatvanyozas-azonossagai" type="link" /] azonosságai ugyanúgy érvényesek, bárhogy is hívjuk ezt a műveletet.</li><li>Ha Eve időközben lehallgatja a csatornát, akkor mindössze a használt elliptikus görbét, a kiindulási [latex]P[/latex] pontot, valamint a csatornán átküldött [latex]nP[/latex] és [latex]mP[/latex] pontokat ismeri meg. Ahhoz, hogy ő is birtokába kerüljön a közös titoknak, ki kéne számítania az [latex]n[/latex] vagy az [latex]m[/latex] egész számot, azaz egy <strong><em>DLP-feladatot</em></strong> kellene megoldania az [latex]E(\mathbb{F}_q)[/latex] csoportban, amit belátható időn belül nem tud kivitelezni.</li></ol>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>Ez mind szép és jó, viszont a <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/9-diffie-hellman-protokoll-egyiranyu-fuggveny-modularis-aritmetika-asszimmetrikus-kulcs#diffie-hellman-attack" target="_blank">9. részben</a> azt is megemlítettük, hogy egy úgynevezett <strong><em>közbeékelődéses támadással (man-in-the-middle attack)</em></strong> egy aktív támadó (például <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/5-one-time-pad-passziv-aktiv-tamado-haromutas-kulcsforgalom#active-attacker" target="_blank">Mallory</a>) el tudja hitetni Alice-szal és Bob-bal, hogy egymással állapodnak meg egy közös titokban, miközben valójában mindketten a támadóval beszélnek. Ez a támadás természetesen az ECDH esetén is ugyanúgy működik, azonban szerencsére létezik <strong><em>elliptikus görbéken alapuló digitális aláírás (<a rel="noreferrer noopener" href="https://en.wikipedia.org/wiki/Elliptic_Curve_Digital_Signature_Algorithm" target="_blank">ECDSA – Elliptic Curve Digital Signature Algorithm</a>)</em></strong> is, amely partnerhitelesítést biztosít. Ismert továbbá <strong><em>elliptikus görbéken alapuló aszimmetrikus kulcsú rejtjelezési eljárás</em></strong> is. Ezek az eljárások szintén az [latex]E(\mathbb{F}_q)[/latex] csoporton értelmezett DLP nehézségén alapulnak, a részletekre azonban nem térünk ki.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az elliptikus görbéknek köszönhetően tehát Alice és Bob merőben újfajta, és – egyelőre legalábbis úgy tűnik – biztonságosabb eszközöket kapott a kezébe titkai elrejtéséhez. Az RSA-hoz képest az <strong><em>elliptikus görbéken alapuló kriptográfia (ECC – Elliptic Curve Cryptography)</em></strong> hosszabb távon is fenntartható a sokkal rövidebb kulcsméreteknek köszönhetően, emiatt napjainkban egyre inkább ez válik a de facto szabvánnyá az Interneten. Manapság már a legtöbb webböngésző is támogatja ezeket az algoritmusokat.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Nem lehetünk ugyanakkor teljesen nyugodtak, mivel a 20. század első felében az anyagot alkotó elemi részecskék elméletében egy addig soha nem látott forradalom kezdett el körvonalazódni. Megszületett ugyanis a <strong><em>kvantummechanika</em></strong>, amely abszolút felborította addigi világképünket, és úgy általában az egész fizikát. Ez az új tudomány olyan teljesen új elveken működő számítástechnikai eszközöket jósol, amelyeknek elképzelhetetlen számítási kapacitása a jelenlegi, algoritmikus bonyolultságon alapuló kriptográfiai eljárásaink végét fogja jelenteni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A kétrés-kísérlet</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Ebben a szakaszban a kvantummechanika egyik fontos kísérletét, az úgynevezett <strong><em>kétrés-kísérletet</em></strong> ismertetjük. A történet az 1600-as évekig, a fény természetéről folytatott első vitákig nyúlik vissza. Az egyik akkoriban uralkodó elmélet szerint a fény apró részecskékből, úgynevezett <strong><em>fotonokból</em></strong> áll, amelyek puskagolyókhoz hasonlóan haladnak előre a térben egyenes vonalban mindaddig, míg akadályba nem ütköznek. Innen aztán egy részük visszaverődik, más részük pedig elnyelődik. Ez az elmélet kiválóan megmagyarázta azokat a fényjelenségeket, amelyeket makroszkópikus világunkban tapasztalhatunk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Képzeljünk el például egy fényforrást, amely fotonokat bocsájt ki magából, valamint egy ernyőt, amelyen a becsapódó fotonok intenzitásuktól függően nyomot hagynak. Helyezzünk a fényforrás és az ernyő közé egy olyan átlátszatlan lemezt, amelyen van egy rés. Ekkor értelemszerűen a fotonok az ernyőnek csak a rés mögé eső részén fognak nyomot hagyni, míg az árnyékban lévő részeken nem keletkezik nyom. Ez teljesen megfelel a puskagolyó-modellnek, vagyis úgy tűnik, hogy a fény valóban <strong><em>részecske természetű</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most kezdjük el egyre jobban szűkíteni a rést. Egy idő után azt fogjuk tapasztalni, hogy a fotonok elkezdenek nyomot hagyni az ernyőn a rés mögötti résztől távolabb is, méghozzá egyre csökkenő intenzitással. Mintha az egyenesen haladó fotonok egy része a résen áthaladva irányt változtatna. Látszólag ugyanaz történik, mint amikor a vízben keltett síkhullámok egy, a hullámhosszukkal összemérhető szélességű résen keresztülhaladva a túloldalon koncentrikus félkörökként kezdenek továbbhaladni. Ez látható az alábbi ábrán:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":7733,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_27_ketres_kiserlet_egy_res.jpg" alt="Fényhullámok egy rés esetén" class="wp-image-7733"/><figcaption>Fényhullámok egy rés esetén</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Az ernyő rés mögötti részén lesz a legnagyobb intenzitású a fény által hagyott nyom, hiszen ez a pont van a legközelebb a réshez. Oldalirányban távolodva viszont a hullámoknak egyre nagyobb utat kell megtenniük, amelynek során erősségük egyre jobban csökken. A fény tehát valójában <strong><em>hullám természetű</em></strong>, csak ez makroszkópikus méretekben nem látszik – mondhatnánk. Még inkább megerősíti ezt az elméletet, ha egy helyett két keskeny rést is nyitunk a lemezen. Az alábbi ábrán látszik, hogy mi történik ilyenkor:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":7734,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_27_ketres_kiserlet_ket_res.jpg" alt="Fényhullámok két rés esetén" class="wp-image-7734"/><figcaption>Fényhullámok két rés esetén</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Ebben az esetben az ernyőn az ábrán látható furcsa csíkok fognak megjelenni. Ez azzal magyarázható, hogy a két résből kiinduló koncentrikus hullámok bizonyos helyeken erősítik, másutt pedig kioltják egymást, azaz <strong><em>interferencia</em></strong> lép fel. Ugyanúgy, mint amikor a vízbe egymás mellé két kavicsot dobunk, és a két becsapódás helyéről kiinduló körhullámok összetalálkoznak. A részecske-hullám vita tehát eldőlni látszott az utóbbi javára.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Volt azonban egy <strong><em>fotoeffektusnak</em></strong> nevezett jelenség, amelyet sehogyan sem lehetett megmagyarázni, ha a fényt egyszerűen csak valamiféle hullámnak tekintjük. A fotoeffektus során megfigyelték, hogy bizonyos fémekre ejtett fény&nbsp;elektromos áramot&nbsp;hozott létre egy alkalmas&nbsp;elektromos áramkörben. A feltételezés szerint a fény elektronokat ütött ki a fémből, amelyek így "folyni kezdtek" az áramkörben. Ugyanakkor azt is megfigyelték, hogy míg egy gyenge kék – azaz rövid hullámhosszú – fény elég volt az áram megindításához, addig egy erős vörös – azaz nagy hullámhosszú – fény nem. A hullámelmélet szerint ugyanakkor a fényhullám ereje a&nbsp;fényerősséggel, és nem pedig a hullámhosszal&nbsp;arányos, azaz egy erős fénynek elég erősnek kellett volna lennie az áramkeltéshez. Különös módon ez mégsem így volt. A jelenséget <a rel="noreferrer noopener" href="https://hu.wikipedia.org/wiki/Albert_Einstein" target="_blank">Albert Einstein</a> azzal magyarázta, hogy a fény valóban fotonokból áll, amelyek ugyanakkor a fény hullámhosszától függő nagyságú energiával rendelkeznek, és csak bizonyos küszöbérték alatti hullámhosszal rendelkező fotonok képesek elektronokat kiszabadítani. Einstein a fotoeffektus magyarázatáért 1921-ben fizikai Nobel-díjat kapott.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Kezdték tehát felismerni, hogy a fény furcsamód <strong><em>kettős természetű</em></strong>: egyszerre mutat részecske- és hullámtulajdonságokat. Ezt azonban akkoriban azzal magyarázták, hogy a fény ugyan részecskékből áll, ám ezek valamilyen módon interferálnak egymással, amennyiben egyfajta tömegjelenségként vizsgáljuk őket. Időközben azonban fejlődött a technológia, és olyan eszközöket sikerült megalkotni, amelyek a hagyományos fényforrásokkal ellentétben képesek voltak <strong><em>egyesével</em></strong> is fotonokat kibocsájtani.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ha a fenti kísérleti elrendezésben a fényforrást egy ilyen fotonágyúra cseréljük le, akkor értelemszerűen azt várnánk, hogy az egyenként kilőtt fotonok az ernyőnek a két rés mögötti részén fognak nyomot hagyni nagyjából fele-fele arányban, hiszen ebben az esetben nem tudnak interferálni más fotonokkal. Így tehát az interferenciára utaló csíkos mintázat helyett mindössze két csíknak kellene megjelennie az ernyőn a rések mögött. <strong><em>Megdöbbentő módon azonban nem ez történik: ebben az esetben is ugyanúgy megjelenik az interferenciakép.</em></strong> Mintha az egyes fotonok varázslatos módon <strong><em>egyszerre mindkét résen</em></strong> keresztülmennének, és a túloldalon valahogyan képesek volnának önmagukkal interferenciára lépni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az egyetlen mód, hogy megtudjuk, mi is történik valójában, ha detektorokat helyezünk el a résekhez – gondolnánk. Ezek ugyanis egyértelműen jeleznék, hogy egy-egy foton konkrétan melyik résen haladt át, vagy esetleg tényleg áthaladt-e mindkettőn egyszerre. Nos, miután elhelyezzük a detektorokat és megismételjük a kísérletet, egy még megdöbbentőbb dolog történik: interferenciakép helyett ezúttal valóban az eredetileg várt két csík fog megjelenni az ernyőn. <strong><em>Mintha a fotonok megfigyelése módosítaná az eredményt.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most dobjuk félre egy picit a józat eszünket, és nézzük, milyen elképesztő magyarázatot ad erre a kvantummechanika.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Schrödinger macskája</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A&nbsp;kvantummechanika&nbsp;egy rendszer pillanatnyi állapotát az úgynevezett&nbsp;<strong><em>hullámfüggvénnyel</em></strong>&nbsp;ábrázolja, ami a mérhető tulajdonságok&nbsp;valószínűségi eloszlását&nbsp;írja le. Például egy, a fenti kísérletben szereplő fotonnak nincs konkrét térbeli pozíciója, a hullámfüggvény ehelyett azt írja le, hogy hol milyen valószínűséggel van a foton. És itt nem arról van szó, hogy a mérőeszközök behatárolt pontosságát modelleznénk egy ilyenfajta matematikai leírással. Ehelyett a kvantummechanika azt állítja, hogy a foton a hullámfüggvény által leírt mértékekben <strong><em>egyszerre mindenhol jelen van</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezt a jelenséget <strong><em>szuperpozíciónak</em></strong> nevezzük. A kvantummechanika abból indul ki, hogy a kísérletben szereplő fotonról csak két dolgot tudunk: elhagyja a fotonágyút, és nekiütközik az ernyőnek. Minden, ami ezek között történt <strong><em>teljes rejtély</em></strong>. Sőt, a kvantummechanika szerint mindaddig, amíg nem tudjuk, hogy mit csinál egy részecske – azaz amíg meg nem mérjük –, addig tulajdonképpen mindent egyidejűleg csinál, azaz <strong><em>szuperpozíciós állapotban van</em></strong>. Azáltal, hogy detektort helyezünk a résekhez, tulajdonképpen egy mérést hajtunk végre, amely megváltoztatja a foton hullámfüggvényét. Ebben a pillanatban a hullámfüggvény egyetlen pontban, konkrétan a mért értéknél sűrűsödik össze, és minden egyéb helyen nulla lesz az értéke. Ezt a jelenséget a <strong><em>hullámfüggvény összeomlásának nevezzük</em></strong>. Ilyenkor tehát a szuperpozíciós állapot egyetlen konkrét állapotba roskad össze, és ez az oka annak, hogy az ernyőn érzékelt mintázat is teljesen más lesz, mint a detektorok nélküli esetben.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ennek a meglehetősen őrültségnek tűnő elképzelésnek a szemléltetésére találta ki <a rel="noreferrer noopener" href="https://en.wikipedia.org/wiki/Erwin_Schr%C3%B6dinger" target="_blank">Erwin Schrödinger</a> a <strong><em>„Schrödinger macskája”</em></strong> néven ismeretes gondolatkísérletet. Habár ez sem hangzik kevésbé őrültségnek, a kvantummechanika szerint az elemi részecskék szintjén valóban így működik a világunk. Képzeljünk el egy dobozban lévő macskát, amelynek két lehetséges állapota van: él vagy pedig halott. Amikor a láda még nyitva van, akkor egyértelműen látjuk, hogy a macska él, azaz ilyenkor nincs szuperpozíciós állapotban. Most beteszünk a macska mellé egy nagyon törékeny ciánfiolát, és lezárjuk a ládát. Ettől a pillanattól kezdve nem látjuk a macskát, nem tudjuk, hogy milyen állapotban van. Hétköznapi szóhasználattal élve vagy életben van, vagy halott, nem lehet tudni. Ezzel szemben a kvantummechanika szerint a macska <strong><em>egyszerre élő és halott</em></strong>, azaz <strong><em>szuperpozíciós állapotban van</em></strong>. Tegyük fel, hogy ismét kinyitjuk a ládát, hogy szemrevételezzük a macskát. Ekkor – és a kvantummechanika szerint csakis ekkor – a macska vagy az egyik, vagy a másik állapotba kerül, és ebben a pillanatban a szuperpozíció egyetlen konkrét állapotba roskad.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Noha mindez teljes képtelenségnek tűnik, ennek ellenére jelenleg ez minden idők legsikeresebb tudományos elmélete, ezért jobb ha megbarátkozik vele az Olvasó. Például ez teszi lehetővé, hogy a fizikusok képesek legyenek kiszámítani egy atomerőműben végbemenő nukleáris folyamatok következményeit. Csak ez az elmélet magyarázza az élőlények genetikai kódját tartalmazó DNS csodáit és a napsütést. Kizárólag ez teszi lehetővé annak a lézernek a megtervezését, amely a lejátszóba helyezett DVD és BluRay lemezeket elolvassa. Ez az alapja a tranzisztor és a dióda működésének, amelyek nélkülözhetetlenek az elektronikában, és amelyek az integrált áramkörök – és így a számítógépeink – építőkövei. És ez lehet az alapja egy olyan elképesző számítási kapacitással rendelkező eszköz, az úgynevezett <strong><em>kvantumszámítógép</em></strong> működésének is, amely eddig soha nem látott mértékű forradalmat hozhat főként a mesterséges intelligencia területén. Ez az eszköz azonban komoly fenyegetést is jelent az egész világ számára.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Kvantumszámítógépek</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A <a href="https://youproof.hu/kriptografia/3-szamrendszerek-binaris-hexadecimalis-szamabrazolas-bitmap/" target="_blank" rel="noreferrer noopener">3. részben</a> volt szó bővebben a hagyományos számítógépek működési elvéről. Itt került elő a kettes (bináris) számrendszer, amelyben ezek az eszközök dolgoznak. Ez azért előnyös, mert az ilyen számok csak <strong>1</strong>-esekből és <strong>0</strong>-ákból állnak, vagyis a számjegyeik könnyen reprezentálhatók valamilyen fizikai jel segítségével. Például folyik-e áram egy vezetékben vagy nem, van-e töltés egy kondenzátorban vagy nincs. A megfelelő elektronikus alkatrészek segítségével ezeket a fizikai jeleket azután manipulálni lehet. Képesek vagyunk tehát <strong><em>műveleteket</em></strong> végezni ezeken a számokon.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A bináris számjegyek reprezentációjához ugyanígy használhatunk elemi részecskéket is. Sok elemi részecske természeténél fogva rendelkezik egy tőle elválaszthatatlan tulajdonsággal, az úgynevezett <strong><em>perdülettel</em></strong>. Kelet vagy nyugat felé foroghatnak, mint az ujjhegyen megpörgetett labda. Állapodjunk meg abban, hogy egy kelet felé pörgő részecske <strong>1</strong>-et, míg egy nyugat felé pörgő részecske <strong>0</strong>-át jelent. Például egy öt darab, rendre kelet, kelet, nyugat, nyugat, nyugat irányba pörgő részecskéből álló rendszer a bináris <strong>11000</strong> számot jelképezi, amely tízes számrendszerben <strong>24</strong>-et jelent. A következő példában ilyen pörgő részecskékkel fogjuk ábrázolni a számokat.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel, hogy meg kell keresnünk a legkisebb olyan egész számot, amelynek a négyzete és a harmadik hatványa együtt felhasználja 0-tól 9-ig az összes tízes számrendszerbeli számjegyet, méghozzá pontosan egyszer. Például a [latex]23[/latex] nem elégíti ki ezt a feltételt, mivel [latex]23^2=529[/latex] és [latex]23^3=12167[/latex]. Itt ugye az 1-es és a 2-es számjegy kétszer szerepel, míg a 0, 3, 4 és 8 számjegyek egyszer sem.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Hagyományos számítógéppel a feladat úgy oldható meg – noha biztosan nem ez a legokosabb módszer –, hogy elkezdjük szép sorban betáplálni a számjegyeknek megfelelő pörgő részecskékből álló sorozatokat egymás után, és megvárjuk, míg a számítógép leellenőrzi őket egyenként, hogy teljesítik-e a feltételt. Az [latex]1[/latex]-es nem teljesíti a követelményt, ezért betápláljuk a [latex]2[/latex]-est, és kivárjuk az újabb ellenőrzést. Aztán jön a [latex]3[/latex]-as, és így tovább, amíg a gép meg nem találja a megoldást, amely a [latex]69[/latex]-es lesz, hiszen [latex]69^2=4761[/latex] és [latex]69^3=328509[/latex]. Ez a módszer elég sok időt emészt fel, hiszen a hagyományos számítógép egyszerre csak egy részecskesorozatot képes leellenőrizni, vagyis az egyes részfeladatokat sorba kell állítani. Így ha egy szám ellenőrzése 1 időegységig tart, akkor a teljes futási idő 69 időegységig fog tartani.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezzel szemben egy kvantumszámítógép dacol a józan ésszel, és képes ezt a feladatot egyetlen időegység alatt is elvégezni. A bináris számjegyeket reprezentáló részecskék perdülete ugyanis egy ugyanolyan kvantumtulajdonság, mint a kétrés-kísérletben szereplő fotonok pozíciója, azaz a megfelelő eszközökkel <strong><em>szuperpozícióba</em></strong> hozható. Ha például valamilyen módon sikerülne egy hét darab pörgő részecskéből álló rendszert szuperpozícióba hozni, akkor ezek a kelet és nyugat felé pörgés minden lehetséges kombinációját <strong><em>egyszerre</em></strong> reprezentálnák. Így egy kvantumszámítógép e szuperpozíciós állapotba került rendszer megfelelő manipulálásával képes lenne az összes lehetséges kombinációt <strong><em>egyszerre</em></strong> vizsgálni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Hét bináris számjegyen összesen [latex]2^7=128[/latex] féle számot lehet ábrázolni. Egy hagyományos számítógép ezek közül egyszerre csak az egyik kombináció által reprezentált számon képes műveletet végezni a számjegyek manipulációjával. Ilyenkor a számjegyeket <strong><em>biteknek</em></strong> nevezzük, ami a <strong><em>binary digit</em></strong> rövidítése. Ezzel szemben a kvantumszámítógép szuperpozícióban lévő számjegyeken, azaz úgynevezett <strong><em>kvantumbiteken</em></strong> vagy <strong><em>qubiteken</em></strong> (ejtsd: kjubit) végez műveleteket, tehát minden lehetséges kombináción <strong><em>egyidejűleg</em></strong>. Tekintsünk most egy mindössze 250 bináris számjegyből álló rendszert – ami hagyományos bitekből, valljuk be, nem túl sok. Ennyi számjegyen nagyjából [latex]10^{75}[/latex] darab különböző szám ábrázolható, amely több, mint a világegyetem atomjainak száma. Ha egy ilyen rendszert sikerülne valahogyan szuperpozícióba hozni, és persze ott is tartani, akkor a kvantumszámítógép <strong><em>egyidejűleg</em></strong> [latex]10^{75}[/latex] darab műveletet tudna végezni, és egyetlen időegység alatt be is fejezné őket. Ez eléggé félelmetesen hangzik, nemde?</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ha mindez nem lenne elég, az 1990-es években történt két olyan fejlemény, amely miatt Alice és Bob joggal kezdhetett el aggódni. Noha a kvantumszámítógép víziója már az 1980-as években napvilágot látott, a kutatók kezdetben nemigazán tudták, hogyan lehetne egy ilyen gépet programozni, hiszen teljesen más elveken működik, mint a hagyományos számítógépek. 1994-ben az AT&amp;T Bell Laboratories egyik munkatársának, <a rel="noreferrer noopener" href="https://en.wikipedia.org/wiki/Peter_Shor" target="_blank">Peter Shor</a>-nak sikerült egy olyan lépéssorozatot definiálnia, amelyet egy kvantumszámítógép képes lenne végrehajtani, és amely óriási számok prímtényezős felbontását számítja ki, méghozzá pillanatok alatt. Ez a <a rel="noreferrer noopener" href="https://en.wikipedia.org/wiki/Shor%27s_algorithm" target="_blank">Shor algoritmusnak</a> nevezett kvantumszámítási eljárás tehát épp azt a feladatot oldja meg, amely az <strong><em>RSA-kód feltöréséhez</em></strong> szükséges, de ezenkívül alkalmas lenne az <strong><em>elliptikus görbéken alapuló kriptográfiai eljárások feltörésére</em></strong> is – habár ehhez több kvantumbitre lenne szükség, mint az RSA töréséhez.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>1996-ban ugyancsak az AT&amp;T Bell-nél <a rel="noreferrer noopener" href="https://en.wikipedia.org/wiki/Lov_Grover" target="_blank">Lov Grover</a>-nek sikerült kidolgoznia egy másik kvantumeljárást, amely aggodalomra adhat okot. Ez a <a rel="noreferrer noopener" href="https://en.wikipedia.org/wiki/Grover%27s_algorithm" target="_blank">Grover algoritmusnak</a> nevezett eljárás hihetetlenül nagy sebességgel képes kutakodni óriási listákban. Fogalmazhatnánk úgy is, hogy tűt keres a szénakazalban, és viszonylag gyorsan meg is találja. Vegyük észre, hogy egy szimmetrikus kulcsú titkosítás feltöréséhez pontosan ez kell: végignézni minden lehetséges kulcsot, míg elő nem kerül a megfelelő.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Noha ezek a fejlemények meglehetősen félelmetesen hangzanak, ám szerencsére egyelőre nem létezik még kvantumszámítógép, amelyen a fenti eljárásokat futtatni lehetne – gondolhatnánk. Ez azonban csak részben igaz! A nagy techcégek ugyanis már régóta kísérleteznek ilyen eszközök építésével, sőt, 2019-ben <strong><em>az IBM bemutatta a világ első kereskedelmi kvantumszámítógépét</em></strong>, az <a rel="noreferrer noopener" href="https://en.wikipedia.org/wiki/IBM_Q_System_One" target="_blank">IBM Q System One</a>-t, amely jó pénzért bárki számára elérhető egy felhőszolgáltatáson keresztül. Ez ugyanakkor egy mindössze 20 kvantumbites gép, amely csak néhány száz mikroszekundumig képes fenntartani a kvantumszámításokhoz szükséges szuperpozíciót. Így jelenleg még nem képes meghaladni a normál számítógépek teljesítményét, ehhez ugyanis a számítások szerint legalább 50 kvantumbitre lenne szükség. A fő problémát az okozza, hogy a szuperpozíció egy rendkívül instabil állapot. A legkisebb környezeti behatás – legyen az akárcsak egy kósza részecske jelenléte – a szuperpozíció összeomlását okozhatja, akárcsak a detektorok elhelyezése a kétrés-kísérlet esetén.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mindezek ellenére az IBM bejelentése hatalmas mérföldkőnek számít, hiszen ezáltal a szélesebb tudományos közösség számára is elérhető a kvantumszámítógép – igaz, ez egyelőre még elsősorban csak kutatási célokat szolgál. Jelenleg még nem tudjuk, hogy a hagyományos számítógépekkel szembeni úgynevezett <strong><em>kvantumfölény</em></strong> elérése vajon pusztán illúzió, vagy már csak idő kérdése. Ha azonban ez valóban megtörténik, akkor egyrészt ma még elképzelhetetlen perspektívákat nyit a mesterséges intelligencia számára. Másrészt viszont komoly fenyegetést is jelent az egész emberiségre a fentebb már ismertetett okokból.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Kvantumkriptográfia</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A kriptográfusoknak tehát az előző szakasz fényében fel kellett készülniük a kvantumfölény esetleges elérése utáni időkre is. Ekkor ugyanis az algoritmikus bonyolultságra építő kódjaink már fabatkát sem fognak érni. Szerencsére azonban az elemi részecskék szintjén tapasztalt furcsa jelenségeket nem csak kódok feltöréséhez, hanem teljesen újfajta kriptográfiai rendszerek létrehozásához is lehet használni. Ezzel foglalkozik a <strong><em>kvantumkriptográfia</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az <a href="https://youproof.hu/kriptografia/5-one-time-pad-passziv-aktiv-tamado-haromutas-kulcsforgalom#one-time-pad" target="_blank" rel="noreferrer noopener">5. részben</a> volt szó róla, hogy elméletben létezik <strong><em>feltörhetetlen rejtjelező eljárás</em></strong>, méghozzá a <strong><em>one-time pad</em></strong>. Ez lényegében felfogható egy olyan <a href="https://youproof.hu/kriptografia/1-alapfogalmak-caesar-vigenere-enigma-kulcsmegosztas#vigenere" target="_blank" rel="noreferrer noopener">Vigenére-kódnak</a>, amely esetén a kulcs hossza megegyezik a nyílt szöveg hosszával, tökéletesen véletlenszerű, és minden egyes üzenethez új kulcsot használnak. Láttuk, hogy ez a kód <strong><em>abszolút értelemben feltörhetetlen</em></strong>, azaz egy támadó akkor sem fogja tudni megfejteni a nyílt szöveget, ha elegendő számítási kapacitás áll rendelkezésére az összes lehetséges kulcs végigpróbálásához. Az előző szakasz fényében a kvantumfölény korszakában ez egy teljesen reális feltételezés, így a jövőbeli Alice és Bob minden bizonnyal rá fog kényszerülni a one-time pad használatára.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Már csak az a kérdés, hogy ezt az óriási mennyiségű kulcsot hogyan fogják egymással megosztani anélkül, hogy találkozniuk kéne. Ne feledjük, erre a célra nem használhatnak RSA-t és semmilyen más olyan jelenlegi eljárást, amely az algoritmikus bonyolultságra épít. A kvantumszámítógépek korszakában ugyanis ezek többé már nem jelentenek védelmet számukra. Szerencsére a kvantummechanika lehetővé teszi Alice és Bob számára, hogy mégis megállapodjanak egy közös kulcsban, méghozzá teljes biztonságban. Ezt a <strong><em>kvantum-kulcsmegosztásnak</em></strong> nevezett eljárást fogjuk ismertetni ebben a szakaszban.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A kvantum-kulcsmegosztáshoz barátaink úgynevezett <strong><em>polarizált fotonokat</em></strong>, és <strong><em>polárszűrőket</em></strong> fognak használni. A fény ugye amellett, hogy fotonoknak nevezett részecskékből áll, hullámjelenségeket is mutat. Ezt úgy kell elképzelni, hogy a fotonok a térben utazva rezegnek egy adott sík mentén. Ennek a rezgésnek a síkját a <strong><em>foton polarizációjának</em></strong> nevezzük. Egy villanykörte által kibocsájtott fotonok a lehető legkülönfélébb polarizációval rendelkezhetnek. Egyesek függőlegesen, mások vízszintesen, megint mások tetszőleges egyéb szögben rezeghetnek. Az egyszerűség kedvéért tegyük fel, hogy csak függőleges, vízszintes, és átlós polarizációk léteznek, amelyeket az alábbi 4 szimbólummal fogunk jelölni: [latex]|[/latex], [latex]-[/latex], [latex]\backslash[/latex], [latex]/[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ha azt szeretnénk, hogy minden foton azonos polarizációjú legyen, akkor egy úgynevezett <strong><em>polárszűrőt</em></strong> kell használnunk. Ezt egy adott szögben álló réssel ellátott lemezként lehet elképzelni. Ha például függőleges polárszűrőt alkalmazunk, akkor a függőleges polarizációjú fotonok akadálytalanul átjutnak, míg a vízszintes polarizációjú fotonok fennakadnak rajta. Az átlós polarizációjú fotonok azonban a kétrés-kísérlet detektoros változatához hasonlóan valamiféle „kvantumdilemmába” kerülnek, és azonos valószínűséggel vagy függőleges polarizációjú fotonná változva átjutnak a szűrőn, vagy pedig fennakadnak rajta. Ez látszik az alábbi ábrán:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":7854,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_27_polarszuro.jpg" alt="Polárszűrő működése" class="wp-image-7854"/><figcaption>Polárszűrő működése</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Ezek után ismertetjük a <strong><em>kvantum-kulcsmegosztás</em></strong> alapgondolatát, amelyet <a rel="noreferrer noopener" href="https://en.wikipedia.org/wiki/Charles_H._Bennett_(physicist)" target="_blank">Charles Bennett</a> és <a rel="noreferrer noopener" href="https://en.wikipedia.org/wiki/Gilles_Brassard" target="_blank">Gilles Brassard</a> dolgoztak ki az 1980-as években. Tegyük fel, hogy Alice titkos üzenetet szeretne küldeni Bobnak, amelyet a tökéletesen biztonságos one-time pad rejtjelezővel szeretne titkosítani. Ehhez előbb meg kell egyezniük egy, az üzenet hosszának megfelelő méretű véletlen kulcsban. Ez 3 szakaszban történik meg</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>1. szakasz:</strong> Alice generál egy <strong>1</strong>-esekből és <strong>0</strong>-ákból álló véletlen bitsorozatot. Tegyük fel, hogy ez a következő: <strong>011000111010</strong>. Ezeket a biteket Alice polarizált fotonok formájában elküldi Bob-nak. Itt kétféle lehetősége van a bitek kódolására:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li>Függőleges és vízszintes polarizációkat használ, azaz a [latex]|[/latex] polarizáció fogja jelenteni az <strong>1</strong>-est, a [latex]-[/latex] polarizáció pedig a <strong>0</strong>-ást.</li><li>Átlós polarizációkat használ, azaz a [latex]/[/latex] lesz az <strong>1</strong>-es, míg a [latex]\backslash[/latex] lesz a <strong>0</strong>.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>A trükk az, hogy Alice a bitek elküldésekor a kétféle polarizációs sémát véletlenszerűen váltogatja. Ennek jelentősége hamarosan világos lesz. Jelöljük a függőleges-vízszintes sémát [latex]+[/latex]-szal, az átlós sémát pedig [latex]\times[/latex]-tel. Tegyük fel, hogy Alice a fenti 12 bitet az alábbi táblázat szerint reprezentálja polarizált fotonokkal, majd az így kapott fotonokat elküldi Bob-nak:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{r|cccccccccccc}\text{bit} &amp; 0&amp;1&amp;1&amp;0&amp;0&amp;0&amp;1&amp;1&amp;1&amp;0&amp;1&amp;0 \\ \hline \text{séma} &amp; +&amp;\times&amp; +&amp;+&amp;\times&amp;\times&amp;+&amp;\times&amp;+&amp;+&amp;+&amp;\times \\ \hline \text{foton} &amp; -&amp;/&amp;|&amp;-&amp;\backslash&amp;\backslash&amp;|&amp;/&amp;|&amp;-&amp;|&amp;\backslash \end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong>2. szakasz:</strong> A vételi oldalon Bob-nak meg kell állapítania a beérkező fotonok polarizációját. Ehhez kétféle polárszűrőt használhat, ezeken azonban egy helyett két rés van, amelyek egymásra merőlegesek. Ezt mutatja az alábbi ábra:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":7853,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_27_ketfele_polarszuro.jpg" alt="Kétféle polárszűrő" class="wp-image-7853"/><figcaption>Kétféle polárszűrő</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>A baloldali [latex]+[/latex] alakú polárszűrőn a függőleges vagy vízszintes síkban polarizált fotonok akadálytalanul áthaladnak. Ezzel szemben az átlósan polarizált fotonok az egyréses esethez hasonlóan azonos valószínűséggel vagy vízszintes, vagy pedig függőleges polarizációjú fotonokká változnak. Ugyanígy az [latex]\times[/latex] alakú szűrőn az átlósan polarizált fotonok fognak akadálytalanul áthaladni, és a vízszintesen vagy függőlegesen polarizált fotonok fognak véletlenszerűen átlósan polarizálttá változni. Mivel Bob nem tudja, hogy Alice melyik fotont milyen sémával polarizálta, ezért nem tehet mást, minthogy tippel. Az alábbi táblázat mutatja a beérkező fotonokat, Bob-nak a sémára vonatkozó tippjeit, valamint az ilymódon detektált biteket:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{r|cccccccccccc}\text{foton} &amp; -&amp;/&amp;|&amp;-&amp;\backslash&amp;\backslash&amp;|&amp;/&amp;|&amp;-&amp;|&amp;\backslash \\ \hline \text{séma} &amp; \times&amp;\times&amp;+&amp;\times&amp;\times&amp;+&amp;+&amp;+&amp;\times&amp;\times&amp;+&amp;\times \\ \hline \text{bit} &amp; \underline{0}&amp;1&amp;1&amp;\underline{1}&amp;0&amp;\underline{1}&amp;1&amp;\underline{1}&amp;\underline{0}&amp;\underline{0}&amp;1&amp;0  \end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Aláhúztuk azokat a biteket, amelyek esetén Bob rosszul tippelt, és nem a megfelelő sémát használta. Ez statisztikailag körülbelül az esetek felében fordul elő, és ilyenkor ugye véletlenszerű lesz a detektálás eredménye. Bob persze ezen a ponton még nem tudja, hogy melyek azok a bitek, amelyekhez nem jó sémát használt, és emiatt potenciálisan rosszul detektálta őket.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>3. szakasz:</strong> Alice felhívja Bob-ot telefonon, és elmondja neki, hogy melyik fotont melyik séma szerint polarizálta, de azt nem árulja el, hogy konkrétan mi lett a fotonok polarizációja. Tehát például elmondja, hogy az első foton elküldésekor a [latex]+[/latex] sémát használta, de azt nem, hogy függőlegesen vagy vízszintesen polarizált fotont küldött-e. Bob válaszában elmondja Alice-nak, hogy mely fotonoknál sikerült eltalálnia a megfelelő polárszűrőt, és mindketten eldobják azokat a biteket, amelyeknél Bob rosszul tippelt. A megmaradó bitek fogják alkotni a kulcsot. Ha esetleg ez még kevesebb, mint az Alice által küldeni kívánt üzenet hossza, akkor megismétlik az eljárást mindaddig, míg a megfelelő számú bit össze nem gyűlik a one-time pad rejtjelezéshez.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ahhoz, hogy megértsük, miért is támadhatatlan ez a kulcsmegosztási eljárás, képzeljük magunkat Eve helyébe.</em></strong> Ő ugye lehallgatja a fotonok átküldésére szolgáló kvantumcsatornát és a főhőseink által használt telefonvonalat is. A fotonokat természetesen ő is megpróbálja detektálni, ám ezen a ponton ugyanabban a helyzetben van, mint Bob: kizárólag tippelni tud, hogy melyik fotonhoz milyen polárszűrőt használjon. Alice ezután elmondja ugyan Bob-nak, hogy melyik fotonnál melyik lett volna a helyes detektor, ám Eve-en ez nem segít, hiszen a Bob által helyesen bemért fotonoknak átlagosan a felénél ő rosszul tippelt. De azokkal a bitekkel sem ér sokat, ahol esetleg jól tippelt, hiszen ezek felénél viszont Bob tévedett, és ezeket a biteket főhőseink figyelmen kívül fogják hagyni. Eve tehát a kulcs bitjeinek körülbelül csak a felét fogja megismerni, amivel sajnos nem megy semmire.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Felfoghatjuk az egészet úgy is, mintha Alice különleges <strong><em>„kvantumkártyákat”</em></strong> küldene Bob-nak. Ezek olyan különleges kártyalapok, amelyeknél el kell döntenünk, hogy a színét, vagy az értékét szeretnénk megismerni, mivel egyszerre a kettőt nem lehet. Alice véletlenszerűen kiválaszt egyet ezek közül a különleges kártyák közül, legyen ez például a <strong>treff 6-os</strong>. Alice úgy dönt hogy a kártya színét nézi meg, és feljegyzi egy lapra, hogy <strong>treff</strong>, majd elküldi a kártyát Bob-nak. Eve persze lehallgatja a csatornát, de szerencsétlenségére ő az értékét leste meg, ami a <strong>6-os</strong>. Alice ezután felhívja Bob-ot, és megbeszélik egymással, hogy egyezően tippeltek-e. Ha a válasz igenlő, akkor mindketten birtokában vannak egy közös titoknak, hiszen mindketten a <strong>treff</strong>-et írták fel. Eve ugyanakkor a <strong>6-ost</strong> írta le, amivel nem megy semmire. Ha viszont Eve helyesen tippel, de Bob hibázik, akkor a fáradozása ugyancsak hiábavaló volt, hiszen ebben az esetben Alice és Bob a telefonos egyeztetés alapján el fogják vetni az Eve által helyesen bemért kártyalapot. Ráadásul Eve helyzete még ennél is rosszabb, hiszen egy <strong><em>4. szakasz</em></strong> beiktatásával Alice és Bob képes detektálni, ha hallgatózik a csatornán.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>4. szakasz:</strong> Miután megtörtént a kulcsmegosztás, Alice szúrópróbaszerűen kiválaszt néhány bitet, és ezeket leegyezteti Bob-bal a telefonvonalon keresztül. Amennyiben mindegyiknél egyezést találnak, az csak úgy lehetséges, hogy Eve nem hallgatózott, vagy ha igen, akkor olyan piszok nagy mázlija volt, hogy mindegyik fotonnál eltalálta a megfelelő polárszűrőt. Máskülönben ugyanis egy rosszul megválasztott polárszűrő megváltoztatta volna az adott foton polarizációját, és az ilyen esetek felében Bob a vételi oldalon hibásan detektálta volna a beérkező bitet annak ellenére, hogy ő viszont a megfelelő polárszűrőt választotta. Ha például Alice ilymódon 75 bitet egyeztet le Bob-bal, és nem találnak hibát, akkor körülbelül <strong><em>egy a milliárdhoz</em></strong> az esélye, hogy Eve lehallgatta a kvantumcsatornát. Ha azonban akárcsak egyetlen eltérést is találnak, akkor Eve lebukott, Alice és Bob pedig kénytelenek az egész kulcsot eldobni, átváltani egy másik csatornára, és elölről kezdeni a folyamatot. Barátaink a leegyeztetett biteket természetesen eldobják, hiszen azokat az egyeztetésre használt telefonvonal lehallgatásával bárki megismerhette.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mindez persze elmélet, és az 1980-as években senki sem tudta, hogy vajon tényleg megvalósítható-e a gyakorlatban. Egészen 1989-ig kellett várni az áttörésre, amikor Bennett-nek egy <strong><em>történelmi léptékű kísérlettel</em></strong> sikerült igazolnia az elméletét: <strong><em>abszolút titkos kommunikációt hozott létre</em></strong> két, egymástól 30 centiméterre álló számítógép között. Azután a Genfi Egyetem tudósainak 1995-ben sikerült ugyanez a mutatvány, ám ezúttal az áthidalt távolság már <strong><em>23 kilométer</em></strong> volt. A jelenlegi rekord 2018-ból származik, ami <strong><em>421 kilométer</em></strong>. A végső cél azonban egy olyan rendszer kialakítása lenne, amely száloptika helyett műholdakon keresztül is működik, hiszen ez biztonságos kommunikációt biztosítana az egész Földön.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A most ismertetett kvantum-kulcsmegosztás természetesen csak a jéghegy csúcsa, amellyel pusztán ízelítőt kívántunk adni abból, hogy a kvantumkriptográfia valóban az abszolút biztonságot ígéri. A gyakorlati alkalmazhatóságig azonban még hosszú út áll a kutatók előtt. Egyelőre nincs szükség rá, hiszen az RSA és az elliptikus görbék révén rendelkezésünkre állnak azok az eljárások, amelyek a hagyományos számítógépek számára feltörhetetlenek. A versenyfutás azonban hatalmas, hiszen ez az előny azonnal szertefoszlik a kvantumszámítógépek megjelenésével. Ha a kvantumkriptográfia tényleg valósággá válik, akkor az információk védelme érdekében folytatott harc Alice és Bob győzelmével ér véget. Egy ilymódon titkosított üzenet feltörhetősége ugyanis azt jelentené, hogy hibás a kvantummechanika, amely az egész fizikát rombadöntené.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>De vajon a kvantumkriptográfia idejében hozza el Alice és Bob számára a végső győzelmet? Vagy esetleg lesz egy olyan időszak, amikor a kvantumszámítógép már valóság, ám a világ még védtelen ellene egy ideig? Vajon a civilizációnk át fogja tudni vészelni ezt az átmeneti időszakot?</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Reméljük, ám ez még a jövő zenéje...</em></strong></p>
+<!-- /wp:paragraph -->

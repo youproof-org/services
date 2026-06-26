@@ -1,0 +1,34 @@
+type: section
+name: 02-a-passziv-tamado
+title: A passzív támadó
+
+body:
+  - type: narrative
+    content: |
+      Képességei szerint a támadókat kétféle típusra oszthatjuk. Az első típus az úgynevezett ***passzív támadó***.
+      Ő a csatornára kerülő bitsorozatot ugyanúgy képes megfigyelni, mint Bob, azonban módosítani nem tudja azt.
+      Egy ilyen támadó valamilyen módon lehallgatja a fizikai csatornát. Ezért őt a "lehallgatás" angol megfelelője
+      (eavesdropping) után általában Eve néven szoktuk emlegetni. Eve-ről feltételezzük továbbá, hogy hallgatózó
+      tevékenységét képes Alice és Bob előtt titokban tartani, és hogy nem ismeri az Alice és Bob által használt
+      kulcsot. Azt mondjuk, hogy Eve ***feltörte*** a rejtjelezési eljárást, ha "gyorsan" képes meghatározni a
+      lehallgatott kódszöveg alapján a nyílt szöveget függetlenül attól, hogy Alice és Bob éppen melyik kulcsot
+      használta. A "gyorsaság" itt olyan időintervallumot jelent, amelyen belül Eve sikeresen használhatja céljaira
+      a megszerzett információt.
+  - type: unordered-list
+    lead-in: |
+      Az Eve által végrehajtott törési kísérleteket azok növekvő ereje alapján a következő kategóriákba
+      sorolhatjuk:
+    items:
+      - "***Rejtett szövegű támadás (ciphertext only attack):*** Ebben a leggyengébb esetben Eve-nek csupán nagyszámú azonos kulccsal kódolt kódszöveg áll rendelkezésére (mert például lehallgatta a csatornát), és ezekből az információkból próbál meg eljárást kidolgozni további üzenetek megfejtésére, vagy akár a kulcs kiszámítására."
+      - "***Nyílt szövegű támadás (known plaintext attack):*** Ilyenkor Eve-nek az azonos kulccsal kódolt elfogott kódszövegeken kívül rendelkezésére állnak azok nyílt szöveg párjai is (mert például valamilyen sunyi módon megszerezte azokat)."
+      - '***Választott szövegű támadás (chosen text attack):*** Ebben a legerősebb esetben Eve saját maga választhatja ki azokat a kódszövegeket, amelyeknek a nyílt párját látni szeretné a törési eljárás kidolgozásához. A gyakorlatban ez persze ritkán fordul elő, azonban célszerű egy rendszert erre a "legrosszabb esetre" felkészíteni.'
+  - type: narrative
+    content: |
+      A rejtjelezés célja alapvetően a passzív támadások elleni védekezés. Azt mondjuk, hogy egy rejtjelező
+      rendszer ***algoritmikusan biztonságos***, ha a támadó nem képes olyan gyorsan kinyerni a rejtett információt
+      a kódszövegből, hogy azt céljaira felhasználhassa, feltéve hogy a rendelkezésére álló számítási kapacitás egy
+      adott ésszerű korlát alatt marad. Nyilvánvalóan minden gyakorlatban használt rejtjelező rendszer elméletben
+      feltörhető az úgynevezett ***kimerítő kulcskereséssel***. Kimerítő kulcskeresés esetén Eve az összes
+      lehetséges kulcsot végigpróbálja. Ezt elméletben megteheti, mivel a lehetséges kulcsok száma véges. Ha
+      azonban ez a szám elegendően nagy, akkor ez beláthatatlanul sok ideig eltarthat még a világ összes
+      számítógépének is.

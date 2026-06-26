@@ -1,0 +1,53 @@
+type: proof
+name: negyzetmentesseg-feltetele-bizonyitas
+remarks: []
+references:
+  euklideszi-gyurukben-teljesul-a-szamelmelet-alaptetele:
+    target:
+      type: theorem
+      name: euklideszi-gyurukben-teljesul-a-szamelmelet-alaptetele
+  hatvanyozas-azonossagai:
+    target:
+      type: theorem
+      name: hatvanyozas-azonossagai
+  negyzetmentes-szam:
+    target:
+      type: definition
+      name: negyzetmentes-szam
+  oszthatosag:
+    target:
+      type: definition
+      name: oszthatosag
+  oszthatosag-tulajdonsagai:
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+content:
+  - type: narrative
+    content: |
+      Ha $n$ négyzetmentes, akkor a [negyzetmentes-szam] alapján nem osztható semmilyen egész szám négyzetével, így
+      nyilván pozitív prímszámok négyzetével sem.
+  - type: narrative
+    content: |
+      ***Megfordítva:*** Tegyük fel, hogy $n$ nem négyzetmentes, azaz létezik olyan $k$ egész szám, hogy $k^2|n$.
+      Legyen $p$ egy olyan prímszám, amely osztója $k$-nak. Ilyen biztosan létezik, hiszen
+      [euklideszi-gyurukben-teljesul-a-szamelmelet-alaptetele] alapján $\Z$-ben teljesül a ***számelmélet
+      alaptétele***. Az általánosság megsértése nélkül feltételezhetjük, hogy $p$ ***pozitív***, hiszen ha negatív
+      lenne, akkor az ő ellentettje lenne pozitív, ami a [oszthatosag-tulajdonsagai] 8. pontja alapján szintén
+      osztója $k$-nak.
+  - type: formula
+    lead-in: |
+      A $p|k$ oszthatóság a [oszthatosag] alapján azt jelenti, hogy létezik olyan $m$ egész szám, amelyre fennáll
+      az alábbi:
+    content: |
+      k=p\cdot m
+  - type: formula
+    lead-in: |
+      Ekkor a [hatvanyozas-azonossagai] 1. pontja alapján $k^2$ így írható fel:
+    content: |
+      k^2=p^2\cdot m^2
+  - type: narrative
+    content: |
+      Ez azt jelenti, hogy teljesül a $p^2|k^2$ oszthatóság. Azonban azt mondtuk, hogy teljesül a $k^2|n$
+      oszthatóság is, amiből a [oszthatosag-tulajdonsagai] 5. pontja alapján következik, hogy teljesül a $p^2|n$
+      oszthatóság.

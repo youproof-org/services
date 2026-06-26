@@ -1,0 +1,40 @@
+type: proof
+name: primhatvanyhoz-relativ-primek-bizonyitas
+remarks: []
+references:
+  oszthatosag-tulajdonsagai:
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+  primtulajdonsagu-elem:
+    target:
+      type: definition
+      name: primtulajdonsagu-elem
+content:
+  - type: narrative
+    content: |
+      Tegyük fel ugyanis, hogy teljesül a $p|a$ oszthatóság. Ekkor &ndash; mivel a $p|p^k$ oszthatóság
+      nyilvánvalóan teljesül &ndash; $p$ egy közös osztója lesz $p^k$-nak és $a$-nak. Mivel a tétel szövege szerint
+      $p$ prím &ndash; és így a [primtulajdonsagu-elem] szerint nem egység &ndash;, az $a$ és $p^k$ számok valóban
+      nem lehetnek egymáshoz relatív prímek. Másként fogalmazva ha $a$ és $p^k$ egymáshoz relatív prímek, akkor
+      valóban ***nem teljesülhet*** a $p|a$ oszthatóság.
+  - type: formula
+    lead-in: |
+      ***Visszafelé:*** Ha $a$ és $p^k$ egymáshoz ***nem relatív prímek***, akkor létezik olyan $d$ közös osztó,
+      amely nem egység, és amely esetén fennáll az alábbi két oszthatóság:
+    content: |
+      \begin{aligned}d&|a \\ d&|p^k\end{aligned}
+  - type: formula
+    lead-in: |
+      Mivel $p$ prím, ezért a második oszthatóság alapján $d$ az alábbi számok közül kerülhet ki:
+    content: |
+      p,p^2,p^3,p^4,\ldots, p^{k-1}, p^k
+  - type: formula
+    lead-in: |
+      Tegyük fel például, hogy $d=p^i$ valamilyen $1\leq i\leq k$ kitevőre, azaz:
+    content: |
+      \begin{aligned}\overbrace{p^i}^{=d}&|a \\ \underbrace{p^i}_{=d}&|p^k\end{aligned}
+  - type: narrative
+    content: |
+      Ám mivel a $p|p^i$ oszthatóság nyilvánvalóan teljesül, ezért a [oszthatosag-tulajdonsagai] 5. pontja miatt
+      valóban fennáll a $p|a$ oszthatóság.

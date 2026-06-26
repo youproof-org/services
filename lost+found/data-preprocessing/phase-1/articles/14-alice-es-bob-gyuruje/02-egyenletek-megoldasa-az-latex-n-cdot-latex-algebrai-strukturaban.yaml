@@ -1,0 +1,122 @@
+type: section
+name: 02-egyenletek-megoldasa-az-latex-n-cdot-latex-algebrai-strukturaban
+title: 'Egyenletek megoldása az [latex](\N , +, \cdot )[/latex] algebrai struktúrában'
+
+references:
+  peano-osszeadas:
+    target:
+      type: definition
+      name: peano-osszeadas
+  peano-osszeg-egyszerusites:
+    target:
+      type: theorem
+      name: peano-osszeg-egyszerusites
+  peano-szorzas:
+    target:
+      type: definition
+      name: peano-szorzas
+  peano-szorzat-egyszerusites:
+    target:
+      type: theorem
+      name: peano-szorzat-egyszerusites
+
+body:
+  - type: narrative
+    content: |
+      Most lépjünk vissza egy kicsit a korábbi részekben felépített $\N$ halmazhoz és az azon értelmezett
+      Peano-összeadáshoz ([peano-osszeadas]) és Peano-szorzáshoz ([peano-szorzas]). Tegyük fel, hogy a $2\cdot
+      x+3=7$ egyenletet szeretnénk megoldani. Általános iskolában mindenki megtanulta, hogy ha egy érvényes
+      egyenlet mindkét oldalából ***kivonunk*** egy tetszőleges számot, vagy mindkét oldalt ***elosztjuk*** egy
+      tetszőleges ***NEM NULLA*** számmal, akkor az így kapott egyenletek továbbra is érvényben maradnak. Nincs más
+      dolgunk hát, mint ilyen lépésekkel addig rendezgetni az egyenletet, míg az egyik oldalon kizárólag az
+      ismeretlen marad. Ekkor a másik oldal épp a megoldás lesz.
+  - type: formula
+    lead-in: |
+      Ezzel a gondolatmenettel tehát vonjunk ki mindkét oldalból 3-at, majd mindkét oldalt osszuk el kettővel, így
+      megkapjuk a megoldást:
+    content: |
+      \begin{aligned}2\cdot x + 3 &= 7 \\ 2\cdot x &= 4 \\ x&=2 \end{aligned}
+  - type: narrative
+    content: |
+      Csakhogy van ezzel egy kis probléma: nem ismerünk olyan fogalmat, mint ***"kivonás"*** vagy ***"osztás"***.
+      Ne feledjük, hogy jelenleg a számelméletet az axiómákból szeretnénk felépíteni! Márpedig ebben az esetben nem
+      hivatkozhatunk olyan fogalmakra, amiket nem definiáltunk pontosan.
+  - type: narrative
+    content: |
+      Szerencsére azonban ez a probléma könnyen áthidalható két okos kis segédtétellel. Az egyiket ezek közül már
+      megismertük egy korábbi részben:
+  - type: embed
+    target:
+      type: theorem
+      name: peano-osszeg-egyszerusites
+  - type: formula
+    lead-in: |
+      A fenti példában szereplő $2\cdot x + 3 = 7$ egyenlet megoldásának első lépésében tehát ahelyett, hogy
+      "kivonnánk" mindkét oldalból 3-at &ndash; ezáltal nem definiált fogalmat használva &ndash;, az egyenlet
+      jobboldalát cselesen felírjuk két természetes szám ***összegeként***:
+    content: |
+      2\cdot x + 3 = 4 + 3
+  - type: narrative
+    content: |
+      Ebből már a [peano-osszeg-egyszerusites] miatt következik, hogy $2\cdot x = 4$. Mondhatnánk, hogy ez
+      szőrszálhasogatás, azonban később látni fogjuk, mennyire könnyen tehetünk olyan logikailag helyesnek tűnő
+      lépéseket, amelyek valójában hibásak. Például amikor majd az úgynevezett maradékosztályokkal kell számolnunk,
+      amelyek a modern kriptográfiai eljárásokban &ndash; és úgy általában az egész számelméletben &ndash; alapvető
+      fontosságúak.
+  - type: formula
+    lead-in: |
+      Na de mi a helyzet a következő lépéssel, amikoris az egyenlet mindkét oldalát "elosztjuk" 2-vel? Az osztás
+      fogalmát szintén nem ismerjük, ezért itt is megpróbáljuk megkerülni ezt a problémát, és az egyenlet
+      jobboldalát felírjuk két természetes szám szorzataként:
+    content: |
+      2\cdot x = 2\cdot 2
+  - type: narrative
+    content: |
+      Kérdés, hogy vajon ebből következik-e, hogy $x=2$? És úgy általában abból, hogy $a\cdot c = b \cdot c$, vajon
+      következik-e, hogy $a = b$? Az alábbiakban ezt fogjuk bizonyítani.
+  - type: narrative
+    content: |
+      Előszöris emlékeztetnénk az Olvasót egy korábban már szintén bizonyított segédtételre:
+  - type: embed
+    target:
+      type: theorem
+      name: peano-nullosszeg-tagjai
+  - type: narrative
+    content: |
+      Eszerint tehát ***a természetes számok körében*** egy összeg csak úgy lehet 0, ha mindkét tagja 0. Egy ehhez
+      hasonló állításra van szükségünk a Peano-szorzásra vonatkozóan:
+  - type: embed
+    target:
+      type: theorem
+      name: peano-nullszorzat-tenyezoi
+  - type: narrative
+    content: |
+      Eszerint tehát egy szorzat csak úgy lehet 0, ha ***legalább*** az egyik tényezője 0. Ez a tulajdonság persze
+      nyilvánvalónak tűnik, ám hamarosan fogunk találkozni olyan algebrai struktúrákkal, amelyekben ez nem
+      teljesül. Most nézzük ennek az állításnak a bizonyítását:
+  - type: embed
+    target:
+      type: proof
+      name: peano-nullszorzat-tenyezoi-bizonyitas
+  - type: narrative
+    content: |
+      Ennek segítségével mostmár megfogalmazhatjuk azt a segédtételt, amely általánosságban is lehetővé teszi, hogy
+      egy egyenlet mindkét oldalát ugyanazzal a tényezővel egyszerűsíthessük:
+  - type: embed
+    target:
+      type: theorem
+      name: peano-szorzat-egyszerusites
+  - type: embed
+    target:
+      type: proof
+      name: peano-szorzat-egyszerusites-bizonyitas
+  - type: narrative
+    content: |
+      Innentől kezdve tehát egy természetes számokon értelmezett egyenlet megoldása során legálisan
+      ***egyszerűsíthetjük*** &ndash; vagy némiképp helytelenül fogalmazva "oszthatjuk el" &ndash; az egyenlet
+      mindkét oldalát egy ***nemnulla*** számmal. Azaz a korábbi példaegyenletünk megoldása során a $2\cdot x = 4$
+      állításból a most bizonyított [peano-szorzat-egyszerusites] miatt következik, hogy $x=2$.
+  - type: narrative
+    content: |
+      Nagyon fontos azonban, hogy csak ***nemnulla*** természetes számmal szabad egyszerűsíteni. Például $a\cdot
+      0=b\cdot 0$ tetszőleges $a$ és $b$ természetes számokra teljesül, így ebből nem következik, hogy $a=b$.

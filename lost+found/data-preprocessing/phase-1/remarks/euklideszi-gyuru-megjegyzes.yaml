@@ -1,0 +1,24 @@
+type: remark
+name: euklideszi-gyuru-megjegyzes
+references:
+  kituntetett-kozos-oszto-tulajdonsagai:
+    target:
+      type: theorem
+      name: kituntetett-kozos-oszto-tulajdonsagai
+content:
+  - type: narrative
+    content: |
+      Az euklidészi gyűrű fogalmának bevezetése mögött az a motiváció, hogy az euklidészi algoritmus ne csak a
+      nemnegatív egész számok halmazán működhessen, hanem azt ki lehessen terjeszteni általános
+      integritástartományok lehetőleg minél szélesebb körére is. A "működés" alatt egyrészt azt értjük, hogy az
+      eljárás véges számú lépés után garantáltan befejeződjön. Ezt az euklidészi normának a definícióban szereplő
+      2. tulajdonsága fogja biztosítani a végtelen leszállás módszerén keresztül.
+  - type: narrative
+    content: |
+      Másrészt viszont azt is szeretnénk, hogy a keresett kitüntetett közös osztó mindenképpen létezzen. Ehhez az
+      kell, hogy az algoritmus leállása után az utolsó nemnulla $r_n$ maradékból képzett $(r_n,0)$ kitüntetett
+      közös osztó is létezzen, máskülönben semmit nem érnénk azzal, hogy befejeződött az algoritmus. Ez viszont a
+      [kituntetett-kozos-oszto-tulajdonsagai] 4. pontja alapján csak egységelemes gyűrűkben létezik.
+  - type: narrative
+    content: |
+      ***Ez az oka annak, hogy az euklidészi gyűrűk definíciójában megköveteljük, hogy létezzen egységelem.***

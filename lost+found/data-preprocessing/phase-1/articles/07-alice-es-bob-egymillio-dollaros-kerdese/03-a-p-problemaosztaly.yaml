@@ -1,0 +1,66 @@
+type: section
+name: 03-a-p-problemaosztaly
+title: A P problémaosztály
+
+body:
+  - type: narrative
+    content: |
+      Most módosítsuk egy kicsit a Kompániára vonatkozó feladatunkat. Ezúttal ne 2, hanem 3 pártra próbáljuk meg
+      szétosztani a lakosságot úgy, hogy az egy pártba kerülők ne utálják egymást. Az ide tartozó döntési probléma:
+      kiszínezhetők-e egy adott gráf csúcsai 3 színnel úgy, hogy az azonos színű csúcsok között ne legyen él?
+      Amennyiben ez megtehető egy adott gráfra, akkor azt mondjuk, hogy a gráf ***3-színezhető***.
+  - type: figure
+    lead-in: |
+      Az alábbi gráf például nem színezhető ki 3 színnel:
+    src: 04-nem-3-szinezheto-graf.jpg
+    alt: Nem 3-színezhető gráf (példa)
+    caption: Nem 3-színezhető gráf (példa)
+  - type: figure
+    lead-in: |
+      Ezzel szemben az alábbi gráf 3-színezhető, a csúcsokhoz rendelt számok pedig egy helyes 3-színezést jelölnek:
+    src: 05-3-szinezheto-graf.jpg
+    alt: 3-színezhető gráf (példa)
+    caption: 3-színezhető gráf (példa)
+  - type: narrative
+    content: |
+      A korábbi, 2-színezhetőségre vonatkozó döntési problémára lehetett exponenciális és polinomiális
+      időkomplexitású algoritmust ***is*** találni. ***A 3-színezhetőség eldöntésére azonban sajnos nem ismerünk
+      exponenciálisnál gyorsabb algoritmust***. Nem tudjuk, hogy létezik-e egyáltalán &ndash; csak esetleg még nem
+      találta meg senki &ndash;, vagy pedig elméletileg sem létezhet ilyen algoritmus. Ha ez utóbbi a helyzet,
+      akkor nem csak a jelenleg ismert algoritmusok "rosszak", hanem ***maga a probléma is "nehéz"***. Ezt jelenleg
+      azonban csak sejtjük. Ezzel szemben a 2-színezhetőség eldöntése "könnyű", mert létezik rá polinomiális
+      algoritmus.
+  - type: narrative
+    content: |
+      Egy másik gráfelméletből ismert fontos probléma az úgynevezett ***független csúcsok problémája***.
+      Elhelyezhető-e a sakktáblán 8 vezér úgy, hogy ne üssék egymást?
+  - type: figure
+    lead-in: |
+      Az alábbi ábra mutatja, hogy ez lehetséges, de aki maga próbálta ezt a rejtvényt megfejteni, tudja, hogy nem
+      olyan könnyű egy ilyen elhelyezést megtalálni:
+    src: 06-fuggetlen-csucsok-sakktablan.jpg
+    alt: Független csúcsok problémája a sakktáblán
+    caption: Független csúcsok problémája a sakktáblán
+  - type: narrative
+    content: |
+      Ez a feladat is megfogalmazható a gráfok nyelvén. A sakktábla mezői legyenek a gráf csúcsai, és két csúcsot
+      akkor kössünk össze éllel, ha az egyik mezőről a vezér egy lépéssel el tud jutni a másikba, azaz a másik
+      mezőt "ütni" tudja. Az általános, már gráfokra vonatkozó probléma így szól: adott egy gráf és egy $k$ egész
+      szám, a kérdés pedig az, hogy ki lehet-e választani a gráfból $k$ darab csúcsot úgy, hogy ezek között a
+      csúcsok között ne legyen él. Ezt úgy mondjuk, hogy ***található-e a gráfban $k$ darab független csúcs***.
+      Azokat a gráfokat, amelyekre ez teljesül, ***k-független gráfoknak*** nevezzük. ***A k-függetlenség
+      eldöntésére sem ismert exponenciálisnál gyorsabb algoritmus***, tehát ez is egy "nehéz" probléma, legalábbis
+      annak tűnik.
+  - type: narrative
+    content: |
+      Azokat a rekurzív nyelveket, amelyek eldöntésére létezik polinomiális időkomplexitású ***determinisztikus
+      Turing-gép***, egy osztályba soroljuk, amelyet $P$-vel jelölünk, és a ***polinomiális időben eldönthető
+      nyelvek osztályának*** nevezünk. Lényegében az összes hatékonyan kezelhető döntési problémához tartozó nyelv
+      $P$-beli. Ilyen volt például a 2-színezhetőségről szóló probléma. A 3-színezhetőség és a k-függetlenség
+      problémájáról azonban nem tudjuk, hogy vajon $P$-ben vannak-e.
+  - type: narrative
+    content: |
+      Amit viszont tudunk róluk, hogy &ndash; sok más rendkívül fontos algoritmikus problémával együtt &ndash; egy
+      $P$-nél általánosabb problémaosztályba tartoznak. Ezért most ezzel a problémaosztállyal ismerkedünk meg.
+      Ennek keretében felfrissítjük emlékeinket a 6. részben már említett nemdeterminisztikus Turing-gépekkel
+      kapcsolatban.

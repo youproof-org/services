@@ -1,0 +1,69 @@
+type: section
+name: 05-csoporthomomorfizmusok-strukturatarto-tulajdonsagai
+title: Csoporthomomorfizmusok struktúratartó tulajdonságai
+
+references:
+  miller-rabin-tanuk-szama:
+    target:
+      type: theorem
+      name: miller-rabin-tanuk-szama
+
+body:
+  - type: narrative
+    content: |
+      Ebben a szakaszban azt fogjuk megmutatni, hogy egy $f:G\to H$ csoporthomomorfizmuson keresztül a $H$ csoport
+      milyen fontos strukturális tulajdonságokat örököl meg a $G$ csoporttól. Főként ezekre a kulcsfontosságú
+      észrevételekre fogjuk építeni a Miller-Rabin-tanúk számára vonatkozó alsó becslésünk lényeges javítását. Ezek
+      megfogalmazásához előbb azonban ismerkedjünk meg néhány függvényekkel kapcsolatos további fogalommal.
+  - type: embed
+    target:
+      type: definition
+      name: kep-teljes-inverz-kep
+  - type: embed
+    target:
+      type: remark
+      name: kep-teljes-inverz-kep-megjegyzes
+  - type: narrative
+    content: |
+      Most azt vizsgáljuk meg, hogy egy $f:G\to H$ csoporthomomorfizmus esetén mik lesznek a $G$ csoport
+      részcsoportjainak képei.
+  - type: embed
+    target:
+      type: theorem
+      name: reszcsoport-kepe
+  - type: embed
+    target:
+      type: proof
+      name: reszcsoport-kepe-bizonyitas
+  - type: narrative
+    content: |
+      Azt tehát már tudjuk, hogy egy $f:G\to H$ csoporthomomorfizmus esetén minden $G$-beli részcsoportnak
+      valamilyen $H$-beli részcsoport lesz az $f$ szerinti képe. Most nézzük meg, hogy mi a helyzet a másik
+      irányban, azaz mik lesznek a $H$-beli részcsoportok teljes inverz képei $G$-ben. Ezekről egy fokkal többet
+      tudunk mondani.
+  - type: embed
+    target:
+      type: theorem
+      name: reszcsoport-teljes-inverz-kepe
+  - type: embed
+    target:
+      type: proof
+      name: reszcsoport-teljes-inverz-kepe-bizonyitas
+  - type: narrative
+    content: |
+      Az imént bizonyított tétel alapján tehát az körvonalazódik, hogy a $G$ csoport bizonyos strukturális
+      tulajdonságai egy $f:G\to H$ csoporthomomorfizmus által átöröklődnek $H$-ra. A mostani tételben ezeket
+      összegezzük.
+  - type: embed
+    target:
+      type: theorem
+      name: csoporthomomorfizmusok-strukturatarto-tulajdonsagai
+  - type: embed
+    target:
+      type: proof
+      name: csoporthomomorfizmusok-strukturatarto-tulajdonsagai-bizonyitas
+  - type: narrative
+    content: |
+      Az imént bizonyított tételnek a következő részben lesz kulcsfontosságú szerepe, amikoris a Miller-Rabin-tanúk
+      számának alsó becslését fogjuk lényegesen megjavítani az előző részben szereplő [miller-rabin-tanuk-szama]hez
+      képest.

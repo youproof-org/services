@@ -1,0 +1,106 @@
+type: section
+name: 02-csoporthomomorfizmus-magja-es-kepe
+title: Csoporthomomorfizmus magja és képe
+
+references:
+  gyuruhomomorfizmus-kepenek-feltetele:
+    target:
+      type: theorem
+      name: gyuruhomomorfizmus-kepenek-feltetele
+  gyuruhomomorfizmus-magja-es-kepe:
+    target:
+      type: definition
+      name: gyuruhomomorfizmus-magja-es-kepe
+  gyuruhomomorfizmus-magjanak-szukseges-feltetele:
+    target:
+      type: theorem
+      name: gyuruhomomorfizmus-magjanak-szukseges-feltetele
+  ideal:
+    target:
+      type: definition
+      name: ideal
+  mellekosztalyok:
+    target:
+      type: theorem
+      name: mellekosztalyok
+  reszcsoport:
+    target:
+      type: definition
+      name: reszcsoport
+  reszgyuru:
+    target:
+      type: definition
+      name: reszgyuru
+
+body:
+  - type: narrative
+    content: |
+      A 18. részben a gyűrűhomomorfizmusok jellemzéséhez megismerkedtünk a ***gyűrűhomomorfizmus magjának és
+      képének*** fogalmával ([gyuruhomomorfizmus-magja-es-kepe]). Egy $f:R\to S$ gyűrűhomomorfizmus ***magjának***
+      neveztük azon $R$-beli elemek halmazát, amelyekhez az $f$ függvény épp az $S$ gyűrű nullelemét rendeli hozzá,
+      míg $f$ ***képének*** azoknak az $S$-beli elemeknek a halmazát neveztük, amelyeket $f$ legalább egy $R$-beli
+      elemhez hozzárendel. Ennek mintájára az alábbiakban definiáljuk a csoporthomomorfizmusok magjának és képének
+      fogalmát. A különbség pusztán annyi, hogy most a célgyűrű nullelemének szerepét a célcsoport egységeleme
+      veszi át.
+  - type: embed
+    target:
+      type: definition
+      name: csoporthomomorfizmus-magja-es-kepe
+  - type: narrative
+    content: |
+      Ezek után bevezettük a ***részgyűrű*** fogalmát ([reszgyuru]) és megmutattuk, hogy egy $f$ gyűrűhomomorfizmus
+      képe minden esetben részgyűrű abban az $S$ gyűrűben, ahová $f$ képez (lásd a
+      [gyuruhomomorfizmus-kepenek-feltetele]t). Ezen túlmenően ebben a tételben azt is megemlítettük, hogy ennél
+      többet nem is tudunk elmondani az $S$-be képező gyűrűhomomorfizmusok képeiről. Ez másként fogalmazva azt
+      jelenti, hogy $S$ bármely részgyűrűje képe valamilyen $S$-be mutató gyűrűhomomorfizmusnak.
+  - type: narrative
+    content: |
+      A ***részcsoport*** fogalmát a [reszcsoport]ban már bevezettük, és most az említett
+      [gyuruhomomorfizmus-kepenek-feltetele] mintájára egy nagyon hasonló állítást fogunk igazolni a
+      ***csoporthomomorfizmusok képeivel*** kapcsolatban.
+  - type: embed
+    target:
+      type: theorem
+      name: csoporthomomorfizmus-kepenek-feltetele
+  - type: embed
+    target:
+      type: proof
+      name: csoporthomomorfizmus-kepenek-feltetele-bizonyitas
+  - type: narrative
+    content: |
+      Egy $H$ csoportban tehát az odamutató csoporthomomorfizmusok ***képeiről*** mindössze annyit tudunk mondani,
+      hogy azok pontosan $H$ részcsoportjai lesznek. Ezzel szemben egy $G$ csoport azon részhalmazairól, amelyek
+      valamilyen $G$-ből kiinduló csoporthomomorfizmusok ***magjai*** lehetnek, ennél többet is fogunk tudni
+      mondani.
+  - type: narrative
+    content: |
+      Ez párhuzamba állítható azzal, ahogyan a ***gyűrűhomomorfizmusok magjait*** jellemeztük. Először a
+      [gyuruhomomorfizmus-magjanak-szukseges-feltetele]ben adtunk erre egy szükséges feltételt. E tétel szerint ha
+      egy $R$ gyűrű valamely $I$ részhalmaza egy $R$-ből kiinduló gyűrűhomomorfizmus magja, akkor $I$ egy olyan
+      ***speciális részgyűrű*** $R$-ben, amely nem csak az $I$-beli elemekkel, hanem tetszőleges $R$-beli elemmel
+      való szorzásra is zárt. Az ilyen speciális részgyűrűket a [ideal]ban ***ideáloknak*** neveztük.
+  - type: narrative
+    content: |
+      Most ehhez hasonlóan arra mutatunk szükséges feltételt, hogy egy $G$ csoport valamely részhalmaza mikor lehet
+      valamilyen $G$-ből induló ***csoporthomomorfizmus magja***. Nem meglepő módon ezek a részhalmazok is bizonyos
+      értelemben ***speciális részcsoportok*** lesznek $G$-ben. Nézzük is meg, hogy mi az a speciális extra
+      tulajdonság, amit még &ndash; azon felül, hogy részcsoportok &ndash; teljesítenek.
+  - type: embed
+    target:
+      type: theorem
+      name: csoporthomomorfizmus-magjanak-szukseges-feltetele
+  - type: embed
+    target:
+      type: proof
+      name: csoporthomomorfizmus-magjanak-szukseges-feltetele-bizonyitas
+  - type: embed
+    target:
+      type: remark
+      name: csoporthomomorfizmus-magjanak-szukseges-feltetele-bizonyitas-megjegyzes
+  - type: narrative
+    content: |
+      A [mellekosztalyok] utáni megjegyzésben már megemlítettük, hogy általában egy részcsoport szerinti bal-
+      illetve jobboldali mellékosztályok különböző halmazok lesznek. Az iménti tétel alapján azonban ha egy
+      részcsoport egy valamilyen csoporthomomorfizmus magja, akkor ezek a mellékosztályok szükségképpen
+      megegyeznek. Csoportok esetén ez tehát az a keresett extra feltétel, amely szükséges ahhoz, hogy egy
+      részcsoport egy csoporthomomorfizmus magja lehessen. Most megmutatjuk, hogy ez egyben elégséges is.

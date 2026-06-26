@@ -1,0 +1,10 @@
+type: definition
+name: teljes-es-redukalt-maradekrendszer
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $m\gt 0$ egy ***pozitív*** egész szám. Ha minden modulo $m$ maradékosztályból pontosan egy elemet
+      kiveszünk, akkor az így kapott számhalmazt ***modulo $m$ teljes maradékrendszernek*** nevezzük. Ehhez
+      hasonlóan ha minden modulo $m$ redukált maradékosztályból pontosan egy elemet kiveszünk, akkor az így kapott
+      számhalmazt ***modulo $m$ redukált maradékrendszernek nevezzük***.

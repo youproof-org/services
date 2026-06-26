@@ -1,0 +1,15 @@
+@use 'variables' as *;
+
+.paragraph {
+  margin: 0.75rem 0;
+}
+
+.drop-cap::first-letter {
+  float: left;
+  font-size: 8.4em;
+  font-style: normal;
+  font-weight: 100;
+  line-height: .78;
+  margin: .05em .1em 0 0;
+  text-transform: uppercase;
+}

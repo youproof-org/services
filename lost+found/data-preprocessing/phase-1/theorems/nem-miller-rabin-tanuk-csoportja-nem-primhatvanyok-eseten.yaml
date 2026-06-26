@@ -1,0 +1,39 @@
+type: theorem
+name: nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten
+proofs:
+  - nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $n$ egy tetszőleges ***$1$-nél nagyobb páratlan szám***, amelynek legalább két egymástól különböző
+      prímtényezője is van, azaz ***nem prímhatvány***.
+  - type: formula
+    lead-in: |
+      Képezzük azt az $e\geq 1$ kitevőt és $k\geq 1$ páratlan számot, amelyekre teljesül az alábbi:
+    content: |
+      n-1=2^e\cdot k
+  - type: formula
+    lead-in: |
+      Ekkor ***létezik legalább egy olyan $j$ kitevő*** a $\{0; 1;2; \ldots ; e-1\}$ számok között, amelyekhez
+      külön-külön találhatók olyan $x$ egész számok, hogy teljesül az alábbi kongruencia:
+    content: |
+      x^{2^j}\equiv -1\pmod n
+  - type: formula
+    lead-in: |
+      Jelöljük az ilyen kitevők közül a ***legnagyobbat*** $j_{\text{max}}$-szal, és legyen $H_n$ azon $[a]_n$
+      maradékosztályok halmaza, amelyek esetén az $a^{2^{j_{\text{max}}}k}$ hatvány $1$-gyel ***vagy*** $-1$-gyel
+      kongruens modulo $n$, azaz:
+    content: |
+      a^{2^{j_{\text{max}}}k} \equiv \pm 1\pmod n
+  - type: ordered-list
+    lead-in: |
+      Ekkor $H_n$-re igazak az alábbiak:
+    items:
+      - 'A $H_n$ halmaz minden eleme ***redukált maradékosztály***. Másként fogalmazva $H_n$ részhalmaza a
+        $(\Z/n\Z)^{\times}$ multiplikatív csoportnak, azaz $H_n\sube (\Z/n\Z)^{\times}$.'
+      - 'A $H_n$ halmaz ezen felül a $(\Z/n\Z)^{\times}$ multiplikatív csoport egy ***részcsoportja***, azaz
+        $H_n\leq (\Z/n\Z)^{\times}$.'
+      - 'A $H_n$ részcsoport tartalmazza az összes ***NEM Miller-Rabin-tanút***.'
+      - 'A $H_n$ egy ***valódi részcsoport***, azaz létezik olyan modulo $n$ redukált maradékosztály, amely nincs
+        benne $H_n$-ben.'

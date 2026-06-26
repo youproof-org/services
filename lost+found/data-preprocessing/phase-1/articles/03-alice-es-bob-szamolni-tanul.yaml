@@ -1,0 +1,54 @@
+type: chapter
+name: 03-alice-es-bob-szamolni-tanul
+title: Alice és Bob számolni tanul
+
+abstract:
+  - type: narrative
+    content: |
+      Az előző részben láttuk, hogy a számítógépek megjelenésével az Alice és Bob közötti titkos kommunikáció
+      igénye a továbbiakban nem pusztán emberi nyelven írt bizalmas szövegek küldözgetésére korlátozódik. Ezért
+      elkezdtük felépíteni az információátviteli rendszerek absztrakt modelljét annak érdekében, hogy megfelelően
+      általánosan tudjuk tárgyalni ezt a kérdést a továbbiak során. Ennek első állomásaként eddig két összetevővel
+      ismerkedtünk meg: az egyik volt az információforrás, a másik pedig a forráskódoló.
+  - type: narrative
+    content: |
+      De vajon hogyan történik a digitális információ reprezentációja az informatikai rendszerekben? Mik azok a
+      számrendszerek? Hogyan kell elképzelni a számítógépek memóriáját és mi van benne? Hogyan épül fel egy képet
+      tartalmazó file és mit tartalmaz? Ebben a részben erről lesz szó...
+prologue:
+  - type: narrative
+    content: |
+      Az előző részben megismert digitális információforrás felfogható egy olyan absztrakt objektumnak, amely egy
+      véges (például N elemű) halmazból vett elemek sorozatát produkálja. Mivel az N elemű halmaz véges, ezért
+      ennek elemeihez egyértelműen hozzárendelhetjük a 0, 1, ..., N-1 egész számokat. Egy szöveges információforrás
+      esetén ezek lehetnek a különböző karakterekhez rendelt egész számok például az ASCII kódtábla alapján, egy
+      hangforrás vagy bármilyen más fizikai folyamat esetén pedig az őt leíró analóg jel digitalizált változatát
+      alkotó számok (lásd az előző rész végét). Látható, hogy matematikai szempontból a közölt információ konkrét
+      tartalmának nincs jelentősége. Ezért azt csupán egy egész számokból álló sorozatnak fogjuk tekinteni.
+      Ráadásul másnak tekinteni nem is lenne értelme, mivel egy informatikai rendszer a vizsgálatunk tárgya, amely
+      számokon kívül semmi mást nem tud értelmezni és feldolgozni.
+  - type: narrative
+    content: |
+      Ez a számsorozat azután a forráskódoló bemenetére kerül. Ennek feladata ebből egy olyan bitsorozat (az adat)
+      előállítása, amely már átküldhető a kommunikációs csatornán. A forráskódolás témakörének vizsgálata messzire
+      vezetne, ezért itt ezt nem fogjuk részletezni. Azt azonban fontos tudnunk, hogy a számokat hogyan lehet
+      leírni bitsorozatokkal, ezért először a különböző számrendszerekről ejtünk néhány szót.
+sections:
+  - 01-szamrendszerek
+  - 02-a-2-es-binaris-szamrendszer
+  - 03-a-16-os-hexadecimalis-szamrendszer
+  - 04-a-memoria-felepitese
+  - 05-elojel-nelkuli-egeszek
+  - 06-elojeles-egeszek
+  - 07-egy-kep-binaris-leirasa
+
+epilogue:
+  - type: narrative
+    content: |
+      Ebben a fejezetben tehát megismerkedtünk a számrendszerek fogalmával, és képet kaptunk arról, hogy az
+      informatikai eszközök milyen módokon tárolják a különböző számokat. Ennek gyakorlati bemutatására megnéztük,
+      hogy egy egyszerű BMP formátumú képet leíró file milyen byte-okat tartalmaz, illetve, hogy melyik byte-nak mi
+      a jelentése a BMP szabvány szerint. Meg is változtattuk néhány képpont színét pusztán néhány byte átírásával.
+      E rövid kitérő után a következő részben az információátviteli rendszerek absztrakt modelljét építjük tovább,
+      és ennek keretében megismerkedünk magával az átviteli csatornával, továbbá a vele kapcsolatban felmerülő
+      problémákkal.

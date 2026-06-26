@@ -1,0 +1,291 @@
+<!-- wp:paragraph -->
+<p><strong><em>Az <a rel="noreferrer noopener" aria-label="előző részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/9-diffie-hellman-protokoll-egyiranyu-fuggveny-modularis-aritmetika-asszimmetrikus-kulcs/" target="_blank">előző részben</a> elkezdtük felvázolni a modern kriptográfiai eljárások mögött meghúzódó alapvető számelméleti gondolatokat. Olyan alapfogalmakat ismertünk meg, mint egyirányú függvények, moduláris összeadás, szorzás és hatványozás, valamint a diszkrét logaritmus problémája. Ezután részletesen megvizsgáltuk a Diffie-Hellman kulcscsere protokoll működését. Láttuk ugyanakkor, hogy megfelelő partnerhitelesítés hiányában egy aktív támadó könnyedén kijátszhatja ezt a rendszert. Ezért elkezdtük bemutatni az úgynevezett aszimmetrikus kulcsú titkosítás alapötletét. Végül megemlítettük az erre az ötletre épülő RSA-algoritmust. Ez – mint látni fogjuk – a digitális aláírások és tanúsítványok segítségével választ ad a partnerhitelesítés kérdésére is. De vajon mik azok a digitális aláírások és tanúsítványok? Hogyan tud meggyőződni Alice és Bob arról, hogy valóban egymással kommunikálnak, nem pedig egy <a rel="noreferrer noopener" aria-label="rosszindulatú támadóval (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/5-one-time-pad-passziv-aktiv-tamado-haromutas-kulcsforgalom#active-attacker" target="_blank">rosszindulatú támadóval</a>? Mik azok a bizalmi modellek és hogyan épülnek fel? Ebben a részben erről lesz szó...</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"className":"prerequisite-warning"} -->
+<p class="prerequisite-warning">Figyelem! Erősen ajánlott elolvasni az <a href="https://youproof.hu/kriptografia/5-one-time-pad-passziv-aktiv-tamado-haromutas-kulcsforgalom/" target="_blank" rel="noreferrer noopener" aria-label="5. (új fülön nyitja meg)">5.</a> és <a rel="noreferrer noopener" aria-label="9. részt (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/9-diffie-hellman-protokoll-egyiranyu-fuggveny-modularis-aritmetika-asszimmetrikus-kulcs/" target="_blank">9. részt</a> az alábbiak megértéséhez. A teljes cikksorozat elejét&nbsp;<a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/1-alapfogalmak-caesar-vigenere-enigma-kulcsmegosztas/" target="_blank">itt</a>&nbsp;találod.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"dropCap":true} -->
+<p class="has-drop-cap">Az aszimmetrikus kulcsú rejtjelezés kapcsán láthattuk, hogy ebben az esetben Alice nem ugyanazt a kulcsot használja a Bob-nak szánt üzenet rejtjelezésére, mint amivel Bob az üzenetet dekódolja. Ebben a felállásban minden résztvevő rendelkezik egy <strong><em>kulcspárral</em></strong>, amelynek egyik felét <strong><em>nyilvános (publikus)</em></strong>, másik felét pedig <strong><em>titkos (privát) kulcsnak</em></strong> nevezzük. Egy adott résztvevő – például Bob – a saját nyilvános kulcsát nyugodtan elérhetővé teheti bárki számára. Az ugyanis csak a neki küldött üzenetek rejtjelezéséhez használható. A dekódolás kizárólag a kulcspár másik részével, a titkos kulccsal lehetséges, amelyet viszont Bob sosem ad ki a kezéből, azt titokban tartja.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez önmagában még nem biztosít partnerhitelesítést, mivel egy aktív támadó – például <a rel="noreferrer noopener" aria-label="Mallory (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/5-one-time-pad-passziv-aktiv-tamado-haromutas-kulcsforgalom#active-attacker" target="_blank">Mallory</a> – könnyedén kijátszhatja a rendszert, méghozzá a következőképpen. Tegyük fel, hogy Alice szeretne Bob-nak rejtjelezett üzenetet küldeni. Ezért megszólítja Bob-ot és elkéri tőle a nyilvános kulcsát. A csaló Mallory azonban eltéríti ezt az üzenetet és beékelődik Alice és Bob közé, pontosan ugyanúgy, mint ahogy a <a href="https://youproof.hu/kriptografia/9-diffie-hellman-protokoll-egyiranyu-fuggveny-modularis-aritmetika-asszimmetrikus-kulcs#diffie-hellman-attack" target="_blank" rel="noreferrer noopener" aria-label="Diffie-Hellman kulcscsere protokoll támadásakor (új fülön nyitja meg)">Diffie-Hellman kulcscsere protokoll támadásakor</a> tette. Válaszol Bob-nak kiadva magát, és visszaküldi a saját [latex]K_M[/latex] nyilvános kulcsát Alice-nak. Ezzel párhuzamosan megszólítja Bob-ot, és elkéri az ő [latex]K_B[/latex] nyilvános kulcsát, neki viszont azt hazudja, hogy ő Alice. Ezen a ponton Alice azt hiszi, hogy Bob nyilvános kulcsát kapta meg, Bob pedig azt hiszi, hogy Alice kérte el az ő nyilvános kulcsát. A támadásnak ez a része látható az alábbi ábrán:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":2374} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_10_kulcs_korrumpalas.jpg" alt="Kulcs korrumpálása" class="wp-image-2374"/><figcaption>Kulcs korrumpálása</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Ezután Alice egy bizalmas [latex]x[/latex] üzenetet küld Bob-nak, amelyet rejtjelez a [latex]K_M[/latex] kulccsal. Alice erről a kulcsról azt hiszi, hogy Bob nyilvános kulcsa, de valójában a csaló Mallory-é. Így amikor Mallory elfogja a rejtjelezett [latex]y[/latex] üzenetet, azt könnyedén dekódolni tudja a saját [latex]k_M[/latex] titkos kulcsával, megismerve ezáltal a bizalmas információt. Annak érdekében, hogy Alice és Bob ne fogjon gyanút, Mallory gyorsan újból rejtjelezi az üzenetet, de ezúttal Bob [latex]K_B[/latex] nyilvános kulcsával, és továbbküldi azt Bob-nak. Végül Bob megkapja a [latex]z[/latex] rejtjelezett üzenetet, és dekódolja azt a saját [latex]k_B[/latex] titkos kulcsával, mit sem sejtve erről az egész disznóságról. Ez a folyamat látható az alábbi ábrán:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":2375} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_10_kulcs_korrumpalas_folyt.jpg" alt="Kulcs korrumpálása (folytatás)" class="wp-image-2375"/><figcaption>Kulcs korrumpálása (folytatás)</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Ennek a problémának a kiküszöbölését teszik lehetővé az úgynevezett digitális tanúsítványok, amelynek alapvető építőelemei a <strong><em>digitális aláírások</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Digitális aláírások</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Láthattuk, hogy egy aszimmetrikus kulcsú rejtjelező esetén a kulcspár nyilvános részével kódolt üzeneteket kizárólag ugyanezen kulcspár titkos részével lehet dekódolni. Igen hasznos eszközt kapunk a kezünkbe, amennyiben <strong><em>a kulcsok szerepe ilyen értelemben felcserélhető</em></strong>. Nevezetesen, ha a kulcspár titkos részével kódolt üzeneteket viszont kizárólag a kulcspár nyilvános részével lehet dekódolni. Nem minden aszimmetrikus kulcsú rejtjelező teljesíti ezt a kritériumot, de történetesen a már sokszor említett <strong><em>RSA-algoritmus</em></strong> igen. De vajon miért olyan hasznos ez?</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Rejtjelezésre nyilván nem használható. Ha ugyanis Alice kódol egy üzenetet a saját titkos kulcsával, akkor azt a fentiek alapján bárki dekódolni tudja Alice nyilvános kulcsával, hiszen az bárki számára elérhető. Vegyük észre azonban, miszerint az a tény, hogy egy üzenet dekódolható Alice nyilvános kulcsával egyben azt is jelenti, hogy azt csak egy olyan résztvevő kódolhatta, aki Alice titkos kulcsának birtokában volt. Márpedig ha Alice nem teljesen bolond, és valóban sosem adja ki a kezéből a titkos kulcsát, akkor ez bizonyíték arra, hogy az üzenetet kizárólag ő küldhette. Ily módon Bob könnyedén meggyőződhet arról, hogy Mallory vagy más belekontárkodott-e az üzenetbe az átvitel során vagy nem.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel ugyanis, hogy Alice szeretne egy [latex]x[/latex] üzenetet küldeni Bob számára, de azt is szeretné, ha Bob ellenőrizni tudná, hogy valóban az az üzenet érkezik-e meg hozzá, amelyet ő elküldött. Alice-nak nincs más dolga, mint kódolni az üzenetet, de ezúttal nem Bob nyilvános kulcsát, hanem a saját [latex]k_A[/latex] titkos kulcsát használva. Az így kapott [latex]y[/latex] kódszöveget ezután Alice az elküldeni kívánt [latex]x[/latex] üzenethez fűzi, és az így keletkezett [latex](x,y)[/latex] összetett üzenetet küldi el Bob-nak. Ez látható az alábbi ábrán:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":2342} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_10_digitalis_alairas_alapvaltozat.jpg" alt="Digitális aláírás (alapváltozat)" class="wp-image-2342"/><figcaption>Digitális aláírás (alapváltozat)</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Bob a vételi oldalon szétszedi a megérkező [latex](x,y)[/latex] összetett üzenetet, de mielőtt annak [latex]x[/latex] komponensét felhasználná, szeretne meggyőződni róla, hogy az sértetlenül érkezett-e meg hozzá. Ezt könnyen megteheti, hiszen csak vennie kell Alice [latex]K_A[/latex] nyilvános kulcsát, azzal dekódolni a kapott összetett üzenet [latex]y[/latex] komponensét, és az eredményt összehasonlítani [latex]x[/latex]-szel. Amennyiben ez a kettő megegyezik, úgy Bob biztos lehet benne, hogy az üzenet küldője Alice titkos kulcsának birtokában volt. Következésképp a küldő csak Alice lehetett. </p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Amennyiben viszont Bob különbséget észlel, akkor ez azt bizonyítja számára, hogy egy aktív támadó garázdálkodik a kommunikációs csatornán. Hiszen Mallory hiába próbálja meg korrumpálni az [latex]x[/latex] üzenetet, a megváltoztatott üzenethez tartozó [latex]y[/latex] komponenst nem fogja tudni előállítani, mivel nem ismeri Alice titkos kulcsát. Az [latex]y[/latex] komponens tehát tulajdonképpen hitelesíti az [latex]x[/latex] komponens eredetét Bob számára, így azt szemléletesen Alice <strong><em>digitális aláírásának</em></strong> nevezzük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez mind szép és jó, van azonban három probléma, amit mindenképpen meg kéne oldani. Az első, és legkisebb probléma az, hogy az [latex](x,y)[/latex] összetett üzenet [latex]x[/latex] komponense teljesen nyílt szövegként halad át a kommunikációs csatornán. Így annak tartalmát egy támadó – habár módosítani nem tudja az [latex]y[/latex] digitális aláírás miatt – minden erőfeszítés nélkül megismerheti. Ez a probléma könnyen kiküszöbölhető, ha Alice először rejtjelezi az [latex]x[/latex] üzenetet Bob [latex]K_B[/latex] nyilvános kulcsával, és az így kapott [latex]s[/latex] kódszöveget látja el a saját digitális aláírásával [latex]x[/latex] helyett.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Bob ebben az esetben ugyanúgy ellenőrizni tudja az [latex]s[/latex] kódszöveg hitelességét az előbb ismertetett módon, csak ezután még dekódolnia kell azt a saját [latex]k_B[/latex] titkos kulcsával annak érdekében, hogy megkapja az eredeti [latex]x[/latex] üzenetet. Ilyen módon tehát az üzenet eredetiségének védelme mellett a tartalmának elrejtése is biztosítható. Ez látható az alábbi ábrán:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":2344} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_10_digitalis_alairas_rejtjelezovel.jpg" alt="Digitális aláírás (rejtjelezővel)" class="wp-image-2344"/><figcaption>Digitális aláírás (rejtjelezővel)</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>A második probléma a digitális aláírás méretével függ össze. Vegyük észre, hogy a digitális aláírás nem más, mint az aláírni kívánt bitsorozat Alice titkos kulcsával kódolt változata. Következésképp ugyanolyan hosszú, mint maga az üzenet. Ezt a problémát a következő szakaszban tárgyalt úgynevezett <strong><em>kriptográfiai hash függvényekkel</em></strong> iktathatjuk ki.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Végül a harmadik probléma Bobnak az Alice nyilvános kulcsába vetett bizalmával függ össze. Nevezetesen, amikor Bob ellenőrzi egy üzenet digitális aláírását Alice nyilvános kulcsával, hogyan győződhet meg arról, hogy az valóban Alice nyilvános kulcsa, nem pedig Mallory-é, aki csak azt hazudja a kulcsról, hogy Alice-é? Bob vagy egy nyilvános kulcstárból kérdezi le Alice kulcsát, vagy pedig maga Alice küldi el neki. De gondoljunk bele, hogy Mallory kontrollálni tudja a résztvevők teljes kommunikációját. Így azt is elérheti, hogy Bob-hoz már egy olyan nyilvános kulcs jut el, ami valójában Mallory titkos kulcsának a párja. Mallory tehát ebben az esetben képes digitálisan aláírni egy meghamisított üzenetet oly módon, hogy Bob rendben találja az aláírást, mivel azt hiszi, hogy Alice nyilvános kulcsát használta az ellenőrzéshez. Ennek kivédésére szolgálnak a <strong><em>digitális tanúsítványok</em></strong>, amelyekről szintén ebben a részben lesz szó.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Kriptográfiai hash függvények</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Egy <strong><em>hash függvény</em></strong> egy olyan művelet, amely egy tetszőleges hosszúságú bemeneti bitsorozatból egy fix méretű – tipikusan 256 vagy 512 bit hosszúságú – kimeneti bitsorozatot állít elő. Ezt a kimeneti bitsorozatot a bemenet <strong><em>hash értékének</em></strong> nevezzük. Amennyiben egy hash függvény teljesít bizonyos kritériumokat, akkor az általa előállított hash értéket a bemeneti bitsorozat eredetiségének ellenőrzésére használhatjuk. Ezeket <strong><em>kriptográfiai hash függvényeknek</em></strong> nevezzük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ahhoz hasonlóan, ahogy minket azonosít az ujjlenyomatunk, az adatok hash értéke is egy, az adott adatra jellemző mennyiség. Ha úgy tetszik, egyfajta „digitális ujjlenyomat”. Mivel függvényről van szó, ezért ugyanazt a jelölést alkalmazhatjuk, mint amit az előző részben a <a rel="noreferrer noopener" aria-label="függvényeknél (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/9-diffie-hellman-protokoll-egyiranyu-fuggveny-modularis-aritmetika-asszimmetrikus-kulcs#function" target="_blank">függvényeknél</a> tanultunk. Például legyen adott egy [latex]x[/latex] üzenet és egy [latex]h[/latex] hash függvény. Ekkor az [latex]x[/latex] üzenet hash értékét – vagy „lenyomatát” így jelöljük: [latex]h(x)[/latex]. Az alábbi ábrán egy hash függvény látható:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":2346} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_10_kriptografiai_hash_fuggveny.jpg" alt="Kriptográfiai hash függvény" class="wp-image-2346"/><figcaption>Kriptográfiai hash függvény</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Vegyük észre, hogy egy hash függvény lehetséges bemeneteinek halmaza végtelen – hiszen a bemenet bármilyen tetszőleges hosszúságú bitsorozat lehet –, a lehetséges hash értékek halmaza viszont véges számosságú – hiszen a kimenet egy fix (például 512 bit) méretű bitsorozat. Emiatt nyilvánvalóan végtelen sok olyan bitsorozat létezik, amelyeknek ugyanaz a hash értéke. Az ilyen eseteket <strong><em>ütközéseknek (collision)</em></strong> nevezzük. A kriptográfiai alkalmazások esetén fontos, hogy minél kisebb valószínűséggel következzen be ütközés egy adott hash függvény és a szóba jövő üzenetek esetén. Egy jó kriptográfiai hash függvénynek ezért az alábbi kritériumokat kell teljesítenie:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li><strong><em>Őskép ellenállóság (pre-image resistance):</em></strong> Tetszőleges [latex]x[/latex] üzenet [latex]h(x)[/latex] hash értékét algoritmikusan „könnyű” legyen kiszámítani, de egy adott [latex]y[/latex] hash értékhez algoritmikusan „nehéz” legyen olyan [latex]x[/latex] üzenetet találni, amelynek épp [latex]y[/latex] a hash értéke – azaz amelyre [latex]y=h(x)[/latex] teljesül. Ez a kritérium lényegében azt követeli meg, hogy a [latex]h[/latex] hash függvény legyen <a rel="noreferrer noopener" aria-label="egyirányú függvény (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/9-diffie-hellman-protokoll-egyiranyu-fuggveny-modularis-aritmetika-asszimmetrikus-kulcs#one-way-function" target="_blank">egyirányú függvény</a>. Arról, hogy mit nevezünk algoritmikusan „könnyű” vagy „nehéz” feladatnak, a <a rel="noreferrer noopener" aria-label="7. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/7-algoritmus-bonyolultsag-problemaosztalyok-polinomialis-exponencialis-p-np-sejtes-tanu-tetel/" target="_blank">7. részben</a> volt szó részletesen. Az ilyen tulajdonságú hash függvényeket <strong><em>őskép ellenálló hash függvényeknek</em></strong> nevezzük.</li><li><strong><em>Második őskép ellenállóság (second pre-image resistance):</em></strong> Egy adott [latex]x_1[/latex] üzenethez algoritmikusan „nehéz” legyen olyan [latex]x_2[/latex] üzenetet találni, amelynek ugyanaz a hash értéke – azaz amelyre [latex]h(x_1)=h(x_2)[/latex] teljesül. Az ilyen tulajdonságú hash függvényeket <strong><em>gyengén ütközésmentes hash függvényeknek</em></strong> nevezzük.</li><li><strong><em>Ütközésellenállóság (collision resistance):</em></strong> Algoritmikusan „nehéz” legyen két olyan tetszőleges [latex]x_1[/latex] és [latex]x_2[/latex] egymástól különböző üzenetet találni, amelyeknek ugyanaz a hash értéke  – azaz amelyre [latex]h(x_1)=h(x_2)[/latex] teljesül. Az ilyen tulajdonságú hash függvényeket <strong><em>erősen ütközésmentes hash függvényeknek</em></strong> nevezzük.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>A fenti kritériumok miatt egy hash függvényre érvényesülnie kell az úgynevezett <strong><em>lavinahatásnak</em></strong>. Ez lényegében azt jelenti, hogy a bemenet egyetlen bitjének megváltoztatása hatására a „lenyomat” minden bitjének <em>50-50%</em> eséllyel kell megváltoznia. Ha egy hash függvény nem mutat erőteljes lavinahatást – azaz gyengén véletlenszerűsít – akkor nem tekinthető erősnek. Innen ered egyébként a „hash” kifejezés is, amely angolul „zagyvalékot” jelent.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Napjainkban kriptográfiai hash függvényt megvalósító eljárásként az <strong><em><a rel="noreferrer noopener" aria-label=" (új fülön nyitja meg)" href="https://en.wikipedia.org/wiki/MD5" target="_blank">MD5 (Message-Digest algorithm 5)</a></em></strong> és az <strong><em><a rel="noreferrer noopener" aria-label="SHA (Secure Hash Algorithm) (új fülön nyitja meg)" href="https://en.wikipedia.org/wiki/Secure_Hash_Algorithms" target="_blank">SHA (Secure Hash Algorithm)</a></em></strong> különböző változatai terjedtek el a legjobban. Ezek részleteire itt nem térünk ki, ám megemlítjük, hogy az MD5 hash algoritmus ma már nem tekinthető biztonságosnak. Ennek okait lentebb fogjuk részletezni. Sőt, 2005 óta már az SHA-1 algoritmus támadhatósága is ismert, ezért rengeteg szervezet az SHA család későbbi változatait ajánlja kriptográfiai alkalmazásra.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Előbb azonban vizsgáljuk meg, hogy a kriptográfiai hash függvények hogyan kapcsolódnak a fentebb már említett digitális aláírásokhoz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Kriptográfiai hash függvények alkalmazása</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Említettük, hogy a digitális aláírás kedvéért nem szeretnénk megduplázni a kommunikációs csatornán átküldött adat mennyiségét. Márpedig ha Alice a Bob-nak szánt üzenetet egy az egyben kódolja a saját titkos kulcsával, akkor az így kapott digitális aláírás hossza az aláírt eredeti üzenet hosszával fog megegyezni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ehelyett egy valódi digitális aláírásnál a következő történik. Tegyük fel, hogy Alice digitális aláírással kívánja ellátni az [latex]x[/latex] bitsorozatot. Az most lényegtelen számunkra, hogy ez az eredeti üzenet-e, vagy annak Bob nyilvános kulcsával titkosított változata. A lényeg, hogy ez az a bitsorozat, amelyről Alice bizonyítani szeretné Bob számára, hogy valóban ő küldte azt.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ennek érdekében Alice először egy [latex]h[/latex] hash függvényt alkalmaz az aláírni kívánt [latex]x[/latex] bitsorozatra, amelynek eredményként előáll az [latex]x[/latex] bitsorozat [latex]h(x)[/latex] „ujjlenyomata”. Ezután Alice ezt a [latex]h(x)[/latex] „lenyomatot” kódolja a saját [latex]k_A[/latex] titkos kulcsával. Valójában ennek a kódolásnak az eredményét nevezzük az [latex]x[/latex] üzenet <strong><em>digitális aláírásának</em></strong>, amelyet [latex]\text{sig}(x)[/latex]-szel jelölünk. Alice ezt a bitsorozatot fűzi hozzá az eredeti üzenethez, és az így kapott [latex](x, \text{sig}(x))[/latex] összetett üzenetet küldi el Bob-nak. Ez az aláírási folyamat látható az alábbi ábrán:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":2348} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_10_digitalis_alairas_hash_fuggvennyel.jpg" alt="Digitális aláírás (hash függvénnyel)" class="wp-image-2348"/><figcaption>Digitális aláírás (hash függvénnyel)</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>A vételi oldalon az aláírás ellenőrzése – egy kis különbséggel – ugyanúgy történik, mint a fentebb már említett esetben. Bob szétszedi a megérkező [latex](x,\text{sig}(x))[/latex] összetett üzenetet, de mielőtt annak [latex]x[/latex] komponensét felhasználná, szeretne meggyőződni róla, hogy az sértetlenül érkezett-e meg hozzá. Ehhez egyrészt veszi Alice [latex]K_A[/latex] nyilvános kulcsát, azzal dekódolja a kapott összetett üzenet [latex]\text{sig}(x)[/latex] komponensét, így megkap egy bitsorozatot. Ennek [latex]x[/latex] sértetlensége esetén meg kell egyeznie a [latex]h(x)[/latex] hash értékkel. Azaz Bob-nak is ki kell számolnia a [latex]h(x)[/latex] lenyomatot, és összehasonlítania a [latex]\text{sig}(x)[/latex] dekódolása során kapott bitsorozattal. Az alábbi ábrán az aláírás ellenőrzésének folyamata látható:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":2358} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_10_digitalis_alairas_ellenorzese.jpg" alt="Digitális aláírás ellenőrzése" class="wp-image-2358"/><figcaption>Digitális aláírás ellenőrzése</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Amennyiben az ellenőrzés sikeres volt, úgy Bob biztos lehet benne, hogy az [latex]x[/latex] üzenet küldője Alice titkos kulcsának birtokában volt, következésképp az csak Alice lehetett. Amennyiben viszont Bob különbséget észlel, akkor ez azt bizonyítja számára, hogy egy aktív támadó garázdálkodik a kommunikációs csatornán. Hiszen Mallory hiába próbálja meg korrumpálni az eredeti [latex]x[/latex] üzenetet, az ugyanis nagy valószínűséggel már egy teljesen különböző hash értéket fog eredményezni a hash függvény <strong><em>lavinahatása miatt</em></strong>. Ezt viszont Mallory nem fogja tudni aláírni Alice nevében, mivel nem ismeri Alice titkos kulcsát.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mallory egyetlen esélye, ha sikerül találnia egy olyan meghamisított [latex]x'[/latex] üzenetet, amelynek ugyanaz a lenyomata, mint [latex]x[/latex]-nek – azaz [latex]h(x')=h(x)[/latex] teljesül –, ekkor ugyanis a digitális aláírás is egyezni fog, és Bob nem fog gyanút. Ez azonban gyakorlatilag lehetetlen Mallory számára, amennyiben a használt hash függvény <strong><em>ütközésellenálló</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most megvizsgálunk egy valószínűségszámításból származó érdekes jelenséget, amelyre a kriptográfiai hash függvények elleni úgynevezett <strong><em>ütközéses támadások</em></strong> épülnek.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A születésnap paradoxon</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>születésnap paradoxon</em></strong> egy érdekes furcsaság, amely matematikai értelemben nem, csak a szó hétköznapi értelmében nevezhető paradoxonnak. Azért hívják mégis így, mivel némileg ellentmond a „józan észnek”.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel, hogy egy szobában véletlenül választott emberek egy csoportja tartózkodik. Ezen kívül feltesszük, hogy ha valakinek nem ismerjük a születésnapját, akkor az a <em>365</em> napos év minden napján azonos valószínűséggel születhetett. A kérdés az, hogy mennyi a valószínűsége, hogy legalább két személynek megegyezik a születésnapja. A meglepő válasz az, hogy ennek esélye több mint&nbsp;<em>50%</em>, ha a csoport létszáma legalább <em>23</em>. Sőt, legalább 58 személy esetén ez a valószínűség már <em>99%</em> felett van. A legtöbb ember valószínűleg sokkal kisebb esélyt mondana erre, ha tippelnie kéne, ezért nevezzük paradoxonnak.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A jelenség megértéséhez kulcsfontosságú az az észrevétel, hogy noha viszonylag kevés ember van a szobában, már így is nagyon sok párt alkotnak, melyeknél egyenként kell vizsgálni a születésnap egyezést. Nem az a kérdés tehát, hogy a szobában tartózkodó emberek közül legalább az egyiknek a születésnapja egybeesik-e <strong><em>egy konkrét emberével</em></strong> – például a miénkével. A születésnap paradoxon esetén ehelyett azt vizsgáljuk, hogy <strong><em>bármely két embernek</em></strong> egyezik-e a születésnapja. A szóbanforgó valószínűség kiszámításának pontos módja most nem érdekes. Az azonban igen, hogy mit jelent ez a jelenség a kriptográfiai hash függvények esetén.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel, hogy egy hash függvény [latex]N[/latex] bit hosszú lenyomatokat állít elő tetszőleges hosszúságú üzenetekből. Az összes létező lenyomatok száma tehát [latex]2^N[/latex]. Tegyük fel továbbá, hogy bármilyen üzenetre is alkalmazzuk a hash függvényt, teljesen véletlenszerű, hogy végül melyik lesz az üzenet lenyomata ebből a [latex]2^N[/latex] lehetőségből. Ez a feltételezés lényegében azt mondja ki, hogy a hash függvényünkre erőteljesen <strong><em>érvényesül a</em></strong> fentebb már említett <strong><em>lavinahatás</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A születésnap paradoxon terminológiájában az üzenetek a szobában tartózkodó embereknek, a véges számú lehetséges lenyomatok pedig a különböző születésnapoknak felelnek meg. A kérdés tehát az, hogy egy támadónak hány üzenetpárt kell megvizsgálnia ahhoz, hogy elegendően nagy valószínűséggel találjon két olyan üzenetet, amelynek ugyanaz a hash értéke. A születésnap paradoxon-hoz hasonló gondolatmenet miatt előfordulhat, hogy egy megfelelő számítási kapacitással rendelkező támadó számára egy ilyen üzenetpár megtalálása belátható időn belül kivitelezhető, amennyiben a használt hash értékek nem elegendően hosszúak. A fentebb már említett MD5 hash függvény 128 bit hosszúságú lenyomatokat képez, amely már több, mint 10 éve – a mai számítási kapacitásokról már nem is beszélve – egyáltalán nem nevezhető biztonságosnak.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Például 2004 márciusában indult az MD5CRK nevű projekt, amelynek célja az MD5 gyengeségeinek demonstrálása volt. Végül 2004 augusztusának második felében mutatták be a módszert, amellyel egy óra alatt sikerült ütközést találni. Az ehhez használt hardver konfiguráció 32 darab 1.90 GHz-es processzorral és 1 TB memóriával volt felszerelve. Ez akkoriban erősnek számított ugyan, de annyira azért nem volt a valóságtól elrugaszkodott számítási kapacitás. 2006-ban egy olyan módszert <a rel="noreferrer noopener" aria-label="publikáltak (új fülön nyitja meg)" href="https://eprint.iacr.org/2006/105" target="_blank">publikáltak</a>, amely már mindössze néhány perc alatt képes volt MD5 ütközést előállítani egy akkori átlagos laptopon (1.6 GHz Intel Pentium).</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Vegyük észre, hogy egy születésnap paradoxonra épülő támadás nem egy adott hash értékhez keres egy üzenetet. Az ugyanis még MD5 esetén is kivitelezhetetlen volna. Ehelyett a támadó olyan üzenet-párokat keres, amelyeknek ugyanaz a hash értéke. Most nézzük meg, hogyan tud ebből anyagi előnyt kovácsolni?</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A születésnapi támadás</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel, hogy a csaló Mallory és Bob adásvételi szerződést kötnek Bob autójára. Mallory kézségesen vállalja, hogy megírja a szerződés szövegét. Az adásvételi szerződésen kívül azonban Mallory egy másik, hamis szerződést is ír, miszerint kölcsönadott Bob-nak 10 millió forintot, amelynek visszafizetését Bob egy adott határidőig vállalja. Mallory kezében tehát van két szerződés, egy valódi és egy hamis. Azt szeretné elérni, hogy a hamis szerződés is el legyen látva Bob digitális aláírásával. A valódi szerződésre azért van szüksége, hogy megszerezze Bob digitális aláírását, mivel azt ő maga – Bob titkos kulcsának hiányában – nem tudja előállítani. Az így megszerzett digitális aláírást ezután a hamis szerződés hitelesítéséhez akarja felhasználni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Van azonban egy probléma, amit Mallory-nek még meg kell oldania a csaláshoz. Mivel a digitális aláírás nem az íráshordozóhoz, hanem a tartalomhoz kötött, ezért a valódi és a hamis szerződés digitális aláírása nagy valószínűséggel nem fog megegyezni. Ez csak egyetlen módon lehetséges: ha történetesen ugyanaz a két szerződést leíró bitsorozat hash értéke.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mallory ezért elkezdi módosítgatni mind a valódi, mind pedig a hamis szerződést. Csak olyan módosításokat hajt végre rajta, amelyek a két szöveg lényegi részét nem érintik. Például extra szóközöket helyez el, kihagy egy-egy vesszőt, máshogy tördeli a szöveget, átfogalmaz néhány mondatot, stb. Egy adásvételi vagy egy kölcsönszerződés már elegendően hosszú ahhoz, hogy az ilyen láthatatlan változtatások összes lehetséges kombinációinak száma meglehetősen nagy legyen. Például, hogy összemérhető legyen a lehetséges hash értékek számának nagyságrendjével. A valódi szerződés módosított változatait jelölje [latex]x_1, x_2, x_3, \dots[/latex], a hamis szerződés módosított változatait pedig [latex]y_1, y_2, y_3, \dots[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ugyan apró módosításokról van szó, azonban a hash függvény lavinahatása miatt már ezek is gyakorlatilag véletlenszerű hash értékeket fognak eredményezni. Mallory mindkét sorozatból veszi az első változatot – azaz [latex]x_1[/latex]-et és [latex]y_1[/latex]-et –, mindkettőnek kiszámítja a hash értékét – azaz [latex]h(x_1)[/latex]-et és [latex]h(y_1)[/latex]-et –, és összehasonlítja őket. Amennyiben ezek különböznek, akkor a két sorozat következő elemére hajtja végre ugyanezt, és így tovább mindaddig, amíg nem talál egy olyan [latex]x_i, y_i[/latex] valódi-hamis szerződéspárt, amelyek hash értéke megegyezik.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Amennyiben valamilyen elavult hash függvényről van szó, akkor a születésnap paradoxon miatt Mallory belátható időn belül ütközést fog találni. Legyen tehát [latex]x_i[/latex] az a valódi, [latex]y_i[/latex] pedig az a hamis szerződésváltozat, amelyeknél ez az ütközés bekövetkezik, azaz amelyekre [latex]h(x_i)=h(y_i)[/latex]. Ezután Mallory odaadja a mit sem sejtő Bob-nak a valódi [latex]x_i[/latex] szerződést aláírásra, az így megszerzett [latex]\text{sig}(x_i)[/latex] digitális aláírást pedig a hash értékek egyezősége miatt nyugodtan felhasználhatja a hamis [latex]y_i[/latex] szerződés digitális aláírásaként is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mallory és Bob a megkötött valódi szerződésnek megfelelően lezavarják az adásvételt, elbúcsúznak egymástól, és mindenki megy szépen haza. Telik-múlik az idő, és elérkezik a hamis kölcsönszerződés szerinti fizetési határidő, amely szerződés létezéséről Bob nem is tud. Mallory felszólítja Bob-ot, hogy adja vissza neki a nem létező kölcsönt. Bob tiltakozik, miszerint ő soha nem kötött kölcsönszerződést Mallory-vel. Mallory ezért a bírósághoz fordul, és bemutatja a hamis szerződést, amelyen ott virít Bob digitális aláírása. A bíróság pedig az aláírás ellenőrzése után Mallory-nek fog igazat adni, és kötelezni fogja Bob-ot a nem létező kölcsön visszafizetésére. Mallory pedig jót röhög a markába, mivel így tulajdonképpen ingyen megszerezte Bob autóját, és még némi pénzt is sikerült tőle kicsalnia.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az ilyen jellegű csalásokat a megfelelő minőségű és elegendően hosszú lenyomatokat előállító hash függvények alkalmazásával lehet kivédeni. Ilyenkor ugyanis egy ütközés megtalálása Mallory számára algoritmikusan kivitelezhetetlen lesz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Digitális tanúsítványok</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Ennek a résznek az elején megemlítettünk egy még megoldásra váró problémát, amely a nyilvános kulcsokba vetett bizalommal függ össze. Nevezetesen ahhoz, hogy Alice biztonsággal használhassa Bob nyilvános kulcsát – akár egy neki szánt bizalmas üzenet titkosításához, akár egy tőle származó digitális aláírás ellenőrzéséhez – mindenekelőtt meg kell bíznia abban, hogy az valóban Bob nyilvános kulcsa, nem pedig a csaló Mallory-é.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezt a problémát Alice és Bob egy olyan harmadik résztvevő bevonásával tudják megoldani, akiben mindketten megbíznak. E résztvevő feladata tanúsítani, hogy egy adott publikus kulcs valóban a tulajdonosként megjelölt résztvevőhöz tartozik. Őt ezért <strong><em>tanúsító hatóságnak vagy szervezetnek (certificate authority – CA)</em></strong> nevezzük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel például, hogy Bob egy új felhasználó a rendszerben. Generál magának egy nyilvános és titkos kulcspárt. A titkos kulcsot szépen elzárja a széfjébe, majd a nyilvános kulcsával elballag a CA-hoz. Itt igazolja a személyazonosságát, és megkéri a CA-t, hogy állítson ki számára egy úgynevezett <strong><em>digitális tanúsítványt</em></strong> arról, hogy a bemutatott publikus kulcs valóban az övé. Itt megjegyezzük, hogy sok esetben a kulcspárt maga a CA generálja a résztvevők számára, ám ez a lényegen nem változtat. A CA által kiállított tanúsítvány nagyjából a következőket tartalmazza:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li>A tanúsítvány tulajdonosának (jelen esetben Bob) adatai</li><li>A tanúsítvány tulajdonosának publikus kulcsa</li><li>A tanúsítvány érvényességi ideje</li><li>A tanúsítvány kiállítója</li><li>A tanúsítvány kiállítójának digitális aláírása</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>Tegyük most fel, hogy Alice bizalmas üzenetet szeretne küldeni Bob-nak, előbb azonban meg akar győződni róla, hogy valóban Bob van-e a „vonal” túloldalán. Megkéri tehát a „vonal” túloldalán lévő résztvevőt, hogy igazolja magát egy tanúsítvánnyal, amelyet egy olyan CA állított ki, akiben Alice megbízik. Bob elküldi tehát Alice-nak a fenti tanúsítványt. Alice ezután ellenőrzi a tanúsítványon szereplő digitális aláírás hitelességét. Ezt a CA nyilvános kulcsával tudja megtenni a fentebb már ismertetett módon. Itt feltételezzük, hogy a CA nyilvános kulcsát Alice ismeri, és megbízik annak hitelességében. Például azért, mert a rendszeradminisztrátor elhelyezte azt Alice számítógépén, mint megbízható nyilvános kulcsot. Miután Alice ellenőrizte a tanúsítványon szereplő aláírást, már nyugodtan megbízhat a kommunikációs partnere hitelességében – azaz, hogy ő valóban Bob.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A bizalom továbbítása – chain of trust</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Térjünk most vissza a <a rel="noreferrer noopener" aria-label="7. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/7-algoritmus-bonyolultsag-problemaosztalyok-polinomialis-exponencialis-p-np-sejtes-tanu-tetel/" target="_blank">7. részben</a> már említett Kompánia országába. Tegyük fel, hogy a kormány teljesen át akar térni az elektronikus ügyintézésre a hagyományos papíralapú helyett. A bíróságok, a rendőrség, a kormányhivatalok és az egész közigazgatás mind mind elektronikus iratokkal dolgozik és az állampolgároknak lehetőségük van teljesen elektronikusan intézni az ügyeiket.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egy ilyen bonyolult és sokrésztvevős rendszerben nyilvánvalóan rengeteg tanúsítványt kell kibocsájtani. Nem lenne túl szerencsés, ha ezt a hatalmas feladatot egyetlen CA-ra bíznánk. Ehelyett több CA van a rendszerben, amelyek egy hierarchikusan felépülő fastruktúrába szerveződnek. A hierarchia csúcsán álló hitelesítő szervezetet <strong><em>gyökér CA-nak (root CA)</em></strong> vagy másnéven <strong><em>bizalmi horgonynak</em></strong> nevezzük. E bizalmi modell alapja, hogy minden résztvevő megbízzon legalább a gyökérben, és birtokában legyen a gyökér CA saját maga által aláírt tanúsítványának, az úgynevezett <strong><em>gyökér tanúsítványnak (root certificate)</em></strong>. Ebből indul ki a bizalom továbbadása az úgynevezett tanúsítványláncon vagy <strong><em>bizalmi láncon (chain of trust)</em></strong> keresztül. Most Kompánia közigazgatásának példáján keresztül nézzük meg, hogyan kell elképzelni egy ilyen tanúsítványláncot.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel, hogy Kompánia esetén mindenki megbízik a Belügyminisztériumban, ezért ebben az elektronikus közigazgatási rendszerben ő fogja betölteni a bizalmi horgony, azaz a gyökér CA szerepét. Feltételezzük tehát, hogy azok az állampolgárok, akik elektronikusan szeretnék ügyeiket intézni, rendelkeznek egy tanúsítvánnyal, amelyet a Belügyminisztérium állított ki. Ez a tanúsítvány tartalmazza a Belügyminisztérium saját publikus kulcsát, és digitálisan alá van írva a Belügyminisztérium saját titkos kulcsával. Kompániában a törvények értelmében ez a tanúsítvány kötelezően telepítve kell legyen minden olyan számítógépen, amelyet Kompániában értékesítenek.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel, hogy egy állampolgár – például Alice – úgy dönt, hogy mostantól ügyeit elektronikusan fogja intézni a Kompániai Ügyfélkapu nevű internetes szolgáltatáson keresztül. Ehhez először el kell mennie a legközelebbi kormányhivatalba, amely – miután Alice igazolta személyazonosságát – kiállít egy digitális tanúsítványt igazolandó, hogy Alice publikus kulcsának valóban Alice a tulajdonosa. A kormányhivatal ezt a tanúsítványt digitálisan aláírja a saját titkos kulcsával. Ezt <strong><em>végfelhasználói tanúsítványnak (end-user certificate)</em></strong> nevezzük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezen kívül a kiállított tanúsítvány meghivatkozik egy másik, magasabb szintű tanúsítványt, amelyet viszont maga a Belügyminisztérium állított ki. Ez azt igazolja, hogy bárki, aki megbízik a helyi kormányhivatalban, az egyúttal megbízhat azokban a tanúsítványokban is, amelyeket ő állít ki. Ezt a tanúsítványt <strong><em>köztes tanúsítványnak (intermediate certificate)</em></strong> nevezzük. Végül ez a köztes tanúsítvány meghivatkozza a Belügyminisztérium gyökértanúsítványát. Ez azt igazolja, hogy bárki, aki megbízik a Belügyminisztériumban, az megbízhat a köztes tanúsítvány tulajdonosában is, azaz a helyi kormányhivatalban.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel, hogy Alice-on kívül Bob is csatlakozik ehhez a rendszerhez. Az ő számára azonban egy másik kormányhivatal állít ki tanúsítványt, amely azonban szintén a kompániai Belügyminisztérium fennhatósága alá tartozik. A tanúsítványoknak ez a hierarchiája látható az alábbi ábrán:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":2354} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_10_hierarchikus_bizalmi_modell.jpg" alt="Hierarchikus bizalmi modell" class="wp-image-2354"/><figcaption>Hierarchikus bizalmi modell</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Ezután Alice az fentebb leírtakhoz hasonlóan bizalmas üzenetet szeretne küldeni Bob-nak. Előbb azonban meg akar győződni róla, hogy valóban Bob van-e a „vonal” túloldalán. Bob a saját végfelhasználói tanúsítványával válaszol, amelyet a saját helyi kormányhivatala állított ki. Most Alice-nak arról kell meggyőződnie, hogy megbízhat-e ennek a tanúsítványnak a hitelességében. Ennek érdekében ellenőrzi a meghivatkozott köztes tanúsítványt, és azt látja, hogy azt egy olyan valaki állította ki, aki a Belügyminisztériumnak mondja magát. Végül a gyökér tanúsítvány segítségével Alice azt is ellenőrizni tudja, hogy a köztes tanúsítványt valóban a Belügyminisztérium állította ki. Alice mostmár nyugodtan megbízhat a kommunikációs partnere hitelességében, hiszen sikeresen lezajlott a tanúsítványlánc ellenőrzése Bob tanúsítványától kiindulva egészen a gyökér tanúsítványig.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Megjegyezzük, hogy a fentebb leírt fastruktúrájú bizalmi modellnek léteznek módosított változatai. Az úgynevezett <strong><em>elosztott bizalmi modell</em></strong> például lehetővé teszi a szereplők hitelesítését több különböző bizalmi hierarchia esetén is. Ilyenkor több különböző gyökér CA van jelen, és közvetlenül mindegyikük a rendszernek csak a saját fastruktúrájába tartozó részét tudja hitelesíteni. Az egyes szereplők alaphelyzetben csak a saját gyökér CA-juk tanúsítványában bíznak meg. A teljes körű hitelesítés megvalósításához tehát szükség van valamilyen módszerre, amivel a bizalmat az egyes bizalmi horgonyok között továbbítani lehet. Erre a legelterjedtebb megoldás az úgynevezett <strong><em>kereszthitelesítés</em></strong>, amikoris a gyökér CA-k egymás számára is kiállítanak tanúsítványokat. Ennek – és az egyéb változatoknak – a részleteit itt mellőzzük, az ilyen bizalmi rendszereket általánosságban <strong><em>publikus kulcs infrastruktúrának (public key infrastructure – PKI)</em></strong> nevezzük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ebben a részben tehát megismerkedtünk a kriptográfiai hash függvények és a digitális aláírások működésének alapjaival. Láttuk, hogy egy nem megfelelő körültekintéssel megválasztott hash függvény esetén milyen agyafúrt módon lehet meghamisítani ezeket az aláírásokat. Végül a bizalmi modellek bemutatásán keresztül képet kaptunk arról, hogy hogyan történik egy ilyen rendszer résztvevőinek hitelesítése. A következő részben azokat a számelméleti összefüggéseket kezdjük el áttekinteni, amelyek mindezt valóban lehetővé teszik, és amelyeken például az RSA-eljárás is alapul.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A következő részt <a href="https://youproof.hu/kriptografia/11-peano-axiomarendszer-termeszetes-szam-muvelet-osszeadas-kommutativitas-asszociativitas-teljes-indukcio/">itt</a> találod...</em></strong></p>
+<!-- /wp:paragraph -->

@@ -1,0 +1,10 @@
+type: theorem
+name: oszthatosag-es-rendezesi-relacio-kapcsolata
+proofs:
+  - oszthatosag-es-rendezesi-relacio-kapcsolata-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Ha $a$ és $b$ tetszőleges egész számok, és $0\lt b$, akkor az $a|b$ oszthatóságból következik, hogy $a\leq
+      b$. Azaz tetszőleges pozitív egész szám legalább akkora, mint bármely osztója.

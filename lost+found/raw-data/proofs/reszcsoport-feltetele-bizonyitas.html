@@ -1,0 +1,79 @@
+<!-- wp:paragraph -->
+<p>Tegyük fel, hogy [latex]H[/latex] részcsoport [latex]G[/latex]-ben. Ekkor a műveleti zártság – azaz az <strong><em>1. tulajdonság</em></strong> – nyilvánvalóan teljesül, máskülönben [latex]H[/latex] nem lenne csoport a [latex]G[/latex] műveletére nézve, és így részcsoport sem lehetne [latex]G[/latex]-ben.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]H[/latex]-nak létezik egységeleme – hiszen maga is csoport –, ezért a <strong><em>2. tulajdonsághoz</em></strong> azt kell megmutatni, hogy ez az egységelem megegyezik [latex]G[/latex] egységelemével. Jelöljük [latex]H[/latex] egységelemét [latex]e_H[/latex]-val, [latex]G[/latex] egységelemét pedig [latex]e_G[/latex]-vel, és tegyük fel indirekt, hogy ez a kettő nem ugyanaz. Ha a kettő nem ugyanaz, akkor az sem mindegy, hogy melyik csoportban beszélünk inverzképzésről. Jelölje most [latex]{e_H}^{-1}[/latex] az [latex]e_H[/latex] elem [latex]G[/latex]-beli inverzét. Őket összeszorozva tehát a [latex]G[/latex] csoport egységelemét kell kapjuk, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]e_H\cdot {e_H}^{-1}=e_G[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]e_H[/latex] a [latex]H[/latex] csoport egységeleme, ezért nyilvánvalóan igaz az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]e_H\cdot e_H=e_H[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Végül, mivel [latex]e_G[/latex] a [latex]G[/latex] csoport egységeleme, ezért az alábbi is teljesül:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]e_H\cdot e_G=e_H[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]H[/latex] csoport, így a csoportművelet asszociativitása miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](e_H\cdot e_H)\cdot {e_H}^{-1}=e_H\cdot (e_H\cdot {e_H}^{-1})[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A baloldalt kifejtve ezt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{(e_H\cdot e_H)}_{=e_H}\cdot {e_H}^{-1}=e_H\cdot {e_H}^{-1}=e_G[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A jobboldalt kifejtve pedig ezt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]e_H\cdot \underbrace{(e_H\cdot {e_H}^{-1})}_{=e_G}=e_H\cdot e_G=e_H[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez a kettő eredmény viszont a fentebb már említett asszociativitás miatt indirekt feltételezésünkkel ellentétben mégis meg kell egyezzen, így valóban [latex]e_G=e_H[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Végül az inverzképzésre való zártság – azaz a <strong><em>3. tulajdonság</em></strong> – igazolásához képezzük a [latex]H[/latex] csoport valamely [latex]a[/latex] elemének inverzét mindkét csoportban, és megmutatjuk, hogy ezek valójában megegyeznek. A [latex]H[/latex]-beli inverzet jelöljük [latex]x_H[/latex]-val, míg a [latex]G[/latex]-beli inverzet [latex]x_G[/latex]-vel. Az [latex]a[/latex] elemet a [latex]G[/latex]-beli inverzével összeszorozva a [latex]G[/latex] csoport egységelemét kell kapnunk, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a\cdot x_G=e_G[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ugyanakkor az [latex]a[/latex] elemet a [latex]H[/latex]-beli inverzével összeszorozva a [latex]H[/latex] csoport egységelemét kell kapnunk, amiről azonban már láttuk, hogy megegyezik a [latex]G[/latex] csoport egységelemével. Azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a\cdot x_H=e_H=e_G[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Minthogy a [latex]G[/latex]-beli inverzképzés a [yp_element slug="inverz-elem-egyertelmu" type="link" /] alapján egyértelmű, ezért szükségképpen [latex]x_H=x_G[/latex]. Azaz a [latex]H[/latex] csoport valóban zárt a [latex]G[/latex]-beli inverzképzésre.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Visszafelé:</em></strong> Most azt kell megmutatnunk, hogy amennyiben teljesül mind a 3 tulajdonság, úgy [latex]H[/latex] részcsoport [latex]G[/latex]-ben. A [latex]G[/latex] csoport művelete az 1. tulajdonság alapján nem vezet ki [latex]H[/latex]-ból, így az algebrai értelemben művelet ezen a szűkebb halmazon is (lásd a [yp_element slug="ketvaltozos-muvelet" type="link" /]t). Továbbá a 2. és 3. tulajdonság miatt létezik egységelem, és minden elemnek létezik inverze is [latex]H[/latex]-ban. Így a [yp_element slug="csoport" type="link" /] szerinti csoportaxiómákból már csak a művelet asszociativitását kell igazolnunk. Ezeket azonban [latex]H[/latex] megörökli a [latex]G[/latex]-től a művelettel együtt. Így tehát [latex]H[/latex] valóban részcsoport [latex]G[/latex]-ben.</p>
+<!-- /wp:paragraph -->

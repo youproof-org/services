@@ -1,0 +1,8 @@
+type: proof
+name: termeszetes-szamok-beagyazasa-szorzattarto-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      A $\Z$ halmazon értelmezett $\odot$ művelet képletének megalkotásakor épp ez volt az I. követelmény, így ez
+      nyilvánvalóan teljesül.

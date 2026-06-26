@@ -1,0 +1,66 @@
+type: proof
+name: gyuruhomomorfizmus-magjanak-szukseges-feltetele-bizonyitas
+remarks: []
+references:
+  osszegtarto-lekepezes-nullelem-es-ellentettkepzestarto:
+    target:
+      type: theorem
+      name: osszegtarto-lekepezes-nullelem-es-ellentettkepzestarto
+  reszgyuru-feltetele:
+    target:
+      type: theorem
+      name: reszgyuru-feltetele
+content:
+  - type: narrative
+    content: |
+      Tekintsük azt az $f$ gyűrűhomomorfizmust, amelynek $I$ a magja. Ez egy valamilyen, számunkra ismeretlen $X$
+      gyűrűbe képez, amelynek nullelemét jelöljük most $0_X$-szel, míg az $R$ gyűrű nullelemét jelöljük $0_R$-rel.
+      Az $f$ függvény tehát $I$ minden eleméhez $0_X$-et rendeli hozzá, hiszen $\ker f=I$. Ezt a szituációt mutatja
+      az alábbi ábra.
+  - type: figure
+    src: gyuruhomomorfizmus_magja.jpg
+    alt: Gyűrűhomomorfizmus magja
+    caption: Gyűrűhomomorfizmus magja
+  - type: narrative
+    content: |
+      Az ***1. állítás*** igazolásához azt kell megmutatni, hogy $I$ részgyűrű $R$-ben. Ez a [reszgyuru-feltetele]
+      alapján pontosan akkor teljesül, ha $I$ tartalmazza $0_R$-t, valamint zárt az $R$ gyűrű mindkét műveletére és
+      az $R$-beli ellentettképzésre.
+  - type: narrative
+    content: |
+      Mivel $f$ gyűrűhomomorfizmus, ezért nyilván összegtartó is, így a
+      [osszegtarto-lekepezes-nullelem-es-ellentettkepzestarto] értelmében tartja a nullelemet és az
+      ellentettképzést. Azaz egyrészt $f(0_R)=0_X$, és így $0_R$ valóban benne van $f$ magjában, azaz $I$-ben.
+      Másrészt ha valamilyen $a$ benne van $I$-ben, akkor $f(a)=0_X$, és így az ellentettképzés tartása miatt
+      $f(-a)=-f(a)=-0_X=0_X$. Azaz $a$ ellentettjének is $0_X$ a képe, következésképp ő is benne van $I$-ben.
+  - type: narrative
+    content: |
+      Az összeadásra való zártság szintén $f$ összegtartó tulajdonságából ered. Ha ugyanis $a$ és $b$ az $I$ két
+      tetszőleges eleme, akkor egyrészt $f(a)=0_X$ és $f(b)=0_X$.
+  - type: formula
+    lead-in: |
+      Másrészt viszont az összegtartás miatt az ő összegükre teljesül az alábbi:
+    content: |
+      f(a+b)=f(a)+f(b)=\underbrace{0_X}_{=f(a)}+\underbrace{0_X}_{=f(b)}=0_X
+  - type: narrative
+    content: |
+      Tehát az $a+b$ összeg is az $X$ gyűrű nullelemére képeződik, következésképp ő is benne van $I$-ben. A
+      szorzásra való zártság teljesen hasonló módon következik $f$ szorzástartó tulajdonságából. Mivel teljesül a
+      [reszgyuru-feltetele] minden feltétele, ezért $I$ valóban részgyűrű $R$-ben.
+  - type: narrative
+    content: |
+      A ***2. állítás*** igazolásához tegyük fel, hogy $r$ az $R$ gyűrű tetszőleges &ndash; tehát nem feltétlenül
+      $I$-beli &ndash; eleme. Azt kell megmutatni, hogyha ezzel akár balról, akár jobbról megszorzunk egy $I$-beli
+      $a$ elemet, akkor az eredmény is $I$-beli lesz. Mivel $a$ benne van $I$-ben, ezért $f(a)=0_X$.
+  - type: formula
+    lead-in: |
+      Következésképp $f$ szorzástartó tulajdonsága miatt az $r\cdot a$ és $a\cdot r$ szorzatok képére igazak
+      lesznek az alábbiak:
+    content: |
+      \begin{aligned}f(r\cdot a)&=f(r)\cdot \overbrace{f(a)}^{=0_X}=0_X \\ f(a\cdot
+      r)&=\underbrace{f(a)}_{=0_X}\cdot f(r)=0_X\end{aligned}
+  - type: narrative
+    content: |
+      Elképzelhető tehát, hogy a két szorzatnak nem ugyanaz lesz az eredménye az $R$ gyűrűben (kivéve persze ha
+      kommutatív gyűrűről van szó), de az biztos, hogy mindkét szorzat $f$ szerinti képe az $X$ gyűrű nulleleme
+      lesz. Következésképp valóban benne vannak $I$-ben.

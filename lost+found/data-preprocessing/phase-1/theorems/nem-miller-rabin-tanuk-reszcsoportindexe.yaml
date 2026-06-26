@@ -1,0 +1,56 @@
+type: theorem
+name: nem-miller-rabin-tanuk-reszcsoportindexe
+proofs:
+  - nem-miller-rabin-tanuk-reszcsoportindexe-bizonyitas
+remarks: []
+references:
+  nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten:
+    target:
+      type: theorem
+      name: nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten
+content:
+  - type: formula
+    lead-in: |
+      Legyen $n$ egy tetszőleges ***$1$-nél nagyobb páratlan szám***, amelynek $r$ darab különböző prímtényezője
+      van, azaz prímtényezős felbontása az alábbi alakban írható fel valamilyen páronként egymástól különböző
+      ***pozitív, páratlan $p_1$, $p_2$, ..., $p_r$ prímszámokkal*** és valamilyen ***pozitív $c_1$, $c_2$, ...,
+      $c_r$ kitevőkkel***:
+    content: |
+      n=p_1^{c_1}\cdot p_2^{c_2}\cdot \ldots \cdot p_r^{c_r}
+  - type: formula
+    lead-in: |
+      Képezzük azt az $e\geq 1$ kitevőt és $k\geq 1$ páratlan számot, amelyekre teljesül az alábbi:
+    content: |
+      n-1=2^ek
+  - type: narrative
+    content: |
+      A [nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten] szövegével megegyező módon legyen
+      $j_{\text{max}}$ a ***legnagyobb*** olyan $j$ kitevő a $\{0;1;2;\ldots;e-1\}$ egész számok között, amelyhez
+      léteznek olyan $x$ egész számok, hogy teljesül az $x^{2^j}\equiv -1\pmod n$ kongruencia. ***Megjegyzés:*** Az
+      említett [nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten] alapján legalább egy ilyen $j$ kitevő
+      biztosan létezik, tehát $j_{\text{max}}$ is létezik.
+  - type: formula
+    lead-in: |
+      Ugyancsak a [nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten] szövegével megegyezően jelöljük
+      $H_n$-nel azon $[a]_n$ maradékosztályok halmazát, amelyek esetén az $a^{2^{j_{\text{max}}}k}$ hatvány
+      $1$-gyel ***vagy*** $-1$-gyel kongruens modulo $n$, azaz:
+    content: |
+      a^{2^{j_{\text{max}}}k} \equiv \pm 1\pmod n
+  - type: formula
+    lead-in: |
+      Végül jelöljük $D_n$-nel azon $[a]_n$ maradékosztályok halmazát, amelyek esetén az alábbi kongruenciák
+      ***mindegyike*** teljesül:
+    content: |
+      \begin{aligned}a^{2^{j_{\text{max}}}k} &\equiv \pm 1\pmod{p_1^{c_1}} \\ a^{2^{j_{\text{max}}}k} &\equiv \pm
+      1\pmod{p_2^{c_2}} \\ &\vdots \\ a^{2^{j_{\text{max}}}k} &\equiv \pm 1\pmod{p_r^{c_r}}\end{aligned}
+  - type: ordered-list
+    lead-in: |
+      Ekkor teljesülnek az alábbiak:
+    items:
+      - '$H_n\leq D_n\leq (\Z/n\Z)^{\times}$'
+      - '$|D_n:H_n|=2^{r-1}$'
+  - type: narrative
+    content: |
+      ***Szavakkal ez így fogalmazható meg:*** $H_n$ ***részcsoport*** $D_n$-ben, amely viszont ***részcsoport***
+      $(\Z/n\Z)^{\times}$-ben, és a $H_n$ részcsoport $D_n$-beli indexe $2^{r-1}$-gyel egyezik meg, ahol $r$ az $n$
+      egymástól különböző prímtényezőinek számát jelöli.

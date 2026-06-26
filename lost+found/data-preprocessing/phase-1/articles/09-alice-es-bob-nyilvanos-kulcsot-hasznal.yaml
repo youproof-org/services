@@ -1,0 +1,72 @@
+type: chapter
+name: 09-alice-es-bob-nyilvanos-kulcsot-hasznal
+title: Alice és Bob nyilvános kulcsot használ
+
+abstract:
+  - type: narrative
+    content: |
+      Az előző három részben (6., 7. és 8.) egy algoritmuselméleti kitérő keretében eléggé pontosan tisztáztuk,
+      hogy mit értünk "könnyű" illetve "nehéz" algoritmikus feladat alatt. Ezért ebben a részben visszatérünk Alice
+      és Bob fő problémájához, és ott folytatjuk, ahol az 5. részben abbahagytuk. Nevezetesen: ahhoz, hogy
+      biztonságosan tudjanak kommunikálni egymással, Alice-nak és Bob-nak először egy kulcsnak nevezett közös
+      titokban kell megállapodniuk. Ezt neveztük a kulcsmegosztás problémájának. A 20. század végéig tartotta magát
+      az a hittétel, miszerint ez kizárólag biztonságos csatornán keresztül &ndash; például személyes találkozó
+      &ndash; oldható meg. De vajon mit tehet Alice és Bob, ha ilyen csatorna nem áll rendelkezésükre? Hogyan
+      működik és hogyan támadható a Diffie-Hellmann kulcscsere protokoll? Mi az az aszimmetrikus kulcsú
+      rejtjelezés? Ebben a részben erről lesz szó...
+prologue:
+  - type: narrative
+    content: |
+      Az összes eddig vizsgált rejtjelezési eljárás nagyon hasonlóan működött. Alice-nak lényegében egy $E$
+      rejtjelezőt, míg Bob-nak egy $D$ dekódolót kellett paramétereznie egy közös $k$ kulccsal ahhoz, hogy
+      biztonságosan kommunikálni tudjanak egymással.
+  - type: figure
+    lead-in: |
+      Ez a kommunikációs folyamat látható az alábbi ábrán:
+    src: 01-szimmetrikus-kulcsu-rejtjelezo-modell.jpg
+    alt: Szimmetrikus kulcsú rejtjelező modell
+    caption: Szimmetrikus kulcsú rejtjelező modell
+  - type: narrative
+    content: |
+      A $k$-val paraméterezett $E$ rejtjelező az $x$ nyílt szövegből előállítja az $y$ kódszöveget, míg a vételi
+      oldalon a szintén $k$-val paraméterezett $D$ dekódoló az $y$ kódszövegből visszaállítja az $x$ nyílt
+      szöveget. A biztonság szempontjából megköveteljük, hogy amennyiben a támadó nem ismeri a $k$ kulcsot, akkor
+      számára algoritmikusan nehéz feladat legyen az $x$ nyílt szöveget előállítani pusztán az $y$ kódszöveg
+      ismeretében. Ezt a felállást ***szimmetrikus kulcsú*** titkosításnak nevezzük, mivel Alice ugyanazt a $k$
+      kulcsot használja a rejtjelezéshez, mint amit Bob használ a dekódoláshoz. Ilyenekre a korábbi részekben
+      láttunk pár példát: Caesar-kód, Vigenére-kód, a német Enigma vagy akár az 5. részben bemutatott, ténylegesen
+      feltörhetetlen one-time-pad.
+  - type: narrative
+    content: |
+      1976-ban azonban megjelent Whitfield Diffie és Martin Hellman ***Új direktívák a kriptográfiában*** című
+      írása, amely két forradalmian új ötletet tartalmazott. Egyrészt ez az írás ismerteti az úgynevezett
+      ***Diffie-Hellman kulcscsere protokollt***, amelynek a segítségével Alice és Bob képes megállapodni egy közös
+      kulcsban egy nem biztonságos csatornán keresztül oly módon, hogy az mégis rejtve marad a csatornát lehallgató
+      Eve elől. Másrészt pedig az írásból körvonalazódott az úgynevezett ***aszimmetrikus kulcsú titkosítás***
+      alapgondolata &ndash; habár végül a konkrét eljárást nem ők, hanem Ron Rivest, Adi Shamir és Len Adleman
+      fejlesztette ki 1977-ben. Ezt a feltalálók vezetékneveinek kezdőbetűi után ***RSA-eljárásnak*** nevezzük,
+      amely napjaink leggyakrabban használt titkosítási eljárása. Ez a rejtjelezésen kívül partner- és
+      üzenethitelesítést is biztosít Alice és Bob számára. Mindkét eljárás működése az úgynevezett ***egyirányú
+      függvényeken*** alapszik, ezért először ezzel a fogalommal &ndash; és általánosságban a függvény fogalmával
+      &ndash; ismerkedünk meg.
+sections:
+  - 01-ismet-a-fuggvenyekrol
+  - 02-egyiranyu-fuggvenyek
+  - 03-szamolas-az-oralapon
+  - 04-a-diszkret-logaritmus-fogalma
+  - 05-a-diffie-hellman-kulcscsere-protokoll
+  - 06-diffie-hellman-protokoll-festekekkel
+  - 07-a-diffie-hellman-protokoll-tamadasa
+  - 08-aszimmetrikus-kulcsu-rejtjelezes
+
+epilogue:
+  - type: narrative
+    content: |
+      Ebben a részben tehát megismerkedtünk a modern kriptográfia két alapvető felfedezésével. Az első a
+      Diffie-Hellman kulcscsere protokoll volt, amely lehetővé teszi, hogy Alice és Bob a pofátlan Eve szeme
+      láttára állapodjanak meg egy közös titkos kulcsban, teljes biztonságban. Láttuk azonban, hogy egy aktív
+      támadó könnyedén kijátszhatja ezt a rendszert, hacsak nem tudjuk kibővíteni a protokollt valamilyen
+      partnerhitelesítéssel. Ezért megismerkedtünk az úgynevezett aszimmetrikus kulcsú rejtjelezés
+      alapgondolatával. A következő részben erre építkezve bemutatjuk a digitális aláírás és partnerhitelesítés
+      működésének alapjait, majd a további részekben elkezdünk megismerkedni az RSA-algoritmus számelméleti
+      hátterével.

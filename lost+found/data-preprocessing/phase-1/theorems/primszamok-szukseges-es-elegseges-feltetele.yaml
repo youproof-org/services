@@ -1,0 +1,23 @@
+type: theorem
+name: primszamok-szukseges-es-elegseges-feltetele
+proofs:
+  - primszamok-szukseges-es-elegseges-feltetele-bizonyitas
+remarks: []
+references:
+  egesz-szamok-abszoluterteke:
+    target:
+      type: definition
+      name: egesz-szamok-abszoluterteke
+content:
+  - type: narrative
+    content: |
+      Legyen $n\eq 0$ egy tetszőleges ***nemnulla*** egész szám, amely ***nem egység***. Ebben az esetben $n$
+      ***akkor és csak akkor prím*** (azaz felbonthatatlan), ha ***nem létezik*** $1$-nél nagyobb, de $|n|$-nél
+      kisebb osztója.
+  - type: narrative
+    content: |
+      ***Ezzel ekvivalens megfogalmazás:*** Az $n$ ***akkor és csak akkor összetett*** (tehát nem prím, azaz nem
+      felbonthatatlan), ha ***létezik*** $1$-nél nagyobb, de $|n|$-nél kisebb osztója.
+  - type: narrative
+    content: |
+      Itt $|n|$ jelöli az $n$ egész szám [egesz-szamok-abszoluterteke] szerinti ***abszolútértékét***.

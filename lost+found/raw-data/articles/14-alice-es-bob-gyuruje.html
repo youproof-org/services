@@ -1,0 +1,767 @@
+<!-- wp:paragraph -->
+<p><strong><em>Az </em></strong><a rel="noreferrer noopener" aria-label="előző részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/13-adossag-ekvivalenciarelacio-ekvivalencia-osztaly-egesz-szam-homomorfizmus-beagyazas-negativ-szam/" target="_blank"><strong><em>előző részben</em></strong></a><strong><em> kényelmi okok miatt elkezdtük kibővíteni a szám fogalmát. Azon a nem is olyan egyszerű absztrakciós úton kezdtünk el haladni, amelyen őseinknek is végig kellett menniük. Eddig a számokat bizonyos dolgok, sokaságok megszámlálására használtuk, így látszólag semmi értelme sincs a „semminél kevesebb” mennyiségekről beszélni. Ezt félretéve azonban láthattuk, hogy például adósság, vagy valamilyen hiány kifejezésére igen praktikus eszközt kaphatunk a kezünkbe. Ennek az absztrakciónak a keretében új algebrai fogalmakkal ismerkedtünk meg.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Az egész számokat természetes számpárok ún. ekvivalencia-osztályaiként határoztuk meg, amelyek között egy összeadásnak nevezett műveletet is definiáltunk. Ezután elkezdtük beágyazni ebbe az új számhalmazba a Peano-axiómarendszer szerinti [latex]\N[/latex] halmazt egy úgynevezett injektív homomorfizmus – azaz struktúratartó leképezés – segítségével. De vajon hogyan tudjuk a szorzás műveletét is ésszerű módon kiterjeszteni a számegyenes 0-tól balra eső részére? Mit jelent az absztrakt algebrában a „neutrális elem”, az „inverz”, a „gyűrű” és a „test” fogalma? Hogyan definiálható a kivonás művelete az egész számok között? Mi a helyzet az osztással? Ebben a részben erről lesz szó...</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"className":"prerequisite-warning"} -->
+<p class="prerequisite-warning">Figyelem! Ez a rész erőteljesen épít az <a rel="noreferrer noopener" aria-label="előző részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/13-adossag-ekvivalenciarelacio-ekvivalencia-osztaly-egesz-szam-homomorfizmus-beagyazas-negativ-szam/" target="_blank">előző részben</a> bevezetett alábbi definíciókra és a hozzájuk kapcsolódó tételekre:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="ekvivalenciarelacio" type="recall-collapsed" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-halmaza" type="recall-collapsed" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="homomorfizmus-izomorfizmus-beagyazas" type="recall-collapsed" show_title="true"/]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="pozitiv-es-negativ-egesz-szamok" type="recall-collapsed" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-osszeadasa" type="recall-collapsed" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph {"className":"prerequisite-warning"} -->
+<p class="prerequisite-warning">E definíciók kontextusba helyezése, valamint a hozzájuk kapcsolódó tételek és egyéb fogalmak megismerése miatt erőteljesen ajánlott elolvasni a <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/11-peano-axiomarendszer-termeszetes-szam-muvelet-osszeadas-kommutativitas-asszociativitas-teljes-indukcio/" target="_blank">11.</a>, a <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/12-szorzas-disztributivitas-teljes-indukcio-indirekt-bizonyitas-relacio-teljes-rendezes-rendezett-halmaz/" target="_blank">12.</a> és a <a rel="noreferrer noopener" aria-label="13. részt (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/13-adossag-ekvivalenciarelacio-ekvivalencia-osztaly-egesz-szam-homomorfizmus-beagyazas-negativ-szam/" target="_blank">13. részt</a> mivel gyakran hivatkozni fogunk rájuk. A teljes cikksorozat elejét <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/1-alapfogalmak-caesar-vigenere-enigma-kulcsmegosztas/" target="_blank">itt</a> találod.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"dropCap":true} -->
+<p class="has-drop-cap">Ahhoz, hogy a szorzást is kiterjesszük az előző részben bevezetett új számkörre, ismét az intuíciónkra kell hagyatkoznunk. Kezdhetnénk persze azzal, hogy megadunk egy képletet, mint a [latex]\Z[/latex] halmaz elemei közötti szorzás definícióját. Ezzel azonban elveszne az az információ, hogy miért éppen azt a képletet használjuk, nem pedig mást. Először is jelöljük ki a céljainkat.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az előző részben ugye azt mondtuk, hogy a Peano-axiómarendszer ([yp_element slug="peano-axiomarendszer" type="link" /]) által definiált [latex]\N[/latex] halmazt szeretnénk beágyazni a [latex]\Z[/latex] halmazba egy úgynevezett <a rel="noreferrer noopener" aria-label="művelettartó leképezéssel (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/13-adossag-ekvivalenciarelacio-ekvivalencia-osztaly-egesz-szam-homomorfizmus-beagyazas-negativ-szam#injective-homomorphism" target="_blank">struktúratartó leképezéssel</a>. Az eredeti [latex]\N[/latex] halmazt átmenetileg [latex]\N_1[/latex]-gyel, míg annak [latex]\Z[/latex]-beli képét [latex]\N_2[/latex]-vel jelöltük. A [yp_element slug="egesz-szamok-osszeadasa" type="link" /] szerinti [latex]\oplus[/latex] műveletről megmutattuk ([yp_element slug="termeszetes-szamok-beagyazasa-osszegtarto" type="link" /]), hogy az az [latex]f(n)=[(n;0)][/latex] leképezés mellett valóban „ugyanúgy viselkedik” az [latex]\N_2[/latex] halmazon, mint a Peano-összeadás az [latex]\N_1[/latex] halmazon.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Hasonló a célunk a most bevezetendő [latex]\odot[/latex] művelettel kapcsolatban ugyanezen leképezés mellett. Ezt a műveletet szorzásnak fogjuk nevezni, és ugyanúgy a teljes [latex]\Z[/latex] halmazon szeretnénk értelmezni, mint az [latex]\oplus[/latex] műveletet. Ennek a halmaznak az elemei ugye a természetes számpárok ekvivalencia-osztályai ([yp_element slug="egesz-szamok-halmaza" type="link" /]). Mi lehet hát két ilyen ekvivalencia-osztály „szorzata”?</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Szorzás a [latex]\Z[/latex] halmazon</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Az előző részben a [yp_element slug="pozitiv-es-negativ-egesz-szamok" type="link" /]ban bevezettük a pozitív és negatív egész számok <strong><em>általános iskolából már megszokott jelölését</em></strong> a meglehetősen szokatlan [latex][(a;b)][/latex] jelölésmód helyett. Eszerint az [latex][(n;0)][/latex] alakú egész számokat – amelyek ugye [latex]n[/latex] aranytallérnyi <strong><em>betétet</em></strong> jelentenek – pozitív egész számoknak neveztük, és [latex]+n[/latex]-nel jelöltük. Ezzel szemben a [latex][(0;n)][/latex] alakú egész számokat – amelyek tehát [latex]n[/latex] aranytallérnyi <strong><em>adósságot</em></strong> jelölnek – negatív egész számoknak neveztük, és [latex]-n[/latex]-nel jelöltük. Végül a [latex][(0;0)][/latex] alakban felírható egész számot <strong><em>„nullának”</em></strong> neveztük, és [latex]0[/latex]-val jelöltük. Ezt a [yp_element slug="ekvivalencia-osztalyok-reprezentansa" type="link" /] miatt tehettük meg, amely szerint minden egész szám felírható valamelyik alakban e három közül. Egyelőre azonban maradjunk a „szokatlan” jelölésmódnál mindaddig, amíg a megszokott számolási szabályok be nem bizonyosodnak.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel, hogy van egy [latex][(a;b)][/latex]-vel és egy [latex][(c;d)][/latex]-vel jelölt egész számunk. Kérdés, hogy mi legyen a [latex][(a;b)] \odot [(c;d)][/latex] szorzás, mint művelet eredménye? Szabad kezet kaptunk a képlet megalkotásához, így azt úgy alakíthatjuk ki, ahogy nekünk tetszik. Az egyetlen megkötés, hogy kizárólag az eddig már megalkotott fogalmainkat használhatjuk, mint amilyen például a Peano-összeadás ([yp_element slug="peano-osszeadas" type="link" /]) és a Peano-szorzás ([yp_element slug="peano-szorzas" type="link" /]). Nyilván azt szeretnénk elérni, hogy a megszokott számolási szabályok teljesüljenek a most bevezetendő [latex]\odot[/latex] és az előző részben bevezetett [latex]\oplus[/latex] műveletekre. Ennek szellemében kell tehát megalkotnunk a képletet.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ehhez azonban egyenleteket kell tudnunk megoldani a Peano-axiómarendszer által meghatározott [latex](\N ,+,\cdot )[/latex] algebrai struktúrában, azaz a természetes számok halmazán. Lévén hogy nem áll rendelkezésünkre mind a négy alapművelet, ezért ehhez szükségünk lesz némi segítségre.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="equations-over-natural-numbers"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Egyenletek megoldása az [latex](\N , +, \cdot )[/latex] algebrai struktúrában</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Most lépjünk vissza egy kicsit a korábbi részekben felépített [latex]\N[/latex] halmazhoz és az azon értelmezett Peano-összeadáshoz ([yp_element slug="peano-osszeadas" type="link" /]) és Peano-szorzáshoz ([yp_element slug="peano-szorzas" type="link" /]). Tegyük fel, hogy a [latex]2\cdot x+3=7[/latex] egyenletet szeretnénk megoldani. Általános iskolában mindenki megtanulta, hogy ha egy érvényes egyenlet mindkét oldalából <strong><em>kivonunk</em></strong> egy tetszőleges számot, vagy mindkét oldalt <strong><em>elosztjuk</em></strong> egy tetszőleges <strong><em>NEM NULLA</em></strong> számmal, akkor az így kapott egyenletek továbbra is érvényben maradnak. Nincs más dolgunk hát, mint ilyen lépésekkel addig rendezgetni az egyenletet, míg az egyik oldalon kizárólag az ismeretlen marad. Ekkor a másik oldal épp a megoldás lesz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezzel a gondolatmenettel tehát vonjunk ki mindkét oldalból 3-at, majd mindkét oldalt osszuk el kettővel, így megkapjuk a megoldást:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}2\cdot x + 3 &amp;= 7 \\ 2\cdot x &amp;= 4 \\ x&amp;=2 \end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Csakhogy van ezzel egy kis probléma: nem ismerünk olyan fogalmat, mint <strong><em>„kivonás”</em></strong> vagy <strong><em>„osztás”</em></strong>. Ne feledjük, hogy jelenleg a számelméletet az axiómákból szeretnénk felépíteni! Márpedig ebben az esetben nem hivatkozhatunk olyan fogalmakra, amiket nem definiáltunk pontosan.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Szerencsére azonban ez a probléma könnyen áthidalható két okos kis segédtétellel. Az egyiket ezek közül már megismertük egy korábbi részben:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-osszeg-egyszerusites" type="recall-expanded" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A fenti példában szereplő [latex]2\cdot x + 3 = 7[/latex] egyenlet megoldásának első lépésében tehát ahelyett, hogy „kivonnánk” mindkét oldalból 3-at – ezáltal nem definiált fogalmat használva –, az egyenlet jobboldalát cselesen felírjuk két természetes szám <strong><em>összegeként</em></strong>:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]2\cdot x + 3 = 4 + 3[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ebből már a [yp_element slug="peano-osszeg-egyszerusites" type="link" /] miatt következik, hogy [latex]2\cdot x = 4[/latex]. Mondhatnánk, hogy ez szőrszálhasogatás, azonban később látni fogjuk, mennyire könnyen tehetünk olyan logikailag helyesnek tűnő lépéseket, amelyek valójában hibásak. Például amikor majd az úgynevezett maradékosztályokkal kell számolnunk, amelyek a modern kriptográfiai eljárásokban – és úgy általában az egész számelméletben – alapvető fontosságúak.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Na de mi a helyzet a következő lépéssel, amikoris az egyenlet mindkét oldalát „elosztjuk” 2-vel? Az osztás fogalmát szintén nem ismerjük, ezért itt is megpróbáljuk megkerülni ezt a problémát, és az egyenlet jobboldalát felírjuk két természetes szám szorzataként:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]2\cdot x = 2\cdot 2[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Kérdés, hogy vajon ebből következik-e, hogy [latex]x=2[/latex]? És úgy általában abból, hogy [latex]a\cdot c = b \cdot c[/latex], vajon következik-e, hogy [latex]a = b[/latex]? Az alábbiakban ezt fogjuk bizonyítani.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Előszöris emlékeztetnénk az Olvasót egy korábban már szintén bizonyított segédtételre:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-nullosszeg-tagjai" type="recall-expanded" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Eszerint tehát <strong><em>a természetes számok körében</em></strong> egy összeg csak úgy lehet 0, ha mindkét tagja 0. Egy ehhez hasonló állításra van szükségünk a Peano-szorzásra vonatkozóan:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-nullszorzat-tenyezoi" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Eszerint tehát egy szorzat csak úgy lehet 0, ha <strong><em>legalább</em></strong> az egyik tényezője 0. Ez a tulajdonság persze nyilvánvalónak tűnik, ám hamarosan fogunk találkozni olyan algebrai struktúrákkal, amelyekben ez nem teljesül. Most nézzük ennek az állításnak a bizonyítását:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-nullszorzat-tenyezoi-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ennek segítségével mostmár megfogalmazhatjuk azt a segédtételt, amely általánosságban is lehetővé teszi, hogy egy egyenlet mindkét oldalát ugyanazzal a tényezővel egyszerűsíthessük:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-szorzat-egyszerusites" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-szorzat-egyszerusites-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Innentől kezdve tehát egy természetes számokon értelmezett egyenlet megoldása során legálisan <strong><em>egyszerűsíthetjük</em></strong> – vagy némiképp helytelenül fogalmazva „oszthatjuk el” – az egyenlet mindkét oldalát egy <strong><em>nemnulla</em></strong> számmal. Azaz a korábbi példaegyenletünk megoldása során a [latex]2\cdot x = 4[/latex] állításból a most bizonyított [yp_element slug="peano-szorzat-egyszerusites" type="link" /] miatt következik, hogy [latex]x=2[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Nagyon fontos azonban, hogy csak <strong><em>nemnulla</em></strong> természetes számmal szabad egyszerűsíteni. Például [latex]a\cdot 0=b\cdot 0[/latex] tetszőleges [latex]a[/latex] és [latex]b[/latex] természetes számokra teljesül, így ebből nem következik, hogy [latex]a=b[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="integer-multiplication-requirements"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A [latex]\Z[/latex]-beli szorzás követelményei</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Egy rövid előzetes megjegyzés: eddig a Peano-szorzás jelölésére minden esetben kiírtuk a [latex]\cdot[/latex] műveleti jelet. Mostantól azonban a jobb olvashatóság kedvéért ezt esetenként el fogjuk hagyni. Így például az [latex]xy[/latex] kifejezés ugyanazt fogja jelenteni, mint az [latex]x\cdot y[/latex] kifejezés. Remélhetőleg ez nem fogja összezavarni az Olvasót, hiszen már az általános iskolában is bevett szokás időnként elhagyni a szorzást jelölő [latex]\cdot[/latex] műveleti jelet.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Térjünk most vissza a [latex]\Z[/latex] halmazon értelmezendő [latex]\odot[/latex] művelethez, és intuitív módon alkossuk meg az [latex][(a;b)]\odot [(c;d)][/latex] szorzat eredményének képletét. Az eredmény ugye szintén valamilyen egész szám lesz egy betétet és egy adósságot jelző komponenssel.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az intuíciónk azt mondatja velünk, hogy mindkét komponens valamilyen módon függeni fog az eredeti [latex][(a;b)][/latex] és [latex][(c;d)][/latex] egész számok mindkét komponensétől. Ennél közelebbit azonban egyelőre nem tudunk mondani, ezért az alábbi viszonylag általános képletből indulunk ki, aztán meglátjuk, jól tippeltünk-e:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}[(a;b)]\odot [(c;d)] = [(&amp;\overbrace{A\cdot ac + B\cdot ad + C\cdot bc + D\cdot bd}^{\text{1. komponens}}; \\ &amp;\underbrace{E\cdot ac + F\cdot ad + G\cdot bc + H\cdot bd}_{\text{2. komponens}})]\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az <strong><em>eredmény első komponensét</em></strong> tehát úgy kapjuk, hogy képezzük az eredeti két egész szám két-két komponensének összes lehetséges szorzatát, ezeket a szorzatokat ellátjuk valamilyen – egyelőre még ismeretlen – [latex]A[/latex], [latex]B[/latex], [latex]C[/latex] és [latex]D[/latex] együtthatókkal, majd az így kapott tagokat összeadjuk. Az <strong><em>eredmény második komponensét</em></strong> ugyanígy kapjuk, csak ott az [latex]E[/latex], [latex]F[/latex], [latex]G[/latex] és [latex]H[/latex] – egyelőre szintén ismeretlen – együtthatókat használjuk. Ez a folyamat látható az alábbi ábrán:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":3520} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_14_egesz_szamok_szorzaskepletenek_konstrukcioja.jpg" alt="Egész számok szorzásképletének konstrukciója" class="wp-image-3520"/><figcaption>Egész számok szorzásképletének konstrukciója</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>A feladatunk tehát az [latex]A[/latex], [latex]B[/latex], [latex]C[/latex] és [latex]D[/latex], valamint az [latex]E[/latex], [latex]F[/latex], [latex]G[/latex] és [latex]H[/latex] természetes számok, mint együtthatók meghatározása oly módon, hogy érvényben maradjanak a szokásos számolási szabályok.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az első és legfontosabb követelményünk, hogy az [latex]f(n)=[(n;0)][/latex] <strong><em>legyen egy szorzattartó leképezés</em></strong> a „régi” [latex]\N_1[/latex] és az „új” [latex]\N_2[/latex] halmaz között. Azaz ha tetszőleges [latex]a[/latex] és [latex]b[/latex] természetes számoknak képezzük az [latex]a\cdot b[/latex] Peano-szorzatát az [latex]\N_1[/latex] halmazban, majd vesszük ennek [latex]f[/latex] szerinti képét az [latex]\N_2[/latex] halmazban, akkor ugyanazt kapjuk, mintha az [latex]a[/latex] és [latex]b[/latex] elemek [latex]f(a)[/latex] és [latex]f(b)[/latex] képeit [latex]\odot[/latex]-oznánk össze az [latex]\N_2[/latex] halmazban. Ez látható az alábbi ábrán:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":3522} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_14_szorzattarto_lekepezes.jpg" alt="Szorzattartó leképezés" class="wp-image-3522"/><figcaption>Szorzattartó leképezés</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Most nézzük meg, milyen megkötést kell tennünk a keresett 8 együtthatóra ahhoz, hogy ez teljesüljön.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4><strong>I. követelmény: Az [latex]f[/latex] leképezés legyen szorzattartó</strong></h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Ezt képlettel így írhatjuk fel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{[(n;0)]}_{=f(n)} \odot \underbrace{[(k;0)]}_{=f(k)} = \underbrace{[(n\cdot k;0)]}_{=f(n\cdot k)}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az egyenlet baloldalára felírva a fentebbi általános képletünket – és persze a 0 tagokat elhagyva – a következőt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][(A\cdot nk;E\cdot nk)]=[(nk;0)][/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt kaptuk tehát, hogy az [latex](A\cdot nk;E\cdot nk)[/latex] természetes számpárnak ugyanabba a [latex]\sim[/latex] reláció (lásd a [yp_element slug="termeszetes-szamparok-ekvivalenciarelacioja" type="link" /]t) szerinti ekvivalencia-osztályba kell esnie, mint az [latex](nk;0)[/latex] számpárnak. Ez viszont az előző részben bizonyított [yp_element slug="termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel" type="link" /] miatt épp azt jelenti, hogy:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]A\cdot nk + 0=E\cdot nk + nk[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A baloldalt 0-val egyszerűsítve, a jobboldalon pedig a Peano-szorzás disztributivitását ([yp_element slug="peano-szorzas-disztributivitas" type="link" /]) kihasználva ez így írható fel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]A\cdot nk=(E+1)\cdot nk[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Itt feltételezhetjük, hogy [latex]nk\
+eq 0[/latex], máskülönben ez az egyenlet [latex]A[/latex] és [latex]E[/latex] megválasztásától függetlenül teljesülne. Ha viszont [latex]nk\
+eq 0[/latex], akkor az imént bizonyított [yp_element slug="peano-szorzat-egyszerusites" type="link" /] miatt következik, hogy:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]A=E+1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A keresett 8 együtthatóról tehát azt már tudjuk, hogy az [latex]A[/latex] együtthatónak [latex]E[/latex]-nél egy 1-gyel nagyobb természetes számot kell választanunk. Ha így teszünk, akkor a fentiek alapján az [latex]f[/latex] leképezés biztosan <strong><em>tartani fogja</em></strong> a Peano-szorzást. Tudományosabban fogalmazva ekkor [latex]f[/latex] egy <strong><em>injektív homomorfizmus</em></strong> (lásd a [yp_element slug="homomorfizmus-izomorfizmus-beagyazas" type="link" /]t) lesz az [latex](\N_1 , \cdot )[/latex] és a [latex](\Z , \odot )[/latex] algebrai struktúrák között.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mondhatnánk, hogy készen is vagyunk. Hiszen ez alapján ha az [latex]A=1[/latex] választással élünk, a másik 7 együtthatót pedig 0-nak választjuk, akkor megvan a művelettartás. Igenám, de mi szeretnénk egyéb megkötéseket is tenni az [latex]\odot[/latex] műveletre annak érdekében, hogy a szokásos számolási szabályok érvényben maradjanak ne csak az [latex]\N_2[/latex]-n belül, hanem a [latex]\Z[/latex] halmaz többi részén is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4><strong>II. követelmény: Adósság szorzása pozitív egész számmal</strong></h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Emlékezzünk vissza, hogy mi motiválta a <a rel="noreferrer noopener" aria-label="természetes számok szorzásának (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/12-szorzas-disztributivitas-teljes-indukcio-indirekt-bizonyitas-relacio-teljes-rendezes-rendezett-halmaz#peano-multiplication" target="_blank">természetes számok szorzásának</a> bevezetését a 12. részben. Ugye szerettük volna lerövidíteni az olyan kifejezéseket, amikor egy számot önmagával kell sokszor összeadni. Például az [latex]a+a+a+a+a[/latex] kifejezést így rövidíthettük: [latex]a\cdot 5[/latex]. Érdemes lenne megtartani ezt a tulajdonságot a [latex]\odot[/latex] művelet esetén is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A pozitív egész számokra ezt már biztosítottuk az I. követelménnyel. Most nézzük meg, mi a helyzet akkor, ha egy adósságot reprezentáló egész számot kell önmagával sokszor összeadni. Tekintsük például a [latex][(0;n)] \oplus [(0;n)] \oplus [(0;n)][/latex] kifejezést. Ez egyrészt az [latex]\oplus[/latex] művelet [yp_element slug="egesz-szamok-osszeadasa" type="link" /]ja miatt így írható fel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][(0;n+n+n)]=[(0;n\cdot 3)][/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Másrészt viszont itt tulajdonképpen arról van szó, hogy a [latex][(0;n)][/latex] adósságot reprezentáló negatív egész számot [latex]\odot[/latex]-ozzuk össze a 3 természetes szám [latex]f[/latex] szerinti képével, azaz a [latex][(3;0)][/latex] pozitív egész számmal. Azaz lényegében:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][(0;n)]\odot [(3;0)]=[(0;n\cdot 3)][/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Általánosságban tehát a [latex]\odot[/latex] művelettel szembeni második követelményünk, hogy tetszőleges [latex]n[/latex] és [latex]k[/latex] természetes számok esetén teljesüljön az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][(0;n)]\odot \underbrace{[(k;0)]}_{=f(k)}=[(0;n\cdot k)][/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az egyenlet baloldalára felírva az általános képletünket – és persze a 0 tagokat elhagyva – a következőt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][(C\cdot nk;G\cdot nk)]=[(0;nk)][/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt kaptuk tehát, hogy a [latex](C\cdot nk;G\cdot nk)[/latex] természetes számpárnak ugyanabba a [latex]\sim[/latex] reláció (lásd a [yp_element slug="termeszetes-szamparok-ekvivalenciarelacioja" type="link" /]t) szerinti ekvivalencia-osztályba kell esnie, mint a [latex](0;nk)[/latex] számpárnak. Ez viszont az előző részben bizonyított [yp_element slug="termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel" type="link" /] miatt épp azt jelenti, hogy:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]C\cdot nk + nk=G\cdot nk + 0[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A jobboldalt 0-val egyszerűsítve, a baloldalon pedig a Peano-szorzás disztributivitását ([yp_element slug="peano-szorzas-disztributivitas" type="link" /]) kihasználva ez így írható fel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](C+1)\cdot nk=G\cdot nk[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Itt feltételezhetjük, hogy [latex]nk\
+eq 0[/latex], máskülönben ez az egyenlet [latex]C[/latex] és [latex]G[/latex] megválasztásától függetlenül teljesülne. Ha viszont [latex]nk\
+eq 0[/latex], akkor ismételten a [yp_element slug="peano-szorzat-egyszerusites" type="link" /] miatt következik, hogy:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]C+1=G[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A keresett 8 együtthatóról most tehát már azt is tudjuk, hogy a [latex]G[/latex] együtthatónak [latex]C[/latex]-nél egy 1-gyel nagyobb természetes számot kell választanunk. Ha így teszünk, akkor a fentiek alapján egy adósságot jobbról megszorozva egy [latex]k[/latex] természetes számnak megfelelő pozitív egész számmal, lényegében az adósság [latex]k[/latex]-szorosát kapjuk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most nézzük, milyen megkötéseket lenne érdemes még tenni a [latex]\odot[/latex] műveletre.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4><strong>III. követelmény: Pozitív egész szám szorzása adóssággal</strong></h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Szeretnénk, ha a Peano-szorzáshoz hasonlóan a [latex]\odot[/latex] művelet is kommutatív lenne. A pozitív egész számokra ezt már biztosítottuk az I. követelménnyel. Jó volna azonban, ha a kommutativitás a II. követelmény kapcsán felvázolt szituációban is teljesülne, tehát amikor az egyik tényező adósságot, a másik pedig betétet reprezentál.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Általánosságban tehát a [latex]\odot[/latex] művelettel szembeni harmadik követelményünk, hogy tetszőleges [latex]n[/latex] és [latex]k[/latex] természetes számok esetén teljesüljön az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][(0;n)] \odot [(k;0)] = [(k;0)] \odot [(0;n)][/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az egyenlet mindkét oldalára felírva az általános képletünket – és persze a 0 tagokat elhagyva – a következőt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][(C\cdot nk;G\cdot nk)] = [(B\cdot nk;F\cdot nk)][/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt kaptuk tehát, hogy a [latex](C\cdot nk;G\cdot nk)[/latex] természetes számpárnak ugyanabba a [latex]\sim[/latex] reláció (lásd a [yp_element slug="termeszetes-szamparok-ekvivalenciarelacioja" type="link" /]t) szerinti ekvivalencia-osztályba kell esnie, mint a [latex](B\cdot nk;F\cdot nk)[/latex] számpárnak. Ez viszont az előző részben bizonyított [yp_element slug="termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel" type="link" /] miatt épp azt jelenti, hogy: </p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]C\cdot nk + F\cdot nk=G\cdot nk + B\cdot nk[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mindkét oldalon a Peano-szorzás disztributivitását ([yp_element slug="peano-szorzas-disztributivitas" type="link" /]) kihasználva ez így írható fel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](C+F)\cdot nk=(G+B)\cdot nk[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Itt feltételezhetjük, hogy [latex]nk\
+eq 0[/latex], máskülönben ez az egyenlet [latex]C[/latex], [latex]F[/latex], [latex]G[/latex] és [latex]B[/latex] megválasztásától függetlenül teljesülne. Ha viszont [latex]nk\
+eq 0[/latex], akkor ismételten a [yp_element slug="peano-szorzat-egyszerusites" type="link" /] miatt következik, hogy: </p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]C+F=G+B[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A II. követelmény kapcsán viszont már megállapítottuk, hogy [latex]G=C+1[/latex], emiatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]C+F=\underbrace{C+1}_{=G}+B[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezt az egyenletet viszont a [yp_element slug="peano-osszeg-egyszerusites" type="link" /] miatt egyszerűsíthetjük [latex]C[/latex]-vel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]F=1+B[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Végül nézzük az utolsó, [latex]\odot[/latex] műveletre vonatkozó megkötésünket.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4><strong>IV. követelmény: Adósság szorzása adóssággal</strong></h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Az előző három pontban felvázolt szituációk esetén legalább az egyik tényező lényegében egy természetes szám, pontosabban annak az [latex]f[/latex] leképezés szerinti képe volt. Ezeket az eseteket viszonylag könnyű volt a valósághoz kötni, most azonban kénytelenek leszünk ettől némiképp elvonatkoztatni. Ha ugyanis a [latex]\odot[/latex] műveletet a teljes [latex]\Z[/latex] halmazon szeretnénk értelmezni, akkor muszáj kezelnünk azokat az eseteket is, amikor mindkét tényező egy-egy adósságot reprezentáló negatív egész szám.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Vonatkoztassunk most el attól az apróságtól, hogy ennek látszólag nincs értelme, és tegyük fel, hogy a [latex][(0;n)] \odot [(0;k)][/latex] szorzás eredménye is egy valamilyen egész szám. Azt még nem tudjuk, hogy pontosan melyik, az azonban biztos, hogy a [latex]\odot[/latex] műveletnek <strong><em>jóldefiniáltnak</em></strong> kell lennie. Mit is jelent ez pontosan?</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az előző részben definiált [latex]\oplus[/latex] művelet ([yp_element slug="egesz-szamok-osszeadasa" type="link" /]) esetén mindkét tag egy-egy ekvivalencia-osztály volt. Felmerült tehát a kérdés, hogy vajon mindegy-e, hogy a definícióban szereplő képletet e két ekvivalencia-osztály mely elemeire alkalmazzuk. A [yp_element slug="egesz-szamok-osszeadasa-joldefinialt" type="link" /] épp arról szólt, hogy e választástól függetlenül az eredményül kapott számpárok mindig ugyanabból az ekvivalencia-osztályból kerülnek ki. Erre mondtuk azt, hogy a [latex]\oplus[/latex] művelet <strong><em>jóldefiniált</em></strong> a [latex]\Z[/latex] halmazon.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Valami hasonlóra volna szükségünk a [latex]\odot[/latex] művelet kapcsán is. A [latex]\sim[/latex]-vel jelölt <strong><em>„ugyanazt a vagyont jelöli”-reláció</em></strong> [yp_element slug="termeszetes-szamparok-ekvivalenciarelacioja" type="link" /]ja alapján a [latex][(0;n)][/latex] és az [latex][(a;n+a)][/latex] kifejezések ugyanazt az egész számot jelölik tetszőleges [latex]a[/latex] természetes szám esetén. Elvárjuk tehát, hogy amennyiben ezt egy tetszőleges [latex][(0;k)][/latex] negatív egész számmal megszorozzuk, akkor a képletünk által szolgáltatott eredmény mindig ugyabból az ekvivalencia-osztályból kerüljön ki függetlenül attól, hogy a baloldali tényezőt a [latex][(0;n)][/latex] vagy az [latex][(a;n+a)][/latex] kifejezéssel írtuk-e le. Mint ahogyan törtszámok esetén is teljesen mindegy, hogy [latex]\frac{1}{2}[/latex]-et vagy [latex]\frac{2}{4}[/latex]-et írunk-e egy kifejezésbe.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A fentiek fényében mostmár megfogalmazhatjuk a [latex]\odot[/latex] művelettel szemben támasztott utolsó követelményünket is, miszerint tetszőleges [latex]n[/latex], [latex]k[/latex] és [latex]a[/latex] természetes számokra teljesülnie kell a következőnek:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][(0;n)] \odot [(0;k)] = [(a;n+a)] \odot [(0;k)][/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az egyenlet mindkét oldalára felírva az általános képletünket – és persze a 0 tagokat elhagyva – a következőt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][(D\cdot nk;H\cdot nk)] = [(B\cdot ak + D\cdot (n+a)k;F\cdot ak + H\cdot (n+a)k)][/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt kaptuk tehát, hogy a [latex](D\cdot nk;H\cdot nk)[/latex] természetes számpárnak ugyanabba a [latex]\sim[/latex] reláció (lásd a [yp_element slug="termeszetes-szamparok-ekvivalenciarelacioja" type="link" /]t) szerinti ekvivalencia-osztályba kell esnie, mint a [latex](B\cdot ak + D\cdot (n+a)k;F\cdot ak + H\cdot (n+a)k)[/latex] számpárnak. Ez viszont az előző részben bizonyított [yp_element slug="termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel" type="link" /] miatt épp azt jelenti, hogy:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]D\cdot nk + F\cdot ak + H\cdot (n+a)k = H\cdot nk + B\cdot ak + D\cdot (n+a)k[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mindkét oldalon a Peano-szorzás disztributivitását ([yp_element slug="peano-szorzas-disztributivitas" type="link" /]) kihasználva ez így írható fel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]D\cdot nk + F\cdot ak + H\cdot nk + H\cdot ak = H\cdot nk + B\cdot ak + D\cdot nk + D\cdot ak[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="peano-osszeg-egyszerusites" type="link" /] miatt az egyenlet mindkét oldalát egyszerűsíthetjük [latex]D\cdot nk[/latex]-val és [latex]H\cdot nk[/latex]-val:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]F\cdot ak + H\cdot ak = B\cdot ak + D\cdot ak[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ismételten a Peano-szorzás disztributivitása miatt ez így is írható:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](F+H)\cdot ak = (B+D)\cdot ak[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Itt feltételezhetjük, hogy [latex]ak\
+eq 0[/latex], máskülönben ez az egyenlet [latex]F[/latex], [latex]H[/latex], [latex]B[/latex] és [latex]D[/latex] megválasztásától függetlenül teljesülne. Ha viszont [latex]ak\
+eq 0[/latex], akkor a [yp_element slug="peano-szorzat-egyszerusites" type="link" /] miatt következik, hogy: </p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]F+H = B+D[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A III. követelmény kapcsán viszont már megállapítottuk, hogy [latex]F=B+1[/latex], emiatt: </p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{B+1}_{=F} + H=B+D[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezt az egyenletet viszont a [yp_element slug="peano-osszeg-egyszerusites" type="link" /] miatt egyszerűsíthetjük [latex]B[/latex]-vel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]1+H=D[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A [latex]\Z[/latex]-beli szorzás definíciója</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Foglaljuk össze, mire jutottunk eddig. A [latex]\odot[/latex] művelet képletének meghatározására az alábbi általánosnak tekinthető képletből indultunk ki (amelyben tehát ismeretlennek tekintettük az [latex]A[/latex], [latex]B[/latex], [latex]C[/latex] és [latex]D[/latex], valamint az [latex]E[/latex], [latex]F[/latex], [latex]G[/latex] és [latex]H[/latex] együtthatóhat):</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}[(a;b)]\odot [(c;d)] = [(&amp;A\cdot ac + B\cdot ad + C\cdot bc + D\cdot bd; \\ &amp;E\cdot ac + F\cdot ad + G\cdot bc + H\cdot bd)]\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az előző szakaszban meghatároztunk 4 olyan követelményt, amelyet elvárunk egy „normálisan viselkedő” szorzástól, mint művelettől. Habár a 8 együttható továbbra is ismeretlen, azt azonban már tudjuk, hogy e 4 követelménynek ez a képlet eleget fog tenni, amennyiben az együtthatókra igazak az alábbiak:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}A&amp;=E+1 \\ D&amp;=H+1 \\ F&amp;=B+1 \\ G&amp;=C+1 \\ \end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mondhatnánk, hogy ezzel nem vagyunk sokkal előrébb, hiszen a [latex]B[/latex], [latex]C[/latex], [latex]E[/latex] és [latex]H[/latex] együtthatókat még mindig nem ismerjük. Ez igaz ugyan, azonban a fenti okfejtésből az következik, hogy <strong><em>a kívánt tulajdonságok teljesülése nem függ ennek a 4 együtthatónak az értékétől</em></strong>. Így azokat tulajdonképpen szabadon megválaszthatjuk. Annak érdekében, hogy minél egyszerűbb legyen a végleges képletünk, célszerű ezeket önkényesen 0-nak választani – feltéve, ha nem vagyunk mazochisták.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Így ezeket az együtthatókat kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{cc} \begin{aligned}E&amp;=0 \\ H&amp;=0 \\ B&amp;=0 \\ C&amp;= 0 \end{aligned} &amp; \begin{aligned} A=E+1&amp;=1 \\ D=H+1&amp;=1 \\ F=B+1&amp;=1 \\ G=C+1&amp;=1 \end{aligned} \end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezek alapján már definiálhatjuk az <strong><em>egész számok szorzásának</em></strong> műveletét.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-szorzasa" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Először megmutatjuk, hogy a [latex]\odot[/latex] művelet nemcsak az előző szakaszban megfogalmazott IV. követelmény szerinti esetekben <strong><em>jóldefiniált</em></strong> – tehát amikor adósságot szorzunk adóssággal –, hanem a teljes [latex]\Z[/latex] halmazon:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-szorzasa-joldefinialt" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-szorzasa-joldefinialt-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most vizsgáljuk meg, hogy tényleg minden szükséges tulajdonságot teljesít-e ez a művelet. Az biztos, hogy az [latex]f(n)=[(n;0)][/latex] beágyazófüggvény – amellyel tehát a Peano-axiómák szerinti [latex]\N_1[/latex] halmazt ágyazzuk be a [latex]\Z[/latex] halmazba – tartja a Peano-szorzást, hiszen épp ez volt az I. követelményünk az előző szakaszban. Ezért ezt most tételként is kimondhatjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="termeszetes-szamok-beagyazasa-szorzattarto" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="termeszetes-szamok-beagyazasa-szorzattarto-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Végül megmutatjuk, hogy a [latex]\odot[/latex] művelet teljesíti az iskolából jól ismert számolási szabályokat.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-szorzasa-kommutativ-asszociativ-es-disztributiv" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-szorzasa-kommutativ-asszociativ-es-disztributiv-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A szokásos számolási szabályok általánosságban</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Ebben és az előző részekben többször is beszéltünk már valamiféle „szokásos számolási szabályokról”. Elsőként akkor, amikor a Peano-összeadás és a Peano-szorzás tulajdonságait vizsgáltuk, majd a [latex]\Z[/latex] halmazon értelmezett két művelet kapcsán is. Ez még sokszor elő fog kerülni a következő részekben is, amikor különböző matematikai objektumok – amelyek nem feltétlenül számok – körében értelmezett műveletek tulajdonságait fogjuk vizsgálni. Ezért jó volna egy általánosan használható és tömör fogalomrendszert használni az ilyen esetekben.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>kétváltozós művelet</em></strong> fogalmát a [yp_element slug="ketvaltozos-muvelet" type="link" /]ból már ismerjük. Fontos, hogy egy műveletet mindig valamilyen alaphalmazon értelmezünk. Önmagában például nincs értelme összeadásról beszélni. Összeadás hol? A természetes számok [latex]\N[/latex] halmazán? Vagy az egész számok [latex]\Z[/latex] halmazán? Nem mindegy, ugyanis adott esetben más-más tulajdonságai lehetnek egy műveletnek az alaphalmaztól függően. Például a [yp_element slug="peano-nullosszeg-tagjai" type="link" /] szerint egy összeg csak akkor lehet „nulla”, ha mindkét tagja „nulla”. Ez nyilvánvalóan csak az [latex]\N[/latex] halmazon értelmezett összeadásra igaz, a [latex]\Z[/latex] halmazon már nem. Például [latex][(3;0)]\oplus [(0;3)] = [(3;3)] = [(0;0)][/latex]. Eredményül a „nulla” egész számot kaptuk, holott sem a [latex][(3;0)][/latex] sem pedig a [latex][(0;3)][/latex] nem a „nulla” egész szám. Egyáltalán mit jelent az egy halmazban, hogy „nulla”? Vizsgáljuk meg először ezt a kérdést általánosságban.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Neutrális elem</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel, hogy adva van egy tetszőleges [latex]R[/latex] halmaz, valamint egy kétváltozós művelet ezen a halmazon, amelyet jelöljünk most [latex]*[/latex]-gal. Előfordulhat, hogy létezik az [latex]R[/latex] halmazban egy olyan kitüntetett [latex]n[/latex] elem, amellyel bármilyen halmazbeli [latex]x[/latex] elemet össze-[latex]*[/latex]-ozva [latex]x[/latex]-et kapjuk vissza eredményül. Ez látható az alábbi ábrán:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":3524} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_14_neutralis_elem.jpg" alt="Műveletvégzés a neutrális elemmel" class="wp-image-3524"/><figcaption>Műveletvégzés a neutrális elemmel</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Néhány példa:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li>Az [latex]\N[/latex] halmazon értelmezett [latex]+[/latex]-szal jelölt Peano-összeadás esetén a 0 természetes szám.</li><li>Az [latex]\N[/latex] halmazon értelmezett [latex]\cdot[/latex]-tal jelölt Peano-szorzás esetén az 1 természetes szám.</li><li>A [latex]\Z[/latex] halmazon értelmezett [latex]\oplus[/latex]-szal jelölt művelet esetén a [latex][(0;0)][/latex] – vagy az iskolában megszokott jelöléssel a [latex]0[/latex] – egész szám.</li><li>A [latex]\Z[/latex] halmazon értelmezett [latex]\odot[/latex]-tal jelölt művelet esetén az [latex][(1;0)][/latex] – vagy az iskolában megszokott jelöléssel az [latex]1[/latex] vagy [latex]+1[/latex] – egész szám.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>Egy adott művelet alaphalmazában egy ilyen tulajdonságú elemnek külön neve van:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="neutralis-elem" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Természetesen kommutatív művelet esetén nincs értelme külön jobb- vagy baloldali neutrális elemről beszélni, hiszen ott minden jobboldali neutrális elem egyben baloldali is, és fordítva. Rögtön felmerülhet a kérdés, hogyha egy halmazban egy adott műveletre nézve létezik neutrális elem, akkor vajon az egyértelmű-e. Ezt válaszolja meg az alábbi tétel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="neutralis-elem-egyertelmu" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="neutralis-elem-egyertelmu-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Megjegyezzük, hogy az egyértelműség csak a kétoldali neutrális elemre igaz,  a csak jobboldali vagy csak baloldali neutrális elemre nem feltétlenül.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most, hogy van már neutrális elemünk, ismerkedjünk meg egy másik fontos fogalommal.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Inverz elem, művelet invertálhatósága</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Maradjunk továbbra is az [latex]R[/latex] halmaznál és a rajta értelmezett [latex]*[/latex] műveletnél, és tegyük fel, hogy létezik erre a műveletre nézve neutrális elem, amelyet jelöljünk [latex]n[/latex]-nel. A példa kedvéért átmenetileg azt is feltételezzük, hogy a [latex]*[/latex] művelet asszociatív. Tegyük fel, hogy elvégeztük az [latex]a*b[/latex] műveletet, melynek eredményeképp kaptunk egy [latex]c[/latex] elemet. Elképzelhető, hogy szeretnénk <strong><em>megfordítani</em></strong>, vagy tudományosabban fogalmazva <strong><em>invertálni</em></strong> a [latex]b[/latex]-vel való [latex]*[/latex]-ozás folyamatát. Azaz szeretnénk találni egy olyan elemet [latex]b[/latex]-hez, amellyel ha össze-[latex]*[/latex]-ozzuk a [latex]c[/latex]-t, akkor visszakapjuk az eredeti [latex]a[/latex] elemet. Jelöljük ezt a keresett elemet [latex]b^{-1}[/latex]-gyel. Az invertálás folyamata látható az alábbi ábrán:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":3526} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_14_muveletvegzes_invertalasa.jpg" alt="Műveletvégzés invertálása" class="wp-image-3526"/><figcaption>Műveletvégzés invertálása</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Mivel átmenetileg feltételeztük, hogy a [latex]*[/latex] művelet asszociatív, ezért lényegében egy olyan [latex]b^{-1}[/latex] elemet keresünk, amelyre teljesül, hogy [latex]b*b^{-1}=n[/latex]. Így valóban meg tudjuk fordítani a [latex]b[/latex]-vel való műveletvégzést, hiszen az asszociativitás miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](\underbrace{a*b}_{=c})*b^{-1} = a*(\underbrace{b*b^{-1}}_{=n}) = a[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt szeretnénk tehát, hogy a [latex]b*b^{-1}[/latex] művelet eredménye épp az [latex]n[/latex] neutrális elem legyen. A [latex]*[/latex] művelet asszociativitását mindössze azért feltételeztük átmenetileg, hogy a fenti átzárójelezést meg tudjuk lépni. Így a [latex]b^{-1}[/latex]-gyel való [latex]*[/latex]-ozás valóban visszaszolgáltatja nekünk az eredeti [latex]a[/latex] elemet. Nem asszociatív esetben ez nem feltétlenül van így, ám a most következő fogalom enélkül a „képesség” nélkül is fontos:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="inverz-elem" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Természetesen kommutatív művelet esetén nincs értelme külön jobb- vagy baloldali inverz elemről beszélni, hiszen ott minden jobboldali inverz elem egyben baloldali is, és fordítva. Megjegyezzük még, hogy a neutrális elem fogalmával ellentétben <strong><em>itt nem egyetlen</em></strong>, az [latex]R[/latex] halmazra nézve <strong><em>globális elemről van szó</em></strong>, amely rendelkezik az „inverzséggel”, mint tulajdonsággal. Inverz elemről beszélni csak akkor van értelme, ha megmondjuk azt is, hogy <strong><em>melyik [latex]R[/latex]-beli elemnek</em></strong> keressük az inverzét.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Rögtön felmerülhet a kérdés, hogyha egy adott elemhez egy műveletre nézve létezik inverz, akkor vajon az egyértelmű-e. Ezt válaszolja meg az alábbi tétel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="inverz-elem-egyertelmu" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="inverz-elem-egyertelmu-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A neutrális elemmel ellentétben tehát egy adott elem inverze csak akkor egyértelmű, ha a művelet <strong><em>asszociatív</em></strong>, általánosságban azonban ez nem feltétlenül van így.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A kivonás művelete</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Most gondoljuk végig, tudunk-e példákat mutatni az inverz fogalmára az eddig tanultakból. A természetes számok [latex]\N[/latex] halmazán ugye nem, hiszen épp azért kezdtük el a számfogalom bővítését és vezettük be a negatív számokat, mert sem a Peano-összeadás, sem pedig a Peano-szorzás nem invertálható. Ezzel szemben a [latex]\Z[/latex] halmazon értelmezett [latex]\oplus[/latex] művelet invertálható, hiszen egy tetszőleges [latex][(a;b)][/latex]-vel jelölt egész számnak az ellentettje erre a műveletre nézve épp a [latex][(b;a)][/latex]-val jelölt egész szám. Ezek összege ugyanis a [yp_element slug="egesz-szamok-osszeadasa" type="link" /] értelmében az [latex][(a+b;a+b)][/latex] egész szám, amely a [yp_element slug="pozitiv-es-negativ-egesz-szamok" type="link" /] alapján megegyezik a [latex][(0;0)][/latex] egész számmal, azaz a [latex]\oplus[/latex] művelet neutrális elemével.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A hagyományos jelölésekkel tehát egy [latex]n[/latex] egész szám [latex]\oplus[/latex] műveletre vonatkozó ellentettje a [latex]-n[/latex] egész szám, és fordítva. Ezt a tényt – tehát, hogy minden egész számnak létezik ellentettje – kihasználva mostmár értelmezhetjük a harmadik alapműveletünket, vagyis a <strong><em>kivonást</em></strong>:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-kivonasa" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Sajnos azonban az <strong><em>osztás</em></strong> fogalmát még mindig nem tudjuk értelmezni a [latex]\Z[/latex] halmazon, mivel a [latex]\odot[/latex] művelet nem invertálható ebben a számkörben. Ehhez tovább kéne bővítenünk a szám fogalmát, és bevezetni az úgynevezett <strong><em>racionális (vagy tört-) számokat</em></strong>, ahol már ez a művelet is invertálható. Ezt egyelőre nem fogjuk megtenni, így általánosságban nem fogjuk tudni elvégezni az egész számok közötti osztást. Hamarosan azonban bevezetjük majd az <strong><em>oszthatóság</em></strong> fogalmát, amely bizonyos esetekben mégis lehetővé teszi, hogy egy egész számot „elosszunk” egy másik egész számmal. Ez az „osztás” azonban algebrai értelemben nem lesz művelet, hiszen nem végezhető el általánosságban bármely két egész szám között.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4 id="rings-and-fields">Gyűrűk és testek</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Most az eddig tanult fogalmakkal felvértezve ismerkedjünk meg azokkal az algebrai fogalmakkal, amelyekre további számelméleti vizsgálataink során gyakran fogunk hivatkozni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="gyuru-test" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Felhívnánk a figyelmet arra, hogy a fenti definícióban semmit nem tételeztünk fel az [latex]R[/latex] halmazról és a két műveletről azon kívül, hogy teljesülnek rájuk a definícióban szereplő gyűrűaxiómák. Az, hogy „összeadásnak” és „szorzásnak” neveztük a két műveletet, egyáltalán nem azt jelenti, hogy ezeknek adott esetben bármiféle közük van az ebben és az előző részben bevezetett egész számok közötti összeadáshoz és szorzáshoz. Az [latex]R[/latex] halmaz elemei még csak nem is feltétlenül számok.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A gyűrűk és a testek vizsgáltával az <a rel="noreferrer noopener" aria-label="absztrakt algebra (új fülön nyitja meg)" href="https://hu.wikipedia.org/wiki/Absztrakt_algebra" target="_blank">absztrakt algebra</a> foglalkozik. Ezek a fejünkben élő számfogalom egyfajta általánosításai, absztrakciói. Célszerű azonban a jól megszokott [latex](\Z ,\oplus , \odot )[/latex] algebrai struktúrára gondolni, amikor például gyűrűkre vonatkozó általános összefüggésekről beszélünk. Mint látni fogjuk, ezek az összefüggések <strong><em>bármilyen</em></strong> más gyűrűre ugyanúgy érvényesek lesznek. Ilyen értelemben az absztrakt algebra igen hatékony fegyverként bevethető lesz konkrét – azaz nem absztrakt – problémák megoldására is. Éppen ezért a tágabb értelemben vett számelmélet főként a gyűrűket, illeve azok szerkezetét vizsgálja. A továbbiakban ezért mi is általános gyűrűkre vonatkozó összefüggéseket fogunk bizonyítani, amennyire csak lehetséges.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Visszatérés a megszokott jelölésekhez</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="egesz-szamok-halmaza" type="link" /]val az előző részben bevezettük az egész számok [latex]\Z[/latex] halmazát, amelynek elemeit természetes számpárok ekvivalencia-osztályaiként határoztuk meg. Ezekre a szokatlan [latex][(a;b)][/latex] jelölésmódot alkalmaztuk, és definiáltunk közöttük egy „összeadásnak” és „szorzásnak” nevezett műveletet, amelyeket a szintén szokatlan [latex]\oplus[/latex] és [latex]\odot[/latex] szimbólumokkal jelöltünk. Erre a szokatlan jelölésmódra azért volt szükség, mert szerettük volna kihangsúlyozni, hogy a [latex](\Z , \oplus , \odot )[/latex] algebrai struktúrának látszólag semmi köze nincs a <a rel="noreferrer noopener" aria-label="11. (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/11-peano-axiomarendszer-termeszetes-szam-muvelet-osszeadas-kommutativitas-asszociativitas-teljes-indukcio/" target="_blank">11.</a> és <a rel="noreferrer noopener" aria-label="12. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/12-szorzas-disztributivitas-teljes-indukcio-indirekt-bizonyitas-relacio-teljes-rendezes-rendezett-halmaz/" target="_blank">12. részben</a> bevezetett, a Peano-axiómarendszer által meghatározott [latex](\N ,+,\cdot )[/latex] algebrai struktúrához, azaz a természetes számok halmazához.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mostanra azonban már kiderült, hogy ez utóbbi struktúra beágyazható a [latex]\Z[/latex] halmazba, méghozzá az [latex]f(n)=[(n;0)][/latex] beágyazófüggvénnyel, amelyről bizonyítottuk, hogy algebrai értelemben tartja a Peano-összeadást és a Peano-szorzást. Ez azt jelenti számunkra, hogy a természetes számok eredeti halmazán – amelyet átmenetileg [latex]\N_1[/latex]-gyel jelöltünk – és annak [latex]f[/latex] szerinti képén – amelyet átmenetileg [latex]\N_2[/latex]-vel jelöltünk, és amely már a [latex]\Z[/latex] halmaz része – az „összeadás” és „szorzás” műveletek gyakorlatilag ugyanúgy viselkednek, leszámítva a jelölésbeli különbséget.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":3246} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_13_N_beagyazasa_Z_be.jpg" alt="Természetes számok beágyazása Z-be" class="wp-image-3246"/><figcaption>Természetes számok beágyazása [latex]\Z[/latex]-be</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>A továbbiakban tehát nyugodtan elfelejthetjük a régi [latex](\N_1 ,+,\cdot )[/latex] algebrai struktúrát, és tekinthetjük az új [latex](\N_2 ,\oplus ,\odot )[/latex] algebrai struktúrát a <strong><em>természetes számoknak</em></strong>, amely így már az általánosabb [latex](\Z , \oplus, \odot )[/latex] algebrai struktúra része. Amint az az alábbi tételből kiderül, ez az algebrai struktúra előnyösebb tulajdonságokkal rendelkezik az elődjéhez képest.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-gyuruje" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-gyuruje-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A továbbiakban tehát a fura [latex]\oplus[/latex], [latex]\odot[/latex] és [latex]\ominus[/latex] jelölések helyett rendre a [latex]+[/latex], a [latex]\cdot[/latex] (vagy egymás után írás) és a [latex]-[/latex] szimbólumokat fogjuk használni a [latex]\Z[/latex] halmazon értelmezett műveleteinkhez. Ezen kívül az egész számokat a továbbiakban nem a szintén szokatlan [latex][(a;b)][/latex] alakban fogjuk jelölni, hanem a [yp_element slug="pozitiv-es-negativ-egesz-szamok" type="link" /]ban szereplő, az általános iskolából jól ismert jelöléseket használjuk mostantól. Végül a természetes számok [latex]\N[/latex] halmaza alatt a továbbiakban a [latex]\Z[/latex]-nek azt a részhalmazát fogjuk érteni, amely a pozitív egész számokat és a [latex]0[/latex] egész számot tartalmazza.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ebben a részben tehát intuitív módon értelmeztük a szorzás műveletét is az egész számok halmazán. Ezután megmutattuk róla, hogy teljesíti a megszokott azonosságokat, valamint ugyanúgy viselkedik, mint a Peano-szorzás az [latex]\N[/latex] halmazon. Végül megismerkedtünk néhány hasznos absztrakt algebrai fogalommal, és megmutattuk, hogy a [latex]\Z[/latex] halmaz egy úgynevezett kommutatív, egységelemes gyűrűt alkot az új műveleteinkkel, emiatt a kivonás korlátlanul elvégezhető rajta. Így már tulajdonképpen teljessé vált [latex]\N[/latex] beágyazása [latex]\Z[/latex]-be a [latex]\leq[/latex] rendezési reláció kiterjesztésétől eltekintve, amelyet a következő részben fogunk elvégezni. Megemlítettük azonban, hogy az osztás még a [latex]\Z[/latex] halmazon sem végezhető el korlátlanul. Ez rövidesen elvezet minket az egyik legfontosabb számelméleti fogalomhoz, méghozzá az oszthatóság kérdéséhez.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A következő részt <a href="https://youproof.hu/kriptografia/15-rendezett-gyuru-absztrakt-algebra-egesz-szam-rendezesi-relacio-rendezesi-axiomak/">itt</a> találod...</em></strong></p>
+<!-- /wp:paragraph -->

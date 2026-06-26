@@ -1,0 +1,67 @@
+type: section
+name: 01-a-csatorna-negativ-hatasa
+title: A csatorna negatív hatása
+
+body:
+  - type: narrative
+    content: |
+      Nézzünk először egy életszerű példát. Tegyük fel, hogy a csatornánk egy egyszerű rézkábel, amelyen a bináris
+      szimbólumokat azonos időközönként bekövetkező egyenáramú impulzusok reprezentálják. Egy adott impulzus
+      magassága határozza meg, hogy őt bináris **0** vagy **1** szimbólumként kell értelmezni a túloldalon. Például
+      a 0.8V és 1.2V közötti magasságú impulzusok jelentsék a **0** biteket, az 1.8V és 2.2V közötti magasságú
+      impulzusok pedig jelentsék az **1** biteket. Így a vételi oldalon egyértelműen eldönthető, hogy hol vannak a
+      bithatárok, illetve hogy milyen bitről van szó.
+  - type: figure
+    lead-in: |
+      Például a **011001** bitsorozatot reprezentáló elektronikus jel alakja az adó oldalon valahogy így nézne ki:
+    src: 02-binaris-jel-ado-oldal.jpg
+    alt: Elektronikus jel (adó oldal)
+    caption: Elektronikus jel (adó oldal)
+  - type: narrative
+    content: |
+      Nyilván az a célunk, hogy minél rövidebb idő alatt minél több bit, azaz végsősoron minél több ilyen impulzus
+      haladjon át a csatornán. Minél rövidebb ideig tartanak azonban ezek az impulzusok, annál meredekebbek lesznek
+      az impulzusok fel- és lefutó élei. Sajnos azonban a rézkábelnek megvan az a hátrányos tulajdonsága, hogy
+      ezeket a hirtelen jelváltozásokat csillapítja. Ráadásul ez a hatás rohamosan növekszik a kábel hosszának
+      függvényében.
+  - type: figure
+    lead-in: |
+      Ezért előfordulhat, hogy a vételi oldalhoz már az alábbi deformált jel fog érkezni:
+    src: 03-binaris-jel-veteli-oldal.jpg
+    alt: Elektronikus jel (vételi oldal)
+    caption: Elektronikus jel (vételi oldal)
+  - type: narrative
+    content: |
+      Sajnos ebben az esetben a második bitnek megfelelő impulzus olyan mértékben deformálódott, hogy a vételi
+      oldalon már nem lehet megállapítani, hogy a magassága melyik bináris szimbólumnak megfelelő sávba esik.
+      Ezáltal nem lehet eldönteni, hogy az Alice által küldött bináris sorozat a **011001**, vagy pedig a
+      **001001** volt. Nem kell hangsúlyoznunk, hogy ez mekkora félreértésekhez vezethet egy Alice és Bob közötti
+      kommunikációban.
+  - type: narrative
+    content: |
+      A fenti egy tipikus példája az úgynevezett ***törléses bithibáknak***. Ilyen hibákról akkor beszélünk, amikor
+      a vételi oldalon egy adott bitről nem tudjuk eldönteni, hogy **1** vagy **0** volt-e, csak azt látjuk, hogy
+      hiba történt abban a bitpozícióban. Ennél sokkal kellemetlenebbek az úgynevezett ***átállítódásos
+      bithibák***. Ilyenkor egész egyszerűen **0** helyett **1**-et vagy **1** helyett **0**-át detektálunk, vagyis
+      a vételi oldal a hiba tényéről sem szerez tudomást, az rejtve marad a számára. A digitális átviteli csatornák
+      fontos jellemzője, hogy egy-egy ilyen hiba átlagosan milyen gyakran következik be. Ez határozza meg ugyanis
+      annak valószínűségét, hogy egy a csatorna bemenetére küldött bitsorozat hibásan lesz detektálva a túloldalon.
+  - type: narrative
+    content: |
+      A matematikában egy esemény bekövetkezésének ***valószínűségét*** egy 0 és 1 közötti számmal jellemezhetjük.
+      Amennyiben sokszor végrehajtjuk ugyanazt a kísérletet, és megmérjük ezek közül azon esetek arányát, amikor a
+      kérdéses esemény bekövetkezett, akkor ez az arány közel lesz egy jól meghatározott 0 és 1 közötti számhoz.
+      Minél több kísérletet végzünk, annál közelebb. Ezt a számot nevezzük az adott esemény valószínűségének. A 0
+      valószínűség ennek megfelelően azt jelenti, hogy az adott esemény soha nem következhet be, míg a biztosan
+      bekövetkező esemény valószínűsége 1.
+  - type: narrative
+    content: |
+      A hibás detektálás valószínűségének csökkentését alapvetően kétféle módszerrel (vagy ezek kombinációjával)
+      érhetjük el. Egyrészt használhatunk jobb minőségű csatornát. Ennek nyilván gátat szab a csatornára elkölthető
+      pénz mennyisége. Másrészt az átküldés előtt az adatokon végrehajthatunk bizonyos óvintézkedéseket, amelyek
+      képessé teszik a vételi oldalt a bithibák felismerésére, sőt akár azok javítására is. Az ilyen jellegű
+      óvintézkedéseket összefoglaló néven ***csatornakódolásnak*** nevezzük. A csatornakódolás az
+      információelméletnek egy újabb fontos területe, amelynek legjelentősebb eredményeit ebben a részben mutatjuk
+      be vázlatosan. Ehhez bevezetjük a diszkrét memóriamentes csatorna absztrakt modelljét, amely matematikailag
+      kezelhetővé teszi a fentiekben leírt kellemetlen jelenségeket függetlenül attól, hogy milyen konkrét fizikai
+      csatornáról van szó.

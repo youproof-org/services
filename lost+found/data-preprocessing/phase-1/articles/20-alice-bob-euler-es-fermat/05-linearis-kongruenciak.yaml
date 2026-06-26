@@ -1,0 +1,266 @@
+type: section
+name: 05-linearis-kongruenciak
+title: Lineáris kongruenciák
+
+references:
+  egesz-szamok-maradekosztalyai:
+    target:
+      type: theorem
+      name: egesz-szamok-maradekosztalyai
+  egesz-szamok-maradekosztalygyurui:
+    target:
+      type: theorem
+      name: egesz-szamok-maradekosztalygyurui
+  gyuruk-homomorfizmustetele:
+    target:
+      type: theorem
+      name: gyuruk-homomorfizmustetele
+  linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga:
+    target:
+      type: theorem
+      name: linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga
+  linearis-kongruenciak-megoldasai-es-megoldasszama:
+    target:
+      type: theorem
+      name: linearis-kongruenciak-megoldasai-es-megoldasszama
+  modularis-osszeadas-es-szorzas:
+    target:
+      type: definition
+      name: modularis-osszeadas-es-szorzas
+
+body:
+  - type: narrative
+    content: |
+      A kongruenciaegyenletek legegyszerűbb képviselői az úgynevezett ***lineáris kongruenciák***, mint amilyen a
+      fenti kongruenciaegyenlet is. Ezeknek kulcsszerepe van a kriptográfiai eljárásokban, ezért ebben a szakaszban
+      fontos tételeket mondunk ki velük kapcsolatban. Előszöris definiáljuk pontosan, hogy mit is értünk lineáris
+      kongruencia, illetve annak megoldásai és megoldásszáma alatt.
+  - type: embed
+    target:
+      type: definition
+      name: linearis-kongruenciak
+  - type: embed
+    target:
+      type: remark
+      name: linearis-kongruenciak-megjegyzes
+  - type: ordered-list
+    lead-in: |
+      Egy lineáris kongruencia esetén &ndash; hasonlóan egy hagyományos egyenlethez &ndash; az alábbi kérdésekre
+      keressük a választ:
+    items:
+      - 'Mi a megoldhatóság szükséges és elégséges feltétele?'
+      - 'Hány megoldás létezik (a fenti definíció szerinti értelemben)?'
+      - 'Hogyan kaphatjuk meg ezeket a megoldásokat?'
+  - type: narrative
+    content: |
+      Ahhoz, hogy ezeket a kérdéseket megválaszoljuk, először is szükségünk van egy fontos állításra az előző
+      részben tárgyalt, ***végesen generált ideálok*** elemeivel kapcsolatban. Az alábbi tétel az
+      ***egységelemes*** gyűrűk esetére szorítkozik, és arról szól, hogy hogyan tudjuk megkapni egy ideál
+      ***összes*** elemét a generátorelemek segítségével. Általános esetben a helyzet némiképp bonyolultabb, és
+      jelenleg nincs is rá szükségünk, így ennek részleteit most mellőzzük.
+  - type: embed
+    target:
+      type: theorem
+      name: vegesen-generalt-ideal-elemei
+  - type: embed
+    target:
+      type: proof
+      name: vegesen-generalt-ideal-elemei-bizonyitas
+  - type: narrative
+    content: |
+      Például tekintsük a $(8,6)$ ideált az egész számok gyűrűjében. A tétel alapján ennek összes elemét megkapjuk,
+      ha a $8x+6y$ kifejezésbe az $x$ és $y$ helyére behelyettesítjük az összes lehetséges egész számpárt.
+  - type: figure
+    lead-in: |
+      Az alábbi táblázatban néhány nemnegatív számpárra számítottuk ki az eredményt, de a táblázat természetesen
+      folytatható lenne a negatív számtartományokban is:
+    src: 04-a-8-6-ideal-elemei.jpg
+    alt: A (8,6) ideál elemei
+    caption: A (8,6) ideál elemei
+  - type: narrative
+    content: |
+      A kapott számok az ábrán feltüntetett vonalak mentén kettesével követik egymást. Úgy tűnik tehát, hogy a
+      $(8,6)$ ideál épp a páros számokat tartalmazza, azaz megegyezik a $(2)$ főideállal. A $2$ ráadásul épp a $8$
+      és a $6$ kitüntetett közös osztója. Az előző részben mutattunk már egy fontos összefüggést egy
+      integritástartomány ideáljai és a kitüntetett közös osztók között:
+  - type: embed
+    target:
+      type: theorem
+      name: idealok-es-a-kituntetett-kozos-oszto
+  - type: narrative
+    content: |
+      Eszerint tehát az $(a,b)$ és $(d)$ ideálok közötti egyenlőségből következik, hogy $d$ kitüntetett közös
+      osztója $a$-nak és $b$-nek. ***Vigyázzunk azonban!*** Visszafelé ugyanis általánosságban nem igaz az
+      összefüggés. Vagyis abból, hogy $d$ kitüntetett közös osztója $a$-nak és $b$-nek még ***nem következik***,
+      hogy az $(a,b)$ és a $(d)$ ideálok megegyeznek. Ennek a megfordításnak a pontos feltételeit az alábbi tétel
+      fogalmazza meg.
+  - type: embed
+    target:
+      type: theorem
+      name: idealok-es-a-kituntetett-kozos-oszto-megforditas
+  - type: embed
+    target:
+      type: proof
+      name: idealok-es-a-kituntetett-kozos-oszto-megforditas-bizonyitas
+  - type: narrative
+    content: |
+      Most alkalmazzuk a fenti példára a tételt. Mivel a $2$ a $8$ és $6$ kitüntetett közös osztója, továbbá
+      $2=1\cdot 8 + (-1)\cdot 6$, ezért a $(8,6)$ ideál nem csak látszólag, hanem valóban megegyezik a $(2)$
+      főideállal.
+  - type: narrative
+    content: |
+      Az előző tételnek van egy egyszerű következménye az előző részben tárgyalt főideálgyűrűkre nézve, amely
+      ***Bézout-lemma*** néven ismeretes. Ez Étienne Bézout 18. századi francia matematikusról kapta a nevét, és
+      eredetileg az egész számok körében volt ismeretes, ám az ennél általánosabb főideálgyűrűkre is érvényes.
+  - type: embed
+    target:
+      type: theorem
+      name: bezout-lemma
+  - type: embed
+    target:
+      type: proof
+      name: bezout-lemma-bizonyitas
+  - type: narrative
+    content: |
+      Most térjünk vissza az $ax\equiv b\pmod m$ lineáris kongruencia megoldhatóságának kérdésére. Az alábbi
+      tételben megmutatjuk, hogy ez szoros összefüggésben van egy egész számokon értelmezett egyenlet &ndash;
+      úgynevezett ***lineáris diofantoszi egyenlet*** &ndash; megoldhatóságával.
+  - type: embed
+    target:
+      type: theorem
+      name: linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga
+  - type: embed
+    target:
+      type: proof
+      name: linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga-bizonyitas
+  - type: narrative
+    content: |
+      Ez tehát azt jelenti, hogy az $ax\equiv b\pmod m$ lineáris kongruencia és az $ax+my=b$ lineáris diofantoszti
+      egyenlet kölcsönösen visszavezethetők egymásra. Ennek alapján bármely, a lineáris kongruenciákkal kapcsolatos
+      eredmény felhasználható a lineáris diofantoszi egyenletek vizsgálatánál és viszont.
+  - type: narrative
+    content: |
+      ***Felhívjuk azonban a figyelmet, hogy jelentős eltérés van a kettő között!*** Egy lineáris kongruencia
+      megoldásai modulo $m$ maradékosztályok, és így a megoldások száma véges. Ezzel szemben egy lineáris
+      diofantoszi egyenlet megoldásai egész számpárok, és ezekből végtelen sok lehet.
+  - type: narrative
+    content: |
+      Amikor egy lineáris kongruenciát kell megoldanunk, akkor általában az iménti tétel alapján visszavezetjük azt
+      egy lineáris diofantoszi egyenletre. Egy ilyen egyenlet megoldására a következő részben fogunk mutatni egy
+      roppant hatékony módszert, amely tulajdonképpen a 17. részben bemutatott ***euklidészi algoritmusnak*** egy
+      kibővített változata. Ennek az eljárásnak a segítségével kiszámítjuk a diofantoszi egyenlet egy $x$, $y$
+      megoldását. Ekkor a [linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga] alapján az $x$
+      által reprezentált $[x]_m$ maradékosztály épp az eredeti lineáris kongruencia ***egyik*** megoldása lesz.
+  - type: narrative
+    content: |
+      Jogosan merül fel a kérdés, hogy ***mi van akkor, ha egy lineáris kongruenciának több megoldása is létezik?
+      Vajon összesen hány megoldás van? Hogyan kapható meg egy megoldásból az összes többi?*** Ezt az alábbi
+      tételben válaszoljuk meg, majd a bizonyítás után egy egyszerű példán demonstráljuk ennek alkalmazását.
+  - type: embed
+    target:
+      type: theorem
+      name: linearis-kongruenciak-megoldasai-es-megoldasszama
+  - type: embed
+    target:
+      type: proof
+      name: linearis-kongruenciak-megoldasai-es-megoldasszama-bizonyitas
+  - type: narrative
+    content: |
+      Most nézzünk meg egy egyszerű példát az iménti tétel alkalmazására. A 18. részben szó volt arról, hogy nagyon
+      óvatosan kell eljárnunk, amikor a [modularis-osszeadas-es-szorzas] szerinti $Z_m$ gyűrűben akarunk
+      egyenleteket megoldani.
+  - type: formula
+    lead-in: |
+      Példaként a $Z_8$ gyűrűben írtuk fel az alábbi egyenletet:
+    content: |
+      (2\odot x)\oplus 3=7
+  - type: narrative
+    content: |
+      Az említett példában megmutattuk, hogyha a "szokásos" módon próbáljuk megoldani ezt az egyenletet, akkor
+      elveszhetnek bizonyos megoldások. Ha például mindkét oldalból kivonunk $3$-at, majd mindkét oldalt
+      "elosztjuk" $2$-vel, akkor megkapjuk ugyan az $x=2$ megoldást, ám elveszítjük az $x=6$ megoldás. Ennek az oka
+      az volt, hogy a $Z_8$ gyűrű ***nem nullosztómentes*** &ndash; hiszen például $2\odot 4=0$, holott egyik
+      tényező sem $0$. Az imént bizonyított, ***lináris kongruenciákkal*** kapcsolatos tétel segítségével azonban
+      már könnyen kezelhetjük az ilyen egyenleteket. Nézzük is meg, hogyan.
+  - type: narrative
+    content: |
+      Mint már említettük, a ***homomorfizmustétel*** miatt ([gyuruk-homomorfizmustetele]) a $Z_8$ gyűrű
+      ***izomorf*** a $\Z/8\Z$ gyűrűvel &ndash; azaz a modulo $8$ maradékosztálygyűrűvel &ndash;, tehát pontosan
+      ugyanúgy kell benne számolni.
+  - type: formula
+    lead-in: |
+      Emiatt a $Z_8$ gyűrűben felírt $(2\odot x)\oplus 3=7$ egyenletet áttranszformálhatjuk a $\Z/8\Z$
+      maradékosztálygyűrűbe:
+    content: |
+      ([2]_8\odot X)\oplus [3]_8=[7]_8
+  - type: narrative
+    content: |
+      A $[3]_8$ maradékosztály ellentettje az $[5]_8$ maradékosztály, mivel ezek összege épp a $[0]_8$
+      maradékosztály.
+  - type: formula
+    lead-in: |
+      Így mindkét oldalhoz $[5]_8$-öt hozzáadva ezt kapjuk:
+    content: |
+      [2]_8\odot X=[4]_8
+  - type: narrative
+    content: |
+      Keressük tehát azt az $X$ maradékosztályt, amelyet a $[2]_8$ maradékosztállyal megszorozva a $[4]_8$
+      maradékosztályt kapjuk eredményül. Ha megnézzük a $\Z/8\Z$ maradékosztálygyűrű alábbi szorzótábláját, akkor
+      látszik, hogy két megoldás van.
+  - type: formula
+    lead-in: |
+      Nevezetesen az $X=[2]_8$ és az $X=[6]_8$ maradékosztályok:
+    content: |
+      \begin{array}{c|cccccccc}\odot & [0]_8 & [1]_8 & [2]_8 & [3]_8 & [4]_8 & [5]_8 & [6]_8 & [7]_8  \\ \hline
+      [0]_8 & [0]_8 & [0]_8 & [0]_8 & [0]_8 & [0]_8 & [0]_8 & [0]_8 & [0]_8  \\  [1]_8 & [0]_8 & [1]_8 & [2]_8 &
+      [3]_8 & [4]_8 & [5]_8 & [6]_8 & [7]_8  \\  [2]_8 & [0]_8 & [2]_8 & [4]_8 & [6]_8 & [0]_8 & [2]_8 & [4]_8 &
+      [6]_8  \\  [3]_8 & [0]_8 & [3]_8 & [6]_8 & [1]_8 & [4]_8 & [7]_8 & [2]_8 & [5]_8  \\  [4]_8 & [0]_8 & [4]_8 &
+      [0]_8 & [4]_8 & [0]_8 & [4]_8 & [0]_8 & [4]_8  \\  [5]_8 & [0]_8 & [5]_8 & [2]_8 & [7]_8 & [4]_8 & [1]_8 &
+      [6]_8 & [3]_8  \\  [6]_8 & [0]_8 & [6]_8 & [4]_8 & [2]_8 & [0]_8 & [6]_8 & [4]_8 & [2]_8  \\  [7]_8 & [0]_8 &
+      [7]_8 & [6]_8 & [5]_8 & [4]_8 & [3]_8 & [2]_8 & [1]_8  \end{array}
+  - type: narrative
+    content: |
+      Igenám, csakhogy egy sokkal nagyobb &ndash; például a kriptográfiai gyakorlatban előforduló többszázjegyű
+      &ndash; modulus esetén nem írhatjuk fel a szorzótáblát, mivel az ehhez használt papírlap sokszorosan
+      beborítaná az egész bolygót. Ehelyett a megoldáshoz a fenti tételt fogjuk alkalmazni.
+  - type: narrative
+    content: |
+      A [egesz-szamok-maradekosztalyai] alapján elegendő a keresett $X$ maradékosztály(ok) egyetlen elemét
+      megtalálni, hiszen ebből könnyedén megkapható az összes többi. Jelöljük ezt a keresett elemet $x$-szel, azaz
+      $X=[x]_m$.
+  - type: formula
+    lead-in: |
+      Ekkor a fenti egyenlet &ndash; követve a $\odot$ művelet [egesz-szamok-maradekosztalygyurui]beli definícióját
+      &ndash; így módosul:
+    content: |
+      [2]_8\odot [x]_8=[2\cdot x]_8=[4]_8
+  - type: narrative
+    content: |
+      Szavakkal megfogalmazva tehát kell keresnünk egy olyan $x$ egész számot, amely esetén a $2\cdot x$ szorzat
+      ugyanabban a maradékosztályban van, mint a $4$ egész szám.
+  - type: formula
+    lead-in: |
+      Ez épp az alábbi ***lineáris kongruencia*** megoldásainak megkeresését jelenti:
+    content: |
+      2\cdot x\equiv 4\pmod 8
+  - type: narrative
+    content: |
+      A [linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga] alapján ez a kongruencia
+      megoldható, mivel a $(2,8)=2$ kitüntetett közös osztónak többszöröse a kongruencia jobboldalán szereplő $4$
+      egész szám. A [linearis-kongruenciak-megoldasai-es-megoldasszama] alapján ekkor a ***megoldásszám*** valóban
+      $2$.
+  - type: narrative
+    content: |
+      Tegyük fel, hogy valahogyan megtaláltuk a $[2]_8$ megoldást. Ezt például az úgynevezett ***kibővített
+      euklidészi algoritmus*** segítségével tudjuk majd kiszámítani, amelyet a következő részben fogunk bemutatni.
+  - type: formula
+    lead-in: |
+      Ekkor a [linearis-kongruenciak-megoldasai-es-megoldasszama] alapján valóban pontosan az alábbi
+      maradékosztályok lesznek a megoldások:
+    content: |
+      \begin{aligned}[2+0\cdot \frac{8}{(2,8)}]_8&=[2]_8 \\ [2+1\cdot
+      \frac{8}{(2,8)}]_8&=[2+4]_8=[6]_8\end{aligned}
+  - type: narrative
+    content: |
+      Így tehát a $Z_8$ gyűrű és a $\Z/8\Z$ maradékosztálygyűrű izomorfiája miatt az eredeti $(2\odot x)\oplus
+      3=7$ egyenlet megoldásai az $x=2$ és $x=6$ elemek lesznek a $Z_8$ gyűrűben.

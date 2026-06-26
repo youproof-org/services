@@ -1,0 +1,81 @@
+type: section
+name: 07-a-bizalom-tovabbitasa-chain-of-trust
+title: A bizalom továbbítása – chain of trust
+
+body:
+  - type: narrative
+    content: |
+      Térjünk most vissza a 7. részben már említett Kompánia országába. Tegyük fel, hogy a kormány teljesen át akar
+      térni az elektronikus ügyintézésre a hagyományos papíralapú helyett. A bíróságok, a rendőrség, a
+      kormányhivatalok és az egész közigazgatás mind mind elektronikus iratokkal dolgozik és az állampolgároknak
+      lehetőségük van teljesen elektronikusan intézni az ügyeiket.
+  - type: narrative
+    content: |
+      Egy ilyen bonyolult és sokrésztvevős rendszerben nyilvánvalóan rengeteg tanúsítványt kell kibocsájtani. Nem
+      lenne túl szerencsés, ha ezt a hatalmas feladatot egyetlen CA-ra bíznánk. Ehelyett több CA van a rendszerben,
+      amelyek egy hierarchikusan felépülő fastruktúrába szerveződnek. A hierarchia csúcsán álló hitelesítő
+      szervezetet ***gyökér CA-nak (root CA)*** vagy másnéven ***bizalmi horgonynak*** nevezzük. E bizalmi modell
+      alapja, hogy minden résztvevő megbízzon legalább a gyökérben, és birtokában legyen a gyökér CA saját maga
+      által aláírt tanúsítványának, az úgynevezett ***gyökér tanúsítványnak (root certificate)***. Ebből indul ki a
+      bizalom továbbadása az úgynevezett tanúsítványláncon vagy ***bizalmi láncon (chain of trust)*** keresztül.
+      Most Kompánia közigazgatásának példáján keresztül nézzük meg, hogyan kell elképzelni egy ilyen
+      tanúsítványláncot.
+  - type: narrative
+    content: |
+      Tegyük fel, hogy Kompánia esetén mindenki megbízik a Belügyminisztériumban, ezért ebben az elektronikus
+      közigazgatási rendszerben ő fogja betölteni a bizalmi horgony, azaz a gyökér CA szerepét. Feltételezzük
+      tehát, hogy azok az állampolgárok, akik elektronikusan szeretnék ügyeiket intézni, rendelkeznek egy
+      tanúsítvánnyal, amelyet a Belügyminisztérium állított ki. Ez a tanúsítvány tartalmazza a Belügyminisztérium
+      saját publikus kulcsát, és digitálisan alá van írva a Belügyminisztérium saját titkos kulcsával. Kompániában
+      a törvények értelmében ez a tanúsítvány kötelezően telepítve kell legyen minden olyan számítógépen, amelyet
+      Kompániában értékesítenek.
+  - type: narrative
+    content: |
+      Tegyük fel, hogy egy állampolgár &ndash; például Alice &ndash; úgy dönt, hogy mostantól ügyeit elektronikusan
+      fogja intézni a Kompániai Ügyfélkapu nevű internetes szolgáltatáson keresztül. Ehhez először el kell mennie a
+      legközelebbi kormányhivatalba, amely &ndash; miután Alice igazolta személyazonosságát &ndash; kiállít egy
+      digitális tanúsítványt igazolandó, hogy Alice publikus kulcsának valóban Alice a tulajdonosa. A
+      kormányhivatal ezt a tanúsítványt digitálisan aláírja a saját titkos kulcsával. Ezt ***végfelhasználói
+      tanúsítványnak (end-user certificate)*** nevezzük.
+  - type: narrative
+    content: |
+      Ezen kívül a kiállított tanúsítvány meghivatkozik egy másik, magasabb szintű tanúsítványt, amelyet viszont
+      maga a Belügyminisztérium állított ki. Ez azt igazolja, hogy bárki, aki megbízik a helyi kormányhivatalban,
+      az egyúttal megbízhat azokban a tanúsítványokban is, amelyeket ő állít ki. Ezt a tanúsítványt ***köztes
+      tanúsítványnak (intermediate certificate)*** nevezzük. Végül ez a köztes tanúsítvány meghivatkozza a
+      Belügyminisztérium gyökértanúsítványát. Ez azt igazolja, hogy bárki, aki megbízik a Belügyminisztériumban, az
+      megbízhat a köztes tanúsítvány tulajdonosában is, azaz a helyi kormányhivatalban.
+  - type: narrative
+    content: |
+      Tegyük fel, hogy Alice-on kívül Bob is csatlakozik ehhez a rendszerhez. Az ő számára azonban egy másik
+      kormányhivatal állít ki tanúsítványt, amely azonban szintén a kompániai Belügyminisztérium fennhatósága alá
+      tartozik.
+  - type: figure
+    lead-in: |
+      A tanúsítványoknak ez a hierarchiája látható az alábbi ábrán:
+    src: 08-hierarchikus-bizalmi-modell.jpg
+    alt: Hierarchikus bizalmi modell
+    caption: Hierarchikus bizalmi modell
+  - type: narrative
+    content: |
+      Ezután Alice az fentebb leírtakhoz hasonlóan bizalmas üzenetet szeretne küldeni Bob-nak. Előbb azonban meg
+      akar győződni róla, hogy valóban Bob van-e a "vonal" túloldalán. Bob a saját végfelhasználói tanúsítványával
+      válaszol, amelyet a saját helyi kormányhivatala állított ki. Most Alice-nak arról kell meggyőződnie, hogy
+      megbízhat-e ennek a tanúsítványnak a hitelességében. Ennek érdekében ellenőrzi a meghivatkozott köztes
+      tanúsítványt, és azt látja, hogy azt egy olyan valaki állította ki, aki a Belügyminisztériumnak mondja magát.
+      Végül a gyökér tanúsítvány segítségével Alice azt is ellenőrizni tudja, hogy a köztes tanúsítványt valóban a
+      Belügyminisztérium állította ki. Alice mostmár nyugodtan megbízhat a kommunikációs partnere hitelességében,
+      hiszen sikeresen lezajlott a tanúsítványlánc ellenőrzése Bob tanúsítványától kiindulva egészen a gyökér
+      tanúsítványig.
+  - type: narrative
+    content: |
+      Megjegyezzük, hogy a fentebb leírt fastruktúrájú bizalmi modellnek léteznek módosított változatai. Az
+      úgynevezett ***elosztott bizalmi modell*** például lehetővé teszi a szereplők hitelesítését több különböző
+      bizalmi hierarchia esetén is. Ilyenkor több különböző gyökér CA van jelen, és közvetlenül mindegyikük a
+      rendszernek csak a saját fastruktúrájába tartozó részét tudja hitelesíteni. Az egyes szereplők alaphelyzetben
+      csak a saját gyökér CA-juk tanúsítványában bíznak meg. A teljes körű hitelesítés megvalósításához tehát
+      szükség van valamilyen módszerre, amivel a bizalmat az egyes bizalmi horgonyok között továbbítani lehet. Erre
+      a legelterjedtebb megoldás az úgynevezett ***kereszthitelesítés***, amikoris a gyökér CA-k egymás számára is
+      kiállítanak tanúsítványokat. Ennek &ndash; és az egyéb változatoknak &ndash; a részleteit itt mellőzzük, az
+      ilyen bizalmi rendszereket általánosságban ***publikus kulcs infrastruktúrának (public key infrastructure
+      &ndash; PKI)*** nevezzük.

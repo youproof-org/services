@@ -1,0 +1,86 @@
+type: proof
+name: osztok-es-a-negyzetgyok-bizonyitas
+remarks: []
+references:
+  abszolutertek-euklideszi-norma:
+    target:
+      type: theorem
+      name: abszolutertek-euklideszi-norma
+  asszocialtsag-tulajdonsagai:
+    target:
+      type: theorem
+      name: asszocialtsag-tulajdonsagai
+  euklideszi-gyuru:
+    target:
+      type: definition
+      name: euklideszi-gyuru
+  pozitivitastartomany:
+    target:
+      type: definition
+      name: pozitivitastartomany
+  primszamok-szukseges-es-elegseges-feltetele:
+    target:
+      type: theorem
+      name: primszamok-szukseges-es-elegseges-feltetele
+  rendezett-gyuru:
+    target:
+      type: definition
+      name: rendezett-gyuru
+content:
+  - type: narrative
+    content: |
+      ***Előszöris*** az világos, hogy $r$ ***nemnegatív***, hiszen az ő és az ellentettjének a négyzete
+      megegyezik, így ha negatív lenne, akkor nem ő lenne a legnagyobb olyan egész szám, amelyre $r^2\leq |n|$
+      teljesül.
+  - type: narrative
+    content: |
+      ***Másodszor*** $r$ biztosan ***nem lehet nulla*** sem. A [abszolutertek-euklideszi-norma] alapján ugyanis az
+      abszolútérték-függvény egy euklidészi norma az egész számok $\Z$ gyűrűjén, és így a [euklideszi-gyuru] 1.
+      pontja alapján $n\eq 0$-ból $|n|\eq 0$, azaz végülis $1\leq |n|$ következik. Ha mármost $r$ nulla lenne,
+      akkor igaz ugyan, hogy a négyzete nem haladná meg $|n|$-t, ám ekkor lenne nála nagyobb ugyanilyen
+      tulajdonságú szám is (például az $1$).
+  - type: narrative
+    content: |
+      ***Összefoglalva*** $r$-re teljesülni fog az $1\leq r$ egyenlőtlenség, ebből pedig a [rendezett-gyuru]ban
+      ismertetett 2. rendezési axióma alapján $r\leq r^2$ következik.
+  - type: formula
+    lead-in: |
+      Ezt összevetve a tétel szövegében szereplő $r^2\leq |n|$ feltétellel teljesül az alábbi:
+    content: |
+      1\leq r\leq |n|
+  - type: narrative
+    content: |
+      ***Ennyi előkészület után igazoljuk a tétel állítását.*** Tegyük fel, hogy $n$ prím. Ekkor a
+      [primszamok-szukseges-es-elegseges-feltetele] alapján egyáltalán nincsen osztója $1$ és $|n|$ között.
+      Következésképp az ennél szűkebb, $1$ és $r$ közötti szakaszon "méginkább" nincs osztója.
+  - type: narrative
+    content: |
+      ***Visszafelé:*** Először azt az esetet igazoljuk, amikoris $n$ ***pozitív***. Tegyük fel, hogy $n$
+      összetett, azaz létezik valamilyen $n=k\cdot l$ nemtriviális felbontása. Az általánosság megsértése nélkül
+      feltehetjük, hogy $k$ és $l$ mindketten pozitívak, máskülönben ellentettjüket véve ez az állapot elérhető.
+      Azt kell igazolni, hogy $k$ és $l$ közül legalább az egyik nemnagyobb $r$-nél.
+  - type: formula
+    lead-in: |
+      Tegyük fel indirekt, hogy nem ez a helyzet, vagyis az alábbi két eset valamelyike áll fenn:
+    content: |
+      \begin{aligned}r&\lt k\leq l \\ r&\lt l\leq k\end{aligned}
+  - type: narrative
+    content: |
+      Első esetben a jobboldali egyenlőtlenség mindkét oldalát $k$-val megszorozva az alábbit kapjuk: $k^2\leq
+      k\cdot l=n$. Ez viszont $r\lt k$ miatt lehetetlen, hiszen a tétel szövege alapján $r$ a legnagyobb olyan
+      szám, amelynek négyzete $|n|=n$-t nem lépi túl.
+  - type: narrative
+    content: |
+      Ehhez hasonlóan a második esetben a jobboldali egyenlőtlenség mindkét oldalát $l$-lel megszorozva ezt kapjuk:
+      $l^2\leq l\cdot k=n$. Ez $r\lt l$ miatt az előbb ismertetett okból szintén lehetetlen.
+  - type: narrative
+    content: |
+      Indirekt feltételezésünk hibás volt, vagyis $k$ és $l$ közül az egyik biztosan nem lehet nagyobb $r$-nél,
+      ahogyan a tétel állítja.
+  - type: narrative
+    content: |
+      ***Végezetül nézzük most azt az esetet, amikor $n$ negatív, azaz $n\lt 0$.*** Ekkor egyrészt a
+      [pozitivitastartomany] utáni megjegyzés alapján $-n$ pozitív. Másrészt pedig a [asszocialtsag-tulajdonsagai]
+      1. pontja alapján ő $n$-nek asszociáltja, azaz pontosan ugyanazok az osztói, mint $n$-nek. Így $n$ akkor és
+      csak akkor prím, ha $-n$ is, amelyre viszont pozitivitása miatt szóról szóra alkalmazható a fenti
+      gondolatmenet.

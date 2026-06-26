@@ -1,0 +1,125 @@
+type: section
+name: 01-a-kibovitett-euklideszi-algoritmus
+title: A kibővített euklidészi algoritmus
+
+references:
+  bezout-lemma:
+    target:
+      type: theorem
+      name: bezout-lemma
+  euklideszi-gyuru-foidealgyuru:
+    target:
+      type: theorem
+      name: euklideszi-gyuru-foidealgyuru
+  linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga:
+    target:
+      type: theorem
+      name: linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga
+
+body:
+  - type: narrative
+    content: |
+      A [linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga]ben igazoltuk, hogy az $ax+my=b$
+      lineáris diofantoszi egyenlet megolhatóságának szükséges és elégséges feltétele, hogy az egyenlet jobboldala
+      &ndash; azaz $b$ &ndash; osztható legyen az $(a,m)$ kitüntetett közös osztóval. Az elégségesség
+      bizonyításához az előző részben bemutatott ***Bézout-lemma*** ([bezout-lemma]) volt a kulcs, amely kimondja,
+      hogy ez a kitüntetett közös osztó ***minden főideálgyűrűben*** kifejezhető $(a,m)=au+mv$ alakban alkalmasan
+      választott $u$ és $v$ gyűrűelemek segítségével.
+  - type: formula
+    lead-in: |
+      Amennyiben tehát fennáll az $(a,m)|b$ oszthatóság, az azt jelenti, hogy létezik olyan $t$ gyűrűelem, hogy
+      teljesül az alábbi:
+    content: |
+      (a,m)\cdot t=b
+  - type: formula
+    lead-in: |
+      Ezt összevetve a ***Bézout-lemmával*** a következőt kapjuk:
+    content: |
+      (\underbrace{au+mv}_{=(a,m)})\cdot t=b
+  - type: formula
+    lead-in: |
+      Felbontva a zárójelet végsősoron megkapjuk az $ax+my=b$ lineáris diofantoszi egyenlet egy megoldását:
+    content: |
+      a\cdot \underbrace{(ut)}_{=x}+m\cdot \underbrace{(vt)}_{=y}=b
+  - type: narrative
+    content: |
+      Először tehát meg kell határoznunk az $u$ és $v$ együtthatókat. A ***Bézout-lemma*** ([bezout-lemma])
+      főideálgyűrűk esetén ugyan garantálja ezek létezését, azonban a bizonyítás nem konstruktív abban az
+      értelemben, hogy nem mutat eljárást ezek kiszámítására. Szerencsére az ***eulidészi gyűrűk*** esetén &ndash;
+      amelyek ugye a [euklideszi-gyuru-foidealgyuru] értelmében mindannyian főideálgyűrűk &ndash; egy ilyen
+      eljárást is kapunk a kezünkbe, amennyiben a 17. részben ismertetett ***euklidészi algoritmust*** egy kicsit
+      kibővítjük.
+  - type: narrative
+    content: |
+      Ezért most két bizonyítást mutatunk a ***Bézout-lemma euklidészi gyűrűkre vonatkoztatott változatára***. Az
+      első bizonyítás automatikusan adódik a már említett [bezout-lemma]ből, ez azonban tehát csak a keresett $u$
+      és $v$ együtthatók ***létezését*** garantálja. Ezzel szemben a második bizonyítás konstruktív, mivel
+      ismerteti a kibővített euklidészi algoritmust, amelynek segítségével ezeket az együtthatókat ki is
+      számíthatjuk. Cserébe viszont nem minden főideálgyűrűn, hanem csak ***euklidészi gyűrűkön*** működik.
+  - type: embed
+    target:
+      type: theorem
+      name: bezout-lemma-euklideszi-gyurukben
+  - type: embed
+    target:
+      type: proof
+      name: bezout-lemma-euklideszi-gyurukben-bizonyitas-1
+  - type: embed
+    target:
+      type: proof
+      name: bezout-lemma-euklideszi-gyurukben-bizonyitas-2
+  - type: narrative
+    content: |
+      Az iménti bizonyításban látott ***kibővitett euklidészi algoritmus*** tehát abban különbözik a 17. részben
+      ismertetett eredeti algoritmustól, hogy itt nem csak a futás során kapott $r_1$, $r_2$, ..., $r_n$
+      maradékokat számítjuk ki, hanem a $k_1$, $k_2$, ..., $k_n$ ***hányadosokat*** is felhasználjuk e maradékok
+      lineáris kombinációs előállításához.
+  - type: narrative
+    content: |
+      Hogy ne csak a levegőbe beszéljünk, térjünk most vissza a 17. részben bemutatott példához, és futtassuk le
+      ezúttal a kibővített euklidészi algoritmust a $12\space 439\space 705\space 049$ és a $15\space 828\space
+      713\space 003$ egész számokra. A feladat ismét e két szám kitüntetett közös osztójának kiszámítása. Jelöljük
+      ezt most $d$-vel. Ezúttal azonban ki is szeretnénk fejezni a $d$ kitüntetett közös osztót e két szám lineáris
+      kombinációjaként.
+  - type: formula
+    lead-in: |
+      Azaz keressük az alábbi egyenletben szereplő $u$ és $v$ együtthatókat:
+    content: |
+      d=15\space 828\space 713\space 003\cdot u + 12\space 439\space 705\space 049\cdot v
+  - type: narrative
+    content: |
+      Ehhez megint használhatunk bármilyen kalkulátort, csak most az osztási maradékokon kívül a hányadosokat is ki
+      kell számolnunk. Ehhez a két számot egyszerűen elosztjuk egymással, és az eredményből a tizedesjegyeket
+      levágva kapjuk meg a keresett hányadost. Ez az ***egész osztásnak*** nevezett művelet &ndash; itt nem
+      részletezett digitális áramköri okok miatt &ndash; az osztási maradék kiszámításához hasonlóan egy számítógép
+      számára rendkívül gyorsan elvégezhető. Ezek után az $u_i$ és $v_i$ együtthatókat az iménti bizonyításban
+      szereplő módon számíthatjuk ki.
+  - type: formula
+    lead-in: |
+      Az első két lépés együtthatóit tehát az alábbi képletekkel:
+    content: |
+      \begin{array}{ll}u_1=1 & u_2=-k_2 \\ v_1=-k_1 & v_2=1+k_1k_2\end{array}
+  - type: formula
+    lead-in: |
+      A további lépések együtthatóit pedig a megelőző két lépés együtthatóiból az alábbi képlettel:
+    content: |
+      \begin{aligned}u_i&=u_{i-2}-k_iu_{i-1} \\ v_i&=v_{i-2}-k_iv_{i-1}\end{aligned}
+  - type: formula
+    lead-in: |
+      Ezek alapján az alábbi táblázat mutatja az algoritmus futását:
+    content: |
+      \begin{array}{c|c|c|c|c|c|c}i & r_{i-2} & r_{i-1} & r_i & k_i & u_i & v_i \\ \hline 1 & 15828713003 &
+      12439705049 & 3389007954 & 1 & 1 & -1 \\ \hline 2 & 12439705049 & 3389007954 & 2272681187 & 3 & -3 & 4 \\
+      \hline 3 & 3389007954 & 2272681187 & 1116326767 & 1 & 4 & -5 \\ \hline 4 & 2272681187 & 1116326767 & 40027653
+      & 2 & -11 & 14 \\ \hline 5 & 1116326767 & 40027653 & 35580136 & 27 & 301 & -383 \\ \hline 6 & 40027653 &
+      35580136 & 4447517 & 1 & -312 & 397 \\ \hline 7 & 35580136 & 4447517 & 0 & - & - & -\end{array}
+  - type: narrative
+    content: |
+      A kitüntetett közös osztó az utolsó nemnulla maradék lett a 6.
+  - type: formula
+    lead-in: |
+      sorban &ndash; $4\space 447\space 517$ &ndash;, ennek lineáris kombinációs együtthatói pedig ugyanebben a
+      sorban találhatók:
+    content: |
+      4\space 447\space 517 = \overbrace{(-312)}^{=u}\cdot 15\space 828\space 713\space 003 +
+      \overbrace{397}^{=v}\cdot 12\space 439\space 705\space 049

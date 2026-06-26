@@ -1,0 +1,171 @@
+type: section
+name: 12-kvantumkriptografia
+title: Kvantumkriptográfia
+
+body:
+  - type: narrative
+    content: |
+      A kriptográfusoknak tehát az előző szakasz fényében fel kellett készülniük a kvantumfölény esetleges elérése
+      utáni időkre is. Ekkor ugyanis az algoritmikus bonyolultságra építő kódjaink már fabatkát sem fognak érni.
+      Szerencsére azonban az elemi részecskék szintjén tapasztalt furcsa jelenségeket nem csak kódok feltöréséhez,
+      hanem teljesen újfajta kriptográfiai rendszerek létrehozásához is lehet használni. Ezzel foglalkozik a
+      ***kvantumkriptográfia***.
+  - type: narrative
+    content: |
+      Az 5. részben volt szó róla, hogy elméletben létezik ***feltörhetetlen rejtjelező eljárás***, méghozzá a
+      ***one-time pad***. Ez lényegében felfogható egy olyan Vigenére-kódnak, amely esetén a kulcs hossza
+      megegyezik a nyílt szöveg hosszával, tökéletesen véletlenszerű, és minden egyes üzenethez új kulcsot
+      használnak. Láttuk, hogy ez a kód ***abszolút értelemben feltörhetetlen***, azaz egy támadó akkor sem fogja
+      tudni megfejteni a nyílt szöveget, ha elegendő számítási kapacitás áll rendelkezésére az összes lehetséges
+      kulcs végigpróbálásához. Az előző szakasz fényében a kvantumfölény korszakában ez egy teljesen reális
+      feltételezés, így a jövőbeli Alice és Bob minden bizonnyal rá fog kényszerülni a one-time pad használatára.
+  - type: narrative
+    content: |
+      Már csak az a kérdés, hogy ezt az óriási mennyiségű kulcsot hogyan fogják egymással megosztani anélkül, hogy
+      találkozniuk kéne. Ne feledjük, erre a célra nem használhatnak RSA-t és semmilyen más olyan jelenlegi
+      eljárást, amely az algoritmikus bonyolultságra épít. A kvantumszámítógépek korszakában ugyanis ezek többé már
+      nem jelentenek védelmet számukra. Szerencsére a kvantummechanika lehetővé teszi Alice és Bob számára, hogy
+      mégis megállapodjanak egy közös kulcsban, méghozzá teljes biztonságban. Ezt a ***kvantum-kulcsmegosztásnak***
+      nevezett eljárást fogjuk ismertetni ebben a szakaszban.
+  - type: narrative
+    content: |
+      A kvantum-kulcsmegosztáshoz barátaink úgynevezett ***polarizált fotonokat***, és ***polárszűrőket*** fognak
+      használni. A fény ugye amellett, hogy fotonoknak nevezett részecskékből áll, hullámjelenségeket is mutat. Ezt
+      úgy kell elképzelni, hogy a fotonok a térben utazva rezegnek egy adott sík mentén. Ennek a rezgésnek a síkját
+      a ***foton polarizációjának*** nevezzük. Egy villanykörte által kibocsájtott fotonok a lehető legkülönfélébb
+      polarizációval rendelkezhetnek. Egyesek függőlegesen, mások vízszintesen, megint mások tetszőleges egyéb
+      szögben rezeghetnek. Az egyszerűség kedvéért tegyük fel, hogy csak függőleges, vízszintes, és átlós
+      polarizációk léteznek, amelyeket az alábbi 4 szimbólummal fogunk jelölni: $|$, $-$, $\backslash$, $/$.
+  - type: narrative
+    content: |
+      Ha azt szeretnénk, hogy minden foton azonos polarizációjú legyen, akkor egy úgynevezett ***polárszűrőt***
+      kell használnunk. Ezt egy adott szögben álló réssel ellátott lemezként lehet elképzelni. Ha például
+      függőleges polárszűrőt alkalmazunk, akkor a függőleges polarizációjú fotonok akadálytalanul átjutnak, míg a
+      vízszintes polarizációjú fotonok fennakadnak rajta. Az átlós polarizációjú fotonok azonban a kétrés-kísérlet
+      detektoros változatához hasonlóan valamiféle "kvantumdilemmába" kerülnek, és azonos valószínűséggel vagy
+      függőleges polarizációjú fotonná változva átjutnak a szűrőn, vagy pedig fennakadnak rajta.
+  - type: figure
+    lead-in: |
+      Ez látszik az alábbi ábrán:
+    src: 17-polarszuro-mukodese.jpg
+    alt: Polárszűrő működése
+    caption: Polárszűrő működése
+  - type: narrative
+    content: |
+      Ezek után ismertetjük a ***kvantum-kulcsmegosztás*** alapgondolatát, amelyet Charles Bennett és Gilles
+      Brassard dolgoztak ki az 1980-as években. Tegyük fel, hogy Alice titkos üzenetet szeretne küldeni Bobnak,
+      amelyet a tökéletesen biztonságos one-time pad rejtjelezővel szeretne titkosítani. Ehhez előbb meg kell
+      egyezniük egy, az üzenet hosszának megfelelő méretű véletlen kulcsban. Ez 3 szakaszban történik meg
+  - type: narrative
+    content: |
+      **1. szakasz:** Alice generál egy **1**-esekből és **0**-ákból álló véletlen bitsorozatot. Tegyük fel, hogy
+      ez a következő: **011000111010**. Ezeket a biteket Alice polarizált fotonok formájában elküldi Bob-nak.
+  - type: unordered-list
+    lead-in: |
+      Itt kétféle lehetősége van a bitek kódolására:
+    items:
+      - 'Függőleges és vízszintes polarizációkat használ, azaz a $|$ polarizáció fogja jelenteni az **1**-est, a $-$ polarizáció pedig a **0**-ást.'
+      - 'Átlós polarizációkat használ, azaz a $/$ lesz az **1**-es, míg a $\backslash$ lesz a **0**.'
+  - type: narrative
+    content: |
+      A trükk az, hogy Alice a bitek elküldésekor a kétféle polarizációs sémát véletlenszerűen váltogatja. Ennek
+      jelentősége hamarosan világos lesz. Jelöljük a függőleges-vízszintes sémát $+$-szal, az átlós sémát pedig
+      $\times$-tel.
+  - type: formula
+    lead-in: |
+      Tegyük fel, hogy Alice a fenti 12 bitet az alábbi táblázat szerint reprezentálja polarizált fotonokkal, majd
+      az így kapott fotonokat elküldi Bob-nak:
+    content: |
+      \begin{array}{r|cccccccccccc}\text{bit} & 0&1&1&0&0&0&1&1&1&0&1&0 \\ \hline \text{séma} & +&\times&
+      +&+&\times&\times&+&\times&+&+&+&\times \\ \hline \text{foton} &
+      -&/&|&-&\backslash&\backslash&|&/&|&-&|&\backslash \end{array}
+  - type: narrative
+    content: |
+      **2. szakasz:** A vételi oldalon Bob-nak meg kell állapítania a beérkező fotonok polarizációját. Ehhez
+      kétféle polárszűrőt használhat, ezeken azonban egy helyett két rés van, amelyek egymásra merőlegesek.
+  - type: figure
+    lead-in: |
+      Ezt mutatja az alábbi ábra:
+    src: 18-ketfele-polarszuro.jpg
+    alt: Kétféle polárszűrő
+    caption: Kétféle polárszűrő
+  - type: narrative
+    content: |
+      A baloldali $+$ alakú polárszűrőn a függőleges vagy vízszintes síkban polarizált fotonok akadálytalanul
+      áthaladnak. Ezzel szemben az átlósan polarizált fotonok az egyréses esethez hasonlóan azonos valószínűséggel
+      vagy vízszintes, vagy pedig függőleges polarizációjú fotonokká változnak. Ugyanígy az $\times$ alakú szűrőn
+      az átlósan polarizált fotonok fognak akadálytalanul áthaladni, és a vízszintesen vagy függőlegesen polarizált
+      fotonok fognak véletlenszerűen átlósan polarizálttá változni. Mivel Bob nem tudja, hogy Alice melyik fotont
+      milyen sémával polarizálta, ezért nem tehet mást, minthogy tippel.
+  - type: formula
+    lead-in: |
+      Az alábbi táblázat mutatja a beérkező fotonokat, Bob-nak a sémára vonatkozó tippjeit, valamint az ilymódon
+      detektált biteket:
+    content: |
+      \begin{array}{r|cccccccccccc}\text{foton} & -&/&|&-&\backslash&\backslash&|&/&|&-&|&\backslash \\ \hline
+      \text{séma} & \times&\times&+&\times&\times&+&+&+&\times&\times&+&\times \\ \hline \text{bit} &
+      \underline{0}&1&1&\underline{1}&0&\underline{1}&1&\underline{1}&\underline{0}&\underline{0}&1&0  \end{array}
+  - type: narrative
+    content: |
+      Aláhúztuk azokat a biteket, amelyek esetén Bob rosszul tippelt, és nem a megfelelő sémát használta. Ez
+      statisztikailag körülbelül az esetek felében fordul elő, és ilyenkor ugye véletlenszerű lesz a detektálás
+      eredménye. Bob persze ezen a ponton még nem tudja, hogy melyek azok a bitek, amelyekhez nem jó sémát
+      használt, és emiatt potenciálisan rosszul detektálta őket.
+  - type: narrative
+    content: |
+      **3. szakasz:** Alice felhívja Bob-ot telefonon, és elmondja neki, hogy melyik fotont melyik séma szerint
+      polarizálta, de azt nem árulja el, hogy konkrétan mi lett a fotonok polarizációja. Tehát például elmondja,
+      hogy az első foton elküldésekor a $+$ sémát használta, de azt nem, hogy függőlegesen vagy vízszintesen
+      polarizált fotont küldött-e. Bob válaszában elmondja Alice-nak, hogy mely fotonoknál sikerült eltalálnia a
+      megfelelő polárszűrőt, és mindketten eldobják azokat a biteket, amelyeknél Bob rosszul tippelt. A megmaradó
+      bitek fogják alkotni a kulcsot. Ha esetleg ez még kevesebb, mint az Alice által küldeni kívánt üzenet hossza,
+      akkor megismétlik az eljárást mindaddig, míg a megfelelő számú bit össze nem gyűlik a one-time pad
+      rejtjelezéshez.
+  - type: narrative
+    content: |
+      ***Ahhoz, hogy megértsük, miért is támadhatatlan ez a kulcsmegosztási eljárás, képzeljük magunkat Eve
+      helyébe.*** Ő ugye lehallgatja a fotonok átküldésére szolgáló kvantumcsatornát és a főhőseink által használt
+      telefonvonalat is. A fotonokat természetesen ő is megpróbálja detektálni, ám ezen a ponton ugyanabban a
+      helyzetben van, mint Bob: kizárólag tippelni tud, hogy melyik fotonhoz milyen polárszűrőt használjon. Alice
+      ezután elmondja ugyan Bob-nak, hogy melyik fotonnál melyik lett volna a helyes detektor, ám Eve-en ez nem
+      segít, hiszen a Bob által helyesen bemért fotonoknak átlagosan a felénél ő rosszul tippelt. De azokkal a
+      bitekkel sem ér sokat, ahol esetleg jól tippelt, hiszen ezek felénél viszont Bob tévedett, és ezeket a
+      biteket főhőseink figyelmen kívül fogják hagyni. Eve tehát a kulcs bitjeinek körülbelül csak a felét fogja
+      megismerni, amivel sajnos nem megy semmire.
+  - type: narrative
+    content: |
+      Felfoghatjuk az egészet úgy is, mintha Alice különleges ***"kvantumkártyákat"*** küldene Bob-nak. Ezek olyan
+      különleges kártyalapok, amelyeknél el kell döntenünk, hogy a színét, vagy az értékét szeretnénk megismerni,
+      mivel egyszerre a kettőt nem lehet. Alice véletlenszerűen kiválaszt egyet ezek közül a különleges kártyák
+      közül, legyen ez például a **treff 6-os**. Alice úgy dönt hogy a kártya színét nézi meg, és feljegyzi egy
+      lapra, hogy **treff**, majd elküldi a kártyát Bob-nak. Eve persze lehallgatja a csatornát, de
+      szerencsétlenségére ő az értékét leste meg, ami a **6-os**. Alice ezután felhívja Bob-ot, és megbeszélik
+      egymással, hogy egyezően tippeltek-e. Ha a válasz igenlő, akkor mindketten birtokában vannak egy közös
+      titoknak, hiszen mindketten a **treff**-et írták fel. Eve ugyanakkor a **6-ost** írta le, amivel nem megy
+      semmire. Ha viszont Eve helyesen tippel, de Bob hibázik, akkor a fáradozása ugyancsak hiábavaló volt, hiszen
+      ebben az esetben Alice és Bob a telefonos egyeztetés alapján el fogják vetni az Eve által helyesen bemért
+      kártyalapot. Ráadásul Eve helyzete még ennél is rosszabb, hiszen egy ***4. szakasz*** beiktatásával Alice és
+      Bob képes detektálni, ha hallgatózik a csatornán.
+  - type: narrative
+    content: |
+      **4. szakasz:** Miután megtörtént a kulcsmegosztás, Alice szúrópróbaszerűen kiválaszt néhány bitet, és ezeket
+      leegyezteti Bob-bal a telefonvonalon keresztül. Amennyiben mindegyiknél egyezést találnak, az csak úgy
+      lehetséges, hogy Eve nem hallgatózott, vagy ha igen, akkor olyan piszok nagy mázlija volt, hogy mindegyik
+      fotonnál eltalálta a megfelelő polárszűrőt. Máskülönben ugyanis egy rosszul megválasztott polárszűrő
+      megváltoztatta volna az adott foton polarizációját, és az ilyen esetek felében Bob a vételi oldalon hibásan
+      detektálta volna a beérkező bitet annak ellenére, hogy ő viszont a megfelelő polárszűrőt választotta. Ha
+      például Alice ilymódon 75 bitet egyeztet le Bob-bal, és nem találnak hibát, akkor körülbelül ***egy a
+      milliárdhoz*** az esélye, hogy Eve lehallgatta a kvantumcsatornát. Ha azonban akárcsak egyetlen eltérést is
+      találnak, akkor Eve lebukott, Alice és Bob pedig kénytelenek az egész kulcsot eldobni, átváltani egy másik
+      csatornára, és elölről kezdeni a folyamatot. Barátaink a leegyeztetett biteket természetesen eldobják, hiszen
+      azokat az egyeztetésre használt telefonvonal lehallgatásával bárki megismerhette.
+  - type: narrative
+    content: |
+      Mindez persze elmélet, és az 1980-as években senki sem tudta, hogy vajon tényleg megvalósítható-e a
+      gyakorlatban. Egészen 1989-ig kellett várni az áttörésre, amikor Bennett-nek egy ***történelmi léptékű
+      kísérlettel*** sikerült igazolnia az elméletét: ***abszolút titkos kommunikációt hozott létre*** két,
+      egymástól 30 centiméterre álló számítógép között. Azután a Genfi Egyetem tudósainak 1995-ben sikerült ugyanez
+      a mutatvány, ám ezúttal az áthidalt távolság már ***23 kilométer*** volt. A jelenlegi rekord 2018-ból
+      származik, ami ***421 kilométer***. A végső cél azonban egy olyan rendszer kialakítása lenne, amely
+      száloptika helyett műholdakon keresztül is működik, hiszen ez biztonságos kommunikációt biztosítana az egész
+      Földön.

@@ -1,0 +1,10 @@
+type: definition
+name: relacio-kompatibilitasa-muvelettel
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $H$ egy tetszőleges halmaz, amelyen értelmezve van egyrészt egy $*$-gal jelölt kétváltozós művelet,
+      másrészt pedig egy valamilyen $\simeq$-val jelölt kétváltozós reláció. Amennyiben $H$ tetszőleges $a$, $b$ és
+      $c$ elemeire az $a\simeq b$ reláció teljesülése esetén az $a*c \simeq b*c$ reláció is teljesül, akkor azt
+      mondjuk, hogy a $\simeq$ reláció ***kompatibilis*** a $*$ művelettel.

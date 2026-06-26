@@ -1,0 +1,93 @@
+type: proof
+name: faktorcsoport-bizonyitas
+remarks: []
+references:
+  csoport:
+    target:
+      type: definition
+      name: csoport
+  normaloszto-szerinti-muvelet-joldefinialtsaga:
+    target:
+      type: theorem
+      name: normaloszto-szerinti-muvelet-joldefinialtsaga
+  reszcsoport-feltetele:
+    target:
+      type: theorem
+      name: reszcsoport-feltetele
+content:
+  - type: narrative
+    content: |
+      A [normaloszto-szerinti-muvelet-joldefinialtsaga] alapján a baloldali mellékosztályok közötti $\odot$
+      műveletek jóldefiniáltak, azaz az eredményként kapott baloldali mellékosztály nem függ az $a$ és $b$
+      reprezentánselemek megválasztásától. Így $G/N$-re elegendő a [csoport] szerinti ***csoportaxiómákat***
+      ellenőrizni.
+  - type: formula
+    lead-in: |
+      ***Az asszociativitási tulajdonság:*** Azt kell megmutatni, hogy tetszőleges $A=aN$, $B=bN$ és $C=cN$
+      baloldali mellékosztályok esetén teljesül az alábbi:
+    content: |
+      (A\odot B)\odot C=A\odot (B\odot C)
+  - type: formula
+    lead-in: |
+      A $\odot$ tételben szereplő definíciója alapján ez így írható fel az $a$, $b$ és $c$ reprezentánselemek
+      segítségével:
+    content: |
+      ((a\cdot b)\cdot c)N=(a\cdot (b\cdot c))N
+  - type: narrative
+    content: |
+      A reprezentánselemek között viszont teljesül az asszociativitás, hiszen ők a $G$ csoport elemei.
+  - type: formula
+    lead-in: |
+      ***Egységelem létezése:*** A $G/N$ faktorcsoportban kell egy olyan $E$ baloldali mellékosztályt mutatni,
+      amelyre tetszőleges $A=aN$ baloldali mellékosztály esetén teljesül az alábbi:
+    content: |
+      A\odot E=E\odot A=A
+  - type: formula
+    lead-in: |
+      Ha a $G$ csoport egységeleme $e_G$, akkor az $E=e_GN$ baloldali mellékosztály épp megfelelő lesz
+      egységelemnek a $G/N$ faktorcsoportban, hiszen:
+    content: |
+      \begin{aligned}(\underbrace{aN}_{=A})\odot (\underbrace{e_GN}_{=E})&=(a\cdot e_G)N=aN=A \\
+      (\underbrace{e_GN}_{=E})\odot (\underbrace{aN}_{=A})&=(e_G\cdot a)N=aN=A\end{aligned}
+  - type: formula
+    lead-in: |
+      ***Inverz elem létezése:*** Itt azt kell megmutatni, hogy amennyiben $E=e_GN$ a $G/N$ faktorcsoport
+      egységeleme, úgy tetszőleges $A=aN$ elemhez létezik olyan $A^{-1}$-gyel jelölt elem, amelyre teljesül az
+      alábbi:
+    content: |
+      A\odot A^{-1}=A^{-1}\odot A=E
+  - type: formula
+    lead-in: |
+      Az $A^{-1}=(a^{-1})N$ baloldali mellékosztály épp megfelelő lesz inverz elemnek a $G/N$ faktorcsoportban,
+      hiszen:
+    content: |
+      \begin{aligned}(\underbrace{aN}_{=A})\odot (\underbrace{(a^{-1})N}_{=A^{-1}})&=(a\cdot a^{-1})N=e_GN=E \\
+      (\underbrace{(a^{-1})N}_{=A^{-1}})\odot (\underbrace{aN}_{=A})&=(a^{-1}\cdot a)N=e_GN=E\end{aligned}
+  - type: narrative
+    content: |
+      A $G/N$ halmaz tehát ***valóban csoportot alkot*** a tételben szereplő művelettel. Tegyük most fel, hogy $G$
+      ***kommutatív***, és legyen az $A=aN$ valamint a $B=bN$ két tetszőleges baloldali mellékosztály a $G/N$
+      faktorcsoportban.
+  - type: formula
+    lead-in: |
+      Ekkor $G$ kommutativitása miatt teljesül az alábbi, azaz $G/N$ is valóban ***kommutatív***:
+    content: |
+      \begin{aligned}A\odot B&=(aN)\odot (bN)=(a\cdot b)N=\\&=(b\cdot a)N=(bN)\odot (aN)=B\odot A\end{aligned}
+  - type: narrative
+    content: |
+      Végezetül meg kell mutatni, hogy a tételben szereplő $f:G\to G/N$ függvény egy ***csoporthomomorfizmus*** az
+      eredeti és a $G/N$ faktorcsoport között. Az $f$ függvény tehát minden $G$-beli $a$ elemhez az $aN$ baloldali
+      mellékosztályt rendeli hozzá. Tegyük fel, hogy $g$ és $h$ a $G$ csoport tetszőleges elemei.
+  - type: formula
+    lead-in: |
+      Ekkor a ***művelettartó tulajdonság*** az alábbi alapján valóban teljesül:
+    content: |
+      f(g)\odot f(h)=(gN)\odot (hN)=(g\cdot h)N=f(g\cdot h)
+  - type: narrative
+    content: |
+      Végül azt kell megmutatni, hogy $f$ ***magja*** épp az $N$ normálosztó. Egy tetszőleges $G$-beli $g$ elemhez
+      az $f$ csoporthomomorfizmus pontosan akkor rendeli hozzá a $G/N$ faktorcsoport egységelemét, azaz az $e_GN$
+      baloldali mellékosztályt, ha $f(g)=gN=e_GN$. Minthogy $N$ egy részcsoport $G$-ben (hiszen normálosztó), ezért
+      a [reszcsoport-feltetele] 2. pontja alapján ő az, aki tartalmazza $e_G$-t, azaz $e_GN=N$. Az $f(g)=e_GN$
+      tehát akkor és csak akkor teljesül, ha $g$ benne van $N$-ben. Az $N$ normálosztó tehát valóban magja az $f$
+      csoporthomomorfizmusnak.

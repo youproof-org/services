@@ -1,0 +1,34 @@
+type: section
+name: 09-a-szokasos-szamolasi-szabalyok-altalanossagban
+title: A szokásos számolási szabályok általánosságban
+
+references:
+  ketvaltozos-muvelet:
+    target:
+      type: definition
+      name: ketvaltozos-muvelet
+  peano-nullosszeg-tagjai:
+    target:
+      type: theorem
+      name: peano-nullosszeg-tagjai
+
+body:
+  - type: narrative
+    content: |
+      Ebben és az előző részekben többször is beszéltünk már valamiféle "szokásos számolási szabályokról". Elsőként
+      akkor, amikor a Peano-összeadás és a Peano-szorzás tulajdonságait vizsgáltuk, majd a $\Z$ halmazon
+      értelmezett két művelet kapcsán is. Ez még sokszor elő fog kerülni a következő részekben is, amikor különböző
+      matematikai objektumok &ndash; amelyek nem feltétlenül számok &ndash; körében értelmezett műveletek
+      tulajdonságait fogjuk vizsgálni. Ezért jó volna egy általánosan használható és tömör fogalomrendszert
+      használni az ilyen esetekben.
+  - type: narrative
+    content: |
+      A ***kétváltozós művelet*** fogalmát a [ketvaltozos-muvelet]ból már ismerjük. Fontos, hogy egy műveletet
+      mindig valamilyen alaphalmazon értelmezünk. Önmagában például nincs értelme összeadásról beszélni. Összeadás
+      hol? A természetes számok $\N$ halmazán? Vagy az egész számok $\Z$ halmazán? Nem mindegy, ugyanis adott
+      esetben más-más tulajdonságai lehetnek egy műveletnek az alaphalmaztól függően. Például a
+      [peano-nullosszeg-tagjai] szerint egy összeg csak akkor lehet "nulla", ha mindkét tagja "nulla". Ez
+      nyilvánvalóan csak az $\N$ halmazon értelmezett összeadásra igaz, a $\Z$ halmazon már nem. Például
+      $[(3;0)]\oplus [(0;3)] = [(3;3)] = [(0;0)]$. Eredményül a "nulla" egész számot kaptuk, holott sem a $[(3;0)]$
+      sem pedig a $[(0;3)]$ nem a "nulla" egész szám. Egyáltalán mit jelent az egy halmazban, hogy "nulla"?
+      Vizsgáljuk meg először ezt a kérdést általánosságban.

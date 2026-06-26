@@ -1,0 +1,62 @@
+type: proof
+name: egesz-szamok-szorzasa-kommutativ-asszociativ-es-disztributiv-bizonyitas
+remarks: []
+references:
+  egesz-szamok-szorzasa:
+    target:
+      type: definition
+      name: egesz-szamok-szorzasa
+content:
+  - type: narrative
+    content: |
+      Először a ***kommutativitást*** vizsgáljuk.
+  - type: formula
+    lead-in: |
+      Az első egyenlet baloldala a $\odot$ művelet [egesz-szamok-szorzasa]ja miatt így írható:
+    content: |
+      [(a;b)] \odot [(c;d)] = [(ac+bd;ad+bc)]
+  - type: formula
+    lead-in: |
+      Az egyenlet jobboldala ugyanilyen okok miatt így írható:
+    content: |
+      [(c;d)] \odot [(a;b)] = [(ca+db;cb+da)]
+  - type: narrative
+    content: |
+      Mivel ugyanazt a kifejezést kaptuk mindkét esetben, ezért a $\odot$ művelet valóban ***kommutatív***.
+  - type: narrative
+    content: |
+      Most nézzük az ***asszociativitást***.
+  - type: formula
+    lead-in: |
+      A második egyenlet baloldala így írható:
+    content: |
+      \begin{aligned}&([(a;b)] \odot [(c;d)]) \odot [(e;f)] = \\ = &[(ac+bd;ad+bc)] \odot [(e;f)] = \\ =
+      &[((ac+bd)e + (ad+bc)f; (ac+bd)f + (ad+bc)e)] = \\ = &[(ace+bde+adf+bcf;acf+bdf+ade+bce)]\end{aligned}
+  - type: formula
+    lead-in: |
+      Az egyenlet jobboldala:
+    content: |
+      \begin{aligned}&[(a;b)] \odot ([(c;d)] \odot [(e;f)]) = \\ = &[(a;b)] \odot [(ce+df;cf+de)] = \\ =
+      &[(a(ce+df) + b(cf+de); a(cf+de) + b(ce+df))] = \\ = &[(ace+adf+bcf+bde;acf+ade+bce+bdf)]\end{aligned}
+  - type: narrative
+    content: |
+      Mivel ugyanazt a kifejezést kaptuk mindkét esetben, ezért a $\odot$ művelet valóban ***asszociatív***.
+  - type: narrative
+    content: |
+      Végül ellenőrizzük a ***disztributivitást***.
+  - type: formula
+    lead-in: |
+      A harmadik egyenlet baloldala:
+    content: |
+      \begin{aligned}&[(a;b)] \odot ([(c;d)] \oplus [(e;f)]) = \\ = &[(a;b)] \odot [(c+e;d+f)] = \\ = &[(a(c+e) +
+      b(d+f);a(d+f) + b(c+e))] = \\ = &[(ac+ae+bd+bf;ad+af+bc+be)]\end{aligned}
+  - type: formula
+    lead-in: |
+      Az egyenlet jobboldala:
+    content: |
+      \begin{aligned}&[(a;b)] \odot [(c;d)] \oplus [(a;b)] \odot [(e;f)] = \\ = &[(ac+bd;ad+bc)] \oplus
+      [(ae+bf;af+be)] = \\ = &[(ac+bd+ae+bf;ad+bc+af+be)]\end{aligned}
+  - type: narrative
+    content: |
+      Mivel ugyanazt a kifejezést kaptuk mindkét esetben, ezért a $\odot$ művelet valóban ***disztributív*** a
+      $\oplus$ műveletre nézve.

@@ -1,0 +1,23 @@
+type: definition
+name: gyuruhomomorfizmus-szerinti-kongruencia
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy $R$ és $S$ tetszőleges gyűrűk, valamint adva van közöttük egy $f:R\to S$
+      ***gyűrűhomomorfizmus***. Amennyiben az $R$ gyűrű valamilyen $a$ és $b$ elemeire teljesül, hogy $f(a)=f(b)$,
+      akkor azt mondjuk, hogy $a$ és $b$ ***kongruensek az $f$ gyűrűhomomorfizmus szerint***.
+  - type: formula
+    lead-in: |
+      Ezt a relációt így jelöljük:
+    content: |
+      a\equiv b\pod f
+  - type: narrative
+    content: |
+      Amennyiben $a$ és $b$ között nem áll fenn az imént definiált $f$ szerinti kongruencia, akkor őket
+      ***inkongruensnek nevezzük az $f$ gyűrűhomomorfizmus szerint***.
+  - type: formula
+    lead-in: |
+      Ezt így jelöljük:
+    content: |
+      a\ \cancel{\equiv}\ b\pod f

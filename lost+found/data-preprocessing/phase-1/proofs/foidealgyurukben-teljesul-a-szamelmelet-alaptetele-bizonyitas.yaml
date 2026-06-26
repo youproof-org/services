@@ -1,0 +1,40 @@
+type: proof
+name: foidealgyurukben-teljesul-a-szamelmelet-alaptetele-bizonyitas
+remarks: []
+references:
+  generalt-reszgyuru-es-ideal:
+    target:
+      type: theorem
+      name: generalt-reszgyuru-es-ideal
+  idealok-es-a-kituntetett-kozos-oszto:
+    target:
+      type: theorem
+      name: idealok-es-a-kituntetett-kozos-oszto
+  kituntetett-kozos-oszto-letezesenek-kovetkezmenye:
+    target:
+      type: theorem
+      name: kituntetett-kozos-oszto-letezesenek-kovetkezmenye
+  szamelmelet-alaptetelenek-szukseges-es-elegseges-feltetele:
+    target:
+      type: theorem
+      name: szamelmelet-alaptetelenek-szukseges-es-elegseges-feltetele
+  vegesen-generalt-idealok-maximumfeltetele:
+    target:
+      type: theorem
+      name: vegesen-generalt-idealok-maximumfeltetele
+content:
+  - type: narrative
+    content: |
+      Azt kell megmutatni, hogy a [szamelmelet-alaptetelenek-szukseges-es-elegseges-feltetele] szerinti mindkét
+      feltétel teljesül. Mivel egy $R$ főideálgyűrű minden ideálja generálható egyetlen elemmel, ezért alkalmazható
+      a [vegesen-generalt-idealok-maximumfeltetele]. Eszerint a főideálok bármely nemüres részhalmazának van
+      maximuma, így ***teljesül az 1. feltétel***.
+  - type: narrative
+    content: |
+      Legyen $a$ és $b$ az $R$ főideálgyűrű két tetszőleges eleme, és képezzük belőlük az $(a,b)$ ideált, ami ugye
+      a [generalt-reszgyuru-es-ideal] alapján létezik. Minthogy $R$ főideálgyűrű, ezért az $(a,b)$ ideál
+      generálható egyetlen elemmel is. Legyen ez az elem $d$, azaz $(a,b)=(d)$. A
+      [idealok-es-a-kituntetett-kozos-oszto] alapján $d$ kitüntetett közös osztója $a$-nak és $b$-nek. Ugyanilyen
+      gondolatmenettel bármely két elemre megmutatható, hogy létezik a kitüntetett közös osztójuk, és így a
+      [kituntetett-kozos-oszto-letezesenek-kovetkezmenye] alapján minden felbonthatatlan elem prímtulajdonságú.
+      Azaz teljesül a ***2. feltétel*** is, tehát $R$-ben ***valóban érvényes a számelmélet alaptétele***.

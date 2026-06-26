@@ -1,0 +1,36 @@
+<!-- wp:paragraph -->
+<p>Tegyük fel <strong><em>indirekt</em></strong>, hogy [latex]R[/latex] <strong><em>minden ideálja végesen generált</em></strong>, ám ennek ellenére az [latex]\mathcal{R}[/latex] halmazrendszernek létezik egy olyan nemüres [latex]\mathcal{S}[/latex] részhalmaza, amelynek nincs maximális eleme. Ez a [yp_element slug="halmazrendszer-minimuma-es-maximuma" type="link" /] alapján azt jelenti, hogy bármilyen [latex]X[/latex] ideált választunk is ki [latex]\mathcal{S}[/latex]-ből, biztosan létezni fog egy [latex]Y\in \mathcal{S}[/latex] ideál is, amely [latex]X[/latex]-nél bővebb, azaz amelyre teljesül az [latex]X\sub Y[/latex] <strong><em>szigorú tartalmazási reláció</em></strong>. Eszerint tehát [latex]\mathcal{S}[/latex] elemeiből alkotható egy olyan végtelen, ideálokból álló sorozat, amelyben minden ideál szigorúan tartalmazza a sorozatban előtte lévőt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]I_1\sub I_2\sub I_3\sub \ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Képezzük ennek a végtelen sok ideálnak az <strong><em>unióját</em></strong>, és nevezzük az így kapott halmazt [latex]U[/latex]-nak. A [yp_element slug="idealok-unioja-ideal" type="link" /] alapján ekkor [latex]U[/latex] is ideál az [latex]R[/latex] gyűrűben. Mivel [latex]R[/latex] minden ideálja végesen generált, így [latex]U[/latex] is. Léteznek tehát az [latex]R[/latex] gyűrűben olyan [latex]a_1,a_2,\ldots,a_n[/latex] elemek, amelyek generálják az [latex]U[/latex] ideált, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]U=(a_1,a_2,\ldots,a_n)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel e generátorelemek benne vannak az [latex]U[/latex] unióhalmazban, ezért minden generátorelemnek benne kell lennie az [latex]I_1, I_2, I_3,\ldots[/latex] ideálok közül is legalább az egyikben. Mivel ezen ideálok közül mindegyik szigorúan tartalmazza a sorozatban előtte lévőt, ezért kell lennie közöttük egy olyan [latex]I_k[/latex] ideálnak, amely már minden generátorelemet tartalmaz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tehát egyrészt teljesül az [latex]U\sube I_k[/latex] tartalmazási reláció, hiszen a [yp_element slug="generalt-reszgyuru-es-ideal" type="link" /] miatt [latex]U[/latex] a <strong><em>legszűkebb</em></strong> olyan ideál, amely az [latex]a_1, a_2, \ldots, a_n[/latex] generátorelemeket tartalmazza. Másrészt a fenti ideálokból álló sorozat következő elemére, azaz [latex]I_{k+1}[/latex]-re ugye teljesül az [latex]I_k\sub I_{k+1}[/latex] <strong><em>szigorú tartalmazási reláció</em></strong>, továbbá az [latex]I_{k+1}\sube U[/latex] tartalmazási reláció is, hiszen [latex]I_{k+1}[/latex] egyike azon ideáloknak, amelyek uniójából állítottuk elő az [latex]U[/latex] ideált. Ezeket összevetve tehát az alábbit kaptuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]U\sube I_k\sub I_{k+1}\sube U[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel a [latex]\sube[/latex] és a [latex]\sub[/latex] relációk tranzitívak ([yp_element slug="reszhalmaz-reszbenrendezes" type="link" /]), ezért ez azt jelenti, hogy teljesül az [latex]U\sub U[/latex] <strong><em>szigorú tartalmazási reláció</em></strong>. Ez viszont lehetetlen, hiszen ez azt jelentené, hogy létezik olyan [latex]x[/latex] gyűrűelem, amelyre [latex]x\in U[/latex] és [latex]x\
+otin U[/latex] egyaránt teljesül.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ha tehát [latex]R[/latex] minden ideálja végesen generált, akkor az ezekből álló [latex]\mathcal{R}[/latex] halmazrendszer bármely nemüres részhalmazának szükségképpen kell legyen maximuma.</p>
+<!-- /wp:paragraph -->

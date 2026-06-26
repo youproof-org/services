@@ -1,0 +1,18 @@
+type: theorem
+name: generalt-reszcsoport-es-normaloszto
+proofs:
+  - generalt-reszcsoport-es-normaloszto-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $G$ egy tetszőleges csoport, továbbá $X$ a $G$ csoportnak egy ***tetszőleges részhalmaza***. Jelöljük
+      $\mathcal{X}$-szel azt a $G$ fölötti halmazrendszert, amelynek elemei pontosan azok a részcsoportok $G$-ben,
+      amelyek tartalmazzák $X$-et.
+  - type: narrative
+    content: |
+      Ekkor ***$\mathcal{X}$-ben létezik pontosan egy legszűkebb elem***, amelyet az ***$X$ által generált
+      részcsoportnak*** nevezünk, és $\lang X\ang$-szel jelölünk.
+  - type: narrative
+    content: |
+      Ugyanilyen értelemben beszélhetünk az ***$X$ által generált normálosztóról*** is.

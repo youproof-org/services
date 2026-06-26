@@ -1,0 +1,10 @@
+type: theorem
+name: kituntetett-kozos-oszto-letezesenek-kovetkezmenye
+proofs:
+  - kituntetett-kozos-oszto-letezesenek-kovetkezmenye-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ egy tetszőleges ***integritástartomány***. Ha bármely két elemnek létezik kitüntetett közös
+      osztója, akkor $R$-ben ***minden felbonthatatlan elem prímtulajdonságú***.

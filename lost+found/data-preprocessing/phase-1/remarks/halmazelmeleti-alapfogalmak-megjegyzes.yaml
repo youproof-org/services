@@ -1,0 +1,36 @@
+type: remark
+name: halmazelmeleti-alapfogalmak-megjegyzes
+references:
+  peano-axiomarendszer:
+    target:
+      type: definition
+      name: peano-axiomarendszer
+content:
+  - type: unordered-list
+    lead-in: |
+      Például ha $P$ a páros számok halmaza, akkor ezt leírhatjuk az alábbi módokon:
+    items:
+      - 'Az elemek felsorolása intuitív módon: $A=\{\ldots ;-4;-2;0;2;4;\ldots\}$'
+      - 'Leírás eldöntési szabállyal ("olyan $x$-ek, amelyek oszthatók 2-vel"): $A=\{x:2|x\}$'
+      - 'Szöveges leírás: $A=\{\text{páros egészek}\}$'
+  - type: ordered-list
+    lead-in: |
+      A definícióval kapcsolatban megjegyezzük az alábbiakat:
+    items:
+      - 'Az üres halmaz ***egyértelmű***, azaz csak egy üres halmaz létezik. Tegyük fel ugyanis indirekt, hogy két
+        üres halmaz is létezik, amelyek különbözőek. Jelöljük ezeket $\empty_1$-gyel és $\empty_2$-vel. Ezek
+        különbözősége a definíció szerint azt jelenti, hogy van olyan $a$ objektum, amely esetén $a\otin
+        \empty_1$, de $a\in \empty_2$, vagy pedig $a\in \empty_1$, de $a\otin \empty_2$. De ez ellentmond annak a
+        ténynek, hogy a $\empty_1$ és a $\empty_2$ halmazoknak nincs egyetlen eleme sem.'
+      - 'Hasonló okok miatt az $U$ univerzális halmaz is ***egyértelmű***. Tegyük fel ugyanis indirekt, hogy két
+        univerzális halmaz is létezik, amelyek különbözőek. Jelöljük ezeket $U_1$-gyel és $U_2$-vel. Ezek
+        különbözősége a definíció szerint azt jelenti, hogy van olyan $a$ objektum, amely esetén $a\otin U_1$, de
+        $a\in U_2$, vagy pedig $a\in U_1$, de $a\otin U_2$. De ez ellentmond annak a ténynek, hogy az $U_1$ és az
+        $U_2$ halmazoknak minden objektum eleme.'
+      - 'A fenti definícióban a ***"halmaz"*** és az ***"eleme lenni"*** kifejezések az alapfogalmak szerepét
+        töltik be ugyanúgy, mint a [peano-axiomarendszer] szerinti
+        Peano-axiómarendszerben szereplő ***"nulla"*** és ***"rákövetkező"*** szavak. Ezeket nem definiáljuk,
+        hanem helyette az axiómákban fogalmazzuk meg a velük szemben támasztott követelményeket.'
+      - 'A fenti definícióban implicit módon csak egyetlen axióma szerepel, amely azt fogalmazza meg, hogy mikor
+        nevezünk egyenlőnek két halmazt. Ezt ***meghatározottsági (vagy extenzionalitási) axiómának*** nevezzük.
+        A ***naív halmazelméletben*** nincsenek további axiómák.'

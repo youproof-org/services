@@ -1,0 +1,149 @@
+type: section
+name: 02-egyenletek-megoldasa-a-latex-z-m-latex-gyuruben
+title: 'Egyenletek megoldása a [latex]Z_m[/latex] gyűrűben'
+
+references:
+  modularis-osszeadas-es-szorzas:
+    target:
+      type: definition
+      name: modularis-osszeadas-es-szorzas
+  peano-osszeg-egyszerusites:
+    target:
+      type: theorem
+      name: peano-osszeg-egyszerusites
+  peano-szorzat-egyszerusites:
+    target:
+      type: theorem
+      name: peano-szorzat-egyszerusites
+  szorzat-egyszerusitese-gyurukben:
+    target:
+      type: theorem
+      name: szorzat-egyszerusitese-gyurukben
+
+body:
+  - type: narrative
+    content: |
+      Eszerint tehát amikor osztási maradékokkal számolunk, akkor nyugodtan hagyatkozhatunk minden olyan eddigi
+      tételre, amelyeket eddig kommutatív, egységelemes gyűrűkre bizonyítottunk az előző részekben. Nagyjából
+      minden ugyanúgy fog működni, ahogyan azt az egész számok körében már megszoktuk.
+  - type: narrative
+    content: |
+      ***De csak nagyjából!*** Az egyenletek megoldásánál a $Z_m$ gyűrűben körültekintően kell eljárnunk. A
+      természetes számok körében a 14. részben felhoztunk egy egyszerű példát. Akkor a $2x+3=7$ egyenletet kellett
+      megoldanunk a ***természetes számok*** halmazán. A problémát az okozta, hogy "kivonás" és "osztás" ebben a
+      számkörben &ndash; mint algebrai értelemben vett "művelet" &ndash; nem állt rendelkezésünkre. Ezért az alábbi
+      két segédtételt voltunk kénytelenek felhasználni "kivonás" és "osztás" helyett:
+  - type: embed
+    target:
+      type: theorem
+      name: peano-osszeg-egyszerusites
+  - type: embed
+    target:
+      type: theorem
+      name: peano-szorzat-egyszerusites
+  - type: formula
+    lead-in: |
+      Első lépésként az egyenlet jobboldalát $7$ helyett egy kéttagú összegként írtuk fel:
+    content: |
+      2x+3=4+3
+  - type: narrative
+    content: |
+      Ebből a [peano-osszeg-egyszerusites] alapján $2x=4$ következett.
+  - type: formula
+    lead-in: |
+      Ezután második lépésként ennek jobboldalát $4$ helyett egy kéttényezős szorzatként írtuk fel:
+    content: |
+      2x=2\cdot 2
+  - type: narrative
+    content: |
+      Ebből viszont a [peano-szorzat-egyszerusites] alapján az $x=2$ megoldás következett. Azaz a természetes
+      számok körében egy egyenlet megoldásakor mindkét oldalból büntetlenül szabad volt "kivonni" ugyanazt a
+      tetszőleges számot, valamint mindkét oldalt szabad volt "elosztani" ugyanazzal a tetszőleges ***nemnulla***
+      számmal. Méghozzá annak ellenére, hogy ez a két "művelet" ezen a számhalmazon nem állt rendelkezésünkre.
+      Megemlítettük ugyanakkor, hogy más algebrai struktúrákban nagyon ***könnyen kaphatunk hibás eredményt***, ha
+      az ehhez hasonló lépéseket nem kellő körültekintéssel végezzük el.
+  - type: narrative
+    content: |
+      A fenti két segédtételt azután a 15. rész elején általánosítottuk tetszőleges gyűrűkre is. Itt a kivonással
+      már nincs gond, hiszen az tetszőleges gyűrűben korlátlanul elvégezhető. Osztani azonban általában továbbra
+      sem tudunk, mivel multiplikatív inverz létezése csak testekben garantált. Az alábbi tétel azonban mégis a
+      segítségünkre siet:
+  - type: embed
+    target:
+      type: theorem
+      name: szorzat-egyszerusitese-gyurukben
+  - type: narrative
+    content: |
+      Eszerint ***nullosztómentes gyűrűkben***, és &ndash; ami talán még fontosabb &ndash; ***csak azokban***
+      továbbra is lehet tetszőleges nemnulla gyűrűelemmel "elosztani" egy egyenlet mindkét oldalát. Kérdés, hogy
+      vajon a $Z_m$ gyűrű minden $m\ eq 0$ esetén nullosztómentes-e?
+  - type: narrative
+    content: |
+      Térjünk most vissza a fenti egyenletünkhöz, és ismét próbáljuk meg megoldani azt, ám ezúttal a $Z_8$
+      gyűrűben keressük a megoldást.
+  - type: formula
+    lead-in: |
+      Az itt érvényes műveleti jelekkel ez az egyenlet az alábbi formát ölti &ndash; a könnyebb áttekinthetőség
+      kedvéért a műveleti sorrendet zárójelekkel is kihangsúlyoztuk:
+    content: |
+      (2\odot x) \oplus 3=7
+  - type: narrative
+    content: |
+      A "kivonás" &ndash; mint említettük &ndash; gond nélkül elvégezhető. Emlékeztetjük az Olvasót, hogy egy
+      gyűrűben "kivonás" alatt az ellentettel (additív inverzzel) való összeadást értjük. Így tehát most adjuk
+      hozzá az egyenlet mindkét oldalához a $3$ gyűrűelem additív inverzét. A $Z_8$ gyűrűben ez az $5$ egész szám
+      lesz, hiszen a moduláris összeadás [modularis-osszeadas-es-szorzas]ja alapján $3\oplus
+      5=\bmod_8(3+5)=\bmod_8(8)=0$. A baloldalon tehát $2\odot x$ marad, míg a jobboldalon $7\oplus
+      5=\bmod_8(7+5)=\bmod_8(12)=4$-et kapunk.
+  - type: formula
+    lead-in: |
+      Azaz:
+    content: |
+      2\odot x=4
+  - type: formula
+    lead-in: |
+      Gondolhatnánk, hogy innen már egyszerű a dolgunk, hiszen &ndash; hasonlóan a természetes számok körében
+      alkalmazott megoldáshoz &ndash; felírhatjuk a jobboldalon szereplő $4$-et egy kéttényezős szorzatként $2\odot
+      2$ alakban:
+    content: |
+      2\odot x=2\odot 2
+  - type: narrative
+    content: |
+      Ha azonban most meggondolatlanul alkalmazzuk szépen a [szorzat-egyszerusitese-gyurukben]t, és erre hivatkozva
+      mindkét oldalt "egyszerűsítjük" $2$-vel, akkor könnyen azt a következtetést vonhatjuk le, hogy a fenti
+      egyenletből $x=2$ következik. ***EZ AZONBAN HIBÁS!***
+  - type: narrative
+    content: |
+      Az $x=2$ valóban megoldása a $(2\odot x)\oplus 3=7$ egyenletnek, azonban ***van még egy további megoldás
+      is***. Nevezetesen az $x=6$, amely fölött ezzel a lépéssel szépen átsiklunk. Ellenőrizzük csak le, hogy a
+      $Z_8$ gyűrűben a $(2\odot 6)\oplus 3$ valóban $7$-tel egyezik meg.
+  - type: narrative
+    content: |
+      Mi okozhatja hát a problémát? Ha tüzetesen megvizsgáljuk az egyenletek egyszerűsíthetőségéről szóló
+      [szorzat-egyszerusitese-gyurukben]t, akkor feltűnhet, hogy az ***kizárólag nullosztómentes gyűrűkre
+      érvényes***. Márpedig ha $Z_8$-ban ez a lépés nem működik, az csak úgy lehetséges, hogy ***ez a gyűrű bizony
+      nem nullosztómentes***.
+  - type: formula
+    lead-in: |
+      Ez azonnal látható is, ha megvizsgáljuk a $Z_8$ gyűrű "szórzótábláját":
+    content: |
+      \begin{array}{c|cccccccc}\odot &0&1&2&3&4&5&6&7 \\ \hline 0&0&0&0&0&0&0&0&0 \\ 1&0&1&2&3&4&5&6&7 \\
+      2&0&2&4&6&0&2&4&6 \\ 3&0&3&6&1&4&7&2&5 \\ 4&0&4&0&4&0&4&0&4 \\ 5&0&5&2&7&4&1&6&3 \\ 6&0&6&4&2&0&6&4&2 \\
+      7&0&7&6&5&4&3&2&1 \end{array}
+  - type: narrative
+    content: |
+      Ha megfigyeljük, ebben a táblázatban az első soron és oszlopon kívül is bőven szerepel a nullelem. Ez azt
+      jelenti, hogy egy szorzat olyan esetekben is lehet $0$, amikor történetesen egyik tényezője sem az. Ilyen
+      például a $2\odot 4$ szorzat, hogy csak egyet említsünk.
+  - type: narrative
+    content: |
+      Jó lenne tehát valami általános szabály arra vonatkozóan, hogy mely esetekben nullosztómentes a $Z_m$ gyűrű,
+      és mely esetekben nem. Erről szól az alábbi tétel.
+  - type: embed
+    target:
+      type: theorem
+      name: maradekok-gyuruje-nullosztomentes
+  - type: embed
+    target:
+      type: proof
+      name: maradekok-gyuruje-nullosztomentes-bizonyitas

@@ -1,0 +1,194 @@
+type: section
+name: 04-felbonthatatlanok-es-primek
+title: Felbonthatatlanok és prímek
+
+references:
+  felbonthatatlan-elem:
+    target:
+      type: definition
+      name: felbonthatatlan-elem
+  integritastartomany:
+    target:
+      type: definition
+      name: integritastartomany
+  oszthatosag-tulajdonsagai:
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+
+body:
+  - type: narrative
+    content: |
+      Az oszthatóságról szóló szakasz elején az volt a feladatunk, hogy egy szorzás $a$ bemenetét és $b$ kimenetét
+      ismerve keressünk egy gyűrűelemet a másik bemenetre. Akkor mondtuk, hogy teljesül az $a|b$ oszthatóság, ha
+      létezett ilyen elem a gyűrűben. Most ennél egy fokkal nehezebb a feladatunk. Képzeljük el azt a szituációt,
+      hogy csak a szorzás kimenetét ismerjük, és mindkét bemenetre keresnünk kell egy-egy gyűrűelemet, amelyek
+      szorzata épp a kimenet.
+  - type: figure
+    lead-in: |
+      Ezt mutatja az alábbi ábra:
+    src: 03-gyuruelem-felbontasa.jpg
+    alt: Gyűrűelem felbontása
+    caption: Gyűrűelem felbontása
+  - type: narrative
+    content: |
+      Ezt képlettel kifejezve: $c=a\cdot b$. Itt tehát az a feladat, hogy a $c$ gyűrűelemnek megtaláljuk valamely
+      osztóját. Algoritmikus szempontból ez egy roppant nehéz feladat, és &ndash; mint látni fogjuk a későbbiekben
+      &ndash; épp ez biztosítja azt, hogy a modern kriptográfiai eljárások gyakorlatilag feltörhetetlenek. Most
+      azonban tegyük félre az algoritmikus nehézséget, és vizsgáljuk meg ezt a feladatot elméleti szempontból. Egy
+      gyűrűelemet adott esetben sokféleképpen felbonthatunk két másik gyűrűelem szorzatára.
+  - type: formula
+    lead-in: |
+      Az alábbi példában felsoroltuk az $50$ egész szám összes lehetséges felbontását a $\Z$ gyűrűben (a tényezők
+      sorrendjétől eltekintve):
+    content: |
+      \begin{aligned}50&=1\cdot 50=\\&=2\cdot 25=\\&=5\cdot 10=\\&=(-1)\cdot (-50)=\\&=(-2)\cdot
+      (-25)=\\&=(-5)\cdot (-10) \end{aligned}
+  - type: formula
+    lead-in: |
+      De vajon mi a helyzet akkor, ha például a $13$ egész számot szeretnénk két másik egész szám szorzatára
+      bontani? Érdekes módon ezt csak kétféleképpen tehetjük meg (a tényezők sorrendjétől eltekintve):
+    content: |
+      13=1\cdot 13=(-1)\cdot (-13)
+  - type: narrative
+    content: |
+      Látható, hogy mindkét felbontásban az egyik tényező egy ***egység*** volt, a másik tényező pedig az eredeti
+      szám valamely ***asszociáltja*** (jelen esetben saját maga vagy az ellentettje). Amennyiben az a célunk, hogy
+      oszthatósággal kapcsolatos újabb információt nyerjünk a felbontandó elemről, úgy az ilyen jellegű
+      felbontásokkal nem sokra megyünk. Az egységtényezőből azért nem tudunk meg semmi újat, mert egy egységnek
+      bármely osztója maga is egység (hiszen az oszthatóság tranzitivitásán keresztül örökli ezt a tulajdonságot).
+      A másik tényezőből pedig azért nem derül ki semmi új, mert neki meg pontosan ugyanazok az osztói, mint a
+      eredeti elemnek.
+  - type: narrative
+    content: |
+      A $\Z$ gyűrűben a $13$ egész szám emiatt egyfajta "építőkockaként" funkcionál: résztvesz más számok
+      felépítésében, ám ő maga már nem bontható tovább értelmes módon. Az általános iskolában ***"prímszámoknak"***
+      neveztük azokat a számokat, amelyeknek "olyan kevés osztójuk van, amilyen kevés csak lehet". Elsőre talán
+      zavart okozhat, hogy egyrészt a most következő definícióban teljesen más megnevezést használunk ezekre a
+      kitüntetett gyűrűelemekre, másrészt pedig a ***"prím"*** kifejezést teljesen másra fogjuk használni. Ennek
+      oka azonban hamarosan világossá válik.
+  - type: embed
+    target:
+      type: definition
+      name: felbonthatatlan-elem
+  - type: narrative
+    content: |
+      A ***páros számok $2\Z$ gyűrűjében*** például felbonthatatlanok a $2$, $6$, $10$, ..., $150$, ..., illetve
+      ezek ellentettjei is. Ezeknek ugyanis egyáltalán nem létezik felbontása ebben a gyűrűben (azaz nem bonthatók
+      fel ***páros számok*** szorzatára).
+  - type: narrative
+    content: |
+      Az ***egész számok $\Z$ gyűrűjében*** például felbonthatatlanok a $2$, $3$, $5$, $7$, $13$, ..., $919$, ...,
+      $17180131327$, ..., illetve ezek ellentettjei is. Ezeknek léteznek ugyan felbontásaik, ám azok mind triviális
+      felbontások a fenti értelemben.
+  - type: narrative
+    content: |
+      Látható, hogy az oszthatósághoz hasonlóan nagyon ***nem mindegy, hogy melyik gyűrűben*** beszélünk
+      felbonthatatlanságról. A $6$ például felbonthatatlan a $2\Z$ gyűrűben &ndash; hiszen nincs két olyan páros
+      szám, amelyeknek szorzata $6$ lenne &ndash;, azonban nem felbonthatatlan a $\Z$ gyűrűben &ndash; hiszen
+      $6=2\cdot 3$ egy nemtriviális felbontás.
+  - type: narrative
+    content: |
+      Az $1$ és a $-1$ egységek, így a definíció szerint ők nem számítanak felbonthatatlannak. Látszólag semmi nem
+      indokolja, hogy az egységeket önkényesen kizárjuk a felbonthatatlanok közül. Ennek pusztán &ndash; mint azt
+      látni fogjuk &ndash; praktikussági okai vannak a ***számelmélet alaptételének*** megfogalmazásakor. A
+      nullelemet azért nem kellett külön kizárni a definícióban a felbonthatatlanok közül, mivel az amúgyis
+      felbontható nemtriviálisan (például $0\cdot a$ tetszőleges $a\ eq 0$ elem esetén egy nemtriviális felbontás).
+  - type: narrative
+    content: |
+      A továbbiakban főként olyan gyűrűket fogunk vizsgálni, amelyekben a szorzás kommutativitásán kívül a
+      ***nullosztómentesség*** is teljesül (azaz két nemnulla elem szorzata nem lehet nulla). Ezeket a gyűrűket
+      ***integritástartományoknak*** neveztük (lásd a [integritastartomany]t), és ezeket tekintettük "normálisan"
+      viselkedő gyűrűknek sok szempontból. Az alábbi tétel alapján például ***integritástartományok*** esetén a
+      "triviális felbontás" fogalma némiképp egyszerűbben fogalmazható meg a [felbonthatatlan-elem]hoz képest.
+  - type: embed
+    target:
+      type: theorem
+      name: egysegtenyezo-nullosztomentes-esetben
+  - type: narrative
+    content: |
+      Ez alapján tehát ***integritástartományok*** esetén a [felbonthatatlan-elem]hoz képest a ***triviális
+      felbontásokra*** elegendő annyit kikötni, hogy az egyik tényező egység, hiszen a fenti tétel alapján ekkor a
+      másik tényező automatikusan a felbontandó elem asszociáltja lesz. A bizonyításhoz azonban erőteljesen
+      kihasználjuk a ***nullosztómentességet***.
+  - type: embed
+    target:
+      type: proof
+      name: egysegtenyezo-nullosztomentes-esetben-bizonyitas
+  - type: narrative
+    content: |
+      Azt tehát már tudjuk, hogy amiket általános iskolában ***"prímeknek"*** neveztünk, azok a gyűrűk absztrakciós
+      szintjén a ***"felbonthatatlan elemeknek"*** felelnek meg. Jogos lehet a kérdés, hogy akkor ugyanezen az
+      absztrakciós szinten mégis mire használjuk a ***"prím"*** kifejezést, ha nem erre. Az alábbi definíció ad
+      erre választ.
+  - type: embed
+    target:
+      type: definition
+      name: primtulajdonsagu-elem
+  - type: embed
+    target:
+      type: remark
+      name: primtulajdonsagu-elem-megjegyzes
+  - type: narrative
+    content: |
+      Ennek a fogalomnak látszólag semmi köze nincs ahhoz, ahogyan az általános iskolában a prímeket szokták
+      meghatározni, ezért talán némi magyarázatra szorul.
+  - type: narrative
+    content: |
+      Emlékeztetnénk az olvasót az oszthatóság tulajdonságairól szóló [oszthatosag-tulajdonsagai] 7. pontjára. Ez
+      ugye azt mondja ki, hogyha egy elem osztója egy szorzat valamely tényezőjének, akkor osztója a szorzatnak is.
+      Például az egész számok gyűrűjében $3|6$, ezért nyilván $3|6\cdot 2$ is teljesül.
+  - type: narrative
+    content: |
+      Ennek ***megfordítása*** azonban általánosságban nem igaz. Azaz általánosságban nem igaz, hogyha egy elem
+      osztója egy szorzatnak, akkor szükségképpen osztója valamelyik tényezőnek is. Például $8|2\cdot 12$,
+      ugyanakkor $8\ mid 2$ és $8\ mid 12$. A ***prímtulajdonságú elemek (vagy prímek)*** éppen azok az elemek egy
+      gyűrűben, amelyeknél a megfordítás is érvényes minden esetben.
+  - type: narrative
+    content: |
+      A nullelemet a felbonthatatlanság [felbonthatatlan-elem]jához hasonlóan a prímek közül is szeretnénk kizárni.
+      Mivel azonban az általunk többnyire vizsgált ***integritástartományokban*** a nullelem egyébként teljesítené
+      a definíció kritériumait, ezért külön ki kellett kötnünk, hogy őt mégsem tekintjük prímnek. Ha ugyanis
+      valamely $a$ és $b$ elemekre teljesülne, hogy $0|ab$, akkor az oszthatóság tulajdonságairól szóló
+      [oszthatosag-tulajdonsagai] 4. pontja miatt $ab=0$ következne. Ez viszont az integritástartományok
+      nullosztómentessége miatt csak úgy lehetne, ha $a$ és $b$ közül legalább az egyik $0$ lenne. Ebből viszont
+      következne, hogy a $0|a$ illetve $0|b$ oszthatóságok közül legalább az egyik teljesül. Azaz végsősoron a $0$
+      prím lenne, ha nem kötnénk ki a definícióban külön, hogy mégsem az.
+  - type: narrative
+    content: |
+      Jogosan merülhet fel a kérdés az Olvasóban, hogy vajon miért nevezik az általános iskolában "prímnek" azt,
+      amit mi itt "felbonthatatlannak" neveztünk. És vajon miért definiáltuk teljesen másként a prímeket? Nem
+      lehetséges-e, hogy valójában ugyanarról a fogalomról van szó? Általánosságban sajnos nem ennyire egyszerű a
+      helyzet. Például a ***páros számok*** $2\Z$ gyűrűjében a $6$ felbonthatatlan, hiszen nem bontható fel két
+      ***páros szám*** szorzatára. Ugyanakkor nem prím, hiszen osztója a $2\cdot 18$ szorzatnak, de nem osztója sem
+      a $2$-nek, sem pedig a $18$-nak (hiszen nem léteznek olyan ***páros számok***, amelyeket $6$-tal szorozva
+      $2$-t vagy $18$-at kapnánk eredményül).
+  - type: narrative
+    content: |
+      Egy ***integritástartományban*** tehát ez a két fogalom általában nem ugyanazt jelenti. Az imént például
+      láthattuk, hogy adott esetben létezhetnek olyan elemek, amelyek felbonthatatlanok, de nem prímek. De vajon
+      létezhetnek-e olyan prímek, amik viszont nem felbonthatatlanok? Az alábbi tétel azokban az esetekben adja meg
+      a választ erre a kérdésre, amikor az integritástartomány ***egységelemmel*** rendelkezik.
+  - type: embed
+    target:
+      type: theorem
+      name: minden-prim-felbonthatatlan
+  - type: embed
+    target:
+      type: proof
+      name: minden-prim-felbonthatatlan-bizonyitas
+  - type: figure
+    lead-in: |
+      Az ***egységelemes integritástartományokban*** tehát biztos, hogy a következő a helyzet:
+    src: 04-primek-es-felbonthatatlanok-viszonya.jpg
+    alt: Prímek és felbonthatatlanok viszonya
+    caption: Prímek és felbonthatatlanok viszonya
+  - type: narrative
+    content: |
+      Érdekes kérdés, hogy mi a helyzet ***nem egységelemes*** integritástartományok esetén. Erre a kérdésre a
+      következő szakaszban fogunk visszakanyarodni.
+  - type: narrative
+    content: |
+      Számunkra az olyan integritástartományok lesznek érdekesek, amelyekben azon kívül, hogy minden prím
+      felbonthatatlan még az is teljesül, hogy minden felbonthatatlan prím. Ezekben ugyanis teljesülni fog egy
+      olyan tulajdonság, amely kriptográfiai szempontból alapvető fontosságú.

@@ -1,0 +1,17 @@
+type: theorem
+name: p-edik-hatvanyok-kulonbsegenek-p-adikus-rendje
+proofs:
+  - p-edik-hatvanyok-kulonbsegenek-p-adikus-rendje-bizonyitas
+remarks: []
+content:
+  - type: formula
+    lead-in: |
+      Legyenek adottak $x$ és $y$ tetszőleges egész számok, valamint egy $p$ pozitív prímszám, amelyekre
+      teljesülnek az alábbiak:
+    content: |
+      \begin{aligned}x&\ eq y\\v_p(xy)&=0\\v_p(x-y)&\ eq 0\end{aligned}
+  - type: formula
+    lead-in: |
+      Ekkor érvényes az alábbi összefüggés:
+    content: |
+      v_p(x^p-y^p)=v_p(x-y)+1

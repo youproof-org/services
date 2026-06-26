@@ -1,0 +1,143 @@
+<!-- wp:paragraph -->
+<p>A [yp_element slug="fermat-tanu" type="link" /] utáni megjegyzés alapján <strong><em>nem Fermat-tanú</em></strong> csak redukált maradékosztály lehet, ezért fennáll az [latex]F_n\sube (\Z/n\Z)^{\times}[/latex] tartalmazási reláció. Így az [latex]F_n\leq (\Z/n\Z)^{\times}[/latex] részcsoport reláció igazolásához a [yp_element slug="reszcsoport-feltetele-veges-csoportok-eseten" type="link" /] alapján csak azt kell megmutatni, hogy [latex]F_n[/latex] <strong><em>nemüres</em></strong> és <strong><em>zárt</em></strong> a [latex](\Z/n\Z)^{\times}[/latex]-beli csoportműveletre nézve. Az első feltétel nyilván teljesül, hiszen [latex]1^{n-1}\equiv 1\pmod n[/latex], és így az [latex][1]_n[/latex] maradékosztály a [yp_element slug="fermat-tanu" type="link" /] értelmében nem Fermat-tanú, azaz benne van [latex]F_n[/latex]-ben.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Legyen most [latex][a]_n[/latex] és [latex][b]_n[/latex] az [latex]F_n[/latex] halmaz két tetszőleges eleme. Mivel ők nem Fermat-tanúk, ezért a [yp_element slug="fermat-tanu" type="link" /] alapján teljesül az alábbi két kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a^{n-1}&amp;\equiv 1\pmod n \\ b^{n-1}&amp;\equiv 1\pmod n\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A két kongruenciát a [yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" type="link" /] 5. pontja miatt összeszorozhatjuk. Alkalmazva a <strong><em>hatványozás azonosságairól</em></strong> szóló [yp_element slug="hatvanyozas-azonossagai" type="link" /] 1. pontját, az alábbi kongruenciát kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](ab)^{n-1}\equiv 1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Így a [yp_element slug="fermat-tanu" type="link" /] alapján az [latex][ab]_n[/latex] maradékosztály szintén <strong><em>nem Fermat-tanú</em></strong>, azaz benne van [latex]F_n[/latex]-ben. Mivel a [yp_element slug="egesz-szamok-maradekosztalygyurui" type="link" /] alapján az [latex][ab]_n[/latex] maradékosztály épp az [latex][a]_n[/latex] és [latex][b]_n[/latex] maradékosztályok szorzata, ezért [latex]F_n[/latex] valóban zárt a [latex](\Z/n\Z)^{\times}[/latex] csoport műveletére nézve, azaz részcsoport [latex](\Z/n\Z)^{\times}[/latex]-ben.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ha most [latex]n[/latex] nem Carmichael-szám, akkor a [yp_element slug="carmichael-szamok" type="link" /] alapján létezik [latex]n[/latex]-hez tartozó Fermat-tanú a redukált maradékosztályok között, vagyis a [latex](\Z/n\Z)^{\times}[/latex] csoportban, amely viszont így nincs benne [latex]F_n[/latex]-ben. Ilyenkor tehát [latex]F_n[/latex] <strong><em>valódi részcsoport</em></strong>. Ezzel szemben ha [latex]n[/latex] Carmichael-szám, akkor egyik redukált maradékosztály sem Fermat-tanú, azaz ilyenkor [latex]F_n=(\Z/n\Z)^{\times}[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Azt kell még igazolni</em></strong>, hogy [latex]H_n[/latex] valódi részcsoport [latex]F_n[/latex]-ben. Azt a [yp_element slug="nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten" type="link" /] 2. pontja alapján már tudjuk, hogy [latex]H_n[/latex] részcsoport [latex](\Z/n\Z)^{\times}[/latex]-ben, ami a [yp_element slug="reszcsoport-feltetele-veges-csoportok-eseten" type="link" /] értelmében azt jelenti, hogy [latex]H_n[/latex] zárt a [latex](\Z/n\Z)^{\times}[/latex] csoport műveletére nézve. Így már csak azt kell megmutatni, hogy fennáll a [latex]H_n\sub F_n[/latex] szigorú tartalmazási reláció.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ehhez először azt igazoljuk</em></strong>, hogy [latex]H_n\sube F_n[/latex]. Legyen ezért [latex][a]_n[/latex] a [latex]H_n[/latex] halmaz tetszőleges eleme, és mutassuk meg, hogy [latex][a]_n\in F_n[/latex]. Mivel [latex][a]_n\in H_n[/latex], ezért a tétel szövege alapján:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{2^{j_{\text{max}}}k} \equiv \pm 1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Akár [latex]1[/latex], akár [latex]-1[/latex] szerepel a jobboldalon, a kongruenciát négyzetre emelve a következőt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{2^{j_{\text{max}}+1}k} \equiv 1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel a tétel szövegéből tudjuk, hogy [latex]j_{\text{max}}\leq e-1[/latex], ezért az egyenlőtlenség mindkét oldalához [latex]1[/latex]-et adva [latex]j_{\text{max}}+1\leq e[/latex] adódik. Így ha a fenti kongruencia mindkét oldalát valahányszor négyzetre emeljük (sőt [latex]j_{\text{max}}+1=e[/latex] esetén még csak nem is kell négyzetre emelnünk egyszer sem), akkor előbb-utóbb eljutunk az itt látható utolsó kongruenciáig:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a^{2^{j_{\text{max}}+1}}k &amp;\equiv 1\pmod n \\ a^{2^{j_{\text{max}}+2}}k &amp;\equiv 1\pmod n \\ a^{2^{j_{\text{max}}+3}}k &amp;\equiv 1\pmod n \\ &amp;\vdots \\ a^{2^ek} &amp;\equiv 1\pmod n\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Minthogy a tétel szövegéből tudjuk, hogy [latex]n-1=2^ek[/latex], ezért ez az utolsó kongruencia a [yp_element slug="fermat-tanu" type="link" /] alapján épp azt jelenti, hogy [latex][a]_n[/latex] nem Fermat-tanú, azaz benne van [latex]F_n[/latex]-ben, és így [latex]H_n\sube F_n[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Végezetül megmutatjuk</em></strong>, hogy ez valójában egy szigorú tartalmazási reláció, azaz mutatni fogunk egy olyan redukált maradékosztályt, amely benne van [latex]F_n[/latex]-ben, de nincs benne [latex]H_n[/latex]-ben. A munka felét már elvégeztük a [yp_element slug="nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten" type="link" /] 4. állításának bizonyításában, ott ugyanis már mutattunk egy olyan [latex][a]_n[/latex] redukált maradékosztályt, amely nincs benne [latex]H_n[/latex]-ben. Most igazoljuk, hogy ez a bizonyos [latex][a]_n[/latex] viszont benne van [latex]F_n[/latex]-ben, azaz a következő a helyzet:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":7352,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_26_reszcsoport_viszonyok.jpg" alt="A Hn és Fn részcsoportok viszonya" class="wp-image-7352"/><figcaption>A [latex]H_n[/latex] és [latex]F_n[/latex] részcsoportok viszonya</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Ismételjük át az említett bizonyítás gondolatmenetét. Felhasználtuk, hogy [latex]n[/latex]-nek legalább két prímtényezője van, hiszen nem prímhatvány. Azaz felírható [latex]n=p^cm[/latex] alakban, ahol [latex]p[/latex] az egyik prímtényező, [latex]c\geq 1[/latex] valamilyen pozitív kitevő, [latex]m\gt 1[/latex] valamilyen páratlan egész szám, továbbá [latex]p^c[/latex] és [latex]m[/latex] relatív prímek. Ekkor ugye érvényes a <strong><em>kínai maradéktétel</em></strong> ([yp_element slug="kinai-maradektetel" type="link" /]), amelynek következményeként a [yp_element slug="maradekosztalygyuruk-dekompozicioja" type="link" /] alapján fennáll az alábbi <strong><em>gyűrűizomorfizmus</em></strong>:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\Z/n\Z \simeq \Z/p^c\Z \times \Z/m\Z[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A tétel szövegéből ugye azt is tudjuk, hogy a [latex]j_{\text{max}}[/latex] kitevőhöz létezik olyan [latex]s[/latex] egész szám, amelyre teljesül az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]s^{2^{j_{\text{max}}}}\equiv -1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Továbbá az említett bizonyításban azt is megmutattuk, hogy ekkor az [latex]s^{2^{j_{\text{max}}}}[/latex] hatvány [latex]-1[/latex]-gyel kongruens modulo [latex]p^c[/latex] is, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]s^{2^{j_{\text{max}}}}\equiv -1\pmod{p^c}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezt az [latex]s[/latex] egész számot használtuk fel az említett [latex][a]_n[/latex] redukált maradékosztály megkonstruálásához. Azt mondtuk, hogy [latex][a]_n[/latex] legyen az a maradékosztály a [latex]\Z/n\Z[/latex] gyűrűben, amelyhez a [yp_element slug="maradekosztalygyuruk-dekompozicioja" type="link" /]ben szereplő [latex]g[/latex] gyűrűizomorfizmus épp az [latex]([s]_{p^c};[1]_m)[/latex] maradékosztálypárt rendeli hozzá a [latex]\Z/p^c\Z \times \Z/m\Z[/latex] szorzatgyűrűből, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][a]_n \xmapsto{g} ([s]_{p^c};[1]_m)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha most a bal- és a jobboldalon álló kifejezést is [latex]2^{j_{\text{max}}}k[/latex]-adik hatványra emeljük, akkor [latex]g[/latex] <strong><em>művelettartó tulajdonsága</em></strong> miatt érvényes lesz az alábbi hozzárendelés is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][a^{2^{j_{\text{max}}}k}]_n \xmapsto{g} ([s^{2^{j_{\text{max}}}k}]_{p^c};[1^{2^{j_{\text{max}}}k}]_m)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]k[/latex] páratlan, és az [latex]s^{2^{j_{\text{max}}}}[/latex] hatvány [latex]-1[/latex]-gyel kongruens modulo [latex]p^c[/latex], ezért ez teljesülni fog az [latex]s^{2^{j_{\text{max}}}k}[/latex] hatványra is. Így tehát a fenti hozzárendelés az alábbira egyszerűsödik:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][a^{2^{j_{\text{max}}}k}]_n \xmapsto{g} ([-1]_{p^c};[1]_m)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha most a bal- és jobboldalon álló kifejezéseket elkezdjük sorozatosan négyzetre emelni, akkor [latex]g[/latex] művelettartó tulajdonsága miatt érvényesek lesznek az alábbi hozzárendelések is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}[a^{2^{j_{\text{max}}}k}]_n &amp;\xmapsto{g} ([-1]_{p^c};[1]_m) \\ [a^{2^{j_{\text{max}}+1}k}]_n &amp;\xmapsto{g} ([1]_{p^c};[1]_m) \\ [a^{2^{j_{\text{max}}+2}k}]_n &amp;\xmapsto{g} ([1]_{p^c};[1]_m) \\ [a^{2^{j_{\text{max}}+3}k}]_n &amp;\xmapsto{g} ([1]_{p^c};[1]_m) \\ &amp;\vdots\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A tétel szövegéből tudjuk, hogy [latex]j_{\text{max}}\lt e[/latex], ezért a sorozatos négyzetre emeléseket folytatva előbb-utóbb eljutunk az itt látható utolsó hozzárendelésig:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][a^{\overbrace{2^ek}^{=n-1}}]_n \xmapsto{g} ([1]_{p^c};[1]_m)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel a [yp_element slug="maradekosztalygyuruk-dekompozicioja" type="link" /] alapján a [latex]g[/latex] gyűrűizomorfizmus a jobboldalon látható [latex]([1]_{p^c};[1]_m)[/latex] maradékosztálypárt épp az [latex][1]_n[/latex] maradékosztályhoz rendeli hozzá, ezért a baloldalon álló [latex][a^{n-1}]_n[/latex] maradékosztály szükségképpen megegyezik az [latex][1]_n[/latex] maradékosztállyal, azaz teljesül az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{n-1}\equiv 1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Így az [latex][a]_n[/latex] maradékosztály a [yp_element slug="fermat-tanu" type="link" /] értelmében nem Fermat-tanú, azaz benne van [latex]F_n[/latex]-ben, tehát valóban fennáll a [latex]H_n\sub F_n[/latex] <strong><em>szigorú tartalmazási</em></strong> reláció.</p>
+<!-- /wp:paragraph -->

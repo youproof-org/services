@@ -1,0 +1,16 @@
+type: theorem
+name: asszociativ-kommutativ-tetszoleges-sorrend-zarojelezes
+proofs: []
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy adott egy $H$ halmaz és egy rajta értelmezett asszociatív és kommutatív kétváltozós művelet.
+      Jelöljük ezt a műveletet $*$-gal. Mutassuk meg, hogy ekkor az
+  - type: formula
+    content: |
+      a_1 * a_2 * \dots * a_n
+  - type: narrative
+    content: |
+      kifejezést akárhogyan is zárójelezzük, illetve akármilyen sorrendben is írjuk fel, az eredmény mindig ugyanaz
+      lesz.

@@ -1,0 +1,85 @@
+type: chapter
+name: 06-alice-es-bob-a-kiszamithatosag-hataran
+title: Alice és Bob a kiszámíthatóság határán
+
+abstract:
+  - type: narrative
+    content: |
+      Az előző részben jobban megismerkedtünk Alice és Bob két fő ellenségével, Eve-vel és Mallory-vel.
+      Megvizsgáltuk, hogy milyen gonosz módokon próbálnak borsot törni főhőseink orra alá. Bemutattuk a one-time
+      pad nevű abszolút biztonságos rejtjelezési rendszert, de láttuk, hogy az a gyakorlatban nagyon limitáltan
+      használható. Ezért az abszolút biztonság helyett a továbbiakban megelégszünk az algoritmikus biztonsággal. Ez
+      olyan módszerek használatát jelenti, hogy Alice és Bob számára egy kulcsnak nevezett plusz információ
+      birtokában algoritmikusan "könnyű" feladat legyen egymással bizalmas információkat közölni, de Eve számára a
+      kulcs ismeretének hiányában algoritmikusan "nehéz" legyen e titkok felfedése. De vajon mit jelent az, hogy
+      egy feladat algoritmikusan "könnyű" vagy "nehéz"? Egyáltalán mit jelent az a szó, hogy "algoritmus"? Vajon
+      minden feladat megoldható algoritmussal? Ebben és a következő részekben erről lesz szó...
+prologue:
+  - type: narrative
+    content: |
+      Általános iskola alsó tagozatában remélhetőleg mindenki megtanulta, hogyan lehet összeadni vagy összeszorozni
+      két tetszőlegesen nagy egész számot. Összeadás esetén például a két számot egymás alá kell felírni, és
+      számjegyenként végezni az összeadást. Ha pedig valamelyik helyiértéken 9-nél nagyobb számot kapnánk
+      részeredményül, akkor a "túlcsordulást" át kell vinni a következő helyiértékre. Szorzásnál egy kicsit
+      bonyolultabb a helyzet, de az is elvégezhető helyiértékenként végzett szorzásokkal és összeadásokkal.
+  - type: narrative
+    content: |
+      Ez nem más, mint egy algoritmus, amelynek bemenete a két összeadandó vagy összeszorzandó szám. A végrehajtás
+      során elemi lépéseket végzünk, miközben a papíron először a részeredmények jelennek meg a "munkaterületen".
+      Végül pedig sorra előállnak a végeredmény számjegyei, mint az algoritmus kimenete. A lépések abban az
+      értelemben elemiek, hogy azok végrehajtása az algoritmus futtatója számára nem igényel további részletezést.
+      Például számítógépek esetén van egy véges utasításkészlet, amelyet a gép áramköri megvalósítása határoz meg,
+      és így adottnak tekinthető. Egy algoritmus leírása ebben az esetben megfelel egy programnak, amely ebből az
+      utasításkészletből gazdálkodhat, ezeket tetszőlegesen kombinálhatja. Például ciklusok, feltételektől függő
+      elágazások, és egyéb, a futás útját vezérlő utasítások segítségével. Az egyetlen kikötés, hogy ennek a
+      leírásnak végesnek kell lennie.
+  - type: narrative
+    content: |
+      Az algoritmus végrehajtójának nem kell foglalkoznia azzal a kérdéssel, hogy az miért ad helyes eredményt
+      tetszőleges bemenet esetén. Neki mindössze annyi a dolga, hogy "bambán" de pontosan kövesse az algoritmus
+      leírását. Egy számítógép is pontosan ezt csinálja egy program futtatása során. Ráadásul ő valóban "bamba" és
+      nem gondolkozik, ezért az ő számára nagyon pontos leírásra van szükség. Ez az oka annak, hogy egy bonyolult
+      algoritmust nem könnyű leprogramozni. A számítógép ugyanis nem azt csinálja, amit le akartunk írni számára,
+      hanem azt, amit ténylegesen leírtunk. Azt viszont halál pontosan.
+  - type: narrative
+    content: |
+      Ahhoz, hogy algoritmussal meg tudjunk oldani egy problémát, a probléma példányait valamilyen módon le kell
+      tudnunk írni a számára. Ezen kívül az algoritmus eredményét is valamilyen írott formában fogjuk megkapni. A
+      fenti példában a ***probléma*** az egész számok összeadása. Ez az, amire egy általános algoritmust szeretnénk
+      adni. Ennek a ***problémának egy példánya*** mondjuk konkrétan a 32, a 11 és a 67 egész számok összeadása. Ha
+      tehát az algoritmus bemenetére ennek a számhármasnak egy olyan leírását adjuk, amit az algoritmus értelmezni
+      képes, akkor a 110 egész számnak szintén valamilyen leírását fogjuk kapni eredményül.
+  - type: narrative
+    content: |
+      Most megvizsgáljuk azt a kérdést, hogy egy algoritmus bemenetét és kimenetét hogyan tudjuk leírni egy véges
+      szimbólumkészlettel. Ehhez teszünk egy rövid kitérőt az úgynevezett ***formális nyelvek*** elmélete felé.
+sections:
+  - 01-formalis-nyelvek
+  - 02-a-turing-gep
+  - 03-a-nemdeterminisztikus-turing-gep
+  - 04-a-turing-gep-altal-kiszamitott-fuggveny
+  - 05-a-church-turing-tezis
+  - 06-a-turing-gep-altal-felismert-nyelv
+  - 07-az-univerzalis-turing-gep
+  - 08-algoritmikusan-eldonthetetlen-problemak
+  - 09-a-megallasi-problema
+  - 10-hilbert-10-problemaja
+
+epilogue:
+  - type: narrative
+    content: |
+      Ebben a részben megismerkedtünk a Turing-gépnek nevezett elméleti konstrukcióval, amely lényegében az
+      "algoritmus" matematikai definíciója, és amellyel döntési és optimalizálási problémákat lehet megoldani. A
+      döntési problémákat formális nyelvekkel reprezentáltuk, ahol a Turing-gép feladata felismerni egy adott
+      jelsorozatról, hogy egy adott nyelv mondata-e vagy sem. Ennek kapcsán a formális nyelveket az $RE$ és $R$
+      nyelvosztályokba soroltuk aszerint, hogy létezik-e a nyelvet felismerő Turing-gép ($RE$ osztály) és ez a
+      Turing-gép vajon olyan jelsorozatokra is mindig megáll-e, amelyek nem mondatai a nyelvnek ($R$ osztály). Az
+      utóbbi osztályba tartozó nyelveket (és az általuk reprezentált problémákat) tekintjük algoritmikusan
+      eldönthető nyelveknek. Az algoritmikus eldönthetőség határait feszegetve mutattunk pár algoritmikusan
+      eldönthetetlen problémát, köztük a komoly gyakorlati jelentőséggel bíró megállási problémát és Hilbert híres
+      10. problémáját is.
+  - type: narrative
+    content: |
+      A következő részben az algoritmikusan eldönthető problémákat (azaz a rekurzív nyelveket) osztályozzuk tovább
+      aszerint, hogy mennyire hatékonyan található meg rájuk az "igen" vagy a "nem" válasz. Ezután már látni
+      fogjuk, hogy mit jelent Alice, Bob és Eve számára egy feladat "nehézsége".

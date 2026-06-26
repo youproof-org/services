@@ -1,0 +1,111 @@
+type: section
+name: 01-primteszteles-osztasprobakkal
+title: Prímtesztelés osztáspróbákkal
+
+body:
+  - type: narrative
+    content: |
+      Alice és Bob némi gondolkodás után néhány korábbi részben ismertetett összefüggés alapján az alábbi egyszerű,
+      és mindenki számára jól ismert következtetésre jut a prímszámokkal kapcsolatban.
+  - type: embed
+    target:
+      type: theorem
+      name: primszamok-szukseges-es-elegseges-feltetele
+  - type: embed
+    target:
+      type: proof
+      name: primszamok-szukseges-es-elegseges-feltetele-bizonyitas
+  - type: formula
+    lead-in: |
+      Ez alapján tehát egy adott $n$ egész szám esetén elegendő osztáspróbákkal ellenőrizni, hogy teljesül-e
+      valamelyik oszthatóság az alábbiak közül:
+    content: |
+      \begin{aligned}2&|n \\ 3&|n \\ 4&|n \\ &\vdots \\ |n|-1&|n\end{aligned}
+  - type: narrative
+    content: |
+      Ha ezek közül akárcsak egyetlen oszthatóság is teljesül, akkor az iménti tétel alapján a prímtesztelő
+      algoritmus leállhat azzal a válasszal, hogy $n$ ***"biztosan összetett"***. Ezzel szemben ha egyetlen
+      oszthatóság sem teljesül a fentiek közül, akkor ugyancsak a fenti tétel alapján $n$ ***"biztosan prím"***.
+  - type: formula
+    lead-in: |
+      Például az $n=7$ ***"biztosan prím"***, hiszen:
+    content: |
+      \begin{aligned}2&\ mid 7 \\ 3&\ mid 7 \\ 4&\ mid 7 \\ 5&\ mid 7 \\ 6&\ mid 7\end{aligned}
+  - type: formula
+    lead-in: |
+      Ezzel szemben az $n=35$ ***"biztosan összetett"***, hiszen:
+    content: |
+      \begin{aligned}2&\ mid 35 \\ 3&\ mid 35 \\ 4&\ mid 35 \\ 5&|35\end{aligned}
+  - type: narrative
+    content: |
+      Főhőseink tehát ez alapján bármilyen egész számról el tudják dönteni, hogy prímszám-e vagy sem. Csakhogy
+      ***van egy kis probléma*** ezzel az eljárással, amely akkor jelentkezik, amikor a gyakorlatban előforduló
+      nagyságrendű számokra kezdjük el lefuttatni. Vizsgáljuk ezért meg, hogy mekkora az eljárás számításigénye a
+      bemenet méretének függvényében. A "bemenet mérete" alatt itt értelemszerűen a leírásához szükséges számjegyek
+      számát fogjuk érteni. Jelöljük ezt a számot mondjuk $k$-val, és tegyük fel, hogy tizes számrendszerben
+      dolgozunk.
+  - type: narrative
+    content: |
+      A lehető legkisebb $k$ számjegyből álló egész szám a $10^{k-1}$ lesz. Vagyis ha a bemenet történetesen
+      prímszám, akkor ez nagyságrendileg legalább ennyi osztáspróba után fog csak kiderülni. Ez bizony a bemenet
+      méretének ***exponenciális függvénye***, és így az algoritmus sajnos a 7. részben tanultak alapján nem
+      nevezhető hatékonynak. Nem sokkal jobb a helyzet akkor sem, ha a bemenet összetett szám, kivéve persze az
+      olyan ritka eseteket, amikor viszonylag kicsi prímtényezője is van. A 21. részben már említettük, hogy az RSA
+      esetén manapság tipikusan 300-600 számjegyből álló prímszámokat használnak, ezért az algoritmus futása ebben
+      a számtartományban az idők végezetéig is eltarthat, és így a gyakorlatban nem használható.
+  - type: narrative
+    content: |
+      Alice és Bob tehát tovább töri a fejét, hogyan tudnának ennél jóval kevesebb osztáspróbával is célt érni, és
+      némi gondolkodás után az alábbi következtetésre jutnak.
+  - type: embed
+    target:
+      type: theorem
+      name: osztok-es-a-negyzetgyok
+  - type: embed
+    target:
+      type: proof
+      name: osztok-es-a-negyzetgyok-bizonyitas
+  - type: narrative
+    content: |
+      Ez alapján tehát az osztáspróbákkal elegendő addig a számig elmenni, amelynek a négyzete még épp $|n|$ alatt
+      marad. Ha eddig nem találunk osztót, akkor ezután sem fogunk.
+  - type: formula
+    lead-in: |
+      Például az $n=61$ ***"biztosan prím"***, hiszen:
+    content: |
+      \begin{aligned}2&\ mid 61 \\ 3&\ mid 61 \\ 4&\ mid 61 \\ 5&\ mid 61 \\ 6&\ mid 61 \\ 7&\ mid 61\end{aligned}
+  - type: narrative
+    content: |
+      A további osztáspróbákat már nem érdemes elvégezni, hiszen $8$ négyzetével már túllépnénk a $61$-et, így ha
+      $7$-ig bezárólag nincs osztója a $61$-nek, akkor $7$-nél nagyobb osztója sem lesz.
+  - type: narrative
+    content: |
+      ***Ez első látásra lényeges gyorsításnak tűnik, de sajnos nem az.*** Most nem teljes matematikai
+      precizitással felvázoljuk, hogy miért.
+  - type: narrative
+    content: |
+      Tegyük fel ismét, hogy a bemeneti szám $k$ darab számjegyből áll, és tizes számrendszerben dolgozunk. A
+      lehető legkisebb $k$ számjegyből álló szám a $10^{k-1}$. Egy ekkora számnak a teszteléséhez az iménti tétel
+      alapján nagyságrendileg $r$ darab osztáspróbát kell elvégezni, ahol $r$ a legnagyobb olyan szám, amelyre
+      teljesül, hogy $r^2\leq 10^{k-1}$. Tegyük fel, hogy $r$ a tizes számrendszerben $l$ darab számjeggyel írható
+      le, azaz $r$ legalább $10^{l-1}$. Ezt négyzetre emelve azt kapjuk, hogy $r^2$ legalább $10^{2\cdot (l-1)}$.
+  - type: formula
+    lead-in: |
+      Összefoglalva:
+    content: |
+      10^{2\cdot (l-1)} \leq r^2 \leq 10^{k-1}
+  - type: formula
+    lead-in: |
+      Azaz:
+    content: |
+      10^{l-1} \leq r \leq 10^{\frac{k-1}{2}}
+  - type: narrative
+    content: |
+      Ez az exponenciális függvény tulajdonságai miatt azt jelenti, hogy $r$ felírásához legalább feleannyi
+      számjegy kell, mint ahány számjegyből a bemeneti szám áll. Mivel $r$ az elvégzendő osztáspróbák számát
+      jelenti, ezért ez sajnos még mindig a ***bemenet méretének exponenciális függvénye***.
+  - type: narrative
+    content: |
+      Alice és Bob tehát továbbra sem mennek sokra ezzel a prímtesztelési eljárással abban a számtartományban, ahol
+      prímszámokat szeretnének keresni. Ezért most szintet lépünk, és egy lényegesen más elven működő prímtesztet
+      ismertetünk.

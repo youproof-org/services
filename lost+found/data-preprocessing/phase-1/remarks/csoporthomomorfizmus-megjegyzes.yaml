@@ -1,0 +1,23 @@
+type: remark
+name: csoporthomomorfizmus-megjegyzes
+references:
+  gyuruhomomorfizmus:
+    target:
+      type: definition
+      name: gyuruhomomorfizmus
+content:
+  - type: narrative
+    content: |
+      A csoportizomorfizmusokra a gyűrűizomorfizmusokhoz hasonlóan teljesül a ***szimmetria***, a
+      ***tranzitivitás*** és a ***reflexivitás***.
+  - type: ordered-list
+    lead-in: |
+      Azaz ha $G$, $H$ és $K$ tetszőleges csoportok, akkor teljesülnek az alábbiak:
+    items:
+      - '***Szimmetria:*** Ha $G\simeq H$, akkor $H\simeq G$.'
+      - '***Tranzitivitás:*** Ha $G\simeq H$ és $H\simeq K$, akkor $G\simeq K$.'
+      - '***Reflexivitás:*** $G\simeq G$.'
+  - type: narrative
+    content: |
+      Ezek igazolása a gyűrűhomomorfizmusokról szóló [gyuruhomomorfizmus] utáni megjegyzésben foglaltakkal szinte
+      szó szerint megegyezik azzal a különbséggel, hogy itt kettő helyett csak egy művelet van.

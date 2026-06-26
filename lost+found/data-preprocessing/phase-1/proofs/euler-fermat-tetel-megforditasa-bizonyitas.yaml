@@ -1,0 +1,36 @@
+type: proof
+name: euler-fermat-tetel-megforditasa-bizonyitas
+remarks: []
+references:
+  linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga:
+    target:
+      type: theorem
+      name: linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga
+content:
+  - type: formula
+    lead-in: |
+      Tekintsük az alábbi lineáris kongruenciát:
+    content: |
+      ax\equiv 1\pmod m
+  - type: narrative
+    content: |
+      Ennek a lineáris kongruenciának a [linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga]
+      értelmében ***akkor és csak akkor*** létezik megoldása, ha teljesül az $(a,m)|1$ oszthatóság. Minthogy az $1$
+      egész szám a $\Z$ gyűrű egységeleme, így ez az oszthatóság ***akkor és csak akkor*** teljesülhet, ha $(a,m)$
+      egység, azaz $a$ relatív prím $m$-hez.
+  - type: formula
+    lead-in: |
+      Márpedig $k\gt 1$ kitevő esetén az $a^k\equiv 1\pmod m$ kongruencia így írható fel:
+    content: |
+      a\cdot \overbrace{a^{k-1}}^{=x}\pmod m
+  - type: formula
+    lead-in: |
+      Ha pedig a $k$ kitevő $1$, akkor pedig így:
+    content: |
+      a\cdot \overbrace{1}^{=x}\pmod m
+  - type: narrative
+    content: |
+      Első esetben a fenti lineáris kongruenciát az $x=a^{k-1}$, második esetben pedig az $x=1$ egész szám
+      kielégíti, azaz van megoldása, és így a
+      [linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga] értelmében ***$a$ valóban relatív
+      prím $m$-hez***.

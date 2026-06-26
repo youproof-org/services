@@ -1,0 +1,99 @@
+type: section
+name: 03-asszocialt-elemek
+title: Asszociált elemek
+
+references:
+  ekvivalenciarelacio:
+    target:
+      type: definition
+      name: ekvivalenciarelacio
+  ekvivalenciarelacio-tulajdonsagai:
+    target:
+      type: theorem
+      name: ekvivalenciarelacio-tulajdonsagai
+
+body:
+  - type: narrative
+    content: |
+      Most az oszthatóság után egy másik relációval fogunk megismerkedni, amely az imént tárgyalt egységekhez
+      kapcsolódik szorosan. Ez a fogalom a ***számelmélet alaptételének*** a pontos megfogalmazásában lesz
+      segítségünkre. Azt fejezi ki, hogy két gyűrűelem az oszthatóság szempontjából ugyanúgy viselkedik, vagy más
+      szavakkal megkülönböztethetetlen. Erről szól az alábbi definíció.
+  - type: embed
+    target:
+      type: definition
+      name: asszocialt
+  - type: narrative
+    content: |
+      Például a $\Z$ gyűrűben az $5$ és a $(-5)$ egymás asszociáltjai.
+  - type: embed
+    target:
+      type: remark
+      name: asszocialt-megjegyzes
+  - type: narrative
+    content: |
+      Először is megmutatjuk, hogy ez a reláció egy ***ekvivalenciareláció*** (lásd a [ekvivalenciarelacio]t) a
+      gyűrű alaphalmazán, és így a [ekvivalenciarelacio-tulajdonsagai] alapján a gyűrű alaphalmazát úgynevezett
+      ***ekvivalencia-osztályokra*** bontja. Erről a fogalomról bővebben a 13. részben írtunk, de dióhéjban arról
+      van szó, hogy minden gyűrűelem pontosan egy ekvivalencia-osztályba fog bekerülni. Méghozzá abba, amely az ő
+      asszociáltjait tartalmazza.
+  - type: embed
+    target:
+      type: theorem
+      name: asszocialtsag-ekvivalenciarelacio
+  - type: embed
+    target:
+      type: proof
+      name: asszocialtsag-ekvivalenciarelacio-bizonyitas
+  - type: narrative
+    content: |
+      Most vizsgáljuk meg, hogy mit tudunk mondani ezekről az ekvivalencia-osztályokról. Általános esetben &ndash;
+      amikor a gyűrűről csak annyit tudunk, hogy ***kommutatív*** &ndash; az alábbiakat.
+  - type: embed
+    target:
+      type: theorem
+      name: asszocialtsag-tulajdonsagai
+  - type: embed
+    target:
+      type: proof
+      name: asszocialtsag-tulajdonsagai-bizonyitas
+  - type: embed
+    target:
+      type: remark
+      name: asszocialtsag-tulajdonsagai-megjegyzes
+  - type: narrative
+    content: |
+      Most vizsgáljuk meg, hogy ***egységelemes gyűrűk*** esetén mennyivel tudunk többet mondani az asszociált
+      elempárokról. Az alábbi tétel ahhoz nyújt segítséget, hogy két tetszőleges elemről könnyen el tudjuk dönteni,
+      hogy egymás asszociáltjai-e vagy sem.
+  - type: embed
+    target:
+      type: theorem
+      name: asszocialtsag-egysegelemes-gyuruben
+  - type: narrative
+    content: |
+      Például az egész számok $\Z$ gyűrűjében a $4$ és a $(-4)$ egymás asszociáltjai, és mivel egységelemes, ezért
+      egymás osztói is. A páros egész számok $2\Z$ gyűrűjében azonban nem teljesül sem a $4|(-4)$, sem pedig a
+      $(-4)|4$ oszthatóság, ennek ellenére ez a két szám ebben a gyűrűben is egymás asszociáltja.
+  - type: embed
+    target:
+      type: proof
+      name: asszocialtsag-egysegelemes-gyuruben-bizonyitas
+  - type: narrative
+    content: |
+      Végül az alábbi tétel ahhoz nyújt segítséget, hogy egy adott elem összes asszociáltját meg tudjuk találni,
+      amennyiben ismerjük az egységeket.
+  - type: embed
+    target:
+      type: theorem
+      name: asszocialtsag-es-egysegek-kapcsolata
+  - type: narrative
+    content: |
+      Például a $\Z$ gyűrűben az egységek az $1$ és a $(-1)$, és rajtuk kívül nincs más egység. A tétel alapján
+      tetszőleges egész számnak megkapjuk az összes asszociáltját, ha megszorozzuk ezzel a két egységgel. Ez
+      alapján például az $5$ asszociáltjai az $5\cdot 1=5$ (azaz önmaga), valamint az $5\cdot (-1)=(-5)$ (azaz az
+      ellentettje), és ezeken kívül nincs is más asszociáltja.
+  - type: embed
+    target:
+      type: proof
+      name: asszocialtsag-es-egysegek-kapcsolata-bizonyitas

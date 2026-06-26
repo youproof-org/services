@@ -1,0 +1,11 @@
+type: theorem
+name: inverz-elem-egyertelmu
+proofs:
+  - inverz-elem-egyertelmu-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy $*$ egy valamilyen $R$ halmazon értelmezett ***asszociatív*** kétváltozós művelet. Ekkor
+      tetszőleges $R$-beli $a$ elemhez ***legfeljebb egy*** inverz elem létezik erre a műveletre nézve. Más
+      szavakkal minden $a$ elem inverze ***egyértelmű***, amennyiben létezik.

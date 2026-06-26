@@ -1,0 +1,99 @@
+type: section
+name: 05-ii-kovetelmeny-adossag-szorzasa-pozitiv-egesz-szammal
+title: 'II. követelmény: Adósság szorzása pozitív egész számmal'
+
+references:
+  egesz-szamok-osszeadasa:
+    target:
+      type: definition
+      name: egesz-szamok-osszeadasa
+  peano-szorzas-disztributivitas:
+    target:
+      type: theorem
+      name: peano-szorzas-disztributivitas
+  peano-szorzat-egyszerusites:
+    target:
+      type: theorem
+      name: peano-szorzat-egyszerusites
+  termeszetes-szamparok-ekvivalenciarelacioja:
+    target:
+      type: definition
+      name: termeszetes-szamparok-ekvivalenciarelacioja
+  termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel:
+    target:
+      type: theorem
+      name: termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel
+
+body:
+  - type: narrative
+    content: |
+      Emlékezzünk vissza, hogy mi motiválta a természetes számok szorzásának bevezetését a 12. részben. Ugye
+      szerettük volna lerövidíteni az olyan kifejezéseket, amikor egy számot önmagával kell sokszor összeadni.
+      Például az $a+a+a+a+a$ kifejezést így rövidíthettük: $a\cdot 5$. Érdemes lenne megtartani ezt a tulajdonságot
+      a $\odot$ művelet esetén is.
+  - type: narrative
+    content: |
+      A pozitív egész számokra ezt már biztosítottuk az I. követelménnyel. Most nézzük meg, mi a helyzet akkor, ha
+      egy adósságot reprezentáló egész számot kell önmagával sokszor összeadni. Tekintsük például a $[(0;n)] \oplus
+      [(0;n)] \oplus [(0;n)]$ kifejezést.
+  - type: formula
+    lead-in: |
+      Ez egyrészt az $\oplus$ művelet [egesz-szamok-osszeadasa]ja miatt így írható fel:
+    content: |
+      [(0;n+n+n)]=[(0;n\cdot 3)]
+  - type: narrative
+    content: |
+      Másrészt viszont itt tulajdonképpen arról van szó, hogy a $[(0;n)]$ adósságot reprezentáló negatív egész
+      számot $\odot$-ozzuk össze a 3 természetes szám $f$ szerinti képével, azaz a $[(3;0)]$ pozitív egész számmal.
+  - type: formula
+    lead-in: |
+      Azaz lényegében:
+    content: |
+      [(0;n)]\odot [(3;0)]=[(0;n\cdot 3)]
+  - type: formula
+    lead-in: |
+      Általánosságban tehát a $\odot$ művelettel szembeni második követelményünk, hogy tetszőleges $n$ és $k$
+      természetes számok esetén teljesüljön az alábbi:
+    content: |
+      [(0;n)]\odot \underbrace{[(k;0)]}_{=f(k)}=[(0;n\cdot k)]
+  - type: formula
+    lead-in: |
+      Az egyenlet baloldalára felírva az általános képletünket &ndash; és persze a 0 tagokat elhagyva &ndash; a
+      következőt kapjuk:
+    content: |
+      [(C\cdot nk;G\cdot nk)]=[(0;nk)]
+  - type: narrative
+    content: |
+      Azt kaptuk tehát, hogy a $(C\cdot nk;G\cdot nk)$ természetes számpárnak ugyanabba a $\sim$ reláció (lásd a
+      [termeszetes-szamparok-ekvivalenciarelacioja]t) szerinti ekvivalencia-osztályba kell esnie, mint a $(0;nk)$
+      számpárnak.
+  - type: formula
+    lead-in: |
+      Ez viszont az előző részben bizonyított
+      [termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel] miatt épp azt jelenti, hogy:
+    content: |
+      C\cdot nk + nk=G\cdot nk + 0
+  - type: formula
+    lead-in: |
+      A jobboldalt 0-val egyszerűsítve, a baloldalon pedig a Peano-szorzás disztributivitását
+      ([peano-szorzas-disztributivitas]) kihasználva ez így írható fel:
+    content: |
+      (C+1)\cdot nk=G\cdot nk
+  - type: narrative
+    content: |
+      Itt feltételezhetjük, hogy $nk\ eq 0$, máskülönben ez az egyenlet $C$ és $G$ megválasztásától függetlenül
+      teljesülne.
+  - type: formula
+    lead-in: |
+      Ha viszont $nk\ eq 0$, akkor ismételten a [peano-szorzat-egyszerusites] miatt következik, hogy:
+    content: |
+      C+1=G
+  - type: narrative
+    content: |
+      A keresett 8 együtthatóról most tehát már azt is tudjuk, hogy a $G$ együtthatónak $C$-nél egy 1-gyel nagyobb
+      természetes számot kell választanunk. Ha így teszünk, akkor a fentiek alapján egy adósságot jobbról
+      megszorozva egy $k$ természetes számnak megfelelő pozitív egész számmal, lényegében az adósság $k$-szorosát
+      kapjuk.
+  - type: narrative
+    content: |
+      Most nézzük, milyen megkötéseket lenne érdemes még tenni a $\odot$ műveletre.

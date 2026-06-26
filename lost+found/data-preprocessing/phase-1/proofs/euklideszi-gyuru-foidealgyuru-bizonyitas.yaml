@@ -1,0 +1,68 @@
+type: proof
+name: euklideszi-gyuru-foidealgyuru-bizonyitas
+remarks: []
+references:
+  euklideszi-gyuru:
+    target:
+      type: definition
+      name: euklideszi-gyuru
+  ideal:
+    target:
+      type: definition
+      name: ideal
+  reszgyuru-feltetele:
+    target:
+      type: theorem
+      name: reszgyuru-feltetele
+  termeszetes-szamok-minimumtetele:
+    target:
+      type: theorem
+      name: termeszetes-szamok-minimumtetele
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ egy tetszőleges ***euklidészi gyűrű***, $I$ pedig egy tetszőleges ideál $R$-ben. Azt kell
+      megmutatnunk, hogy létezik olyan $r\in R$ elem, amely generálja $I$-t, azaz amelyre $I=(r)$ teljesül.
+      Jelöljük az $R$ euklidészi gyűrű nullelmét $0_R$-rel. Ha $I$ csak a nullelemből áll, akkor $I=(0)$ nyilván
+      teljesül. Feltehetjük tehát, hogy $I$ nem csak a nullelemből áll.
+  - type: narrative
+    content: |
+      Mivel $R$ euklidészi gyűrű, ezért ennek elemein értelmezhető egy $f:R\to\N$ ***euklidészi norma***, amely
+      eleget tesz a [euklideszi-gyuru]ban szereplő feltételeknek. Az $f$ euklidészi norma tehát az $I$ ideál minden
+      ***nemnulla*** eleméhez hozzárendel valamilyen pozitív egész számot. A [termeszetes-szamok-minimumtetele]
+      alapján ennek a számhalmaznak mindenképpen van minimuma függetlenül attól, hogy $I$ végtelen sok elemet
+      tartalmaz-e vagy sem. Legyen $b$ az $I$ ideál egy olyan ***nemnulla*** eleme, amelyhez az $f$ euklidészi
+      norma épp ezt a minimumot rendeli hozzá. Azt kell megmutatni, hogy $b$ generálja az $I$ ideált, azaz $I=(b)$.
+  - type: narrative
+    content: |
+      Az egyrészt nyilvánvaló, hogy mivel $b\in I$, ezért $b$-nek bármilyen többszöröse is $I$-ben van. Ez az ideál
+      definíciójából következik ([ideal]). Másrészt azt kell még igazolnunk, hogy $I$-nek ezeken kívül nincs is más
+      eleme. Tegyük fel tehát, hogy $a\in I$, és mutassuk meg, hogy $a$ szükségképpen többszöröse $b$-nek. Mivel
+      $b\eq 0_R$, és $R$ euklidészi gyűrű, ezért $a$ és $b$ között a [euklideszi-gyuru] 2. pontja alapján
+      elvégezhető a ***maradékos osztás***.
+  - type: formula
+    lead-in: |
+      Azaz létezik olyan $k$ ***hányados*** és $r$ ***maradék***, amelyekre teljesülnek az alábbi feltételek:
+    content: |
+      \begin{aligned}a&=k\cdot b+r \\ f(r)&\lt f(b)\end{aligned}
+  - type: formula
+    lead-in: |
+      Az egyenletből az $r$ maradékot kifejezve ezt kapjuk:
+    content: |
+      r=a-k\cdot b
+  - type: narrative
+    content: |
+      Mivel $I$ ideál és $b\in I$, ezért a [ideal] alapján $kb\in I$ is teljesül. Másrészt tudjuk, hogy $a\in I$,
+      és így a [reszgyuru-feltetele] 1. és 4. pontja alapján az $r=a-kb$ maradék szintén benne van $I$-ben.
+  - type: narrative
+    content: |
+      Vegyük észre, hogy a maradékos osztás $f(r)\lt f(b)$ feltétele miatt az $r$ egy olyan eleme az $I$ ideálnak,
+      amelynek euklidészi normája szigorúan kisebb $b$ euklidészi normájánál. Márpedig azt mondtuk, hogy $I$-ben
+      nincs olyan elem, amelynek euklidészi normája a $b$ euklidészi normájánál kisebb, de még mindig pozitív.
+      Ezért kizárólag $f(r)=0$ lehetséges, ami a [euklideszi-gyuru] 1. pontja alapján azt jelenti, hogy $r=0_R$.
+  - type: narrative
+    content: |
+      Az $a$ és $b$ közötti maradékos osztást elvégezve tehát a maradék csak a nullelem lehet, azaz valójában
+      teljesül a $b|a$ oszthatóság. Az $a$ elem tehát többszöröse $b$-nek, és így $a\in (b)$ teljesül. Más
+      szavakkal a $b$ elem tényleg ***generálja*** az $I$ ideált, azaz $I=(b)$. Minthogy ez a gondolatmenet
+      tetszőleges ideállal végigjátszható, ezért $R$ ***valóban főideálgyűrű***, ahogyan a tétel állítja.

@@ -1,0 +1,39 @@
+type: remark
+name: reszhalmaz-megjegyzes
+references:
+  euklideszi-gyurukben-teljesul-a-szamelmelet-alaptetele:
+    target:
+      type: theorem
+      name: euklideszi-gyurukben-teljesul-a-szamelmelet-alaptetele
+  halmazelmeleti-alapfogalmak:
+    target:
+      type: definition
+      name: halmazelmeleti-alapfogalmak
+  maradekosztalygyuruk:
+    target:
+      type: theorem
+      name: maradekosztalygyuruk
+content:
+  - type: ordered-list
+    items:
+      - 'Az imént bevezetett $\sube$ szimbólummal jelölt tartalmazási relációt ne keverjük össze a [halmazelmeleti-alapfogalmak]ban bevezetett $\in$ relációval. Nagyon nem ugyanaz a
+        két fogalom! Ha például $A$ és $B$ két halmaz, akkor $A\sube B$ azt fejezi ki, hogy $A$ összes eleme
+        egyúttal $B$-nek is eleme. Ezzel szemben $A\in B$ azt fejezi ki, hogy $B$ egy olyan halmaz, amelynek
+        elemei maguk is halmazok, és ezek közül az $A$ halmaz az egyik. Az előző részben a [maradekosztalygyuruk]ben bevezetett maradékosztálygyűrűknek például az ***elemei***
+        maradékosztályok, amelyek ugye maguk is halmazok. Gyakran fogjuk ugyanakkor használni az ***"$A$
+        tartalmazza $B$-t elemként"*** kifejezést. Ilyenkor értelemszerűen mindig a $B\in A$ "eleme"-relációra,
+        és nem pedig a $B\sube A$ tartalmazási relációra gondolunk.'
+      - 'Az üres halmaz részhalmaza tetszőleges $A$ halmaznak, hiszen nyilván igaz az a kijelentés, hogy az üres
+        halmaz ***minden*** eleme egyben $A$-nak is eleme. Az persze más kérdés, hogy ez a ***"minden eleme"***
+        jelen esetben 0 darab elemet jelent. Ezt a furcsa logikai jelenséget a [euklideszi-gyurukben-teljesul-a-szamelmelet-alaptetele] bizonyítása utáni
+        megjegyzésben fejtettük ki részletesen.'
+      - 'Minden $A$ halmaz részhalmaza önmagának (azaz $A\sube A$), máskülönben létezne olyan $a$ objektum,
+        amelyre $a\in A$ és $a\otin A$ egyszerre teljesül, ami nyilvánvaló ellentmondás.'
+      - 'Minden $A$ halmaz részhalmaza továbbá az $U$ univerzális halmaznak. Máskülönben létezne olyan $a$
+        objektum, amelyre $a\in A$ teljesül ugyan, azonban $a\otin U$. Ez nyilvánvaló ellentmondás, mivel a
+        [halmazelmeleti-alapfogalmak] alapján $U$-nak eleme minden objektum.'
+      - 'Két halmaz ***akkor és csak akkor*** egyenlő egymással, ha részhalmazai egymásnak. Ha ugyanis $A=B$,
+        akkor a fenti 3. megjegyzés miatt $A\sube B$ és $B\sube A$ teljesül. ***Visszafelé:*** Egyrészt, ha
+        $A\sube B$ teljesül, akkor $a\in A$-ból következik $a\in B$. Másrészt ha $B\sube A$ is teljesül, akkor
+        $a\in B$-ből is következik $a\in A$. Ebben az esetben tehát $a\in A$ akkor és csak akkor, ha $a\in B$,
+        azaz a két halmaznak pontosan ugyanazok az elemei, és így a [halmazelmeleti-alapfogalmak] alapján egyenlőek egymással.'

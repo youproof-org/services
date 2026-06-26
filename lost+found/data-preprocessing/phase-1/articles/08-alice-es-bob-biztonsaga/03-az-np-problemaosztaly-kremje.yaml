@@ -1,0 +1,61 @@
+type: section
+name: 03-az-np-problemaosztaliy-kremje
+title: Az NP problémaosztály krémje
+
+body:
+  - type: narrative
+    content: |
+      A Karp-redukció fogalmának segítségével tehát egy adott $L$ nyelv felismerésének feladatát ***vissza lehet
+      vezetni*** egy másik $K$ nyelv felismerésének feladatára. Egy $L \prec K$ Karp-redukció létezése azt jelenti
+      számunkra, hogy az $L$ nyelv felismerése ***nem lényegesen nehezebb*** a $K$ nyelv felismerésénél, leszámítva
+      egy polinomiális időkomplexitású extra munkát. Ebből következik, hogy **ha** $K$ felismerésére van
+      polinomiális idejű algoritmusunk, **akkor** $L$-re is van. Fordítva: **ha** $L$-re nincs polinomiális
+      algoritmus, **akkor** $K$-ra sincs. Az $NP$ nyelvosztály érdekes tulajdonsága, hogy léteznek benne ilyen
+      értelemben ***"legnehezebb"*** nyelvek (döntési feladatok). Ezt világítjuk meg a következő definícióval.
+  - type: narrative
+    content: |
+      Tegyük fel, hogy $K$ egy $NP$-beli nyelv. Amennyiben tetszőleges, szintén $NP$-beli $L$ nyelv esetén létezik
+      $L \prec K$ Karp-redukció, akkor azt mondjuk, hogy a $K$ nyelv ***NP-teljes***. ***Az NP-teljes nyelvek
+      felismerése tehát "legalább olyan nehéz", mint bármilyen más NP-beli nyelv felismerése.*** Amennyiben a
+      kérdéses $K$ nyelvtől nem követeljük meg, hogy maga is $NP$-ben legyen, úgy a $K$ nyelvet ***NP-nehéznek***
+      nevezzük. ***Az NP-teljes nyelvek tehát olyan speciális NP-nehéz nyelvek, amelyek maguk is $NP$-ben
+      vannak.***
+  - type: narrative
+    content: |
+      A fenti definíció egyszerű következménye, hogy ***amennyiben akár egyetlen NP-teljes nyelv eldöntésére is
+      találnánk polinomiális algoritmust, abból következne, hogy $P=NP$***. Ha ugyanis akár egyetlen egy NP-teljes
+      $K$ nyelv is a $P$ osztályban lenne (azaz felismerhető lenne polinomiális időkomplexitású algoritmussal), úgy
+      minden $NP$-beli $L$ nyelv szintén a $P$ osztályban lenne, hiszen az $L \prec K$ Karp-redukció létezése miatt
+      ebben az esetben az $L$ nyelvet is fel tudnánk ismerni polinomiális algoritmussal. De megfordítva is igaz:
+      ***amennyiben akár egyetlen NP-teljes nyelvről is kiderülne, hogy nem létezik őt felismerő polinomiális
+      algoritmus, abból következne*** &ndash; azon kívül, hogy nyilván $P \neq NP$ lenne &ndash; ***, hogy egyetlen
+      NP-teljes nyelv felismerésére sem létezik polinomiális algoritmus.*** Ha ugyanis egy NP-teljes $L$ nyelvről
+      bebizonyosodna, hogy a $P$ osztályon kívül van, akkor nem létezhet olyan NP-teljes $K$ nyelv, ami $P$-ben
+      van, hiszen különben az $L \prec K$ Karp-redukció létezése miatt az $L$ nyelvet is fel tudnánk ismerni
+      polinomiális algoritmussal.
+  - type: narrative
+    content: |
+      Vagyis ***minden NP-teljes nyelv vagy egyszerre polinomiális vagy egyszerre exponenciális időkomplexitású***.
+      Rendkívül sok algoritmikus probléma vezethető vissza NP-teljes nyelvek felismerésének feladatára. Éppen ezért
+      eléggé bosszantó, hogy eddig &ndash; számtalan próbálkozás ellenére &ndash; egyetlen ilyen nyelvről sem
+      tudtuk bizonyítani egyik eshetőséget sem.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán az eddig megismert bonyolultsági osztályok egymáshoz való viszonya látható a $P \neq NP$
+      sejtésre adható két lehetséges válasz esetére:
+    src: 04-p-nem-egyenlo-np.jpg
+    alt: Bonyolultságtérkép P nem egyenlő NP esetén
+    caption: Bonyolultságtérkép $P \neq NP$ esetén
+  - type: figure
+    src: 05-p-egyenlo-np.jpg
+    alt: Bonyolultságtérkép P egyenlő NP esetén
+    caption: Bonyolultságtérkép $P=NP$ esetén
+  - type: narrative
+    content: |
+      E két eshetőség közül a legtöbb matematikus az első elrendezést valószínűsíti. A gyakorlatban is előforduló
+      algoritmikus feladatok között ugyanis ***nagyon gyakoriak az NP-teljes problémák***. A szakirodalomban
+      dokumentált NP-teljes feladatok száma ***jóval ezer felett*** van. Azonban ezek intenzív vizsgálata ellenére
+      sem tapasztalható a polinomiális algoritmusok irányába történő legcsekélyebb előrehaladás. Így meglehetősen
+      furcsa lenne, ha kiderülne, hogy ezek ***mindegyikére*** létezik hatékony algoritmus. Most mutatunk néhány, a
+      gyakorlatban fontos algoritmikus optimalizálási feladatot, amelyek mind NP-teljes döntési problémákhoz
+      vezetnek.

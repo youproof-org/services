@@ -1,0 +1,36 @@
+type: proof
+name: halmazrendszer-legkisebb-es-legnagyobb-eleme-egyertelmu-bizonyitas
+remarks: []
+references:
+  reszhalmaz:
+    target:
+      type: definition
+      name: reszhalmaz
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy $A$ és $B$ is legszűkebb elem $\mathcal{H}$-ban. Mivel $A$ legszűkebb elem, ezért ő
+      tetszőleges halmaznak részhalmaza, többek között például $B$-nek is, azaz $A\sube B$. Másrészt, mivel $B$ is
+      legszűkebb elem, ezért ő is részhalmaza tetszőleges halmaznak, többek között például $A$-nak is, azaz $B\sube
+      A$. Így tehát $A$ és $B$ kölcsönösen részhalmazai egymásnak, vagyis a [reszhalmaz] utáni megjegyzés 5. pontja
+      miatt megegyeznek, azaz $A=B$. Egy halmazrendszer legszűkebb eleme tehát &ndash; amennyiben egyáltalán
+      létezik &ndash; egyértelmű. Ugyanilyen gondolatmenettel belátható, hogy egy halmazrendszer legbővebb eleme is
+      egyértelmű.
+  - type: narrative
+    content: |
+      Tegyük fel most indirekt, hogy $A$ a $\mathcal{H}$ halmazrendszer legszűkebb eleme, azonban mégsem minimális.
+      Ez egyrészt azt jelentené, hogy létezik olyan $X$ halmaz $\mathcal{H}$-ban, amelyre $X\sub A$ teljesül.
+      Másrészt, mivel $A$ a legszűkebb $\mathcal{H}$-ban, ezért $A\sube X$-nek is teljesülnie kéne. De $X\sub A$ és
+      $A\sube X$ egyszerre nem teljesülhet, hiszen ekkor $X\sub A$ alapján létezne olyan $a$, amely eleme $A$-nak,
+      de nem eleme $X$-nek, ugyanakkor $A\sube X$ miatt mindenképpen eleme kéne legyen $X$-nek. Egy halmazrendszer
+      legszűkebb eleme tehát &ndash; amennyiben egyáltalán létezik &ndash; mindenképpen minimális. Ugyanilyen
+      gondolatmenettel belátható egy halmazrendszer legbővebb eleméről, hogy &ndash; amennyiben egyáltalán létezik
+      &ndash; mindenképpen maximális.
+  - type: narrative
+    content: |
+      Végül tegyük fel, hogy $A$ a $\mathcal{H}$ halmazrendszer legszűkebb eleme, amely tehát minimális, de létezik
+      egy másik minimális elem is, amelyet jelöljünk most $B$-vel. Mivel $A$ a legszűkebb elem, ezért $A\sube B$
+      teljesül. Ugyanakkor, mivel $B$ minimális, ezért nem állhat fenn az $A\sub B$ szigorú tartalmazás. Ez a
+      [reszhalmaz] alapján $A\sube B$ mellett csak $A=B$ esetén lehetséges. Tehát valóban $A$ az egyetlen minimális
+      elem. Ugyanilyen gondolatmenettel belátható, hogy amennyiben $A$ a legbővebb elem $\mathcal{H}$-ban, akkor
+      egyúttal ő az egyetlen maximális elem.

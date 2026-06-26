@@ -1,0 +1,22 @@
+type: theorem
+name: gyuru-reszbenrendezesenek-tulajdonsagai
+proofs:
+  - gyuru-reszbenrendezesenek-tulajdonsagai-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy $(R,+,\cdot )$ egy tetszőleges gyűrű, amelynek $R$ alaphalmazán értelmezve van egy
+      részbenrendezési reláció. Jelöljük ezt a relációt a $\leq$ szimbólummal, és tegyük fel, hogy a $\leq$ reláció
+      kompatibilis a gyűrű $+$ műveletével.
+  - type: ordered-list
+    lead-in: |
+      Ekkor tetszőleges $a$, $b$ és $c$ elemekre igazak az alábbiak:
+    items:
+      - 'Ha $0\leq a$, akkor $0\geq (-a)$.'
+      - 'Ha $ac\leq bc$, akkor $a(-c)\geq b(-c)$.'
+      - 'Ha $ca\leq cb$, akkor $(-c)a\geq (-c)b$.'
+  - type: narrative
+    content: |
+      Itt $0$ jelöli a gyűrű nullelemét, $-x$ pedig az $x$ elem ellentettjét. Megjegyezzük még, hogy kommutatív
+      gyűrű esetén természetesen a 2. és 3. tulajdonság egymással ekvivalens.

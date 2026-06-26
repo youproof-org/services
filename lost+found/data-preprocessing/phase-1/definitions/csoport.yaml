@@ -1,0 +1,44 @@
+type: definition
+name: csoport
+remarks: []
+references:
+  inverz-elem:
+    target:
+      type: definition
+      name: inverz-elem
+  neutralis-elem:
+    target:
+      type: definition
+      name: neutralis-elem
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy adva van egy valamilyen $G$ halmaz, amelyen értelmezve van egy kétváltozós művelet. Nevezzük
+      ezt a műveletet ***szorzásnak*** és jelöljük $\cdot$-tal, vagy egymás után írással. Például egy $a$ és egy
+      $b$ elem szorzatát jelöljük $a\cdot b$-vel vagy $ab$-vel.
+  - type: narrative
+    content: |
+      Az így kapott $(G,\cdot )$ algebrai struktúrát ***félcsoportnak*** nevezzük, amennyiben az említett művelet
+      ***asszociatív***.
+  - type: formula
+    lead-in: |
+      Azaz tetszőleges $a$, $b$ és $c$ elemek esetén teljesül az alábbi:
+    content: |
+      (a\cdot b)\cdot c = a\cdot (b\cdot c)
+  - type: narrative
+    content: |
+      ***Csoportnak*** nevezzük az olyan félcsoportokat, amelyek esetén az asszociativitáson kívül a műveletre
+      nézve ***létezik neutrális elem*** is ([neutralis-elem]), továbbá a ***művelet invertálható***
+      ([inverz-elem]). Egy csoport esetén a neutrális elemet általában $e$-vel vagy $1$-gyel szoktuk jelölni, és
+      ilyenkor ***egységelemről*** beszélünk. Egy $a$ elem ***inverzét*** $a^{-1}$-gyel szoktuk jelölni.
+  - type: formula
+    lead-in: |
+      Tetszőleges $a$ elem esetén teljesülnek tehát az alábbiak:
+    content: |
+      \begin{aligned}a\cdot e &= e\cdot a = a \\ a\cdot a^{-1} &= a^{-1}\cdot a = e\end{aligned}
+  - type: narrative
+    content: |
+      Amennyiben a művelet a fentieken felül még ***kommutatív*** is, úgy ***Abel-csoportról*** vagy ***kommutatív
+      csoportról*** beszélünk. Abel-csoportok esetén a csoportműveletet tipikusan a $+$ szimbólummal, a neutrális
+      elemet $0$-val, egy $a$ elem inverzét pedig $-a$-val szoktuk jelölni. Ilyenkor a neutrális elemet
+      ***nullelemnek***, az $a$ elem inverzét pedig $a$ ***ellentettjének*** nevezzük.

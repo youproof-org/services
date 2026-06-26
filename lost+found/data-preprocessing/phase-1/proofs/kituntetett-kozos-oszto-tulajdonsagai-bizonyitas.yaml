@@ -1,0 +1,36 @@
+type: proof
+name: kituntetett-kozos-oszto-tulajdonsagai-bizonyitas
+remarks: []
+references:
+  kituntetett-kozos-oszto:
+    target:
+      type: definition
+      name: kituntetett-kozos-oszto
+  oszthatosag-tulajdonsagai:
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+content:
+  - type: narrative
+    content: |
+      ***Az 1. tulajdonság:*** A nullelem osztója önmagának, így közös osztó. Ugyanakkor neki minden elem osztója,
+      így az összes többi potenciális közös osztó is, ezért ő kitüntetett is. Rajta kívül viszont más kitüntetett
+      közös osztó nem létezhet, hiszen akkor annak a nullelem többszörösének kéne lennie, ami a
+      [oszthatosag-tulajdonsagai] 4. pontja miatt lehetetlen. Tehát valóban $(0,0)=0$.
+  - type: narrative
+    content: |
+      ***A 2. tulajdonság:*** Az $a$ és $b$ közös osztóinak halmaza nem változik, ha a pozíciójukat felcseréljük az
+      $(a,b)$ kifejezésben, így a kitüntetett közös osztó sem.
+  - type: narrative
+    content: |
+      ***A 3. tulajdonság:*** A [kituntetett-kozos-oszto] 2. pontja alapján az $(a,b)$ kitüntetett közös osztó
+      önmagának is osztója, és ha $a$ illetve $b$ közül legalább az egyik nem $0$, akkor a
+      [oszthatosag-tulajdonsagai] 4. pontja miatt $(a,b)$ sem lehet $0$. Ám ekkor ugyanezen tétel 2. pontja alapján
+      $R$ egységelemes.
+  - type: narrative
+    content: |
+      ***Végül a 4. tulajdonság:*** Ha $(a,b)$ létezik, akkor az $a\eq 0$ feltétel miatt a 3. tulajdonság alapján
+      $R$ egységelemes. ***Megfordítva:*** Ha $R$ egységelemes, akkor a [oszthatosag-tulajdonsagai] 1. pontja
+      alapján teljesül az $a|a$ oszthatóság. Az $a|b$ feltétel miatt tehát $a$ valóban közös osztó. Ezenkívül
+      nyilván kitüntetett is, hiszen bármilyen elem csak akkor lehet közös osztó, ha osztója $a$-nak. Az $(a,b)$
+      kitüntetett közös osztó tehát valóban létezik, és $a$-val egyezik meg.

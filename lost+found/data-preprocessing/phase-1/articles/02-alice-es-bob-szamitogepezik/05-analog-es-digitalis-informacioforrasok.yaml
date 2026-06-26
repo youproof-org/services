@@ -1,0 +1,60 @@
+type: section
+name: 05-analog-es-digitalis-informacioforrasok
+title: Analóg és digitális információforrások
+
+body:
+  - type: narrative
+    content: |
+      A fizikai világban az "információt" valamilyen vizsgált objektumok bizonyos fizikai jellemzői hordozzák,
+      amelyeket általában az idő függvényében változó számértékekkel írhatunk le. Egy-egy ilyen fizikai jellemző
+      időbeli változását ***jel***nek nevezzük, és egy grafikonon ábrázolhatjuk. A vízszintes tengely az időt
+      jelenti, a függőleges tengely pedig a jel lehetséges értékeit tartalmazza. A jelet reprezentáló görbe egy
+      adott pontját leolvasva láthatjuk, hogy az adott jel az adott időpillanatban milyen értéket vesz fel. Analóg
+      (folytonos) jelről beszélünk abban az esetben, ha a jel bármely tetszőleges időpontban bármilyen tetszőleges
+      értéket felvehet egy adott intervallumon belül.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán egy analóg jel látható, amely a 4,3 helyen a 2,85 értéket veszi fel (bármit is jelentsen ez a
+      jel által reprezentált fizikai jellemző szempontjából):
+    src: 03-analog-jel.jpg
+    alt: Analóg jel
+    caption: Analóg jel
+  - type: narrative
+    content: |
+      Ezzel szemben digitális (diszkrét) jelről beszélünk akkor, ha a jel csak bizonyos időpillanatokban van
+      értelmezve, és csak véges sok különböző értéket vehet fel. A továbbiakban jel alatt mindig digitális jelet
+      fogunk érteni, ugyanis bármely analóg jel átalakítható digitális jellé tetszőleges pontossággal. Az ilyen
+      átalakításokat ***digitalizálás***nak nevezzük, amely két részből áll. Egyrészt adott időközönként mintát
+      veszünk a folytonos idejű analóg jelből. Ezt ***mintavételezés***nek nevezzük. Másrészt pedig a vett minták
+      folytonos értéktartományát adott számú részre osztjuk, és minden mintáról azt írjuk le, hogy melyik részbe
+      esett az értéke. Ezt ***kvantálás***nak nevezzük, amely tehát azt biztosítja, hogy egy-egy minta véges sok
+      tizedesjeggyel leírható legyen.
+  - type: narrative
+    content: |
+      Azt, hogy az eredeti analóg jelet mennyire pontosan tükrözi a digitalizált változata, egyrészt a
+      mintavételezés gyakorisága, azaz a ***mintavételi frekvencia***, másrészt pedig az értéktartomány
+      felosztásának finomsága, azaz a ***kvantálási mélység*** határozza meg.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán egy 1 másodperces analóg jel digitalizálásának folyamatát láthatjuk:
+    src: 04-analog-jel-digitalizalasa.jpg
+    alt: Analóg jel digitalizálása
+    caption: Analóg jel digitalizálása
+  - type: narrative
+    content: |
+      Itt 16 Hz-es mintavételezési frekvenciát és 2 bites kvantálási mélységet alkalmaztunk. Ez azt jelenti, hogy
+      az 1 másodperces jelből 16 mintát vettünk, és 2^2^=4 részre osztottuk az értéktartományt a kvantáláskor.
+      Eredményül egy számsorozatot kaptunk, amely leírja minden mintáról, hogy az adott minta melyik
+      résztartományba esett. Az egyes résztartományokat a 0, 1, 2 és 3 számokkal azonosítottuk ebben az esetben.
+  - type: narrative
+    content: |
+      A kapott digitalizált jel az **1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 2, 1** számsorozat lesz. Ez nem egy
+      túl pontos digitalizálás, de nyilván minden esetben megadható egy olyan ésszerű mintavételezési frekvencia és
+      kvantálási mélység, amely elegendően nagy pontosságot eredményez az adott alkalmazás szempontjából. Vegyünk
+      például egy analóg hangjelet, amely egy mikrofon vezetékén keresztül valamilyen elektromos jel formájában
+      érkezik a digitalizáló egységhez. Ekkor egy 44100 Hz-es mintavételezési frekvencia (azaz másodpercenként
+      44100 mintavétel) és egy 16-bites kvantálási mélység (azaz az értéktartomány 2^16^=65536 részre osztása)
+      bőven elegendő ahhoz, hogy az emberi fül által hallható hangokat leírjuk. Ez azt jelenti, hogy ebben az
+      esetben az eredeti analóg jel és a digitalizált jel közötti különbség (vagyis a digitalizálás során fellépő
+      hiba) olyan csekély mértékű, amelyet az emberi fül nem tud érzékelni. Egy audió CD gyakorlatilag ezeket a
+      mintákat tartalmazza bináris adatként.

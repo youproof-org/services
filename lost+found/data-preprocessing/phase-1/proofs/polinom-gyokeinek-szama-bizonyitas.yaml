@@ -1,0 +1,64 @@
+type: proof
+name: polinom-gyokeinek-szama-bizonyitas
+remarks: []
+references:
+  osszeg-es-szorzatpolinom-foka:
+    target:
+      type: theorem
+      name: osszeg-es-szorzatpolinom-foka
+  polinom-gyokenek-feltetele:
+    target:
+      type: theorem
+      name: polinom-gyokenek-feltetele
+  polinomfuggveny:
+    target:
+      type: definition
+      name: polinomfuggveny
+content:
+  - type: narrative
+    content: |
+      Tekintsük elsőként az $f_{r_1}$ ***gyöktényezőt***.
+  - type: formula
+    lead-in: |
+      A [polinom-gyokenek-feltetele] alapján $f$ felírható az alábbi alakban valamilyen alkalmas $q_1\in R[x]$
+      polinommal:
+    content: |
+      f=f_{r_1}\odot q_1
+  - type: narrative
+    content: |
+      Mivel $R$ ***egységelemes***, továbbá az $f_{r_1}$ gyöktényező ***főegyütthatója az egységelem*** &ndash;
+      hiszen az ugye a [polinomfuggveny] alapján megegyezik a hozzátartozó $F_{r_1}(x)=x-r_1$ polinomfüggvény
+      elsőfokú tagjának, azaz $x$-nek az együtthatójával &ndash;, ezért a [osszeg-es-szorzatpolinom-foka] 5. pontja
+      alapján $\deg(f)=\deg(f_{r_1})+\deg(q_1)$. Miután $f_{r_1}$ egy gyöktényező, és így $\deg(f_{r_1})=1$, ezért
+      a $q_1$ polinom foka ***eggyel kisebb*** $f$ fokánál.
+  - type: formula
+    lead-in: |
+      Továbbá a [polinom-gyokenek-feltetele] alapján a polinomfüggvények szintjén az alábbi teljesül:
+    content: |
+      F(x)=(x-r_1)\cdot Q_1(x)
+  - type: formula
+    lead-in: |
+      De ugye $r_2$ is gyöke az $f$ polinomnak, ezért őt behelyettesítve ebbe a polinomfüggvénybe az $R$ gyűrű
+      nullelemét kell kapnunk:
+    content: |
+      0_R=F(r_2)=(r_2-r_1)\cdot Q_1(r_2)
+  - type: narrative
+    content: |
+      A jobboldali első tényező biztosan nemnulla, ezért a ***nullosztómentesség*** miatt szükségképpen
+      $Q_1(r_2)=0_R$, azaz $r_2$ gyöke a $q_1$ polinomnak.
+  - type: formula
+    lead-in: |
+      Ám ekkor a [polinom-gyokenek-feltetele] alapján $q_1$-ből kiemelhető az $f_{r_2}$ gyöktényező, azaz $f$
+      felírható az alábbi alakban valamilyen alkalmas $q_2\in R[x]$ polinommal, ahol $q_2$ foka a fentebb már
+      ismertetett okok miatt már ***kettővel kisebb*** $f$ fokánál:
+    content: |
+      f=f_{r_1}\odot f_{r_2}\odot q_2
+  - type: formula
+    lead-in: |
+      Ugyanilyen gondolatmenet alapján $f$-ből kiemelhető mind a $k$ darab gyöktényező, és a fennmaradó $q$ polinom
+      foka $k$-val kisebb $f$ fokánál:
+    content: |
+      f=f_{r_1}\odot f_{r_2}\odot \ldots \odot f_{r_k}\odot q
+  - type: narrative
+    content: |
+      Mivel a fokszám nullánál nem lehet kisebb, ezért $k$ valóban legfeljebb $f$ foka lehet.

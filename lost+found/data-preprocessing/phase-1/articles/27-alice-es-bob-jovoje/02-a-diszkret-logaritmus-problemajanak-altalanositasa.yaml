@@ -1,0 +1,82 @@
+type: section
+name: 02-a-diszkret-logaritmus-problemajanak-altalanositasa
+title: A diszkrét logaritmus problémájának általánosítása
+
+references:
+  ciklikus-csoportok:
+    target:
+      type: definition
+      name: ciklikus-csoportok
+  egesz-kitevos-hatvany:
+    target:
+      type: definition
+      name: egesz-kitevos-hatvany
+
+body:
+  - type: narrative
+    content: |
+      A 9. részben ismertetett ***Diffie-Hellman kulcscsere protokoll*** esetén az egyirányú függvényt az előző
+      rész alapján lényegében egy speciális ciklikus csoportban, nevezetesen a $(\Z/m\Z)^{\times}$ csoportban
+      történő hatványozás jelenti, ahol a függvény megfordításaként a használt kitevő meghatározását kellene
+      kiszámítania a támadónak. Ezt ***diszkrét logaritmus problémának (DLP)*** neveztük, és megemlítettük, hogy ez
+      is egy roppant nehéz algoritmikus feladat. Vegyük észre, hogy a DLP megfogalmazható úgy is, hogy
+      elvonatkoztatunk a konkrétan használt $(\Z/m\Z)^{\times}$ csoporttól. Eszerint legyen $G$ egy tetszőleges
+      ***csoport***, $g$ pedig ennek egy tetszőleges ***eleme*** (lásd a [ciklikus-csoportok]t), valamint tegyük
+      fel, hogy ismerjük a $g^k$ hatványt. A DLP ebben az általános esetben a $k$ kitevő meghatározását jelenti.
+  - type: narrative
+    content: |
+      Ennek a feladatnak az algoritmikus bonyolultsága nyilván erősen összefügg azzal, hogy konkrétan milyen
+      csoportot használunk, vagy annak elemeit hogyan reprezentáljuk. Tekintsünk azonban most egy úgynevezett
+      általános csoportot, azaz egyelőre vonatkoztassunk el az adott csoport konkrét reprezentációjától. Ezt úgy
+      tudjuk modellezni, hogy feltételezzük egy olyan úgynevezett "orákulum" létezését, amely képes elvégezni a
+      csoportműveletet, illetve két elemről el tudja dönteni, hogy megegyeznek-e vagy sem, azonban ennek az
+      "orákulumnak" a válaszain kívül nincs semmilyen egyéb információnk a csoportról. Victor Shoup amerikai
+      matematikus 1997-ben igazolta, hogy véges csoport esetén amennyiben $p$ a csoport rendjének legnagyobb
+      prímosztója, akkor ***legalább*** $c\cdot \sqrt{p}$-szer kell elvégezni a csoportműveletet a keresett kitevő
+      kiszámításához, ahol $c$ egy valamilyen alkalmasan választott konstans mennyiség. Ez a lépésszám
+      nyilvánvalóan a csoport rendjének bináris hosszától exponenciálisan függ.
+  - type: narrative
+    content: |
+      Ez persze nem azt jelenti, hogy egy konkrét csoport esetén ne lehetne ennél akár lényegesen jobb eredményt
+      elérni, kihasználva annak speciális tulajdonságait.
+  - type: formula
+    lead-in: |
+      Gondoljunk csak például az alábbi lineáris kongruenciára, ahol keressük az $n$ ismeretlent:
+    content: |
+      a\cdot n\equiv b\pmod m
+  - type: narrative
+    content: |
+      A 21. részben megmutattuk, hogy egy ilyen kongruencia rendkívül hatékonyan megoldható a ***kibővített
+      euklidészi algoritmus*** segítségével. Ez a hatékonyság kulcsfontosságú is, hiszen az RSA-hoz használt titkos
+      kitevőt épp emiatt tudja kiszámítani az, aki birtokában van a modulus prímtényezőinek. Habár ez elsőre nem
+      feltétlenül látszik, de tulajdonképpen itt is a DLP-ről van szó, csak éppenséggel a $(\Z/m\Z)^+$ ***additív
+      csoportban***. Valóban, hiszen a kérdés most is tulajdonképpen az, hogy az $[a]_m$ maradékosztályt hányszor
+      kell "összeműveleteznünk" önmagával ebben a csoportban ahhoz, hogy a $[b]_m$ maradékosztályt kapjuk
+      eredményül.
+  - type: formula
+    lead-in: |
+      Vagyis a $(\Z/m\Z)^+$ csoportban az alábbi egyenletet írhatjuk fel, ahol keressük az $n$ "kitevőt", csak épp
+      ebben az esetben a [egesz-kitevos-hatvany] utáni megjegyzés szerinti ***additív irásmódot*** alkalmaztuk:
+    content: |
+      n[a]_m=[b]_m
+  - type: narrative
+    content: |
+      Az additív csoporttal ellentétben szerencsére a $(\Z/m\Z)^{\times}$ ***multiplikatív csoportban*** ennél
+      lényegesen nehezebb ez a feladat. Sőt, ebben a csoportban jelenleg nem is ismeretes szubexponenciális
+      időkomplexitású algoritmus a DLP-re, amely így alkalmasabbnak tűnik kriptográfiai primitívek képzésére, mint
+      a prímfaktorizáció nehézségén alapuló módszerek. A kisteljesítményű eszközök számára azonban továbbra is
+      problémát jelent, hogy a $(\Z/m\Z)^{\times}$ csoportot használó eljárásokhoz nagy kulcsokat kell használni a
+      kívánt biztonsági szint eléréséhez.
+  - type: narrative
+    content: |
+      Ezért Neal Koblitz amerikai matematikus egy 1987-ben megjelent publikációjában a $(\Z/m\Z)^{\times}$ helyett
+      olyan csoportok használatát javasolta, amelyek esetén a DLP várhatóan jóval nagyobb komplexitású a
+      hagyományos változathoz képest, és így kisebb méretű kulcsokkal is ugyanolyan biztonsági szintet lehet
+      elérni. Egy-egy ilyen csoport elemei azonban nem számok, hanem a számelméletben az utóbbi évtizedekben
+      intenzíven kutatott furcsa képződményeknek, az úgynevezett ***elliptikus görbéknek*** a "pontjai".
+  - type: narrative
+    content: |
+      Az elliptikus görbék elmélete az algebrai számelmélet egyik központi területe, melyhez számos jelentős és
+      mély megoldatlan sejtés kapcsolódik. Mivel ez a témakör messze túlmutat e cikksorozat keretein, ezért itt
+      csak vázlatosan tekintjük át az elliptikus görbékhez kapcsolódó alapfogalmakat. Előbb azonban vizsgáljuk meg,
+      hogy tulajdonképpen mivel is foglalkozik az algebrai számelmélet.

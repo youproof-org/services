@@ -1,0 +1,42 @@
+type: section
+name: 12-a-kivonas-muvelete
+title: A kivonás művelete
+
+references:
+  egesz-szamok-osszeadasa:
+    target:
+      type: definition
+      name: egesz-szamok-osszeadasa
+  pozitiv-es-negativ-egesz-szamok:
+    target:
+      type: definition
+      name: pozitiv-es-negativ-egesz-szamok
+
+body:
+  - type: narrative
+    content: |
+      Most gondoljuk végig, tudunk-e példákat mutatni az inverz fogalmára az eddig tanultakból. A természetes
+      számok $\N$ halmazán ugye nem, hiszen épp azért kezdtük el a számfogalom bővítését és vezettük be a negatív
+      számokat, mert sem a Peano-összeadás, sem pedig a Peano-szorzás nem invertálható. Ezzel szemben a $\Z$
+      halmazon értelmezett $\oplus$ művelet invertálható, hiszen egy tetszőleges $[(a;b)]$-vel jelölt egész számnak
+      az ellentettje erre a műveletre nézve épp a $[(b;a)]$-val jelölt egész szám. Ezek összege ugyanis a
+      [egesz-szamok-osszeadasa] értelmében az $[(a+b;a+b)]$ egész szám, amely a [pozitiv-es-negativ-egesz-szamok]
+      alapján megegyezik a $[(0;0)]$ egész számmal, azaz a $\oplus$ művelet neutrális elemével.
+  - type: narrative
+    content: |
+      A hagyományos jelölésekkel tehát egy $n$ egész szám $\oplus$ műveletre vonatkozó ellentettje a $-n$ egész
+      szám, és fordítva. Ezt a tényt &ndash; tehát, hogy minden egész számnak létezik ellentettje &ndash;
+      kihasználva mostmár értelmezhetjük a harmadik alapműveletünket, vagyis a ***kivonást***:
+  - type: embed
+    target:
+      type: definition
+      name: egesz-szamok-kivonasa
+  - type: narrative
+    content: |
+      Sajnos azonban az ***osztás*** fogalmát még mindig nem tudjuk értelmezni a $\Z$ halmazon, mivel a $\odot$
+      művelet nem invertálható ebben a számkörben. Ehhez tovább kéne bővítenünk a szám fogalmát, és bevezetni az
+      úgynevezett ***racionális (vagy tört-) számokat***, ahol már ez a művelet is invertálható. Ezt egyelőre nem
+      fogjuk megtenni, így általánosságban nem fogjuk tudni elvégezni az egész számok közötti osztást. Hamarosan
+      azonban bevezetjük majd az ***oszthatóság*** fogalmát, amely bizonyos esetekben mégis lehetővé teszi, hogy
+      egy egész számot "elosszunk" egy másik egész számmal. Ez az "osztás" azonban algebrai értelemben nem lesz
+      művelet, hiszen nem végezhető el általánosságban bármely két egész szám között.

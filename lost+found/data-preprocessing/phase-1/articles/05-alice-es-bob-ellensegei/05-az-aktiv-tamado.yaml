@@ -1,0 +1,57 @@
+type: section
+name: 05-az-aktiv-tamado
+title: Az aktív támadó
+
+body:
+  - type: narrative
+    content: |
+      Ismerkedjünk hát meg történetünk leggonoszabb szereplőjével. Ő Eve-vel ellentétben nem csak passzívan figyeli
+      a kommunikációt, hanem ***aktív támadóként*** be is avatkozik abba.
+  - type: narrative
+    content: |
+      Az ő neve ***Mallory***, amely név a "rosszindulatú támadó" angol megfelelőjére (malicious attacker) rímel.
+      Mallory azért nagyon veszélyes, mert nemcsak megfigyelni képes a csatornán áthaladó üzeneteket, hanem képes
+      azokat részben vagy teljes egészében megváltoztatni Alice és Bob számára észrevétlenül. Ezenkívül Mallory
+      olykor arra is vetemedik, hogy megpróbálja eljátszani egy vagy több legális fél szerepét azért, hogy valamely
+      másik legális résztvevőktől információt csaljon ki. Ezt ***megszemélyesítésnek (impersonating)*** nevezzük.
+  - type: narrative
+    content: |
+      Az aktív támadásokat algoritmikus eszközökkel nem tudjuk megakadályozni, de úgynevezett
+      ***kriptoprotokollok*** alkalmazásával a támadást detektálhatóvá tehetjük Alice és Bob (tehát a legális
+      résztvevők) számára. A protokollok általánosságban véve egy előre meghatározott üzenetcsere folyamatot
+      jelentenek, amelyet kettő vagy több legális fél bonyolít le kooperatívan valamilyen feladat végrehajtására. A
+      kriptoprotokollok építőelemként használják a rejtjelezőt és egyéb kriptográfiai építőelemeket (ezeket
+      összefoglaló néven ***kriptográfiai primitíveknek*** nevezzük), s biztosítják a védett kapcsolat felépülését
+      és a kommunikáció alatti aktív támadások észlelhetőségét. Ezen kívül garantálják a kommunikációban résztvevő
+      felek és üzenetfolyamataik hitelességének ellenőrizhetőségét.
+  - type: narrative
+    content: |
+      Egy ***üzenet hitelessége*** azt jelenti Alice vagy Bob számára, hogy majdnem biztos lehet benne, hogy az
+      módosítatlanul, eredeti állapotában érkezett meg hozzá. Egy ***partner hitelessége*** Alice vagy Bob számára
+      azt jelenti, hogy majdnem biztos lehet benne, hogy egy üzenetet valóban a tartalmából kiderülő partner
+      küldte, nem pedig Mallory vagy egy hozzá hasonló gazember. A "majdnem biztos benne" itt azt jelenti, hogy a
+      tévedés esélye nagyságrendileg megegyezik annak az esélyével, hogy valaki egymás után ötször megnyeri a
+      főnyereményt az 5-ös lottón.
+  - type: narrative
+    content: |
+      A mérnöki pesszimizmus a Mallory elleni védekezés kapcsán is megjelenik azáltal, hogy a várhatónál nagyobb
+      hatalmat biztosít neki, azaz feltételezi, hogy Mallory a legálisan résztvevő felek teljes kommunikációját
+      kontrollálni tudja. Ez alatt egyrészt azt értjük, hogy Mallory minden üzenetet képes lehallgatni, módosítani
+      és törölni, másrészt képes olyan hamis üzenetek generálására is, amit a rendelkezésére álló információk
+      lehetővé tesznek. Például képes üzeneteket megfigyelni, megjegyezni és később visszajátszani is. Lényegében
+      tehát a legális résztvevők Mallory-n keresztül kommunikálnak egymással, azaz üzeneteiket neki küldik és tőle
+      is kapják. Ezen kívül Mallory képes bármelyik résztvevőt bevonni egy protokoll végrehajtásába, sőt még arra
+      is rá tud venni egy becsületes résztvevőt, hogy az kezdeményezze egy protokoll végrehajtását Mallory-vel vagy
+      egy másik becsületes résztvevővel.
+  - type: narrative
+    content: |
+      Mallory tehát egy igazi csaló, aki ellen sokkal nehezebb védekezni, mint Eve-vel szemben. Átalában azonban
+      feltételezzük Mallory-ről, hogy nem elsősorban a protokollok által használt kriptográfiai primitívek
+      feltörésével próbálkozik, hanem abban keresi a gyengeséget, ahogyan a protokoll ezeket az építőelemeket
+      egymással kombinálja. A kriptoprotokollok alapvetően 3 féle kriptográfiai primitívből építkeznek, ezek a
+      következők: **rejtjelezők**, **digitális aláírások** és az úgynevezett **kriptográfiai hash függvények**.
+      Ebben a cikksorozatban főként e primitívek bemutatása fog megtörténni, de ki fogunk térni néhány olyan
+      példára is, amely azt szemlélteti, hogy hogyan lehet ezeket kombinálva egy aktív támadások elleni
+      kriptoprotokollt (vagy egy ilyen elleni támadást) létrehozni. Első körben a rejtjelezőt, mint primitívet
+      vesszük górcső alá, a digitális aláírásokról és a hash függvényekről pedig későbbi részekben lesz szó
+      bővebben.

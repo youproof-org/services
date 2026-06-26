@@ -1,0 +1,21 @@
+@use 'variables' as *;
+
+.claim {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.index {
+  flex-shrink: 0;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+}
+
+.formula {
+  overflow-x: auto;
+  padding: 0.5rem 0;
+}

@@ -1,0 +1,46 @@
+type: section
+name: 04-akkor-mi-ertelme-van-folytatni
+title: Akkor mi értelme van folytatni?
+
+body:
+  - type: narrative
+    content: |
+      Hurrá! &ndash; mondhatnánk, hiszen úgy tűnik, hogy megtaláltuk a kriptográfia Szent Grálját, tehát mindenki
+      mehet szépen haza. Sajnos nem ez a helyzet, mivel a one-time pad, habár elméletben tökéletes, a gyakorlatban
+      &ndash; néhány speciális esettől eltekintve &ndash; nem alkalmazható. A legkisebb probléma, hogy az egyszer
+      használatos kulcsoknak valóban "tökéletesen véletlenszerű számokból" kell állniuk. Hogy ez matematikailag
+      pontosan mit jelent, az messzire vezetne, és e problémakör messze nem olyan egyszerű, mint gondolnánk.
+      Léteznek azonban olyan célhardverek, amelyek valamilyen fizikai jelenséget kihasználva állítanak elő valódi
+      véletlenszámokat. Tegyük fel tehát, hogy ezt a problémát megoldottuk.
+  - type: narrative
+    content: |
+      Ami egy ennél sokkal nagyobb gond, az az első rész végén már felvázolt ***kulcsmegosztás problémája***. Ez a
+      probléma one-time pad esetén hatványozottan jelentkezik. Nevezetesen: hogyan juttassuk el a kommunikáció
+      összes résztvevőjének azt a temérdek mennyiségű kulcsot biztonságosan? Gondoljunk bele, hogy mi történne, ha
+      például egy egész hadsereg szeretne ilyen módon kommunikálni. Az egymással harcoló egységek helyett a
+      csatamező futárokkal lenne tele, akik a kulcsokat szállítják. Azon logisztikai problémáról már nem is
+      beszélve, hogy mindenki mindig a megfelelő egyszer használatos kulcsot használja. Ha bárki hibázna, az a
+      rendszer teljes összeomlásához vezetne.
+  - type: narrative
+    content: |
+      Persze megemlítettük az első rész végén, hogy a kulcsmegosztás problémája megoldható biztonságos csatorna
+      használata nélkül is, hiszen az egész cikksorozatnak ez a központi témája. Ez a megoldás azonban "csupán"
+      algoritmikus biztonságot nyújt. Azaz feltételezi, hogy az Eve rendelkezésére álló számítási kapacitás
+      bizonyos korlát alatt marad, még ha ez a korlát nagyon nagy is. A one-time paddel azonban éppenséggel egy
+      korlátlan erőforrásokkal rendelkező támadó ellen akarunk védekezni. Botorság lenne tehát pont a kulcsokat egy
+      olyan rendszeren keresztül továbbítani, amely nem garantálja a feltétel nélküli biztonságot.
+  - type: narrative
+    content: |
+      A one-time pad alkalmazása tehát iszonyatosan drága, ezért csak néhány nagyon speciális és különleges esetben
+      használják. Csak hogy egyet említsünk: one-time pad rejtjelezést használnak az ***USA és Oroszország***
+      között a kubai rakétaválság apropóján 1963-ban létrehozott ***forródrót*** titkosítására, az egyszeri
+      kulcsokat pedig a lehető legszigorúbb biztonsági intézkedések mellett osztják meg egymás között.
+  - type: narrative
+    content: |
+      Vegyük észre, hogy a one-time pad főként a kulcsmegosztás problémája miatt használhatatlan a gyakorlatban. Ha
+      azonban ezt is meg tudnánk oldani feltétel nélkül biztonságos módon, akkor valóban megtalálnánk a Szent
+      Grált, és a kriptográfia tudományának fejlődése véget érne. A jó hír az, hogy a kvantumfizika törvényei ezt
+      elvileg lehetővé teszik, és &ndash; habár ez a technológia még gyerekcipőben jár &ndash; már vannak nagyon
+      bíztató eredmények, sőt bizonyos gyakorlati alkalmazások is. A ***kvantumkriptográfiáról*** majd egy későbbi
+      részben lesz szó bővebben. Ez azonban még csak a jövő, a titkaink védelmét a jelenben az algoritmikus
+      biztonságra bízzuk, ezért most visszatérünk ehhez a témakörhöz.

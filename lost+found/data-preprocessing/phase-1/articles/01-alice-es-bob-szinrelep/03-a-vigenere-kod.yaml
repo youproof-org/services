@@ -1,0 +1,47 @@
+type: section
+name: 03-a-vigenere-kod
+title: A Vigenére-kód
+
+body:
+  - type: narrative
+    content: |
+      Alice és Bob tehát továbbra sincs biztonságban, ezért egy újabb személyes találkozót kénytelenek megbeszélni
+      egymással annak érdekében, hogy még jobban megnehezítsék Eve dolgát. Megállapodnak abban, hogy az üzenetek
+      kódolásakor betűnként fogják váltogatni az adott betűre alkalmazott eltolás értékét. Így a kulcs mostantól
+      nem egy darab szám lesz, hanem egy valahány számból álló sorozat. A módosított kriptográfiai eljárás a
+      következő: a nyílt szöveg betűi alá kezdjük el felírni a kulcsot alkotó számokat egyenként. Ismételgessük a
+      kulcs számait mindaddig, amíg a nyílt szöveg összes betűje alá nem kerül valamilyen szám. Ezután minden
+      betűre akkora eltolást alkalmazzunk, amilyen szám szerepel alatta.
+  - type: narrative
+    content: |
+      Az előző példánál maradva tegyük fel, hogy Alice és Bob a (3, 5, 2) kulcsban állapodtak meg, és Alice ismét a
+      **sziabobmiahelyzet** nyílt szöveget szeretné rejtjelezve elküldeni Bob-nak.
+  - type: typewriter
+    lead-in: |
+      Az alábbiakban látható az Alice által alkalmazott kódolás:
+    rows:
+      - "sziabobmiahelyzet"
+      - "35235235235235235"
+      - "vekdgqerkdmgodbhy"
+  - type: narrative
+    content: |
+      A kódolás eredményeképpen előálló kódszöveg tehát **vekdgqerkdmgodbhy** lesz. Látható, hogy Eve-nek ebben az
+      esetben sokkal nehezebb dolga van, ugyanis például a **bob** szövegrészből **gqe** lesz a kódszövegben,
+      vagyis az első **b** betűre más eltolás lett alkalmazva, mint a második **b** betűre. Hiába készít tehát
+      statisztikát Eve a kódszöveg betűinek gyakoriságára, az sokkal kevésbé fogja tükrözni a magyar nyelv
+      sajátosságait. Persze elkezdhet különböző kulcsokkal próbálkozni, azonban most nem 26 féle kulcsot kell
+      kipróbálnia, hanem sokkal többet. A kulcs ugyanis most egy számsorozat, amelynek minden tagja 26 féle lehet,
+      ráadásul Eve még azt sem tudja, hogy milyen hosszú a kulcs. Reménytelennek tűnik tehát Eve helyzete.
+  - type: narrative
+    content: |
+      Ezt az eljárást ***Vigenére-kód***nak nevezzük, amely egy egyszerű fajtája az ún. ***polialfabetikus
+      behelyettesítő kódolás***oknak. Ezeknél tehát változó, hogy a nyílt szöveg betűit milyen más betűkkel
+      helyettesítjük. A Vigenére-kódot sokáig használták a középkorban, mivel a számtalan variációs lehetőség miatt
+      sokáig feltörhetetlennek hitték. Azonban Leonhard Euler (18. századi matematikus, a matematikatörténet egyik
+      legjelentősebb alakja) felfedezte, hogy a kulcsnál lényegesen hosszabb szöveg esetén periodikus ismétlődések
+      lesznek a kódszövegben. A részletektől itt most eltekintünk, de ezeknek a periódusoknak a hosszából a kulcs
+      hosszára lehet következtetni, amely által a feltörés lényegesen egyszerűbbé válik. A törési eljárás akkor
+      igazán hatékony, ha hosszú a szöveg, és rövid a kulcs. Ezért célszerű olyan kulcsot választani, ami
+      összemérhető a nyílt szöveg hosszával. Egy gyakorlott rejtjelfejtőnek különböző gyakoriságtáblázatok
+      birtokában egy nem túl hosszú kulcs esetén mindössze 6-9 órába telt megfejteni a kódolt szöveget. Alice és
+      Bob tehát még mindig nem érezhette magát eléggé biztonságban.

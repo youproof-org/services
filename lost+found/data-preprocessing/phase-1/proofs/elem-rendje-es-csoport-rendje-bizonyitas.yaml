@@ -1,0 +1,39 @@
+type: proof
+name: elem-rendje-es-csoport-rendje-bizonyitas
+remarks: []
+references:
+  egesz-kitevos-hatvanyozas-azonossagai:
+    target:
+      type: theorem
+      name: egesz-kitevos-hatvanyozas-azonossagai
+  lagrange-tetele:
+    target:
+      type: theorem
+      name: lagrange-tetele
+  reszcsoport-feltetele-veges-csoportok-eseten:
+    target:
+      type: theorem
+      name: reszcsoport-feltetele-veges-csoportok-eseten
+content:
+  - type: narrative
+    content: |
+      Legyen $g$ a $G$ csoport tetszőleges eleme, és jelöljük $H$-val azt a halmazt, amely pontosan $g$
+      hatványaiból áll. Ekkor $H$ nyilván ***nemüres***, hiszen tartalmazza legalább $g$-t.
+  - type: formula
+    lead-in: |
+      Továbbá ***zárt*** a $G$ csoport műveletére nézve, ugyanis $g$ bármely két hatványát összeszorozva ugyancsak
+      $g$-nek egy hatványát kapjuk, hiszen a [egesz-kitevos-hatvanyozas-azonossagai] 3. pontja miatt:
+    content: |
+      g^k\cdot g^n=g^{k+n}
+  - type: narrative
+    content: |
+      Mivel $G$ véges, ezért a [reszcsoport-feltetele-veges-csoportok-eseten] értelmében $H$ részcsoport $G$-ben.
+  - type: formula
+    lead-in: |
+      A ***Lagrange-tétel*** ([lagrange-tetele]) miatt tehát teljesül az alábbi oszthatóság:
+    content: |
+      |H|\ |\ |G|
+  - type: narrative
+    content: |
+      Mivel azonban $H$ a $g$ elem összes létező hatványaiból áll, ezért $|H|=o(g)$. Ezt behelyettesítve a fenti
+      oszthatóságba megkapjuk a tétel állítását.

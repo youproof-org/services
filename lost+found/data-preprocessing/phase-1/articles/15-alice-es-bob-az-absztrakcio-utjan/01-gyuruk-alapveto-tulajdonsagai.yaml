@@ -1,0 +1,140 @@
+type: section
+name: 01-gyuruk-alapveto-tulajdonsagai
+title: Gyűrűk alapvető tulajdonságai
+
+references:
+  egesz-szamok-gyuruje:
+    target:
+      type: theorem
+      name: egesz-szamok-gyuruje
+  egesz-szamok-szorzasa:
+    target:
+      type: definition
+      name: egesz-szamok-szorzasa
+  gyuru-test:
+    target:
+      type: definition
+      name: gyuru-test
+  peano-nullszorzat-tenyezoi:
+    target:
+      type: theorem
+      name: peano-nullszorzat-tenyezoi
+  peano-szorzat-egyszerusites:
+    target:
+      type: theorem
+      name: peano-szorzat-egyszerusites
+  pozitiv-es-negativ-egesz-szamok:
+    target:
+      type: definition
+      name: pozitiv-es-negativ-egesz-szamok
+
+body:
+  - type: narrative
+    content: |
+      A ***gyűrűaxiómákat*** a [gyuru-test]ból már ismerjük. Ezek mindössze annyit követelnek meg, hogy legyen egy
+      halmazunk két művelettel, amelyeket most önkényesen "összeadásnak" és "szorzásnak" nevezünk. Az
+      ***"összeadás" legyen kommutatív és asszociatív***, létezzen rá nézve neutrális elem (amelyet
+      ***nullelemnek*** nevezünk és $0$-val jelölünk), valamint minden $a$ elemnek létezzen inverze erre a
+      műveletre nézve (amelyet $a$ ***ellentettjének*** nevezünk és $-a$-val jelölünk). Ezen kívül a
+      ***"szorzásnak" asszociatívnak*** kell lennie, valamint teljesülnie kell a két ***disztributivitási
+      szabálynak***. Mivel az ellentett létezése követelmény, ezért minden gyűrűben korlátlanul ***el lehet végezni
+      a "kivonást"***.
+  - type: narrative
+    content: |
+      Egy általános gyűrű mindössze "ennyit tud". Azaz esetében még a "szorzás" sem feltétlenül kommutatív. Ezért
+      kellett rögzíteni két disztributivitási szabályt is. Továbbá egységelem sem feltétlenül létezik rá nézve.
+      Attól függően, hogy ezen extra tulajdonságok közül melyik teljesül pluszban, beszélhetünk rendre
+      ***kommutatív gyűrűről***, ***egységelemes gyűrűről*** vagy ***kommutatív és egységelemes gyűrűről***. Végül
+      az olyan kommutatív és egységelemes gyűrűket ***testnek*** neveztük, amelyekben ***"osztani" is lehet minden
+      nem $0$ elemmel*** (azaz amelyben minden nem $0$ elemnek létezik inverze a szorzásra nézve is).
+  - type: narrative
+    content: |
+      Azt ugye már tudjuk, hogy az ***egész számok egy kommutatív, egységelemes gyűrűt alkotnak*** a szokásos
+      műveletekkel ([egesz-szamok-gyuruje]). Ez a gyűrű azonban ***nem test***, hiszen csak az egységelemnek és
+      ellentettjének (azaz az $1$ és a $-1$ egész számoknak) létezik multiplikatív inverze: méghozzá önmaga. Azt
+      javasoljuk az Olvasónak, hogy ezt saját maga is gondolja végig a [egesz-szamok-szorzasa] és a
+      [pozitiv-es-negativ-egesz-szamok] alapján.
+  - type: narrative
+    content: |
+      Most néhány, az általános iskolából már jól ismert összefüggést fogunk bizonyítani, ám ezúttal általános
+      gyűrűkre. Ne feledjük azonban, hogy ezen az absztrakciós szinten a gyűrűaxiómákon kívül nem feltételezhetünk
+      semmi egyebet ezekkel az algebrai struktúrákkal kapcsolatban. Még azt sem, hogy egyáltalán számokról van-e
+      szó. Az alábbi &ndash; sokak számára jól ismert &ndash; összefüggések tehát csak és kizárólag a gyűrűaxiómák
+      logikai következményei.
+  - type: embed
+    target:
+      type: theorem
+      name: gyuruk-alapveto-tulajdonsagai
+  - type: embed
+    target:
+      type: proof
+      name: gyuruk-alapveto-tulajdonsagai-bizonyitas
+  - type: narrative
+    content: |
+      Az alábbi egyszerű tétel a nullelem és az egységelem egymáshoz való viszonyáról szól:
+  - type: embed
+    target:
+      type: theorem
+      name: egysegelem-es-nullelem-kulonbozo
+  - type: embed
+    target:
+      type: proof
+      name: egysegelem-es-nullelem-kulonbozo-bizonyitas
+  - type: narrative
+    content: |
+      Az előző rész elején azt vizsgáltuk, hogy vajon a természetes számok $\N$ halmazán érvényesek-e a ***szokásos
+      egyenletrendezési szabályok***. Ennek kapcsán merült fel az a kérdés, hogy vajon egy egyenlet mindkét oldalát
+      el lehet-e "osztani" egy adott nem nulla természetes számmal annak ellenére, hogy az osztás művelete nem
+      értelmezhető ezen a számhalmazon. Ezt a [peano-nullszorzat-tenyezoi] következményeként a
+      [peano-szorzat-egyszerusites] tette lehetővé számunkra.
+  - type: narrative
+    content: |
+      Most ***általános gyűrűkre*** is megvizsgáljuk ezt a kérdést. Az nyilvánvaló, hogy egy tetszőleges gyűrűn
+      értelmezett egyenlet mindkét oldalából ***"ki lehet vonni"*** ugyanazt az elemet. A gyűrűkben ugyanis
+      korlátlanul elvégezhető a ***"kivonás"***. Az ***"osztás"*** azonban csak testekben értelmezhető korlátlanul,
+      általános gyűrűkben nem. Ennek ellenére vannak olyan gyűrűk, amelyek nem testek ugyan, ám a természetes
+      számokhoz hasonlóan egy rajtuk értelmezett egyenlet mindkét oldalát bizonyos esetekben ***"el lehet
+      osztani"*** ugyanazzal a nem $0$ elemmel. Ezeknek a gyűrűknek speciális nevük van:
+  - type: embed
+    target:
+      type: definition
+      name: nullosztomentes-gyuru
+  - type: narrative
+    content: |
+      Ez a definíció elsőre furcsának tűnhet. Az általános iskolából ugyanis megszokhattuk, hogy egy szorzat csak
+      úgy lehet 0, ha legalább az egyik tényezője 0. Gyűrűk esetén &ndash; mint hamarosan látni fogjuk &ndash; ez
+      általánosságban nem igaz. Ezért mindig körültekintően kell eljárnunk, amikor egyenleteket oldunk meg
+      valamilyen gyűrűben. A nullosztómentes gyűrűkben azonban az alábbi tétel alapján nyugodtan alkalmazhatjuk a
+      szokásos egyenletrendezési szabályokat.
+  - type: embed
+    target:
+      type: theorem
+      name: szorzat-egyszerusitese-gyurukben
+  - type: embed
+    target:
+      type: proof
+      name: szorzat-egyszerusitese-gyurukben-bizonyitas
+  - type: narrative
+    content: |
+      Végezetül érdemes megismerkedni még egy fogalommal, amely gyakran fordul elő a szakirodalomban.
+  - type: embed
+    target:
+      type: definition
+      name: integritastartomany
+  - type: narrative
+    content: |
+      Egy integritástartományban tehát minden "ugyanúgy működik", ahogy az általános iskolában megszokhattuk. Ez a
+      fogalom az egész számok szokásos műveletekkel alkotott algebrai struktúrájának általánosítása, mint ahogyan
+      az alábbi tétel is mutatja.
+  - type: embed
+    target:
+      type: theorem
+      name: az-egesz-szamok-halmaza-integritastartomany
+  - type: embed
+    target:
+      type: proof
+      name: az-egesz-szamok-halmaza-integritastartomany-bizonyitas
+  - type: narrative
+    content: |
+      A szokásos ***egyenletrendezési játékszabályokat*** tehát az általános gyűrűk szintjén tisztáztuk. Most
+      nézzük meg, hogy mi a helyzet az úgynevezett ***egyenlőtlenségek*** esetén ugyanezen az absztrakciós szinten.

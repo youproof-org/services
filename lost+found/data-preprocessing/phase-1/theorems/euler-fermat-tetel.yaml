@@ -1,0 +1,18 @@
+type: theorem
+name: euler-fermat-tetel
+proofs:
+  - euler-fermat-tetel-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $m\gt 0$ tetszőleges ***pozitív***, $a$ pedig egy $m$-hez ***relatív prím*** egész szám.
+  - type: formula
+    lead-in: |
+      Ekkor teljesül az alábbi kongruencia:
+    content: |
+      a^{\varphi(m)} \equiv 1\pmod m
+  - type: narrative
+    content: |
+      Itt az $a^{\varphi(m)}$ kifejezés alatt egy olyan $\varphi(m)$ tényezős szorzatot értünk, amelynek minden
+      tényezője $a$.

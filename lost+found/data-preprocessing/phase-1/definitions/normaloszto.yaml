@@ -1,0 +1,21 @@
+type: definition
+name: normaloszto
+remarks:
+  - normaloszto-megjegyzes
+content:
+  - type: narrative
+    content: |
+      Legyen adva egy $G$ csoport, valamint egy $N$ ***részcsoport*** $G$-ben.
+  - type: formula
+    lead-in: |
+      Tegyük fel továbbá, hogy az $N$ részcsoport szerinti bal- és jobboldali mellékosztályok megegyeznek, azaz
+      ***minden*** $a\in G$ esetén teljesül az alábbi:
+    content: |
+      aN=Na
+  - type: narrative
+    content: |
+      Ekkor azt mondjuk, hogy az $N$ részcsoport ***normálosztó*** $G$-ben. Ezt így jelöljük: $N\triangleleft G$.
+  - type: narrative
+    content: |
+      Az a részcsoport, amely csak $G$ egységeleméből áll, illetve maga a teljes $G$ nyilvánvalóan normálosztók
+      $G$-ben. Ezeket ***triviális normálosztóknak*** nevezzük.

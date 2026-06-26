@@ -1,0 +1,14 @@
+type: definition
+name: redukalt-maradekosztaly
+remarks: []
+references:
+  egesz-szamok-maradekosztalygyurui:
+    target:
+      type: theorem
+      name: egesz-szamok-maradekosztalygyurui
+content:
+  - type: narrative
+    content: |
+      Legyen $m\gt 0$ egy tetszőleges ***pozitív*** egész szám. Ekkor a $\Z/m\Z$-vel jelölt modulo $m$
+      maradékosztálygyűrű (lásd a [egesz-szamok-maradekosztalygyurui]t) invertálható elemeit ***modulo $m$ redukált
+      maradékosztályoknak*** nevezzük.

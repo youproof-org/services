@@ -1,0 +1,58 @@
+type: proof
+name: idealok-metszete-ideal-bizonyitas
+remarks: []
+references:
+  ideal:
+    target:
+      type: definition
+      name: ideal
+  reszgyuru-feltetele:
+    target:
+      type: theorem
+      name: reszgyuru-feltetele
+content:
+  - type: narrative
+    content: |
+      ***Nézzük először a részgyűrűk metszetére vonatkozó állítást!*** Jelöljük $S$-sel az $\mathcal{S}$
+      halmazrendszerben lévő részgyűrűk metszetét. Azt kell megmutatni, hogy $S$ részgyűrű $R$-ben. Ez a
+      [reszgyuru-feltetele] szerint pontosan akkor teljesül, ha $S$ zárt az $R$-beli összeadásra, szorzásra és
+      ellentettképzésre, valamint tartalmazza az $R$ gyűrű nullelemét.
+  - type: narrative
+    content: |
+      Mivel $\mathcal{S}$ minden eleme részgyűrű, így a [reszgyuru-feltetele] miatt mindegyik tartalmazza az $R$
+      gyűrű nullelemét. A nullelem tehát valóban benne van ezek metszetében, azaz $S$-ben.
+  - type: narrative
+    content: |
+      Legyen most $x$ az $S$ halmaz egy tetszőleges eleme. Mivel $S$ az $\mathcal{S}$-beli részgyűrűk metszete, így
+      $x$ e részgyűrűk mindegyikének szintén eleme, amelyek viszont ismét a [reszgyuru-feltetele] miatt zártak az
+      ellentettképzésre. Így $-x$ is eleme az összes $\mathcal{S}$-beli részgyűrűnek, vagyis valóban benne van ezek
+      metszetében, azaz $S$-ben.
+  - type: narrative
+    content: |
+      Végül legyen $x$ és $y$ az $S$ halmaz két tetszőleges eleme. Mivel $S$ az $\mathcal{S}$-beli részgyűrűk
+      metszete, így $x$ és $y$ e részgyűrűk mindegyikének szintén eleme, amelyek viszont ismét a
+      [reszgyuru-feltetele] miatt zártak az összeadásra és szorzásra. Így az $x+y$ összeg, valamint az $x\cdot y$
+      szorzat is eleme az összes $\mathcal{S}$-beli részgyűrűnek, vagyis valóban benne vannak ezek metszetében,
+      azaz $S$-ben. Az $S$ tehát ***valóban részgyűrű*** $R$-ben, ahogyan a tétel állítja.
+  - type: narrative
+    content: |
+      ***Most nézzük a balideálok metszetére vonatkozó állítást!*** Jelöljük $I$-vel az $\mathcal{I}$
+      halmazrendszerben lévő balideálok metszetét. Azt kell megmutatni, hogy $I$ balideál $R$-ben. Ez a [ideal]
+      szerint azt jelenti, hogy egyrészt $I$ részgyűrű $R$-ben, másrészt akármelyik $a\in I$ elemet balról
+      megszorozva akármelyik $r\in R$ elemmel, az így kapott $r\cdot a$ szorzat szintén benne van $I$-ben. Minthogy
+      $\mathcal{I}$ minden eleme részgyűrű $R$-ben (hiszen balideál), ezért a fentiek alapján $I$ is részgyűrű
+      $R$-ben. Elegendő tehát csak a baloldali szorzásra vonatkozó feltételt ellenőrizni.
+  - type: narrative
+    content: |
+      Tegyük fel, hogy $a$ az $I$ részgyűrű, $r$ pedig az $R$ gyűrű egy tetszőleges eleme. Mivel $I$ az
+      $\mathcal{I}$-beli balideálok metszete, így $a$ e balideálok mindegyikének szintén eleme. Emiatt az $r\cdot
+      a$ szorzat is benne van az összes $\mathcal{I}$-beli balideálban, tehát ezek metszetében is, azaz $I$-ben.
+      Emiatt $I$ ***valóban balideál*** $R$-ben.
+  - type: narrative
+    content: |
+      ***A jobbideálok metszetére vonatkozó állítás*** értelemszerűen ugyanezzel a gondolatmenettel igazolható
+      azzal a különbséggel, hogy ekkor az $r\cdot a$ szorzat helyett az $a\cdot r$ szorzatot kell tekinteni.
+  - type: narrative
+    content: |
+      ***Végül a (kétoldali) ideálok metszetére vonatkozó állítás*** triviálisan adódik, hiszen minden (kétoldali)
+      ideál egyszerre bal- és jobbideál.

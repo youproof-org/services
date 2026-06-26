@@ -1,0 +1,10 @@
+type: theorem
+name: termeszetes-szamok-rendezesi-relacioja-tranzitiv
+proofs:
+  - termeszetes-szamok-rendezesi-relacioja-tranzitiv-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Az $\N$ halmaz tetszőleges $a$, $b$ és $c$ elemére teljesül, hogy $a\leq b$ és $b\leq c$ együttes fennállása
+      esetén $a\leq c$ is fennáll &ndash; azaz a $\leq$ reláció ***tranzitív***.

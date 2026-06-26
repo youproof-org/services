@@ -1,0 +1,114 @@
+type: proof
+name: gyuruk-alapveto-tulajdonsagai-bizonyitas
+remarks: []
+references:
+  inverz-elem-egyertelmu:
+    target:
+      type: theorem
+      name: inverz-elem-egyertelmu
+content:
+  - type: narrative
+    content: |
+      Igazoljuk először az ***1. állítást***.
+  - type: formula
+    lead-in: |
+      Mivel $0$ a gyűrű nulleleme, ezért a 2. gyűrűaxióma miatt $0+0=0$, és így a disztributivitási szabály miatt:
+    content: |
+      0a = (\underbrace{0+0}_{=0})a = 0a+0a
+  - type: formula
+    lead-in: |
+      Mindkét oldalhoz hozzáadva $0a$ ellentettjét (amely ugye a 3. gyűrűaxióma miatt létezik) a tétel 1. állítását
+      kapjuk:
+    content: |
+      0 = 0a
+  - type: narrative
+    content: |
+      A $0=a0$ azonosság ugyanilyen módon igazolható, csak ekkor a másik oldali disztributivitási szabályt kell
+      alkalmazni.
+  - type: narrative
+    content: |
+      A ***2. állítás*** baloldalán $-(-a)$ szerepel, amely nem más, mint $-a$ ellentettje.
+  - type: formula
+    lead-in: |
+      Ezért a 3. gyűrűaxióma miatt kettejük összege épp a nullelem kell legyen:
+    content: |
+      -(-a)+(-a)=0
+  - type: formula
+    lead-in: |
+      Mindkét oldalhoz hozzáadva $a$-t a következőt kapjuk:
+    content: |
+      -(-a)+\underbrace{0}_{=(-a)+a}=0+a
+  - type: formula
+    lead-in: |
+      A keletkező 0-kat mindkét oldalról elhagyhatjuk a 2. gyűrűaxióma miatt, megkapva így a tétel 2. állítását:
+    content: |
+      -(-a)=a
+  - type: narrative
+    content: |
+      Most a ***3. állítást*** igazoljuk.
+  - type: formula
+    lead-in: |
+      Az 1. állítás miatt $0=0b$, de mivel $0$ a gyűrű nulleleme, ezért a 3. gyűrűaxióma miatt $-a+a=0$, és így a
+      disztributivitási szabály miatt:
+    content: |
+      0=0b=(\underbrace{-a+a}_{=0})b=(-a)b + ab
+  - type: narrative
+    content: |
+      Mivel $ab$-hez $(-a)b$-t adva épp a nullelemet kapjuk, ezért $(-a)b$ valóban $ab$ ellentettje.
+  - type: formula
+    lead-in: |
+      Ez viszont a [inverz-elem-egyertelmu] miatt egyértelmű, így tehát:
+    content: |
+      (-a)b = -(ab)
+  - type: narrative
+    content: |
+      Az $a(-b)=-(ab)$ azonosság ugyanilyen módon igazolható, csak ekkor a másik oldali disztributivitási szabályt
+      kell alkalmazni.
+  - type: narrative
+    content: |
+      A ***4. állítás*** könnyen adódik az előző 3 állításból.
+  - type: formula
+    lead-in: |
+      Az 1. állítás miatt $0=0(-b)$, de mivel $0$ a gyűrű nulleleme, ezért a 3. gyűrűaxióma miatt $-a+a=0$, és így
+      a disztributivitási szabály miatt:
+    content: |
+      0=0(-b)=(\underbrace{-a+a}_{=0})(-b)=(-a)(-b) + a(-b)
+  - type: formula
+    lead-in: |
+      A 3. állítás miatt a fenti egyenlet jobboldalán lévő második tag $-(ab)$-vel egyenlő, azaz:
+    content: |
+      0=(-a)(-b) + \underbrace{(-(ab))}_{=a(-b)}
+  - type: narrative
+    content: |
+      Mivel $(-a)(-b)$-hez $-(ab)$-t adva épp a nullelemet kapjuk, ezért $(-a)(-b)$ valóban $-(ab)$ ellentettje.
+  - type: formula
+    lead-in: |
+      Ez viszont a [inverz-elem-egyertelmu] miatt egyértelmű, így tehát:
+    content: |
+      (-a)(-b) = -(-(ab))
+  - type: formula
+    lead-in: |
+      Az egyenlet jobboldalát viszont a 2. állítás miatt átírhatjuk a következőképpen, megkapva a tétel 4.
+      állítását:
+    content: |
+      (-a)(-b) = \overbrace{ab}^{=-(-(ab))}
+  - type: narrative
+    content: |
+      Végül az ***5. állításhoz*** azt kell belátnunk, hogy az $(a+b)$ ellentettje &ndash; azaz a $-(a+b)$ elem
+      &ndash; valóban megegyezik a $(-a)+(-b)$ elemmel.
+  - type: formula
+    lead-in: |
+      A [inverz-elem-egyertelmu] miatt az ellentettképzés asszociatív művelet esetén egyértelmű, így ez pontosan
+      akkor teljesül, ha:
+    content: |
+      (a+b)+((-a)+(-b))=0
+  - type: formula
+    lead-in: |
+      Az 1. gyűrűaxióma alapján ez a kifejezés tetszőlegesen átzárójelezhető (asszociatív) és átsorrendezhető
+      (kommutatív), így felírható így is:
+    content: |
+      \underbrace{(a+(-a))}_{=0}+\underbrace{(b+(-b))}_{=0}=0+0=0
+  - type: narrative
+    content: |
+      Így tehát $(a+b)$ ellentettje &ndash; azaz a $-(a+b)$ elem &ndash; tényleg megegyezik a $(-a)+(-b)$ elemmel,
+      ahogyan a tétel állítja.

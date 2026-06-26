@@ -1,0 +1,117 @@
+type: proof
+name: kituntetett-kozos-oszto-kiemelesi-tulajdonsaga-bizonyitas
+remarks: []
+references:
+  asszocialtsag-es-egysegek-kapcsolata:
+    target:
+      type: theorem
+      name: asszocialtsag-es-egysegek-kapcsolata
+  egysegek-es-egysegelem-viszonya:
+    target:
+      type: theorem
+      name: egysegek-es-egysegelem-viszonya
+  gyuruk-alapveto-tulajdonsagai:
+    target:
+      type: theorem
+      name: gyuruk-alapveto-tulajdonsagai
+  kituntetett-kozos-oszto-tulajdonsagai:
+    target:
+      type: theorem
+      name: kituntetett-kozos-oszto-tulajdonsagai
+  oszthatosag:
+    target:
+      type: definition
+      name: oszthatosag
+  oszthatosag-egyszerusitese:
+    target:
+      type: theorem
+      name: oszthatosag-egyszerusitese
+  oszthatosag-tulajdonsagai:
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+content:
+  - type: narrative
+    content: |
+      Ha $c=0$, akkor nyilván igaz az állítás, hiszen a [kituntetett-kozos-oszto-tulajdonsagai] 1. pontja miatt
+      egyrészt $(a\cdot 0,b\cdot 0)=(0,0)=0$, másrészt a [gyuruk-alapveto-tulajdonsagai] 1. pontja miatt
+      $(a,b)\cdot 0 = 0$.
+  - type: narrative
+    content: |
+      Ha $a=b=0$, akkor hasonló okok miatt szintén nyilvánvalóan teljesül a tétel, hiszen egyrészt $(0\cdot
+      c,0\cdot c)=(0,0)=0$, másrészt $(0,0)\cdot c=0\cdot c=0$.
+  - type: narrative
+    content: |
+      Az általánosság megsértése nélkül feltehetjük tehát, hogy $c\eq 0$, valamint $a$ és $b$ közül legalább az
+      egyik nem $0$, és így egyrészt a [oszthatosag-tulajdonsagai] 4. pontja miatt $(a,b)\eq 0$, másrészt a
+      [kituntetett-kozos-oszto-tulajdonsagai] 3. pontja miatt $R$-ben létezik ***egységelem***.
+  - type: formula
+    lead-in: |
+      Mivel $(a,b)$ közös osztó, ezért teljesülnek az alábbi oszthatóságok:
+    content: |
+      \begin{aligned}(a,b)&|a \\ (a,b)&|b\end{aligned}
+  - type: formula
+    lead-in: |
+      Ekkor azonban a [oszthatosag-egyszerusitese] miatt teljesülnek az alábbi oszthatóságok is:
+    content: |
+      \begin{aligned}(a,b)c&|ac \\ (a,b)c&|bc\end{aligned}
+  - type: narrative
+    content: |
+      Ez viszont azt jelenti, hogy $(a,b)c$ közös osztója $ac$-nek és $bc$-nek. Mivel feltételeztük, hogy bármely
+      két elemnek létezik kitüntetett közös osztója, ezért nyilván létezik az $(ac,bc)$ kitüntetett közös osztó is.
+      Ez viszont &ndash; kitüntetett lévén &ndash; többszöröse bármely más közös osztónak, így $(a,b)c$-nek is.
+  - type: formula
+    lead-in: |
+      Azt tehát már tudjuk a tételben szereplő két kifejezésről, hogy teljesül közöttük az alábbi oszthatóság:
+    content: |
+      (a,b)c|(ac,bc)
+  - type: formula
+    lead-in: |
+      Ez viszont az oszthatóság [oszthatosag]ja alapján épp azt jelenti, hogy létezik olyan $k$ elem, amelyre
+      teljesül az alábbi egyenlet:
+    content: |
+      (a,b)c \cdot k = (ac,bc)
+  - type: narrative
+    content: |
+      Azt fogjuk megmutatni, hogy $k$ egység, mivel ebből a [asszocialtsag-es-egysegek-kapcsolata] miatt már
+      következik az $(a,b)c\sim (ac,bc)$ asszociáció. Vizsgáljuk hát meg a fenti egyenletet.
+  - type: narrative
+    content: |
+      Ennek jobboldala $ac$ és $bc$ közös osztója, így az egyenlet baloldala is.
+  - type: formula
+    lead-in: |
+      Fennállnak tehát az alábbi oszthatóságok:
+    content: |
+      \begin{aligned}(a,b)c\cdot k &|ac \\ (a,b)c\cdot k &|bc\end{aligned}
+  - type: narrative
+    content: |
+      Mivel a bizonyítás elején az általánosság megsértése nélkül feltehettük, hogy $c\eq 0$, így mindkét
+      oszthatóságot egyszerűsíteni lehet vele a [oszthatosag-egyszerusitese] miatt.
+  - type: formula
+    lead-in: |
+      Ekkor ezt kapjuk:
+    content: |
+      \begin{aligned}(a,b)k &|a \\ (a,b)k &|b\end{aligned}
+  - type: narrative
+    content: |
+      Azt kaptuk tehát, hogy $(a,b)k$ közös osztója $a$-nak és $b$-nek, és így osztója az ő kitüntetett közös
+      osztójuknak.
+  - type: formula
+    lead-in: |
+      Azaz:
+    content: |
+      (a,b)k|(a,b)
+  - type: narrative
+    content: |
+      Mivel a bizonyítás elején láttuk, hogy létezik egységelem, valamint $(a,b)\eq 0$, így mindkét oszthatóságot
+      egyszerűsíteni lehet $(a,b)$-vel a [oszthatosag-egyszerusitese] miatt.
+  - type: formula
+    lead-in: |
+      Ekkor ezt kapjuk:
+    content: |
+      k|1
+  - type: narrative
+    content: |
+      A $k$ elem tehát osztója az egységelemnek, emiatt a [egysegek-es-egysegelem-viszonya] értelmében valóban
+      egység, és így $(a,b)c\cdot k=(ac,bc)$-ből következik az $(a,b)c\sim (ac,bc)$ asszociáció, ahogyan a tétel
+      állítja.

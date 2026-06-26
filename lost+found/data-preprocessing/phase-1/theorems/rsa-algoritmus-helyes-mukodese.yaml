@@ -1,0 +1,33 @@
+type: theorem
+name: rsa-algoritmus-helyes-mukodese
+proofs:
+  - rsa-algoritmus-helyes-mukodese-bizonyitas
+remarks: []
+references:
+  euler-fuggveny-primhatvanyokra:
+    target:
+      type: theorem
+      name: euler-fuggveny-primhatvanyokra
+  euler-fuggveny-szorzattarto-tulajdonsaga:
+    target:
+      type: theorem
+      name: euler-fuggveny-szorzattarto-tulajdonsaga
+content:
+  - type: ordered-list
+    lead-in: |
+      Tegyük fel, hogy teljesülnek az alábbi feltételek:
+    items:
+      - 'Legyen adott két tetszőleges, egymástól különböző ***pozitív*** prímszám: $p$ és $q$.'
+      - 'Képezzük ezekből az $m=p\cdot q$ modulust.'
+      - 'Képezzük az Euler-féle $\varphi$-függvény értékét az $m$ modulusra, azaz kiszámítjuk a
+        $\varphi(m)=(p-1)\cdot (q-1)$ egész számot (erre vonatkozóan lásd a [euler-fuggveny-szorzattarto-tulajdonsaga]t és a [euler-fuggveny-primhatvanyokra]t).'
+      - 'Legyen adott egy tetszőleges $e$ egész szám, amely relatív prím $\varphi(m)$-hez.'
+      - 'Keressünk egy olyan $d$ egész számot, amelyre teljesül az alábbi kongruencia:'
+  - type: formula
+    content: |
+      e\cdot d\equiv 1\pmod{\varphi(m)}
+  - type: formula
+    lead-in: |
+      Ekkor tetszőleges $x$ egész szám esetén teljesül az alábbi kongruencia is:
+    content: |
+      x^{e\cdot d}\equiv x\pmod m

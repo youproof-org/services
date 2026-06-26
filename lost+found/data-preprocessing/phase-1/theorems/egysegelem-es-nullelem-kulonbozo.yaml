@@ -1,0 +1,10 @@
+type: theorem
+name: egysegelem-es-nullelem-kulonbozo
+proofs:
+  - egysegelem-es-nullelem-kulonbozo-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $(R, +, \cdot )$ tetszőleges ***egységelemes*** gyűrű a szokásos jelölésekkel. Ekkor $0\eq 1$, azaz az
+      egységelem biztosan különbözik a nullelemtől.

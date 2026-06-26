@@ -1,0 +1,195 @@
+type: proof
+name: rsa-algoritmus-helyes-mukodese-bizonyitas
+remarks: []
+references:
+  egesz-szamok-kozotti-kongruencia:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia
+  egesz-szamok-kozotti-kongruencia-tulajdonsagai:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia-tulajdonsagai
+  euler-fermat-tetel:
+    target:
+      type: theorem
+      name: euler-fermat-tetel
+  hatvanyozas-azonossagai:
+    target:
+      type: theorem
+      name: hatvanyozas-azonossagai
+  kinai-maradektetel-alternativ:
+    target:
+      type: theorem
+      name: kinai-maradektetel-alternativ
+  kinai-maradektetel-megforditasa:
+    target:
+      type: theorem
+      name: kinai-maradektetel-megforditasa
+  kis-fermat-tetel:
+    target:
+      type: theorem
+      name: kis-fermat-tetel
+  oszthatosag:
+    target:
+      type: definition
+      name: oszthatosag
+  primhatvanyhoz-relativ-primek:
+    target:
+      type: theorem
+      name: primhatvanyhoz-relativ-primek
+content:
+  - type: formula
+    lead-in: |
+      Mivel teljesül az $e\cdot d\equiv 1\pmod{\varphi(m)}$ kongruencia, ezért a [egesz-szamok-kozotti-kongruencia]
+      3. pontja alapján teljesül az alábbi oszthatóság:
+    content: |
+      \varphi(m)|e\cdot d-1
+  - type: formula
+    lead-in: |
+      Az oszthatóság [oszthatosag]ja alapján ekkor létezik olyan $k$ egész szám, amelyre teljesül az alábbi
+      egyenlet:
+    content: |
+      k\cdot \varphi(m)=e\cdot d-1
+  - type: formula
+    lead-in: |
+      Mindkét oldalhoz $1$-et adva:
+    content: |
+      k\cdot \varphi(m) + 1=e\cdot d
+  - type: formula
+    lead-in: |
+      Azt kell tehát bizonyítani, hogy tetszőleges $x$ esetén teljesül az alábbi kongruencia:
+    content: |
+      x^{\overbrace{k\cdot \varphi(m)+1}^{=ed}}\equiv x\pmod m
+  - type: narrative
+    content: |
+      Itt két eset lehetséges. Az első (és legvalószínűbb) esetben $x$ ***relatív prím*** $m$-hez. Ekkor
+      közvetlenül alkalmazható az ***Euler-Fermat tétel*** ([euler-fermat-tetel]).
+  - type: formula
+    lead-in: |
+      Ehhez alakítsuk át a kongruencia baloldalán álló kifejezést a [hatvanyozas-azonossagai] 2. és 3. pontjának
+      megfelelően:
+    content: |
+      (x^{\varphi(m)})^k\cdot x\equiv x\pmod m
+  - type: narrative
+    content: |
+      Az ***Euler-Fermat tétel*** miatt az $x^{\varphi(m)}$ kifejezés $1$-gyel kongruens modulo $m$.
+  - type: formula
+    lead-in: |
+      Így a [egesz-szamok-kozotti-kongruencia-tulajdonsagai] 5. és 8. pontja alapján a fenti kongruencia
+      egyszerűsíthető:
+    content: |
+      \underbrace{1^k\cdot x}_{=x}\equiv x\pmod m
+  - type: narrative
+    content: |
+      Ez a kongruencia viszont nyilvánvalóan teljesül a [egesz-szamok-kozotti-kongruencia-tulajdonsagai] 1. pontja
+      alapján.
+  - type: narrative
+    content: |
+      Most nézzük meg, hogy mi a helyzet abban a nem túl gyakori esetben, ha $x$ ***NEM relatív prím*** $m$-hez,
+      azaz $x$-nek és $m$-nek van egységtől különböző közös osztója. Mivel az $m=pq$ modulusnak csak két
+      prímtényezője van ($p$ és $q$), ezért ez csak az alábbi három esetben fordulhat elő:
+  - type: narrative
+    content: |
+      ***1. eset:*** Az $x$ többszöröse $p$-nek is és $q$-nak is, azaz magának az $m=pq$ modulusnak.
+  - type: formula
+    lead-in: |
+      Ilyenkor tehát teljesül az alábbi kongruencia:
+    content: |
+      x\equiv 0\pmod m
+  - type: formula
+    lead-in: |
+      Ekkor a [egesz-szamok-kozotti-kongruencia-tulajdonsagai] 8. pontja alapján mindkét oldalt a $k\cdot
+      \varphi(m)+1$-edik hatványra emelve teljesül az alábbi kongruencia is:
+    content: |
+      x^{k\cdot \varphi(m)+1}\equiv 0\pmod m
+  - type: formula
+    lead-in: |
+      A két kongruenciát összevetve a [egesz-szamok-kozotti-kongruencia-tulajdonsagai] 2. és 3. pontjai alapján
+      valóban teljesül a tétel állítása, azaz:
+    content: |
+      x^{k\cdot \varphi(m)+1}\equiv x\pmod m
+  - type: narrative
+    content: |
+      ***2. eset:*** Az $x$ többszöröse $p$-nek, de nem többszöröse $q$-nak. Azaz teljesül a $p|x$ oszthatóság, de
+      nem teljesül a $q|x$ oszthatóság. Ebben az esetben a [primhatvanyhoz-relativ-primek] alapján $x$ relatív prím
+      $q$-hoz.
+  - type: formula
+    lead-in: |
+      Mivel $\varphi(m)=(p-1)\cdot (q-1)$, ezért teljesül az alábbi:
+    content: |
+      x^{k\cdot \varphi(m) +1}=x^{k\cdot \overbrace{(p-1)\cdot (q-1)}^{=\varphi(m)} + 1}
+  - type: formula
+    lead-in: |
+      Felhasználva a hatványozás azonosságairól szóló [hatvanyozas-azonossagai] 2. és 3. pontját, ez a
+      hatványkifejezés az alábbi alakba írható:
+    content: |
+      (x^{q-1})^{k\cdot (p-1)}\cdot x
+  - type: formula
+    lead-in: |
+      Mivel $x$ relatív prím $q$-hoz, ezért a ***kis Fermat-tétel*** ([kis-fermat-tetel]) miatt teljesül az alábbi
+      kongruencia:
+    content: |
+      x^{q-1}\equiv 1\pmod q
+  - type: formula
+    lead-in: |
+      A [egesz-szamok-kozotti-kongruencia-tulajdonsagai] 8. pontja alapján mindkét oldalt a $k\cdot (p-1)$-edik
+      hatványra emelve továbbra is érvényes kongruenciát kapunk:
+    content: |
+      (x^{q-1})^{k\cdot (p-1)}\equiv 1\pmod q
+  - type: formula
+    lead-in: |
+      Így tehát a $x^{k\cdot \varphi(m) +1} = (x^{q-1})^{k\cdot (p-1)}\cdot x$ kifejezésre teljesül az alábbi
+      kongruencia:
+    content: |
+      x^{k\cdot \varphi(m) +1}\equiv x\pmod q
+  - type: formula
+    lead-in: |
+      Továbbá nyilván teljesül az alábbi kongruencia is, mivel $x$ többszöröse $p$-nek, és így mindkét oldal
+      $0$-val kongruens modulo $p$:
+    content: |
+      x^{k\cdot \varphi(m) +1}\equiv x\pmod p
+  - type: narrative
+    content: |
+      ***3. eset:*** Az $x$ többszöröse $q$-nak, de nem többszöröse $p$-nek. Azaz teljesül a $q|x$ oszthatóság, de
+      nem teljesül a $p|x$ oszthatóság. Ebben az esetben az $x$ egész szám $q$ helyett $p$-hez lesz relatív prím.
+      Ekkor az előző gondolatmenet szinte szóról szóra megismételhető, pusztán a $p$ és $q$ szerepét kell
+      felcserélni.
+  - type: formula
+    lead-in: |
+      Mivel $ed=k\cdot \varphi(m)+1$, ezért ***a 2. és 3. esetben*** is tulajdonképpen azt kaptuk, hogy teljesül az
+      alábbi két kongruencia:
+    content: |
+      \begin{aligned}x^{ed}&\equiv x\pmod p \\ x^{ed}&\equiv x\pmod q\end{aligned}
+  - type: formula
+    lead-in: |
+      Ez a $\Z/p\Z$ és a $\Z/q\Z$ maradékosztálygyűrűkben az alábbiakat jelenti:
+    content: |
+      \begin{aligned}[x^{ed}]_p &= [x]_p \\ [x^{ed}]_q &= [x]_q\end{aligned}
+  - type: formula
+    lead-in: |
+      Ennek megfelelően ezt így írhatjuk fel a $\Z/p\Z \times \Z/q\Z$ direkt szorzat egy elemeként:
+    content: |
+      ([x^{ed}]_p; [x^{ed}]_q) = ([x]_p; [x]_q)
+  - type: narrative
+    content: |
+      A [kinai-maradektetel-alternativ] és a [kinai-maradektetel-megforditasa] alapján azonban tudjuk, hogy a
+      $\Z/p\Z \times \Z/q\Z$ elemei kölcsönösen egyértelműen megfeleltethetők a $\Z/pq\Z$ maradékosztálygyűrű
+      elemeivel.
+  - type: formula
+    lead-in: |
+      Ez a leképezés a fenti egyenlet bal és jobboldalához a [kinai-maradektetel-megforditasa]ben szereplő képlet
+      alapján az alábbiakat rendeli hozzá:
+    content: |
+      \begin{aligned}([x^{ed}]_p; [x^{ed}]_q) &\to [x^{ed}]_{pq} \\ ([x]_p; [x]_q) &\to [x]_{pq}\end{aligned}
+  - type: formula
+    lead-in: |
+      Mármost ha itt a nyilak baloldalán álló objektumok megegyeznek, akkor a leképezés kölcsönösen egyértelműsége
+      miatt a nyilak jobboldalán álló objektumok is meg kell egyezzenek, azaz:
+    content: |
+      [x^{ed}]_{pq}=[x]_{pq}
+  - type: formula
+    lead-in: |
+      Ugyanezt kongruenciával megfogalmazva megkapjuk a tétel állítását:
+    content: |
+      x^{ed}\equiv x\pmod{\underbrace{pq}_{=m}}

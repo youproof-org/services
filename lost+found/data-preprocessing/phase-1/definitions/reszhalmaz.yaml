@@ -1,0 +1,18 @@
+type: definition
+name: reszhalmaz
+remarks:
+  - reszhalmaz-megjegyzes
+content:
+  - type: narrative
+    content: |
+      Legyenek $A$ és $B$ valamilyen halmazok. Tegyük fel továbbá, hogy minden olyan esetben, amikor $a\in A$
+      teljesül, egyúttal teljesül $a\in B$ is. Ekkor azt mondjuk, hogy az $A$ halmaz ***részhalmaza*** a $B$
+      halmaznak, vagy más szavakkal a $B$ halmaz ***tartalmazza*** az $A$ halmazt. Ezt így jelöljük: $A\sube B$.
+  - type: narrative
+    content: |
+      Ha $A\eq \empty$ és $A\eq B$, akkor azt mondjuk, hogy $A$ ***valódi részhalmaza*** $B$-nek. Ezzel szemben az
+      üres halmaz és maga $B$ is ***nemvalódi részhalmazai*** $B$-nek.
+  - type: narrative
+    content: |
+      Ha $A\sube B$, de $A\eq B$, akkor azt mondjuk, hogy ***szigorú tartalmazás*** áll fenn $B$ és $A$ között. Ezt
+      így jelöljük: $A\sub B$.

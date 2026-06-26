@@ -1,0 +1,59 @@
+type: proof
+name: gyuruhomomorfizmus-kepenek-feltetele-bizonyitas
+remarks: []
+references:
+  osszegtarto-lekepezes-nullelem-es-ellentettkepzestarto:
+    target:
+      type: theorem
+      name: osszegtarto-lekepezes-nullelem-es-ellentettkepzestarto
+  reszgyuru-feltetele:
+    target:
+      type: theorem
+      name: reszgyuru-feltetele
+content:
+  - type: narrative
+    content: |
+      Tekintsük azt az $f$ gyűrűhomomorfizmust, amelynek képe $T$. Ez egy valamilyen, számunkra ismeretlen $X$
+      gyűrű elemein van értelmezve, amelynek nullelemét jelöljük most $0_X$-szel, míg az $S$ gyűrű nullelemét
+      jelöljük $0_S$-sel. Azt kell megmutatnunk, hogy $T$-re teljesülnek a [reszgyuru-feltetele]ben felsorolt
+      feltételek.
+  - type: narrative
+    content: |
+      A [osszegtarto-lekepezes-nullelem-es-ellentettkepzestarto] 1. pontja alapján $f(0_X)=0_S$, így tehát az $S$
+      gyűrű nulleleme valóban benne van $T$-ben.
+  - type: narrative
+    content: |
+      Ha valamilyen $a$ és $b$ elemek benne vannak $T$-ben, akkor léteznek olyan $x_a$ és $x_b$ elemek $X$-ben,
+      amelyeknek épp ő a képük, azaz $f(x_a)=a$ és $f(x_b)=b$.
+  - type: formula
+    lead-in: |
+      A két egyenletet összeadva és összeszorozva, valamint kihasználva $f$ művelettartó tulajdonságait az
+      alábbiakat kapjuk:
+    content: |
+      \begin{aligned}f(x_a)+f(x_b)&=f(x_a+x_b)=a+b \\ f(x_a)\cdot f(x_b)&=f(x_a\cdot x_b)=a\cdot b\end{aligned}
+  - type: narrative
+    content: |
+      Léteznek tehát olyan elemek $X$-ben, amelyeknek $a+b$ és $a\cdot b$ a képei (nevezetesen $x_a+x_b$ és
+      $x_a\cdot x_b$), emiatt az $a+b$ összeg és az $a\cdot b$ szorzat is benne van $T$-ben, ami így valóban zárt
+      az összeadásra és szorzásra nézve.
+  - type: narrative
+    content: |
+      Végül ha valamilyen $a$ elem benne van $T$-ben, akkor létezik olyan $x_a$ elem $X$-ben, amelynek épp $a$ a
+      képe, azaz $f(x_a)=a$.
+  - type: formula
+    lead-in: |
+      A [osszegtarto-lekepezes-nullelem-es-ellentettkepzestarto] 2. pontja alapján azonban $f$ tartja az
+      ellentettképzést is, így teljesül az alábbi:
+    content: |
+      f(-x_a)=-f(x_a)=-a
+  - type: narrative
+    content: |
+      Létezik tehát olyan elem $X$-ben, amelynek $-a$ a képe (nevezetesen $-x_a$), emiatt $-a$ is benne van
+      $T$-ben, ami így zárt az ellentettképzésre nézve is. Minthogy a [reszgyuru-feltetele]ben felsorolt minden
+      feltétel teljesül, ezért $T$ valóban részgyűrű $S$-ben.
+  - type: narrative
+    content: |
+      ***Visszafelé:*** Tegyük most fel, hogy $T$ részgyűrű $S$-ben. Azt kell megmutatnunk, hogy van olyan $S$-be
+      mutató gyűrűhomomorfizmus, amelynek képe $T$. Tekintsük például azt az $f:T\to S$ függvényt, amely $T$ minden
+      eleméhez önmagát rendeli hozzá. Ez kétségkívül nem egy izgalmas függvény, viszont nyilvánvalóan
+      gyűrűhomomorfizmus, aminek a képe ráadásul épp a $T$ halmaz.

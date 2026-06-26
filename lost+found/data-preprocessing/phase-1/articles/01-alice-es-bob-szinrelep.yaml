@@ -1,0 +1,64 @@
+type: chapter
+name: 01-alice-es-bob-szinrelep
+title: Alice és Bob színrelép
+
+abstract:
+  - type: narrative
+    content: |
+      Ez a cikksorozat a titkok elrejtésének tudományába kalauzolja el az Olvasót. E tudomány neve kriptográfia,
+      amely az ógörög "kryptós" (rejtett) és "gráphein" (írni) szavakból ered, és amely szó szerint titkosírást,
+      rejtjelezést jelent. A sorozat bevezető részében a kriptográfia tudományának történetén keresztül
+      megismerkedünk az alapfogalmakkal és azokkal a problémákkal, amelyek megoldása nélkül ma nem létezne
+      mobiltelefon, bankkártyás fizetés és Internet. De kezdjük a legelején, és ismerkedjünk meg főhőseinkkel...
+prologue:
+  - type: narrative
+    content: |
+      A mindenki által jól ismert bibliai teremtéstörténetben leírtakkal ellentétben a legújabb kutatások szerint
+      az első két ember neve nem Ádám és Éva, hanem Alice és Bob volt. Ez a történet főként róluk szól, amibe
+      időnként más (olykor gonosz) mellékszereplők is be fognak kapcsolódni. A történet számunkra érdekes része
+      akkor kezdődik, amikor a Paradicsomból való kiűzésük és a Föld benépesítésének fáradalmai után Alice és Bob
+      ismeretlen okokból nagyon távol kerültek egymástól.
+  - type: narrative
+    content: |
+      Szerencsére ekkorra már az emberek postaszolgálatokat hoztak létre, így a nagy távolság ellenére Alice és Bob
+      képesek voltak üzeneteket küldeni egymásnak. Mivel korábban rendkívül közeli (amit nevezhetünk akár intimnek
+      is) viszony alakult ki közöttük, ezért nyilván bizalmas üzeneteket is váltottak egymással, amelyekben a
+      titkaikat beszélték meg. Sajnos azonban volt egy nagyon gonosz nőszemély, aki szerette mások titkait
+      kifürkészni, és adott esetben akár még anyagi hasznot is húzni ezekből a bizalmas információkból. Őt Eve-nek
+      hívták, aki a postán dolgozott, és így mindig látta, amikor Alice és Bob éppen üzenetet küldött egymásnak.
+      Eve nagyon körültekintő volt ilyenkor: óvatosan felbontotta a borítékokat és elolvasta a bizalmas üzeneteket,
+      azután visszazárta és visszatette a többi közé. Mindig nagyon figyelt arra, hogy senki se vegye őt észre, így
+      Alice és Bob mit sem sejtett arról, hogy a bizalmas üzenetváltásaikat a gonosz Eve pofátlanul elolvassa.
+  - type: narrative
+    content: |
+      Történt egyszer, hogy Alice sok pénzt szeretett volna küldeni Bob-nak, ezért elment a közeli bankfiókba.
+      Nyitott egy bankszámlát, és befizette a pénzt erre a számlára. Ezután kitalált egy jelszót, és meghagyta a
+      banknak, hogy csak annak adhatják oda ezt a pénzt, aki a jelszót meg tudja mondani. Alice arra gondolt, hogy
+      nem túl biztonságos ilyen sok pénzt postán küldeni, hiszen akkoriban sajnos már elszaporodtak a
+      postarablások. Ehelyett Alice-nak csupán értesítenie kell Bob-ot, hogy pénzösszeget helyezett el számára a
+      bankban, valamint meg kell adnia neki a pénzfelvételhez szükséges jelszót.
+  - type: narrative
+    content: |
+      Írt is gyorsan erről egy üzenetet Bob számára, és pénz helyett ezt az üzenetet küldte el postán.
+      Természetesen a szemtelen Eve ezt az üzenetet is elolvasta titokban, és egyből kikerekedett a szeme annak
+      láttán, hogy milyen értékes információhoz jutott. Nem is vesztegette az idejét, gyorsan elutazott egy közeli
+      bankfiókba, és a titkos jelszó ismeretében Bob-ot megelőzve fel is vette a pénzt a számláról. Mire
+      szerencsétlen Bob megkapta a bizalmas levelet, és elment a bankba felvenni a pénzt, a bankszámla már üres
+      volt. Eve tehát közvetlen anyagi hasznot húzott az Alice és Bob közötti bizalmas üzenet megismeréséből.
+sections:
+  - 01-a-kriptografia-megjelenese
+  - 02-a-caesar-kod
+  - 03-a-vigenere-kod
+  - 04-a-kriptografia-alapelve
+  - 05-az-enigma
+  - 06-az-enigma-mukodese
+  - 07-az-enigma-feltorese
+  - 08-a-kulcsmegosztas-problemaja
+
+epilogue:
+  - type: narrative
+    content: |
+      A sorozat következő részeiben érdekes gyakorlati példákon keresztül vázlatosan áttekintjük az
+      információátviteli rendszerek absztrakt modelljét. Ebből világos lesz, hogy a kriptográfia tudománya hol
+      kapcsolódik be ebbe a játszmába. Ezután pedig részletesen rátérünk a kulcsmegosztás problémájának
+      megoldására, és sok egyéb, a modern kriptográfiai eljárások kapcsán felmerülő kérdés megválaszolására.

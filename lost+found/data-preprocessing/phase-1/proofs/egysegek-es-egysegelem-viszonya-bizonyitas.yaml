@@ -1,0 +1,23 @@
+type: proof
+name: egysegek-es-egysegelem-viszonya-bizonyitas
+remarks: []
+references:
+  egyseg:
+    target:
+      type: definition
+      name: egyseg
+  oszthatosag-tulajdonsagai:
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+content:
+  - type: narrative
+    content: |
+      Mivel egy egység a definíció alapján minden gyűrűelemnek osztója, ezért nyilván az egységelemnek is.
+  - type: narrative
+    content: |
+      ***Visszafelé:*** Tegyük fel, hogy egy $e$ elem osztója az egységelemnek, azaz $e|1$. Az egység [egyseg]ja
+      utáni megjegyzésben azonban már láttuk, hogy $1$ szükségképpen egység, azaz minden $a$ gyűrűelemre teljesül
+      az $1|a$ oszthatóság. Fennállnak tehát az $e|1$ és $1|a$ oszthatóságok, így az oszthatósági reláció
+      tranzitivitása miatt (lásd a [oszthatosag-tulajdonsagai] 5. pontját) fennáll az $e|a$ oszthatóság is minden
+      $a$ gyűrűelemre. Ez viszont épp azt jelenti, hogy $e$ egység.

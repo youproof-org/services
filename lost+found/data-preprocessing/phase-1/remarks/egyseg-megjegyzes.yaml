@@ -1,0 +1,38 @@
+type: remark
+name: egyseg-megjegyzes
+references:
+  gyuru-test:
+    target:
+      type: definition
+      name: gyuru-test
+  oszthatosag:
+    target:
+      type: definition
+      name: oszthatosag
+  oszthatosag-tulajdonsagai:
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+content:
+  - type: narrative
+    content: |
+      ***Figyelem!*** Ez nem tévesztendő össze az ***egységelem*** fogalmával, amely a [gyuru-test] alapján a gyűrű
+      $\cdot$-tal jelölt műveletének neutrális eleme.
+  - type: narrative
+    content: |
+      Igaz ugyanakkor, hogy egy gyűrű egységeleme &ndash; amennyiben létezik &ndash; mindig egység. Ugyanis bármely
+      $a$ gyűrűelem esetén $1\cdot a=a$, amely viszont épp azt jelenti, hogy $1|a$. Igaz továbbá, hogy az
+      egységelem ellentettje is egység, hiszen a [oszthatosag-tulajdonsagai] 8. pontja alapján az $1|a$
+      oszthatóságból következik a $(-1)|a$ oszthatóság.
+  - type: narrative
+    content: |
+      Egyáltalán nem biztos azonban, hogy egy gyűrűben csak ez a két egység létezik. Egy testben például a
+      nullelemen kívül minden elem egység, ugyanis az oszthatóság [oszthatosag]ja utáni megjegyzés alapján itt
+      minden elem osztható bármilyen nemnulla elemmel.
+  - type: narrative
+    content: |
+      Megjegyezzük ugyanakkor, hogy nem csak ez a két szélsőséges eset létezik. Vannak olyan gyűrűk is, amelyekben
+      az egységelemen és ellentettjén kívül is létezik egység, ugyanakkor nem minden eleme az. Ilyen gyűrű például
+      az egész számok egyfajta általánosításának tekinthető úgynevezett Gauss-egészek gyűrűje, amelyben összesen 4
+      egység van. Ennek részleteitől azonban &ndash; az úgynevezett komplex számok ismeretének hiányában &ndash;
+      eltekintünk.

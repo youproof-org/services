@@ -1,0 +1,15 @@
+type: theorem
+name: reszgyuru-feltetele
+proofs:
+  - reszgyuru-feltetele-bizonyitas
+remarks: []
+content:
+  - type: ordered-list
+    lead-in: |
+      Egy tetszőleges $R$ gyűrű valamely $S$ részhalmaza ***akkor és csak akkor*** részgyűrű, ha teljesülnek az
+      alábbi tulajdonságok:
+    items:
+      - '$S$ zárt az $R$ gyűrű összeadására.'
+      - '$S$ zárt az $R$ gyűrű szorzására.'
+      - '$S$ tartalmazza az $R$ gyűrű nullelemét.'
+      - '$S$ zárt az $R$-beli ellentettképzésre.'

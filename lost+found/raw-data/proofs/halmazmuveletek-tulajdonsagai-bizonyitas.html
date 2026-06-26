@@ -1,0 +1,59 @@
+<!-- wp:paragraph -->
+<p><strong>Az 1. tulajdonság:</strong> Ez nyilvánvalóan következik az üres halmaz és az univerzális halmaz definíciójából. Az üres halmaznak ugyanis nincs egyetlen eleme sem, így a vele végzett unióképzés nem ad hozzá elemeket semmilyen halmazhoz. Ehhez hasonlóan az univerzális halmaznak minden objektum az eleme, így a vele végzett metszetképzés nem vesz el elemeket semmilyen halmazból.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>A 2. tulajdonság:</strong> Ez is teljesen nyilvánvalóan adódik az unió- és a metszetképzés [yp_element slug="halmazmuveletek" type="link" /]jából.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>A 3. tulajdonság:</strong> Ha [latex]a\in A[/latex] vagy [latex]a\in B[/latex] közül legalább az egyik teljesül, akkor ez nyilván nem változik a két feltétel megcserélésével sem. Így tehát az [latex]A\cup B[/latex] halmaz pontosan meg fog egyezni a [latex]B\cup A[/latex] halmazzal. Ugyanez a gondolatmenet a metszetképzéssel is végigjátszható.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>A 4. tulajdonság:</strong> Az unióképzésre vonatkozó asszociativitás mindkét oldalán az a halmaz szerepel, amelynek minden [latex]a[/latex] elemére [latex]a\in A[/latex], [latex]a\in B[/latex] vagy [latex]a\in C[/latex] közül legalább az egyik teljesül, hiszen teljesen mindegy, hogy ezt a 3 feltételt milyen sorrendben ellenőrizzük le. A metszetképzésre vonatkozó asszociativitásra ugyanez a gondolatmenet végigjátszható.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Az 5. tulajdonság:</strong> Csak az <strong><em>első disztributivitási szabályt</em></strong> fogjuk igazolni, a másik nagyon hasonló gondolatmenettel igazolható. Tegyük fel, hogy egy [latex]x[/latex] objektum benne van a disztributivitási szabály <strong><em>baloldalán</em></strong> lévő halmazban, azaz az [latex]A\cup (B\cap C)[/latex] <strong><em>unióhalmazban</em></strong>. Itt az <strong><em>unió</em></strong> miatt két eset lehetséges. Első esetben [latex]x\in A[/latex], és ekkor nyilván [latex]x\in A\cup B[/latex] és [latex]x\in A\cup C[/latex] is teljesül, tehát [latex]x\in (A\cup B)\cap (A\cup C)[/latex] is. Második esetben [latex]x\
+otin A[/latex], de ekkor viszont az <strong><em>unió</em></strong> miatt [latex]x\in B\cap C[/latex], tehát [latex]x\in B[/latex] és [latex]x\in C[/latex] egyszerre teljesül. Ilyenkor megintcsak teljesülnek az [latex]x\in A\cup B[/latex] és [latex]x\in A\cup C[/latex] relációk, azaz [latex]x\in (A\cup B)\cap (A\cup C)[/latex] is. Mindkét esetben azt kaptuk, hogyha [latex]x[/latex] eleme a disztributivitási szabály baloldalának, akkor eleme a jobboldalának is, tehát a <strong><em>baloldal részhalmaza a jobboldalnak</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most tegyük fel, hogy [latex]x[/latex] benne van a disztributivitási szabály <strong><em>jobboldalán</em></strong> lévő halmazban, azaz az [latex](A\cup B)\cap (A\cup C)[/latex] <strong><em>metszethalmazban</em></strong>. Itt a <strong><em>metszet</em></strong> miatt tehát [latex]x\in A\cup B[/latex] és [latex]x\in A\cup C[/latex] is teljesül. Ez két ok miatt teljesülhet. Egyrészt, ha [latex]x\in A[/latex], akkor jók vagyunk, mert ekkor [latex]x[/latex] benne van minkét unióban, és így ezek metszetében is. Ha [latex]x\
+otin A[/latex], akkor viszont [latex]x\in B[/latex] és [latex]x\in C[/latex] kell teljesüljön, ami azt jelenti, hogy [latex]x\in B\cap C[/latex]. Azt kaptuk, hogy [latex]x\in A[/latex] vagy [latex]x\in B\cap C[/latex] közül legalább az egyik teljesül, azaz [latex]x\in A\cup (B\cap C)[/latex] is. Ha tehát [latex]x[/latex] eleme a disztributivitási szabály jobboldalának, akkor eleme a baloldalnak is, tehát a <strong><em>jobboldal is részhalmaza a baloldalnak</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Minthogy a szabály két oldalán álló halmazokról megmutattuk, hogy <strong><em>kölcsönösen részhalmazai egymásnak</em></strong>, ezért a [yp_element slug="reszhalmaz" type="link" /] utáni 5. megjegyzés alapján szükségképpen <strong><em>megegyeznek</em></strong>. A másik disztributivitási szabály ugyanilyen módon igazolható.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>A 6. tulajdonság:</strong> Nézzük először az [latex]A\cup (A\cap B)[/latex] kifejezést. Mivel a metszetképzés [yp_element slug="halmazmuveletek" type="link" /]ja miatt bármilyen [latex]x[/latex] objektum esetén ha [latex]x\in A\cap B[/latex], akkor [latex]x\in A[/latex], ezért ez egyben azt is jelenti, hogy a zárójelben lévő metszet részhalmaza [latex]A[/latex]-nak (lásd a [yp_element slug="reszhalmaz" type="link" /]t). A fenti kifejezésben tehát tulajdonképpen az [latex]A[/latex] halmaznak egy [latex]X[/latex] részhalmazával vett uniója szerepel. Az [latex]A\cup X[/latex] unió viszont nyilvánvalóan [latex]A[/latex]-val egyezik meg, mivel [latex]X[/latex]-nek nincs olyan eleme, ami ne lenne magának [latex]A[/latex]-nak is eleme (hiszen azt mondtuk, hogy [latex]X\sube A[/latex]). Valóban igaz tehát, hogy [latex]A\cup (A\cap B)=A[/latex], azaz teljesül az unióképzésre vonatkozó elnyelési tulajdonság. A metszetképzésre vonatkozó elnyelési tulajdonság a disztributivitásból és az idempotenciából következik:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]A\cap (A\cup B)=(\underbrace{A\cap A}_{=A})\cup (A\cap B)=A\cup (A\cap B)=A[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong>A 7. tulajdonság:</strong> Az üres halmaz komplementere az [latex]U\setminus \empty[/latex] különbséghalmaz, amely a [yp_element slug="halmazmuveletek" type="link" /] alapján azokat az elemeket tartalmazza, amelyek benne vannak [latex]U[/latex]-ban, de nincsenek benne az üreshalmazban. Tekintve, hogy az üres halmazban egyáltalán nincsenek elemek, ezért ez a különbséghalmaz magával [latex]U[/latex]-val egyezik meg. Ehhez hasonlóan az univerzális halmaz komplementere az [latex]U\setminus U[/latex] különbséghalmaz, amely tehát azokat az elemeket tartalmazza, amelyek benne is vannak és nincsenek is benne [latex]U[/latex]-ban. Ilyen elem létezése nyilvánvaló ellentmondás lenne, ezért ez a különbséghalmaz csak az üres halmaz lehet.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>A 8. tulajdonság:</strong> Az [latex]\overline{A}[/latex] komplementerhalmaz azokat az elemeket tartalmazza, amelyekre nem igaz az, hogy elemei [latex]A[/latex]-nak. Ennek a komplementere pedig azokat, amelyekre <strong><em>nem igaz az, hogy nem elemei</em></strong> [latex]A[/latex]-nak. Ezek viszont a dupla tagadás miatt épp [latex]A[/latex] elemei, azaz valóban [latex]\overline{\overline{A}}=A[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>A 9. tulajdonság:</strong> Az [latex]A[/latex] halmaz és komplementerének úniója azokat az [latex]x[/latex] elemeket tartalmazza, amelyekre [latex]x\in A[/latex] vagy [latex]x\
+otin A[/latex] közül legalább az egyik teljesül. Ez viszont minden létező [latex]x[/latex] igaz, hiszen valami vagy benne van egy halmazban, vagy nincs. Így tehát valóban [latex]A\cup \overline{A}=U[/latex]. Ehhez hasonlóan az [latex]A[/latex] halmaz és komplementerének metszete az üres halmaz, máskülönben létezne olyan [latex]x[/latex], amelyre [latex]x\in A[/latex] és [latex]x\
+otin A[/latex] egyszerre teljesülne, ami nyilvánvaló ellentmondás. Így tehát valóban [latex]A\cap \overline{A}=\empty[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Végül a 10. tulajdonság:</em></strong> Az [latex]A\cup B[/latex] komplementerébe azok az [latex]x[/latex] elemek tartoznak, amelyekre <strong>nem</strong> igaz az, hogy [latex]x\in A[/latex] vagy [latex]x\in B[/latex] közül legalább az egyik teljesül. Másként fogalmazva ezek az elemek sem [latex]A[/latex]-ban, sem pedig [latex]B[/latex]-ben nincsenek benne, azaz ezekre [latex]x\
+otin A[/latex] és [latex]x\
+otin B[/latex] egyszerre teljesül. Ez viszont épp [latex]A[/latex] és [latex]B[/latex] komplementerhalmazainak a metszete. Ehhez hasonlóan az [latex]A\cap B[/latex] komplementerébe azok az [latex]x[/latex] elemek tartoznak, amelyekre <strong>nem</strong> igaz az, hogy [latex]x\in A[/latex] és [latex]x\in B[/latex] egyszerre teljesül. Másként fogalmazva ezek az elemek [latex]A[/latex] és [latex]B[/latex] közül legalább az egyikben nincsenek benne, azaz ezekre [latex]x\
+otin A[/latex] vagy [latex]x\
+otin B[/latex] közül legalább az egyik teljesül. Ez viszont épp [latex]A[/latex] és [latex]B[/latex] komplementerhalmazainak az uniója.</p>
+<!-- /wp:paragraph -->

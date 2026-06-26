@@ -1,0 +1,14 @@
+type: remark
+name: asszocialt-megjegyzes
+references:
+  oszthatosag:
+    target:
+      type: definition
+      name: oszthatosag
+content:
+  - type: narrative
+    content: |
+      Egy testben bármely $a\eq 0$ és $b\eq 0$ elem között teljesül az $a\sim b$ asszociáció. Itt ugyanis minden
+      nemnulla elem osztója az összes elemnek (lásd a [oszthatosag] utáni megjegyzést). Az $a$-nak és $b$-nek tehát
+      minden elem többszöröse, és a nullelemen kívül minden elem osztója. Így az osztóik is megegyeznek és a
+      többszöröseik is, ami épp azt jelenti, hogy egymás asszociáltjai.

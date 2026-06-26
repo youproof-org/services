@@ -1,0 +1,79 @@
+<!-- wp:paragraph -->
+<p>Tegyük fel, hogy [latex]S[/latex] részgyűrű [latex]R[/latex]-ben. Ekkor a műveleti zártság – azaz az <strong><em>1.</em></strong> és <strong><em>2. tulajdonság</em></strong> – nyilvánvalóan teljesül, máskülönben [latex]S[/latex] nem lenne gyűrű az [latex]R[/latex]-beli műveletekre nézve, és így részgyűrű sem lehetne [latex]R[/latex]-ben.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]S[/latex]-nek létezik nulleleme – hiszen maga is gyűrű –, ezért a <strong><em>3. tulajdonsághoz</em></strong> azt kell megmutatni, hogy ez a nullelem megegyezik [latex]R[/latex] nullelemével. Jelöljük [latex]S[/latex] nullelemét [latex]0_S[/latex]-sel, [latex]R[/latex] nullelemét pedig [latex]0_R[/latex]-rel, és tegyük fel indirekt, hogy ez a kettő nem ugyanaz. Ha a kettő nem ugyanaz, akkor az sem mindegy, hogy melyik gyűrűben beszélünk ellentettképzésről. Jelölje most [latex](-0_S)[/latex] a [latex]0_S[/latex] elem [latex]R[/latex]-beli ellentettjét. Őket összeadva tehát az [latex]R[/latex] gyűrű nullelemét kell kapjuk, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]0_S+(-0_S)=0_R[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]0_S[/latex] az [latex]S[/latex] gyűrű nulleleme, ezért nyilvánvalóan igaz az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]0_S+0_S=0_S[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Végül, mivel [latex]0_R[/latex] az [latex]R[/latex] gyűrű nulleleme, ezért az alábbi is teljesül:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]0_S+0_R=0_S[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]S[/latex] gyűrű, így az összeadás asszociativitása miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](0_S+0_S)+(-0_S)=0_S+(0_S+(-0_S))[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A baloldalt kifejtve ezt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{(0_S+0_S)}_{=0_S}+(-0_S)=0_S+(-0_S)=0_R[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A jobboldalt kifejtve pedig ezt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]0_S+\underbrace{(0_S+(-0_S))}_{=0_R}=0_S+0_R=0_S[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez a kettő eredmény viszont a fentebb már említett asszociativitás miatt indirekt feltételezésünkkel ellentétben mégis meg kell egyezzen, így valóban [latex]0_R=0_S[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Végül az ellentettképzésre való zártság – azaz a <strong><em>4. tulajdonság</em></strong> – igazolásához képezzük az [latex]S[/latex] gyűrű valamely [latex]a[/latex] elemének ellentettjét mindkét gyűrűben, és megmutatjuk, hogy ezek valójában megegyeznek. Az [latex]S[/latex]-beli ellentettet jelöljük [latex]x_S[/latex]-sel, míg az [latex]R[/latex]-beli ellentettet [latex]x_R[/latex]-rel. Az [latex]a[/latex] elemet az [latex]R[/latex]-beli ellentettjével összeadva az [latex]R[/latex] gyűrű nullelemét kell kapnunk, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a+x_R=0_R[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ugyanakkor az [latex]a[/latex] elemet az [latex]S[/latex]-beli ellentettjével összeadva az [latex]S[/latex] gyűrű nullelemét kell kapnunk, amiről azonban már láttuk, hogy megegyezik az [latex]R[/latex] gyűrű nullelemével. Azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a+x_S=0_S=0_R[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Minthogy az [latex]R[/latex]-beli ellentettképzés a [yp_element slug="inverz-elem-egyertelmu" type="link" /] alapján egyértelmű, ezért szükségképpen [latex]x_S=x_R[/latex]. Azaz az [latex]S[/latex] gyűrű valóban zárt az [latex]R[/latex]-beli ellentettképzésre.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Visszafelé:</em></strong> Most azt kell megmutatnunk, hogy amennyiben teljesül mind a 4 tulajdonság, úgy [latex]S[/latex] részgyűrű [latex]R[/latex]-ben. Az [latex]R[/latex] gyűrű műveletei az 1. és 2. tulajdonságok alapján nem vezetnek ki [latex]S[/latex]-ből, így azok algebrai értelemben műveletek ezen a szűkebb halmazon is (lásd a [yp_element slug="ketvaltozos-muvelet" type="link" /]t). Továbbá a 3. és 4. tulajdonság miatt létezik nullelem, és minden elemnek létezik ellentettje is [latex]S[/latex]-ben. Így a [yp_element slug="gyuru-test" type="link" /] szerinti gyűrűaxiómákból már csak a két művelet asszociativitását, valamint a disztributivitási szabályokat kell igazolnunk. Ezeket azonban [latex]S[/latex] megörökli az [latex]R[/latex]-től a műveletekkel együtt. Így tehát [latex]S[/latex] valóban részgyűrű [latex]R[/latex]-ben.</p>
+<!-- /wp:paragraph -->

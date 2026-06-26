@@ -1,0 +1,88 @@
+type: section
+name: 06-az-osszeadas-kommutativitasa
+title: Az összeadás kommutativitása
+
+references:
+  peano-osszeadas:
+    target:
+      type: definition
+      name: peano-osszeadas
+  peano-osszeadas-kommutativitas-0-lemma:
+    target:
+      type: theorem
+      name: peano-osszeadas-kommutativitas-0-lemma
+  peano-osszeadas-kommutativitas-lemma:
+    target:
+      type: theorem
+      name: peano-osszeadas-kommutativitas-lemma
+
+body:
+  - type: narrative
+    content: |
+      Általános iskolában megtanultuk, hogy teljesen mindegy, milyen sorrendben adunk össze két számot, ugyanazt az
+      eredményt kell kapnunk. Megköveteljük tehát, hogy az összeadásban a tagok sorrendje felcserélhető legyen. Az
+      olyan műveleteket, amelyek esetén ez teljesül, ***kommutatív műveleteknek*** nevezzük. Első jogos kérdés
+      tehát, hogy vajon a [peano-osszeadas]ban ismertetett "összeadásnak" nevezett művelet teljesíti-e ezt a
+      kritériumot?
+  - type: narrative
+    content: |
+      Most meg fogjuk mutatni, hogy ez a tulajdonság bizony teljesül, méghozzá a Peano-axiómák logikai
+      következményeként. Ehhez először egy úgynevezett segédtételt &ndash; tudományosabb nevén ***lemmát*** &ndash;
+      fogunk bizonyítani. Egy lemma semmiben sem különbözik egy sima tételtől. Ezzel az elnevezéssel pusztán azt
+      szeretnénk jelezni, hogy egy olyan állításról van szó, amelynek önmagában nincs jelentősége, viszont
+      felhasználjuk más tételek &ndash; jelen esetben például a kommutativitás &ndash; bizonyításához. Nézzük is
+      meg ezt a segédtételt:
+  - type: embed
+    target:
+      type: theorem
+      name: peano-osszeadas-kommutativitas-lemma
+  - type: narrative
+    content: |
+      Ennek belátására mutatunk egy remek példát ***teljes indukciós bizonyításra***, amelyet ugye a
+      Peano-axiómarendszer 4. pontja tesz lehetővé. Ez jól szemléltethető egy valamelyik irányban végtelen
+      dominósorral, amelyről belátjuk, hogy bármely dominót felborítva az fel fogja borítani a soron következő
+      dominót is. Ezek után nincs más dolgunk, mint egy laza mozdulattal felborítani az első dominót, és élvezni a
+      &ndash; végtelen hosszú &ndash; műsort. Most lássuk, hogyan működik ez a gyakorlatban:
+  - type: embed
+    target:
+      type: proof
+      name: peano-osszeadas-kommutativitas-lemma-bizonyitas
+  - type: narrative
+    content: |
+      Az imént bizonyított segédtételt fogjuk felhasználni az összeadás kommutativitásának bizonyításához. Ezt két
+      lépésben fogjuk megtenni ismét a teljes indukciót alkalmazva. Egyrészt bizonyítjuk, hogy ha tetszőleges $a$
+      számra valamilyen $n$ esetén teljesül, hogy $a + n = n + a$, akkor teljesülni fog $a+s(n)=s(n)+a$ is, azaz
+      felállítjuk a dominósort. Másrészt felborítjuk az első dominót, azaz bizonyítjuk, hogy konkrétan $n=0$ esetén
+      valóban teljesül a kommutativitás. Kezdjük ez utóbbival.
+  - type: embed
+    target:
+      type: theorem
+      name: peano-osszeadas-kommutativitas-0-lemma
+  - type: embed
+    target:
+      type: proof
+      name: peano-osszeadas-kommutativitas-0-lemma-bizonyitas
+  - type: narrative
+    content: |
+      Most tehát rendelkezésünkre áll a [peano-osszeadas-kommutativitas-lemma] és a
+      [peano-osszeadas-kommutativitas-0-lemma]. Ezek segítségével már be tudjuk látni az összeadás
+      kommutativitását:
+  - type: embed
+    target:
+      type: theorem
+      name: peano-osszeadas-kommutativitas
+  - type: embed
+    target:
+      type: proof
+      name: peano-osszeadas-kommutativitas-bizonyitas
+  - type: narrative
+    content: |
+      Látható tehát, hogy a [peano-osszeadas]ban értelmezett "összeadásnak" nevezett művelet valóban kommutatív,
+      ahogy azt az általános iskolában már megszokhattuk tőle. Ez azonban csak és kizárólag a Peano-axiómák logikai
+      következménye, nem pedig holmi fejünkben élő intuitív kép miatt van ez így. A bizonyításához két segédtételen
+      keresztül vezetett az út, azaz kicsit sem mondható magától értetődőnek. A továbbiakban azonban egészen
+      nyugodtan felhasználhatjuk majd ezt a tulajdonságot, hiszen az megnyugtató bizonyosságot nyert.
+  - type: narrative
+    content: |
+      Most nézzük meg az összeadás egy másik nagyon fontos tulajdonságát, amely szintén jól ismert az általános
+      iskolából.

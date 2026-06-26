@@ -1,0 +1,65 @@
+type: chapter
+name: 11-alice-es-bob-szamelmeletet-epit
+title: Alice és Bob számelméletet épít
+
+abstract:
+  - type: narrative
+    content: |
+      Az előző részben megismerkedtünk a digitális aláírások és a kriptográfiai hash függvények fogalmával. Láttuk,
+      hogy hogyan építhetünk fel e kriptográfiai primitívekből egy olyan rendszert, amelyben a résztvevők az
+      úgynevezett tanúsítványok segítségével ellenőrizni tudják egymás hitelességét. Az ilyen rendszereket
+      összefoglaló néven publikus kulcs infrastruktúrának neveztük. Megemlítettük, hogy az 1977-ben publikált
+      RSA-algoritmus esetén a publikus és titkos kulcsok szerepe felcserélhető, amely így alkalmas rejtjelezésen
+      kívül digitális aláírások előállítására is. Az RSA működésének megértéséhez azonban tisztában kell lennünk a
+      mögötte meghúzódó számelméleti összefüggésekkel, és úgy általában a matematika alapvető működésével. De vajon
+      hogyan építhető fel egy matematikai elmélet gyakorlatilag a semmiből? Mit nevezünk axiómáknak, amelyek egy
+      ilyen elmélet kiindulópontjai? Mi az a 4 axióma, amelyből következik minden, amit az egész számokról tudunk
+      &ndash; és az is, amit még nem tudunk? Hogyan lesz egy állításból tétel? Ebben a részben erről lesz szó...
+prologue:
+  - type: narrative
+    content: |
+      Az emberek többsége minden bizonnyal nincs elragadtatva a matematikától. Ennek főként az lehet az oka, hogy
+      sok esetben olyan absztrakt dolgokkal foglalkozik, amelyeket nehéz a valósághoz kötni. Rejtvényeket fejteni
+      viszont talán sokkal többen szeretnek. Ez azért jó hír, mivel a modern kriptográfia a matematikának épp egy
+      olyan ágára &ndash; nevezetesen a ***számelméletre*** &ndash; épül, amely tele van a rejtvényekhez hasonló
+      érdekes problémákkal. Ezek a problémák bizonyos esetekben a laikusok számára is könnyen érthetők. Megoldásuk
+      azonban még a legnagyobb elméknek is komoly, sőt sokszor szinte megoldhatatlan kihívást jelentett &ndash; és
+      jelent mind a mai napig. Talán épp ez adta a vonzerőt ahhoz, hogy az évszázadok során a matematikusokon kívül
+      rengeteg laikus is szívesen foglalkozzon ezzel a területtel pusztán kedvtelésből.
+  - type: narrative
+    content: |
+      Ez ahhoz hasonló, mint amikor valaki szeret Sudoku rejtvényeket megoldani. Az ilyen rejtvényeknek önmagukban
+      a szórakoztatáson kívül nem sok hasznuk van. Azonban általános tulajdonságaik vizsgálata elvezethet bennünket
+      igen mély összefüggésekhez, amelyeknek a kutatók szerint lehetnek különböző ipari és tudományos alkalmazásuk
+      is. Hasonló dolog történt a számelmélettel is, amely egészen a közelmúltig a matematikának egy haszontalan
+      ága volt több ezer éven keresztül. A 20. század második felére azonban a számítógépek és az Internet
+      megjelenésével a kódelmélet és azon belül is a kriptográfia fejlődése miatt egy csapásra alapvetően fontossá
+      vált.
+sections:
+  - 01-mik-azok-az-axiomak
+  - 02-a-jatekszabalyok-megvaltoztatasa
+  - 03-a-peano-fele-axiomarendszer
+  - 04-a-matematikai-bizonyitas-fogalma
+  - 05-muvelet-bevezetese-az-latex-n-latex-halmazon
+  - 06-az-osszeadas-kommutativitasa
+  - 07-az-osszeadas-asszociativitasa
+
+epilogue:
+  - type: narrative
+    content: |
+      Ebben a részben tehát ízelítőt mutattunk abból, hogy hogyan történik egy matematikai elmélet felépítése. Egy
+      ilyen építménynek az alapja mindig egy úgynevezett axiómarendszer, amely néhány olyan állításból áll,
+      amelyeket igaznak fogadunk el. Ezekből kiindulva aztán újabb fogalmak definiálhatók, és újabb állítások
+      eredeztethetők a matematikai logika szigorú szabályai szerint. Példaként bemutattuk a Peano-axiómarendszert,
+      amely mindössze 4 állítást fogalmaz meg. Ebből következik minden, amit a természetes számokkal kapcsolatban
+      jelenleg tudunk, de az is, amit majd csak az utókor fog felfedezni a jövőben. A Peano-axiómák segítségével
+      bevezettünk egy műveletet is a természetes számok között, amelyet összeadásnak neveztünk el. Végül a teljes
+      indukciós bizonyításra mutattunk példákat, amelyekkel bizonyítottuk, hogy az összeadás jól megszokott
+      tulajdonságai valóban teljesülnek, mint az axiómák logikai következményei.
+  - type: narrative
+    content: |
+      A következő részben egy másik műveletet is be fogunk vezetni, amelyet szorzásnak fogunk nevezni. Erre a
+      műveletre is hasonló tulajdonságokat fogunk bizonyítani az axiómákból, valamint megmutatunk egy nagyon fontos
+      kapcsolatot a két művelet között. Ezután végre rátérhetünk azokra a kérdésekre, amelyek lehetővé teszik az
+      előző részekben bemutatott kriptográfiai primitívek működését, és amelyek nélkül ma nem létezne információs
+      társadalom.

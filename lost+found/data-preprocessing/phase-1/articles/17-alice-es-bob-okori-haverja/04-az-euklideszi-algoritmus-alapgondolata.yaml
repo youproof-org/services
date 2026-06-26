@@ -1,0 +1,187 @@
+type: section
+name: 04-az-euklideszi-algoritmus-alapgondolata
+title: Az euklidészi algoritmus alapgondolata
+
+references:
+  asszocialtsag-tulajdonsagai:
+    target:
+      type: theorem
+      name: asszocialtsag-tulajdonsagai
+  kituntetett-kozos-oszto-tulajdonsagai:
+    target:
+      type: theorem
+      name: kituntetett-kozos-oszto-tulajdonsagai
+  oszthatosag-tulajdonsagai:
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+
+body:
+  - type: narrative
+    content: |
+      Az euklidészi algoritmus az egyik legősibb, igen gyakran használt számelméleti algoritmus. Nevét az ókori
+      görög matematikusról, Euklidészről kapta, aki Kr.e. 300 körül írta le az Elemek című művében. Ez egy
+      rendkívül hatékony módszert határoz meg két egész szám kitüntetett közös osztójának előállítására.
+  - type: narrative
+    content: |
+      Az általános iskolából nyilván mindenki emlékszik arra a módszerre, amely a két számnak a számelmélet
+      alaptétele szerinti prímtényezős felbontásából indul ki. Mivel egy egész szám és az ellentettje ugyanúgy
+      viselkedik oszthatóság szempontjából (lásd a [asszocialtsag-tulajdonsagai] 1. pontját), ezért elegendő csak a
+      pozitív egészekre és a pozitív prímtényezőkre szorítkozni. Ha tehát rendelkezésünkre áll a két szám
+      prímtényezős felbontása, akkor a keresett kitüntetett közös osztó prímtényezős felbontása pontosan azokból a
+      prímtényezőkből fog állni, amelyek mindkét szám felbontásában szerepelnek. Így például a $18$ és a $45$
+      kitüntetett közös osztója $9$, mivel a két eredeti szám felbontása $18=2\cdot 3\cdot 3$ és $45=3\cdot 3\cdot
+      5$. A két felbontás közös prímtényezői adják a kitüntetett közös osztót, azaz $3\cdot 3=9$.
+  - type: narrative
+    content: |
+      Ezzel a módszerrel &ndash; bár helyes &ndash; két alapvető probléma van. Egyrészt azt még nem bizonyítottuk,
+      hogy a $\Z$ gyűrűben valóban teljesül a számelmélet alaptétele, így azt elméletben még nem használhatnánk.
+      Másrészt viszont &ndash; és ez egy jóval nagyobb, gyakorlati probléma &ndash; ehhez a módszerhez szükségünk
+      van a két szám prímtényezős felbontására. Ennek meghatározására jelenlegi tudásunk szerint azonban nem
+      létezik hatékony eljárás, habár ez még bizonyításra vár. Hogy mit értünk "hatékony eljárás" alatt, arról a
+      6., 7. és 8. részekben volt szó részletesen, így azt nem ismételnénk meg. Azonban saját bőrünkön is
+      érzékelhetjük a problémát, ha megpróbáljuk megtalálni például a $12\space 439\space 705\space 049$ és a
+      $15\space 828\space 713\space 003$ kitüntetett közös osztóját ezzel a módszerrel.
+  - type: narrative
+    content: |
+      Az említett "iskolás" módszert követve persze elkezdhetjük a prímtényezőkre bontást. Hamar beletörik azonban
+      a bicskánk, mivel ezt a két számot szándékosan nagy prímtényezőkből állítottam össze.
+  - type: formula
+    lead-in: |
+      Nevezetesen:
+    content: |
+      \begin{aligned}12\space 439\space 705\space 049 &= 2797\cdot 2999\cdot 1483 \\ 15\space 828\space 713\space
+      003 &= 2999\cdot 1483\cdot 3559 \end{aligned}
+  - type: formula
+    lead-in: |
+      Innen persze a közös prímtényezők kiválogatása, és a kitüntetett közös osztó kiszámítása már egyszerű:
+    content: |
+      (12\space 439\space 705\space 049, 15\space 828\space 713\space 003)=2999\cdot 1483=4\space 447\space 517
+  - type: narrative
+    content: |
+      Mondhatnánk, hogy számítógéppel pillanatok alatt prímtényezőire bonthatjuk ezt a két számot. Ez minden
+      bizonnyal így is van az ilyen nagyságrendű számok esetén. A problémát az okozza, hogy a bemeneti számjegyek
+      számának növelésével a prímtényezők kiszámításához szükséges idő nagyon meredeken kezd emelkedni. Olyannyira,
+      hogy például egy 500 számjegyből álló szám prímtényezőire bontása még a világ összes számítógépének is
+      beláthatatlanul sok ideig tartana. A kriptográfiában használt RSA-eljárás algoritmikus biztonsága épp a
+      prímtényezős felbontás feladatának e roppant nehézségén alapszik.
+  - type: narrative
+    content: |
+      Az ***euklidészi algoritmus*** ezzel szemben egy olyan eljárást ad két egész szám kitüntetett közös
+      osztójának kiszámítására, amelyhez nincs szükség a két szám prímtényezőire. Az algoritmus alapötlete az
+      oszthatóság tulajdonságairól szóló [oszthatosag-tulajdonsagai] 6. és 7. pontjainak egy egyszerű
+      következményén alapul. Nézzük is meg ezt az összefüggést.
+  - type: embed
+    target:
+      type: theorem
+      name: euklideszi-algoritmus-alapgondolata
+  - type: embed
+    target:
+      type: proof
+      name: euklideszi-algoritmus-alapgondolata-bizonyitas
+  - type: narrative
+    content: |
+      Nézzük is meg, hogy miképpen tudunk profitálni ebből az imént kapott $(a,b)=(b, a-kb)$ összefüggésből.
+      Egyelőre tegyük fel, hogy az egész számok $\Z$ gyűrűjében vagyunk, mind $a$, mind pedig $b$ pozitív egészek,
+      valamint $a\gt b$. Később majd általánosítani fogjuk az algoritmust tetszőleges esetre, sőt tetszőleges
+      integritástartományra, most azonban a működés alapelvének megértése a cél.
+  - type: narrative
+    content: |
+      Rajzoljunk fel két "rudat", amelyek méretarányosan tükrözik e két szám nagyságát. Kezdjünk el lenyesegetni
+      $b$-nek megfelelő hosszúságú darabokat az $a$-t jelölő rúdból mindaddig, amíg a maradék kisebb nem lesz, mint
+      $b$, vagy akár el nem tűnik teljesen.
+  - type: figure
+    lead-in: |
+      Ezt a folyamatot láthatjuk az alábbi ábrán, amelyen a maradék rudacska hosszának megfelelő számot $r_1$-gyel
+      jelöltük:
+    src: 01-maradekos-osztas-szemleltetese-rudakkal.jpg
+    alt: Maradékos osztás szemléltetése rudakkal
+    caption: Maradékos osztás szemléltetése rudakkal
+  - type: formula
+    lead-in: |
+      Ha belegondolunk, tulajdonképpen az történt, hogy az $a$ pozitív egész számot sikerült kifejeznünk
+      ***"valahányszor $b$, meg egy kis maradék"*** alakban:
+    content: |
+      a=k_1b+r_1
+  - type: formula
+    lead-in: |
+      Ráadásul &ndash; és ez kulcsfontosságú &ndash; az $r_1$ maradékra teljesül, hogy legalább $0$, viszont
+      szigorúan kisebb $b$-nél:
+    content: |
+      b\gt r_1\geq 0
+  - type: narrative
+    content: |
+      A fenti egyenletből az $r_1$ maradékot ki tudjuk fejezni $r_1=a-k_1b$ alakban. Ez azért baromi jó, mivel az
+      imént bizonyított tétel alapján az $(a,b)$ kitüntetett közös osztó meg fog egyezni a $(b,r_1)$ kitüntetett
+      közös osztóval. Az eredeti számok közös osztójának kiszámítását tehát sikerült két kisebb szám közös
+      osztójának kiszámítására visszavezetni. Most folytassuk ugyanezt a lenyesegetős eljárást a $b$ és $r_1$
+      számokkal.
+  - type: figure
+    lead-in: |
+      Ez látható az alábbi ábrán kinagyítva:
+    src: 02-maradekos-osztas-masodik-lepes.jpg
+    alt: Maradékos osztás (második lépés)
+    caption: Maradékos osztás (második lépés)
+  - type: narrative
+    content: |
+      Ekkor tulajdonképpen a $b$ egész számot sikerült kifejeznünk ***"valahányszor $r_1$, meg egy kis maradék"***
+      alakban.
+  - type: formula
+    lead-in: |
+      Ezt az eljárást folytatva a következő sorozathoz jutunk:
+    content: |
+      \begin{aligned}a&=k_1b+r_1 \\ b&=k_2r_1+r_2 \\ r_1&=k_3r_2+r_3 \\ r_2&=k_4r_3+r_4 \\ &\vdots \end{aligned}
+  - type: formula
+    lead-in: |
+      A kapott maradékok így alakulnak:
+    content: |
+      b\gt r_1\gt r_2\gt r_3\gt r_4\gt \ldots \geq 0
+  - type: formula
+    lead-in: |
+      Mindeközben pedig a keresett kitüntetett közös osztóra igaz lesz az alábbi egyenlőségsorozat:
+    content: |
+      (a,b)=(b,r_1)=(r_1,r_2)=(r_2,r_3)=\ldots
+  - type: narrative
+    content: |
+      A maradékok tehát ***egyre kisebbek és kisebbek lesznek***, miközben mindegyikről tudjuk, hogy $0$-nál
+      semmiképpen sem lehetnek kisebbek. Ezért érezhetően véges számú lépés után valamelyik maradék előbb-utóbb
+      biztosan $0$ lesz. A következő szakaszban megmutatjuk, hogy ez valóban a Peano-axiómarendszer egy
+      következménye. Egyelőre tegyük fel, hogy ez tényleg így van, és az utolsó nemnulla maradék $r_n$. Ekkor
+      befejezhetjük az eljárást, hiszen $r_n\ eq 0$ és $r_n|0$ ugye teljesül, így alkalmazhatjuk a
+      [kituntetett-kozos-oszto-tulajdonsagai] 4. pontjában foglaltakat.
+  - type: formula
+    lead-in: |
+      Ez alapján megkaptuk a keresett kitüntetett közös osztót:
+    content: |
+      (a,b)=(r_n,0)=r_n
+  - type: narrative
+    content: |
+      ***Maradékos osztásnak*** nevezzük azt a műveletet, melynek során kiszámítjuk, hogy egy szám egy másikkal
+      osztva mennyi maradékot ad. A maradékos osztás &ndash; itt nem részletezett digitális áramköri okok miatt
+      &ndash; egy számítógép számára rendkívül hatékonyan elvégezhető. Ráadásul megmutatható &ndash; habár erre
+      most nem térünk ki &ndash;, hogy az algoritmushoz szükséges maradékos osztások száma a kisebbik bemenet
+      számjegyeinek a számával egyenesen arányos. Ez azt jelenti, hogy még az 500-jegyű számok tartományában is
+      nagyságrendileg pár száz maradékos osztásból megkaphatjuk a kitüntetett közös osztót. Egy átlagos számítógép
+      számára ez egy szemvillanás alatt elvégezhető. Ezzel szemben a prímtényezős módszer az idők végezetéig is
+      eltartana ebben a számtartományban.
+  - type: narrative
+    content: |
+      E gyorsaság demonstrálására nézzük is meg, hogy mennyire gyorsan kapjuk meg a fentebbi példában szereplő
+      $12\space 439\space 705\space 049$ és $15\space 828\space 713\space 003$ számok kitüntetett közös osztóját. A
+      maradékos osztás műveletét könnyedén el tudjuk végezni a legegyszerűbb kalkulátorral is. Ezt általában a
+      **mod** (vagy hasonló) feliratú nyomógombbal érhetjük el. Ez egyetlen lépésben képezni fogja nekünk a képződő
+      maradékot. Például a $8\space \text{mod}\space 3$ műveletet elvégezve az eredmény $2$, mivel a $8$-at $3$-mal
+      osztva a maradék $2$.
+  - type: formula
+    lead-in: |
+      Az euklideszi algoritmust a két bemeneti számunkon lefuttatva az alábbi lépéseken keresztül jutunk el a
+      keresett kitüntetett közös osztóig:
+    content: |
+      \begin{aligned}&(15828713003,12439705049) = \\ =&(12439705049,3389007954) = \\ =&(3389007954, 2272681187) =
+      \\ =&(2272681187,1116326767) = \\ = &(1116326767, 40027653) = \\ =&(40027653, 35580136) =\\=
+      &(35580136,4447517) =\\=&(4447517, 0)\end{aligned}
+  - type: narrative
+    content: |
+      A keresett kitüntetett közös osztó tehát $4\space 447\space 517$. Valóban ugyanazt az eredményt kaptuk, mint
+      a prímtényezős felbontást használó módszerrel, csak épp nem sok ezer (vagy épp millió) osztáspróbával, hanem
+      mindössze 7 maradékos osztással. Úgy gondolom ez eléggé meggyőző, amikor hatékonyságról beszélünk.

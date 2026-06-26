@@ -1,0 +1,35 @@
+type: section
+name: 10-hilbert-10-problemaja
+title: Hilbert 10. problémája
+
+body:
+  - type: narrative
+    content: |
+      Végül bemutatunk egy igazán érdekes döntési problémát, amely a ***Turing-gépek formalizmusától
+      függetlenül***, természetesen is ***megfogalmazható***. 1900-ban Párizsban a világ matematikusainak
+      kongresszusán David Hilbert egy azóta legendás hírűvé vált előadást tartott, amelyen a jövő fontos kutatási
+      területeit próbálta meg kijelölni. Huszonhárom olyan kérdést fogalmazott meg, amelyről úgy vélte, hogy
+      megoldásuk lényeges előrelépést jelentene sok területen.
+  - type: narrative
+    content: |
+      Ezek közül a ***10. probléma*** szól az úgynevezett ***diofantoszi egyenletek*** megoldásáról. Ehhez előbb
+      szükségünk van egy fontos fogalomra. ***Egész együtthatós polinom*** alatt olyan kifejezéseket értünk,
+      amelyek változókból és egész számokból építhetők fel az összeadás, kivonás és szorzás segítségével. Például
+      az $x^2\cdot y - z - 1$ kifejezés az $x$, $y$ és $z$ változók egy egész együtthatós polinomja. Egy ***egész
+      együtthatós polinomból képzett diofantoszi egyenlet megoldásakor*** az egész számok között keressük a
+      változók olyan értékeit, melyeket a polinomba helyettesítve az eredmény 0. Egy diofantoszi egyenletet
+      megoldhatónak mondunk, ha létezik ilyen értelemben vett megoldás.
+  - type: formula
+    lead-in: |
+      Például a fenti diofantoszi egyenletnek egy lehetséges egészekből álló megoldása:
+    content: |
+      \begin{aligned}x &= 1 \\ y &=2 \\ z&=1 \end{aligned}
+  - type: narrative
+    content: |
+      A David Hilbert által felvázolt 10. probléma így hangzik: ***adjunk algoritmust, amely tetszőleges
+      diofantoszi egyenletre eldönti, hogy létezik-e megoldása vagy nem***. A kérdést végül 1970-ben Martin Davis,
+      Julia Robinson és mások munkáira építve Jurij Matyijaszevics válaszolta meg, amikor bizonyította, hogy a
+      ***diofantoszi egyenletek megoldhatóságának kérdése algoritmikusan eldönthetetlen***. Ez persze nem azt
+      jelenti, hogy egy-egy konkrét diofantoszi egyenletről ezt ne lehetne eldönteni annak valamilyen speciális
+      tulajdonságát felhasználva, hanem azt, hogy nincs olyan általános döntési algoritmus, amely ezt tetszőleges
+      egyenletről képes eldönteni.

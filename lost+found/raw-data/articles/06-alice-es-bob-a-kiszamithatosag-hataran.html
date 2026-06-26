@@ -1,0 +1,427 @@
+<!-- wp:paragraph -->
+<p><strong><em>Az <a rel="noreferrer noopener" aria-label="előző részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/5-one-time-pad-passziv-aktiv-tamado-haromutas-kulcsforgalom/" target="_blank">előző részben</a> jobban megismerkedtünk Alice és Bob két fő ellenségével, Eve-vel és Mallory-vel. Megvizsgáltuk, hogy milyen gonosz módokon próbálnak borsot törni főhőseink orra alá. Bemutattuk a one-time pad nevű abszolút biztonságos rejtjelezési rendszert, de láttuk, hogy az a gyakorlatban nagyon limitáltan használható. Ezért az abszolút biztonság helyett a továbbiakban megelégszünk az algoritmikus biztonsággal. Ez olyan módszerek használatát jelenti, hogy Alice és Bob számára egy kulcsnak nevezett plusz információ birtokában algoritmikusan „könnyű” feladat legyen egymással bizalmas információkat közölni, de Eve számára a kulcs ismeretének hiányában algoritmikusan „nehéz” legyen e titkok felfedése. De vajon mit jelent az, hogy egy feladat algoritmikusan „könnyű” vagy „nehéz”? Egyáltalán mit jelent az a szó, hogy „algoritmus”? Vajon minden feladat megoldható algoritmussal? Ebben és a következő részekben erről lesz szó...</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"dropCap":true} -->
+<p class="has-drop-cap">Általános iskola alsó tagozatában remélhetőleg mindenki megtanulta, hogyan lehet összeadni vagy összeszorozni két tetszőlegesen nagy egész számot. Összeadás esetén például a két számot egymás alá kell felírni, és számjegyenként végezni az összeadást. Ha pedig valamelyik helyiértéken 9-nél nagyobb számot kapnánk részeredményül, akkor a „túlcsordulást” át kell vinni a következő helyiértékre. Szorzásnál egy kicsit bonyolultabb a helyzet, de az is elvégezhető helyiértékenként végzett szorzásokkal és összeadásokkal.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez nem más, mint egy algoritmus, amelynek bemenete a két összeadandó vagy összeszorzandó szám. A végrehajtás során elemi lépéseket végzünk, miközben a papíron először a részeredmények jelennek meg a „munkaterületen”. Végül pedig sorra előállnak a végeredmény számjegyei, mint az algoritmus kimenete. A lépések abban az értelemben elemiek, hogy azok végrehajtása az algoritmus futtatója számára nem igényel további részletezést. Például számítógépek esetén van egy véges utasításkészlet, amelyet a gép áramköri megvalósítása határoz meg, és így adottnak tekinthető. Egy algoritmus leírása ebben az esetben megfelel egy programnak, amely ebből az utasításkészletből gazdálkodhat, ezeket tetszőlegesen kombinálhatja. Például ciklusok, feltételektől függő elágazások, és egyéb, a futás útját vezérlő utasítások segítségével. Az egyetlen kikötés, hogy ennek a leírásnak végesnek kell lennie.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az algoritmus végrehajtójának nem kell foglalkoznia azzal a kérdéssel, hogy az miért ad helyes eredményt tetszőleges bemenet esetén. Neki mindössze annyi a dolga, hogy „bambán” de pontosan kövesse az algoritmus leírását. Egy számítógép is pontosan ezt csinálja egy program futtatása során. Ráadásul ő valóban „bamba” és nem gondolkozik, ezért az ő számára nagyon pontos leírásra van szükség. Ez az oka annak, hogy egy bonyolult algoritmust nem könnyű leprogramozni. A számítógép ugyanis nem azt csinálja, amit le akartunk írni számára, hanem azt, amit ténylegesen leírtunk. Azt viszont halál pontosan.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ahhoz, hogy algoritmussal meg tudjunk oldani egy problémát, a probléma példányait valamilyen módon le kell tudnunk írni a számára. Ezen kívül az algoritmus eredményét is valamilyen írott formában fogjuk megkapni. A fenti példában a <em><strong>probléma</strong></em> az egész számok összeadása. Ez az, amire egy általános algoritmust szeretnénk adni. Ennek a <strong><em>problémának egy példánya</em></strong> mondjuk konkrétan a <em>32</em>, a <em>11</em> és a <em>67</em> egész számok összeadása. Ha tehát az algoritmus bemenetére ennek a számhármasnak egy olyan leírását adjuk, amit az algoritmus értelmezni képes, akkor a <em>110</em> egész számnak szintén valamilyen leírását fogjuk kapni eredményül.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most megvizsgáljuk azt a kérdést, hogy egy algoritmus bemenetét és kimenetét hogyan tudjuk leírni egy véges szimbólumkészlettel. Ehhez teszünk egy rövid kitérőt az úgynevezett <strong><em>formális nyelvek</em></strong> elmélete felé.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4 id="formal-languages">Formális nyelvek</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A <a href="https://youproof.hu/kriptografia/3-szamrendszerek-binaris-hexadecimalis-szamabrazolas-bitmap/" target="_blank" rel="noreferrer noopener" aria-label="3. részben (új fülön nyitja meg)">3. részben</a> már képet kaptunk arról, hogy számokat – vagy bármi mást – hogyan lehet leírni valamilyen véges szimbólumkészlettel. Például a számítógépek tipikusan 2 elemű szimbólumkészlettel dolgoznak, amelynek elemeit bináris szimbólumoknak nevezzük. Mi kényelmi szempontból egy ennél bővebb készlettel fogunk dolgozni, ám ennek nincs elméleti jelentősége. Rögzítsük tehát először magát a szimbólumkészletet, illetve azokat a szabályokat, amivel az egyes problémapéldányokat és magát az eredményt le fogjuk írni. Csak ezután van ugyanis értelme algoritmusról beszélni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Kezdjük a szimbólumkészlettel. A mi szimbólumkészletünk összesen 11 elemből fog állni. Legyenek ezek a <strong>0, 1, 2, 3, 4, 5, 6, 7, 8, 9</strong> és a <strong>#</strong> szimbólumok. Ez a 11 elemű halmaz lesz tehát az az <strong><em>ábécé</em></strong>, amivel az algoritmusunk dolgozni fog. Az ábécét, mint halmazt tipikusan görög nagybetűkkel szoktuk jelölni. Nevezzük például a fenti ábécét [latex]\Sigma[/latex]-nak (ejtsd: „szigma”). Eszerint tehát:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"] \Sigma = \lbrace 0; 1; 2; 3; 4; 5; 6; 7; 8; 9; \# \brace [/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az algoritmus a [latex]\Sigma[/latex] elemeiből alkotott jelsorozatok formájában fogja megkapni a bemenetét, és a kimenetét is ilyen formában kell előállítania. Azt a halmazt, amely a [latex]\Sigma[/latex] elemeiből alkotott összes lehetséges véges hosszúságú jelsorozatból áll, [latex]\Sigma^*[/latex]-gal (ejtsd: „szigma csillag”) jelöljük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A [latex]\Sigma^*[/latex] halmaznak az ábécével ellentétben végtelen sok eleme van. Eleme például a <strong>12##986#1##</strong>, a <strong>###7#</strong>, vagy a <strong>32#11#67</strong> jelsorozat, de ide soroljuk azt a jelsorozatot is, amely 0 darab szimbólumból áll. Ennek a speciális jelsorozatnak a neve <strong><em>üres jelsorozat</em></strong>. Az üres jelsorozatot általában [latex]\varepsilon[/latex]-nal (ejtsd: „epszilon”) jelöljük. Az [latex]\varepsilon[/latex] tehát nem az ábécé egy szimbóluma, hanem azt a jelsorozatot jelöli, amely egyetlen szimbólumot sem tartalmaz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most, hogy megállapodtunk a szimbólumkészletben, rögzítsük a bemeneti és a kimeneti jelsorozatokkal szemben támasztott követelményeket. Nyilvánvalóan nem minden [latex]\Sigma^*[/latex]-beli jelsorozat lesz bemenetként értelmezhető az algoritmus számára. Például állapodjunk meg abban, hogy az összeadandó számokat 10-es számrendszerben kell felsorolnunk, és ezeket a számokat a # szimbólummal kell elválasztanunk egymástól. Eszerint a megállapodás szerint például a <strong>32#11#67</strong> jelsorozat egy értelmes bemenet, és azt fogja jelenteni az algoritmus számára, hogy adja össze a <em>32</em>, a <em>11</em> és a <em>67</em> számokat. Állapodjunk meg továbbá abban, hogy értelmes bemenet esetén az algoritmus az összeadás eredményét szintén 10-es számrendszerben írja a kimenetre. A <strong>32#11#67</strong> bemeneti jelsorozat esetén tehát az algoritmus kimenetén az <strong>110</strong> jelsorozatnak kell megjelennie a megállapodás szerint.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mivel „hülyebiztos” algoritmust szeretnénk készíteni, ezért kezdenünk kell valamit azokkal az esetekkel is, amikor a felhasználó a bemenetre nem egy értelmes jelsorozatot adott meg. Például a <strong>###7#</strong> nem egy értelmes jelsorozat a fenti értelmezés szerint. Állapodjunk meg abban, hogy az ilyen esetekben az algoritmus kimenete legyen az üres jelsorozat, azaz [latex]\varepsilon[/latex]. Az értelmes jelsorozatok tehát a [latex]\Sigma^*[/latex]-on belül egy részhalmazt alkotnak. Az algoritmusnak nyilván először el kell tudnia dönteni, hogy a bemeneti jelsorozat egyáltalán eleme-e ennek a részhalmaznak, és csak ezután kezdheti elvégezni az összeadást. Ehhez kapcsolódik a most következő definíció.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A [latex]\Sigma^*[/latex] halmaznak egy valamilyen [latex]L[/latex] részhalmazát a [latex]\Sigma[/latex] ábécé feletti <strong><em>formális nyelvnek</em></strong>, az [latex]L[/latex] részhalmaz elemeit pedig e formális nyelv <strong><em>mondatainak</em></strong> nevezzük. Ez a definíció egy kissé szokatlannak tűnik annak fényében, amit eddig a „nyelvről”, mint fogalomról gondoltunk. De igazából semmi meglepő nincs benne. Vegyük például a szokásos magyar ábécét az írásjelekkel és az egyéb, írásban használt szimbólummal együtt. A magyar nyelv tulajdonképpen nem más, mint az ezekből alkotott összes lehetséges jelsorozatok halmazának egy jól meghatározott részhalmaza. Az persze más kérdés, hogy ezt a jól meghatározott – és általában szintén végtelen sok elemet tartalmazó – részhalmazt hogyan jelölhetjük ki az összes jelsorozat tengerében valamilyen véges leírással anélkül, hogy egyenként fel kellene sorolni az elemeit. Erre szolgálnak az úgynevezett <strong><em>nyelvtani szabályok</em></strong>, amelyek meghatározzák, hogy mely jelsorozatokat tekintjük a magyar nyelv mondatainak, és melyeket nem.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egy formális nyelv ilyen tekintetben semmiben nem különbözik a természetes nyelvektől két dolgot leszámítva. Egyrészt egy formális nyelv a fenti definíció szerint a [latex]\Sigma^*[/latex] halmaz bármely részhalmaza lehet. Még akár egy olyan részhalmaz is, amelynek a kijelölésére nem lehet a nyelvtani szabályokat egy véges leírással megadni. Ennek a résznek egy későbbi szakaszában fogunk ilyenekre példát mutatni. Ilyen nyelvek esetén azt fogjuk mondani, hogy egy jelsorozat nyelvbe tartozása <strong><em>algoritmikusan eldönthetetlen</em></strong>. Másrészt, egy formális nyelvet leíró véges szabályrendszer – amennyiben létezik – egyértelmű, és általában lényegesen egyszerűbb, mint amit a természetes nyelvek esetén megszoktunk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A formális nyelvek elméletével – és általában a nyelvtudománnyal – kapcsolatos úttörő munkássága miatt érdemes megismerni <a rel="noreferrer noopener" aria-label="Noam Chomsky (új fülön nyitja meg)" href="https://hu.wikipedia.org/wiki/Noam_Chomsky" target="_blank">Noam Chomsky</a> nevét. Chomsky eredményei rettentő fontos szerepet játszanak az informatikában is, hiszen az ember és gép, illetve a gép és gép közötti kommunikáció is minden esetben formális nyelvek segítségével történik. Gondoljunk csak például a programozási nyelvekre, vagy akár arra az egyszerű nyelvre, amelyet az imént definiáltunk az összeadó algoritmusunk bemeneteinek és kimeneteinek leírására.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Látható, hogy a formális nyelvek fenti definíciója önmagában nem túl használható. Ezért most megismerkedünk egy olyan matematikai objektummal, amelynek a segítségével el tudjuk dönteni, hogy egy jelsorozat egy adott nyelv mondata-e. Egy ilyen objektumra tehát tekinthetünk az adott nyelv szabályainak egyfajta véges leírásaként. Ezen kívül pedig ez az objektum a fenti, egész számok összeadásával kapcsolatos problémánkat is képes lesz megoldani.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="turing-machine"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A Turing-gép</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A Turing-gép fogalmát az <a rel="noreferrer noopener" aria-label="első részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/1-alapfogalmak-caesar-vigenere-enigma-kulcsmegosztas#enigma" target="_blank">első részben</a> már említett <a rel="noreferrer noopener" aria-label="Alan Turing (új fülön nyitja meg)" href="https://hu.wikipedia.org/wiki/Alan_Turing" target="_blank">Alan Turing</a> dolgozta ki. A név kissé félrevezető, mivel a Turing-gép, mint matematikai objektum nem elsősorban a valódi számítógépek működését, hanem az általuk végrehajtott számítási folyamatot modellezi. Ezért a számítógépek absztrakciójaként érdemes rá tekinteni a továbbiakban. Most nézzük meg, hogy tulajdonképpen mit tudunk leírni egy Turing-gép segítségével.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az előző összeadásos példában igazából arról van szó, hogy adva van egy [latex]\Sigma[/latex] ábécé, és az ennek elemeiből alkotott jelsorozatok között szeretnénk egyfajta hozzárendelést leírni valahogyan. Például a <strong>32#11#67</strong> jelsorozathoz az <strong>110</strong> jelsorozatot szeretnénk hozzárendelni. Vagy például azt szeretnénk, hogy az „értelmetlen” <strong>###7#</strong> jelsorozat párja az [latex]\varepsilon[/latex], azaz az üres jelsorozat legyen eszerint a hozzárendelés szerint. Vegyük észre, hogy ez matematikailag nem más, mint egy <strong><em>függvény</em></strong>. Épp csak annyi a szokatlan benne, hogy ez a függvény nem számhalmazok között teremt kapcsolatot, hanem a [latex]\Sigma^*[/latex] halmaz bizonyos elemeihez szintén a [latex]\Sigma^*[/latex] halmaz bizonyos más elemeit rendeli hozzá. Az alábbi ábra néhány ilyen hozzárendelést mutat:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":1167} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_6_fuggvenyhozzarendelesek.jpg" alt="Függvény hozzárendelések (példa)" class="wp-image-1167"/><figcaption>Függvény hozzárendelések (példa)</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Az összes ilyen hozzárendelést nyilvánvalóan nem tudjuk felsorolni, mégis szeretnénk valamilyen véges leírást adni erre a függvényre – amennyiben az lehetséges. Egy olyan leírást, amely alapján bárki tetszőleges [latex]\Sigma^*[/latex]-beli jelsorozathoz meg tudja találni a függvény által hozzárendelt párját. A <strong><em>Turing-gép</em></strong> nem más, mint egy ilyen leírás. Most nézzük meg, mit tud. Elsőre meglehetősen primitívnek fog tűnni, azonban hamarosan látni fogjuk, hogy a látszat ellenére mennyire erős számítási potenciált képvisel.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egy <strong><em>Turing-gép</em></strong> rendelkezik egy vagy több szalaggal, amelyek az egyik irányban végtelenek és cellákra vannak osztva. Egy adott cella lehet üres, vagy szerepelhet benne a [latex]\Sigma[/latex] ábécé valamilyen szimbóluma. Ezen kívül a Turing-gép rendelkezik egy író-olvasófejekkel ellátott vezérlőegységgel. Ez a fejeken keresztül képes írni és olvasni a szalagok celláit, valamint azokon jobbra-balra lépkedni. Végül a vezérlőegységnek van véges sok állapota, amelyek közül mindig pontosan az egyikben tartózkodik. Kezdetben a Turing-gép vezérlőegysége egy adott kezdőállapotból indul, az első szalag elején a Turing-gép bemenete helyezkedik el az üres cellák óceánja előtt, a többi szalag üres, és a vezérlőegység író-olvasó fejei a szalagok legelső celláira mutatnak.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi ábrán a mi kis összeadó Turing-gépünk vázlata látható. Tegyük fel, hogy a gép összesen 3 szalaggal rendelkezik, valamint a lehetséges állapotainak száma <em>5</em>. Tegyük fel továbbá, hogy kezdetben az <em>1</em>-es számú állapotból indul, és épp most kapta meg a <strong>32#11#67</strong> jelsorozatot bemenetként. Ez a jelsorozat tehát ott virít az első szalag elején, a többi szalag pedig üres:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":1169} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_6_turing_gep_kezdoallapot.jpg" alt="Turing-gép kezdőállapot (vázlat)" class="wp-image-1169"/><figcaption>Turing-gép kezdőállapot (vázlat)</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>A Turing-gép a futása során elemi lépéseket végez. Azt, hogy a soron következő elemi lépésben mi történjen, egy hatalmas – de véges – szabályokból álló lista írja le. Ezeket <strong><em>állapotváltási szabályoknak</em></strong> nevezzük, amelyek tehát lényegében a Turing-gép programját írják le. Egy állapotváltási <strong><em>szabály akkor hajtható végre</em></strong>, ha teljesül annak <strong><em>előfeltétele</em></strong>. Egy állapotváltási szabály <strong><em>előfeltétele akkor teljesül</em></strong>, ha a fejek által aktuálisan mutatott cellákban az előfeltételben meghatározott tartalom van, és a vezérlőegység az előfeltételben meghatározott állapotban van.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Amennyiben legalább egy állapotváltási szabály előfeltétele teljesül, úgy a Turing-gép önkényesen választ közülük pontosan egyet, amelyet végrehajt. A <strong><em>szabály végrehajtása</em></strong> során a Turing-gép a szabályban leírtaknak megfelelően a fejek által mutatott cellák tartalmát felülír<strong>hatja</strong> vagy töröl<strong>heti</strong>, a fejeket elmozdít<strong>hatja</strong> 1-1 pozícióval jobbra vagy balra, valamint a vezérlőegységet új állapotba léptet<strong>heti</strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezek után az egész folyamat kezdődik elölről. A Turing-gép újra megvizsgálja, hogy mely szabályok hajthatók végre, ezek közül választ pontosan egyet, majd az abban leírtakat végrehajtja. És így tovább mindaddig, amíg talál legalább <em>1</em> végrehajtható szabályt. Amennyiben ilyen szabályt már nem talál, úgy a Turing-gép <strong><em>megáll</em></strong>, és a futása véget ér. Ilyenkor azt mondjuk, hogy a Turing-gép <strong><em>kiszámította</em></strong> a bemenethez tartozó <strong><em>kimenetet (vagy választ)</em></strong>, amely <strong><em>az utolsó szalag tartalma</em></strong> lesz. Előfordulhat azonban, hogy a Turing-gép soha nem áll meg, mert mindig talál legalább <em>1</em> végrehajtható szabályt. Ilyenkor azt mondjuk, hogy a Turing-gép <strong><em>végtelen ciklusba került</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi ábrán az összeadó Turing-gépünk látható közvetlenül azután, hogy megállt – jelen esetben mondjuk a <em>3</em>-as számú állapotban. Épp most írta ki a <strong>110</strong> jelsorozat, azaz az eredmény utolsó szimbólumát az utolsó szalagra. Ezt tekintjük tehát a <strong><em>számítás eredményének</em></strong>. A többi szalag tartalma minket most nem érdekel, azok csupán valamilyen részeredmények, amelyeket a Turing-gép a futása során „odaszemetelt”:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":1171} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_6_turing_gep_vegallapot.jpg" alt="Turing-gép végállapot (vázlat)" class="wp-image-1171"/><figcaption>Turing-gép végállapot (vázlat)</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Érezhető, hogy az állapotváltási szabálylista már egy ilyen egyszerű feladat esetén is vélhetően roppant sok szabályt tartalmaz. Példaként nézzünk meg közelebbről egy állapotváltási szabályt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"align":"center"} -->
+<p class="has-text-align-center"><strong>HA</strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{|c|c|c|c|}\hline \text{állapot} &amp; \text{szalag 1} &amp; \text{szalag 2} &amp; \text{szalag 3} \\ \hline 2 &amp; \# &amp; \text{üres} &amp; \text{mindegy} \\ \hline\end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph {"align":"center"} -->
+<p class="has-text-align-center"><strong>AKKOR</strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{|c|c|c|c|}\hline \text{állapot} &amp; \text{szalag 1} &amp; \text{szalag 2} &amp; \text{szalag 3} \\ \hline 4 &amp; \larr &amp; (\text{üres},\larr) &amp; (8,\larr) \\ \hline\end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ennek a konkrét szabálynak – bármilyen célt is szolgáljon az összeadási feladat szempontjából – az előfeltétele akkor teljesül, ha a vezérlőegység a <em>2</em>-es számú állapotban van, az <em>1</em>-es szalagra mutató fej alatti cellában a <strong>#</strong> szimbólum van, a <em>2</em>-es szalagra mutató fej alatti cella pedig üres. A szabály a <em>3</em>-as szalag tartalmáról nem nyilatkozik, így attól nem függ az előfeltétel teljesülése. Ha az előfeltétel teljesül, akkor a <strong><em>szabály végrehajtható</em></strong>vá válik. Ha ez az egyetlen végrehajtható szabály, akkor a Turing-gép köteles azt végrehajtani. Ha több másik szabály is végrehajtható ezen kívül, akkor a Turing-gép választhat, hogy ezek közül melyiket hajtja végre (de egyet mindenképpen választania kell). Ha pedig egyetlen szabály sem végrehajtható, akkor a Turing-gép futása megáll. Tegyük fel, hogy a Turing-gép végrehajtja ezt a szabályt. Nézzük meg, mi történik.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A szabály arra utasítja a Turing-gépet, hogy menjen át a <em>4</em>-es számú állapotba, írja felül a <em>3</em>-as szalagra mutató fej alatti cellát a <strong>8</strong>-as szimbólummal, törölje a <em>2</em>-es szalagra mutató fej alatti cella tartalmát, és léptesse mindhárom fejet balra – jelentsen ez bármit is az összeadási feladat szempontjából. Jogosan merülhet fel az Olvasóban a kérdés, hogy egy ennyire alacsonyszintű leírással hogyan tudunk megoldani akár egyetlen gyakorlati problémát is. Egyáltalán mi köze ennek egy valódi számítógép által végrehajtott számítási folyamathoz? Vegyük észre azonban, hogy ez csupán technikai – de semmiképpen sem elméleti – nehézséget jelent.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A legalacsonyabb szinten ugyanis egy számítógép processzora sem csinál ennél többet. Van neki egy memóriája, amely a <a rel="noreferrer noopener" aria-label=" (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/3-szamrendszerek-binaris-hexadecimalis-szamabrazolas-bitmap#memory" target="_blank">3. részben leírtak alapján</a> véges sok 8-bites rekeszből áll. Következésképp a memória tartalma véges sokféle lehet a futás során, még ha ez a szám nagyon nagy is. A memória aktuális tartalmát tehát elméleti síkon tekinthetjük a Turing-gép aktuális állapotának. Amennyiben a gépünk a véges memóriába nem férne bele valamilyen ok miatt, úgy használhatja a háttértárat (ami a legtöbbször a merevlemez) is a részeredmények tárolására. A háttértár tehát szintén elméleti síkon tekinthető a Turing-gép szalagjának vagy szalagjainak.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az egyetlen különbség a kettő között, hogy egy Turing-gép szalagjai végtelen hosszúak, míg egy valódi számítógép háttértára nem. Ez azonban nem jelent elméleti megszorítást. Ha ugyanis egy feladat megoldható Turing-géppel véges sok lépésben, akkor a futás során a szalagokra is véges sok szimbólum fog kerülni a megállásig. Következésképp mindig található olyan háttértár méret, amely elegendő e szimbólumok tárolására, ha a fix méretű memóriába a részeredmények esetleg nem férnének bele. Egy valódi háttértár tehát tekinthető <strong><em>potenciálisan végtelen</em></strong> méretűnek.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egy valódi számítógép által végrehajtandó program a legalacsonyabb szinten – amelyet <strong><em>gépi kódnak</em></strong> nevezünk – a Turing-gépünk szabályrendszeréhez nagyon hasonló módon írja le a gép számára, hogy mit kell csinálnia. Az, hogy a programozóknak mégsem kell ennyire alacsonyszintű programkódot írniuk, pusztán az úgynevezett magasszintű <strong><em>programozási nyelvek</em></strong>nek, és a <strong><em>fordítóprogramok</em></strong>nak köszönhető. A programozási nyelvek ugyanis lehetővé teszik, hogy a végrehajtandó feladatot az emberi nyelvekhez sokkal közelebb – de azért attól még mindig viszonylag távol – álló módon „fogalmazhassuk meg” a gép számára. A fordítóprogramok feladata pedig ennek az elkészült magasszintű leírásnak a lefordítása olyan alacsonyszintű gépi kódra, amely már közvetlenül értelmezhető a processzor számára.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="non-deterministic-turing-machine"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A nemdeterminisztikus Turing-gép</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Az előző szakasz elején azt mondtuk, hogy egy probléma matematikai értelemben nem más, mint egy <strong><em>függvény</em></strong>. Méghozzá egy olyan függvény, amely az adott [latex]\Sigma[/latex] ábécé feletti jelsorozatokhoz hozzárendel valamilyen szintén [latex]\Sigma[/latex] feletti jelsorozatot. Elképzelhető, hogy a függvény bizonyos bemeneti jelsorozatokra egyáltalán nincs értelmezve, azaz ezekhez a jelsorozatokhoz nem rendel hozzá semmit. Azonban azokon a helyeken, ahol értelmezve van, egyértelmű kell legyen. Ez azt jelenti, hogy egy adott bemeneti jelsorozathoz a függvény minden esetben <strong><em>legfeljebb egy</em></strong> kimeneti jelsorozatot rendelhet hozzá.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Máskülönben nem függvényről, hanem egy úgynevezett <strong><em>relációról</em></strong> beszélnénk. A relációk mindössze annyiban különböznek a függvényektől, hogy egy bemeneti jelsorozathoz <strong><em>tetszőleges számú</em></strong> – tehát akár végtelen sok – kimeneti jelsorozatot is hozzárendelhetnek. Ilyen értelemben egy függvény egy olyan speciális relációként fogható fel, amelynél ez a „tetszőleges szám” legfeljebb <em>1</em>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi ábrán a függvény és a reláció fogalma közötti különbség látható:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":1173} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_6_fuggvenyek_es_relaciok.jpg" alt="Függvények és relációk" class="wp-image-1173"/><figcaption>Függvények és relációk</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>De mi köze ennek a két fogalomnak a Turing-gépekhez? Az előző szakaszban említettük, hogy egy Turing-gépnél előfordulhat, hogy egy adott helyzetben <strong><em>egynél több állapotváltási szabály is végrehajtható</em></strong>. Ilyenkor a Turing-gépnek ugye <strong><em>választania kell</em></strong>, hogy ezek közül konkrétan melyiket hajtja végre a következő lépésben. Arra azonban nem tettünk semmilyen megkötést, hogy mi alapján válasszon. Ilyen helyzetekben azt mondjuk, hogy a Turing-gép következő lépése <strong><em>nem determinált</em></strong>. Az olyan Turing-gépeket, amelyek a szabályrendszerük alapján ilyen választási helyzetbe kényszerül<strong>hetnek</strong>, <strong><em>nemdeterminisztikus Turing-gépek</em></strong>nek nevezzük. Ezzel szemben ha minden esetben legfeljebb <em>1</em> szabály hajtható végre, akkor <strong><em>determinisztikus Turing-gépek</em></strong>ről beszélünk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Vegyük észre, hogy a <strong><em>függvény és reláció</em></strong> fogalma közötti különbség párhuzamba hozható a <strong><em>determinisztikus és nemdeterminisztikus</em></strong> Turing-gépek lehetséges számítási útvonalai közötti különbséggel. Egy determinisztikus Turing-gépnek egy adott bemenetre egyetlen lehetséges számítási útvonala létezik, hiszen minden helyzetben legfeljebb <em>1</em> szabály lesz végrehajtható. Ez az egyetlen számítási útvonal vagy végtelen hosszú lesz, vagy pedig véges attól függően, hogy az adott bemenetre a gép végtelen ciklusba kerül-e vagy nem. Előbbi esetben a bemenetre nem érkezik semmilyen kimenet (azaz válasz), utóbbi esetben pedig a megállás után a kimenet ott lesz az utolsó szalagon. Az alábbi ábra mutatja ezt a két lehetőséget <strong><em>determinisztikus Turing-gép</em></strong> esetén:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":1175} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_6_determinisztikus_turing_gep.jpg" alt="Determinisztikus Turing-gép számítási útvonalai" class="wp-image-1175"/><figcaption>Determinisztikus Turing-gép számítási útvonalai</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Az első esetben az [latex]x_1[/latex] bemenetre nem kaptunk kimenet, míg a második esetben az [latex]x_2[/latex] bemenetre megkaptuk az egyértelmű [latex]y[/latex] kimenetet. Épp úgy, mintha egy <strong><em>függvény</em></strong> az [latex]x_1[/latex] jelsorozathoz nem rendelt volna hozzá semmit, de az [latex]x_2[/latex] jelsorozathoz az [latex]y[/latex] jelsorozatot rendelte volna hozzá.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezzel szemben egy nemdeterminisztikus Turing-gépnek egy adott bemenetre <em>1</em>-nél több – amely lehet akár végtelen sok – számítási útvonala létezik, hiszen bizonyos helyzetekben <em>1</em>-nél több szabály lesz végrehajtható. E végtelen sok számítási útvonal között bizonyára lesznek végtelen és véges hosszúak is attól függően, hogy az adott bemenetre az adott útvonalon a gép végtelen ciklusba kerül-e vagy nem. Amennyiben <strong><em>minden</em></strong> lehetséges számítási útvonal végtelen hosszú, akkor a bemenetre nem érkezik semmilyen kimenet (azaz válasz). Amennyiben léteznek véges hosszú útvonalak is, akkor ezeknek az útvonalaknak a kimenete a megállás után ott lesz az utolsó szalagon. Az alábbi ábra mutatja ezt a két lehetőséget <strong><em>nemdeterminisztikus Turing-gép</em></strong> esetén:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":1177} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_6_nemdeterminisztikus_turing_gep.jpg" alt="Nemdeterminisztikus Turing-gép számítási útvonalai" class="wp-image-1177"/><figcaption>Nemdeterminisztikus Turing-gép számítási útvonalai</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Az első esetben az [latex]x_1[/latex] bemenetre nem kaptunk kimenet, míg a második esetben az [latex]x_2[/latex] bemenetre megkaptuk az [latex]y_1, y_2, y_3, \dots[/latex] kimeneteket. Épp úgy, mintha egy <strong><em>reláció</em></strong> az [latex]x_1[/latex] jelsorozathoz nem rendelt volna hozzá semmit, de az [latex]x_2[/latex] jelsorozathoz az [latex]y_1, y_2, y_3, \dots[/latex] jelsorozatokat rendelte volna hozzá.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>determinisztikus</em></strong> és <strong><em>nemdeterminisztikus</em></strong> Turing-gépek által reprezentált számítási modellek közötti viszonynak érezhetően köze van a <strong><em>függvények</em></strong> és <strong><em>relációk</em></strong> fogalma közötti viszonyhoz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="turing-machine-function"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A Turing-gép által kiszámított függvény</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Legyen adott egy [latex]M[/latex] <strong><em>determinisztikus Turing-gép</em></strong>, valamint egy [latex]\Sigma[/latex] ábécé, amellyel ez a gép dolgozik. Ekkor a [latex]\Sigma[/latex] feletti jelsorozatok két részre oszthatók. Egyrészt lesznek olyanok, amelyekre – mint bemenetekre – az [latex]M[/latex] Turing-gép véges sok lépés után megáll és ad valamilyen kimenetet. Másrészt lesznek olyanok, amelyekre végtelen ciklusba kerül, azaz nem ad kimenetet. Definiálhatunk tehát egy <strong><em>függvényt</em></strong>, amely épp azokra a jelsorozatokra van értelmezve, amelyekre [latex]M[/latex] megáll, és minden ilyen jelsorozathoz épp azt a jelsorozatot rendeli hozzá, amely a megállás után a kimeneti szalagon van. Ezt a függvényt az [latex]M[/latex] <strong><em>Turing-gép által kiszámított függvénynek</em></strong> nevezzük, és [latex]f_M[/latex]-mel jelöljük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ehhez hasonlóan legyen adott egy [latex]N[/latex] <strong><em>nemdeterminisztikus Turing-gép</em></strong>, valamint szintén egy [latex]\Sigma[/latex] ábécé, amellyel ez a gép dolgozik. Ekkor a [latex]\Sigma[/latex] feletti jelsorozatok két részre oszthatók. Lesznek olyanok, amelyekre – mint bemenetekre – az [latex]N[/latex] Turing-gép <strong><em>legalább 1</em></strong> számítási útvonalon véges sok lépés után megáll, és minden ilyen számítási útvonal végén ad valamilyen kimenetet, és lesznek olyan bemenetek is, amelyekre a gép <strong><em>mindegyik</em></strong> számítási útvonalon végtelen ciklusba kerül, azaz nem ad semmilyen kimenetet. Definiálhatunk tehát egy <strong><em>relációt</em></strong>, amely épp azokra a jelsorozatokra van értelmezve, amelyekre [latex]N[/latex] legalább <em>1</em> számítási útvonalon megáll, és minden ilyen bemenethez épp azokat a jelsorozatokat rendeli hozzá, amelyek a megálló számítási útvonalak végén a kimeneti szalagon vannak. Ezt a relációt az [latex]N[/latex] <strong><em>Turing-gép által kiszámított relációnak</em></strong> nevezzük, és [latex]R_N[/latex]-nel jelöljük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Látható, hogy a nemdeterminisztikus Turing-gépek a determinisztikus Turing-gépek általánosításának tekinthetők hasonlóan ahhoz, mint ahogy a relációk a függvények általánosításai. <strong><em>A továbbiakban függvényekkel fogunk foglalkozni, és ennek megfelelően Turing-gép alatt mindig determinisztikus Turing-gépet fogunk érteni</em></strong>, hacsak külön nem jelezzük ennek ellentettjét. A most következő definíciók egyfajta alapvető osztályozását adják az összes lehetséges [latex]\Sigma[/latex] feletti jelsorozatokon értelmezett függvénynek.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egy [latex]f[/latex] függvényt <strong><em>parciálisan rekurzív függvénynek</em></strong> nevezzük, ha létezik olyan Turing-gép, amely által kiszámított függvény épp [latex]f[/latex]. A „parciális” elnevezés arra utal, hogy az [latex]f[/latex] függvénynek nem feltétlenül kell minden bemeneti jelsorozatra értelmezve lennie, de azt elvárjuk, hogy létezzen olyan Turing-gép, amely minden olyan jelsorozatra véges sok lépésben megáll és kiszámolja a függvény értékét, amelyre a függvény értelmezve van. A „rekurzív” elnevezés a matematika egy másik területéről ered, ezt most nem részletezzük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az olyan parciálisan rekurzív függvényeket, amelyek minden bemeneti jelsorozatra értelmezve vannak, <strong><em>rekurzív függvényeknek</em></strong> nevezzük. A rekurzív függvényeket fogjuk <strong><em>algoritmikus szempontból kezelhető</em></strong> függvényeknek tekinteni, mivel ezek azok, amelyeknél a kiszámításukat végző Turing-gép soha nem keveredik végtelen ciklusba. Erre egy remek példa a fenti összeadó Turing-gépünk, amely az összeadás szempontjából értelmezhetetlen bemenetekre is megáll, és az üres jelsorozatot, mint kimenetet produkálja. Kérdés, hogy nem túl szűk-e ez a meghatározás? Nincsenek-e esetleg olyan algoritmusok, amelyek nem valósíthatók meg Turing-géppel? Nem lehet-e valamilyen „hiper-szuper” számítógéppel olyan függvényt is kiszámítani, amit Turing-géppel nem? Most ezekre a kérdésekre adjuk meg a választ.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="church-turing"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A Church-Turing tézis</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Az úgynevezett <strong><em>Church-Turing tézis</em></strong> állítása a következő: minden olyan probléma, amely algoritmussal megoldható, arra szerkeszthető alkalmas Turing-gép is. Vegyük észre, hogy ez nem egy matematikai tétel, hanem egy tapasztalati kijelentés, de felfoghatjuk magának <strong><em>az „algoritmus” fogalom matematikai definíciójá</em></strong>nak is. Az olyan problémamegoldási módszereket tekintjük tehát <strong><em>algoritmusnak</em></strong>, amelyekre készíthető Turing-gép. Ennek oka mindössze annyi, hogy számos kísérlet ellenére eddig még senki sem adott meg olyan algoritmus-fogalmat, amely a gyakorlatban megvalósítható lenne, és a <strong><em>Turing-kiszámíthatóságnál</em></strong> erősebb képességű. Természetesen, ha majd a jövőben képesek leszünk építeni olyan számítógépeket, amelyek működése alapjaiban különbözik a jelenlegi gépektől, akkor ezt a paradigmát át kell majd értékelnünk. Ilyenek lesznek például az úgynevezett <a rel="noreferrer noopener" aria-label="kvantumszámítógépek (új fülön nyitja meg)" href="https://hu.wikipedia.org/wiki/Kvantumsz%C3%A1m%C3%ADt%C3%B3g%C3%A9p" target="_blank">kvantumszámítógépek</a>. Az elméleti számítástudomány fejlődése természetesen már elindult ilyen irányokba is, ám ez még csak a jövő. A jelen valóságában a Church-Turing tézist kell elfogadnunk igaznak.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Elméleti értelemben mindegy, hogy a gép hány szalaggal rendelkezik. Sőt, elképzelhető, hogy esetleg szalagok helyett négyzetrácsos füzethez hasonló síkokon dolgozik, a fejek pedig nem csak jobbra és balra, hanem fel és lefelé, vagy akár tetszőleges helyre mozoghatnak. Ezekről mind-mind bebizonyítható, hogy ugyanazt a számítási potenciált képviselik. Ami tehát megoldható az egyikkel, az megoldható az összes többivel is. Maximum nagyobb – de még mindig véges – szabályrendszerrel tudjuk leírni a gépet. Elméleti szempontból tehát teljesen mindegy, hogy melyiket tekintjük <strong><em>„a Turing-gép”</em></strong> definíciójának, maximum „kényelmi” szempontból használjuk hol az egyik, hol a másik definíciót. Mi a továbbiakban a fenti többszalagos változatot fogjuk Turing-gépnek tekinteni, hacsak ennek ellenkezőjét nem állítjuk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most nézzük meg, hogy függvények kiszámításán kívül mire lehet még használni a Turing-gépet.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="turing-machine-language"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A Turing-gép által felismert nyelv</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Algoritmussal általában <strong><em>optimalizálási feladatokat</em></strong> oldunk meg, azaz egy megoldáshalmazból olyan megoldást keresünk, amely bizonyos szempontok szerint a „legjobb”. Például legrövidebb vagy leggyorsabb útvonal keresése egy térképen. </p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Amikor azonban egy optimalizálási feladat „nehézségéről” szeretnénk képet kapni, akkor célszerű azt egy úgynevezett <strong><em>döntési problémára</em></strong> visszavezetni. Például létezik-e olyan útvonal, amely egy adott küszöbértéknél rövidebb vagy gyorsabb. Ha ugyanis az optimalizálási feladat „könnyű”, akkor a belőle képzett döntési feladat is „könnyű”, hiszen csak a kapott eredményt kell összehasonlítani a küszöbértékkel. Másként fogalmazva: ha egy döntési feladat „nehéz”, akkor a hozzátartozó optimalizálási feladat is „nehéz”. A <strong><em>döntési problémák</em></strong> lényegében olyan függvények, amelyek a bemeneti jelsorozatokhoz kétféle kimeneti jelsorozatot rendelhetnek, amelyek egy <strong><em>„igen”</em></strong> vagy egy <strong><em>„nem”</em></strong> választ reprezentálnak. Ezeket <strong><em>döntőfüggvényeknek</em></strong> nevezzük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi ábrán egy olyan döntőfüggvény látható, amely nem minden bemeneti jelsorozatra van értelmezve. De amelyekre értelmezve van, azok esetén a kimenet kétféle lehet: az egyik az <strong><em>„igen”</em></strong>, míg a másik a <strong><em>„nem”</em></strong> választ jelenti:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":1179} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_6_dontofuggveny.jpg" alt="Döntőfüggvény" class="wp-image-1179"/><figcaption>Döntőfüggvény</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Mivel <strong><em>egy döntőfüggvény</em></strong> is épp olyan függvény, mint amikről eddig szó volt, ezért ő <strong><em>is lehet parciálisan rekurzív</em></strong>. Ebben az esetben tehát létezik olyan [latex]M[/latex] Turing-gép, amely őt kiszámolja. Ilyenkor 3 eset lehetséges erre a Turing-gépre vonatkozólag:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li>A fenti ábrán az [latex]L[/latex] részhalmazba tartozó bemenetekre a Turing-gép megáll, és az <strong><em>„igen”</em></strong> választ adja.</li><li>Az ábrán a [latex]K[/latex] részhalmazba tartozó bemenetekre a Turing-gép megáll, és a <strong><em>„nem”</em></strong> választ adja.</li><li>A többi bemenetre a Turing-gép végtelen ciklusba kerül.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>Ilyen esetekben tehát <strong><em>a Turing-gép egy döntési problémát old meg</em></strong>. A probléma példányai ebben az esetben valamilyen <strong><em>eldöntendő kérdések</em></strong>. Ezeket reprezentálják a bemeneti jelsorozatok a Turing-gép számára, amelytől választ várunk a kérdésre. Azok a bemeneti jelsorozatok, amelyekre a Turing-gép az <strong><em>„igen”</em></strong> választ adja, egy részhalmazt alkotnak az összes bemeneti jelsorozat között. Ezt a részhalmazt <strong><em>a Turing-gép által felismert nyelvnek</em></strong> nevezzük és [latex]L_M[/latex]-mel jelöljük. A most következő definíciók egyfajta alapvető osztályozását adják az összes lehetséges [latex]\Sigma[/latex] feletti formális nyelvnek – hasonlóan ahhoz, mint ahogy a függvényeket osztályoztuk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egy [latex]L[/latex] nyelvet <strong><em>rekurzívan felsorolható</em></strong>, vagy <strong><em>algoritmikusan felismerhető nyelvnek</em></strong> nevezzük, ha létezik olyan Turing-gép, amely által felismert nyelv épp [latex]L[/latex]. Az elnevezés ismét a matematika egy másik területéről ered, ennek részleteit most mellőzzük. Egy rekurzívan felsorolható nyelv <strong><em>mondatait</em></strong> tehát tulajdonképpen <strong><em>egy olyan döntőfüggvény jelöli ki, amely parciálisan rekurzív</em></strong>. Az ilyen nyelvek osztályát [latex]RE[/latex]-vel jelöljük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egy nyelv rekurzívan felsorolhatósága azonban önmagában még kevés, mivel az csak annyit garantál, hogy a nyelvbe tartozó jelsorozatokra a Turing-gép mindig megáll, és az <strong><em>„igen”</em></strong> választ adja. Ha azonban véletlenül egy olyan jelsorozat kerül a bemenetre, amely nem mondata a nyelvnek, akkor nem garantált, hogy a Turing-gép valaha is megáll, és megkapjuk a <strong><em>„nem”</em></strong> választ. Azokat a nyelveket, amelyek esetén még ez utóbbi is garantált, <strong><em>rekurzív</em></strong>, vagy más néven <strong><em>algoritmikusan eldönthető nyelveknek</em></strong> nevezzük, az ilyen nyelvek osztályát pedig [latex]R[/latex]-rel jelöljük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Vegyük észre, hogy a döntési problémák és egy adott [latex]\Sigma[/latex] ábécé feletti nyelvek között megfeleltetés létesíthető. Minden döntési probléma ugyanis kijelöl egy [latex]\Sigma[/latex] feletti formális nyelvet. Ennek épp azok a [latex]\Sigma[/latex] feletti jelsorozatok lesznek a mondatai, amelyek a döntési probléma <strong><em>igenpéldányait</em></strong> reprezentálják. Megfordítva, tetszőleges [latex]\Sigma[/latex] feletti formális nyelvnek megfeleltethető egy olyan döntési probléma, amelynek <strong><em>igenpéldányai</em></strong> épp a nyelv mondataival reprezentálhatók.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Azokat a döntési problémákat tekintjük tehát <strong><em>algoritmikusan eldönthető problémák</em></strong>nak, amelyeket reprezentáló nyelvek az [latex]R[/latex] osztályban vannak, azaz rekurzívak. Az [latex]R[/latex] nyilvánvalóan részhalmaza [latex]RE[/latex]-nek, azaz <strong><em>minden rekurzív nyelv egyben rekurzívan felsorolható is</em></strong>. Az olvasó jól érzékeli, hogy most az algoritmikus eldönthetőség határait feszegetjük, ezért természetesen adódik a kérdés, hogy <strong><em>vajon valódi részhalmazról van-e szó</em></strong>? Esetleg létezik-e olyan [latex]\Sigma[/latex] feletti nyelv, amely rekurzívan felsorolható ugyan, de nem rekurzív? Sőt továbbmegyek: vajon létezik-e olyan nyelv, amely még csak nem is rekurzívan felsorolható? A továbbiakban ezekre a kérdésekre adjuk meg a választ.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Az univerzális Turing-gép</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Képzeljünk most el egy olyan Turing-gépet, amely képes bármilyen más <strong><em>Turing-gép működését szimulálni</em></strong> tetszőleges bemenetre. Az ilyen Turing-gépet logikus módon <strong><em>univerzális Turing-gépnek</em></strong> nevezzük. Az univerzális Turing-gép bemenete két részből áll: az első rész a szimulálni kívánt Turing-gép valamilyen [latex]w[/latex] leírását (amely ugye véges), míg a második rész a szimulálni kívánt Turing-gép [latex]x[/latex] bemenetét tartalmazza. Az univerzális Turing-gép ezután pontosan úgy viselkedik erre az összetett bemenetre, mint ahogyan a [latex]w[/latex] „betűsorozat” által leírt szimulált Turing-gép viselkedne az [latex]x[/latex] bemenetre. Kérdés, hogy egyáltalán létezik-e univerzális Turing-gép?</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A válasz igen, ám ennek konkrét konstrukciójától most eltekintünk, mivel ez inkább technikai jellegű probléma, mintsem elméleti. Az univerzális Turing-gép létezése egyébként nem meglepő, hiszen ha belegondolunk, tulajdonképpen <strong><em>minden valódi számítógép tekinthető ilyen konstrukciónak</em></strong>. A szimulált gépek [latex]w[/latex] leírásai valódi számítógépek esetén a különböző programoknak felelnek meg, maga a szimuláció pedig nem más, mint a [latex]w[/latex] „betűsorozat” által leírt program futtatása. Az, hogy egy tetszőleges Turing-gépet hogyan tudunk leírni egy [latex]w[/latex] „betűsorozattal” szintén technikai jellegű kérdés, de ez nyilván megoldható valamilyen szabványos módon.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ennyi bevezető után végre rátérhetünk az algoritmikus eldönthetőség kérdésére.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Algoritmikusan eldönthetetlen problémák</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A 19. század végéig mindenki úgy gondolta, hogy egy kellőképpen pontosan megfogalmazott döntési problémára mindig létezik olyan algoritmus (azaz Turing-gép) amely a probléma tetszőleges konkrét példányára (azaz tetszőleges bemenetre) megadja az <strong><em>„igen”</em></strong> vagy <strong><em>„nem”</em></strong> választ. Maximum túl sokáig, de mindenképpen véges ideig tart ennek az algoritmusnak a végrehajtása. Vagy esetleg az algoritmus létezik ugyan, de a tudomány jelenlegi állása alapján azt még nem találtuk meg, így az az utókor feladata lesz. A századforduló megdöbbentő felfedezése az, hogy ez egyszerűen nem így van: <strong><em>feltehetünk olyan kérdést, amely algoritmikusan eldönthetetlen</em></strong>. Sőt, olyan kérdés is megfogalmazható, amelynek az algoritmikus eldönthetetlensége is eldönthetetlen, és így tovább, ez az eldönthetetlenségi láncolat vég nélkül folytatható.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most demonstrálunk egy olyan nyelvet, amely nemhogy nem rekurzív, de még csak <strong><em>nem is rekurzívan felsorolható</em></strong>, azaz <strong><em>nem létezik olyan Turing-gép, amely a nyelvhez tartozó „szavakat” egyáltalán felismeri</em></strong>. Ennek a nyelvnek a neve <strong><em>diagonális nyelv</em></strong>, és főként elméleti jelentőségű, mivel demonstrálja rekurzívan nem felsorolható nyelvek létezését.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Figyelem! Logikai tandemugrás következik</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>diagonális nyelv</em></strong> olyan [latex]\Sigma[/latex] feletti jelsorozatokból áll, amelyek <strong><em>Turing-gép leírások, és az általuk leírt Turing-gép nem fogadja el őket</em></strong>, azaz vagy a <strong><em>„nem”</em></strong> választ adja, vagy nem is áll meg. A diagonális nyelv jele [latex]L_d[/latex]. Itt a nyelv egy elemét egyszerre tekintjük bemenetnek és algoritmusnak is. Ráadásul azzal a nyakatekert tulajdonsággal, hogy saját magára, mint bemenetre az algoritmus <strong><em>„nem”</em></strong>-et mond, vagy nem áll meg. Most megvizsgáljuk, milyen furcsa tulajdonsággal rendelkezik ez a nyelv.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]L_d[/latex] nyelv <strong><em>nem rekurzívan felsorolható</em></strong>. Ha ugyanis az lenne, akkor létezne olyan [latex]M[/latex] Turing-gép, amely épp [latex]L_d[/latex]-t ismeri fel. Ha létezne ilyen [latex]M[/latex] Turing-gép, akkor azt le lehetne írni egy valamilyen [latex]w[/latex] „betűsorozattal”. De vajon mit tenne [latex]M[/latex], ha ráküldenénk [latex]w[/latex]-t (azaz a saját leírását), mint bemenetet? Az alábbi két eset lehetséges:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li>Ha [latex]M[/latex] elfogadná [latex]w[/latex]-t (azaz <strong><em>„igen”</em></strong> választ adna rá), akkor az azt jelentené, hogy [latex]w[/latex] eleme az [latex]L_d[/latex] nyelvnek (hiszen [latex]M[/latex] éppen az [latex]L_d[/latex] elemeit fogadja el). Ha [latex]w[/latex] eleme az [latex]L_d[/latex] nyelvnek, akkor ő egy olyan Turing-gép leírása, amely nem fogadja el a saját leírását (hiszen [latex]L_d[/latex] épp az ilyen Turing-gép leírások nyelve). De [latex]w[/latex] épp [latex]M[/latex] leírása, tehát [latex]M[/latex] nem fogadhatja el [latex]w[/latex]-t.</li><li>Ha [latex]M[/latex] nem fogadná el [latex]w[/latex]-t (azaz <strong><em>„nem”</em></strong> választ adna rá, vagy <strong><em>végtelen ciklusba kerülne</em></strong>), akkor az azt jelentené, hogy [latex]w[/latex] nem eleme az [latex]L_d[/latex] nyelvnek (hiszen [latex]M[/latex] éppen az [latex]L_d[/latex] elemeit fogadja el). Ha [latex]w[/latex] nem eleme az [latex]L_d[/latex] nyelvnek, akkor ő egy olyan Turing-gép leírása, amely elfogadja a saját leírását. De mivel [latex]w[/latex] épp [latex]M[/latex] leírása, ezért [latex]M[/latex]-nek el kell fogadnia [latex]w[/latex]-t.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>Teljes logikai paradoxonba kerülnénk, ha feltételeznénk [latex]M[/latex] létezését, vagyis azt, hogy [latex]L_d[/latex] rekurzívan felsorolható. [latex]L_d[/latex] tehát <strong><em>nem lehet rekurzívan felsorolható</em></strong>. Persze az [latex]L_d[/latex] egy nagyon elborult nyelv, és mondhatnánk, hogy ilyen nyelvet konstruálni nagyon nem egyszerű feladat, pláne ha még gyakorlati hasznot is megkövetelünk tőle. Ez így is van, azonban az az érdekes, hogy halmazelméleti szempontból egy adott [latex]\Sigma[/latex] ábécé feletti nyelvek közül <strong><em>„majdnem mindegyik”</em></strong> ilyen, és csak „elvétve” fordulnak elő közöttük [latex]RE[/latex]-beli (azaz <strong><em>algoritmikusan felismerhető</em></strong>) nyelvek. Az összes [latex]\Sigma[/latex] feletti nyelvek számossága ugyanis <strong><em>kontinuum számosságú</em></strong>, míg az [latex]RE[/latex]-beli nyelvek „csak” <strong><em>megszámlálhatóan végtelen</em></strong> sokan vannak. A pontos matematikai definíciót mellőzzük, de e kétféle végtelen nagyjából úgy viszonyul egymáshoz, mint ahogyan az egész számok végtelensége viszonyul a számegyenesen lévő összes szám végtelenségéhez. Az összes szám folytonosan tölti fel a számegyenest (innen a „kontinuum” elnevezés), míg közöttük az egész számok „csak” elvétve fordulnak elő.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>De térjünk vissza a Földre, és foglalkozzunk mostantól csak az [latex]RE[/latex]-beli nyelvekkel, hiszen a többivel nem sok mindent tudunk kezdeni. A kérdés ezek után az, hogy létezik-e olyan nyelv, amely rekurzívan felsorolható ugyan, de nem rekurzív (azaz <strong><em>algoritmikusan eldönthetetlen</em></strong>)?</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A megállási probléma</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Gyakorlati szempontból hasznos volna, ha egy algoritmusról el tudnánk dönteni, hogy létezik-e olyan bemenet, amelyre végtelen ciklusba kerülne. Gondoljunk csak bele: egy csomó teszteléstől meg tudnák magukat kímélni a szoftverfejlesztők, ha lenne egy olyan „szuperalgoritmusuk”, amely bármilyen programról ítéletet tudna mondani ilyen tekintetben. Legyünk szerények: vizsgáljuk csak azt a kérdést, hogy <strong><em>egy algoritmus egy adott konkrét bemenettel kerülhet-e végtelen ciklusba</em></strong>. Ezt <strong><em>megállási problémának</em></strong> nevezik, ahol az eldöntendő kérdés tehát az, hogy egy [latex]w[/latex] jelsorozattal leírt Turing-gép egy adott [latex]x[/latex] bemenetre megáll-e vagy sem. Az ilyen tulajdonságú [latex](w,x)[/latex] párokat leíró mondatokat tartalmazó nyelvet <strong><em>megállási nyelvnek</em></strong> nevezzük és [latex]L_h[/latex]-val jelöljük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Sajnos az a helyzet, hogy az [latex]L_h[/latex] nyelv ugyan rekurzívan felsorolható, de <strong><em>nem rekurzív</em></strong>. A bizonyításnak csak a vázlatát ismertetjük, annak részleteit mellőzzük. A rekurzívan felsorolhatóság könnyen adódik: bütyköljük meg az univerzális Turing-gépet úgy, hogy ha megáll valamilyen [latex](w,x)[/latex] bemenetre, akkor mindig <strong><em>„igen”</em></strong> választ adjon. Az így megbütykölt gép nyilván felismeri az [latex]L_h[/latex] nyelvet, tehát az <strong><em>rekurzívan felsorolható</em></strong>. Ezután azt kell megvizsgálni, hogy <strong><em>mi lenne, ha ezen felül még rekurzív is lenne</em></strong>. Ebben az esetben lenne olyan [latex]M[/latex] Turing-gép, amely [latex]L_h[/latex]-t ismeri fel és mindig megáll. Ekkor azonban – itt nem részletezett módon – tudnánk konstruálni [latex]M[/latex] segítségével egy olyan „szuperokos” Turing-gépet is, amely a fentebb ismertetett <strong><em>diagonális nyelvet ismerné fel</em></strong>. De ez ugye – mint láttuk – képtelenség, hiszen a diagonális nyelv nem rekurzívan felsorolható. <strong><em>Nem létezhet</em></strong> tehát a „szuperokos” Turing-gép alapjául szolgáló [latex]M[/latex] Turing-gép sem, amely mindig megáll és [latex]L_h[/latex]-t ismeri fel, azaz [latex]L_h[/latex] <strong><em>nem lehet rekurzív</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi ábrán az eddig megismert [latex]RE[/latex] és [latex]R[/latex] nyelvosztályok egymáshoz való viszonya, valamint az eddig megismert 2 nyelv (a diagonális és a megállási nyelv) elhelyezkedése látható:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":1181} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_6_r_re_nyelvosztalyok.jpg" alt="R és RE nyelvosztályok viszonya" class="wp-image-1181"/><figcaption>R és RE nyelvosztályok viszonya</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Hilbert 10. problémája</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Végül bemutatunk egy igazán érdekes döntési problémát, amely a <strong><em>Turing-gépek formalizmusától függetlenül</em></strong>, természetesen is <strong><em>megfogalmazható</em></strong>. 1900-ban Párizsban a világ matematikusainak kongresszusán <a rel="noreferrer noopener" aria-label="David Hilbert (új fülön nyitja meg)" href="https://hu.wikipedia.org/wiki/David_Hilbert" target="_blank">David Hilbert</a> egy azóta legendás hírűvé vált előadást tartott, amelyen a jövő fontos kutatási területeit próbálta meg kijelölni. Huszonhárom olyan <a rel="noreferrer noopener" aria-label="kérdést (új fülön nyitja meg)" href="https://hu.wikipedia.org/wiki/Hilbert-probl%C3%A9m%C3%A1k" target="_blank">kérdést</a> fogalmazott meg, amelyről úgy vélte, hogy megoldásuk lényeges előrelépést jelentene sok területen.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezek közül a <strong><em>10. probléma</em></strong> szól az úgynevezett <strong><em>diofantoszi egyenletek</em></strong> megoldásáról. Ehhez előbb szükségünk van egy fontos fogalomra. <strong><em>Egész együtthatós polinom</em></strong> alatt olyan kifejezéseket értünk, amelyek változókból és egész számokból építhetők fel az összeadás, kivonás és szorzás segítségével. Például az [latex]x^2\cdot y - z - 1[/latex] kifejezés az [latex]x[/latex], [latex]y[/latex] és [latex]z[/latex] változók egy egész együtthatós polinomja. Egy <strong><em>egész együtthatós polinomból képzett diofantoszi egyenlet megoldásakor</em></strong> az egész számok között keressük a változók olyan értékeit, melyeket a polinomba helyettesítve az eredmény <em>0</em>. Egy diofantoszi egyenletet megoldhatónak mondunk, ha létezik ilyen értelemben vett megoldás. Például a fenti diofantoszi egyenletnek egy lehetséges egészekből álló megoldása:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}x &amp;= 1 \\ y &amp;=2 \\ z&amp;=1 \end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A David Hilbert által felvázolt 10. probléma így hangzik: <strong><em>adjunk algoritmust, amely tetszőleges diofantoszi egyenletre eldönti, hogy létezik-e megoldása vagy nem</em></strong>. A kérdést végül 1970-ben Martin Davis, Julia Robinson és mások munkáira építve Jurij Matyijaszevics válaszolta meg, amikor bizonyította, hogy a <strong><em>diofantoszi egyenletek megoldhatóságának kérdése algoritmikusan eldönthetetlen</em></strong>. Ez persze nem azt jelenti, hogy egy-egy konkrét diofantoszi egyenletről ezt ne lehetne eldönteni annak valamilyen speciális tulajdonságát felhasználva, hanem azt, hogy nincs olyan általános döntési algoritmus, amely ezt tetszőleges egyenletről képes eldönteni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ebben a részben megismerkedtünk a Turing-gépnek nevezett elméleti konstrukcióval, amely lényegében az „algoritmus” matematikai definíciója, és amellyel döntési és optimalizálási problémákat lehet megoldani. A döntési problémákat formális nyelvekkel reprezentáltuk, ahol a Turing-gép feladata felismerni egy adott jelsorozatról, hogy egy adott nyelv mondata-e vagy sem. Ennek kapcsán a formális nyelveket az [latex]RE[/latex] és [latex]R[/latex] nyelvosztályokba soroltuk aszerint, hogy létezik-e a nyelvet felismerő Turing-gép ([latex]RE[/latex] osztály) és ez a Turing-gép vajon olyan jelsorozatokra is mindig megáll-e, amelyek nem mondatai a nyelvnek ([latex]R[/latex] osztály). Az utóbbi osztályba tartozó nyelveket (és az általuk reprezentált problémákat) tekintjük algoritmikusan eldönthető nyelveknek. Az algoritmikus eldönthetőség határait feszegetve mutattunk pár algoritmikusan eldönthetetlen problémát, köztük a komoly gyakorlati jelentőséggel bíró megállási problémát és Hilbert híres 10. problémáját is.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A következő részben az algoritmikusan eldönthető problémákat (azaz a rekurzív nyelveket) osztályozzuk tovább aszerint, hogy mennyire hatékonyan található meg rájuk az „igen” vagy a „nem” válasz. Ezután már látni fogjuk, hogy mit jelent Alice, Bob és Eve számára egy feladat „nehézsége”.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A következő részt <a href="https://youproof.hu/kriptografia/7-algoritmus-bonyolultsag-problemaosztalyok-polinomialis-exponencialis-p-np-sejtes-tanu-tetel/">itt</a> találod...</em></strong></p>
+<!-- /wp:paragraph -->

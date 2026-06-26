@@ -1,0 +1,111 @@
+<!-- wp:paragraph -->
+<p>Az [latex]a[/latex]-ra vonatkozó teljes indukciót alkalmazunk, azaz feltesszük, hogy az állítás már igaz valamilyen [latex]a=n[/latex] természetes számra. <strong><em>Indukciós feltevésünk</em></strong> szerint tehát [latex]s(b)\cdot n=(b\cdot n) + n[/latex]. Azt kell bizonyítanunk, hogy ekkor az állítás [latex]a=s(n)[/latex]-re is teljesül, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]s(b)\cdot s(n) = (b\cdot s(n)) + s(n)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A Peano-szorzás [yp_element slug="peano-szorzas" type="link" /]jának 2. pontja miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]s(b)\cdot s(n) = (s(b)\cdot n) + s(b) = \ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az indukciós feltétel miatt a zárójel átírható:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots = (\underbrace{(b\cdot n) + n}_{=s(b)\cdot n}) + s(b) = \ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Tekintve, hogy az összeadás asszociatív (lásd: [yp_element slug="peano-osszeadas-asszociativitas" type="link" /]), ezért ezt a kifejezést átzárójelezhetjük:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots = (b\cdot n) + (n + s(b)) = \ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A Peano-összeadás [yp_element slug="peano-osszeadas" type="link" /]jának 2. pontja miatt a zárójel átírható:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots = (b\cdot n) + \underbrace{s(n+b)}_{=(n + s(b))} = \ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Tekintve, hogy az összeadás kommutatív (lásd: [yp_element slug="peano-osszeadas-kommutativitas" type="link" /]), ezért a jobboldali tagban szereplő [latex]s[/latex] függvény paramétere átírható:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots = (b\cdot n) + s(\underbrace{b+n}_{=n+b}) = \ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ismételten a Peano-összeadás [yp_element slug="peano-osszeadas" type="link" /]jának 2. pontját alkalmazva:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots = (b\cdot n) + \underbrace{(b+s(n))}_{=s(b+n)} = \ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az összeadás asszociativitása miatt ez a kifejezés ismételten átzárójelezhető:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots = ((b\cdot n) + b)+s(n) = \ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Végül a Peano-szorzás [yp_element slug="peano-szorzas" type="link" /]jának 2. pontja miatt a zárójelben lévő kifejezés átírható:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots = (\underbrace{b\cdot s(n)}_{=(b\cdot n)+b})+s(n)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Vagyis azt kaptuk, hogy valóban [latex]s(b)\cdot \underbrace{s(n)}_{=a} = (b\cdot \underbrace{s(n)}_{=a}) + \underbrace{s(n)}_{=a}[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Felállítottuk tehát a dominósort, és beláttuk, hogy bármely dominó felborítása esetén a soron következő dominó is fel fog borulni. Ezért most felborítjuk az első dominót, azaz igazoljuk, hogy az állítás igaz [latex]a=0[/latex]-ra, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]s(b)\cdot \underbrace{0}_{=a} = (b\cdot \underbrace{0}_{=a}) + \underbrace{0}_{=a}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez viszont nyilvánvalóan teljesül, hiszen a Peano-szorzás [yp_element slug="peano-szorzas" type="link" /]jának 1. pontja miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]s(b)\cdot 0 = 0 = \ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Szintén ugyanezen ok miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots = b\cdot 0 = \ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Végül a Peano-összeadás [yp_element slug="peano-osszeadas" type="link" /]jának 1. pontja miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots = (b\cdot 0) + 0[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Borul tehát az első dominó, és vele együtt a teljes dominósor, azaz minden [latex]b[/latex] és [latex]a[/latex] számra igaz, hogy [latex]s(b)\cdot a = (b\cdot a) + a[/latex].</p>
+<!-- /wp:paragraph -->

@@ -1,0 +1,46 @@
+type: remark
+name: ciklikus-csoportok-megjegyzes
+references:
+  egesz-kitevos-hatvany:
+    target:
+      type: definition
+      name: egesz-kitevos-hatvany
+  egesz-kitevos-hatvanyozas-azonossagai:
+    target:
+      type: theorem
+      name: egesz-kitevos-hatvanyozas-azonossagai
+content:
+  - type: narrative
+    content: |
+      Az, hogy $G$ ciklikus, amelynek generátoreleme $g$, pontosan azt jelenti, hogy $G$ összes eleme kifejezhető
+      ennek az egyetlen $g$ elemnek az ***egész kitevős hatványaiként*** (lásd a [egesz-kitevos-hatvany]t). A $G$
+      csoport $e$ egységeleme és $g$ inverze ugyanis a [egesz-kitevos-hatvany] alapján $g$-nek rendre a nulladik és
+      a $-1$-edik hatványaként írható fel, továbbá minden egyéb elem kifejezhető a $g$ valamint a $g^{-1}$ elemek
+      valamilyen sorrendben felírt szorzataként &ndash; máskülönben $g$ nem lenne generátorelem.
+  - type: formula
+    lead-in: |
+      Például:
+    content: |
+      ggg^{-1}gg^{-1}g^{-1}gg
+  - type: narrative
+    content: |
+      Egy ilyen szorzatban az egymás mellett álló $g$ és $g^{-1}$ tényezők nyilván elhagyhatók. Vagyis
+      végeredményben vagy magát az egységelemet, vagy egy olyan szorzatot kapunk, amely már csak $g$ vagy csak
+      $g^{-1}$ tényezőket tartalmaz. A [egesz-kitevos-hatvany] alapján a végeredmény tehát első esetben $g^0$-ként,
+      míg második esetben $g^n$-ként írható fel valamilyen pozitív vagy negatív $n$ kitevővel.
+  - type: narrative
+    content: |
+      Ebből az is következik, hogy minden $G$ ciklikus csoport ***Abel-csoport***. Legyenek ugyanis $a$ és $b$ a
+      $G$ csoport tetszőleges elemei.
+  - type: formula
+    lead-in: |
+      Mivel $G$ ciklikus, ezért $a$ és $b$ felírhatók valamilyen $g\in G$ generátorelem egész kitevős
+      hatványaiként:
+    content: |
+      \begin{aligned}a&=g^n \\ b&=g^k\end{aligned}
+  - type: formula
+    lead-in: |
+      Ám ekkor e két elem szorzata a [egesz-kitevos-hatvanyozas-azonossagai] 3. pontja alapján felcserélhető,
+      hiszen:
+    content: |
+      a\cdot b=g^n\cdot g^k=g^{n+k}=g^{k+n}=g^k\cdot g^n=b\cdot a

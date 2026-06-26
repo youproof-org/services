@@ -1,0 +1,67 @@
+type: proof
+name: peano-osszeadas-asszociativitas-bizonyitas
+remarks: []
+references:
+  peano-osszeadas:
+    target:
+      type: definition
+      name: peano-osszeadas
+content:
+  - type: narrative
+    content: |
+      Ezúttal $c$-re vonatkozó teljes indukciót alkalmazunk. Tegyük fel, hogy az állítás igaz valamely $c=n$
+      természetes számra. Az tehát az ***indukciós feltétel***, hogy $(a+b)+n = a+(b+n)$.
+  - type: formula
+    lead-in: |
+      Azt kell bizonyítanunk, hogy ebben az esetben $c=s(n)$-re is igaz, azaz:
+    content: |
+      (a+b)+\underbrace{s(n)}_{=c} = a+(b+\underbrace{s(n)}_{=c})
+  - type: formula
+    lead-in: |
+      A [peano-osszeadas] 2. pontja miatt:
+    content: |
+      (a+b)+s(n)=s((a+b)+n) = \ldots
+  - type: formula
+    lead-in: |
+      Az indukciós feltétel miatt:
+    content: |
+      \ldots =s(a+(b+n)) = \ldots
+  - type: formula
+    lead-in: |
+      Ismételten a [peano-osszeadas] 2. pontja miatt:
+    content: |
+      \ldots = a+s(b+n) = \ldots
+  - type: formula
+    lead-in: |
+      És végül megint csak a [peano-osszeadas] 2. pontja miatt:
+    content: |
+      \ldots = a+(b+s(n))
+  - type: narrative
+    content: |
+      Vagyis azt kaptuk, hogy valóban $(a+b)+\underbrace{s(n)}_{=c} = a+(b+\underbrace{s(n)}_{=c})$.
+  - type: narrative
+    content: |
+      Felállítottuk tehát a dominósort, és beláttuk, hogy bármely dominó felborítása esetén a soron következő
+      dominó is fel fog borulni.
+  - type: formula
+    lead-in: |
+      Ezért most felborítjuk az első dominót, vagyis igazoljuk, hogy az állítás igaz $c=0$-ra, azaz:
+    content: |
+      (a+b)+\underbrace{0}_{=c} = a+(b+\underbrace{0}_{=c})
+  - type: formula
+    lead-in: |
+      A [peano-osszeadas] 1. pontja miatt:
+    content: |
+      (a+b)+0 = a+b = \ldots
+  - type: formula
+    lead-in: |
+      Ismételten a [peano-osszeadas] 1. pontja miatt:
+    content: |
+      \ldots = a+(b+0)
+  - type: narrative
+    content: |
+      Vagyis azt kaptuk, hogy valóban $(a+b)+\underbrace{0}_{=c} = a+(b+\underbrace{0}_{=c})$.
+  - type: narrative
+    content: |
+      Borul tehát az első dominó, és vele együtt a teljes dominósor, azaz minden $a$, $b$ és $c$ számra igaz, hogy
+      $(a+b)+c=a+(b+c)$.

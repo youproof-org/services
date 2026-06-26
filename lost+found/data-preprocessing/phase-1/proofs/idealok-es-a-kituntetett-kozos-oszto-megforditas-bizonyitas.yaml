@@ -1,0 +1,76 @@
+type: proof
+name: idealok-es-a-kituntetett-kozos-oszto-megforditas-bizonyitas
+remarks: []
+references:
+  idealok-es-a-kituntetett-kozos-oszto:
+    target:
+      type: theorem
+      name: idealok-es-a-kituntetett-kozos-oszto
+  oszthatosag-tulajdonsagai:
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+  reszhalmaz:
+    target:
+      type: definition
+      name: reszhalmaz
+  vegesen-generalt-ideal-elemei:
+    target:
+      type: theorem
+      name: vegesen-generalt-ideal-elemei
+content:
+  - type: narrative
+    content: |
+      ***Az 1. állítás:*** Legyen tehát $d$ kitüntetett közös osztója $a$-nak és $b$-nek. Azt kell bizonyítani,
+      hogy ekkor fennáll az $(a,b)\sube (d)$ tartalmazási reláció, azaz az $(a,b)$ ideál bármely eleme egyúttal a
+      $(d)$ főideálnak is eleme.
+  - type: narrative
+    content: |
+      Legyen tehát $x$ az $(a,b)$ ideál egy tetszőleges eleme.
+  - type: formula
+    lead-in: |
+      Mivel az $R$ integritástartomány egységelemes, ezért a [vegesen-generalt-ideal-elemei] értelmében $x$
+      kifejezhető az $a$ és $b$ generátorelemek segítségével az alábbi alakban:
+    content: |
+      x=u\cdot a + v\cdot b
+  - type: narrative
+    content: |
+      Mármost, mivel fennállnak a $d|a$ és $d|b$ oszthatóságok &ndash; hiszen $d$ közös osztója $a$-nak és $b$-nek
+      &ndash;, ezért a [oszthatosag-tulajdonsagai] 7. pontja miatt fennállnak a $d|ua$ és $d|vb$ oszthatóságok is.
+  - type: formula
+    lead-in: |
+      Ám ekkor ugyanezen tétel 6. pontja miatt fennáll az alábbi oszthatóság is:
+    content: |
+      d|\underbrace{u\cdot a +v\cdot b}_{=x}
+  - type: narrative
+    content: |
+      Azaz $x$ többszöröse $d$-nek, ami azt jelenti, hogy benne van a $(d)$ főideálban, tehát valóban teljesül az
+      $(a,b)\sube (d)$ tartalmazási reláció.
+  - type: narrative
+    content: |
+      ***A 2. állítás:*** Azt már a [idealok-es-a-kituntetett-kozos-oszto]ben igazoltuk, hogy az $(a,b)=(d)$
+      halmazegyenlőség esetén $d$ kitüntetett közös osztója $a$-nak és $b$-nek. Így most csak annyit kell
+      megmutatni, hogy felírható $d=u\cdot a+v\cdot b$ alakban. Mivel nyilván $d\in (d)$, ezért az $(a,b)=(d)$
+      halmazegyenlőség miatt $d\in (a,b)$. Ám ekkor $d$ a [vegesen-generalt-ideal-elemei] alapján valóban felírható
+      a kívánt alakban.
+  - type: narrative
+    content: |
+      ***Visszafelé:*** Legyen most $d$ kitüntetett közös osztója $a$-nak és $b$-nek, és tegyük fel, hogy $d$
+      felírható $d=u\cdot a+v\cdot b$ alakban. Azt kell megmutatni, hogy ebben az esetben teljesül az $(a,b)=(d)$
+      halmazegyenlőség. Mivel $d$ kitüntetett közös osztó, ezért az ***1. állítás*** miatt fennáll az $(a,b)\sube
+      (d)$ tartalmazási reláció, így már csak a másik irányú tartalmazás &ndash; azaz $(d)\sube (a,b)$ &ndash;
+      fennállását kell bizonyítani.
+  - type: narrative
+    content: |
+      Legyen $x$ a $(d)$ főideál tetszőleges eleme. Ez azt jelenti, hogy teljesül a $d|x$ oszthatóság, azaz létezik
+      olyan $k$ gyűrűelem, hogy $x=k\cdot d$.
+  - type: formula
+    lead-in: |
+      De mivel $d$-ről tudjuk, hogy felírható $d=ua+vb$ alakban, ezért ugyanez igaz lesz $x$-re:
+    content: |
+      x=k\cdot (\underbrace{ua+vb}_{=d})=(ku)\cdot a+(kv)\cdot b
+  - type: narrative
+    content: |
+      Így $x$ a [vegesen-generalt-ideal-elemei] alapján benne van az $(a,b)$ ideálban, tehát valóban teljesül a
+      $(d)\sube (a,b)$ tartalmazási reláció is. Minthogy $(d)$ és $(a,b)$ között mindkét irányban fennáll a
+      tartalmazási reláció, ezért a [reszhalmaz] utáni megjegyzés 5. pontja miatt a két halmaz megegyezik.

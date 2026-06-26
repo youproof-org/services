@@ -1,0 +1,102 @@
+type: proof
+name: halmazmuveletek-tulajdonsagai-bizonyitas
+remarks: []
+references:
+  halmazmuveletek:
+    target:
+      type: definition
+      name: halmazmuveletek
+  reszhalmaz:
+    target:
+      type: definition
+      name: reszhalmaz
+content:
+  - type: narrative
+    content: |
+      **Az 1. tulajdonság:** Ez nyilvánvalóan következik az üres halmaz és az univerzális halmaz definíciójából. Az
+      üres halmaznak ugyanis nincs egyetlen eleme sem, így a vele végzett unióképzés nem ad hozzá elemeket
+      semmilyen halmazhoz. Ehhez hasonlóan az univerzális halmaznak minden objektum az eleme, így a vele végzett
+      metszetképzés nem vesz el elemeket semmilyen halmazból.
+  - type: narrative
+    content: |
+      **A 2. tulajdonság:** Ez is teljesen nyilvánvalóan adódik az unió- és a metszetképzés [halmazmuveletek]jából.
+  - type: narrative
+    content: |
+      **A 3. tulajdonság:** Ha $a\in A$ vagy $a\in B$ közül legalább az egyik teljesül, akkor ez nyilván nem
+      változik a két feltétel megcserélésével sem. Így tehát az $A\cup B$ halmaz pontosan meg fog egyezni a $B\cup
+      A$ halmazzal. Ugyanez a gondolatmenet a metszetképzéssel is végigjátszható.
+  - type: narrative
+    content: |
+      **A 4. tulajdonság:** Az unióképzésre vonatkozó asszociativitás mindkét oldalán az a halmaz szerepel,
+      amelynek minden $a$ elemére $a\in A$, $a\in B$ vagy $a\in C$ közül legalább az egyik teljesül, hiszen
+      teljesen mindegy, hogy ezt a 3 feltételt milyen sorrendben ellenőrizzük le. A metszetképzésre vonatkozó
+      asszociativitásra ugyanez a gondolatmenet végigjátszható.
+  - type: narrative
+    content: |
+      **Az 5. tulajdonság:** Csak az ***első disztributivitási szabályt*** fogjuk igazolni, a másik nagyon hasonló
+      gondolatmenettel igazolható. Tegyük fel, hogy egy $x$ objektum benne van a disztributivitási szabály
+      ***baloldalán*** lévő halmazban, azaz az $A\cup (B\cap C)$ ***unióhalmazban***. Itt az ***unió*** miatt két
+      eset lehetséges. Első esetben $x\in A$, és ekkor nyilván $x\in A\cup B$ és $x\in A\cup C$ is teljesül, tehát
+      $x\in (A\cup B)\cap (A\cup C)$ is. Második esetben $x\otin A$, de ekkor viszont az ***unió*** miatt $x\in
+      B\cap C$, tehát $x\in B$ és $x\in C$ egyszerre teljesül. Ilyenkor megintcsak teljesülnek az $x\in A\cup B$ és
+      $x\in A\cup C$ relációk, azaz $x\in (A\cup B)\cap (A\cup C)$ is. Mindkét esetben azt kaptuk, hogyha $x$ eleme
+      a disztributivitási szabály baloldalának, akkor eleme a jobboldalának is, tehát a ***baloldal részhalmaza a
+      jobboldalnak***.
+  - type: narrative
+    content: |
+      Most tegyük fel, hogy $x$ benne van a disztributivitási szabály ***jobboldalán*** lévő halmazban, azaz az
+      $(A\cup B)\cap (A\cup C)$ ***metszethalmazban***. Itt a ***metszet*** miatt tehát $x\in A\cup B$ és $x\in
+      A\cup C$ is teljesül. Ez két ok miatt teljesülhet. Egyrészt, ha $x\in A$, akkor jók vagyunk, mert ekkor $x$
+      benne van minkét unióban, és így ezek metszetében is. Ha $x\otin A$, akkor viszont $x\in B$ és $x\in C$ kell
+      teljesüljön, ami azt jelenti, hogy $x\in B\cap C$. Azt kaptuk, hogy $x\in A$ vagy $x\in B\cap C$ közül
+      legalább az egyik teljesül, azaz $x\in A\cup (B\cap C)$ is. Ha tehát $x$ eleme a disztributivitási szabály
+      jobboldalának, akkor eleme a baloldalnak is, tehát a ***jobboldal is részhalmaza a baloldalnak***.
+  - type: narrative
+    content: |
+      Minthogy a szabály két oldalán álló halmazokról megmutattuk, hogy ***kölcsönösen részhalmazai egymásnak***,
+      ezért a [reszhalmaz] utáni 5. megjegyzés alapján szükségképpen ***megegyeznek***. A másik disztributivitási
+      szabály ugyanilyen módon igazolható.
+  - type: narrative
+    content: |
+      **A 6. tulajdonság:** Nézzük először az $A\cup (A\cap B)$ kifejezést. Mivel a metszetképzés
+      [halmazmuveletek]ja miatt bármilyen $x$ objektum esetén ha $x\in A\cap B$, akkor $x\in A$, ezért ez egyben
+      azt is jelenti, hogy a zárójelben lévő metszet részhalmaza $A$-nak (lásd a [reszhalmaz]t). A fenti
+      kifejezésben tehát tulajdonképpen az $A$ halmaznak egy $X$ részhalmazával vett uniója szerepel. Az $A\cup X$
+      unió viszont nyilvánvalóan $A$-val egyezik meg, mivel $X$-nek nincs olyan eleme, ami ne lenne magának $A$-nak
+      is eleme (hiszen azt mondtuk, hogy $X\sube A$). Valóban igaz tehát, hogy $A\cup (A\cap B)=A$, azaz teljesül
+      az unióképzésre vonatkozó elnyelési tulajdonság.
+  - type: formula
+    lead-in: |
+      A metszetképzésre vonatkozó elnyelési tulajdonság a disztributivitásból és az idempotenciából következik:
+    content: |
+      A\cap (A\cup B)=(\underbrace{A\cap A}_{=A})\cup (A\cap B)=A\cup (A\cap B)=A
+  - type: narrative
+    content: |
+      **A 7. tulajdonság:** Az üres halmaz komplementere az $U\setminus \empty$ különbséghalmaz, amely a
+      [halmazmuveletek] alapján azokat az elemeket tartalmazza, amelyek benne vannak $U$-ban, de nincsenek benne az
+      üreshalmazban. Tekintve, hogy az üres halmazban egyáltalán nincsenek elemek, ezért ez a különbséghalmaz
+      magával $U$-val egyezik meg. Ehhez hasonlóan az univerzális halmaz komplementere az $U\setminus U$
+      különbséghalmaz, amely tehát azokat az elemeket tartalmazza, amelyek benne is vannak és nincsenek is benne
+      $U$-ban. Ilyen elem létezése nyilvánvaló ellentmondás lenne, ezért ez a különbséghalmaz csak az üres halmaz
+      lehet.
+  - type: narrative
+    content: |
+      **A 8. tulajdonság:** Az $\overline{A}$ komplementerhalmaz azokat az elemeket tartalmazza, amelyekre nem igaz
+      az, hogy elemei $A$-nak. Ennek a komplementere pedig azokat, amelyekre ***nem igaz az, hogy nem elemei***
+      $A$-nak. Ezek viszont a dupla tagadás miatt épp $A$ elemei, azaz valóban $\overline{\overline{A}}=A$.
+  - type: narrative
+    content: |
+      **A 9. tulajdonság:** Az $A$ halmaz és komplementerének úniója azokat az $x$ elemeket tartalmazza, amelyekre
+      $x\in A$ vagy $x\otin A$ közül legalább az egyik teljesül. Ez viszont minden létező $x$ igaz, hiszen valami
+      vagy benne van egy halmazban, vagy nincs. Így tehát valóban $A\cup \overline{A}=U$. Ehhez hasonlóan az $A$
+      halmaz és komplementerének metszete az üres halmaz, máskülönben létezne olyan $x$, amelyre $x\in A$ és
+      $x\otin A$ egyszerre teljesülne, ami nyilvánvaló ellentmondás. Így tehát valóban $A\cap \overline{A}=\empty$.
+  - type: narrative
+    content: |
+      ***Végül a 10. tulajdonság:*** Az $A\cup B$ komplementerébe azok az $x$ elemek tartoznak, amelyekre **nem**
+      igaz az, hogy $x\in A$ vagy $x\in B$ közül legalább az egyik teljesül. Másként fogalmazva ezek az elemek sem
+      $A$-ban, sem pedig $B$-ben nincsenek benne, azaz ezekre $x\otin A$ és $x\otin B$ egyszerre teljesül. Ez
+      viszont épp $A$ és $B$ komplementerhalmazainak a metszete. Ehhez hasonlóan az $A\cap B$ komplementerébe azok
+      az $x$ elemek tartoznak, amelyekre **nem** igaz az, hogy $x\in A$ és $x\in B$ egyszerre teljesül. Másként
+      fogalmazva ezek az elemek $A$ és $B$ közül legalább az egyikben nincsenek benne, azaz ezekre $x\otin A$ vagy
+      $x\otin B$ közül legalább az egyik teljesül. Ez viszont épp $A$ és $B$ komplementerhalmazainak az uniója.

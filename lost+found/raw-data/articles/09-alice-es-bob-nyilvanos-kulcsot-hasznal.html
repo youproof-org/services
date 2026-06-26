@@ -1,0 +1,431 @@
+<!-- wp:paragraph -->
+<p><strong><em>Az előző három részben (<a rel="noreferrer noopener" aria-label="6. (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/6-turing-gep-formalis-nyelv-rekurzivan-felsorolhato-rekurziv-megallasi-problema/" target="_blank">6.</a>, <a aria-label="7. (új fülön nyitja meg)" rel="noreferrer noopener" href="https://youproof.hu/kriptografia/7-algoritmus-bonyolultsag-problemaosztalyok-polinomialis-exponencialis-p-np-sejtes-tanu-tetel/" target="_blank">7.</a> és <a rel="noreferrer noopener" aria-label="8. (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/8-karp-redukcio-np-teljes-np-nehez-cook-levin-tetel-logikai-halozatok-graf-izomorfizmus/" target="_blank">8.</a>) egy algoritmuselméleti kitérő keretében eléggé pontosan tisztáztuk, hogy mit értünk „könnyű” illetve „nehéz” algoritmikus feladat alatt. Ezért ebben a részben visszatérünk Alice és Bob fő problémájához, és ott folytatjuk, ahol az <a rel="noreferrer noopener" aria-label="5. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/5-one-time-pad-passziv-aktiv-tamado-haromutas-kulcsforgalom/" target="_blank">5. részben</a> abbahagytuk. Nevezetesen: ahhoz, hogy biztonságosan tudjanak kommunikálni egymással, Alice-nak és Bob-nak először egy kulcsnak nevezett közös titokban kell megállapodniuk. Ezt neveztük a kulcsmegosztás problémájának. A 20. század végéig tartotta magát az a hittétel, miszerint ez kizárólag biztonságos csatornán keresztül – például személyes találkozó – oldható meg. De vajon mit tehet Alice és Bob, ha ilyen csatorna nem áll rendelkezésükre? Hogyan működik és hogyan támadható a Diffie-Hellmann kulcscsere protokoll? Mi az az aszimmetrikus kulcsú rejtjelezés? Ebben a részben erről lesz szó...</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"className":"prerequisite-warning"} -->
+<p class="prerequisite-warning">Figyelem! Erősen ajánlott elolvasni az <a rel="noreferrer noopener" aria-label="5. részt (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/5-one-time-pad-passziv-aktiv-tamado-haromutas-kulcsforgalom/" target="_blank">5. részt</a> az alábbiak megértéséhez. A teljes cikksorozat elejét&nbsp;<a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/1-alapfogalmak-caesar-vigenere-enigma-kulcsmegosztas/" target="_blank">itt</a>&nbsp;találod.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"dropCap":true} -->
+<p class="has-drop-cap">Az összes eddig vizsgált rejtjelezési eljárás nagyon hasonlóan működött. Alice-nak lényegében egy [latex]E[/latex] rejtjelezőt, míg Bob-nak egy [latex]D[/latex] dekódolót kellett paramétereznie egy közös [latex]k[/latex] kulccsal ahhoz, hogy biztonságosan kommunikálni tudjanak egymással. Ez a kommunikációs folyamat látható az alábbi ábrán:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":2064} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_9_szimmetrikus_kulcsu_rejtjelezo_modell.jpg" alt="Szimmetrikus kulcsú rejtjelező modell" class="wp-image-2064"/><figcaption>Szimmetrikus kulcsú rejtjelező modell</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>A [latex]k[/latex]-val paraméterezett [latex]E[/latex] rejtjelező az [latex]x[/latex] nyílt szövegből előállítja az [latex]y[/latex] kódszöveget, míg a vételi oldalon a szintén [latex]k[/latex]-val paraméterezett [latex]D[/latex] dekódoló az [latex]y[/latex] kódszövegből visszaállítja az [latex]x[/latex] nyílt szöveget. A biztonság szempontjából megköveteljük, hogy amennyiben a támadó nem ismeri a [latex]k[/latex] kulcsot, akkor számára algoritmikusan nehéz feladat legyen az [latex]x[/latex] nyílt szöveget előállítani pusztán az [latex]y[/latex] kódszöveg ismeretében. Ezt a felállást <strong><em>szimmetrikus kulcsú</em></strong> titkosításnak nevezzük, mivel Alice ugyanazt a [latex]k[/latex] kulcsot használja a rejtjelezéshez, mint amit Bob használ a dekódoláshoz. Ilyenekre a korábbi részekben láttunk pár példát: <a rel="noreferrer noopener" aria-label="Caesar-kód (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/1-alapfogalmak-caesar-vigenere-enigma-kulcsmegosztas#caesar" target="_blank">Caesar-kód</a>, <a rel="noreferrer noopener" aria-label="Vigenére-kód (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/1-alapfogalmak-caesar-vigenere-enigma-kulcsmegosztas#vigenere" target="_blank">Vigenére-kód</a>, a német <a rel="noreferrer noopener" aria-label="Enigma (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/1-alapfogalmak-caesar-vigenere-enigma-kulcsmegosztas#enigma" target="_blank">Enigma</a> vagy akár az 5. részben bemutatott, ténylegesen feltörhetetlen <a rel="noreferrer noopener" aria-label="one-time-pad (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/5-one-time-pad-passziv-aktiv-tamado-haromutas-kulcsforgalom#one-time-pad" target="_blank">one-time-pad</a>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>1976-ban azonban megjelent <a rel="noreferrer noopener" aria-label="Whitfield Diffie (új fülön nyitja meg)" href="https://en.wikipedia.org/wiki/Whitfield_Diffie" target="_blank">Whitfield Diffie</a> és <a rel="noreferrer noopener" aria-label="Martin Hellman (új fülön nyitja meg)" href="https://en.wikipedia.org/wiki/Martin_Hellman" target="_blank">Martin Hellman</a> <strong><em>Új direktívák a kriptográfiában</em></strong> című írása, amely két forradalmian új ötletet tartalmazott. Egyrészt ez az írás ismerteti az úgynevezett <strong><em>Diffie-Hellman kulcscsere protokollt</em></strong>, amelynek a segítségével Alice és Bob képes megállapodni egy közös kulcsban egy nem biztonságos csatornán keresztül oly módon, hogy az mégis rejtve marad a csatornát lehallgató <a rel="noreferrer noopener" aria-label="Eve (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/5-one-time-pad-passziv-aktiv-tamado-haromutas-kulcsforgalom#passive-attacker" target="_blank">Eve</a> elől. Másrészt pedig az írásból körvonalazódott az úgynevezett <strong><em>aszimmetrikus kulcsú titkosítás</em></strong> alapgondolata – habár végül a konkrét eljárást nem ők, hanem <a rel="noreferrer noopener" aria-label="Ron Rivest (új fülön nyitja meg)" href="https://en.wikipedia.org/wiki/Ron_Rivest" target="_blank">Ron Rivest</a>, <a rel="noreferrer noopener" aria-label="Adi Shamir (új fülön nyitja meg)" href="https://en.wikipedia.org/wiki/Adi_Shamir" target="_blank">Adi Shamir</a> és <a rel="noreferrer noopener" aria-label="Len Adleman (új fülön nyitja meg)" href="https://en.wikipedia.org/wiki/Leonard_Adleman" target="_blank">Len Adleman</a> fejlesztette ki 1977-ben. Ezt a feltalálók vezetékneveinek kezdőbetűi után <strong><em>RSA-eljárásnak</em></strong> nevezzük, amely napjaink leggyakrabban használt titkosítási eljárása. Ez a rejtjelezésen kívül partner- és üzenethitelesítést is biztosít Alice és Bob számára. Mindkét eljárás működése az úgynevezett <strong><em>egyirányú függvényeken</em></strong> alapszik, ezért először ezzel a fogalommal – és általánosságban a függvény fogalmával – ismerkedünk meg.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="function"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Ismét a függvényekről</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A 6. részben a <a rel="noreferrer noopener" aria-label="Turing-gépek (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/6-turing-gep-formalis-nyelv-rekurzivan-felsorolhato-rekurziv-megallasi-problema#turing-machine" target="_blank">Turing-gépek</a> kapcsán már felmerült a függvény fogalma. Ott adva volt egy Turing-gép, amely a bemeneti szalagjára írt jelsorozatból a futása során a kimeneti szalagján előállított egy másik jelsorozatot. Azt mondhatjuk tehát, hogy a Turing-gép valamilyen hozzárendelést valósít meg a szimbólumkészletéből alkotható jelsorozatok között. Ezt a hozzárendelést <strong><em>a Turing-gép által kiszámított függvénynek</em></strong> nevezzük. Az alábbiakban egy ennél általánosabb definíciót adunk a függvény fogalmára.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ehhez hasonlóan általánosságban egy <strong><em>függvény</em></strong> is egy hozzárendelést valósít meg két tetszőleges – nem feltétlenül különböző – halmaz között. <strong><em>Alaphalmaznak</em></strong> nevezzük azt a halmazt, amelyek közül a bemenetek, míg <strong><em>képhalmaznak</em></strong> nevezzük azt a halmazt, amelyek közül a kimenetek kerülhetnek ki. Az alaphalmaz és a képhalmaz lehet különböző, ezt azonban nem követeljük meg. Legyen például [latex]A[/latex] és [latex]B[/latex] két – nem feltétlenül különböző – halmaz. Ekkor egy olyan [latex]f[/latex] hozzárendelést, amely az [latex]A[/latex] halmaz minden eleméhez legfeljebb egy [latex]B[/latex]-beli elemet rendel, az [latex]A[/latex] halmazból a [latex]B[/latex] halmazba képező <strong><em>függvénynek</em></strong> nevezzük és így jelöljük:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f:A \to B[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha például [latex]x[/latex] az [latex]A[/latex] halmaz egy olyan eleme, amelyhez az [latex]f[/latex] függvény hozzárendel egy [latex]B[/latex]-beli elemet, akkor ezt a [latex]B[/latex]-beli elemet az [latex]x[/latex] <strong><em>képének</em></strong> nevezzük és így jelöljük:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f(x)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Elképzelhető, hogy az alaphalmaz nem minden elemének van képe, azonban fontos megkötés, hogy minden elemnek legfeljebb 1 képe lehet. Az alaphalmaz azon részét, amely a képpel rendelkező elemeket tartalmazza, a <strong><em>függvény értelmezési tartományának</em></strong> nevezzük. Hasonlóan elképzelhető, hogy a képhalmaz nem minden eleme képe az alaphalmaz valamely elemének, itt viszont már nincs megkötés arra vonatkozóan, hogy a képhalmaz egy adott eleme hány alaphalmazbeli elemnek lehet képe. Ha például [latex]x[/latex] és [latex]y[/latex] az alaphalmaz két különböző eleme, akkor elképzelhető, hogy a képük ugyanaz az elem a képhalmazban, azaz [latex]f(x)=f(y)[/latex]. A képhalmaz azon részét, amely azokat az elemeket tartalmazza, amelyek képei legalább egy alaphalmazbeli elemnek, a <strong><em>függvény értékkészletének</em></strong> nevezzük. Az alábbi ábrán a most ismertetett fogalmakat szemléltetjük. Itt az [latex]f[/latex] függvény alaphalmaza [latex]A[/latex], képhalmaza [latex]B[/latex], értelmezési tartománya [latex]C[/latex], értékkészlete pedig [latex]D[/latex]:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":2066} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_9_fuggveny.jpg" alt="Függvény értelmezési tartománya és értékkészlete" class="wp-image-2066"/><figcaption>Függvény értelmezési tartománya és értékkészlete</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Jogosan merülhet fel a kérdés az olvasóban, hogy mi értelme van az értelmezési tartományon kívül az ennél – adott esetben – bővebb alaphalmazról beszélni, ha a függvény úgyis csak az értelmezési tartománybeli elemekhez rendel képet. Hasonlóan jogos kérdés, hogy mi értelme van az értékkészleten kívül az ennél – adott esetben – bővebb képhalmazról beszélni, ha a függvény úgyis csak az értékkészletbeli elemeket rendeli hozzá képként az alaphalmazbeli elemekhez. Nos, ennek pusztán praktikussági okai vannak, ugyanis sok esetben nehéz pontosan meghatározni akár az értelmezési tartományt, akár az értékkészletet. Ezért célszerűbb olyan alap- és képhalmazt választani, amelyeket könnyen meg tudunk határozni, ugyanakkor nem túl tágak a tényleges értelmezési tartományhoz és értékkészlethez képest.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Hogy ne csak a levegőbe beszéljünk, nézzük is rögtön egy egyszerű példát. Tekintsük például azt a függvényt, amely tetszőleges [latex]n[/latex] egész számhoz hozzárendeli mondjuk a <em>2</em>-nek az [latex]n[/latex]-edik hatványát, azaz a [latex]2^n[/latex] egész számot. Nevezzük ezt a függvényt [latex]f[/latex]-nek. Ekkor az alábbi képlettel adhatjuk meg ezt a függvényt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f(n)=2^n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Látható, hogy ennek a függvénynek a bemenetei és a kimenetei is ugyanabból a halmazból, nevezetesen az egész számok közül kerülnek ki. Az egész számok halmazát konvencionálisan [latex]\Z[/latex]-vel szokták jelölni, ezért a korábbi jelölésekkel ezt írhatjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f:\Z \to \Z[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A fenti [latex]f[/latex] függvény különleges abból a szempontból, hogy le lehet írni csak az [latex]n[/latex] változótól függő explicit képlettel: [latex]f(n)=2^n[/latex]. Ez sok esetben nem, vagy csak nehezen tehető meg. Tekintsük például a híres <strong><em>Fibonacci-függvényt</em></strong>, amely a pozitív egész számokon van értelmezve. Ennek az értéke [latex]n=1[/latex] és [latex]n=2[/latex] esetén 1, azaz [latex]f(1)=1[/latex] és [latex]f(2)=1[/latex], minden további [latex]n[/latex]-re pedig teljesíti az alábbi úgynevezett függvényegyenletet:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f(n)=f(n-1) + f(n-2)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A Fibonacci-függvény néhány további értékét ennek alapján könnyedén kiszámíthatjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f(3)=f(2)+f(1)=1+1=2[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f(4)=f(3)+f(2)=1+2=3[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f(5)=f(4)+f(3)=2+3=5[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\vdots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Látható, hogy ez az [latex]f(n)[/latex]-re adott kifejezés nem explicit, mivel a függvény két korábbi helyén felvett értékétől függ. Ha például ez alapján az [latex]f(100)[/latex]-at szeretnénk kiszámítani, akkor előbb ki kell számítanunk a függvény <em>100</em> alatti számokra adott értékeit is. Érdekességképp megjegyezzük, hogy a Fibonacci-függvény esetén létezik csak [latex]n[/latex]-től függő explicit képlet is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f(n)=\frac{(1+\sqrt{5})^n - (1-\sqrt{5})^n}{\sqrt{5} \cdot 2^n}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az Olvasó behelyettesítésekkel könnyen leellenőrizheti ennek a képletnek a helyességét. Az persze más kérdés, hogy hogyan lehet egy ilyen képletre rájönni. Ennek ismertetését a szükséges absztrakt algebrai ismeretek hiányában mellőzzük. Sok olyan fontos függvény van azonban, amelyre ilyen explicit képlet nem is létezik, ezért általánosságban az értelmezési tartomány és/vagy az értékkészlet meghatározása nem egyszerű feladat.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="one-way-function"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Egyirányú függvények</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Most térjünk vissza az [latex]f(n)=2^n[/latex] függvényhez, és ennek kapcsán vizsgáljuk meg, hogy mit jelent az <strong><em>egyirányú függvény</em></strong> fogalma. A pontos matematikai definíció helyett egy gyakorlati példán keresztül mutatjuk meg a fogalom lényegét. Tekintsük az [latex]f(n)=2^n[/latex] függvénynek azt a megszorítását, amely csak az <em>1, 2, …, 10</em> számokra van értelmezve. Ezekre az értékekre algoritmikusan könnyű meghatározni a függvény értékét, hiszen csak hatványozni kell. Az értékek rendre a <em>2, 4, 8, 16, 32, 64, 128, 256, 512 </em>és<em> 1024</em> számok lesznek.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel, hogy ennek a függvénynek a megfordítása a feladat, azaz olyan algoritmust kell készítenünk, amely bemenetként kap egy számot ebből az értékkészletből (legyen ez mondjuk <em>512</em>), és azt kell kiszámítani, hogy ez melyik [latex]n[/latex] értéknek a képe az [latex]f[/latex] függvény szerint. Keressük tehát azt az [latex]n[/latex] kitevőt, amelyre <em>2</em>-t emelve épp <em>512</em>-t kapunk. A szemfülesebb olvasók egyből észreveszik, hogy itt az <em>512</em>-nek a <em>2</em>-es alapú <strong><em>logaritmusának</em></strong> a kiszámításáról van szó, de tegyük most félre ezt a fogalmat és szorítkozzunk a „józan paraszti eszünkre”.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Jobban megvizsgálva észrevehetjük, hogy a függvényünk ad bizonyos támpontokat. Nevezetesen [latex]n[/latex] értékét növelve (illetve csökkentve) az [latex]f(n)[/latex] mennyiség is határozottan növekszik (illetve csökken). Ezt a tulajdonságot okosan kihasználva igen hatékonyan megtalálhatjuk az <em>512</em>-höz tartozó [latex]n[/latex] értékét megfelelő szisztéma szerinti próbálgatással.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Végezzünk például egy próbát az értelmezési tartomány közepe táján lévő [latex]n=5[/latex]-re. Ebben az esetben [latex]f(5) = 2^5 = 32[/latex]. Ez ugyan <em>512</em>-nél kisebb, viszont a függvényünk fenti tulajdonsága miatt egyből következik, hogy a keresett [latex]n[/latex] csak nagyobb lehet <em>5</em>-nél. Azaz a lehetőségek felét kizárhatjuk, és a továbbiakban elegendő [latex]n[/latex] értékét a <em>6, 7, 8, 9, 10</em> halmazban keresnünk. Most végezzünk egy újabb próbát ennek a szűkített halmaznak a közepén lévő [latex]n=8[/latex]-ra. Ebben az esetben [latex]f(8) = 2^8 = 256[/latex] . Ez még mindig kisebb, mint <em>512</em>, azaz a keresett [latex]n[/latex] biztos, hogy csak a <em>9</em> és <em>10</em> számok valamelyike lehet, vagyis újra kizárhattuk a lehetőségek felét. Végül egy utolsó próbával megkapjuk, hogy [latex]f(9) = 2^9 = 512[/latex], azaz a keresett [latex]n[/latex] értéke <em>9</em>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Általánosságban <strong><em>bináris keresésnek</em></strong> hívjuk az olyan módszereket, amikor egy véges halmazban kell keresnünk a megoldást, és minden lépésben ki tudjuk zárni a lehetőségek felét. Ez egy rendkívül hatékony algoritmikus módszer, mivel a szükséges lépések száma a halmaz méretének <em>2</em>-es alapú logaritmusával arányos. Ha például a megoldást egy ezermilliárdszor milliárdszor milliárd nagyságú halmazban kell is keresnünk, a szükséges lépések száma akkor is nagyságrendileg mindössze <em>100</em> körül van. Többek között ezért tudunk megtalálni hamar egy keresett szót egy szótárban. Habár nem tudatosul bennünk, de ilyenkor is lényegében egy bináris keresést hajtunk végre a szavak halmazán, csak ebben az esetben a rendezést az ábécé-sorrend határozza meg.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az olyan függvényeket, amelyek esetén az alaphalmaz elemeinek képe algoritmikusan könnyen kiszámítható, de a képhalmaz tetszőleges eleméhez algoritmikusan nehéz olyan alaphalmazbeli elemet találni, amelynek épp ő a képe, <strong><em>egyirányú függvényeknek</em></strong> nevezzük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az egyirányú függvényeket egy adott irányban nyíló csapóajtóhoz hasonlíthatjuk. Az egyik irányban (az alaphalmazból a képhalmaz irányába) könnyű áthaladni rajta, azonban ha egyszer bezárult mögöttünk az ajtó, akkor nehezen juthatunk vissza rajta a másik irányba (a képhalmazból az alaphalmazba).</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A fenti példában szereplő [latex]f[/latex] függvény nyilván nem egyirányú függvény, hiszen a megfordítása egy algoritmikusan könnyű bináris keresési feladathoz vezet, azonban egy aprónak tűnő módosítással ezt a megfordítást reménytelenül nehézzé tehetjük egy potenciális támadó számára. Ehhez teszünk egy kis kitérőt az úgynevezett <strong><em>moduláris aritmetika</em></strong> irányába, amelyet most az egyszerűség kedvéért csak <strong><em>óraaritmetikának</em></strong> fogunk nevezni. Az elnevezés mindjárt világossá válik. A későbbi részekben részletesen ki fogunk térni a moduláris aritmetikára, most azonban az elsődleges cél az alapgondolat megértése.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="modular-arithmetic"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Számolás az óralapon</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Az általános iskolából jól ismert szokásos <strong><em>összeadás és szorzás műveletek</em></strong> a mindkét irányban végtelen számegyenesen vannak értelmezve. Vizsgáljuk meg először, hogy ezen a számegyenesen hogyan adunk össze két számot, például a <em>8</em>-at és a <em>4</em>-et. Elindulunk az egyik számtól, mondjuk a <em>8</em>-tól, és a másik számnak megfelelő számú, azaz jelen esetben <em>4</em> lépést teszünk jobbra a számegyenesen. Az összeadás eredménye az a szám lesz, ahová megérkeztünk, ez ugye a <em>12</em>. A hagyományos összeadás esetén tehát [latex]8+4=12[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":2100} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_9_hagyomanyos_osszeadas.jpg" alt="Hagyományos összeadás" class="wp-image-2100"/><figcaption>Hagyományos összeadás</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Most átértelmezzük egy kicsit az összeadás műveletét. Vágjunk ki a számegyenesből egy <em>0</em>-tól kezdődő <em>11</em> számból álló szakaszt. Az így kapott szakasz két végét képzeletben ragasszuk össze, így egy óra számlapjához hasonló elrendezést kapunk. A különbség pusztán annyi, hogy itt nem <em>1</em>-től <em>12</em>-ig futnak a számok, hanem <em>0</em>-tól <em>10</em>-ig. Ez látható az alábbi ábrán:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":2070} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_9_modularis_aritmetika.jpg" alt="Moduláris aritmetika" class="wp-image-2070"/><figcaption>Moduláris aritmetika</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Ezen az óralapon egy nagyon hasonló műveletet tudunk definiálni, mint amilyen a hagyományos összeadás volt. Ezt a műveletet <strong><em>modulo 11 összeadásnak</em></strong> nevezzük, vagy általánosságban – egy [latex]N[/latex] darab számot tartalmazó óralap esetén – <strong><em>modulo [latex]N[/latex] összeadásról</em></strong> beszélünk. Adjuk össze ismét az előző példában szereplő <em>8</em> és <em>4</em> számokat, de ezúttal a számegyenes helyett ezen az óralapon végezzük a számolást. Induljunk el a <em>8</em>-as számtól, és tegyünk meg <em>4</em> lépést az óramutató járásával megegyező irányban. Az összeadás eredménye az a szám lesz, ahová megérkeztünk, ami jelen esetben az <em>1</em>. A modulo <em>11</em> összeadás esetén tehát a <em>8</em> és a <em>4</em> összege <em>1</em>, amit így jelölünk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]8+4=1 \pmod{11}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az óralapon számolva ezt az összeadást az alábbi ábra szerint végezzük el:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":2102} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_9_modulo_11_osszeadas.jpg" alt="Modulo 11 összeadás" class="wp-image-2102"/><figcaption>Modulo 11 összeadás</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Az összeadáshoz hasonlóan szorzást is értelmezhetünk ebben a furcsa óraaritmetikában. Legyen például a két összeszorzandó szám a <em>4</em> és az <em>5</em>. Ilyenkor a <em>0</em>-ról indulunk, és annyiszor lépünk az egyik tényezőnek megfelelő lépést, mint amennyi a másik tényező. A hagyományos számegyenesen jobbra kell lépkedni, így a <em>20</em>-as számhoz jutunk, azaz [latex]4\cdot 5=20[/latex]. Ezzel szemben az óraaritmetikában ismét az óramutató járásával megegyező irányban kell lépkedni, így nem egész két kör megtétele után a <em>9</em>-es számhoz jutunk, azaz [latex]4\cdot 5=9 \pmod{11}[/latex]. Az alábbi ábrákon a [latex]4\cdot 5[/latex] szorzás eredményét láthatjuk a kétféle aritmetikában:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":2104} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_9_hagyomanyos_szorzas.jpg" alt="Hagyományos szorzás" class="wp-image-2104"/><figcaption>Hagyományos szorzás</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:image {"align":"center","id":2105} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_9_modulo_11_szorzas.jpg" alt="Modulo 11 szorzás" class="wp-image-2105"/><figcaption>Modulo 11 szorzás</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Most, hogy van már szorzásunk is, nem lesz nehéz értelmezni a modulo <em>11</em> hatványozást sem. Egy [latex]x[/latex] szám [latex]n[/latex]-edik hatványát – hasonlóan a hagyományos hatványozáshoz – úgy kapjuk meg, hogy veszünk egy olyan [latex]n[/latex] darab tényezőből álló szorzatot, amelyben minden tényező [latex]x[/latex]. A különbség annyi a hagyományos hatványozáshoz képest, hogy a hagyományos szorzás helyett az imént bevezetett modulo <em>11</em> szorzást alkalmazzuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x^n = \underbrace{x \cdot x \cdot \ldots \cdot x}_{\text{n darab}}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most vizsgáljuk meg, hogy mi történik az előző szakaszban bevezetett [latex]f(n) = 2^n[/latex] függvénnyel, ha a hagyományos számegyenes helyett a modulo <em>11</em> óraaritmetikában alkalmazzuk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4 id="discrete-logarithm">A diszkrét logaritmus fogalma</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi táblázat első oszlopa az [latex]n[/latex] változó, míg a második és harmadik oszlopa az [latex]f(n) = 2^n[/latex] függvény értékét tartalmazza rendre a hagyományos és a modulo <em>11</em> hatványozás esetén:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{c}{	\begin{array}{|c|c|c|} \hline n &amp; 2^n &amp; 2^n \pmod{11} \\ \hline \hline 0 &amp; 1 &amp; 1 \\ \hline 1 &amp; 2 &amp; 2\\ \hline 2 &amp; 4 &amp; 4\\ \hline 3 &amp; 8 &amp; 8\\ \hline 4 &amp; 16 &amp; 5 \\ \hline 5 &amp; 32 &amp; 10 \\ \hline 6 &amp; 64 &amp; 9 \\ \hline 7 &amp; 128 &amp; 7 \\ \hline 8 &amp; 256 &amp; 3 \\ \hline 9 &amp; 512 &amp; 6\\ \hline 10 &amp; 1024 &amp; 1\\ \hline 11 &amp; 2048 &amp; 2\\ \hline \end{array}} \\ \vdots \end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha megvizsgáljuk a táblázat harmadik oszlopát, akkor láthatjuk, hogy ez a sorozat – a második oszloppal ellentétben – teljesen véletlenszerűen ugrál össze-vissza a függvény értékkészletét alkotó számokon. Itt nem kapunk semmiféle támpontot a függvény megfordításához.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ennek érzékeltetéséhez képzeljük most magunkat egy potenciális támadó – például Eve – helyébe. Tegyük fel, hogy a támadási kísérlet során Eve-nek ki kell számítania azt az [latex]n[/latex] kitevőt, amely esetén [latex]2^n = 6 \pmod{11}[/latex]. Ezt a kitevőt a <em>6</em>-os szám <em>2</em>-es alapú <strong><em>diszkrét logaritmusának</em></strong> nevezik. Mivel modulo <em>11</em> óraaritmetikában számolunk, ezért Eve csak annyit tud, hogy a megoldás az <em>1, 2, ..., 10</em> számok közül kerülhet ki.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Eve azt megteheti, hogy elkezdi sorban kipróbálni ezeket a kitevőket, ez azonban reménytelenül sokáig tarthat neki, amennyiben nem egy <em>11</em> elemű, hanem egy ennél sokkal nagyobb óralapon kell keresgélnie. Sebaj – gondolja magában Eve –, szerencsére a fentebb már ismertetett bináris keresést épp az ilyen esetekre találták ki.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Eve tehát először tesz egy próbát az értelmezési tartomány közepén lévő [latex]n=5[/latex] értékre. Erre azt kapja, hogy [latex]2^5=10 \pmod{11}[/latex]. Az így kapott eredmény nagyobb, mint <em>6</em>, ezért Eve a bináris keresés logikáját követve azt a következtetést vonja le, hogy a keresett kitevő biztosan <em>5</em>-nél kisebb. Ez azonban hibás feltételezés, hiszen a megoldás ebben az esetben a <em>9</em> lenne. A modulo <em>11</em> hatványozás tehát nem ad olyan támpontokat, mint a hagyományos, így Eve ezzel a módszerrel nem tudja kizárni minden lépésben a kitevőjelöltek felét.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Sőt, jelenleg nem is ismeretes semmilyen más módszer sem, ami a modulo hatványozás megfordítására lényegesen gyorsabb megoldást szolgáltatna, mint az összes lehetséges kitevőjelölt végigpróbálgatása. Ez viszont egy megfelelően nagy méretű óralap esetén reménytelen feladat elé állítja Eve-et. A <strong><em>modulo hatványozás</em></strong> tehát valóban egy <strong><em>egyirányú függvénynek</em></strong> tűnik, amelyet Alice és Bob <strong><em>kulcsmegosztásra</em></strong> használhatnak. Az előző részben a <a rel="noreferrer noopener" aria-label="prímfaktorizációról tett megjegyzéshez (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/8-karp-redukcio-np-teljes-np-nehez-cook-levin-tetel-logikai-halozatok-graf-izomorfizmus#prime-factorization-complexity" target="_blank">prímfaktorizációról tett megjegyzéshez</a> hasonlóan azonban itt is kénytelenek vagyunk megjegyezni, hogy a diszkrét logaritmus problémájáról sem bizonyított, hogy NP-teljes lenne.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="diffie-hellman-protocol"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A Diffie-Hellman kulcscsere protokoll</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel, hogy Alice és Bob szeretnének megegyezni egy közös kulcsban, amelyet aztán egy valamilyen szimmetrikus kulcsú titkosításhoz fognak használni. A korábbi részekben már láttuk, hogy az Alice és Bob közötti kommunikáció gyakorlatilag számok küldözgetéséből áll, így a rejtjelező és dekódoló komponensekre nyugodtan tekinthetünk matematikai függvényekként. Alice és Bob feladata tehát megegyezni egy egész számban, amellyel ezeket a függvényeket paraméterezni fogják. Jelen esetben azonban nem tudnak egymással személyesen találkozni, így a kulcsban való megegyezést egy nembiztonságos csatornán keresztül kell megoldaniuk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Alice ezért felhívja Bob-ot telefonon, és megállapodnak egy egyirányú függvényben. Legyen ez az egyirányú függvény például az előző szakaszból már ismerős modulo <em>11</em> hatványozás:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f(n) = 2^n \pmod{11}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Miután ezt megbeszélték, mindketten kiválasztanak maguknak egy-egy titkos kitevőt, ezt azonban titokban tartják még egymás előtt is. Tegyük fel, hogy Alice az [latex]a=4[/latex], míg Bob a [latex]b=8[/latex] titkos kitevőt választja magának. Most mindketten alkalmazzák ezekre a kitevőkre a megbeszélt egyirányú függvényt, és az eredményt elküldik egymásnak. Alice tehát elküldi a <em>5</em>-ös számot Bob-nak – mivel [latex]2^a=2^4=5 \pmod{11}[/latex] –, Bob pedig elküldi a <em>3</em>-as számot Alice-nak – mivel [latex]2^b=2^8=3 \pmod{11}[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Végül a kapott számot mindketten a saját titkos kitevőjükre emelik szintén modulo <em>11</em> számolva. Alice ugye a <em>3</em>-es számot kapta Bob-tól, a saját titkos kitevője [latex]a=4[/latex], ezért ő a [latex]3^4 = 4 \pmod{11}[/latex] értéket fogja kapni végeredményül. Bob ehhez hasonlóan jár el: ő a <em>5</em>-ös számot kapta Alice-tól, a saját titkos kitevője [latex]b=8[/latex], így az általa kiszámított végeredmény a [latex]5^8 = 4\pmod{11}[/latex] lesz. Láss csodát: mindketten ugyanúgy a <em>4</em>-es számot kapták végeredményül. Ez lesz tehát a közös [latex]k[/latex] kulcs. A kulcscsere folyamat az alábbi ábrán látható:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":2107} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_9_diffie_hellman_kulcscsere-1.jpg" alt="Diffie-Hellman kulcscsere protokoll" class="wp-image-2107"/><figcaption>Diffie-Hellman kulcscsere protokoll</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Mielőtt azt a kérdést megválaszolnánk, hogy hogyan kaphatta Alice és Bob is ugyanazt az eredmény, először vizsgáljuk meg, hogy mit lát ebből az egészből Eve. Róla ugye korábbról már <a rel="noreferrer noopener" aria-label="tudjuk (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/5-one-time-pad-passziv-aktiv-tamado-haromutas-kulcsforgalom#passive-attacker" target="_blank">tudjuk</a>, hogy minden olyan üzenetnek ő is a birtokába kerül, amely áthalad a kommunikációs csatornán. Az első ilyen alkalom az, amikor Alice telefonon megbeszéli Bob-bal azt az egyirányú függvényt, amely alapján a kulcscserét végre fogják hajtani. Eve tehát megtudja, hogy Alice és Bob az [latex]f(n)=2^n \pmod{11}[/latex] függvényt fogják használni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezután Eve elfogja az Alice által Bob-nak küldött <em>5</em>-ös és a Bob által Alice-nak küldött <em>3</em>-as számot, és nyilván szeretné ő is kiszámítani a közös kulcsot. Eve-nek ezen a ponton két választása van: vagy az [latex]5^b \pmod{11}[/latex] vagy pedig a [latex]3^a \pmod{11}[/latex] értéket számítja ki. Mindegy melyiket választja, hiszen mindkettő ugyanazt az eredmény – a kulcsot – adja. A probléma csak annyi, hogy Eve nem ismeri sem az [latex]a[/latex], sem pedig a [latex]b[/latex] kitevőt, hiszen ezeket Alice és Bob nem közölte egymással.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Eve mindössze 2 dolgot tud az [latex]a[/latex] és [latex]b[/latex] kitevőkről. Egyrészt az Alice által Bob-nak küldött <em>5</em>-ös számból tudja, hogy [latex]2^a=5 \pmod{11}[/latex]. Másrészt pedig a Bob által Alice-nak küldött <em>3</em>-as számból tudja, hogy [latex]2^b=3 \pmod{11}[/latex]. Bármelyik kitevőt is szeretné kiszámítani, <strong><em>kénytelen megoldani a fentebb ismertetett diszkrét logaritmus problémáját</em></strong>. Ez azonban jóval nagyobb számok esetén – mint tudjuk – gyakorlatilag lehetetlen feladat a számára még a világ összes számítógépével is. Ezzel szemben Alice-nak és Bob-nak mindössze két modulo hatványozást kell csak elvégeznie, amely – ahogy azt majd egy későbbi részben látni fogjuk – egy algoritmikusan könnyű feladat számukra.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most vizsgáljuk meg, hogy miből adódik a Diffie-Hellman protokoll helyessége. Bob ugye megkapja Alice-tól a [latex]2^a \pmod{11}[/latex] számot, és ezt hatványozza a saját titkos kitevőjével. Azaz végeredményként a [latex](2^a)^b \pmod{11}[/latex] kulcsot fogja kapni. Ehhez hasonlóan Alice megkapja Bob-tól a [latex]2^b \pmod{11}[/latex] számot, és ezt hatványozza a saját titkos kitevőjével. Azaz végeredményként a [latex](2^b)^a \pmod{11}[/latex] kulcsot fogja kapni. A Diffie-Hellman protokoll ezek után nyilván akkor helyes, ha ez a két szám ugyanaz, vagyis:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](2^a)^b = (2^b)^a \pmod{11}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Erre a figyelmetlen olvasó – aki jól megtanulta általános iskolában a hatványozás azonosságait – rögtön rávágná, hogy nyilvánvalóan teljesül. Vigyázzunk azonban, itt ugyanis nem a hagyományos, hanem modulo <em>11</em> hatványozás történik. Szerencsére ezek az összefüggések a moduláris aritmetikában is érvényesek, ez azonban korántsem magától értetődő. Ennek részleteiről majd egy későbbi részben lesz szó.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Diffie-Hellman protokoll festékekkel</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A fentiek megértéséhez most egy egyszerű analógiát ismertetünk. Ennek ugyan semmi köze nem lesz a kriptográfiához, ám jól szemlélteti az egyirányú függvények működését. Képzeljük el, hogy Alice és Bob most nem számokkal, hanem festékekkel dolgozik. A közös titok, amelyben meg szeretnének egyezni, egy adott színű festékkeverék. Ennek érdekében először megegyeznek egy közös kiinduló színben. Ebben a példában ez legyen mondjuk egy-egy liter fehér festék.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most mindketten kiválasztanak maguknak egy-egy liter festéket valamilyen titkos színből, és hozzákeverik a náluk lévő fehér festékhez, de nem árulják el még egymásnak sem, hogy mi volt a titkos szín. Ezután az így képződött színkeveréket elküldik egymásnak postán. Bob-hoz kerül tehát Alice, Alice-hoz pedig Bob keveréke. Végül a kapott keverékhez ismét hozzáöntenek mindketten egy-egy liter festéket a saját titkos színükből. Így mindkettejüknél lesz <em>3</em> liter festékkeverék, amelyekben 1 liter fehér festék van összekeverve 1-1 literrel Alice és Bob titkos festékéből. Következésképp a végső festékkeverék mindkettejüknél ugyanolyan színű kell legyen, ez lesz tehát a közös titok. Ez a folyamat látható az alábbi ábrán:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":2080} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_9_diffie_hellman_kulcscsere_festekekkel.jpg" alt="Diffie-Hellman kucscsere protokoll – festék analógia" class="wp-image-2080"/><figcaption>Diffie-Hellman kucscsere protokoll – festék analógia</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Vegyük észre, hogy Eve megint hasonló szituációban van, mint a modulo hatványozásra épülő példában. Nevezetesen: hiába ismeri a kiinduló fehér színt, és hiába kukkant bele az egymásnak küldött köztes keverékekbe, ezekkel az információkkal nem tud mihez kezdeni, mivel nem ezek alkotják a kulcsot. Ahhoz, hogy Eve is elő tudja állítani a végső színkeveréket, ismernie kéne Alice és Bob titkos színei közül legalább az egyiket. Ehhez azonban külön kéne tudnia választani ezeket a kiinduló fehér színtől, amikor a köztes keverékeket elfogja a kommunikációs csatornán. Ez Eve számára gyakorlatilag lehetetlen feladat, tekintve, hogy a festékkeverés egy egyirányú művelet.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="diffie-hellman-attack"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A Diffie-Hellman protokoll támadása</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Jelenleg ugyan – mint azt fentebb már említettük – még nincs bizonyítva a diszkrét logaritmus problémájának NP-teljessége, de tegyük fel, hogy ez valóban egy reménytelen feladat. Ezután jogosan merül fel a kérdés, hogy vajon milyen módszerek állnak egy passzív támadó – például Eve – rendelkezésére ahhoz, hogy sikeres támadást hajtson végre a protokoll ellen, és megszerezze Alice és Bob kulcsát.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A protokoll egy gyenge pontja lehet az, amikor Alice és Bob megállapodnak a használt egyirányú függvény paramétereiben. Egy Diffie-Hellman protokollban használt függvény általános alakja így néz ki:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f(n)=g^n \pmod{N}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Itt a [latex]g[/latex] paramétert <strong><em>generátorelemnek</em></strong>, az [latex]N[/latex] paramétert pedig <strong><em>modulusnak</em></strong> nevezzük. A fentebb ismertetett egyszerű példában Alice és Bob a [latex]g=2[/latex] generátorelemben és az [latex]N=11[/latex] modulusban egyeztek meg. Ám egy valódi kulcscsere esetén ennél jóval nagyobb számokat használunk. Egy tipikus [latex]N[/latex] modulus például nagyságrendileg <em>200</em> számjegyből áll.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Előfordulhat, hogy bizonyos szerencsétlenül megválasztott [latex]g[/latex] generátorelem és [latex]N[/latex] modulus esetén Eve-nek lényegesen könnyebb dolga van egy ilyen függvény megfordításával még akkor is, ha nagy számokat használnak. Azonban eléggé jól ismerjük azokat a számelméleti kritériumokat, amelyeket e paramétereknek teljesíteniük kell a megfelelő biztonság érdekében. Ezekről a későbbiekben még bőven lesz szó, most azonban nyugodtan feltételezhetjük, hogy Alice és Bob ilyen értelemben megfelelő körültekintéssel választja meg a használt paramétereket.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ilyen feltételezések mellett kimondhatjuk, hogy a Diffie-Hellman protokoll egy passzív támadó – például Eve – számára gyakorlatilag feltörhetetlen. Sajnos azonban egy aktív támadó – például a csaló <a href="https://youproof.hu/kriptografia/5-one-time-pad-passziv-aktiv-tamado-haromutas-kulcsforgalom#active-attacker" target="_blank" rel="noreferrer noopener" aria-label=" (új fülön nyitja meg)">Mallory</a> – könnyedén ki tud csalni titkos információkat Alice-tól és Bob-tól egy úgynevezett <strong><em>közbeékelődéses támadás (man-in-the-middle attack)</em></strong> segítségével.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mallory ezt úgy tudja elérni, hogy Alice és Bob közé ékelődik a kommunikációs folyamat során, és elhiteti velük, hogy egymással folytatják le a kulcscsere folyamatot. Valójában azonban Alice és Bob is Mallory-vel kommunikál közvetlenül, nem pedig egymással. Ennek folyamatát az alábbi ábra mutatja:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":2082} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_9_diffie_hellman_tamadas.jpg" alt="A Diffie-Hellmann protokoll támadása" class="wp-image-2082"/><figcaption>A Diffie-Hellmann protokoll támadása</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Itt Alice kulcscserét kezdeményez Bob-bal, ez a kezdeményezés azonban nem jut el Bob-hoz, mivel Mallory eltéríti az üzenetet. Bob helyett Mallory folytatja le a kulcscserét Alice-szal Bob-nak kiadva magát. Így Alice azt hiszi, hogy Bob-bal állapodott meg a [latex]k_1 = 9[/latex] közös kulcsban. Ezzel párhuzamosan Mallory Bob-bal is kezdeményez egy kulcscserét Alice-nak kiadva magát. Így Bob azt hiszi, hogy Alice-szal állapodott meg a [latex]k_2 = 5[/latex] közös kulcsban.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A kulcscserét követően tehát Alice és Bob is azt hiszi, hogy egymással beszélgetnek közvetlenül. Ám valójában Mallory-n keresztül kommunikálnak, aki így gond nélkül birtokába jut a bizalmas információknak, ráadásul teljesen észrevétlenül.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez igen pofátlan dolog, nemde? A kérdés tehát az, hogy Alice hogyan tudja igazolni Bob-nak, hogy ő valóban Alice, és viszont? Erre a következő részben fogjuk megadni a választ, amelyhez most felvázoljuk egy olyan rejtjelező rendszer alapjait, amely ezt lehetővé teszi.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="asymmetric-cryptography"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Aszimmetrikus kulcsú rejtjelezés</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Ennek a résznek az elején felvázoltuk az eddig ismertetett rejtjelezők közös működési modelljét, amelyet <strong><em>szimmetrikus kulcsú rejtjelezésnek</em></strong> neveztünk. Ebben az esetben Bob ugyanazt a kulcsot használja a dekódoláshoz, amelyet Alice használ a rejtjelezéshez. Diffie és Hellman fentebb már említett forradalmi irásában azonban az úgynevezett <strong><em>aszimmetrikus kulcsú rejtjelezés</em></strong> merőben új alapgondolata körvonalazódott.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az 5. részben a <a rel="noreferrer noopener" aria-label="háromutas kulcsforgalom (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/5-one-time-pad-passziv-aktiv-tamado-haromutas-kulcsforgalom#three-pass-protocol" target="_blank">háromutas kulcsforgalom</a> kapcsán már éltünk egy olyan analógiával, amely ládákat, lakatokat és kulcsokat használt a rejtjelezés szemléltetésére. Ezzel az analógiával élve a szimmetrikus kulcsú rejtjelezés úgy fogható fel, hogy Alice a Bob-nak szánt üzenetet beteszi egy ládába, amelyet lezár egy lakattal. Bob csak akkor tudja kinyitni a ládát, ha neki is van egy másolata a lakatot nyitó kulcsról. A problémát itt az okozza, hogy hogyan tudjuk eljuttatni a kulcsmásolatokat a kommunikáló felekhez biztonságosan.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az <strong><em>aszimmetrikus kulcsú rejtjelezés</em></strong> egy egészen más gondolatra épül. A kulcsos, lakatos analógiával élve ez kicsit olyan, mintha nem a kulcsról, hanem a lakatról készítenénk másolatokat. Képzeljük el, hogy Bob szeretné, ha bárki tudna neki titkos üzenetet küldeni. Ennek érdekében Bob a saját lakatját minél több példányban publikusan elérhetővé teszi bárki számára. A trükk abban van, hogy a Bob-féle lakatokat mindössze egyetlen kulcs nyitja, amely végig ott lapul Bob zsebében.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel, hogy Alice szeretne Bob-nak egy titkos üzenetet küldeni. Elmegy hát a postára, kér egy Bob-féle lakatot, az üzenetet beleteszi egy ládába, amelyet lezár ezzel a lakattal. Ezt könnyedén megteheti, hiszen a lakatot csak rá kell pattintani a ládára. Innentől kezdve azonban kizárólag Bob fogja tudni kinyitni ezt a lakatot, hiszen csak ő rendelkezik az ehhez szükséges egyetlen kulccsal. Olyannyira, hogy a láda lezárása után még maga Alice sem tudja többé kinyitni azt.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A lakatokat félretéve itt tehát arról van szó, hogy egy üzenet dekódolásához szükség van egy plusz információra ahhoz képest, mint ami a rejtjelezéséhez kell. A dekódoláshoz szükséges plusz információt <strong><em>privát (titkos) kulcsnak</em></strong>, míg a rejtjelezéshez szükséges információt <strong><em>publikus (nyilvános) kulcsnak</em></strong> nevezzük. A rendszerben lévő valamennyi résztvevőhöz tehát nem egy kulcs, hanem egy kulcspár tartozik. E kulcspár privát részét csak az adott résztvevő ismeri, és azt soha nem adja ki a kezéből. Ezzel szemben a kulcspár publikus része bárki számára elérhető egy nyilvános kulcstárban egy telefonkönyvhöz hasonlóan.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel, hogy Alice szeretne Bob-nak elküldeni egy [latex]x[/latex] üzenetet. Ehhez előkeresi a nyilvános kulcstárból Bob [latex]K_b[/latex] publikus kulcsát, és ezzel paraméterezi az [latex]E[/latex] rejtjelező függvényt. Ily módon előáll az [latex]y[/latex] kódszöveg, amelyet elküld Bob-nak. Ezt az üzenetet kizárólag Bob tudja visszafejteni, mivel a [latex]K_b[/latex] publikus kulcshoz tartozó [latex]k_b[/latex] privát kulcsot csak ő ismeri. Bob tehát a [latex]k_b[/latex] privát kulccsal paraméterezve a [latex]D[/latex] dekódoló függvényt könnyedén vissza tudja állítani az eredeti [latex]x[/latex] üzenetet. Ez a folyamat látható az alábbi ábrán:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":2084} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_9_asszimetrikus_kulcsu_rejtjelezo_modell.jpg" alt="Aszimmetrikus kulcsú rejtjelező modell" class="wp-image-2084"/><figcaption>Aszimmetrikus kulcsú rejtjelező modell</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Ez az alapgondolat forradalmat indított el a kriptográfiában, megindult ugyanis a versenyfutás a dicsőségért, amely a fentieknek megfelelő [latex]E[/latex] és [latex]D[/latex] függvények elsőként való megtalálásáért járt. A dicsőség Ron Rivest-nek, Adi Shamir-nak, és Len Adleman-nak jutott, akik 1977-ben publikálták az úgynevezett <strong><em>RSA-algoritmust</em></strong>, amely alapjaiban változtatta meg világunkat.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ebben a részben tehát megismerkedtünk a modern kriptográfia két alapvető felfedezésével. Az első a Diffie-Hellman kulcscsere protokoll volt, amely lehetővé teszi, hogy Alice és Bob a pofátlan Eve szeme láttára állapodjanak meg egy közös titkos kulcsban, teljes biztonságban. Láttuk azonban, hogy egy aktív támadó könnyedén kijátszhatja ezt a rendszert, hacsak nem tudjuk kibővíteni a protokollt valamilyen partnerhitelesítéssel. Ezért megismerkedtünk az úgynevezett aszimmetrikus kulcsú rejtjelezés alapgondolatával. A következő részben erre építkezve bemutatjuk a digitális aláírás és partnerhitelesítés működésének alapjait, majd a további részekben elkezdünk megismerkedni az RSA-algoritmus számelméleti hátterével.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A következő részt <a href="https://youproof.hu/kriptografia/10-publikus-privat-kulcs-digitalis-alairas-kriptografiai-hash-fuggveny-szuletesnap-paradoxon-tanusitvany/">itt</a> találod...</em></strong></p>
+<!-- /wp:paragraph -->

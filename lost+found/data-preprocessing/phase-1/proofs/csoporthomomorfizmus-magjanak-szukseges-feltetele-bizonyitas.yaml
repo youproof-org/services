@@ -1,0 +1,122 @@
+type: proof
+name: csoporthomomorfizmus-magjanak-szukseges-feltetele-bizonyitas
+remarks:
+  - csoporthomomorfizmus-magjanak-szukseges-feltetele-bizonyitas-megjegyzes
+references:
+  csoporthomomorfizmus-egysegelem-es-inverzkepzestarto:
+    target:
+      type: theorem
+      name: csoporthomomorfizmus-egysegelem-es-inverzkepzestarto
+  mellekosztalyok:
+    target:
+      type: theorem
+      name: mellekosztalyok
+  reszcsoport-feltetele:
+    target:
+      type: theorem
+      name: reszcsoport-feltetele
+  reszhalmaz:
+    target:
+      type: definition
+      name: reszhalmaz
+content:
+  - type: narrative
+    content: |
+      Tekintsük azt az $f$ csoporthomomorfizmust, amelynek $N$ a magja. Ez egy valamilyen, számunkra ismeretlen $X$
+      csoportba képez, amelynek egységelemét jelöljük most $e_X$-szel, míg a $G$ csoport egységelemét jelöljük
+      $e_G$-vel. Az $f$ függvény tehát $N$ minden eleméhez $e_X$-et rendeli hozzá, hiszen $\ker f=N$. Ezt a
+      szituációt mutatja az alábbi ábra.
+  - type: figure
+    src: homomorfizmus_illusztracio.jpg
+    alt: 
+    caption: Csoporthomomorfizmus magja
+  - type: narrative
+    content: |
+      Az ***1. állítás*** igazolásához azt kell megmutatni, hogy $N$ részcsoport $G$-ben. Ez a
+      [reszcsoport-feltetele] alapján pontosan akkor teljesül, ha $N$ tartalmazza $e_G$-t, valamint zárt a $G$
+      csoport műveletére és a $G$-beli inverzképzésre.
+  - type: narrative
+    content: |
+      Mivel $f$ csoporthomomorfizmus, ezért a [csoporthomomorfizmus-egysegelem-es-inverzkepzestarto] értelmében
+      tartja az egységelemet és az inverzképzést. Azaz egyrészt $f(e_G)=e_X$, és így $e_G$ valóban benne van $f$
+      magjában, vagyis $N$-ben. Másrészt ha valamilyen $a$ benne van $N$-ben, akkor $f(a)=e_X$, és így az
+      inverzképzés tartása miatt $f(a^{-1})=(f(a))^{-1}=e_X^{-1}=e_X$. Azaz $a$ inverzének is $e_X$ a képe,
+      következésképp ő is benne van $N$-ben.
+  - type: narrative
+    content: |
+      A $G$ csoport műveletére való zártság szintén $f$ művelettartó tulajdonságából ered. Ha ugyanis $a$ és $b$ az
+      $N$ két tetszőleges eleme, akkor egyrészt $f(a)=e_X$ és $f(b)=e_X$.
+  - type: formula
+    lead-in: |
+      Másrészt viszont a művelettartás miatt az ő szorzatukra teljesül az alábbi:
+    content: |
+      f(a\cdot b)=f(a)\cdot f(b)=\underbrace{e_X}_{=f(a)}\cdot \underbrace{e_X}_{=f(b)}=e_X
+  - type: narrative
+    content: |
+      Tehát az $a\cdot b$ szorzat is az $X$ csoport egységelemére képeződik, következésképp ő is benne van $N$-ben.
+      Mivel teljesül a [reszcsoport-feltetele] minden feltétele, ezért $N$ valóban részcsoport $G$-ben.
+  - type: narrative
+    content: |
+      A ***2. állítás*** igazolásához tegyük fel tehát, hogy $f(a)=f(b)$ valamilyen $a\in G$ és $b\in G$ elemek
+      esetén. Vizsgáljuk meg, hogy mi lesz az $a^{-1}b$ szorzat $f$ szerinti képe $X$-ben.
+  - type: formula
+    lead-in: |
+      Ehhez kihasználjuk egyrészt $f$ ***művelettartó*** és ***inverzképzéstartó*** (lásd a
+      [csoporthomomorfizmus-egysegelem-es-inverzkepzestarto] 2. pontját) tulajdonságát, másrészt pedig azt a tényt,
+      hogy jelen esetben ugye $f(a)=f(b)$:
+    content: |
+      f(a^{-1}b)=f(a^{-1})\cdot f(b)=\underbrace{(f(a))^{-1}}_{=f(a^{-1})}\cdot \underbrace{f(a)}_{=f(b)}=e_X
+  - type: narrative
+    content: |
+      Mivel tehát az $a^{-1}b$ szorzat épp az $X$ csoport egységelemére képződött, ezért ez a szorzat benne van $f$
+      magjában, azaz $a^{-1}b\in N$. Ez viszont azt jelenti, hogy $a$ és $b$ között fennáll a [mellekosztalyok]ben
+      definiált $\sim$-vel jelölt ekvivalenciareláció, azaz $a$ és $b$ ugyanabban az ekvivalencia-osztályban
+      vannak. Minthogy az említett tétel alapján ezek az ekvivalencia-osztályok tulajdonképpen az $N$ szerinti
+      baloldali mellékosztályok, ezért valóban $b\in aN$.
+  - type: narrative
+    content: |
+      ***Visszafelé:*** Tegyük most fel, hogy $a$ és $b$ ugyanabban az $N$ szerinti baloldali mellékosztályban
+      vannak. Ez a [mellekosztalyok] alapján azt jelenti, hogy $a^{-1}b\in N$. De mivel $N$ az $f$
+      csoporthomomorfizmus magja, ezért ez a szorzat az $X$ csoport egységelemére képződik, azaz $f(a^{-1}b)=e_X$.
+  - type: formula
+    lead-in: |
+      Ebből viszont &ndash; ismét kihasználva $f$ ***művelettartó*** és ***inverzképzéstartó*** tulajdonságát
+      &ndash; az alábbi következik:
+    content: |
+      f(a^{-1}b)=f(a^{-1})\cdot f(b)=(f(a))^{-1}\cdot f(b)=e_X
+  - type: formula
+    lead-in: |
+      Ha most az utolsó egyenlőségjel által leírt egyenlet mindkét oldalát balról megszorozzuk $f(a)$-val, akkor az
+      alábbit kapjuk:
+    content: |
+      \underbrace{f(a)\cdot (f(a))^{-1}}_{=e_X}\cdot f(b)=f(a)\cdot e_X
+  - type: narrative
+    content: |
+      Azaz &ndash; az egységelemeket elhagyva &ndash; valóban $f(b)=f(a)$, és ezzel igazoltuk a tétel ***2.
+      állítását***.
+  - type: narrative
+    content: |
+      A ***3. állítás*** ugyanígy igazolható, csak ebben az esetben az $a^{-1}b$ szorzat helyett a $ba^{-1}$
+      szorzatot kell tekinteni, és $f(a)$-val nem balról, hanem jobbról kell szorozni.
+  - type: narrative
+    content: |
+      ***Végül a 4. állításhoz*** most tekintsünk egy tetszőleges $a\in G$ elemet, és mutassuk meg, hogy az $aN$
+      mellékosztály, mint halmaz megegyezik az $Na$ mellékosztállyal.
+  - type: formula
+    lead-in: |
+      Ehhez a [reszhalmaz] utáni megjegyzés 5. pontja alapján azt kell igazolni, hogy az alábbi mindkét
+      tartalmazási reláció fennáll:
+    content: |
+      \begin{aligned}aN&\sube Na \\ Na&\sube aN\end{aligned}
+  - type: narrative
+    content: |
+      ***Az első tartalmazáshoz*** azt kell megmutatni, hogy tetszőleges $b\in aN$ esetén $b\in Na$ is teljesül.
+      Mivel $b\in aN$, ezért ez azt jelenti, hogy $b$ ugyanabban a baloldali mellékosztályban van, mint $a$. Ez
+      viszont a már bizonyított ***2. állítás*** alapján azt jelenti, hogy $f(a)=f(b)$, ami azonban a szintén már
+      bizonyított ***3. állítás*** miatt azt is jelenti, hogy $b$ ugyanabban a jobboldali mellékosztályban van,
+      mint $a$, azaz valóban $b\in Na$. A ***másik irányú tartalmazást*** ugyanilyen módon lehet megmutatni a
+      ***2.*** és ***3. állítások*** felhasználásával.
+  - type: narrative
+    content: |
+      Ezzel igazoltuk a tétel ***4. állítását***, miszerint az $N$ szerinti bal- és jobboldali mellékosztályok
+      valóban megegyeznek.

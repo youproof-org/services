@@ -1,0 +1,152 @@
+type: section
+name: 02-a-turing-gep
+title: A Turing-gép
+
+body:
+  - type: narrative
+    content: |
+      A Turing-gép fogalmát az első részben már említett Alan Turing dolgozta ki. A név kissé félrevezető, mivel a
+      Turing-gép, mint matematikai objektum nem elsősorban a valódi számítógépek működését, hanem az általuk
+      végrehajtott számítási folyamatot modellezi. Ezért a számítógépek absztrakciójaként érdemes rá tekinteni a
+      továbbiakban. Most nézzük meg, hogy tulajdonképpen mit tudunk leírni egy Turing-gép segítségével.
+  - type: narrative
+    content: |
+      Az előző összeadásos példában igazából arról van szó, hogy adva van egy $\Sigma$ ábécé, és az ennek elemeiből
+      alkotott jelsorozatok között szeretnénk egyfajta hozzárendelést leírni valahogyan. Például a **32#11#67**
+      jelsorozathoz az **110** jelsorozatot szeretnénk hozzárendelni. Vagy például azt szeretnénk, hogy az
+      "értelmetlen" **###7#** jelsorozat párja az $\varepsilon$, azaz az üres jelsorozat legyen eszerint a
+      hozzárendelés szerint. Vegyük észre, hogy ez matematikailag nem más, mint egy ***függvény***. Épp csak annyi
+      a szokatlan benne, hogy ez a függvény nem számhalmazok között teremt kapcsolatot, hanem a $\Sigma^$ halmaz
+      bizonyos elemeihez szintén a $\Sigma^$ halmaz bizonyos más elemeit rendeli hozzá.
+  - type: figure
+    lead-in: |
+      Az alábbi ábra néhány ilyen hozzárendelést mutat:
+    src: 01-fuggveny-hozzarendelesek.jpg
+    alt: Függvény hozzárendelések (példa)
+    caption: Függvény hozzárendelések (példa)
+  - type: narrative
+    content: |
+      Az összes ilyen hozzárendelést nyilvánvalóan nem tudjuk felsorolni, mégis szeretnénk valamilyen véges leírást
+      adni erre a függvényre &ndash; amennyiben az lehetséges. Egy olyan leírást, amely alapján bárki tetszőleges
+      $\Sigma^*$-beli jelsorozathoz meg tudja találni a függvény által hozzárendelt párját. A ***Turing-gép*** nem
+      más, mint egy ilyen leírás. Most nézzük meg, mit tud. Elsőre meglehetősen primitívnek fog tűnni, azonban
+      hamarosan látni fogjuk, hogy a látszat ellenére mennyire erős számítási potenciált képvisel.
+  - type: narrative
+    content: |
+      Egy ***Turing-gép*** rendelkezik egy vagy több szalaggal, amelyek az egyik irányban végtelenek és cellákra
+      vannak osztva. Egy adott cella lehet üres, vagy szerepelhet benne a $\Sigma$ ábécé valamilyen szimbóluma.
+      Ezen kívül a Turing-gép rendelkezik egy író-olvasófejekkel ellátott vezérlőegységgel. Ez a fejeken keresztül
+      képes írni és olvasni a szalagok celláit, valamint azokon jobbra-balra lépkedni. Végül a vezérlőegységnek van
+      véges sok állapota, amelyek közül mindig pontosan az egyikben tartózkodik. Kezdetben a Turing-gép
+      vezérlőegysége egy adott kezdőállapotból indul, az első szalag elején a Turing-gép bemenete helyezkedik el az
+      üres cellák óceánja előtt, a többi szalag üres, és a vezérlőegység író-olvasó fejei a szalagok legelső
+      celláira mutatnak.
+  - type: narrative
+    content: |
+      Az alábbi ábrán a mi kis összeadó Turing-gépünk vázlata látható. Tegyük fel, hogy a gép összesen 3 szalaggal
+      rendelkezik, valamint a lehetséges állapotainak száma 5. Tegyük fel továbbá, hogy kezdetben az 1-es számú
+      állapotból indul, és épp most kapta meg a **32#11#67** jelsorozatot bemenetként.
+  - type: figure
+    lead-in: |
+      Ez a jelsorozat tehát ott virít az első szalag elején, a többi szalag pedig üres:
+    src: 02-turing-gep-kezdoallapot.jpg
+    alt: Turing-gép kezdőállapot (vázlat)
+    caption: Turing-gép kezdőállapot (vázlat)
+  - type: narrative
+    content: |
+      A Turing-gép a futása során elemi lépéseket végez. Azt, hogy a soron következő elemi lépésben mi történjen,
+      egy hatalmas &ndash; de véges &ndash; szabályokból álló lista írja le. Ezeket ***állapotváltási
+      szabályoknak*** nevezzük, amelyek tehát lényegében a Turing-gép programját írják le. Egy állapotváltási
+      ***szabály akkor hajtható végre***, ha teljesül annak ***előfeltétele***. Egy állapotváltási szabály
+      ***előfeltétele akkor teljesül***, ha a fejek által aktuálisan mutatott cellákban az előfeltételben
+      meghatározott tartalom van, és a vezérlőegység az előfeltételben meghatározott állapotban van.
+  - type: narrative
+    content: |
+      Amennyiben legalább egy állapotváltási szabály előfeltétele teljesül, úgy a Turing-gép önkényesen választ
+      közülük pontosan egyet, amelyet végrehajt. A ***szabály végrehajtása*** során a Turing-gép a szabályban
+      leírtaknak megfelelően a fejek által mutatott cellák tartalmát felülír**hatja** vagy töröl**heti**, a fejeket
+      elmozdít**hatja** 1-1 pozícióval jobbra vagy balra, valamint a vezérlőegységet új állapotba léptet**heti**.
+  - type: narrative
+    content: |
+      Ezek után az egész folyamat kezdődik elölről. A Turing-gép újra megvizsgálja, hogy mely szabályok hajthatók
+      végre, ezek közül választ pontosan egyet, majd az abban leírtakat végrehajtja. És így tovább mindaddig, amíg
+      talál legalább 1 végrehajtható szabályt. Amennyiben ilyen szabályt már nem talál, úgy a Turing-gép
+      ***megáll***, és a futása véget ér. Ilyenkor azt mondjuk, hogy a Turing-gép ***kiszámította*** a bemenethez
+      tartozó ***kimenetet (vagy választ)***, amely ***az utolsó szalag tartalma*** lesz. Előfordulhat azonban,
+      hogy a Turing-gép soha nem áll meg, mert mindig talál legalább 1 végrehajtható szabályt. Ilyenkor azt
+      mondjuk, hogy a Turing-gép ***végtelen ciklusba került***.
+  - type: narrative
+    content: |
+      Az alábbi ábrán az összeadó Turing-gépünk látható közvetlenül azután, hogy megállt &ndash; jelen esetben
+      mondjuk a 3-as számú állapotban. Épp most írta ki a **110** jelsorozat, azaz az eredmény utolsó szimbólumát
+      az utolsó szalagra. Ezt tekintjük tehát a ***számítás eredményének***.
+  - type: figure
+    lead-in: |
+      A többi szalag tartalma minket most nem érdekel, azok csupán valamilyen részeredmények, amelyeket a
+      Turing-gép a futása során "odaszemetelt":
+    src: 03-turing-gep-vegallapot.jpg
+    alt: Turing-gép végállapot (vázlat)
+    caption: Turing-gép végállapot (vázlat)
+  - type: narrative
+    content: |
+      Érezhető, hogy az állapotváltási szabálylista már egy ilyen egyszerű feladat esetén is vélhetően roppant sok
+      szabályt tartalmaz.
+  - type: formula
+    lead-in: |
+      Példaként nézzünk meg közelebbről egy állapotváltási szabályt:
+    content: |
+      \begin{array}{c}
+      \begin{array}{|c|c|c|c|}\hline \text{állapot} & \text{szalag 1} & \text{szalag 2} & \text{szalag 3} \\ \hline
+      2 & \# & \text{üres} & \text{mindegy} \\ \hline\end{array}
+      \\[6pt]
+      \downarrow
+      \\[6pt]
+      \begin{array}{|c|c|c|c|}\hline \text{állapot} & \text{szalag 1} & \text{szalag 2} & \text{szalag 3} \\ \hline
+      4 & \larr & (\text{üres},\larr) & (8,\larr) \\ \hline\end{array}
+      \end{array}
+  - type: narrative
+    content: |
+      Ennek a konkrét szabálynak &ndash; bármilyen célt is szolgáljon az összeadási feladat szempontjából &ndash;
+      az előfeltétele akkor teljesül, ha a vezérlőegység a 2-es számú állapotban van, az 1-es szalagra mutató fej
+      alatti cellában a **#** szimbólum van, a 2-es szalagra mutató fej alatti cella pedig üres. A szabály a 3-as
+      szalag tartalmáról nem nyilatkozik, így attól nem függ az előfeltétel teljesülése. Ha az előfeltétel
+      teljesül, akkor a ***szabály végrehajtható***vá válik. Ha ez az egyetlen végrehajtható szabály, akkor a
+      Turing-gép köteles azt végrehajtani. Ha több másik szabály is végrehajtható ezen kívül, akkor a Turing-gép
+      választhat, hogy ezek közül melyiket hajtja végre (de egyet mindenképpen választania kell). Ha pedig egyetlen
+      szabály sem végrehajtható, akkor a Turing-gép futása megáll. Tegyük fel, hogy a Turing-gép végrehajtja ezt a
+      szabályt. Nézzük meg, mi történik.
+  - type: narrative
+    content: |
+      A szabály arra utasítja a Turing-gépet, hogy menjen át a 4-es számú állapotba, írja felül a 3-as szalagra
+      mutató fej alatti cellát a **8**-as szimbólummal, törölje a 2-es szalagra mutató fej alatti cella tartalmát,
+      és léptesse mindhárom fejet balra &ndash; jelentsen ez bármit is az összeadási feladat szempontjából. Jogosan
+      merülhet fel az Olvasóban a kérdés, hogy egy ennyire alacsonyszintű leírással hogyan tudunk megoldani akár
+      egyetlen gyakorlati problémát is. Egyáltalán mi köze ennek egy valódi számítógép által végrehajtott számítási
+      folyamathoz? Vegyük észre azonban, hogy ez csupán technikai &ndash; de semmiképpen sem elméleti &ndash;
+      nehézséget jelent.
+  - type: narrative
+    content: |
+      A legalacsonyabb szinten ugyanis egy számítógép processzora sem csinál ennél többet. Van neki egy memóriája,
+      amely a 3. részben leírtak alapján véges sok 8-bites rekeszből áll. Következésképp a memória tartalma véges
+      sokféle lehet a futás során, még ha ez a szám nagyon nagy is. A memória aktuális tartalmát tehát elméleti
+      síkon tekinthetjük a Turing-gép aktuális állapotának. Amennyiben a gépünk a véges memóriába nem férne bele
+      valamilyen ok miatt, úgy használhatja a háttértárat (ami a legtöbbször a merevlemez) is a részeredmények
+      tárolására. A háttértár tehát szintén elméleti síkon tekinthető a Turing-gép szalagjának vagy szalagjainak.
+  - type: narrative
+    content: |
+      Az egyetlen különbség a kettő között, hogy egy Turing-gép szalagjai végtelen hosszúak, míg egy valódi
+      számítógép háttértára nem. Ez azonban nem jelent elméleti megszorítást. Ha ugyanis egy feladat megoldható
+      Turing-géppel véges sok lépésben, akkor a futás során a szalagokra is véges sok szimbólum fog kerülni a
+      megállásig. Következésképp mindig található olyan háttértár méret, amely elegendő e szimbólumok tárolására,
+      ha a fix méretű memóriába a részeredmények esetleg nem férnének bele. Egy valódi háttértár tehát tekinthető
+      ***potenciálisan végtelen*** méretűnek.
+  - type: narrative
+    content: |
+      Egy valódi számítógép által végrehajtandó program a legalacsonyabb szinten &ndash; amelyet ***gépi kódnak***
+      nevezünk &ndash; a Turing-gépünk szabályrendszeréhez nagyon hasonló módon írja le a gép számára, hogy mit
+      kell csinálnia. Az, hogy a programozóknak mégsem kell ennyire alacsonyszintű programkódot írniuk, pusztán az
+      úgynevezett magasszintű ***programozási nyelvek***nek, és a ***fordítóprogramok***nak köszönhető. A
+      programozási nyelvek ugyanis lehetővé teszik, hogy a végrehajtandó feladatot az emberi nyelvekhez sokkal
+      közelebb &ndash; de azért attól még mindig viszonylag távol &ndash; álló módon "fogalmazhassuk meg" a gép
+      számára. A fordítóprogramok feladata pedig ennek az elkészült magasszintű leírásnak a lefordítása olyan
+      alacsonyszintű gépi kódra, amely már közvetlenül értelmezhető a processzor számára.

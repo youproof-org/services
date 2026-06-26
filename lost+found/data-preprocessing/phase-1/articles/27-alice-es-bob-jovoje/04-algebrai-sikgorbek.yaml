@@ -1,0 +1,167 @@
+type: section
+name: 04-algebrai-sikgorbek
+title: Algebrai síkgörbék
+
+references:
+  csoport:
+    target:
+      type: definition
+      name: csoport
+
+body:
+  - type: narrative
+    content: |
+      Az ***algebrai síkgörbék*** olyan polinomiális egyenletekkel írhatók le, amelyekben két ismeretlen szerepel.
+      Ezeket $x$-szel és $y$-nal fogjuk jelölni. Egy ilyen egyenlet általános alakjában tehát $ax^ny^k$ alakú tagok
+      szerepelnek a baloldalon, ahol $n$ és $k$ nemnegatív egész kitevők, az $a$ együtthatók pedig valamilyen
+      ***racionális számok*** (vagy általánosabban egy $T$ test elemei), míg a jobboldalon $0$ (vagy általánosabban
+      a $T$ test nulleleme) szerepel. Az együtthatókra &ndash; a matematikai részletek mellőzésével &ndash;
+      mindössze annyi megkötést teszünk, hogy a görbe bizonyos "simasági" feltételeknek eleget tegyen, azaz ne
+      legyenek rajta törések, önmetszések, izolált pontok, stb. Egy tag fokszáma alatt az $n+k$ összeget, míg az
+      egyenlet (vagy görbe) fokszáma alatt a legnagyobb fokú tag ilyen értelemben vett fokszámát értjük.
+  - type: formula
+    lead-in: |
+      Ennek megfelelően például egy első-, egy másod-, illetve egy harmadfokú algebrai síkgörbe egyenletének
+      általános alakjai az alábbiak:
+    content: |
+      \begin{aligned}ax+by+c&=0 \\ ax^2+bxy+cy^2+dx+ey+f&=0 \\
+      ax^3+bx^2y+cxy^2+dy^3+ex^2+fxy+gy^2+hx+iy+j&=0\end{aligned}
+  - type: narrative
+    content: |
+      Egy ilyen $\mathbb{Q}$ felett értelmezett kétismeretlenes egyenlet megoldásai (vagy más szavakkal a ***görbe
+      pontjai***) alatt azokat az $(x;y)$ ***racionális számpárokat*** értjük, amelyeket az egyenletbe
+      behelyettesítve az egyenlőség fennáll a két oldal között.
+  - type: narrative
+    content: |
+      A görbéket némi "csalással" ábrázolhatjuk is egy kétdimenziós koordináta-rendszerben, ahol a vízszintes
+      tengely értelemszerűen az $x$, míg a függőleges tengely az $y$ változónak felel meg.
+  - type: formula
+    lead-in: |
+      Tekintsük például az alábbi $\mathbb{Q}$ feletti első- és másodfokú görbéket:
+    content: |
+      \begin{aligned}\frac{1}{2}x-y+1&=0 \\ x^2+y^2-1&=0\end{aligned}
+  - type: figure
+    lead-in: |
+      Ha most a koordináta-rendszerünkben bejelöljük azokat és csakis azokat a pontokat, amelyeknek koordinátái
+      kielégítik ezeket az egyenleteket, akkor a két görbe láthatóvá válik:
+    src: 01-algebrai-sikgorbek-pelda.jpg
+    alt: Algebrai síkgörbék (példa)
+    caption: Algebrai síkgörbék (példa)
+  - type: narrative
+    content: |
+      Általánosságban az elsőfokú görbék képe mindig valamilyen egyenes, míg a másodfokú görbék képe az
+      együtthatóktól függően lehet kör, ellipszis, parabola vagy hiperbola, amelyeket összefoglaló néven
+      kúpszeleteknek nevezünk.
+  - type: narrative
+    content: |
+      A fenti ábrán a már említett "csalást" ott követtük el, hogy valójában nem ábrázolhattuk volna ezeket a
+      görbéket folytonos vonallal, mivel ezeket a görbéket a racionális számok $\mathbb{Q}$ teste felett
+      értelmeztük, és így a megoldások (a görbe pontjainak koordinátái) is ebből a testből kell származzanak.
+      Márpedig a koordináta-tengelyek pontjainak "nagyrésze" bizony nem racionális, azaz nem írható fel két egész
+      szám hányadosaként.
+  - type: figure
+    lead-in: |
+      Ha például az egységoldalú négyzet átlójának hosszát (ami a pitagorasz-tétel alapján $\sqrt{2}$ hosszúságú)
+      felmérjük a számegyenesre, akkor kétségkívül egy létező távolságot kapunk, amely azonban nem írható fel tört
+      alakban:
+    src: 02-egysegnegyzet-atloja-a-szamegyenesen.jpg
+    alt: Egységnégyzet átlója a számegyenesen
+    caption: Egységnégyzet átlója a számegyenesen
+  - type: narrative
+    content: |
+      A koordináta-tengelyeken, és így a fenti görbéinken tehát "hézagok" vannak, azaz olyan pontok, amelyekhez nem
+      lehet racionális koordinátákat rendelni. Ráadásul ez annak ellenére így van, hogy a racionális számok
+      végtelenül sűrűn helyezkednek el a számegyenesen, azaz bármely két racionális szám között végtelen sok
+      további található. Ha ez még nem lenne elég, az ilyen "hézagokról" elmondható, hogy "sokkal többen" vannak,
+      mint a racionális számok. Úgy is fogalmazhatunk, hogy a számegyenes pontjai és a racionális számok között nem
+      lehet kölcsönösen egyértelmű megfeleltetést létesíteni, azaz ilyen értelemben előbbiek "magasabb rendben"
+      vannak végtelen sokan, mint a racionális számok. Ez egyrészt elvezet a ***számosság*** fogalmához, amelyet
+      itt nem részletezünk. Másrészt pedig felveti annak szükségességét, hogy ezeket a "hézagokat" a számfogalom
+      további bővítésével "betömködjük", és a számegyenes minden pontját "számnak" tekintsük, ne pedig csak azt a
+      "néhány" racionális számot, amelyek csak "elvétve" fordulnak elő közöttük. Így válna legálissá az, hogy a
+      fenti görbéket folytonos vonallal rajzoltuk fel. Ez az úgynevezett ***valós számok*** bevezetéséhez vezet,
+      amelyet szintén nem részletezünk.
+  - type: narrative
+    content: |
+      Mindenesetre jogosan merül fel a kérdés, hogy vajon a fenti görbéink "eltalálnak-e" akárcsak egyetlen egy
+      ***racionális pontot*** is &ndash; azaz olyan pontot, amelynek mindkét koordinátája racionális &ndash; a
+      síkon? És ha igen, akkor mennyi van belőlük? Véges vagy végtelen sok? Hogyan lehet mindegyiket megtalálni? Az
+      algebrai számelmélet elsősorban ezekkel a kérdésekkel foglalkozik. Az ***elsőfokú*** $\mathbb{Q}$ feletti
+      görbék (azaz az egyenesek) esetén a kérdés roppant egyszerű. Egy ilyen görbe ugyanis mindig végtelen sok
+      racionális pontot tartalmaz. Az összes ilyen pontot megkaphatjuk, ha a görbe egyenletébe $x$ helyére
+      behelyettesítünk egy tetszőleges racionális számot, és az így kapott &ndash; immár egyismeretlenes &ndash;
+      egyenletet megoldjuk $y$-ra. Általános iskolai módszerekkel könnyedén belátható, hogy minden ilyen esetben
+      kapunk pontosan egy racionális megoldást, azaz bármilyen racionális $x$ koordinátához pontosan egy racionális
+      $y$ koordináta tartozik. A $\mathbb{Q}$ számtest elemei tehát kölcsönösen egyértelmű megfeleltetésben állnak
+      az egyenes racionális pontjaival.
+  - type: narrative
+    content: |
+      A ***másodfokú*** görbék, azaz a kúpszeletek esetén a helyzet egy fokkal bonyolultabb. Itt már két eset
+      lehetséges: a görbének vagy egyáltalán nincs racionális pontja, vagy pedig végtelen sok van. De vajon hogyan
+      lehet eldönteni, hogy a két eset közül melyikben vagyunk? Meglepő módon erre létezik hatékony eljárás,
+      amelynek elméleti hátterét az úgynevezett ***Hasse-Minkowski tétel*** adja, ennek részletei azonban szintén
+      túlmutatnak e cikksorozat keretein. Ha azonban ebből azt kaptuk, hogy végtelen sok racionális pont van, akkor
+      egyetlen racionális pontból könnyen előállítható az összes többi.
+  - type: figure
+    lead-in: |
+      Az eljárást az egységkör esetére vázoljuk fel, de minden kúpszeletre nagyjából ugyanígy kell elképzelni:
+    src: 03-egysegkor-racionalis-pontjainak-eloallitasa.jpg
+    alt: Egységkör racionális pontjainak előállítása
+    caption: Egységkör racionális pontjainak előállítása
+  - type: narrative
+    content: |
+      Ebben a példában a $P=(-1;0)$ pontból indultunk ki, amelyről nyilvánvalóan látszik, hogy racionális.
+      Válasszunk ki egy tetszőleges ***racionális*** koordinátát az $y$ tengelyen &ndash; a fenti ábrán ezt $a$-val
+      jelöltük &ndash;, és kössük össze ezzel a kiindulási $P$ pontunkat. Az így kapott egyeneseket ***racionális
+      meredekségű egyeneseknek*** nevezzük. Középiskolás módszerekkel viszonylag könnyen belátható, hogy egy
+      racionális $P$ ponton áthaladó racionális meredekségű egyenes egy szintén racionális $Q$ pontban fogja
+      metszeni az egységkört. Még könnyebben látható, hogy ennek megfordítása is igaz: ha az egységkör tetszőleges
+      $P$-től különböző racionális pontját összekötjük $P$-vel, akkor az így kapott egyenes racionális meredekségű
+      lesz, azaz az $y$ tengelyt egy racionális koordinátánál fogja metszeni. Ebből következik, hogy az egységkörön
+      elhelyezkedő racionális pontok a $P$ pont kivételével kölcsönösen egyértelmű megfeleltetésbe hozhatók az $y$
+      tengelyen elhelyezkedő racionális koordinátákkal, vagyis tulajdonképpen a $\mathbb{Q}$ számtest elemeivel. Az
+      egységkör azonban nem speciális ilyen értelemben, tehát a fenti eljáráshoz nagyon hasonlóan minden kúpszelet
+      esetén található ilyen megfeleltetés a racionális pontok és $\mathbb{Q}$ között.
+  - type: narrative
+    content: |
+      A ***másodfokúnál magasabbfokú*** görbék racionális pontjainak kérdése az első- és másodfokú esetekhez képest
+      jóval bonyolultabb, és jelenleg is csak részben tisztázott. Nagy meglepetést okozott, amikor Gerd Faltings
+      német matematikus 1984-ben igazolta, hogy a ***legalább negyedfokú görbéknek*** csak véges sok racionális
+      pontjuk lehet (beleértve azt az esetet is, amikor egyáltalán nincs racionális pont). Ez a nagyszerű eredmény
+      Faltings-tétel néven ismeretes. Mindazonáltal jelenleg nem ismerünk olyan eljárást, amely ezeket a pontokat
+      meg tudja határozni.
+  - type: unordered-list
+    lead-in: |
+      ***Összefoglalva az eddigieket:*** Az első- és másodfokú, valamint a legalább negyedfokú görbék esetén tehát
+      a racionális pontok számára vonatkozó kérdést meg tudjuk válaszolni:
+    items:
+      - 'Az ***elsőfokú görbéknek*** mindig végtelen sok racionális pontjuk van, amely általános iskolás módszerekkel is könnyen látható.'
+      - 'A ***másodfokú görbéknek*** vagy egyáltalán nincs, vagy pedig végtelen sok racionális pontjuk van. Ennek eldöntésére ad módszert a ***Hasse-Minkowski tétel***.'
+      - 'A ***legalább negyedfokú görbéknek*** legfeljebb véges sok racionális pontjuk van a ***Faltings-tétel*** alapján.'
+  - type: narrative
+    content: |
+      ***De vajon mi a helyzet a harmadfokú görbékkel?*** Ezeket ***elliptikus görbéknek*** nevezzük, és az ő
+      esetükben mindhárom lehetséges eset &ndash; nulla, véges illetve végtelen sok racionális pont &ndash;
+      előfordulhat. Sajnos az a helyzet, hogy a harmadfokú esetben nem ismerünk olyan eljárást, amelynek
+      segítségével el lehetne dönteni, hogy egy adott görbe melyik kategóriába tartozik, illetve amelynek
+      segítségével meg lehetne határozni az összes racionális pontot egy görbén. Épp erről szól a számelmélet egyik
+      mély és központi jelentőségű sejtése, amely egyrészt &ndash; ha igaznak bizonyul &ndash; választ ad ezekre a
+      kérdésekre, másrészt messzemenő következményei vannak az egész számelméletben. Ez a ***Birch és
+      Swinnerton-Dyer sejtés***, amelyet az 1960-as évek első felében elliptikus görbéken végzett gépi számításaik
+      alapján két brit matematikus, Bryan John Birch és Peter Swinnerton-Dyer vetett fel.
+  - type: narrative
+    content: |
+      A ***Birch és Swinnerton-Dyer sejtés*** jelentőségét mi sem bizonyítja jobban, minthogy &ndash; a 7. részben
+      ismertetett $P\ eq NP$-sejtés mellett &ndash; ez is szerepel a Millenniumi Problémák között, amelyek
+      megoldásáért egyenként ***egymillió amerikai dollár*** jutalom jár. A sejtés állítását némi előkészület után
+      hamarosan ismertetjük.
+  - type: narrative
+    content: |
+      Ehhez azonban előbb meg kell ismernünk az ***elliptikus görbék*** egy másik, kriptográfiai szempontból is
+      fontos tulajdonságát, amely megkülönbözteti őket más algebrai görbéktől. Nevezetesen: az elliptikus görbék
+      pontjai között egyedülálló módon egy olyan műveletet is lehet értelmezni, amellyel ezek a pontok egy kis
+      kiegészítést követően ***csoportot*** (lásd a [csoport]t) alkotnak. Ilyen csoportot más fokszámú görbék
+      esetén nem lehet létrehozni, és ez az a bizonyos csoport, amelyet Neal Koblitz a már említett 1987-es
+      publikációjában kriptográfiai felhasználásra javasolt. Ahhoz azonban, hogy ezt a kis kiegészítést
+      megtehessük, az elliptikus görbéket a szokásos kétdimenziós sík helyett az úgynevezett ***projektív síkra***
+      kell kiterjesztenünk.

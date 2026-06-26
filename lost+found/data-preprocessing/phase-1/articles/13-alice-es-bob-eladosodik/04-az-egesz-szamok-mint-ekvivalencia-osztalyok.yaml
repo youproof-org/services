@@ -1,0 +1,83 @@
+type: section
+name: 04-az-egesz-szamok-mint-ekvivalencia-osztalyok
+title: Az egész számok, mint ekvivalencia-osztályok
+
+references:
+  ekvivalenciarelacio-tulajdonsagai:
+    target:
+      type: theorem
+      name: ekvivalenciarelacio-tulajdonsagai
+  termeszetes-szamparok-ekvivalenciarelacioja:
+    target:
+      type: definition
+      name: termeszetes-szamparok-ekvivalenciarelacioja
+  termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel:
+    target:
+      type: theorem
+      name: termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel
+
+body:
+  - type: narrative
+    content: |
+      A fentiek fényében térjünk most vissza az előző szakaszban definiált $\sim$ relációnkhoz, amelyet az
+      $\N\times \N$ halmazon &ndash; azaz a természetes számpárokon &ndash; értelmeztünk a
+      [termeszetes-szamparok-ekvivalenciarelacioja] alapján. Megjegyezzük, hogy a
+      [termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel] miatt e reláció vonatkozásában
+      mindegy, hogy a tételben vagy a reláció eredeti definíciójában szereplő feltételeket használjuk a
+      továbbiakban, hiszen az említett tétel épp azt mondja ki, hogy vagy mindkét tulajdonság teljesül, vagy egyik
+      sem. Az alábbi tétel igazolásához &ndash; amely a $\sim$ reláció kulcsfontosságú tulajdonságát mondja ki
+      &ndash; az utóbbi tulajdonságot fogjuk használni.
+  - type: embed
+    target:
+      type: theorem
+      name: termeszetes-szamparok-ekvivalenciarelacioja-tetel
+  - type: embed
+    target:
+      type: proof
+      name: termeszetes-szamparok-ekvivalenciarelacioja-tetel-bizonyitas
+  - type: narrative
+    content: |
+      Ha viszont $\sim$ egy ekvivalenciareláció, akkor a [ekvivalenciarelacio-tulajdonsagai] alapján ez a reláció
+      ***ekvivalencia-osztályokra*** bontja az $\N\times \N$ halmazt. Vizsgáljuk meg, hogyan néznek ki ezek az
+      ekvivalencia-osztályok. Ábrázoljuk az $\N\times \N$ halmaz elemeit egy kétdimenziós koordinátarendszer
+      rácspontjaiként, és csoportosítsuk ezeket a pontokat az ekvivalencia-osztályok alapján.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán ezek az ekvivalencia-osztályok láthatók bekarikázva:
+    src: 03-nxn-ekvivalencia-osztalyai.jpg
+    alt: NxN ekvivalencia-osztályai
+    caption: '$\N \times \N$ ekvivalencia-osztályai'
+  - type: narrative
+    content: |
+      A vagyoni helyzetek analógiájával élve az azonos csoportba került számpárok mind ugyanazt a vagyoni helyzetet
+      írják le. Ha például egy ügyfélnek 2 aranytallér van a betéti számláján és 3 aranytallér a hitelszámláján,
+      akkor ugyanolyan a vagyoni helyzete, mintha 0 aranytallér lenne a betéti számláján és 1 a hitelszámláján. Az
+      első esetet a $(2;3)$, míg a második esetet a $(0;1)$ számpár írja le. Mivel vagyoni helyzet szempontjából
+      mindegy, hogy melyik leírást választjuk, ezért ennek megfelelően e két számpár ugyanabba az
+      ekvivalencia-osztályba került. Ezt úgy is mondhatjuk, hogy a $(2;3)$ és a $(0;1)$ számpárok ***ugyanazt az
+      ekvivalencia-osztályt reprezentálják***.
+  - type: narrative
+    content: |
+      Minket ezért a továbbiakban nem külön-külön az egyes számpárok, azaz az $\N\times \N$ halmaz elemei
+      érdekelnek, hanem azok az ekvivalencia-osztályok, amelyeket ***reprezentálják***. A most következő, elsőre
+      furcsának tűnő definíció bevezet egy olyan halmazt, amelynek az ***elemei ezek az ekvivalencia-osztályok***
+      lesznek. Ez a halmaz annyira fontos lesz a továbbiakban, hogy a definíció külön nevet is ad ezeknek az
+      ekvivalencia-osztályoknak, mint e halmaz elemeinek.
+  - type: embed
+    target:
+      type: definition
+      name: egesz-szamok-halmaza
+  - type: narrative
+    content: |
+      Jól vigyázzunk a fenti jelölésekkel, az $(a;b)$ ugyanis egy egyszerű természetes számpárt jelöl, amely az
+      $\N\times \N$ halmaz eleme. Ezzel szemben $[(a;b)]$ egy ekvivalencia-osztályt, azaz &ndash; a fenti definíció
+      szerinti elnevezés alapján &ndash; egy ***egész számot jelöl***, amely viszont a $\Z$ halmaz eleme. Igaz
+      továbbá, hogy egy egész számot végtelen sok különböző számpárral reprezentálhatunk. Ha például $(c;d)$ egy
+      olyan számpár, hogy $(a;b)\sim (c;d)$, akkor a $[(c;d)]$ is ugyanazt az egész számot jelöli, mint $[(a;b)]$.
+      Ez nagyon hasonló ahhoz, mint amikor törtszámokat írunk le többféleképpen. Például
+      $\frac{1}{2}=\frac{2}{4}=\frac{3}{6}=\dots$.
+  - type: narrative
+    content: |
+      A fenti definíció azért tűnik elsőre furcsának, mert nem vagyunk hozzászokva, hogy egy egész számot $[(a;b)]$
+      alakban jelöljünk. Ezért hamarosan ***be fogunk vezetni egy olyan jelölést***, amelyet az általános iskolában
+      már megszoktunk. Egyelőre azonban tekintsük ezeket az $[(a;b)]$ alakú furcsaságokat az egész számoknak.

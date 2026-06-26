@@ -1,0 +1,146 @@
+type: chapter
+name: 20-alice-bob-euler-es-fermat
+title: Alice, Bob, Euler és Fermat
+
+references:
+  euklideszi-gyuru-foidealgyuru:
+    target:
+      type: theorem
+      name: euklideszi-gyuru-foidealgyuru
+  foidealgyuruk:
+    target:
+      type: definition
+      name: foidealgyuruk
+  ideal-szerinti-kongruencia:
+    target:
+      type: definition
+      name: ideal-szerinti-kongruencia
+  vegesen-generalt-idealok-es-foidealok:
+    target:
+      type: definition
+      name: vegesen-generalt-idealok-es-foidealok
+
+abstract:
+  - type: narrative
+    content: |
+      A 18. részben bevezettük a "gyűrűhomomorfizmus" és az ehhez szorosan kapcsolódó "gyűrűhomomorfizmus szerinti
+      kongruencia" fogalmát. Megmutattuk ugyanakkor, hogy egy ilyen reláció nem függ egy konkrét
+      gyűrűhomomorfizmustól, hanem annak csak a "magjától". Ezeket a részhalmazokat "ideáloknak" neveztük el,
+      definiáltuk az "ideál szerinti kongruenciát", és igazoltuk, hogy ez a kétféle kongruencia-fogalom valójában
+      egy és ugyanaz. Ennek során ismerkedtünk meg az úgynevezett "maradékosztálygyűrű" vagy "faktorgyűrű"
+      fogalmával, amely ebben a részben kap fontos szerepet. Végül az előző részben az ideálok segítségével
+      megadtunk egy szükséges és elégséges feltételt a számelmélet alaptételének teljesülésére, valamint
+      megismerkedtünk a "főideálgyűrűk" fogalmával.
+  - type: narrative
+    content: |
+      De vajon mit jelent a kongruencia és a maradékosztálygyűrű fogalma az egész számok esetén? Mik azok a teljes
+      és redukált maradékrendszerek, és milyen tulajdonságaik vannak? Mit mér az Euler-féle $\varphi$-függvény? Mit
+      nevezünk lineáris kongruenciának és mikor létezik megoldása? Mit állít az Euler-Fermat tétel és miért olyan
+      fontos? Ebben a részben erről lesz szó...
+prerequisite-warning:
+  - type: narrative
+    content: |
+      Figyelem! Ez a rész erőteljesen épít a 17., 18. és 19. részekben felépített alábbi definíciókra, valamint a
+      hozzájuk kapcsolódó tételekre:
+  - type: recall
+    target:
+      type: definition
+      name: kituntetett-kozos-oszto
+  - type: recall
+    target:
+      type: definition
+      name: modularis-osszeadas-es-szorzas
+  - type: recall
+    target:
+      type: definition
+      name: gyuruhomomorfizmus-szerinti-kongruencia
+  - type: recall
+    target:
+      type: definition
+      name: ideal
+  - type: recall
+    target:
+      type: definition
+      name: ideal-szerinti-kongruencia
+  - type: recall
+    target:
+      type: theorem
+      name: maradekosztalygyuruk
+  - type: recall
+    target:
+      type: definition
+      name: vegesen-generalt-idealok-es-foidealok
+  - type: recall
+    target:
+      type: definition
+      name: foidealgyuruk
+  - type: narrative
+    content: |
+      Ezek kontextusba helyezése miatt erőteljesen ajánlott elolvasni a 17., 18. és 19. részeket, mivel gyakran
+      hivatkozni fogunk rájuk. A teljes cikksorozat elejét itt találod.
+prologue:
+  - type: narrative
+    content: |
+      Első körben azt fogjuk megvizsgálni, hogy az egész számok $\Z$ gyűrűjén pontosan mit jelent a
+      [ideal-szerinti-kongruencia]ban bevezetett, meglehetősen absztrakt ***ideál szerinti kongruencia***. Ehhez
+      előszöris meg kell találnunk e gyűrű ***ideáljait***. A [euklideszi-gyuru-foidealgyuru] alapján minden
+      euklidészi gyűrű &ndash; és így speciálisan maga $\Z$ is &ndash; ***főideálgyűrű***.
+  - type: narrative
+    content: |
+      Ez a [foidealgyuruk] szerint azt jelenti, hogy $\Z$ összes ideálja egy-egy elemmel generálható. Ha tehát
+      kiválasztunk egy tetszőleges $m$ egész számot, akkor az $m$-et tartalmazó legszűkebb $\Z$-beli ideált úgy
+      kapjuk meg, hogy képezzük $m$ összes többszörösét. Ezt a halmazt a [vegesen-generalt-idealok-es-foidealok]
+      alapján az $m$ egész szám által generált ***főideálnak*** nevezzük, és $(m)$-mel jelöljük.
+  - type: formula
+    lead-in: |
+      Ha például $m=3$, akkor az ehhez tartozó főideál &ndash; az előző részben tanult halmazjelölésekkel &ndash;
+      az alábbi halmaz lesz:
+    content: |
+      (3)=\{\ldots;-9;-6;-3;0;3;6;9;\ldots\}
+  - type: narrative
+    content: |
+      Ezután a [ideal-szerinti-kongruencia]t szó szerint követve már könnyedén megmondhatjuk bármely $a$ és $b$
+      egész számokról, hogy vajon kongruensek-e a $(3)$ főideál szerint vagy nem. Az említett definíció szerint ez
+      a kongruencia pontosan akkor teljesül, ha az $a-b$ különbség eleme ennek az ideálnak, azaz &ndash; szintén az
+      előző részben tanult halmazjelölésekkel &ndash; $(a-b)\in (3)$. Például a $13$ és a $7$ között fennál a $(3)$
+      főideál szerinti kongruencia, mivel $13-7=6\in (3)$. Ezzel szemben a $18$ és a $13$ egész számok
+      inkongruensek a $(3)$ főideál szerint, hiszen $18-13=5\ otin (3)$.
+  - type: narrative
+    content: |
+      Ez persze nem túl intuitív, és nem is ez volt a kongruencia fogalmának eredeti jelentése. Ezt a relációt Carl
+      Friedrich Gauss német matematikus vezette be a Disquisitiones Arithmeticae című művében, és kizárólag az
+      egész számok között volt értelmezve. Ehhez képest az ***ideál*** fogalmának alapjait Ernst Kummer, szintén
+      német matematikus fektette le jó 50 évvel később, amikor a mintegy 350 évig megoldatlan Nagy Fermat-sejtést
+      akarta bizonyítani. Ez ugyan végül nem sikerült neki, de jelentős előrehaladást sikerült elérnie, és
+      felfedezései a 20. században kifejlesztett számelméleti eszközöket is megalapozták.
+  - type: narrative
+    content: |
+      Először tehát azt fogjuk megvizsgálni, hogy mi volt a ***kongruencia fogalmának eredeti jelentése***, és
+      hogyan kapcsolódik ez a [ideal-szerinti-kongruencia]ban bevezetett ***ideál szerinti kongruenciákhoz***.
+sections:
+  - 01-kongruencia-az-egesz-szamok-kozott
+  - 02-kongruenciak-alapveto-tulajdonsagai
+  - 03-kongruenciak-osztasa
+  - 04-egesz-szamok-maradekosztalyai-es-maradekosztalygyurui
+  - 05-linearis-kongruenciak
+  - 06-teljes-es-redukalt-maradekrendszerek
+  - 07-az-euler-fermat-tetel
+
+epilogue:
+  - type: narrative
+    content: |
+      Ebben a részben tehát megvizsgáltuk, hogy a 18. részben bevezetett kongruencia fogalma mit jelent az egész
+      számok $\Z$ gyűrűjére vonatkoztatva. Megmutattuk, hogy a kongruenciákkal nagyjából ugyanúgy kell számolni,
+      mint a hagyományos egyenletekkel, de azért bizonyos esetekben vigyázni kell. Ezután megvizsgáltuk, hogy
+      hogyan néznek ki az egész számok maradékosztályai és maradékosztálygyűrűi, és megismerkedtünk az Euler-féle
+      $\varphi$-függvénnyel, amely a modulo $m$ redukált maradékosztályok számát adja meg. A lineáris kongruenciák
+      megoldhatóságának feltételei kapcsán erre a függvényre adtunk egy alternatív definíciót is. Végül
+      megismerkedtünk az RSA-eljárás alapját képező Euler-Fermat tétellel.
+  - type: narrative
+    content: |
+      A következő részekben kibővítjük a 17. részben megismert euklidészi algoritmust, amely így már alkalmas lesz
+      a most tanult lineáris kongruenciák megoldására is. Megvizsgáljuk továbbá, hogy hogyan lehet kiszámítani az
+      Euler-féle $\varphi$-függvény értékét egy adott számra annak prímtényezőinek ismeretében. Így már minden
+      számelméleti ismeret rendelkezésre áll az RSA-eljárás részleteinek bemutatásához. Végül rátérünk arra a
+      kérdésre, hogy hogyan lehet az RSA biztonságához szükséges óriási &ndash; a gyakorlatban többszázjegyű
+      &ndash; prímszámokat találni.

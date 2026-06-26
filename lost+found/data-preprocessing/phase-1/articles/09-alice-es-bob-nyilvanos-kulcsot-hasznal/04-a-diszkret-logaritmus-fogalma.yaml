@@ -1,0 +1,47 @@
+type: section
+name: 04-a-diszkret-logaritmus-fogalma
+title: A diszkrét logaritmus fogalma
+
+body:
+  - type: formula
+    lead-in: |
+      Az alábbi táblázat első oszlopa az $n$ változó, míg a második és harmadik oszlopa az $f(n) = 2^n$ függvény
+      értékét tartalmazza rendre a hagyományos és a modulo 11 hatványozás esetén:
+    content: |
+      \begin{array}{c}{ \begin{array}{|c|c|c|} \hline n & 2^n & 2^n \pmod{11} \\ \hline \hline 0 & 1 & 1 \\ \hline
+      1 & 2 & 2\\ \hline 2 & 4 & 4\\ \hline 3 & 8 & 8\\ \hline 4 & 16 & 5 \\ \hline 5 & 32 & 10 \\ \hline 6 & 64 &
+      9 \\ \hline 7 & 128 & 7 \\ \hline 8 & 256 & 3 \\ \hline 9 & 512 & 6\\ \hline 10 & 1024 & 1\\ \hline 11 & 2048
+      & 2\\ \hline \end{array}} \\ \vdots \end{array}
+  - type: narrative
+    content: |
+      Ha megvizsgáljuk a táblázat harmadik oszlopát, akkor láthatjuk, hogy ez a sorozat &ndash; a második oszloppal
+      ellentétben &ndash; teljesen véletlenszerűen ugrál össze-vissza a függvény értékkészletét alkotó számokon.
+      Itt nem kapunk semmiféle támpontot a függvény megfordításához.
+  - type: narrative
+    content: |
+      Ennek érzékeltetéséhez képzeljük most magunkat egy potenciális támadó &ndash; például Eve &ndash; helyébe.
+      Tegyük fel, hogy a támadási kísérlet során Eve-nek ki kell számítania azt az $n$ kitevőt, amely esetén $2^n =
+      6 \pmod{11}$. Ezt a kitevőt a 6-os szám 2-es alapú ***diszkrét logaritmusának*** nevezik. Mivel modulo 11
+      óraaritmetikában számolunk, ezért Eve csak annyit tud, hogy a megoldás az 1, 2, ..., 10 számok közül kerülhet
+      ki.
+  - type: narrative
+    content: |
+      Eve azt megteheti, hogy elkezdi sorban kipróbálni ezeket a kitevőket, ez azonban reménytelenül sokáig tarthat
+      neki, amennyiben nem egy 11 elemű, hanem egy ennél sokkal nagyobb óralapon kell keresgélnie. Sebaj &ndash;
+      gondolja magában Eve &ndash;, szerencsére a fentebb már ismertetett bináris keresést épp az ilyen esetekre
+      találták ki.
+  - type: narrative
+    content: |
+      Eve tehát először tesz egy próbát az értelmezési tartomány közepén lévő $n=5$ értékre. Erre azt kapja, hogy
+      $2^5=10 \pmod{11}$. Az így kapott eredmény nagyobb, mint 6, ezért Eve a bináris keresés logikáját követve azt
+      a következtetést vonja le, hogy a keresett kitevő biztosan 5-nél kisebb. Ez azonban hibás feltételezés,
+      hiszen a megoldás ebben az esetben a 9 lenne. A modulo 11 hatványozás tehát nem ad olyan támpontokat, mint a
+      hagyományos, így Eve ezzel a módszerrel nem tudja kizárni minden lépésben a kitevőjelöltek felét.
+  - type: narrative
+    content: |
+      Sőt, jelenleg nem is ismeretes semmilyen más módszer sem, ami a modulo hatványozás megfordítására lényegesen
+      gyorsabb megoldást szolgáltatna, mint az összes lehetséges kitevőjelölt végigpróbálgatása. Ez viszont egy
+      megfelelően nagy méretű óralap esetén reménytelen feladat elé állítja Eve-et. A ***modulo hatványozás***
+      tehát valóban egy ***egyirányú függvénynek*** tűnik, amelyet Alice és Bob ***kulcsmegosztásra***
+      használhatnak. Az előző részben a prímfaktorizációról tett megjegyzéshez hasonlóan azonban itt is kénytelenek
+      vagyunk megjegyezni, hogy a diszkrét logaritmus problémájáról sem bizonyított, hogy NP-teljes lenne.

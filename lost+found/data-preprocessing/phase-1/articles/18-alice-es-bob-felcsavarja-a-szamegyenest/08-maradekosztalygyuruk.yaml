@@ -1,0 +1,266 @@
+type: section
+name: 08-maradekosztalygyuruk
+title: Maradékosztálygyűrűk
+
+references:
+  gyuruhomomorfizmus-magja-es-kepe:
+    target:
+      type: definition
+      name: gyuruhomomorfizmus-magja-es-kepe
+  gyuruhomomorfizmus-magjanak-szukseges-feltetele:
+    target:
+      type: theorem
+      name: gyuruhomomorfizmus-magjanak-szukseges-feltetele
+  gyuruhomomorfizmus-szerinti-kongruencia:
+    target:
+      type: definition
+      name: gyuruhomomorfizmus-szerinti-kongruencia
+  gyuruhomomorfizmus-szerinti-kongruencia-ekvivalenciarelacio:
+    target:
+      type: theorem
+      name: gyuruhomomorfizmus-szerinti-kongruencia-ekvivalenciarelacio
+  gyuruhomomorfizmus-szerinti-kongruenciak-ekvivalenciajanak-feltetele:
+    target:
+      type: theorem
+      name: gyuruhomomorfizmus-szerinti-kongruenciak-ekvivalenciajanak-feltetele
+  ideal-szerinti-kongruencia:
+    target:
+      type: definition
+      name: ideal-szerinti-kongruencia
+  ketvaltozos-muvelet:
+    target:
+      type: definition
+      name: ketvaltozos-muvelet
+
+body:
+  - type: narrative
+    content: |
+      Előszöris bevezetünk egy új jelölésmódot, amelynek a segítségével tömören le tudunk írni bizonyos
+      részhalmazokat egy gyűrűben. Az alábbi definíció azonban nem csak gyűrűk, hanem tetszőleges algebrai
+      struktúrák esetén alkalmazható.
+  - type: embed
+    target:
+      type: definition
+      name: komplexusmuveletek
+  - type: embed
+    target:
+      type: remark
+      name: komplexusmuveletek-megjegyzes
+  - type: narrative
+    content: |
+      Most térjünk vissza az előző szakasz végén felvetett problémához. Azt már tudjuk, hogy ha egy $R$ gyűrű
+      valamely $I$ részhalmaza magja valamilyen gyűrűhomomorfizmusnak, akkor $I$ ideál $R$-ben. Most szeretnénk
+      megmutatni, hogy ez visszafelé is igaz, azaz bármely $I$ ideál magja valamilyen gyűrűhomomorfizmusnak.
+  - type: narrative
+    content: |
+      Ehhez szükségünk van egy konstrukcióra, amelynek a segítségével egy tetszőleges $I$ ideálhoz tudunk
+      konstruálni egy olyan $f$ gyűrűhomomorfizmust, amelynek épp $I$ lesz a magja. Ehhez azonban kell egy célgyűrű
+      is, ***ahová*** $f$ mutatni fog. Ezt a gyűrűt és az $f$ gyűrűhomomorfizmust is az $R$ gyűrűből fogjuk képezni
+      az $I$ ideál segítségével.
+  - type: narrative
+    content: |
+      Az ötletet a kongruenciákról szóló szakaszban már bemutatott $\bmod_3$ gyűrűhomomorfizmus szerinti
+      maradékosztályokat szemléltető ábráról kölcsönözzük.
+  - type: figure
+    lead-in: |
+      Ezen az ábrán ugye felcsavartuk a számegyenest olymódon, hogy az azonos maradékosztályba eső elemek
+      egyvonalba essenek:
+    src: 04-a-felcsavart-szamegyenes.jpg
+    alt: A felcsavart számegyenes
+    caption: A felcsavart számegyenes
+  - type: narrative
+    content: |
+      Ugyan jelen esetben egy általános gyűrűről beszélünk, ahol nem sok értelme van számegyenesről beszélni, ám az
+      analógia meglehetősen hasznos a megértéshez. Az ábrán a függőleges irányban álló maradékosztály az, amelyik a
+      $\bmod_3$ gyűrűhomomorfizmus magja. Ez ugye épp a $3$-mal osztható egész számok halmaza lesz, amelyet a
+      fentebbi komplexusszorzást alkalmazva $3\Z$-vel jelölünk. Kérdés, hogy a többi maradékosztályt, mint halmazt
+      hogyan tudjuk kifejezni $3\Z$ segítségével.
+  - type: narrative
+    content: |
+      Tegyük fel, hogy $a$ egy valamilyen előre rögzített egész szám, és jelöljük $[a]_3$-mal azt a
+      maradékosztályt, amelynek ő eleme. A továbbiakban tehát ennek a maradékosztálynak $a$ lesz a képviselője. A
+      fenti ábrán látható, hogy $a$-ból kiindulva az $[a]_3$ maradékosztály tetszőleges eleméhez &ndash; és csak
+      ezekhez &ndash; eljuthatunk, ha $3$-nak valamilyen többszöröse számú lépést teszünk meg valamilyen irányban a
+      felcsavart számegyenesen.
+  - type: formula
+    lead-in: |
+      Komplexusműveletekkel kifejezve ez azt jelenti, hogy teljesül az alábbi halmazegyenlőség:
+    content: |
+      [a]_3=a+3\Z
+  - type: narrative
+    content: |
+      Ezek szerint tehát a $\bmod_3$ szerinti kongruencia minden maradékosztályát elő tudjuk állítani annak
+      valamely önkényesen kiválasztott eleméből és a $\bmod_3$ magjából &ndash; azaz $3\Z$-ből &ndash;, ami ugye a
+      [gyuruhomomorfizmus-magjanak-szukseges-feltetele] alapján ideál $\Z$-ben.
+  - type: narrative
+    content: |
+      Most térjünk vissza az eredeti $R$ gyűrűnkhöz és annak valamely $I$ ideáljához. Az előző példával analóg
+      módon szeretnénk valamiféle "maradékosztályokat" előállítani $r+I$ alakban, ahol $r$ az adott
+      "maradékosztály" egy eleme. Az idézőjeles megfogalmazást az indokolja, hogy a
+      [gyuruhomomorfizmus-szerinti-kongruencia-ekvivalenciarelacio] ***gyűrűhomomorfizmus szerinti, nem pedig ideál
+      szerinti*** maradékosztályokról beszél. Márpedig $I$-ről egyelőre nem tudjuk, hogy vajon magja-e bármiféle
+      gyűrűhomomorfizmusnak, hiszen épp ezt szeretnénk bizonyítani.
+  - type: narrative
+    content: |
+      A ***gyűrűhomomorfizmus szerinti maradékosztályok*** tulajdonképpen a
+      [gyuruhomomorfizmus-szerinti-kongruencia]ban bevezetett ***gyűrűhomomorfizmus szerinti kongruencia***
+      ekvivalencia-osztályai. A [gyuruhomomorfizmus-magja-es-kepe] utáni megjegyzés alapján két elem pontosan akkor
+      volt kongruens egy $f$ gyűrűhomomorfizmus szerint, ha a különbségük benne volt $f$ magjában. Ezzel analóg
+      módon talán praktikus lenne bevezetni az ***ideál szerinti kongruencia*** fogalmát.
+  - type: embed
+    target:
+      type: definition
+      name: ideal-szerinti-kongruencia
+  - type: narrative
+    content: |
+      Nem lesz túl meglepő, hogy a gyűrűhomomorfizmus szerinti kongruenciához hasonlóan az ***ideál szerinti
+      kongruencia is egy ekvivalenciareláció***. Ennek ekvivalencia-osztályai ráadásul épp a kívánt alakban írhatók
+      fel a komplexusműveletek segítségével.
+  - type: embed
+    target:
+      type: theorem
+      name: ideal-szerinti-kongruencia-ekvivalenciarelacio
+  - type: embed
+    target:
+      type: proof
+      name: ideal-szerinti-kongruencia-ekvivalenciarelacio-bizonyitas
+  - type: embed
+    target:
+      type: remark
+      name: ideal-szerinti-kongruencia-ekvivalenciarelacio-megjegyzes
+  - type: narrative
+    content: |
+      Az ***ideálok szerinti kongruenciák*** tehát eddig láthatóan ugyanúgy "működnek", mint a
+      ***gyűrűhomomorfizmusok szerinti kongruenciák***. Mindkettő maradékosztályokba sorolja a gyűrű elemeit,
+      méghozzá minden elemet pontosan egybe. Eddig azonban az ideálok tulajdonságaiból csak azt használtuk ki, hogy
+      részgyűrűk, a szorzásra vonatkozó tulajdonságot nem.
+  - type: narrative
+    content: |
+      Mi azonban egy adott $I$ ideálhoz keresünk egy olyan gyűrűhomomorfizmust, amelynek épp $I$ a magja. Ehhez
+      viszont szükségünk lesz egy célgyűrűre is. Ennek a célgyűrűnek &ndash; habár első hallásra furcsának tűnik
+      &ndash; az $I$ ideál szerinti maradékosztályok lesznek az elemei, így ezek között be szeretnénk vezetni két
+      műveletet. Az ideálok szorzással kapcsolatos tulajdonságának most lesz jelentősége.
+  - type: narrative
+    content: |
+      Hogy miért hangzik furcsának bevezetni két műveletet ***maradékosztályok*** között? Hát azért, mert a
+      maradékosztályok ***halmazok***, márpedig műveletet általában valamilyen halmaz ***elemei*** között szokás
+      bevezetni. A matematikában azonban semmi nem tiltja, hogy bizonyos halmazok elemei maguk is halmazok
+      legyenek. Emlékezzünk vissza, hogy a 13. részben magukat az egész számokat is hasonlóképpen építettük fel.
+      Akkor egy-egy természetes számpárral írtunk le egy készpénz-adósság párost, amely számpárok között
+      definiáltunk egy "azonos vagyoni helyzetet jelöl"-relációt, amelyről megmutattuk, hogy egy
+      ekvivalenciareláció. Az egész számok tulajdonképpen ennek a relációnak az ekvivalencia-osztályai, amelyek
+      között vígan értelmezni tudtuk az összeadást és a szorzást, mint műveletet.
+  - type: narrative
+    content: |
+      A trükk az volt, hogy két ekvivalencia-osztály ***összegének*** vagy ***szorzatának*** képzéséhez először
+      kiválasztottunk egy-egy tetszőleges elemet a két osztályból. Ezután ezeken elvégeztük az eredeti halmazon
+      értelmezett megfelelő műveletet, és az eredményül kapott elem ekvivalencia-osztálya lett az
+      ekvivalencia-osztályok közötti összegzés illetve szorzás eredménye.
+  - type: narrative
+    content: |
+      Most ugyanezt a trükköt fogjuk alkalmazni, amikoris bevezetjük az ***összeadást és szorzást egy $R$ gyűrű $I$
+      ideáljának maradékosztályai között***. Két maradékosztályt úgy fogunk összeadni, illetve összeszorozni, hogy
+      kiválasztunk belőlük egy-egy tetszőleges elemet, amelyeket összeadunk, illetve összeszorzunk az eredeti $R$
+      gyűrű műveleteivel, majd azt a maradékosztályt választjuk végeredménynek, amelybe az így kapott elem esik.
+      Egy ilyen maradékosztályok közötti műveletnek nyilvánvalóan akkor van csak értelme, ha az eredményül kapott
+      maradékosztály nem függ attól, hogy a két bemeneti maradékosztályból mely elemeket választottuk ki a művelet
+      elvégzéséhez. Ilyenkor mondjuk azt, hogy a művelet ***jóldefiniált***.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán például az $M$ és $N$ maradékosztályok összeadása látható, amit két különböző elempár
+      segítségével elvégezve ugyanaz az eredmény adódik:
+    src: 05-maradekosztalyok-osszeadasa.jpg
+    alt: Maradékosztályok összeadása
+    caption: Maradékosztályok összeadása
+  - type: narrative
+    content: |
+      Megköveteljük tehát, hogy függetlenül attól, hogy az $a_1+b_1$ vagy az $a_2+b_2$ összeget számítjuk-e ki, az
+      eredménynek mindkét esetben ugyanabba a maradékosztályba kell esnie. Természetesen ugyanezt megköveteljük a
+      szorzásra is.
+  - type: narrative
+    content: |
+      Egy $R$ gyűrűben egy $f$ ***gyűrűhomomorfizmus szerinti maradékosztályok*** közötti összeadás és szorzás
+      jóldefiniáltságát $f$ művelettartó tulajdonságai biztosítják. Ugyanis az $a_1\equiv a_2\pod f$, és a
+      $b_1\equiv b_2\pod f$ kongruenciák épp azt jelentik, hogy teljesülnek az $f(a_1)=f(a_2)$ és $f(b_1)=f(b_2)$
+      egyenletek. Ez viszont $f$ összegtartó tulajdonságából következően a [gyuruhomomorfizmus-magja-es-kepe] utáni
+      megjegyzés alapján épp azt jelenti, hogy az $a_1-a_2$ és $b_1-b_2$ különbségek benne vannak $f$ magjában,
+      azaz $\ker f$-ben. Ám $\ker f$ a [gyuruhomomorfizmus-magjanak-szukseges-feltetele] miatt részgyűrű $R$-ben,
+      és így zárt az összeadásra. Ez alapján e két különbség összege, azaz $(a_1+b_1)-(a_2+b_2)$ szintén benne van
+      $\ker f$-ben, azaz teljesül az $a_1+b_1\equiv a_2+b_2\pod f$ kongruencia. Az összeadás tehát valóban
+      jóldefiniált, hiszen ugyanabba a maradékosztályba eső eredményt kapunk, függetlenül attól, hogy mely elemeket
+      választjuk ki a műveletvégzéshez a két bemeneti maradékosztályból.
+  - type: narrative
+    content: |
+      A szorzás jóldefiniáltsága $f$ szorzattartó tulajdonságából következik. Ha ugyanis a fenti két egyenletet
+      összeszorozzuk, akkor $f(a_1)\cdot f(b_1)=f(a_2)\cdot f(b_2)$ következik. A szorzattartó tulajdonság miatt ez
+      viszont azt jelenti, hogy $f(a_1\cdot b_1)=f(a_2\cdot b_2)$, azaz teljesül az $a_1\cdot b_1\equiv a_2\cdot
+      b_2\pod f$ kongruencia.
+  - type: narrative
+    content: |
+      Kérdés, hogy ez a jóldefiniáltság vajon az ideál szerinti maradékosztályokra is teljesül-e. Ezt biztosítja az
+      alábbi tétel.
+  - type: embed
+    target:
+      type: theorem
+      name: ideal-szerinti-muveletek-joldefinialtsaga
+  - type: embed
+    target:
+      type: proof
+      name: ideal-szerinti-muveletek-joldefinialtsaga-bizonyitas
+  - type: narrative
+    content: |
+      Ez tehát azt jelenti, hogy az ideál szerinti maradékosztályok közötti összeadás és szorzás valóban
+      jóldefiniáltak, azaz ***műveletek*** a szó algebrai értelmében (lásd a [ketvaltozos-muvelet]t).
+  - type: narrative
+    content: |
+      Egyre több jel mutat tehát arra, hogy a ***gyűrűhomomorfizmusok szerinti kongruencia*** és az ***ideálok
+      szerinti kongruencia*** fogalma tulajdonképpen ***egy és ugyanaz***.
+  - type: ordered-list
+    lead-in: |
+      Szedjük is össze az eddig megtalált párhuzamokat:
+    items:
+      - 'Két elem között mindkettő pontosan akkor teljesül, ha a különbségük benne van egy bizonyos halmazban. Egyik esetben ez annak a ***gyűrűhomomorfizmusnak a magja***, másik esetben pedig az az ***ideál***, amely szerint képeztük az adott kongruenciát.'
+      - 'Mindkettő ekvivalenciareláció.'
+      - 'Mindkettőnek a maradékosztályai teljesen ugyanúgy fejezhetők ki a komplexusműveletek segítségével.'
+      - 'E maradékosztályok között mindkettő esetben ugyanúgy értelmezhetünk jóldefiniált műveleteket.'
+  - type: narrative
+    content: |
+      Ha ez a két fogalom valóban ugyanaz, akkor az egyben azt is jelenti, hogy egy gyűrűből kiinduló
+      gyűrűhomomorfizmusok magjai és az adott gyűrű ideáljai pontosan ugyanazok a halmazok lesznek. Visszautalnánk
+      a [gyuruhomomorfizmus-magjanak-szukseges-feltetele] tételre, amelyben már láttuk, hogy a gyűrűhomomorfizmusok
+      magjai mind ideálok. Most azt fogjuk megmutatni, hogy ez visszafelé is igaz.
+  - type: narrative
+    content: |
+      Ez az alábbi tétel közvetlen következménye lesz, amely az ***ideál szerinti maradékosztályok halmazán***
+      imént bevezetett műveletek tulajdonságairól szól.
+  - type: embed
+    target:
+      type: theorem
+      name: maradekosztalygyuruk
+  - type: embed
+    target:
+      type: proof
+      name: maradekosztalygyuruk-bizonyitas
+  - type: narrative
+    content: |
+      Az imént bizonyított és a [gyuruhomomorfizmus-magjanak-szukseges-feltetele] következményeként mostmár
+      egyértelműen azonosítani tudjuk egy gyűrű azon részhalmazait, amelyek valamilyen gyűrűhomomorfizmusok magjai
+      lehetnek. Erről szól az alábbi következmény.
+  - type: embed
+    target:
+      type: theorem
+      name: idealok-es-gyuruhomomorfizmusok
+  - type: embed
+    target:
+      type: proof
+      name: idealok-es-gyuruhomomorfizmusok-bizonyitas
+  - type: narrative
+    content: |
+      Ez tehát azt jelenti, hogy a [gyuruhomomorfizmus-szerinti-kongruencia]ban bevezetett ***gyűrűhomomorfizmus
+      szerinti kongruencia*** fogalma helyett nyugodtan használhatjuk a továbbiakban a
+      [ideal-szerinti-kongruencia]ban bevezetett ***ideál szerinti kongruencia*** fogalmát. A
+      [gyuruhomomorfizmus-szerinti-kongruenciak-ekvivalenciajanak-feltetele] alapján ugyanis egy kongruenciareláció
+      nem függ konkrét gyűrűhomomorfizmusoktól, hanem azoknak csakis a magjától. Most viszont épp azt
+      bizonyítottuk, hogy bármely $R$ gyűrűben a belőle kiinduló gyűrűhomomorfizmusok magjai épp egybeesnek $R$
+      ideáljaival. Így tehát egy gyűrű ideáljai alapján az összes létező kongruenciarelációt megkaphatjuk, ami csak
+      értelmezhető az adott gyűrűn.

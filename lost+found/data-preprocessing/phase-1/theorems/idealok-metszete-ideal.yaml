@@ -1,0 +1,20 @@
+type: theorem
+name: idealok-metszete-ideal
+proofs:
+  - idealok-metszete-ideal-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ egy tetszőleges gyűrű, valamint legyen $\mathcal{S}$ egy olyan $R$ feletti halmazrendszer, amely
+      $R$ valahány &ndash; akár végtelen számú &ndash; ***részgyűrűjét*** tartalmazza elemként. Ekkor az
+      $\mathcal{S}$-ben lévő halmazok metszete is ***részgyűrű*** $R$-ben.
+  - type: narrative
+    content: |
+      Ehhez hasonlóan ha az $\mathcal{I}$ egy olyan halmazrendszer, amely $R$ valahány &ndash; akár végtelen számú
+      &ndash; ***balideálját (illetve jobbideálját)*** tartalmazza elemként, akkor az $\mathcal{I}$-ben lévő
+      halmazok metszete is ***balideál (illetve jobbideál)*** $R$-ben.
+  - type: narrative
+    content: |
+      Végül ha $\mathcal{J}$ az $R$ gyűrű valahány &ndash; akár végtelen számú &ndash; ***(kétoldali) ideálját***
+      tartalmazza elemként, akkor a $\mathcal{J}$-ben lévő halmazok metszete is ***(kétoldali) ideál*** $R$-ben.

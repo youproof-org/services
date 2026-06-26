@@ -1,0 +1,59 @@
+<!-- wp:paragraph -->
+<p>Először a <strong><em>kommutativitást</em></strong> vizsgáljuk. Az első egyenlet baloldala a [latex]\odot[/latex] művelet [yp_element slug="egesz-szamok-szorzasa" type="link" /]ja miatt így írható:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][(a;b)] \odot [(c;d)] = [(ac+bd;ad+bc)][/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az egyenlet jobboldala ugyanilyen okok miatt így írható:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][(c;d)] \odot [(a;b)] = [(ca+db;cb+da)][/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel ugyanazt a kifejezést kaptuk mindkét esetben, ezért a [latex]\odot[/latex] művelet valóban <strong><em>kommutatív</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most nézzük az <strong><em>asszociativitást</em></strong>. A második egyenlet baloldala így írható:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}&amp;([(a;b)] \odot [(c;d)]) \odot [(e;f)] = \\ = &amp;[(ac+bd;ad+bc)] \odot [(e;f)] = \\ = &amp;[((ac+bd)e + (ad+bc)f; (ac+bd)f + (ad+bc)e)] = \\ = &amp;[(ace+bde+adf+bcf;acf+bdf+ade+bce)]\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az egyenlet jobboldala:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}&amp;[(a;b)] \odot ([(c;d)] \odot [(e;f)]) = \\ = &amp;[(a;b)] \odot [(ce+df;cf+de)] = \\ = &amp;[(a(ce+df) + b(cf+de); a(cf+de) + b(ce+df))] = \\ = &amp;[(ace+adf+bcf+bde;acf+ade+bce+bdf)]\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel ugyanazt a kifejezést kaptuk mindkét esetben, ezért a [latex]\odot[/latex] művelet valóban <strong><em>asszociatív</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Végül ellenőrizzük a <strong><em>disztributivitást</em></strong>. A harmadik egyenlet baloldala:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}&amp;[(a;b)] \odot ([(c;d)] \oplus [(e;f)]) = \\ = &amp;[(a;b)] \odot [(c+e;d+f)] = \\ = &amp;[(a(c+e) + b(d+f);a(d+f) + b(c+e))] = \\ = &amp;[(ac+ae+bd+bf;ad+af+bc+be)]\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az egyenlet jobboldala:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}&amp;[(a;b)] \odot [(c;d)] \oplus [(a;b)] \odot [(e;f)] = \\ = &amp;[(ac+bd;ad+bc)] \oplus [(ae+bf;af+be)] = \\ = &amp;[(ac+bd+ae+bf;ad+bc+af+be)]\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel ugyanazt a kifejezést kaptuk mindkét esetben, ezért a [latex]\odot[/latex] művelet valóban <strong><em>disztributív</em></strong> a [latex]\oplus[/latex] műveletre nézve.</p>
+<!-- /wp:paragraph -->

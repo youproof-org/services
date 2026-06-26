@@ -1,0 +1,35 @@
+type: theorem
+name: polinomgyuru
+proofs:
+  - polinomgyuru-bizonyitas
+remarks: []
+references:
+  gyuru-test:
+    target:
+      type: definition
+      name: gyuru-test
+  polinomok:
+    target:
+      type: definition
+      name: polinomok
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ tetszőleges kommutatív gyűrű, és jelölje $R[x]$ az $R$ feletti polinomok halmazát. Ekkor az $R[x]$
+      halmaz a [polinomok]ban bevezetett műveletekkel szintén egy ***kommutatív gyűrűt*** alkot, amelyet az ***$R$
+      feletti polinomgyűrűnek*** nevezünk. Ezt a gyűrűt az alaphalmazához hasonlóan szintén $R[x]$-szel jelöljük.
+  - type: formula
+    lead-in: |
+      Az $R[x]$ gyűrű ***nulleleme a nullapolinom***, továbbá tetszőleges $f=(a_0,a_1,\ldots)$ polinom $-f$-fel
+      jelölt ***ellentettje*** az alábbi polinom:
+    content: |
+      -f=(-a_0,-a_1,-a_2,\ldots)
+  - type: formula
+    lead-in: |
+      Ha $R$ ***egységelemes*** gyűrű (lásd a [gyuru-test]t), melynek egységelemét $1_R$-rel, nullelemét pedig
+      $0_R$-rel jelöljük, akkor ***$R[x]$ is egységelemes***, melynek egységeleme az alábbi konstans polinom:
+    content: |
+      (1_R,0_R,0_R,0_R,\ldots)
+  - type: narrative
+    content: |
+      Végül ha $R$ ***nullosztómentes***, akkor $R[x]$ is nullosztómentes.

@@ -1,0 +1,59 @@
+type: proof
+name: legnagyobb-kozos-oszto-kituntetett-bizonyitas
+remarks: []
+references:
+  antiszimmetrikus-relacio:
+    target:
+      type: definition
+      name: antiszimmetrikus-relacio
+  asszocialtsag-tulajdonsagai:
+    target:
+      type: theorem
+      name: asszocialtsag-tulajdonsagai
+  gyuru-reszbenrendezesenek-tulajdonsagai:
+    target:
+      type: theorem
+      name: gyuru-reszbenrendezesenek-tulajdonsagai
+  kituntetett-kozos-oszto-egyertelmusege:
+    target:
+      type: theorem
+      name: kituntetett-kozos-oszto-egyertelmusege
+  legnagyobb-kozos-oszto:
+    target:
+      type: definition
+      name: legnagyobb-kozos-oszto
+  oszthatosag-es-rendezesi-relacio-kapcsolata:
+    target:
+      type: theorem
+      name: oszthatosag-es-rendezesi-relacio-kapcsolata
+  oszthatosag-tulajdonsagai:
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+content:
+  - type: narrative
+    content: |
+      Az $a=b=0$ esetet egyből ki is zárhatjuk, hiszen a [legnagyobb-kozos-oszto] utáni megjegyzés miatt ekkor nem
+      létezne legnagyobb közös osztó. Minthogy létezik (hiszen $d$ az), ezért biztos, hogy $a$ és $b$ közül
+      legalább az egyik nem $0$. Ebből viszont következik, hogy a feltételezett $e$ kitüntetett közös osztó
+      biztosan nem $0$ (hiszen a [oszthatosag-tulajdonsagai] 4. pontja miatt a $0$ csak saját magának osztója). Így
+      tehát $e$ a rendezési reláció trichotómiája miatt vagy pozitív, vagy pedig negatív.
+  - type: narrative
+    content: |
+      Legyen $f=e$, ha $e$ pozitív, és $f=-e$ ha $e$ negatív. Ekkor egyrészt a
+      [gyuru-reszbenrendezesenek-tulajdonsagai] 1. pontja miatt $f$ biztosan pozitív, másrészt pedig $e$-nek
+      asszociáltja (vagy azért, mert megegyezik vele, vagy pedig a [asszocialtsag-tulajdonsagai] 1. pontja miatt).
+      Ebből viszont a [kituntetett-kozos-oszto-egyertelmusege] miatt következik, hogy $f$ is kitüntetett közös
+      osztó.
+  - type: narrative
+    content: |
+      Mivel $f$ közös osztó, és $d$ a legnagyobb közös osztó, ezért egyrészt teljesül az $f\leq d$ reláció.
+      Másrészt mivel $d$ szintén közös osztó, és $f$ kitüntetett, ezért teljesül a $d|f$ oszthatóság is. Ekkor
+      azonban $0\lt f$ miatt alkalmazható a [oszthatosag-es-rendezesi-relacio-kapcsolata], ami alapján teljesül a
+      $d\leq f$ reláció is.
+  - type: narrative
+    content: |
+      Minthogy $f\leq d$ és $d\leq f$ egyszerre teljesül, ezért a $\leq$ reláció antiszimmetriája (lásd a
+      [antiszimmetrikus-relacio]t) miatt $d=f$. Azaz $d$ valóban asszociáltja a tételben szereplő $e$ kitüntetett
+      közös osztónak, és így a [kituntetett-kozos-oszto-egyertelmusege] értelmében ő maga is kitüntetett közös
+      osztó.

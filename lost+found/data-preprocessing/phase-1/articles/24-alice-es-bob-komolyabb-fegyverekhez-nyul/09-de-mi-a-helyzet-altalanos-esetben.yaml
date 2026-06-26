@@ -1,0 +1,20 @@
+type: section
+name: 09-de-mi-a-helyzet-altalanos-esetben
+title: De mi a helyzet általános esetben?
+
+body:
+  - type: narrative
+    content: |
+      Az előző szakaszban tehát igazoltuk, hogy prímhatványok esetén a nem Miller-Rabin-tanúk pont egy ***valódi
+      részcsoportot*** alkotnak a $(\Z/n\Z)^{\times}$ multiplikatív csoportban. Mint ahogy azt is láttuk, hogy
+      általános esetben sajnos nem ez a helyzet. Szerencsére azonban a következő tételben mutatunk egy olyan
+      ***valódi részcsoportot***, amely egyéb redukált maradékosztályok mellett tartalmazza az összes nem
+      Miller-Rabin-tanút. Hamarosan világossá válik, hogy ez miért olyan fontos.
+  - type: embed
+    target:
+      type: theorem
+      name: nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten
+  - type: embed
+    target:
+      type: proof
+      name: nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten-bizonyitas

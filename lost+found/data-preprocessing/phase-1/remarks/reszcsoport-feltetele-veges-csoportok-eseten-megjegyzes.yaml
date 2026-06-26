@@ -1,0 +1,13 @@
+type: remark
+name: reszcsoport-feltetele-veges-csoportok-eseten-megjegyzes
+content:
+  - type: narrative
+    content: |
+      A tétel bizonyításában $G$ végességére pusztán azért volt szükség, mert ebből következett, hogy minden elem
+      rendje szintén véges &ndash; ami ugye a bizonyítás kulcsa volt. Azonban visszafelé ez nem feltétlenül van
+      így. Azaz abból, hogy minden elem rendje véges még nem következik, hogy maga a csoport is véges.
+      ***Torziócsoportoknak*** nevezzük az olyan csoportokat, amelyeknél csak az elemrendek végességét követeljük
+      meg, de magának a csoport rendjének a végességét nem feltétlenül. Nyilván minden véges csoport torziócsoport,
+      ám léteznek végtelen torziócsoportok is. Ilyenre azonban az eddig definiált fogalmak alapján sajnos nem
+      tudunk példát mutatni. Mindenesetre a tétel szövegében elegendő lett volna annyit kikötni, hogy $G$ legyen
+      torziócsoport.

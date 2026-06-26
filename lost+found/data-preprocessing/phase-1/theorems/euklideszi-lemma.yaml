@@ -1,0 +1,11 @@
+type: theorem
+name: euklideszi-lemma
+proofs:
+  - euklideszi-lemma-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ egy tetszőleges ***integritástartomány***, amelyben ***bármely két elemnek létezik kitüntetett
+      közös osztója***. Ekkor ha valamely $a$, $b$ és $c$ elemek esetén teljesül az $a|bc$ oszthatóság és $a$
+      ***relatív prím*** $b$-hez, akkor teljesül az $a|c$ oszthatóság is.

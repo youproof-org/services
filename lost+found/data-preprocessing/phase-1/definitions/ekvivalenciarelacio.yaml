@@ -1,0 +1,8 @@
+type: definition
+name: ekvivalenciarelacio
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy adott egy $H$ halmaz, és egy rajta értelmezett $R$ reláció. Amennyiben $R$ ***egyszerre
+      reflexív, szimmetrikus és tranzitív***, úgy $R$-et a $H$ halmaz feletti ***ekvivalenciarelációnak ***hívjuk.

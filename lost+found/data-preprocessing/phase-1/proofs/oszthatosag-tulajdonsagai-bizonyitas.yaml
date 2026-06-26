@@ -1,0 +1,136 @@
+type: proof
+name: oszthatosag-tulajdonsagai-bizonyitas
+remarks: []
+references:
+  gyuru-test:
+    target:
+      type: definition
+      name: gyuru-test
+  gyuruk-alapveto-tulajdonsagai:
+    target:
+      type: theorem
+      name: gyuruk-alapveto-tulajdonsagai
+  neutralis-elem:
+    target:
+      type: definition
+      name: neutralis-elem
+  szorzat-egyszerusitese-gyurukben:
+    target:
+      type: theorem
+      name: szorzat-egyszerusitese-gyurukben
+content:
+  - type: narrative
+    content: |
+      **Az 1. tulajdonság:** Az egységelem a szorzás neutrális eleme. A [neutralis-elem] szerint ezzel tehát
+      bármilyen $a$ elemet megszorozva az eredmény marad $a$. Ez épp azt jelenti, hogy $a|a$.
+  - type: narrative
+    content: |
+      ***A 2. tulajdonság:*** Az, hogy fennáll az $a|a$ oszthatóság azt jelenti, hogy létezik olyan $x$ gyűrűelem,
+      amelyre teljesül az $a\cdot x=a$ egyenlet.
+  - type: formula
+    lead-in: |
+      Ezt az egyenletet bármely $r$ gyűrűelemmel megszorozva ezt kapjuk:
+    content: |
+      a\cdot x\cdot r=a\cdot r
+  - type: narrative
+    content: |
+      Mivel azonban a gyűrű nullosztómentes, ezért a [szorzat-egyszerusitese-gyurukben] miatt mindkét oldalt lehet
+      egyszerűsíteni $a$-val.
+  - type: formula
+    lead-in: |
+      Így ezt kapjuk:
+    content: |
+      x\cdot r=r
+  - type: narrative
+    content: |
+      Az $x$ elemre tehát igaz lesz, hogy őt bármilyen $r$ gyűrűelemmel megszorozva $r$-et kapunk eredményül. Más
+      szavakkal $x$ a gyűrű egységeleme.
+  - type: narrative
+    content: |
+      **A 3. tulajdonság:** A [gyuruk-alapveto-tulajdonsagai] 1. pontja alapján bármely $a$ elemet a nullelemmel
+      szorozva a nullelemet kapjuk eredményül. Ez épp azt jelenti, hogy $a|0$.
+  - type: narrative
+    content: |
+      **A 4. tulajdonság:** Mivel az imént bizonyított 3. tulajdonság alapján minden gyűrűelem osztója a
+      nullelemnek, így nyilván maga a nullelem is. Ha tehát $a=0$, akkor fennáll a $0|a$ oszthatóság.
+      ***Visszafelé:*** ha fennáll a $0|a$ oszthatóság, akkor ez azt jelenti, hogy létezik olyan $k$ gyűrűelem,
+      amelyre $0\cdot k=a$ teljesül. Ebből viszont a [gyuruk-alapveto-tulajdonsagai] 1. pontja miatt $a=0$
+      következik.
+  - type: formula
+    lead-in: |
+      **Az 5. tulajdonság:** Az, hogy fennállnak az $a|b$ és a $b|c$ oszthatóságok azt jelenti, hogy léteznek olyan
+      $k_1$ és $k_2$ gyűrűelemek, amelyekre teljesülnek az alábbi egyenletek:
+    content: |
+      \begin{aligned}a\cdot k_1&=b\\b\cdot k_2&=c\end{aligned}
+  - type: formula
+    lead-in: |
+      A második egyenletbe $b$ helyére behelyettesítve az első egyenlet baloldalát ezt kapjuk:
+    content: |
+      \underbrace{(a\cdot k_1)}_{=b}\cdot k_2=c
+  - type: formula
+    lead-in: |
+      Mivel azonban a [gyuru-test]ban megfogalmazott 4. gyűrűaxióma alapján a szorzás asszociatív, ezért ennek az
+      egyenletnek a baloldala átzárójelezhető:
+    content: |
+      a\cdot (k_1\cdot k_2)=c
+  - type: narrative
+    content: |
+      Létezik tehát olyan gyűrűelem, amellyel $a$-t megszorozva $c$-t kapunk (nevezetesen a $k_1\cdot k_2$). Ez
+      viszont épp azt jelenti, hogy $a|c$.
+  - type: formula
+    lead-in: |
+      **A 6. tulajdonság:** Az, hogy fennállnak az $a|b$ és az $a|c$ oszthatóságok azt jelenti, hogy léteznek olyan
+      $k_1$ és $k_2$ gyűrűelemek, amelyekre teljesülnek az alábbi egyenletek:
+    content: |
+      \begin{aligned}a\cdot k_1&=b\\a\cdot k_2&=c\end{aligned}
+  - type: formula
+    lead-in: |
+      Ezt a két egyenletet egymással összeadva, illetve az elsőből a másodikat kivonva a következőket kapjuk:
+    content: |
+      \begin{aligned}ak_1+ak_2&=b+c \\ ak_1-ak_2&=b-c\end{aligned}
+  - type: formula
+    lead-in: |
+      Mivel azonban a [gyuru-test]ban megfogalmazott 5. gyűrűaxióma alapján teljesülnek a disztributivitási
+      szabályok, ezért ennek a két egyenletnek a baloldalai átírhatók az alábbi módon:
+    content: |
+      \begin{aligned}a\cdot (k_1+k_2)&=b+c \\ a\cdot (k_1-k_2)&=b-c\end{aligned}
+  - type: narrative
+    content: |
+      Eszerint tehát léteznek olyan gyűrűelemek, amelyekkel $a$-t megszorozva $b+c$-t illetve $b-c$-t kapunk
+      (nevezetesen a $k_1+k_2$ illetve a $k_1-k_2$). Ez viszont épp azt jelenti, hogy $a|b+c$ illetve $a|b-c$.
+  - type: formula
+    lead-in: |
+      **A 7. tulajdonság:** Az, hogy fennáll az $a|b$ oszthatóság azt jelenti, hogy létezik olyan $k$ gyűrűelem,
+      amelyre teljesül az alábbi egyenlet:
+    content: |
+      a\cdot k = b
+  - type: formula
+    lead-in: |
+      Az egyenlet mindkét oldalát a $c$ gyűrűelemmel megszorozva ezt kapjuk:
+    content: |
+      (a\cdot k)\cdot c = b\cdot c
+  - type: formula
+    lead-in: |
+      Mivel azonban a [gyuru-test]ban megfogalmazott 4. gyűrűaxióma alapján a szorzás asszociatív, ezért ennek az
+      egyenletnek a baloldala átzárójelezhető:
+    content: |
+      a\cdot (k\cdot c) = b\cdot c
+  - type: narrative
+    content: |
+      Létezik tehát olyan gyűrűelem, amellyel $a$-t megszorozva $bc$-t kapunk (nevezetesen a $kc$). Ez viszont épp
+      azt jelenti, hogy $a|bc$.
+  - type: formula
+    lead-in: |
+      **Végül a 8. tulajdonság:** Az, hogy fennáll az $a|b$ oszthatóság azt jelenti, hogy létezik olyan $k$
+      gyűrűelem, amelyre teljesül az alábbi egyenlet:
+    content: |
+      a\cdot k = b
+  - type: formula
+    lead-in: |
+      Viszont a [gyuruk-alapveto-tulajdonsagai] 2., 3. és 4. pontjai miatt ekkor az alábbi egyenletek is
+      teljesülnek:
+    content: |
+      \begin{aligned}a\cdot(-k)&=(-b) \\ (-a)\cdot k&=(-b)\\ (-a)\cdot (-k)&=-(-b)=b\end{aligned}
+  - type: narrative
+    content: |
+      Ez viszont épp azt jelenti, hogy fennállnak az $a|(-b)$, $(-a)|(-b)$ és $(-a)|b$ oszthatóságok.

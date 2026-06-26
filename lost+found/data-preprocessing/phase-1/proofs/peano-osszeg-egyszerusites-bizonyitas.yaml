@@ -1,0 +1,30 @@
+type: proof
+name: peano-osszeg-egyszerusites-bizonyitas
+remarks: []
+references:
+  peano-axiomarendszer:
+    target:
+      type: definition
+      name: peano-axiomarendszer
+  peano-osszeadas:
+    target:
+      type: definition
+      name: peano-osszeadas
+content:
+  - type: narrative
+    content: |
+      A már jól ismert ***teljes indukciót*** alkalmazzuk. Először is megmutatjuk, hogy ha az állítás teljesül
+      valamilyen $c=n$-re, akkor teljesülni fog $c=s(n)$-re is. Meg kell tehát mutatnunk, hogy ha $a+n = b+n$-ből
+      $a=b$ következik, akkor $a+s(n) = b+s(n)$-ből is $a=b$ következik.
+  - type: narrative
+    content: |
+      Az $a+s(n)=b+s(n)$ egyenlet mindkét oldalát a Peano-összeadás definíciójának ([peano-osszeadas]) 2. pontja
+      miatt átírhatjuk így: $s(a+n)=s(b+n)$. Mármost a 2. Peano-axióma ([peano-axiomarendszer]) kimondja, hogy ha
+      két természetes szám rákövetkezője megegyezik, akkor a két szám is megegyezik. Ebből tehát az következik,
+      hogy $a+n=b+n$. Az indukciós feltétel szerint viszont az állítás teljesül $n$-re, ezért ebből $a=b$
+      következik.
+  - type: narrative
+    content: |
+      A dominósort felállítottuk, nincs más hátra, mint felborítani az első dominót, azaz megmutatni, hogy
+      $a+0=b+0$-ból $a=b$ következik. Ez viszont nyilvánvalóan teljesül, hiszen az egyenlet mindkét oldalát
+      egyszerűsíthetjük 0-val a Peano-összeadás definíciójának ([peano-osszeadas]) 1. pontja miatt.

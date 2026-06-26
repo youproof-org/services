@@ -1,0 +1,79 @@
+<!-- wp:paragraph -->
+<p><strong><em>Egyrészt</em></strong> az általánosság megsértése nélkül feltehetjük, hogy [latex]a\
+eq 1[/latex], ebben az esetben ugyanis a tétel nyilvánvalóan igaz. Továbbá azt is feltehetjük, hogy [latex]a\
+eq -1[/latex], mivel ebben az esetben a [latex]-1\equiv 1\pmod p[/latex] feltétel alapján [latex]p[/latex] csak [latex]2[/latex] lehet, és ekkor a tétel ismét nyilvánvalóan igaz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Másrészt</em></strong> az [latex]a[/latex] egész szám biztosan nem osztható [latex]p[/latex]-vel, hiszen a tétel szövegében szereplő [latex]a\equiv 1\pmod p[/latex] kongruencia alapján [latex]1[/latex]-et ad maradékul [latex]p[/latex]-vel osztva. Az [latex]1[/latex] szintén nem osztható [latex]p[/latex]-vel. Emiatt a [yp_element slug="egesz-szam-p-adikus-rendje" type="link" /] szerint a szorzatuk [latex]p[/latex]-adikus rendje biztosan 0.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Harmadrészt</em></strong> az [latex]a\equiv 1\pmod p[/latex] a [yp_element slug="egesz-szamok-kozotti-kongruencia" type="link" /] 3. pontja alapján azt is jelenti, hogy teljesül az alábbi oszthatóság:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]p|a-1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Így ismételten a [yp_element slug="egesz-szam-p-adikus-rendje" type="link" /] szerint az [latex]a-1[/latex] különbség [latex]p[/latex]-adikus rendje biztosan nem 0.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Összefoglalva</em></strong> tehát az [latex]a[/latex] és az [latex]1[/latex] egész számokra teljesül a [yp_element slug="p-edik-hatvanyok-kulonbsegenek-p-adikus-rendje" type="link" /] mindhárom feltétele, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a&amp;\
+eq 1\\v_p(a\cdot 1)&amp;=0\\v_p(a-1)&amp;\
+eq 0\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ekkor viszont ugye teljesül az alábbi összefüggés:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]v_p(a^p-1^p)=v_p(a-1)+1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez tehát azt jelenti, hogy az [latex]a^p-1[/latex] különbség prímtényezős felbontásában 1-gyel többször szerepel [latex]p[/latex], mint az [latex]a-1[/latex] felbontásában. Következésképp, mivel ugye teljesül a [latex]p|a-1[/latex] oszthatóság, ezért szükségképpen teljesülnie kell a [latex]p^2|a^p-1[/latex] oszthatóságnak is, ami a [yp_element slug="egesz-szamok-kozotti-kongruencia" type="link" /] 3. pontja alapján az alábbi kongruenciát jelenti:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^p\equiv 1\pmod{p^2}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most ugyanezt a gondolatmenetet eljátszhatjuk az [latex]a^p[/latex] és az [latex]1[/latex] egész számokra is. <strong><em>Egyrészt</em></strong> mivel [latex]a\
+eq 1[/latex] és [latex]a\
+eq -1[/latex], ezért nyilván [latex]a^p\
+eq 1[/latex] is teljesül. <strong><em>Másrészt</em></strong> mivel [latex]a[/latex]-ról tudjuk, hogy nem osztható [latex]p[/latex]-vel, ezért nyilván [latex]a^p[/latex] sem osztható [latex]p[/latex]-vel, azaz [latex]v_p(a^p\cdot 1)=0[/latex]. <strong><em>Harmadrészt</em></strong> mivel teljesül a [latex]p^2|a^p-1[/latex] oszthatóság, ezért nyilván [latex]v_p(a^p-1)\
+eq 0[/latex]. Ám ekkor ismét a [yp_element slug="p-edik-hatvanyok-kulonbsegenek-p-adikus-rendje" type="link" /] alapján:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]v_p((a^p)^p-1^p)=v_p(a^p-1)+1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Vagyis az [latex](a^p)^p-1=a^{p^2}-1[/latex] különbség prímtényezős felbontásában 1-gyel többször szerepel [latex]p[/latex], mint az [latex]a^p-1[/latex] felbontásában. Következésképp, mivel ugye teljesül a [latex]p^2|a^p-1[/latex] oszthatóság, ezért szükségképpen teljesülnie kell a [latex]p^3|a^{p^2}-1[/latex] oszthatóságnak is, ami a [yp_element slug="egesz-szamok-kozotti-kongruencia" type="link" /] 3. pontja alapján az alábbi kongruenciát jelenti:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{p^2}\equiv 1\pmod{p^3}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A fenti gondolatmenetet akárhányszor megismételhetjük, melynek során a [latex]c-1[/latex]-edik lépésben épp a tétel állítását kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a^{p^3}&amp;\equiv 1\pmod{p^4} \\ a^{p^4}&amp;\equiv 1\pmod{p^5} \\ a^{p^5}&amp;\equiv 1\pmod{p^6} \\ &amp;\vdots \\ a^{p^{c-1}}&amp;\equiv 1\pmod{p^c}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p></p>
+<!-- /wp:paragraph -->
