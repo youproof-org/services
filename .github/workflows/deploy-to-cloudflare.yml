@@ -105,11 +105,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # The zone root reaches stable/production only after the zone promotion wave;
+      # earlier production pushes (e.g. the worker cut-over) still run this job but
+      # have no terraform/zone/ yet. Treat an absent root as a clean no-op so the
+      # run stays green.
+      - name: Check zone root present
+        id: check
+        run: |
+          if [ -d "$TF_WORKDIR" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::$TF_WORKDIR not present on this ref — nothing to apply, skipping."
+          fi
+
       - uses: hashicorp/setup-terraform@v3
+        if: steps.check.outputs.present == 'true'
         with:
           terraform_version: "1.11.4"
 
       - name: Terraform init (R2 backend, zone state key)
+        if: steps.check.outputs.present == 'true'
         working-directory: ${{ env.TF_WORKDIR }}
         run: |
           terraform init -input=false \
@@ -120,15 +136,17 @@ jobs:
             -backend-config="secret_key=${AWS_SECRET_ACCESS_KEY}"
 
       - name: Terraform format check
+        if: steps.check.outputs.present == 'true'
         working-directory: ${{ env.TF_WORKDIR }}
         run: terraform fmt -check -recursive
 
       - name: Terraform plan
+        if: steps.check.outputs.present == 'true'
         working-directory: ${{ env.TF_WORKDIR }}
         run: terraform plan -input=false -out=tfplan
 
       - name: Terraform apply
-        if: github.event_name == 'push'
+        if: steps.check.outputs.present == 'true' && github.event_name == 'push'
         working-directory: ${{ env.TF_WORKDIR }}
         run: terraform apply -input=false -auto-approve tfplan
 
