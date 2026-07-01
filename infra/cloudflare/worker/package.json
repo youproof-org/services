@@ -1,0 +1,19 @@
+{
+  "name": "@youproof.org/migration-worker",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Cloudflare Worker proxying/redirecting legacy youproof.hu traffic to youproof.org during migration.",
+  "scripts": {
+    "validate-manifest": "node scripts/validate-manifest.mjs",
+    "typecheck": "tsc --noEmit",
+    "build": "node build.mjs",
+    "prebuild": "pnpm run validate-manifest"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "catalog:",
+    "ajv": "catalog:",
+    "esbuild": "catalog:",
+    "typescript": "catalog:"
+  }
+}
