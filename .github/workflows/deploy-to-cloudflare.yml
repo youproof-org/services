@@ -39,47 +39,48 @@ jobs:
     outputs:
       zone: ${{ steps.filter.outputs.zone }}
       worker: ${{ steps.filter.outputs.worker }}
-      zone_src: ${{ steps.filter.outputs.zone_src }}
-      not_zone: ${{ steps.filter.outputs.not_zone }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
         id: filter
         with:
           filters: |
-            # These gate the PR plan jobs only (pushes deploy by branch). The
-            # workflow file is intentionally NOT listed, so a workflow-only change
-            # doesn't cross-trigger a zone/worker plan (which would fail if that
-            # root isn't present on the base branch).
+            # Gate the PR plan jobs only (pushes deploy by branch). The workflow
+            # file is intentionally NOT listed, so a workflow-only change doesn't
+            # cross-trigger a zone/worker plan (which would fail if that root isn't
+            # present on the base branch). The `guard` job checks PR purity on its
+            # own (via the REST files API), so no negation-based filter here.
             zone:
               - 'infra/cloudflare/terraform/zone/**'
             worker:
               - 'infra/cloudflare/terraform/worker/**'
               - 'infra/cloudflare/worker/**'
-            # Guard inputs (see the `guard` job): zone_src = zone sources; not_zone
-            # = any changed file outside the zone root. dorny sets picomatch
-            # dot:true, so `**` also matches dotfiles / dot-dirs.
-            zone_src:
-              - 'infra/cloudflare/terraform/zone/**'
-            not_zone:
-              - '**'
-              - '!infra/cloudflare/terraform/zone/**'
 
-  # Zone PRs must be "pure": a PR touching the zone root may touch NOTHING else.
-  # Zone changes apply only at the production merge and are never staged, so keeping
-  # them isolated makes that production apply clean, reviewable, and easy to roll
-  # back. Runs on every PR (so `guard` is a stable required status check) and fails
-  # only when the zone root is changed alongside anything else.
+  # Zone PRs must be "pure": a PR touching the zone root may touch NOTHING else,
+  # so a zone change is never batched with worker/other changes. Runs on every PR;
+  # lists the PR's files via the REST API (authoritative — a negation path filter
+  # doesn't work reliably under dorny's `some` quantifier) and fails only when both
+  # zone and non-zone paths are present.
   guard:
-    needs: changes
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
     steps:
       - name: Zone PRs must contain only zone changes
-        if: needs.changes.outputs.zone_src == 'true' && needs.changes.outputs.not_zone == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          echo "::error::This PR changes terraform/zone/** together with other files. Zone changes apply only at the production merge and are never staged, so a zone PR must contain ONLY terraform/zone/** — move anything else (worker, docs, unrelated files) into a separate PR."
-          exit 1
+          files=$(gh api --paginate "repos/${{ github.repository }}/pulls/${{ github.event.number }}/files" --jq '.[].filename')
+          zone=$(printf '%s\n' "$files" | grep '^infra/cloudflare/terraform/zone/' || true)
+          other=$(printf '%s\n' "$files" | grep -v '^infra/cloudflare/terraform/zone/' || true)
+          if [ -n "$zone" ] && [ -n "$other" ]; then
+            echo "::error title=Mixed zone PR::A zone PR must contain ONLY terraform/zone/** — move these out of the PR:"
+            printf '%s\n' "$other"
+            exit 1
+          fi
+          echo "Zone-only or no zone changes — OK."
 
   # Shared zone + nothing else. Applies on a push to the production branch (it
   # owns account-level infra shared by both environments); plan-only on PRs that
