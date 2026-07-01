@@ -445,14 +445,20 @@ match the intended environment before applying.**
 is a generic Cloudflare-infra pipeline, structured to grow. A `changes` job
 (path filter) decides which of these run:
 
-- **`zone`** — applies `terraform/zone/`. Runs only when `zone/**` changed and
-  only from `stable/production` (it owns account-level shared infra); plan-only
-  on PRs. Bound to the `production` GitHub Environment.
+- **`zone`** — applies `terraform/zone/` on a **push to `stable/production`** (it
+  owns account-level shared infra); on PRs that touch `zone/**` it runs plan-only.
+  Bound to the `production` GitHub Environment.
 - **`worker`** — deploys the Worker; the target environment is derived from the
   branch (`stable/production` push → production; otherwise staging — i.e. a
   `stable/staging` push, or a PR as a plan-only review gate). Steps: install →
   validate-manifest → typecheck → build → `terraform init` (per-env state key) →
   fmt check → plan → apply. Bound to the matching GitHub Environment.
+
+> **Push deploys are gated by branch, not by the path filter.** On a promotion
+> merge the promoted branch becomes an ancestor of the stable branch, so the
+> `changes` path filter sees an empty diff and would wrongly skip the deploy.
+> Applies are idempotent, so pushes just run (a no-op if nothing changed); the
+> path filter is used only for the PR plan/`guard`.
 - **`guard`** — runs on every PR and **fails if a PR touches `terraform/zone/**`
   together with anything else** (see the zone-promotion note below).
 

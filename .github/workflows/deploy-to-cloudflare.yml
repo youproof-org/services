@@ -47,17 +47,18 @@ jobs:
         id: filter
         with:
           filters: |
+            # These gate the PR plan jobs only (pushes deploy by branch). The
+            # workflow file is intentionally NOT listed, so a workflow-only change
+            # doesn't cross-trigger a zone/worker plan (which would fail if that
+            # root isn't present on the base branch).
             zone:
               - 'infra/cloudflare/terraform/zone/**'
-              - '.github/workflows/deploy-to-cloudflare.yml'
             worker:
               - 'infra/cloudflare/terraform/worker/**'
               - 'infra/cloudflare/worker/**'
-              - '.github/workflows/deploy-to-cloudflare.yml'
-            # Guard inputs (see the `guard` job): zone_src = zone sources only
-            # (excludes the workflow file, so a workflow-only PR isn't flagged);
-            # not_zone = any changed file outside the zone root. dorny sets
-            # picomatch dot:true, so `**` also matches dotfiles / dot-dirs.
+            # Guard inputs (see the `guard` job): zone_src = zone sources; not_zone
+            # = any changed file outside the zone root. dorny sets picomatch
+            # dot:true, so `**` also matches dotfiles / dot-dirs.
             zone_src:
               - 'infra/cloudflare/terraform/zone/**'
             not_zone:
@@ -80,13 +81,19 @@ jobs:
           echo "::error::This PR changes terraform/zone/** together with other files. Zone changes apply only at the production merge and are never staged, so a zone PR must contain ONLY terraform/zone/** — move anything else (worker, docs, unrelated files) into a separate PR."
           exit 1
 
-  # Shared zone + nothing else. Applied only from the production branch (it owns
-  # account-level infra shared by both environments); plan-only on PRs.
+  # Shared zone + nothing else. Applies on a push to the production branch (it
+  # owns account-level infra shared by both environments); plan-only on PRs that
+  # touch the zone root.
+  #
+  # Push deploys are gated by BRANCH, not by the path filter: on a promotion merge
+  # `development` becomes an ancestor of the stable branch, so dorny's diff is
+  # empty and would wrongly skip the deploy. The apply is idempotent, so running
+  # it when nothing changed is a safe no-op. dorny is only used for the PR case.
   zone:
     needs: changes
     if: >-
-      needs.changes.outputs.zone == 'true' &&
-      (github.event_name == 'pull_request' || github.ref == 'refs/heads/stable/production')
+      (github.event_name == 'push' && github.ref == 'refs/heads/stable/production') ||
+      (github.event_name == 'pull_request' && needs.changes.outputs.zone == 'true')
     runs-on: ubuntu-latest
     environment: production
     env:
@@ -131,7 +138,13 @@ jobs:
   # environment, and `matrix` isn't an available context in a job-level `if`.
   worker:
     needs: changes
-    if: needs.changes.outputs.worker == 'true'
+    # Push deploys gated by BRANCH (idempotent apply), not the path filter — see
+    # the note on the `zone` job for why dorny's diff is empty on promotion merges.
+    # dorny still gates the PR plan (and the `guard`).
+    if: >-
+      (github.event_name == 'push' &&
+        (github.ref == 'refs/heads/stable/staging' || github.ref == 'refs/heads/stable/production')) ||
+      (github.event_name == 'pull_request' && needs.changes.outputs.worker == 'true')
     runs-on: ubuntu-latest
     # Binds to the GitHub Environment so only that environment's secrets/vars are
     # visible — production values are never available to the staging run.
@@ -172,7 +185,10 @@ jobs:
           cache: pnpm
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        # Install only the worker package's subtree — a full-workspace install runs
+        # apps/website's postinstall (check-latex), which fails on runners without
+        # TeX. The worker is self-contained here.
+        run: pnpm install --frozen-lockfile --filter @youproof.org/migration-worker...
 
       - name: Validate manifest
         run: pnpm --filter @youproof.org/migration-worker run validate-manifest
