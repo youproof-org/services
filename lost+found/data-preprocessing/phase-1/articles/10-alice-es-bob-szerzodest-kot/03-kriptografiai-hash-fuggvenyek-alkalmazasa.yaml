@@ -1,0 +1,62 @@
+type: section
+name: 03-kriptografiai-hash-fuggvenyek-alkalmazasa
+title: Kriptográfiai hash függvények alkalmazása
+
+body:
+  - type: narrative
+    content: |
+      Említettük, hogy a digitális aláírás kedvéért nem szeretnénk megduplázni a kommunikációs csatornán átküldött
+      adat mennyiségét. Márpedig ha Alice a Bob-nak szánt üzenetet egy az egyben kódolja a saját titkos kulcsával,
+      akkor az így kapott digitális aláírás hossza az aláírt eredeti üzenet hosszával fog megegyezni.
+  - type: narrative
+    content: |
+      Ehelyett egy valódi digitális aláírásnál a következő történik. Tegyük fel, hogy Alice digitális aláírással
+      kívánja ellátni az $x$ bitsorozatot. Az most lényegtelen számunkra, hogy ez az eredeti üzenet-e, vagy annak
+      Bob nyilvános kulcsával titkosított változata. A lényeg, hogy ez az a bitsorozat, amelyről Alice bizonyítani
+      szeretné Bob számára, hogy valóban ő küldte azt.
+  - type: narrative
+    content: |
+      Ennek érdekében Alice először egy $h$ hash függvényt alkalmaz az aláírni kívánt $x$ bitsorozatra, amelynek
+      eredményként előáll az $x$ bitsorozat $h(x)$ "ujjlenyomata". Ezután Alice ezt a $h(x)$ "lenyomatot" kódolja a
+      saját $k_A$ titkos kulcsával. Valójában ennek a kódolásnak az eredményét nevezzük az $x$ üzenet ***digitális
+      aláírásának***, amelyet $\text{sig}(x)$-szel jelölünk. Alice ezt a bitsorozatot fűzi hozzá az eredeti
+      üzenethez, és az így kapott $(x, \text{sig}(x))$ összetett üzenetet küldi el Bob-nak.
+  - type: figure
+    lead-in: |
+      Ez az aláírási folyamat látható az alábbi ábrán:
+    src: 06-digitalis-alairas-hash-fuggvennyel.jpg
+    alt: Digitális aláírás (hash függvénnyel)
+    caption: Digitális aláírás (hash függvénnyel)
+  - type: narrative
+    content: |
+      A vételi oldalon az aláírás ellenőrzése &ndash; egy kis különbséggel &ndash; ugyanúgy történik, mint a
+      fentebb már említett esetben. Bob szétszedi a megérkező $(x,\text{sig}(x))$ összetett üzenetet, de mielőtt
+      annak $x$ komponensét felhasználná, szeretne meggyőződni róla, hogy az sértetlenül érkezett-e meg hozzá.
+      Ehhez egyrészt veszi Alice $K_A$ nyilvános kulcsát, azzal dekódolja a kapott összetett üzenet $\text{sig}(x)$
+      komponensét, így megkap egy bitsorozatot. Ennek $x$ sértetlensége esetén meg kell egyeznie a $h(x)$ hash
+      értékkel. Azaz Bob-nak is ki kell számolnia a $h(x)$ lenyomatot, és összehasonlítania a $\text{sig}(x)$
+      dekódolása során kapott bitsorozattal.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán az aláírás ellenőrzésének folyamata látható:
+    src: 07-digitalis-alairas-ellenorzese.jpg
+    alt: Digitális aláírás ellenőrzése
+    caption: Digitális aláírás ellenőrzése
+  - type: narrative
+    content: |
+      Amennyiben az ellenőrzés sikeres volt, úgy Bob biztos lehet benne, hogy az $x$ üzenet küldője Alice titkos
+      kulcsának birtokában volt, következésképp az csak Alice lehetett. Amennyiben viszont Bob különbséget észlel,
+      akkor ez azt bizonyítja számára, hogy egy aktív támadó garázdálkodik a kommunikációs csatornán. Hiszen
+      Mallory hiába próbálja meg korrumpálni az eredeti $x$ üzenetet, az ugyanis nagy valószínűséggel már egy
+      teljesen különböző hash értéket fog eredményezni a hash függvény ***lavinahatása miatt***. Ezt viszont
+      Mallory nem fogja tudni aláírni Alice nevében, mivel nem ismeri Alice titkos kulcsát.
+  - type: narrative
+    content: |
+      Mallory egyetlen esélye, ha sikerül találnia egy olyan meghamisított $x'$ üzenetet, amelynek ugyanaz a
+      lenyomata, mint $x$-nek &ndash; azaz $h(x')=h(x)$ teljesül &ndash;, ekkor ugyanis a digitális aláírás is
+      egyezni fog, és Bob nem fog gyanút. Ez azonban gyakorlatilag lehetetlen Mallory számára, amennyiben a
+      használt hash függvény ***ütközésellenálló***.
+  - type: narrative
+    content: |
+      Most megvizsgálunk egy valószínűségszámításból származó érdekes jelenséget, amelyre a kriptográfiai hash
+      függvények elleni úgynevezett ***ütközéses támadások*** épülnek.

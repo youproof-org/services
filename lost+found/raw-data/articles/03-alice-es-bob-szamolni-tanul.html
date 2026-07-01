@@ -1,0 +1,279 @@
+<!-- wp:paragraph -->
+<p><strong><em>Az <a rel="noreferrer noopener" aria-label=" (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/2-informacio-adat-ascii-entropia-forraskodolas-digitalizalas/" target="_blank">előző részben</a> láttuk, hogy a számítógépek megjelenésével az Alice és Bob közötti titkos kommunikáció igénye a továbbiakban nem pusztán emberi nyelven írt bizalmas szövegek küldözgetésére korlátozódik. Ezért elkezdtük felépíteni az információátviteli rendszerek absztrakt modelljét annak érdekében, hogy megfelelően általánosan tudjuk tárgyalni ezt a kérdést a továbbiak során. Ennek első állomásaként eddig két összetevővel ismerkedtünk meg: az egyik volt az információforrás, a másik pedig a forráskódoló.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>De vajon hogyan történik a digitális információ reprezentációja az informatikai rendszerekben? Mik azok a számrendszerek? Hogyan kell elképzelni a számítógépek memóriáját és mi van benne? Hogyan épül fel egy képet tartalmazó file és mit tartalmaz? Ebben a részben erről lesz szó...</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"dropCap":true} -->
+<p class="has-drop-cap">Az <a href="https://youproof.hu/kriptografia/2-informacio-adat-ascii-entropia-forraskodolas-digitalizalas/">előző részben</a> megismert digitális információforrás felfogható egy olyan absztrakt objektumnak, amely egy véges (például <em>N</em> elemű) halmazból vett elemek sorozatát produkálja. Mivel az <em>N</em> elemű halmaz véges, ezért ennek elemeihez egyértelműen hozzárendelhetjük a <em>0, 1, ..., N-1</em> egész számokat. Egy szöveges információforrás esetén ezek lehetnek a különböző karakterekhez rendelt egész számok például az ASCII kódtábla alapján, egy hangforrás vagy bármilyen más fizikai folyamat esetén pedig az őt leíró analóg jel digitalizált változatát alkotó számok (lásd az előző rész <a rel="noreferrer noopener" aria-label="végét (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/2-informacio-adat-ascii-entropia-forraskodolas-digitalizalas/#digital" target="_blank">végét</a>). Látható, hogy matematikai szempontból a közölt információ konkrét tartalmának nincs jelentősége. Ezért azt csupán egy egész számokból álló sorozatnak fogjuk tekinteni. Ráadásul másnak tekinteni nem is lenne értelme, mivel egy informatikai rendszer a vizsgálatunk tárgya, amely számokon kívül semmi mást nem tud értelmezni és feldolgozni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez a számsorozat azután a forráskódoló bemenetére kerül. Ennek feladata ebből egy olyan bitsorozat (az adat) előállítása, amely már átküldhető a kommunikációs csatornán. A forráskódolás témakörének vizsgálata messzire vezetne, ezért itt ezt nem fogjuk részletezni. Azt azonban fontos tudnunk, hogy a számokat hogyan lehet leírni bitsorozatokkal, ezért először a különböző számrendszerekről ejtünk néhány szót.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Számrendszerek</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A mindenkinek ismerős tízes (vagy más néven <strong><em>decimális</em></strong>) számrendszer kialakulásához mindenképpen szükség volt az úgynevezett helyiértékes írásmódra, amelyet először az ókori Mezopotámiában vezettek be. A történelmi áttekintés mellőzésével egy példán keresztül mutatjuk be ennek lényegét. Tegyük fel, hogy meg kell számlálnunk bizonyos dolgokat, és kavicsokkal szeretnénk jelölni a számlálás eredményét. Az egyik megoldás, hogy a számlálás során dobáljuk le a kavicsokat a homokba, így a végeredmény a homokban lévő kavicsok száma lesz. Ennek hátránya, hogy egyrészt sok tárgy megszámlálásához rengeteg kavicsra van szükségünk, másrészt pedig a végeredmény egy rakás kavics lesz, amivel nem vagyunk sokkal előrébb. Nem könnyű például megmondani két közel azonos méretű kavicshalomról, hogy melyik a több.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egy ennél jóval hatékonyabb eljárás a következő. Rajzoljunk egymás mellé köröket a homokba, és határozzuk meg, hogy maximum hány kavicsot engedünk meg egy körön belül. Legyen ez például most <em>2</em>. Ezután kezdjük el a jobb szélső körbe dobálni a kavicsokat. Ezt mindaddig folytathatjuk, amíg el nem értük a maximális 2 kavicsot a jobb szélső körben. Ekkor a következő kavicsot már az eggyel balra lévő körbe dobjuk, az első kört pedig kiürítjük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":589,"width":300,"height":363} -->
+<div class="wp-block-image"><figure class="aligncenter is-resized"><img src="https://youproof.hu/wp-content/uploads/kriptografia_3_szamrendszer_1.jpg" alt="Számolás kavicsokkal" class="wp-image-589" width="300" height="363"/><figcaption>Számolás kavicsokkal</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Ezután ismét dobálhatunk az első körbe. Amikor az újra megtelt, a következő kavicsot megint a második körbe dobjuk és ismét kiürítjük az első kört.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":590} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_3_szamrendszer_2.jpg" alt="Számolás kavicsokkal" class="wp-image-590"/><figcaption> Számolás kavicsokkal </figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Ezt folytatva egy idő után elérkezünk egy olyan pontra, amikor megtelik az első és a második kör is. Ekkor a következő kavicsot már a harmadik körbe dobjuk, és kiürítjük mind az első, mind pedig a második kört.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":591} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_3_szamrendszer_3.jpg" alt="Számolás kavicsokkal" class="wp-image-591"/><figcaption> Számolás kavicsokkal</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>És így tovább, ezt az eljárást a végtelenségig folytathatjuk. Vegyük észre, hogy így nagy számok esetén lényegesen kevesebb kavicsra van szükségünk ahhoz képest, mint amekkora mennyiséget jelölünk velük. A módszer hatékonysága abban rejlik, hogy a kavicsoknak különböző értékei vannak attól függően, hogy melyik körben helyezkednek el. Az első körben lévő kavicsoknak <em>1</em> az értéke, és minden további körben az értékük megháromszorozódik. A második körben egy kavics értéke már <em>3</em>, a harmadik körben már <em>3<sup>2</sup>=9</em>, a negyedik körben <em>3<sup>3</sup>=27</em> és így tovább, a <em>k</em>-adik körben <em>3<sup>k-1</sup></em> egy-egy kavics értéke. Az alábbi ábrán például a 2019 kavicsokkal történő reprezentációját láthatjuk, és ehhez mindössze <em>9</em> kavicsra van szükségünk. Az egyes körök alatt láthatjuk, hogy mekkora az értéke egy-egy kavicsnak az adott körben:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":672} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_3_3as_szamrendszer_2019_abrazolas.jpg" alt="A 2019-es szám kavicsokkal jelölve" class="wp-image-672"/><figcaption>A 2019-es szám kavicsokkal jelölve</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Gratulálhatunk magunknak, ugyanis lényegében feltaláltuk a helyiértékes számábrázolást. Konkrétan a fenti példában a <em>3</em>-as számrendszert. A dolgot továbbfejleszthetjük azzal, ha különböző szimbólumokat találunk ki egy-egy kör lehetséges tartalmainak leírására. Jelen esetben <em>3</em> féle szimbólumra van szükségünk, mivel egy kör tartalma <em>3</em> féle lehet: üres, egy kavics, két kavics. Legyen ez a <em>3</em> féle szimbólum például rendre a <strong>0</strong>, az <strong>1</strong> és a <strong>2</strong>. Ekkor kavicsok helyett a <em>2019</em>-es szám leírására használhatjuk például a <strong>2202210</strong> szimbólumsorozatot.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ehhez hasonlóan leírhatjuk a számokat tetszőleges <strong><em>n-alapú számrendszerben</em></strong>, ha <em>n&gt;1</em>. Egy <em>n</em>-alapú számrendszer semmiben sem különbözik a fenti kavicsos példától. Ekkor az egyes körökben elhelyezhető kavicsok maximális száma <em>n-1</em> lesz, egy adott körben lévő kavicsok értéke pedig <em>n</em> megfelelő hatványa lesz a kör pozíciójának (amit <strong><em>helyiértéknek</em></strong> nevezünk) függvényében. A jobb szélső kör helyiértéke <em>n<sup>0</sup>=1</em>, míg a további körök helyiértékei rendre <em>n<sup>1</sup></em>, <em>n<sup>2</sup></em>, <em>n<sup>3</sup></em>, és így tovább. Egy adott kör helyiértéke mindig a tőle jobbra lévő kör helyiértékének <em>n</em>-szerese.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A megszokott <em>10</em>-es számrendszerben ezek a helyiértékek például: <em>10<sup>0</sup></em> (azaz <em>1</em>), <em>10<sup>1</sup></em> (azaz <em>10</em>), <em>10<sup>2</sup></em> (azaz <em>100</em>), stb. A maja, valamint a pre-kolumbiai és közép-amerikai civilizációk 20-as alapú számrendszereket használtak. Ennek eredete feltehetőleg összefügg az emberek kéz- és lábujjainak számával. A 60-as alapú rendszert a sumér és az azt követő mezopotámiai kultúrák használták. Ez a ma használt időmérő rendszerben is visszaköszön: egy órát 60 percre osztunk, illetve 1 percet 60 másodpercre. A 12-es számrendszer maradványai is fellelhetők például abban, hogy az év 12 hónapra oszlik. Csaknem minden nyelvben külön szó van a 12 dologból álló csoportra, például a magyar „tucat”, az angol „dozen”, a német „das Dutzend”, az olasz „dozzina”, az orosz „djuzsina” stb.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A 2-es (bináris) számrendszer</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Most nézzük meg, hogy <em>n=2</em> esetén (azaz <em>2</em>-es számrendszerben) hogyan tudjuk leírni az előző példában szereplő <em>2019</em>-es számot. A <em>2</em>-es számrendszer helyiértékei rendre <em>2<sup>0</sup>=1</em>, <em>2<sup>1</sup>=2</em>, <em>2<sup>2</sup>=4</em>, <em>2<sup>3</sup>=8</em>, <em>2<sup>4</sup>=16</em>, és így tovább. A helyiértékeket reprezentáló körök tartalma ebben az esetben <em>2</em> féle lehet: vagy nincs kavics az adott körben, vagy pedig van. Ezt a két esetet rendre a <strong>0</strong> és az <strong>1</strong> szimbólumokkal fogjuk jelölni a számábrázolásban. Ezután megkeressük azt a legnagyobb helyiértéket, amely még éppen nem nagyobb az ábrázolni kívánt számunknál, azaz <em>2019</em>-nél. Ez a <em>2<sup>10</sup>=1024</em> lesz, így az ennek megfelelő körbe annyi kavicsot helyezünk, amennyinek az összértéke még éppen nem haladja meg a <em>2019</em>-et. Ez jelen esetben a maximális <em>1</em> darab kavics lesz, így leírjuk az ennek megfelelő <strong>1</strong> szimbólumot, és az elhelyezett kavics értékét (<em>1024</em>) levonjuk a <em>2019</em>-ből, eredményül <em>995</em>-öt kaptunk. Ezután ezzel az <em>995</em>-tel megyünk tovább az eggyel alacsonyabb helyiértékre, ez a <em>2<sup>9</sup>=512</em> lesz. Ebbe a körbe megint annyi kavicsot helyezünk, hogy ezek összértéke ne legyen nagyobb <em>995</em>-nél. Ez megint a maximális <em>1</em> darab kavics lesz, tehát leírjuk az ennek megfelelő <strong>1</strong> szimbólumot is, és az elhelyezett kavics értékét (<em>512</em>) levonjuk az <em>995</em>-ből. Így a számunk ábrázolása eddig az <strong>11</strong> szimbólumsorozat, a maradék pedig <em>483</em>. Ezt az eljárást folytatjuk egészen a legalacsonyabb helyiértékig. Végeredményül az <strong>11111100011</strong> szimbólumsorozatot kapjuk, amely tehát a <em>2019</em>-es szám <em>2</em>-es számrendszerbeli ábrázolása:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":593} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_3_2es_szamrendszer_2019.jpg" alt="A 2019-es szám 2-es számrendszerben" class="wp-image-593"/><figcaption> <br>A 2019-es szám 2-es számrendszerben</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>A most bemutatott <em>2</em>-es (vagy más néven <strong><em>bináris</em></strong>) számrendszer rendkívül fontos az informatikai rendszerek szempontjából. A <strong>0</strong> és <strong>1</strong> szimbólumokat ugyanis könnyű elektronikus eszközökkel kezelni. Például folyik-e áram egy vezetékben vagy nem? Van-e töltés egy kondenzátorban vagy nincs? Van-e lyuk égetve egy DVD lemezre vagy nincs? Egy bináris szám számjegyeit <strong><em>bit</em></strong>-eknek nevezzük, amely kifejezés az angol „binary digit” (azaz <strong><em>bináris számjegy</em></strong>) rövidített változata. Megfelelő áramkörökkel bináris számokon műveleteket tudunk végezni az őket reprezentáló fizikai jelek manipulálása által, méghozzá veszettül gyorsan. Például 64-bites egész számok szorzásának időtartama egy mai átlagos processzor esetén a néhány nanoszekundumos nagyságrendbe esik. Ez egyetlen másodperc alatt nagyságrendileg 1 milliárd szorzás elvégzését jelenti. A bináris számok szorzása, összeadása, és egyéb műveletek végzése helyiértékenként történik nagyon hasonlóan ahhoz, mint ahogyan az írásban számolást tanultuk általános iskolában, <em>10</em>-es számrendszerben. Az alábbi ábrán például ugyanazon két szám írásbeli összeadásának folyamata látható bináris és 10-es számrendszerben:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{rr}{\begin{array}{rr} &amp; \ 11010 \\ + &amp; \ 10011 \\ \hline \ &amp; 101101 \end{array}} &amp; {\begin{array}{rr} &amp; \ 26 \\ + &amp; \ 19 \\ \hline \ &amp; 45 \end{array}}\end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A 16-os (hexadecimális) számrendszer</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Annak érdekében, hogy ne kelljen állandóan olyan sok bináris számjegyet leírnunk, bevezethetünk egy praktikus rövidítést. Ha a biteket képzeletben <em>4</em>-esével csoportosítjuk, és ezeket a csoportokat egy-egy szimbólummal helyettesítjük, akkor egy sokkal rövidebb írásmódot kapunk. Ez az ábrázolás épp a <em>16</em>-os (vagy más néven <strong><em>hexadecimális</em></strong>) számrendszernek felel meg, mivel <em>4</em> bináris helyiértéken épp <em>16</em> féle bitsorozat írható le. Méghozzá pontosan azok, amelyek megfelelnének a <em>0, 1, 2, …, 15</em> darab kavics elhelyezésének az adott csoportnak megfelelő <em>16</em>-os számrendszerbeli helyiértéken.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A hexadecimális számjegyek jelöléséhez <em>16</em> különböző szimbólumra van szükségünk. Ezért a szokásos <strong>0</strong>, <strong>1</strong>, <strong>2</strong>, …, <strong>9</strong> szimbólumok mellé be kell vezetnünk 6 darab további szimbólumot is: <strong>A</strong>, <strong>B</strong>, <strong>C</strong>, <strong>D</strong>, <strong>E</strong> és <strong>F</strong> (vagy ezek kisbetűs változatai), amelyek rendre a <em>10</em>, <em>11</em>, <em>12</em>, <em>13</em>, <em>14</em> és <em>15</em> kavics elhelyezését jelentik. Amikor egy hexadecimális számot leírunk, akkor általában a számjegyek felsorolása elé a <strong>„0x”</strong> prefixumot szoktuk írni a <em>16</em>-os számrendszer jelölésére. Az alábbi ábrán a <em>2019</em>-es szám bináris leírásának hexadecimális rövidítése látható:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{0111}_{\text{7}}\underbrace{1110}_{\text{E}}\underbrace{0011}_{\text{3}}=\text{0x7E3}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ehhez hasonlóan az előző részben ismertetett <a rel="noreferrer noopener" aria-label=" (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/2-informacio-adat-ascii-entropia-forraskodolas-digitalizalas#ascii-table" target="_blank">ASCII kódtábla</a> szerint kódolt <strong>Bob</strong> üzenet 24 bites kódját a <strong>0x42, 0x6F, 0x62</strong> hexadecimális számsorozattal is leírhatjuk. Ne feledjük azonban, hogy ez csupán a bitsorozatok leírásának egy rövidítése. A digitális áramkörök ettől függetlenül természetesen továbbra is <em>2</em>-es számrendszerben számolnak. Most vizsgáljuk meg, hogyan mi van egy informatikai eszköz memóriájában vagy például egy bináris adatokat tartalmazó file-ban.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="memory"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A memória felépítése</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Egy informatikai rendszerben futó folyamat bemenő adatai, valamint a folyamat által végrehajtandó program utasításai a futás megkezdése előtt egy <strong><em>memóriának</em></strong> nevezett tárolóba kerülnek. Erre azért van szükség, mert a memóriát sokkal gyorsabban lehet írni és olvasni, mint a hosszútávú tárolásra szolgáló úgynevezett háttértárat (ami a legtöbbször a merevlemez). A folyamat a memóriát használja munkaterületként. Innen olvassa a végrehajtandó utasításokat és a bemenetet, itt tárolja a részeredményeket, valamint a kimenet is itt fog megjelenni, amelyet aztán vissza lehet írni a háttértárra, ha a hosszabb távú tárolás szükséges.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A tárolás/adattovábbítás szempontjából a <strong><em>byte</em></strong> (azaz bitek 8-as csoportja) tekinthető atomi egységnek vagy legalsóbb szintnek. A memória ennek megfelelően kis rekeszekből áll, amelyek mindegyike egy-egy byte-ot tárol. A rekeszek 0-tól kezdődően sorszámozva vannak, egy ilyen sorszámot az adott rekesz <strong><em>memóriacímének</em></strong> nevezünk. A folyamat ezekkel a címekkel hivatkozik a memóriában lévő rekeszekre, amikor írni vagy olvasni akarja őket. Ez a memóriamodell látható az alábbi ábrán:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{c}{\begin{array}{cc}\text{c\'\i m} &amp; \text{adat}\end{array}}\\{\begin{array}{|c|c|} \hline 0. &amp; \text{0x13} \\ \hline 1. &amp; \text{0xF1} \\ \hline 2. &amp; \text{0x2A} \\ \hline 3. &amp; \text{0x58} \\ \hline \end{array}}\\\vdots\end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Egy informatikai rendszerben azonban egynél több folyamat is futhat párhuzamosan. Ezek mindegyike ugyanazt a <strong><em>fizikai memóriát</em></strong> használja munkaterületként, ezért biztosítani kell, hogy mindegyik folyamat csak a saját adataihoz férjen hozzá. Nem lenne jó például, ha az egyik folyamat valamely részeredményét egy párhuzamosan futó másik folyamat véletlenül felülírhatná. Ennek biztosítása az operációs rendszer feladata, amely úgy mutatja a memóriát az egyes folyamatok számára, mintha mindegyik kizárólagosan rendelkezne a teljes címtartománnyal. Ezt a mechanizmust <strong><em>virtuális memória</em></strong>kezelésnek nevezzük. A folyamatok tehát <strong><em>virtuális címek</em></strong>et használnak az adataik eléréséhez, és az operációs rendszer képezi le ezeket a valódi, <strong><em>fizikai címek</em></strong>re. Erről bővebben <a rel="noreferrer noopener" aria-label="itt  (új fülön nyitja meg)" href="https://hu.wikipedia.org/wiki/Virtu%C3%A1lis_mem%C3%B3ria" target="_blank">itt </a>lehet olvasni. Számunkra azonban most csak annyi a fontos, hogy egy adott folyamat szempontjából a memória a fenti képen látható módon néz ki.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Hasonló mondható el a háttértáron lévő file-ok tartalmáról is, valamint a hálózati kommunikáció során továbbított adatok is lényegében tekinthetők byte-ok sorozatának. A továbbiakban tehát általánosságban byte-sorozatokról lesz szó, függetlenül attól, hogy ezek a memóriában vagy egy file-ban lévő, netán valamilyen kommunikációs csatornán továbbított adatokból származnak.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="unsigned-integer"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Előjel nélküli egészek</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Az, hogy egy byte-sorozatban az egyes byte-ok mit jelentenek, az adott alkalmazástól függ, vagy valamilyen szabványban van leírva. Ennek a résznek a végén mutatunk erre egy példát, amikoris megvizsgáljuk egy képet leíró file szerkezetét. Az azonban általánosságban elmondható, hogy van néhány alap adattípus, ami a legtöbb alkalmazásban előfordul.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A legegyszerűbb példa az úgynevezett <strong><em>előjel nélküli egész számok (unsigned integer)</em></strong> ábrázolása. Ez tipikusan 1, 2, 4 vagy 8 byte-on (azaz rendre <em>8</em>, <em>16</em>, <em>32</em> vagy <em>64</em> biten) szokott történni attól függően, hogy milyen értéktartományra van szükségünk, és mennyi memóriát szánunk egy-egy érték tárolására. Ezek azonban csak a „beépített” típusok. Ha ennél nagyobb számokkal akarunk dolgozni, annak természetesen nincs elvi akadálya. Viszont ekkor ezek aritmetikáját (az egyes műveletek végrehajtásának módját) magunknak kell leprogramozni. A legtöbb alkalmazáshoz azonban a <em>64</em> bit (azaz 8 byte) bőven elegendő, hiszen ennyi helyiértékkel <em>2<sup>64</sup>=18446744073709551616</em> különböző egész számot tudunk leírni. Az előjel nélküli egész számokat leíró byte-ok sorrendje általában kétféle szokott lenni. <strong><em>Little endian</em></strong>nak nevezzük azt a sorrendet, amikor a kisebb helyiértékű byte-ok vannak elöl, és ezt követik az egyre nagyobb helyiértékűek. Az ezzel ellentétes sorrendet <strong><em>big endian</em></strong>nak nevezzük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tekintsük például a <em>18365</em>-ös számot, és nézzük meg, hogy ez 32-bites little endian byte-sorrendű előjel nélküli egészként ábrázolva hogyan nézne ki egy byte-sorozatban. A <em>18365</em>-ös szám bináris alakja 32 biten <strong>00000000000000000100011110111101</strong>. Ezt byte-okra osztjuk és felsoroljuk ezeket a byte-okat a legkisebb helyiértéktől kezdve. Ekkor a következő byte-sorozatot kapjuk: <strong>0xBD</strong>, <strong>0x47</strong>, <strong>0x00</strong>, <strong>0x00</strong>. Ugyanezt a számot 64 biten ábrázolva további <em>4</em> darab <strong>0x00</strong> byte is szerepelne a fenti <em>4</em> byte után. Az alábbi ábrán a <em>18365</em>-ös számot leíró byte-ok láthatók 32-bites little endian ábrázolásban az <em>n</em>-edik memóriacímtől kezdve:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{c}\vdots\\{\begin{array}{|c|c|} \hline (n+0). &amp; \text{0xBD} \\ \hline (n+1). &amp; \text{0x47} \\ \hline (n+2). &amp; \text{0x00} \\ \hline (n+3). &amp; \text{0x00} \\ \hline \end{array}}\\\vdots\end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ugyanez a szám 32-bites big endian ábrázolásban:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{c}\vdots\\{\begin{array}{|c|c|} \hline (n+0). &amp; \text{0x00} \\ \hline (n+1). &amp; \text{0x00} \\ \hline (n+2). &amp; \text{0x47} \\ \hline (n+3). &amp; \text{0xBD} \\ \hline \end{array}}\\\vdots\end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Úgy tűnik, nincs jelentős előnye egyik ábrázolási módnak sem a másikkal szemben, és használatuk az adott számítógép-architektúrától függ. A legtöbb szabvány mindenesetre a little endian módot írja elő. Ennek oka talán abban keresendő, hogy az ezt használó Intel x86/x64 processzor-architektúra a legelterjedtebb.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Előjeles egészek</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Természetesen <strong><em>előjeles egész számokat (signed integer)</em></strong> is tárolhatunk. Itt is választhatunk a 8, 16, 32 vagy 64 bites ábrázolásmódok közül. Az ilyen számok ábrázolása a következőképpen történik: amennyiben az ábrázolni kívánt szám pozitív, azt ugyanúgy ábrázoljuk, mint az előjel nélküli esetben. Ha viszont a szám negatív, akkor leírjuk őt binárisan úgy, mintha pozitív lenne, majd minden így kapott bitet az ellentettjére cserélünk (ahol <strong>0</strong> volt, oda <strong>1</strong> kerül, és viszont, ezt <strong><em>invertálásnak</em></strong> nevezzük), végül az eredményhez hozzáadunk <em>1</em>-et. Az így kapott bitsorozatot tároljuk le ugyanúgy byte-onként, mint az előjel nélküli esetben.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tekintsük például a <em>-18365</em>-ös számot, vagyis az előző példa negatív változatát. Ennek pozitív változata 32 biten ábrázolva a <strong>00000000000000000100011110111101</strong> bitsorozat. Ezt a bitsorozatot invertáljuk, és adjunk az eredményhez <em>1</em>-et. A kapott bitsorozat: <strong>11111111111111111011100001000011</strong>. Ezt little endian sorrendben letárolva a kapott byte-ok: <strong>0x43</strong>, <strong>0xB8</strong>, <strong>0xFF</strong>, <strong>0xFF</strong>. Ugyanezt a számot 64 biten ábrázolva további <em>4</em> darab <strong>0xFF</strong> byte is szerepelne a fenti <em>4</em> byte után. Az alábbi ábrán a <em>-18365</em>-ös számot leíró byte-ok láthatók 32-bites little endian ábrázolásban az <em>n</em>-edik memóriacímtől kezdve:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{c}\vdots\\{\begin{array}{|c|c|} \hline (n+0). &amp; \text{0x43} \\ \hline (n+1). &amp; \text{0xB8} \\ \hline (n+2). &amp; \text{0xFF} \\ \hline (n+3). &amp; \text{0xFF} \\ \hline \end{array}}\\\vdots\end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ugyanez a szám 32-bites big endian ábrázolásban:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{c}\vdots\\{\begin{array}{|c|c|} \hline (n+0). &amp; \text{0xFF} \\ \hline (n+1). &amp; \text{0xFF} \\ \hline (n+2). &amp; \text{0xB8} \\ \hline (n+3). &amp; \text{0x43} \\ \hline \end{array}}\\\vdots\end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezt <strong><em>kettes komplemens</em></strong> számábrázolásnak nevezzük. Ilyenkor tehát a legnagyobb helyiértékű bitet előjelként használjuk: ha ez a bit <em>0</em>, akkor az ábrázolt számot pozitívnak, ha pedig <em>1</em>, akkor negatívnak értelmezzük. Az invertálásnak és az eredmény <em>1</em>-gyel való megnövelésének praktikussági okai vannak. Egyrészt, ha egy számnak képezzük a kettes komplemensét, majd az eredménynek ismét képezzük a kettes komplemensét, akkor az eredeti számot kapjuk vissza (épp úgy, mintha kétszer vennénk egy szám ellentettjét). Ezen kívül a digitális összeadó áramköröket kivonásra is használhatjuk változtatás nélkül. Ha ugyanis egy bináris számhoz hozzáadjuk egy másik szám kettes komplemensét, akkor épp olyan eredményt kapunk, mintha kivonást végeztünk volna. Ráadásul, ha egy kisebb számból vonunk ki egy nagyobbat ilyen módon, akkor épp az így keletkező negatív eredményt kapjuk szintén kettes komplemens ábrázolásban. Ezek általános bizonyításától most eltekintünk, de érdemes kipróbálni papíron, hogy tényleg működik.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Itt csak megemlítjük, hogy természetesen nem csak egész, hanem tört számokat is tudunk ábrázolni (és rajtuk műveleteket végezni) a számot leíró bitek megfelelő értelmezésével. Ennek leggyakoribb formája az úgynevezett <strong><em>lebegőpontos számábrázolás</em></strong>. Ennek nagyjából az a lényege, hogy a számot leíró bitek egyik csoportja a „hasznos” számjegyeket írja le, a bitek egy másik csoportja pedig azt, hogy ebben a számjegysorozatban hol helyezkedik el a tizedesvessző. Ennek részleteire azonban itt nem térünk ki.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="bitmap-example"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Egy kép bináris leírása</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Most egy példán keresztül bemutatjuk, hogyan kell a fentieket elképzelni a gyakorlatban. Az <a rel="noreferrer noopener" aria-label="előző részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/2-informacio-adat-ascii-entropia-forraskodolas-digitalizalas/#mp3-file" target="_blank">előző részben</a> megpróbáltunk megnyitni egy MP3 file-t a jól ismert Notepad alkalmazással, és azt tapasztaltuk, hogy egy látszólag értelmetlen adathalmaz van benne. Most egy hasonló példát fogunk megnézni, azonban vizsgálatunk tárgya az egyszerűség kedvéért MP3 helyett egy BMP típusú kép lesz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ehhez elkészítettem egy tesztképet. Ez mindössze 2x2 képpontból áll, és <a rel="noreferrer noopener" aria-label="innen (új fülön nyitja meg)" href="https://youproof.hu/wp-content/uploads/testimage_2x2.bmp" target="_blank">innen</a> lehet letölteni (jobb klikk, mentés másként). Ha a letöltött képet megnyitjuk a Paint nevű egyszerű képszerkesztőben, és kellőképpen ránagyítunk a képre, akkor láthatjuk, hogy a bal-felső és a jobb-alsó képpont fekete, míg a bal-alsó és a jobb-felső képpont fehér színű. Az alábbi ábrán ez látható kinagyítva:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":595} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_3_testimage_nagyitva.png" alt="2x2-es tesztkép nagyítva" class="wp-image-595"/><figcaption>2x2-es tesztkép nagyítva</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Most a fehér képpontokat szürkékre fogjuk cserélni, ám ezt nem a képszerkesztővel, hanem a file-ban szereplő megfelelő byte-ok átírásával fogjuk megtenni. A képszerkesztőt tehát egy időre bezárhatjuk. Ha megnyitnánk a képfile-t Notepad-ban, az MP3-hoz hasonlóan megint egy látszólag értelmetlen ASCII karaktersorozatot látnánk. Ehelyett nyissuk meg a file-t egy olyan programmal, amely a file-ban lévő byte-okat jeleníti meg hexadecimális alakban. Sokféle ilyen szerkesztőt találhatunk a neten, ilyen például a <a rel="noreferrer noopener" aria-label="„HxD – Hexeditor” (új fülön nyitja meg)" href="https://mh-nexus.de/en/hxd/" target="_blank">HxD – Hexeditor</a> nevű program. Ezzel láthatóvá válik az a file-ban lévő 70 darab byte, amely ezt az egyszerű 2x2 pixeles képet leírja. A byte-ok az alábbi ábrán látható sorrendben sorfolytonosan követik egymást (balról jobbra olvasva):</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":580} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_3_testimage_hexa.png" alt="Tesztkép byte-jai" class="wp-image-580"/><figcaption>Tesztkép byte-jai</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Azt, hogy ebből a 70 byte-ból melyik mit jelent, a <a rel="noreferrer noopener" aria-label="BMP szabvány (új fülön nyitja meg)" href="https://en.wikipedia.org/wiki/BMP_file_format" target="_blank">BMP szabvány</a> írja le. A részletekbe most nem megyünk bele, a számunkra ebből most annyi fontos, hogy a file alapvetően 2 részből áll. Az első rész az úgynevezett <strong><em>fejléc</em></strong>, amely információkat tartalmaz a képpel kapcsolatban, míg a második rész tartalmazza a konkrét <strong><em>képpont adatokat</em></strong>. Ez utóbbi a fenti ábrán a feketével bekeretezett rész.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egy BMP file fejléce minden esetben a <strong>B</strong> és <strong>M</strong> karakterek ASCII-kódjával, azaz a <strong>0x42</strong> és <strong>0x4D</strong> értékű byte-okkal kezdődik (ez az ábrán is látszik). Ez egy előzetes ellenőrzést tesz lehetővé az alkalmazás számára, hogy valóban egy BMP formátumú képpel van-e dolga. A fejléc továbbá – többek között – tartalmazza, hogy hány képpont a kép szélessége és magassága, hogy milyen módon van leírva egy-egy képpont színe a képpont adatoknál, illetve hogy hanyadik byte-tól kezdődnek konkrétan ezek a képpont adatok. Ez utóbbi információt a fejlécben a 10. sorszámú pozíciótól (a számozás 0-tól indul) kezdődő 4 byte tartalmazza (<strong>0x36</strong>, <strong>0x00</strong>, <strong>0x00</strong>, <strong>0x00</strong>). Ezeket a szabvány szerint 32-bites little endian byte-sorrendű előjel nélküli egészként kell értelmezni. Ennek értéke tehát <em>54</em>. Valóban, a feketével bekeretezett pixel adatok kezdete épp az 54. sorszámú byte. A fejléc tartalmát a továbbiakban nem részletezzük, ehelyett ugorjunk a bekeretezett részhez, azaz a képpont adatokhoz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az egyes képpontok ebben a BMP file-ban 3-3 byte-tal vannak leírva, amelyek rendre az adott képpont színének kék, zöld és vörös színösszetevőit adják meg. A színösszetevők intenzitását a megfelelő byte értéke határozza meg: a <strong>0x00</strong> érték az adott színösszetevő teljes hiányát, míg a <strong>0xFF</strong> érték a maximális intenzitását jelenti. Ezeket <strong><em>RGB-színkódoknak</em></strong> nevezik, utalva a „red”, „green” és „blue” szavak kezdőbetűire.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A kép soronként lentről felfelé tárolódik, vagyis a képpont adatok a legalsó sorral kezdődnek. Az első 3 byte (<strong>0xFF</strong>, <strong>0xFF</strong>, <strong>0xFF</strong>) tárolja tehát a bal alsó pixel RGB-színkódját, amely a fehér színnek felel meg. Ha megnézzük a képet, a bal alsó pixel valóban fehér. A következő 3 byte (<strong>0x00</strong>, <strong>0x00</strong>, <strong>0x00</strong>) a következő, azaz a jobb alsó pixel színét tárolja, amely valóban a fekete. Ezzel vége az alsó sornak, azonban van itt még 2 darab <strong>0x00</strong> értékű byte, a szabvány szerint ugyanis minden sort szükség szerint 0 bitekkel kell feltölteni oly módon, hogy az egyes sorokhoz 4-gyel osztható számú byte tartozzék. Ez programozástechnikailag megkönnyíti az ilyen file-ok kezelését, ennek részleteire most nem térünk ki.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A következő 3 byte (<strong>0x00</strong>, <strong>0x00</strong>, <strong>0x00</strong>) már a következő sor első pixelét, azaz a bal felső fekete pixelt tárolja. Ezután pedig az utolsó, jobb felső fehér pixel RGB-kódja következik (<strong>0xFF</strong>, <strong>0xFF</strong>, <strong>0xFF</strong>). Végül ismét 2 darab <strong>0x00</strong> értékű kitöltő byte következik az előző sorhoz hasonlóan. Ezzel vége a pixel adatoknak, és egyben a BMP file-nak is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most módosítani fogjuk a bal alsó és a jobb felső pixel színét leíró byte-okat. Azt szeretnénk, hogy ezek szürkék legyenek. A szürke színben a fehérhez hasonlóan mindhárom színösszetevő szerepel, csak éppen nem a maximális (<strong>0xFF</strong>) intenzitással. Egy közepes intenzitású szürke színt kapunk, ha például mindhárom összetevőt <strong>0x80</strong>-ra állítjuk. Az alábbi ábra mutatja a módosított byte-okat feketével bekeretezve:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":602} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_3_testimage_hexa_modified.png" alt="Tesztkép byte-jai módosítva" class="wp-image-602"/><figcaption>Tesztkép byte-jai módosítva</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Miután elmentettük a file-t, bezárhatjuk a Hexeditor-t. Ha ezek után Paint-ben megnyitjuk a módosított file-unkat és kellőképpen ránagyítunk a képre, akkor láthatjuk, hogy a bal-alsó és a jobb-felső képpont színe a várakozásoknak megfelelően fehérről szürkére módosult. Az alábbi ábrán ez látható kinagyítva:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":605} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_3_testimage_modified_nagyitva.png" alt="Módosított tesztkép" class="wp-image-605"/><figcaption>Módosított tesztkép</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Láthatjuk tehát, hogy egy kép egy informatikai eszköz memóriájában vagy egy file-ban semmi más, mint egy bináris számsorozat. A képszerkesztő szoftverek abban segítenek nekünk, hogy értelmezik ezt a számsorozatot, vizuálisan megjelenítik a számunkra az általuk kódolt képet, és lehetővé teszik, hogy szintén vizuális eszközökkel ezen a képen módosítsunk. Egy Adobe Photoshop persze nagyon bonyolult képfeldolgozó algoritmusokat is megvalósít, de valójában a legalacsonyabb szinten nem történik más, mint bináris adatok manipulálása. Pontosan úgy, ahogy mi most azt manuálisan megtettük, képszerkesztő program nélkül.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ebben a fejezetben tehát megismerkedtünk a számrendszerek fogalmával, és képet kaptunk arról, hogy az informatikai eszközök milyen módokon tárolják a különböző számokat. Ennek gyakorlati bemutatására megnéztük, hogy egy egyszerű BMP formátumú képet leíró file milyen byte-okat tartalmaz, illetve, hogy melyik byte-nak mi a jelentése a BMP szabvány szerint. Meg is változtattuk néhány képpont színét pusztán néhány byte átírásával. E rövid kitérő után a következő részben az információátviteli rendszerek absztrakt modelljét építjük tovább, és ennek keretében megismerkedünk magával az átviteli csatornával, továbbá a vele kapcsolatban felmerülő problémákkal.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A következő részt <a href="https://youproof.hu/kriptografia/4-csatornakodolas-hibajavito-kod-kodelmelet-hamming-tavolsag/">itt</a> találod...</em></strong></p>
+<!-- /wp:paragraph -->

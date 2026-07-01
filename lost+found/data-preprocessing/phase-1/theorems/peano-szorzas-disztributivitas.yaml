@@ -1,0 +1,14 @@
+type: theorem
+name: peano-szorzas-disztributivitas
+proofs:
+  - peano-szorzas-disztributivitas-bizonyitas
+remarks: []
+content:
+  - type: formula
+    lead-in: |
+      Az $\N$ halmaz tetszőleges $a$, $b$ és $c$ elemeire igazak az alábbi összefüggések:
+    content: |
+      a\cdot (b+c) = (a\cdot b) + (a\cdot c)
+  - type: formula
+    content: |
+      (a+b)\cdot c = (a\cdot c) + (b\cdot c)

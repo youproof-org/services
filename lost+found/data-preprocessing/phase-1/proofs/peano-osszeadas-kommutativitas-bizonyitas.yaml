@@ -1,0 +1,58 @@
+type: proof
+name: peano-osszeadas-kommutativitas-bizonyitas
+remarks: []
+references:
+  peano-osszeadas:
+    target:
+      type: definition
+      name: peano-osszeadas
+  peano-osszeadas-kommutativitas-0-lemma:
+    target:
+      type: theorem
+      name: peano-osszeadas-kommutativitas-0-lemma
+  peano-osszeadas-kommutativitas-lemma:
+    target:
+      type: theorem
+      name: peano-osszeadas-kommutativitas-lemma
+content:
+  - type: narrative
+    content: |
+      Ismételten teljes indukciót alkalmazunk, ám ezúttal a $b$-re vonatkozóan. Tegyük fel, hogy az állítás igaz
+      valamilyen $b=n$ természetes számra. Az tehát az ***indukciós feltétel***, hogy $a+n=n+a$.
+  - type: formula
+    lead-in: |
+      Azt kell bizonyítanunk, hogy ebben az esetben $b=s(n)$-re is igaz lesz, azaz:
+    content: |
+      a+\underbrace{s(n)}_{=b} = \underbrace{s(n)}_{=b}+a
+  - type: formula
+    lead-in: |
+      A [peano-osszeadas] 2. pontja miatt:
+    content: |
+      a+s(n) = s(a+n) = \ldots
+  - type: formula
+    lead-in: |
+      Az indukciós feltétel miatt:
+    content: |
+      \ldots =s(n+a)= \ldots
+  - type: formula
+    lead-in: |
+      Ismételten a [peano-osszeadas] 2. pontja miatt:
+    content: |
+      \ldots = n + s(a) = \ldots
+  - type: formula
+    lead-in: |
+      Végül a korábban már bizonyított [peano-osszeadas-kommutativitas-lemma] miatt:
+    content: |
+      \ldots = s(n) + a
+  - type: narrative
+    content: |
+      Vagyis azt kaptuk, hogy valóban $a + \underbrace{s(n)}_{=b} = \underbrace{s(n)}_{=b} + a$.
+  - type: narrative
+    content: |
+      Felállítottuk tehát a dominósort, és beláttuk, hogy bármely dominó felborítása esetén a soron következő
+      dominó is fel fog borulni. Az első dominót pedig már fel is boríttottuk, ugyanis a
+      [peano-osszeadas-kommutativitas-0-lemma] alapján az állítás igaz $b=0$-ra.
+  - type: narrative
+    content: |
+      Borul tehát az első dominó, és vele együtt a teljes dominósor, azaz minden $a$ és $b$ számra igaz, hogy
+      $a+b=b+a$.

@@ -1,0 +1,10 @@
+type: theorem
+name: egysegek-es-egysegelem-viszonya
+proofs:
+  - egysegek-es-egysegelem-viszonya-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Egy ***kommutatív, egységelemes gyűrűben*** egy elem ***akkor és csak akkor*** egység, ha osztója az
+      egységelemnek.

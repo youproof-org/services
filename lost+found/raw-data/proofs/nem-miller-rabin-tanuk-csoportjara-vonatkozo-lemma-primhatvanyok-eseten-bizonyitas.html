@@ -1,0 +1,115 @@
+<!-- wp:paragraph -->
+<p>A [latex]P_r[/latex] megoldáshalmaz minden eleme kielégíti az első kongruenciát, azaz [latex]r[/latex]-rel azonos modulo [latex]p^c[/latex] maradékosztályban van. Következésképp a [yp_element slug="egesz-szamok-maradekosztalyai" type="link" /] alapján minden [latex]x\in P_r[/latex] esetén létezik olyan [latex]y[/latex] egész szám, hogy teljesül az alábbi egyenlet:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x=r+p^cy[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Tehát tulajdonképpen azokat az [latex]y[/latex] egész számokat keressük, amelyekre fennáll a második kongruencia is, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](\underbrace{r+p^cy}_{=x})^{p-1}\equiv 1\pmod{p^{c+1}}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A baloldalon szereplő zárójeles kifejezést felbontva a Korselt-kritérium ([yp_element slug="korselt-kriterium" type="link" /]) bizonyításánál látott gondolatmenet alapján az alábbi összeget kapjuk valamilyen [latex]A_2[/latex], [latex]A_3[/latex], ..., [latex]A_{p-1}[/latex] együtthatókkal:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}(r+p^cy)^{p-1}&amp;=r^{p-1}+(p-1)r^{p-2}p^cy+\\&amp;+A_2r^{p-3}p^{2c}y^2 + A_3r^{p-4}p^{3c}y^3+\ldots +A_{p-1}p^{(p-1)c}y^{p-1}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ennek a kifejezésnek az értéke modulo [latex]p^{c+1}[/latex] érdekel minket, emiatt nincs szükségünk az [latex]A_2[/latex], [latex]A_3[/latex], ..., [latex]A_{p-1}[/latex] együtthatók pontos értékére – amelyeket egyébként a <a aria-label="undefined (új lapon nyílik meg)" href="https://hu.wikipedia.org/wiki/Binomi%C3%A1lis_t%C3%A9tel" target="_blank" rel="noreferrer noopener">binomiális tétel</a> alapján lehetne kiszámítani. A 3. tagtól kezdve ugyanis minden tag osztható [latex]p^{c+1}[/latex]-gyel, vagy másként fogalmazva [latex]0[/latex]-val kongruens modulo [latex]p^{c+1}[/latex]. Azaz tulajdonképpen az alábbi kongruencia megoldásait keressük:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{r^{p-1}+(p-1)r^{p-2}p^cy}_{\equiv (r+p^cy)^{p-1}}\equiv 1\pmod{p^{c+1}}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A tétel szövegéből tudjuk, hogy [latex]r[/latex]-re teljesül az alábbi kongruencia is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]r^{p-1}\equiv 1\pmod{p^c}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azaz az [latex]r^{p-1}[/latex] hatvány ugyanabban a modulo [latex]p^c[/latex] maradékosztályban van, mint az [latex]1[/latex] egész szám. Ám ekkor ugyancsak a [yp_element slug="egesz-szamok-maradekosztalyai" type="link" /] értelmében létezik olyan [latex]k_r[/latex] egész szám, amelynek a segítségével az [latex]r^{p-1}[/latex] hatvány felírható az alábbi alakban:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]r^{p-1}=p^ck_r+1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezt behelyettesíthetjük a kongruenciánkba, amelynek tehát a megoldásait keressük:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{p^ck_r+1}_{=r^{p-1}}+(p-1)r^{p-2}p^cy\equiv 1\pmod{p^{c+1}}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" type="link" /] 6. pontja értelmében mindkét oldalból levonhatunk [latex]1[/latex]-et:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]p^ck_r+(p-1)r^{p-2}p^cy\equiv 0\pmod{p^{c+1}}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A zárójelet felbontva az alábbit kapjuk, ahol a második tag [latex]0[/latex]-val lesz kongruens modulo [latex]p^{c+1}[/latex], így az elhagyható:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]p^ck_r+\underbrace{\cancel{r^{p-2}p^{c+1}y}}_{\equiv 0}-r^{p-2}p^cy\equiv 0\pmod{p^{c+1}}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A maradék két tagból a [latex]p^c[/latex] szorzótényezőt kiemelhetjük:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]p^c\cdot (k_r-r^{p-2}y)\equiv 0\pmod{p^{c+1}}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez a kongruencia viszont a <strong><em>kongruenciák egyszerűsítéséről</em></strong> szóló [yp_element slug="egesz-szamok-kozotti-kongruencia-egyszerusitese" type="link" /] alapján akkor és csak akkor teljesül, amikor az alábbi kongruencia is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]k_r-r^{p-2}y\equiv 0\pmod p[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mindkét oldalhoz [latex]r^{p-2}y[/latex]-t adva tehát tulajdonképpen az alábbi <strong><em>lineáris kongruencia</em></strong> megoldásait keressük:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]r^{p-2}y\equiv k_r\pmod p[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel a tétel szövegéből tudjuk, hogy teljesül az [latex]r^{p-1}\equiv 1\pmod{p^c}[/latex] kongruencia, ezért a [yp_element slug="nem-miller-rabin-tanuk-csoportja-primhatvanyok-eseten" type="link" /] 1. pontjának értelmében az [latex][r]_{p^c}[/latex] maradékosztály nem lehet Miller-Rabin-tanúja [latex]p^c[/latex]-nek. Így viszont a [yp_element slug="miller-rabin-tanu" type="link" /] utáni megjegyzés értelmében [latex][r]_{p^c}[/latex] egy <strong><em>redukált maradékosztály</em></strong>, azaz [latex]r[/latex] <strong><em>relatív prím</em></strong> [latex]p^c[/latex]-hez. Ez egyben azt is jelenti, hogy [latex]r[/latex] prímtényezős felbontásában biztosan nem szerepel a [latex]p[/latex] prímszám, amely nyilván igaz lesz [latex]r[/latex] bármely hatványára is. Így például az [latex]r^{p-2}[/latex] hatványra – mint a fenti lineáris kongruencia együtthatójára – is, amely tehát relatív prím a [latex]p[/latex] modulushoz, azaz [latex](r^{p-2},p)=1[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez biztosan osztója a lineáris kongruencia jobboldalán lévő [latex]k_r[/latex]-nek, így tehát a [yp_element slug="linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga" type="link" /] értelmében szükségképpen <strong><em>létezik</em></strong> megoldás. Továbbá a megoldások száma a [yp_element slug="linearis-kongruenciak-megoldasai-es-megoldasszama" type="link" /] alapján pontosan [latex](r^{p-2},p)=1[/latex] darab modulo [latex]p[/latex] maradékosztály.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Válasszuk ki ennek az eszerint egyetlen modulo [latex]p[/latex] maradékosztálynak egy tetszőleges elemét, amelyet jelöljünk [latex]y_0[/latex]-val. Ekkor tehát az [latex]y=y_0+pm[/latex] képlet segítségével megkapjuk az [latex](r+p^cy)^{p-1}\equiv 1\pmod{p^{c+1}}[/latex] kongruenciát kielégítő <strong><em>összes</em></strong> egész számot (és csak azokat), amennyiben [latex]m[/latex]-mel befutjuk a teljes [latex]\Z[/latex] halmazt. Most alkalmazzuk visszafelé az [latex]x[/latex]-re bevezetett jelölésünket:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x=r+p^c\cdot (\underbrace{y_0+pm}_{=y})=r+p^cy_0+p^{c+1}m[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez tehát azt jelenti, hogy a tételben szereplő kongruenciarendszert kielégítő [latex]P_r[/latex] megoldáshalmaz összes elemét (és csak azokat) megkapjuk, amennyiben a fenti képletben szereplő [latex]m[/latex]-mel befutjuk a teljes [latex]\Z[/latex] halmazt. Vagyis a [yp_element slug="egesz-szamok-maradekosztalyai" type="link" /] értelmében [latex]P_r[/latex] valóban épp egy modulo [latex]p^{c+1}[/latex] maradékosztály, melynek egyik reprezentánseleme [latex]r+p^cy_0[/latex].</p>
+<!-- /wp:paragraph -->

@@ -1,0 +1,149 @@
+type: section
+name: 03-a-feltorhetetlen-rejtjelezo
+title: A feltörhetetlen rejtjelező
+
+body:
+  - type: narrative
+    content: |
+      Ezzel szemben azt mondjuk, hogy egy rejtjelező rendszer ***feltétel nélkül biztonságos***, ha a támadó
+      korlátlan számítási kapacitás mellett **sem** tudja feltörni azt. A jó hír az, hogy ilyen rejtjelező eljárás
+      létezik, a neve: ***one-time pad***. Mielőtt rátérnénk a rossz hírre, ismertetjük az eljárás lényegét. A
+      one-time pad lényegét tekintve megegyezik az első részben már ismertetett ***Vigenére-kóddal***, ezért
+      először felfrissítjük az ezzel kapcsolatos emlékeinket. Vigenére-kód esetén a nyílt szöveg egyes betűit
+      betűnként váltakozó értékekkel toljuk el az ábécében. A kulcs egy számsorozat, amely meghatározza, hogy
+      melyik betűre mekkora eltolást kell alkalmazni.
+  - type: typewriter
+    lead-in: |
+      Például a 26 elemű **ABCDEFGHIJKLMNOPQRSTUVWXYZ** ábécé használata esetén a (14, 19, 15) kulcsot használva a
+      **SZIABOB** üzenet kódolása a következő:
+    rows:
+      - "S  Z  I  A  B  O  B"
+      - "14 19 15 14 19 15 14"
+      - "G  S  X  O  U  D  P"
+  - type: narrative
+    content: |
+      A nyílt szöveg első betűjére tehát 14, a másodikra 19, a harmadikra pedig 15 eltolást alkalmaztunk. A további
+      betűkre ezeket az eltolásokat ismételgettük periodikusan. Ennek eredményeként állt elő a **GSXOUDP**
+      kódszöveg. Mielőtt rátérnénk a one-time pad leírására, röviden egy hasznos trükköt fogunk ismertetni a
+      kódolás és dekódolás megkönnyítésére.
+  - type: narrative
+    content: |
+      Könnyebben megjegyezhetővé tehetjük a kulcsot, ha az őt alkotó számok helyett az ábécé megfelelő sorszámú
+      betűit jegyezzük meg (ahol a 0 sorszámú betű az **A**, az 1 sorszámú betű a **B**, stb.). Eszerint a
+      hozzárendelés szerint tehát a (14, 19, 15) kulcs helyett elég az **OTP** kulcsszót megjegyeznünk. Ezek után
+      készíthetünk egy táblázatot oly módon, hogy felírjuk az ábécé összes eltolt változatát egymás alá (beleértve
+      a 0 eltolást, azaz az eredeti ábécét is). Ebből nyilván 26 féle van, azonban a számunkra most csak az
+      eredeti, illetve a kulcsszó betűivel kezdődő ábécék az érdekesek.
+  - type: typewriter
+    lead-in: |
+      Ezek ugye a következők:
+    rows:
+      - "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      - "_OP_QRSTUVWXYZABCDEF_G_HIJKLMN"
+      - "T_U_VWXYZABCDEFGHIJKLMNOPQR_S_"
+      - "PQRSTUVW_X_YZABC_D_EFGHIJKLMNO"
+  - type: narrative
+    content: |
+      Kódoláskor a kulcsot alkotó számok helyett a kulcsszó betűit írjuk az üzenet betűi alá. A kódszöveget ezután
+      úgy állítjuk elő, hogy a fenti táblázatból kikeressük azt a sort és oszlopot, amelyek rendre a kulcsszó és a
+      nyílt szöveg aktuális betűivel kezdődnek. A kódszöveg aktuális betűje ekkor épp a kiválasztott sor és oszlop
+      metszéspontjában lévő betű lesz (a fenti táblázatban az aláhúzott betűk).
+  - type: typewriter
+    lead-in: |
+      Ezek alapján a **SZIABOB** üzenet kódolása:
+    rows:
+      - "SZIABOB"
+      - "OTPOTPO"
+      - "GSXOUDP"
+  - type: narrative
+    content: |
+      Dekódoláskor ennek az eljárásnak a megfordítását hajtjuk végre. Ilyenkor a kódszöveg betűi alá írjuk a
+      kulcsszó betűit. Ezek minden betűhöz kijelölik azt a sort a táblázatban, amely alapján az adott betű kódolva
+      lett. Ebben a sorban megkeressük a kódszöveg aktuális betűjét, és megnézzük, hogy az eredeti ábécében ez
+      melyik betűnek felel meg (azaz melyik oszlopban van). Ez lesz a nyílt szöveg aktuális betűje.
+  - type: typewriter
+    lead-in: |
+      Ezek alapján a **GSXOUDP** kódszöveg dekódolása az **OTP** kulcsot használva:
+    rows:
+      - "GSXOUDP"
+      - "OTPOTPO"
+      - "SZIABOB"
+  - type: narrative
+    content: |
+      Most nézzük meg, hogy ebből az eljárásból hogyan nyerhetünk valóban feltörhetetlen rejtjelezőt. A
+      Vigenére-kód esetén a kulcs általában rövidebb, mint a nyílt szöveg, és ezért periodikusan ismételgetni kell
+      az eltolások sorozatát. Ez lehetőséget adhat egy passzív támadónak arra, hogy a kódszöveg statisztikai
+      elemzésével információkat nyerhessen (feltéve persze, hogy elegendő mennyiségű azonos kulccsal kódolt
+      kódszöveg áll rendelkezésére).
+  - type: unordered-list
+    lead-in: |
+      Ezzel szemben a ***one-time pad*** esetén a kulcsra az alábbi megkötéseket tesszük:
+    items:
+      - "Hossza a nyílt szöveg hosszával egyezik meg."
+      - "Tökéletesen véletlenszerű."
+      - "Minden egyes üzenethez új kulcsot használnak."
+  - type: narrative
+    content: |
+      A már sokat emlegetett Claude Shannon bizonyította be, hogy ***a one-time pad valóban feltörhetetlen***.
+      Ennek oka az, hogy a véletlenszerűen előállított kulcs olyan szinten függetleníti a kódszöveget a nyílt
+      szövegtől, hogy közöttük semmilyen statisztikai összefüggés nem tárható fel. Azaz Eve gyakorlatilag egy
+      "pénzfeldobás sorozatot" fog látni statisztikai értelemben. A feltörhetetlenséget ténylegesen abszolút
+      értelemben kell érteni. Ez azt jelenti, hogy Eve még akkor sem fogja tudni megfejteni a nyílt szöveget, ha az
+      összes lehetséges kulcsot végigpróbálgatja. Az alábbiakban egy egyszerű példán keresztül megmutatjuk, hogy
+      miért.
+  - type: narrative
+    content: |
+      Tegyük fel, hogy háború van. Alice és Bob a maximális biztonság érdekében úgy dönt, hogy one-time paddel
+      fogják rejtjelezni katonai üzeneteiket. Megállapodnak abban, hogy az angol ábécé 26 betűjét fogják használni
+      ékezetek, írásjelek és szavak közti szünetek nélkül. Végül megegyeznek, hogy minden esetben pontosan 20
+      karakter hosszú üzenetekkel fognak kommunikálni. Az ennél hosszabb üzeneteket felszeletelik több üzenetre,
+      míg az ennél rövidebb üzeneteket kiegészítik **X** betűkkel úgy, hogy éppen 20 betű hosszúak legyenek.
+      Például a **SZIABOB** üzenet helyett a **SZIABOBXXXXXXXXXXXXX** üzenetet fogják kódolni. Ennek értelme
+      hamarosan világos lesz.
+  - type: narrative
+    content: |
+      Ezek után előállítanak egy könyvnyi teljesen véletlenszerű betűsorozatot, amelyet kulcsként fognak használni.
+      Amikor Alice egy 20 betűs üzenetet szeretne küldeni Bobnak, a kulcskönyv soron következő 20 betűjét felírja a
+      nyílt szöveg alá kulcsként. Ezután alkalmazza a Vigenére-kódolást, majd a felhasznált 20 betűt kihúzza a
+      kulcskönyvből. Alice, miután megkapta a 20 betűs kódszöveget, a kulcskönyv nála lévő példányából szintén
+      felírja a soron következő 20 betűt a kódszöveg alá. Dekódolja az üzenetet, végül ő is kihúzza a felhasznált
+      20 betűt a saját kulcskönyvéből. Amennyiben Alice és Bob soha nem hibázik, és szinkronban haladnak előre a
+      kulcskönyvben a kommunikáció során, akkor az általuk alkalmazott rejtjelezés ***feltörhetetlen*** Eve
+      számára. Most megmutatjuk, hogy miért.
+  - type: narrative
+    content: |
+      Képzeljük magunkat Eve helyébe, aki az Alice és Bob által használt csatorna lehallgatása során elfogja a 20
+      betűs **AWLJKFHAEIFHWOIJSSBF** kódszöveget. Tegyük fel, hogy Eve tudja, hogy Alice és Bob one-time pad
+      rejtjelezést használt, a szintén 20 betűs kulcsot azonban nem ismeri. Nézzük meg hogy mit tehet.
+      Gyakoriságelemzést nem érdemes alkalmaznia még abban az esetben sem, ha esetleg rengeteg korábbi kódszöveg
+      áll a rendelkezésére. Tudja ugyanis, hogy azokat mind más és más kulccsal titkosították. Amelyek ráadásul
+      tökéletesen véletlenszerűek voltak, csakúgy, mint a jelenleg használt kulcs. Eve tehát nem tehet mást, mint
+      szisztematikusan elkezdeni végigpróbálgatni az összes lehetséges 20 hosszú kulcsot. Ezekből a 26 betűs angol
+      ábécé használata esetén 26^20^, azaz egészen pontosan 19928148895209409152340197376 darab van. Most
+      nagyvonalúan lépjünk túl azon, hogy ennyi kulcs végigpróbálgatása az idők végezetéig is eltarthat a világ
+      összes számítási kapacitásával is. Tételezzük fel, hogy az Eve rendelkezésére álló számítási kapacitás
+      valóban korlátlan.
+  - type: narrative
+    content: |
+      Eve abban reménykedik, hogy valamelyik kipróbált kulcs esetén értelmes szöveget fog kapni. Egy idő után
+      például el fog érkezni a **HWZJHFPTQXSHHXEDMOQI** kulcshoz. Ekkor a **TAMADASHOLNAPREGGELX** feltételezett
+      nyílt szöveget kapja. Ez kétségkívül egy értelmes üzenetnek tűnik, de vajon joggal gondolhatja-e Eve, hogy
+      megtalálta az Alice és Bob által használt kulcsot?
+  - type: narrative
+    content: |
+      A biztonság kedvéért tovább folytatja az összes létező kulcs szisztematikus kipróbálását. Nagy meglepetésére
+      a **FOTRLFMMROUHERLMVVEI** kulcshoz érve a **VISSZAVONULASXXXXXXX** feltételezett nyílt szöveget fogja kapni.
+      Látszólag ez is egy értelmes üzenet, aminek jelentése ráadásul épp az ellenkezője az előzőnek. Eve egyre
+      idegesebb, és tovább folytatja a kulcskeresést. Ám döbbenten tapasztalja, hogy egyre több és több értelmesnek
+      látszó potenciális üzenetet kap a visszafejtési kísérletekből. Például a **ZSBFTXOWMVHNQOPSEHEI** kulcs
+      kipróbálása esetén a **BEKERITESNYUGATROLXX** üzenetet, a **WFXRCMDILYBQCBYMVVEI** kulcs esetén az
+      **EROSITESTKERUNKXXXXX** üzenetet, és a **PSFBRFVMYIMHEKRZOTTV** kulcs esetén a **LEGITAMOGATASERKEZIK**
+      üzenetet kapja. Sőt, mire végez az összes kulcs ellenőrzésével, az összes olyan potenciális nyílt szöveg
+      jelöltet megkapja, amely legfeljebb 20 betű hosszú. De megkapja az olyanokat is, amelyek akár egy hosszabb
+      üzenet valamilyen részei lehetnek.
+  - type: narrative
+    content: |
+      Látható tehát, hogy one-time pad rejtjelezés esetén Eve helyzete reménytelen, hiszen Alice ezek közül
+      bármelyik üzenetet küldhette. Mivel a használt kulcs teljesen véletlenszerű és egyszer használatos volt,
+      ezért Eve semmit sem feltételezhet azzal kapcsolatban, hogy melyik feltételezett nyílt szöveg a
+      legvalószínűbb. Ráadásul mindez független attól, hogy mennyi erőforrást tudott mozgósítani a feltöréshez.

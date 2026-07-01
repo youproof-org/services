@@ -1,0 +1,68 @@
+type: section
+name: 07-reszcsoportok-generalasa
+title: Részcsoportok generálása
+
+references:
+  generalt-reszgyuru-es-ideal:
+    target:
+      type: theorem
+      name: generalt-reszgyuru-es-ideal
+  idealok-metszete-ideal:
+    target:
+      type: theorem
+      name: idealok-metszete-ideal
+
+body:
+  - type: narrative
+    content: |
+      A 19. részben a részgyűrűkkel és ideálokkal kapcsolatban vezettük be a ***generálás*** fogalmát. Ott azt
+      mondtuk, hogy egy gyűrű tetszőleges nemüres $X$ részhalmazához mindig egyértelműen létezik egy legszűkebb
+      olyan részgyűrű (vagy ideál), amely $X$-et tartalmazza. Ezt az $X$ által generált részgyűrűnek (vagy
+      ideálnak) neveztük és $\lang X\ ang$-szel jelöltük.
+  - type: narrative
+    content: |
+      Ugyanilyen értelemben bármely csoport részcsoportjaira (vagy normálosztóira) is bevezethető a generálás
+      fogalma. A gyűrűknél ennek feltétele az volt, hogy részgyűrűk (vagy ideálok) metszete is részgyűrű (vagy
+      ideál) legyen, amelyet a [idealok-metszete-ideal]ben igazoltunk is. Most a részcsoportokra (vagy
+      normálosztókra) mondunk ki egy ugyanilyen tulajdonságot, előbb azonban igazolnunk kell egy segédtételt, amely
+      lényegében a normálosztókra ad egy alternatív definíciót.
+  - type: embed
+    target:
+      type: theorem
+      name: normaloszto-feltetele
+  - type: embed
+    target:
+      type: proof
+      name: normaloszto-feltetele-bizonyitas
+  - type: narrative
+    content: |
+      Ezután már könnyedén kimondhatjuk a [idealok-metszete-ideal]hez hasonló állításunkat egy csoport
+      részcsoportjainak (vagy normálosztóinak) metszetéről.
+  - type: embed
+    target:
+      type: theorem
+      name: reszcsoportok-metszete-reszcsoport
+  - type: embed
+    target:
+      type: proof
+      name: reszcsoportok-metszete-reszcsoport-bizonyitas
+  - type: narrative
+    content: |
+      Mostmár a generált részgyűrűhöz illetve generált ideálhoz hasonlóan (lásd a [generalt-reszgyuru-es-ideal]t)
+      bevezethetjük a ***generált részcsoport*** illetve ***generált normálosztó*** fogalmát.
+  - type: embed
+    target:
+      type: theorem
+      name: generalt-reszcsoport-es-normaloszto
+  - type: embed
+    target:
+      type: proof
+      name: generalt-reszcsoport-es-normaloszto-bizonyitas
+  - type: narrative
+    content: |
+      Ahhoz hasonlóan, ahogyan a részgyűrűk és ideálok generálása kapcsán a 19. részben már kifejtettük, egy adott
+      $G$ csoport bármely $X$ részhalmaza ***egyértelműen*** meghatároz egy részcsoportot (vagy speciális esetben
+      egy normálosztót). Ez lesz az $X$-et tartalmazó ***legszűkebb*** részcsoport (vagy normálosztó). Ugyanakkor
+      elképzelhető, hogy az $\lang X\ ang$ részcsoportot (vagy normálosztót) lehet generálni egy $X$-nél szűkebb
+      részhalmazzal is. Amikor tehát azt mondjuk, hogy egy részcsoport "generálható $X$-szel", ez még nem jelenti
+      azt, hogy az adott részcsoport kizárólag $X$-szel generálható.

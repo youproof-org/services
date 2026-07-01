@@ -1,0 +1,13 @@
+type: theorem
+name: kulonbozo-maradekosztalyok-szorzasa-redukalt-maradekosztallyal
+proofs:
+  - kulonbozo-maradekosztalyok-szorzasa-redukalt-maradekosztallyal-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Ha bármely két egymástól különböző $[a]_n$ és $[b]_n$ maradékosztályt megszorzunk egy tetszőleges $[c]_n$
+      ***redukált maradékosztállyal***, akkor az így kapott maradékosztályok is különböznek egymástól.
+  - type: narrative
+    content: |
+      Azaz ha $[a]_n \eq [b]_n$, akkor $[c]_n \odot [a]_n \eq [c]_n \odot [b]_n$.

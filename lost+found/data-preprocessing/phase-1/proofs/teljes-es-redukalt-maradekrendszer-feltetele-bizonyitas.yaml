@@ -1,0 +1,46 @@
+type: proof
+name: teljes-es-redukalt-maradekrendszer-feltetele-bizonyitas
+remarks: []
+references:
+  egesz-szamok-maradekosztalyai:
+    target:
+      type: theorem
+      name: egesz-szamok-maradekosztalyai
+  euler-fuggveny:
+    target:
+      type: definition
+      name: euler-fuggveny
+  redukalt-maradekosztaly-feltetele:
+    target:
+      type: theorem
+      name: redukalt-maradekosztaly-feltetele
+content:
+  - type: narrative
+    content: |
+      ***Nézzük először a teljes maradékrendszerekre vonatkozó állítást!*** Tegyük fel, hogy $H$ teljes
+      maradékrendszer modulo $m$. Mivel a modulo $m$ maradékosztályok száma a [egesz-szamok-maradekosztalyai]
+      alapján $m$, és $H$ minden maradékosztályból pontosan egy elemet tartalmaz, ezért elemszáma szükségképpen
+      $m$. Továbbá $H$ elemei páronként inkongruensek modulo $m$, hiszen mindegyik különböző maradékosztályból
+      származik.
+  - type: narrative
+    content: |
+      ***Visszafelé:*** Tegyük fel, hogy a $H$ halmaz $m$ darab páronként inkongruens számot tartalmaz. Ekkor a
+      páronkénti inkongruencia miatt ezek mindegyike különböző maradékosztályokba tartozik. Továbbá mivel a számuk
+      $m$, ezért $m$ darab maradékosztályt reprezentálnak, azaz a [egesz-szamok-maradekosztalyai] alapján az
+      összeset. A $H$ halmaz tehát valóban egy modulo $m$ teljes maradékrendszer.
+  - type: narrative
+    content: |
+      ***Most nézzük a redukált maradékrendszerekre vonatkozó állítást!*** Tegyük fel, hogy $H$ redukált
+      maradékrendszer modulo $m$. Mivel a modulo $m$ redukált maradékosztályok száma a [euler-fuggveny] alapján
+      $\varphi(m)$, és $H$ minden redukált maradékosztályból pontosan egy elemet tartalmaz, ezért elemszáma
+      szükségképpen $\varphi(m)$. Továbbá $H$ elemei páronként inkongruensek modulo $m$, hiszen mindegyik különböző
+      redukált maradékosztályból származik. Végül $H$ minden eleme relatív prím $m$-hez, hiszen ezeket redukált
+      maradékosztályokból választottuk ki, márpedig a [redukalt-maradekosztaly-feltetele] alapján egy redukált
+      maradékosztálynak minden eleme relatív prím $m$-hez.
+  - type: narrative
+    content: |
+      ***Visszafelé:*** Tegyük fel, hogy a $H$ halmaz $\varphi(m)$ darab páronként inkongruens számot tartalmaz,
+      amelyek mindegyike relatív prím $m$-hez. Ekkor a páronkénti inkongruencia miatt ezek mindegyike különböző
+      maradékosztályokba tartozik, amelyek mindegyike az $m$-hez relatív prímség miatt redukált maradékosztály.
+      Továbbá mivel a számuk $\varphi(m)$, ezért $\varphi(m)$ darab redukált maradékosztályt reprezentálnak, azaz a
+      [euler-fuggveny] alapján az összeset. A $H$ halmaz tehát valóban egy modulo $m$ redukált maradékrendszer.

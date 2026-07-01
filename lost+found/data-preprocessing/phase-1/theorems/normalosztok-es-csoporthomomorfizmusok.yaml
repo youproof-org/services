@@ -1,0 +1,10 @@
+type: theorem
+name: normalosztok-es-csoporthomomorfizmusok
+proofs:
+  - normalosztok-es-csoporthomomorfizmusok-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen adva egy $G$ csoport és annak egy $N$ részhalmaza. Az $N$ részhalmaz ***akkor és csak akkor*** magja
+      egy valamilyen $G$-ből kiinduló csoporthomomorfizmusnak, ha ***normálosztó*** $G$-ben.

@@ -1,0 +1,17 @@
+type: theorem
+name: termeszetes-szamok-rendezesenek-tulajdonsagai
+proofs:
+  - termeszetes-szamok-rendezesenek-tulajdonsagai-bizonyitas
+remarks: []
+content:
+  - type: ordered-list
+    lead-in: |
+      A ***természetes számok*** $\N$ halmazán tetszőleges $a$, $b$ és $c$ számokra igazak az alábbiak:
+    items:
+      - 'Ha $a\leq b$ akkor $a+c \leq b+c$.'
+      - 'Ha $a\leq b$ akkor $ac \leq bc$.'
+  - type: narrative
+    content: |
+      Ha tehát egy egyenlőtlenség mindkét oldalához hozzáadjuk ugyanazt a ***természetes számot***, vagy mindkét
+      oldalát megszorozzuk ugyanazzal a ***természetes számmal***, akkor az egyenlőtlenség továbbra is érvényben
+      marad.

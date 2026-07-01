@@ -1,0 +1,26 @@
+type: proof
+name: termeszetes-szamok-rendezesi-relacioja-lemma-bizonyitas
+remarks: []
+references:
+  peano-axiomarendszer:
+    target:
+      type: definition
+      name: peano-axiomarendszer
+  termeszetes-szamok-rendezese:
+    target:
+      type: definition
+      name: termeszetes-szamok-rendezese
+content:
+  - type: narrative
+    content: |
+      Mivel ez egy ***"akkor és csak akkor"*** típusú állítás, ezért mindkét irányú következtetést igazolni kell.
+  - type: narrative
+    content: |
+      Ha $a\leq b$, akkor ez azt jelenti a [termeszetes-szamok-rendezese] definíció miatt, hogy létezik $n$,
+      amelyre $a+n=b$. Ám ekkor nyilvánvalóan $s(a+n)=s(b)$, és így $s(a)+n=s(b)$ is igaz. Ez viszont szintén a
+      definíció miatt épp azt jelenti, hogy $s(a)\leq s(b)$.
+  - type: narrative
+    content: |
+      Megfordítva: ha $s(a)\leq s(b)$, akkor létezik $n$, amelyre $s(a)+n=s(b)$. Ám ekkor nyilvánvalóan
+      $s(a+n)=s(b)$ is igaz, amiből a 2. Peano-axióma miatt ([peano-axiomarendszer]) $a+n=b$ következik. Ez viszont
+      épp azt jelenti, hogy $a\leq b$.

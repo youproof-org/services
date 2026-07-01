@@ -1,0 +1,58 @@
+type: section
+name: 14-visszateres-a-megszokott-jelolesekhez
+title: Visszatérés a megszokott jelölésekhez
+
+references:
+  egesz-szamok-halmaza:
+    target:
+      type: definition
+      name: egesz-szamok-halmaza
+  pozitiv-es-negativ-egesz-szamok:
+    target:
+      type: definition
+      name: pozitiv-es-negativ-egesz-szamok
+
+body:
+  - type: narrative
+    content: |
+      A [egesz-szamok-halmaza]val az előző részben bevezettük az egész számok $\Z$ halmazát, amelynek elemeit
+      természetes számpárok ekvivalencia-osztályaiként határoztuk meg. Ezekre a szokatlan $[(a;b)]$ jelölésmódot
+      alkalmaztuk, és definiáltunk közöttük egy "összeadásnak" és "szorzásnak" nevezett műveletet, amelyeket a
+      szintén szokatlan $\oplus$ és $\odot$ szimbólumokkal jelöltünk. Erre a szokatlan jelölésmódra azért volt
+      szükség, mert szerettük volna kihangsúlyozni, hogy a $(\Z , \oplus , \odot )$ algebrai struktúrának látszólag
+      semmi köze nincs a 11. és 12. részben bevezetett, a Peano-axiómarendszer által meghatározott $(\N ,+,\cdot )$
+      algebrai struktúrához, azaz a természetes számok halmazához.
+  - type: narrative
+    content: |
+      Mostanra azonban már kiderült, hogy ez utóbbi struktúra beágyazható a $\Z$ halmazba, méghozzá az
+      $f(n)=[(n;0)]$ beágyazófüggvénnyel, amelyről bizonyítottuk, hogy algebrai értelemben tartja a
+      Peano-összeadást és a Peano-szorzást. Ez azt jelenti számunkra, hogy a természetes számok eredeti halmazán
+      &ndash; amelyet átmenetileg $\N_1$-gyel jelöltünk &ndash; és annak $f$ szerinti képén &ndash; amelyet
+      átmenetileg $\N_2$-vel jelöltünk, és amely már a $\Z$ halmaz része &ndash; az "összeadás" és "szorzás"
+      műveletek gyakorlatilag ugyanúgy viselkednek, leszámítva a jelölésbeli különbséget.
+  - type: figure
+    src: 05-termeszetes-szamok-beagyazasa-z-be.jpg
+    alt: Természetes számok beágyazása Z-be
+    caption: 'Természetes számok beágyazása $\Z$-be'
+  - type: narrative
+    content: |
+      A továbbiakban tehát nyugodtan elfelejthetjük a régi $(\N_1 ,+,\cdot )$ algebrai struktúrát, és tekinthetjük
+      az új $(\N_2 ,\oplus ,\odot )$ algebrai struktúrát a ***természetes számoknak***, amely így már az
+      általánosabb $(\Z , \oplus, \odot )$ algebrai struktúra része. Amint az az alábbi tételből kiderül, ez az
+      algebrai struktúra előnyösebb tulajdonságokkal rendelkezik az elődjéhez képest.
+  - type: embed
+    target:
+      type: theorem
+      name: egesz-szamok-gyuruje
+  - type: embed
+    target:
+      type: proof
+      name: egesz-szamok-gyuruje-bizonyitas
+  - type: narrative
+    content: |
+      A továbbiakban tehát a fura $\oplus$, $\odot$ és $\ominus$ jelölések helyett rendre a $+$, a $\cdot$ (vagy
+      egymás után írás) és a $-$ szimbólumokat fogjuk használni a $\Z$ halmazon értelmezett műveleteinkhez. Ezen
+      kívül az egész számokat a továbbiakban nem a szintén szokatlan $[(a;b)]$ alakban fogjuk jelölni, hanem a
+      [pozitiv-es-negativ-egesz-szamok]ban szereplő, az általános iskolából jól ismert jelöléseket használjuk
+      mostantól. Végül a természetes számok $\N$ halmaza alatt a továbbiakban a $\Z$-nek azt a részhalmazát fogjuk
+      érteni, amely a pozitív egész számokat és a $0$ egész számot tartalmazza.

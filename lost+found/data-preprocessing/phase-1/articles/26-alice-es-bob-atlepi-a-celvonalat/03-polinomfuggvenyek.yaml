@@ -1,0 +1,166 @@
+type: section
+name: 03-polinomfuggvenyek
+title: Polinomfüggvények
+
+references:
+  modularis-osszeadas-es-szorzas:
+    target:
+      type: definition
+      name: modularis-osszeadas-es-szorzas
+  polinomfuggveny:
+    target:
+      type: definition
+      name: polinomfuggveny
+  polinomok:
+    target:
+      type: definition
+      name: polinomok
+
+body:
+  - type: narrative
+    content: |
+      Legyen adott továbbra is egy tetszőleges $R$ kommutatív gyűrű. Az előző szakaszban tárgyalt $R$ feletti
+      polinomok felfoghatók olyan "gépek" ***leírásaként*** is, amelyek nagyon hasonlítanak a 11. részben definiált
+      kétváltozós műveletekhez. A különbség pusztán annyi, hogy ebben az esetben egy ilyen "gép" tetején kettő
+      helyett csak egy lyuk van.
+  - type: figure
+    lead-in: |
+      Ha például $f$ egy $R$ feletti polinom, azaz $f\in R[x]$, akkor jelöljük $F$-fel az általa ***leírt***
+      "gépet", amelyet tehát így tudunk elképzelni:
+    src: 01-az-f-polinom-altal-leirt.jpg
+    alt: Az f polinom által leírt gép
+    caption: Az $f$ polinom által leírt gép
+  - type: narrative
+    content: |
+      Ha most ennek az $F$-fel jelölt "gépnek" a tetején bedobunk egy valamilyen $R$-beli elemet, akkor ez a "gép"
+      "végre fogja hajtani" az $f$ polinom, mint az ő ***leírása*** által specifikált műveletsorozatot. Ennek az
+      eredménye szintén az $R$ gyűrű valamely eleme lesz, amely szépen kipottyan a "gép" alján.
+  - type: narrative
+    content: |
+      Nézzünk is egy konkrét példát.
+  - type: formula
+    lead-in: |
+      Tekintsük például az alábbi $f$ polinomot az egész számok $\Z$ gyűrűje feletti $\Z[x]$ polinomgyűrűben:
+    content: |
+      f=(1,2,3,0,0,0,\ldots)
+  - type: narrative
+    content: |
+      Itt szándékosan a [polinomok]ban szereplő végtelen sorozattal történő reprezentációt használtuk, mivel
+      hangsúlyozni szeretnénk, hogy az $f$ polinom csupán egy ***leírása*** az $F$-fel jelölt "gépnek", nem pedig
+      maga a "gép".
+  - type: figure
+    lead-in: |
+      Az alábbi ábra mutatja, hogy mi történik, ha ennek a "gépnek" a felső nyílásába "bedobjuk" a $4\in \Z$ egész
+      számot:
+    src: 02-az-f-polinom-altal-leirt.jpg
+    alt: Az f polinom által leírt gép (példa)
+    caption: Az $f$ polinom által leírt gép (példa)
+  - type: narrative
+    content: |
+      A "gép" alján tehát az $57\in \Z$ egész szám, mint eredmény fog kipottyanni.
+  - type: formula
+    lead-in: |
+      A "gép" működését könnyen megérthetjük, ha az $f$ polinomot, mint e "gép" ***leírását*** a [polinomok]ban
+      szereplő végtelen sorozat helyett kevésbé precízen a neki megfelelő alábbi kifejezésként képzeljük el,
+      ahogyan azt az ábrán is feltüntettük:
+    content: |
+      f=1+2x+3x^2
+  - type: narrative
+    content: |
+      Valóban, a "gép" alján kipottyanó $57$ egész szám úgy áll elő, hogy a tetején bedobott $4$ egész számot
+      ***behelyettesítjük*** ebbe a kifejezésbe az $x$ ismeretlen helyére, és az így kapott műveletsorozatot
+      végrehajtjuk a $\Z$ gyűrűben. Ez az "algoritmus" nyilván bármilyen egész számra végrehajtható. Így az $f$
+      polinom által ***leírt*** $F$ "gép" tulajdonképpen nem más, mint egy $F:\Z\to \Z$ ***függvény***, amely tehát
+      a $\Z$ gyűrű minden eleméhez egyértelműen hozzárendel szintén egy $\Z$-beli gyűrűelemet. Méghozzá azt,
+      amelyet az $f$ polinom által ***leírt*** műveletsorozat végrehajtásával számítunk ki a bemeneti gyűrűelemből.
+      Ez elvezet minket az alábbi fontos definícióhoz.
+  - type: embed
+    target:
+      type: definition
+      name: polinomfuggveny
+  - type: narrative
+    content: |
+      Itt tehát az $x$ már nem csupán egy szimbolikus változó, hanem egy konkrét $R$-beli gyűrűelemet jelöl. Fontos
+      kihangsúlyozni, hogy egy polinom illetve a hozzátartozó polinomfüggvény ***két teljesen különböző fogalom***,
+      noha első látásra ez nem látszik.
+  - type: formula
+    lead-in: |
+      Például tekintsük az alábbi két $\Z$ feletti polinomot és a hozzájuk tartozó polinomfüggvényeket:
+    content: |
+      \begin{aligned}f=(0,0,3,0,0,\ldots) &\to F(x)=3x^2 \\ g=(0,2,1,0,0,\ldots) &\to G(x)=2x+x^2\end{aligned}
+  - type: narrative
+    content: |
+      Mivel most az egész számok $\Z$ gyűrűjéről van szó, ezért az $F$ és $G$ polinomfüggvények grafikonjait a
+      középiskolában megszokott módon ábrázolhatjuk is két egymásra merőleges tengely segítségével, amelyek a
+      nullánál metszik egymást.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán az $F$ polinomfüggvény grafikonjának pontjait $\bullet$-okkal, a $G$ polinomfüggvény
+      grafikonjának pontjait pedig $\circ$-ökkel ábrázoltuk:
+    src: 03-polinomfuggvenyek-grafikonja.jpg
+    alt: Polinomfüggvények grafikonja
+    caption: Polinomfüggvények grafikonja
+  - type: narrative
+    content: |
+      Látható, hogy jelen esetben az $f$ és $g$ polinomok egyértelműen azonosíthatók a hozzájuk tartozó $F$ és $G$
+      polinomfüggvényekkel, hiszen ezek grafikonjai is különböznek egymástól. Ezért egyesek hajlamosak arra
+      gondolni, hogy gyakorlati szempontból nincs is különbség a két fogalom között.
+  - type: narrative
+    content: |
+      Egy gondolatkísérlet erejéig azonban térjünk most át az egész számok $\Z$ gyűrűjéről a
+      [modularis-osszeadas-es-szorzas]ban definiált $Z_4$ gyűrűre, és tegyük fel, hogy a fenti $f$ és $g$
+      polinomok most a $Z_4[x]$ polinomgyűrű elemei. Ezt nyugodtan megtehetjük, hiszen az őket reprezentáló
+      végtelen sorozatok elemei $4$-nél kisebb egész számok, vagyis mindannyian tekinthetők a $Z_4$ gyűrű
+      elemeinek is.
+  - type: formula
+    lead-in: |
+      Ekkor az $f$-hez és $g$-hez tartozó $F$ és $G$ polinomfüggvényeket a [polinomfuggveny] alapján ugyanúgy a
+      fenti két képlettel adhatjuk meg:
+    content: |
+      \begin{aligned}f=(0,0,3,0,0,\ldots) &\to F(x)=3x^2 \\ g=(0,2,1,0,0,\ldots) &\to G(x)=2x+x^2\end{aligned}
+  - type: narrative
+    content: |
+      A különbség pusztán annyi, hogy itt az $F$ és $G$ polinomfüggvények képletében szereplő összeadások és
+      szorzások alatt most a $Z_4$ gyűrű műveleteit, vagyis a [modularis-osszeadas-es-szorzas]ban definiált
+      ***moduláris összeadást és szorzást*** kell érteni.
+  - type: formula
+    lead-in: |
+      Mivel a $Z_4$ gyűrűnek mindössze $4$ eleme van, ezért most az $F$ és $G$ polinomfüggvények "grafikonjait" az
+      alábbi táblázatban adhatjuk meg:
+    content: |
+      \begin{array}{c||c|c}x & F(x)=3x^2 & G(x)=2x+x^2 \\ \hline 0 & 3\cdot 0^2=0 & 2\cdot 0+0^2=0 \\ 1 & 3\cdot
+      1^2=3 & 2\cdot 1+1^2=3 \\ 2 & 3\cdot 2^2=0 & 2\cdot 2+2^2=0 \\ 3 & 3\cdot 3^2=3 & 2\cdot 3+3^2=3\end{array}
+  - type: narrative
+    content: |
+      A példából jól látszik, hogy noha az $f$ és $g$ polinomok most is különböznek egymástól, a hozzájuk tartozó
+      polinomfüggvények mégis ugyanazt a hozzárendelést valósítják meg, hiszen bármely $x\in Z_4$ gyűrűelemhez
+      mindketten ugyanazt a szintén $Z_4$-beli gyűrűelemet rendelik hozzá. Ez a fenti táblázatból is látszik,
+      hiszen a "grafikonjaikhoz" tartozó oszlopok azonosak, ami viszont azt jelenti, hogy a két polinomfüggvény
+      megegyezik, függetlenül attól, hogy kétféle képlettel is le tudtuk írni őket a $Z_4$ gyűrű műveleteit
+      használva. Általánosságban tehát minden polinomhoz egyértelműen tartozik egy polinomfüggvény, azonban ugyanaz
+      a polinomfüggvény tartozhat egynél több polinomhoz is.
+  - type: narrative
+    content: |
+      A polinomok és polinomfüggvények tehát két nagyon különböző állatfaj. Van azonban közöttük egy fontos
+      összefüggés, amelyre hamarosan rávilágítunk. Először azonban definiáljuk, hogy mit értünk két függvény
+      (speciálisan két polinomfüggvény) pontonkénti összege illetve szorzata, vagy teljes általánosságban két
+      függvény pontonkénti "összeműveletezése" alatt.
+  - type: embed
+    target:
+      type: definition
+      name: fuggvenyek-kozotti-muveletek
+  - type: narrative
+    content: |
+      Ennek a fogalomnak a felhasználásával megfogalmazhatjuk a már említett, polinomok és polinomfüggvényeik
+      közötti fontos összefüggést.
+  - type: embed
+    target:
+      type: theorem
+      name: polinomok-osszegenek-es-szorzatanak-polinomfuggvenye
+  - type: narrative
+    content: |
+      A bizonyításban a polinomokkal való számolás intuitív bevezetése során látott gondolatmenetet fogjuk követni.
+  - type: embed
+    target:
+      type: proof
+      name: polinomok-osszegenek-es-szorzatanak-polinomfuggvenye-bizonyitas

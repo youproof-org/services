@@ -1,0 +1,17 @@
+type: theorem
+name: prim-modulus-hatvanyozasa
+proofs:
+  - prim-modulus-hatvanyozasa-bizonyitas
+remarks: []
+content:
+  - type: formula
+    lead-in: |
+      Legyen $p$ egy pozitív prímszám, $a$ pedig egy tetszőleges egész szám, amely $p$-vel osztva $1$-et ad
+      maradékul, azaz amelyre teljesül az alábbi kongruencia:
+    content: |
+      a\equiv 1\pmod p
+  - type: formula
+    lead-in: |
+      Ekkor tetszőleges $c\geq 1$ egész kitevő esetén teljesül az alábbi kongruencia is:
+    content: |
+      a^{p^{c-1}}\equiv 1\pmod{p^c}

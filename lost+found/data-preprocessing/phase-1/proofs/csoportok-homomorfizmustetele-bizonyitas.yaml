@@ -1,0 +1,85 @@
+type: proof
+name: csoportok-homomorfizmustetele-bizonyitas
+remarks: []
+references:
+  csoporthomomorfizmus-kepenek-feltetele:
+    target:
+      type: theorem
+      name: csoporthomomorfizmus-kepenek-feltetele
+  csoporthomomorfizmus-magjanak-szukseges-feltetele:
+    target:
+      type: theorem
+      name: csoporthomomorfizmus-magjanak-szukseges-feltetele
+content:
+  - type: narrative
+    content: |
+      Előszöris megjegyezzük, hogy a [csoporthomomorfizmus-magjanak-szukseges-feltetele] 4. pontja alapján $\ker f$
+      normálosztó $G$-ben, így a baloldalon álló $G/\ker f$ faktorcsoport valóban értelmes. Igaz továbbá, hogy a
+      [csoporthomomorfizmus-kepenek-feltetele] alapján $\text{im} f$ részcsoport abban a csoportban, ahová $f$
+      mutat, így a tételben szereplő csoportizomorfia jobboldala is értelmes. Most megmutatjuk, hogy az izomorfia
+      valóban teljesül.
+  - type: narrative
+    content: |
+      Az átláthatóság érdekében vezessük be az $N=\ker f$ jelölést. A $G/N$ faktorcsoport elemei tehát az $N=\ker
+      f$, mint normálosztó szerinti baloldali mellékosztályok. A
+      [csoporthomomorfizmus-magjanak-szukseges-feltetele] 2. pontja alapján minden ilyen baloldali mellékosztályban
+      az ott lévő elemeknek ugyanaz lesz az $f$ szerinti képe $H$-ban, tehát abban a csoportban, ahová $f$ mutat.
+  - type: narrative
+    content: |
+      Ez alapján definiálhatunk egy $g:G/N\to \text{im} f$ leképezést a tételben szereplő faktorcsoport és az $f$
+      csoporthomomorfizmus képe között. Ennek a leképezésnek a képletét a $G$ csoport elemeinek és az $f$
+      csoporthomomomorfizmusnak a segítségével adjuk meg.
+  - type: formula
+    lead-in: |
+      Az alábbi képlet azt fejezi ki, hogy minden $a$ elem esetén a $g$ leképezés az $a$ elemet tartalmazó
+      ***BALOLDALI MELLÉKOSZTÁLYhoz*** épp azt az elemet rendeli hozzá a $H$ csoportból, amelyet az $f$
+      csoporthomomorfizmus is hozzárendel magához az $a$ ***ELEMhez***:
+    content: |
+      g(aN)=f(a)
+  - type: narrative
+    content: |
+      Az alábbi ábra mutatja a $g$ leképezés iménti konstrukcióját.
+  - type: figure
+    src: faktorcsoport_izomorfizmusa.jpg
+    alt: 
+    caption: Faktorcsoport elemeinek leképezése
+  - type: narrative
+    content: |
+      Ez egy értelmes leképezés, ha ugyanis valamely $a$ és $b$ elemek ugyanabban a baloldali mellékosztályban
+      vannak, akkor a [csoporthomomorfizmus-magjanak-szukseges-feltetele] 2. pontja alapján az ő $f$ szerinti képük
+      megegyezik. Így tehát a $g$ leképezés eredménye nem függ attól, hogy a bemeneti baloldali mellékosztály mely
+      reprezentánselemének segítségével számítottuk azt ki a fenti képlettel.
+  - type: narrative
+    content: |
+      Most igazoljuk, hogy a $g$ leképezés ***kölcsönösen egyértelmű***. Előszöris azt mutatjuk meg, hogy két
+      különböző baloldali mellékosztály $g$ szerinti képe is különbözik. Tegyük fel ezért indirekt, hogy a $G$
+      csoport $a$ és $b$ elemei két ***különböző*** baloldali mellékosztályban vannak, ám e két mellékosztálynak
+      ennek ellenére ugyanaz a $g$ szerinti képe, azaz $g(aN)=g(bN)$. Ez a $g$ leképezés definíciója alapján azt
+      jelentené, hogy $f(a)=f(b)$. De ez ***ellentmondás***, hiszen ez azt jelentené, hogy $a$ és $b$ mégis
+      ugyanabban a baloldali mellékosztályban van. Azt tehát már tudjuk, hogy a $H$-beli $\text{im} f$ részcsoport
+      minden eleme ***legfeljebb egy*** baloldali mellékosztálynak lehet a $g$ szerinti képe, azaz $g$
+      ***injektív***.
+  - type: narrative
+    content: |
+      A kölcsönös egyértelműséghez azt kell még igazolni, hogy $\text{im} f$-ben nincs olyan elem, amely ne lenne
+      képe valamely baloldali mellékosztálynak a $g$ függvény szerint (azaz, hogy $g$ ***szürjektív***). Ez viszont
+      természetesen teljesül, hiszen $\text{im} f$ nem más, mint az $f$ csoporthomomorfizmus képe. Következésképp
+      minden itt lévő $a$ elemhez létezik olyan $x$ elem a $G$ csoportban, amelynek épp $a$ a képe az $f$ függvény
+      szerint (azaz $f(x)=a$). Ez az $x$ elem viszont benne van az $xN$ baloldali mellékosztályban, amelyhez
+      viszont a $g$ függvény rendeli hozzá az $a$ elemet $H$-ban. A $g$ függvény tehát valóban ***kölcsönösen
+      egyértelmű***.
+  - type: narrative
+    content: |
+      A $g$ ***művelettartási tulajdonsága*** a fenti képletből már könnyen adódik. Felhívjuk az Olvasó figyelmét,
+      hogy az alábbi levezetésben három különböző csoport is érintett, ennek megfelelően az ezekben értelmezett
+      műveletek között jelölésbeli különbséget is tettünk.
+  - type: formula
+    lead-in: |
+      A $G/N$ faktorcsoport műveletét a $\odot$, a $G$ csoport műveletét a $\cdot$, míg a $H$ csoport műveletét a
+      $\boxdot$ szimbólumokkal jelöltük:
+    content: |
+      \begin{aligned}g(aN\odot bN)&=g((a\cdot b)N)=\\&=f(a\cdot b)=f(a)\boxdot f(b)=\\&=g(aN)\boxdot
+      g(bN)\end{aligned}
+  - type: narrative
+    content: |
+      Így tehát $g$ valóban ***csoportizomorfizmus*** a $G/N$ faktorcsoport és $f$ képe között.

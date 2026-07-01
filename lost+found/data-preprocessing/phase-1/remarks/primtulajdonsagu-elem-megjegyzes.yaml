@@ -1,0 +1,9 @@
+type: remark
+name: primtulajdonsagu-elem-megjegyzes
+content:
+  - type: narrative
+    content: |
+      A definícióból és a szorzás asszociativitásából azonnal adódik, hogy ez a tulajdonság akárhánytényezős
+      szorzatokra is ugyanúgy működik. Azaz ha $p$ prím, és teljesül a $p|a_1\cdot a_2\cdot \ldots \cdot a_n$
+      oszthatóság, akkor a $p|a_1$, $p|a_2$, ..., $p|a_n$ oszthatóságok közül ***legalább az egyik*** ugyancsak
+      teljesül. Ennek végiggondolását az Olvasóra bízzuk.

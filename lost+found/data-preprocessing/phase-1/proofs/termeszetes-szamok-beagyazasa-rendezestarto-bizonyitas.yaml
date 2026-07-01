@@ -1,0 +1,37 @@
+type: proof
+name: termeszetes-szamok-beagyazasa-rendezestarto-bizonyitas
+remarks: []
+references:
+  egesz-szamok-rendezese:
+    target:
+      type: definition
+      name: egesz-szamok-rendezese
+  pozitiv-es-negativ-egesz-szamok:
+    target:
+      type: definition
+      name: pozitiv-es-negativ-egesz-szamok
+  termeszetes-szamok-beagyazasa-osszegtarto:
+    target:
+      type: theorem
+      name: termeszetes-szamok-beagyazasa-osszegtarto
+  termeszetes-szamok-rendezese:
+    target:
+      type: definition
+      name: termeszetes-szamok-rendezese
+content:
+  - type: narrative
+    content: |
+      Ha $a\leq b$, akkor létezik olyan $k$ elem az $\N_1$ halmazban, amelyre $a+k=b$. Mivel a
+      [termeszetes-szamok-beagyazasa-osszegtarto] miatt az $f$ függvény tartja a Peano-összeadást, ezért $f(a+k)=
+      f(a)\oplus f(k) = f(b)$. Tekintve, hogy az $\N_1$ halmaz minden elemének $f$ szerinti képe a
+      [pozitiv-es-negativ-egesz-szamok] értelmében pozitív vagy $0$ a $\Z$ halmazon belül (tehát természetes szám),
+      így nyilván $f(k)$ is az. Azaz a [egesz-szamok-rendezese] értelmében $f(a)\lesssim f(b)$.
+  - type: narrative
+    content: |
+      ***Megfordítva:*** ha $f(a)\lesssim f(b)$, akkor létezik olyan $c$ természetes szám a $\Z$ halmazon belül,
+      amelyre $f(a)\oplus c=f(b)$. Mivel $c$ természetes szám, ezért csak pozitív vagy $0$ lehet. Emiatt létezik az
+      $\N_1$ halmazban olyan $n$ elem, amelynek épp ő az $f$ szerinti képe, azaz amelyre $f(n)=c$, és így
+      $f(a)\oplus f(n)=f(b)$. De mivel az $f$ függvény tartja a Peano-összeadást, ezért $f(a+n)=f(b)$ is teljesül.
+      Tekintve, hogy az $f$ függvény minden $\Z$-beli elemet legfeljebb egy $\N_1$-beli elemhez rendel hozzá, ezért
+      ebből $a+n=b$ következik. Ez viszont a [termeszetes-szamok-rendezese] értelmében épp azt jelenti, hogy $a\leq
+      b$.

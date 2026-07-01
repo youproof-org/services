@@ -1,0 +1,30 @@
+type: definition
+name: fuggvenyek-kozotti-muveletek
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ egy tetszőleges ***gyűrű*** egy $+$ szimbólummal jelölt összeadással és egy $\cdot$ szimbólummal
+      vagy egymás után írással jelölt szorzással. Legyenek továbbá $f:R\to R$ és $g:R\to R$ valamilyen $R$-en
+      értelmezett és $R$-be képező függvények.
+  - type: narrative
+    content: |
+      Ekkor az $f+g$-vel illetve $f\cdot g$-vel jelölt függvények alatt azokat a &ndash; szintén $R$-en értelmezett
+      és $R$-be képző &ndash; függvényeket értjük, amelyek minden $x\in R$ gyűrűelemhez rendre az $f(x)+g(x)$
+      illetve az $f(x)\cdot g(x)$ elemet rendelik hozzá. Előbbit az $f$ és $g$ függvények ***pontonkénti
+      összegének***, utóbbit pedig ***pontonkénti szorzatának*** nevezzük.
+  - type: formula
+    lead-in: |
+      Képlettel:
+    content: |
+      \begin{aligned}(f+g)(x)&=f(x)+g(x) \\ (f\cdot g)(x)&=f(x)\cdot g(x)\end{aligned}
+  - type: narrative
+    content: |
+      ***Általánosságban:*** Amennyiben $R$ tetszőleges ***halmaz*** egy valamilyen $*$ szimbólummal jelölt
+      kétváltozós művelettel, akkor az $f*g$-vel jelölt függvény alatt azt a függvényt értjük, amely minden $x\in
+      R$ elemhez az $f(x)*g(x)$ elemet rendeli hozzá.
+  - type: formula
+    lead-in: |
+      Képlettel:
+    content: |
+      (f*g)(x)=f(x)*g(x)

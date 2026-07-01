@@ -1,0 +1,27 @@
+type: theorem
+name: linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga
+proofs:
+  - linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $a$ és $b$ tetszőleges, $m\gt 0$ pedig valamilyen ***pozitív*** egész szám.
+  - type: formula
+    lead-in: |
+      Ekkor az $a\cdot x\equiv b\pmod m$ lineáris kongruencia ***akkor és csak akkor*** oldható meg, ha megoldható
+      az alábbi úgynevezett ***lineáris diofantoszi egyenlet***:
+    content: |
+      a\cdot x+m\cdot y=b
+  - type: narrative
+    content: |
+      Itt ***megoldáson*** egy olyan ***egész számpárt*** értünk, amelyeket a fenti lineáris diofantoszi egyenletbe
+      $x$ és $y$ helyére behelyettesítve teljesül az egyenlőség. Egy tetszőleges $s$ egész szám által reprezentált
+      $[s]_m$ maradékosztály ***akkor és csak akkor*** megoldása az $ax\equiv b\pmod m$ lineáris kongruenciának, ha
+      létezik olyan $t$ egész szám, hogy az $(s;t)$ számpár megoldása az $ax+my=b$ lineáris diofantoszi egyenletnek
+      &ndash; azaz fennáll az $as+mt=b$ egyenlőség.
+  - type: narrative
+    content: |
+      Jelöljük $(a,m)$-mel az $a$ és $m$ egész számok ***kitüntetett közös osztóját***. A fenti lineáris
+      diofantoszi egyenletnek &ndash; és így a neki megfelelő $ax\equiv b\pmod m$ lineáris kongruenciának &ndash;
+      ***akkor és csak akkor*** létezik megoldása, ha teljesül az $(a,m)|b$ oszthatóság.

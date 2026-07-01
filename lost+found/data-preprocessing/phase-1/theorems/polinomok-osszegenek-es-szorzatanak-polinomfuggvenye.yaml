@@ -1,0 +1,21 @@
+type: theorem
+name: polinomok-osszegenek-es-szorzatanak-polinomfuggvenye
+proofs:
+  - polinomok-osszegenek-es-szorzatanak-polinomfuggvenye-bizonyitas
+remarks: []
+references:
+  fuggvenyek-kozotti-muveletek:
+    target:
+      type: definition
+      name: fuggvenyek-kozotti-muveletek
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ tetszőleges ***kommutatív gyűrű***, $f$ és $g$ pedig tetszőleges $R$ feletti polinomok a hozzájuk
+      tartozó $F$ és $G$ polinomfüggvényekkel. Az $R$ gyűrű műveleteit jelöljük a szokásos módon, míg az $R[x]$
+      polinomgyűrű műveleteit jelöljük a $\oplus$ és $\odot$ szimbólumokkal.
+  - type: narrative
+    content: |
+      Ekkor az $f\oplus g$ összegpolinomhoz az $F+G$, míg az $f\odot g$ szorzatpolinomhoz az $F\cdot G$
+      polinomfüggvény tartozik, melyek alatt a [fuggvenyek-kozotti-muveletek] szerinti értelemben vett pontonkénti
+      összeg- illetve szorzatfüggvényeket értjük.

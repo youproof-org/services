@@ -1,0 +1,12 @@
+type: theorem
+name: csoporthomomorfizmusok-ciklikussagtarto-tulajdonsaga
+proofs:
+  - csoporthomomorfizmusok-ciklikussagtarto-tulajdonsaga-bizonyitas
+remarks:
+  - csoporthomomorfizmusok-ciklikussagtarto-tulajdonsaga-megjegyzes
+content:
+  - type: narrative
+    content: |
+      Legyenek $G$ és $H$ tetszőleges csoportok, továbbá legyen adott egy $f:G\to H$ ***szürjektív
+      csoporthomomorfizmus***. Ebben az esetben ha $G$ ciklikus, melynek generátoreleme $g$, akkor $H$ is ciklikus,
+      melynek generátoreleme $f(g)$.

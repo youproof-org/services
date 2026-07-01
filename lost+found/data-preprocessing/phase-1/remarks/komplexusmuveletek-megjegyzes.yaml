@@ -1,0 +1,20 @@
+type: remark
+name: komplexusmuveletek-megjegyzes
+references:
+  gyuru-test:
+    target:
+      type: definition
+      name: gyuru-test
+content:
+  - type: ordered-list
+    items:
+      - 'Tegyük fel, hogy $m$ egy ***nemnulla*** egész szám. Ekkor az $m$-mel osztható egész számok halmazát (vagy
+        más szavakkal $m$ többszöröseit) a fenti komplexusszorzást alkalmazva $m\Z$-vel jelölhetjük. Például a
+        páros számok halmazát ezért jelöljük $2\Z$-vel.'
+      - 'A komplexusösszeadást is alkalmazva ennek megfelelően a páratlan számok halmazát $2\Z+1$-gyel
+        jelölhetjük.'
+      - 'Egy gyűrű valamilyen $S$ részhalmaza és $r$ eleme esetén az $r+S$ halmaz mindig megegyezik az $S+r$
+        halmazzal, hiszen a [gyuru-test] szerinti 1. gyűrűaxióma alapján az
+        összeadás kommutatív, így mindegy, hogy melyik oldalról adjuk hozzá az $r$ elemet az $S$ elemeihez.'
+      - 'Ezzel szemben az $rS$ halmaz általában különbözik az $Sr$ halmaztól, mivel a szorzás általában nem
+        kommutatív (kivéve persze kommutatív gyűrűk esetén).'

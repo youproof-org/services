@@ -1,0 +1,44 @@
+type: proof
+name: peano-nullszorzat-tenyezoi-bizonyitas
+remarks: []
+references:
+  peano-axiomarendszer:
+    target:
+      type: definition
+      name: peano-axiomarendszer
+  peano-nullosszeg-tagjai:
+    target:
+      type: theorem
+      name: peano-nullosszeg-tagjai
+  peano-szorzas:
+    target:
+      type: definition
+      name: peano-szorzas
+content:
+  - type: narrative
+    content: |
+      A korábbi részekben már jól bejáratott ***indirekt bizonyítást*** fogjuk alkalmazni. Azaz megmutatjuk, hogy
+      milyen képtelen következményekhez vezetne, ha az állítás nem lenne igaz.
+  - type: narrative
+    content: |
+      Tegyük fel tehát, hogy léteznek olyan galád $a$ és $b$ természetes számok, amelyek esetén $a\cdot b=0$,
+      ugyanakkor $a\eq 0$ és $b\eq 0$.
+  - type: narrative
+    content: |
+      Mivel $b\eq 0$, ezért a Peano-axiómarendszer ([peano-axiomarendszer]) 3. pontja miatt létezik olyan
+      természetes szám, amelynek épp $b$ a rákövetkezője. Jelöljük ezt a számot $c$-vel, azaz $s(c)=b$.
+  - type: formula
+    lead-in: |
+      Ekkor viszont $b$ helyére behelyettesítve $s(c)$-t, a következőt kapjuk:
+    content: |
+      a\cdot \underbrace{s(c)}_{=b} = 0
+  - type: formula
+    lead-in: |
+      A Peano-szorzás definíciójának ([peano-szorzas]) 2. pontja miatt ez a kifejezés így is írható:
+    content: |
+      a\cdot c + a = 0
+  - type: narrative
+    content: |
+      Viszont a [peano-nullosszeg-tagjai] miatt a természetes számok körében egy összeg csak akkor lehet 0, ha
+      mindkét tagja 0. Azaz jelen esetben $a\cdot c=0$ és $a=0$. Ezek közül a második viszont ellentmond annak az
+      indirekt feltételezésünknek, miszerint $a\eq 0$.

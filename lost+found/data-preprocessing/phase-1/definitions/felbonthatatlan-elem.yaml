@@ -1,0 +1,13 @@
+type: definition
+name: felbonthatatlan-elem
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ egy tetszőleges ***kommutatív gyűrű***. Ha valamely $a$, $b$ és $c$ elemekre $a=b\cdot c$
+      teljesül, akkor a $b\cdot c$ szorzatot az $a$ elem ***felbontásának*** nevezzük. Azokat a felbontásokat,
+      amelyekben $b$ és $c$ közül az egyik egység, a másik pedig $a$ asszociáltja, ***triviális felbontásoknak***
+      nevezzük. Ha egy gyűrűelem saját maga nem egység és nem létezik nemtriviális felbontása (azaz ha létezik is
+      felbontása, az csak triviális lehet), akkor őt ***felbonthatatlannak vagy irreducibilisnek*** nevezzük. Ha
+      egy elem nem felbonthatatlan és nem egység, akkor őt ***összetett elemnek*** nevezzük. Az egységeket nem
+      tekintjük sem felbonthatatlannak, sem pedig összetettnek.

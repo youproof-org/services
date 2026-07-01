@@ -1,0 +1,54 @@
+type: proof
+name: peano-szorzas-asszociativitas-bizonyitas
+remarks: []
+references:
+  peano-szorzas:
+    target:
+      type: definition
+      name: peano-szorzas
+  peano-szorzas-disztributivitas:
+    target:
+      type: theorem
+      name: peano-szorzas-disztributivitas
+content:
+  - type: narrative
+    content: |
+      Ezúttal is $c$-re vonatkozó teljes indukcióval bizonyítunk.
+  - type: formula
+    lead-in: |
+      ***Indukciós feltételként*** feltételezzük, hogy valamilyen $c=n$-re a tétel már teljesül, azaz:
+    content: |
+      (a\cdot b)\cdot n = a\cdot (b\cdot n)
+  - type: formula
+    lead-in: |
+      Feladatunk megmutatni, hogy ekkor $c=s(n)$-re is teljesül, azaz:
+    content: |
+      (a\cdot b)\cdot s(n) = a\cdot (b\cdot s(n))
+  - type: formula
+    lead-in: |
+      A [peano-szorzas] 2. pontja miatt:
+    content: |
+      (a\cdot b)\cdot s(n) = ((a\cdot b) \cdot n) + (a\cdot b)=\ldots
+  - type: formula
+    lead-in: |
+      Az indukciós feltétel miatt:
+    content: |
+      \ldots =(a\cdot (b \cdot n)) + (a\cdot b)=\ldots
+  - type: formula
+    lead-in: |
+      A disztributivitási szabály miatt ([peano-szorzas-disztributivitas]):
+    content: |
+      \ldots =a\cdot ((b \cdot n) + b)=\ldots
+  - type: formula
+    lead-in: |
+      Végül ismételten a [peano-szorzas] 2. pontja miatt:
+    content: |
+      \ldots =a\cdot (b \cdot s(n))
+  - type: narrative
+    content: |
+      A dominósor tehát felállítva, most elborítjuk az első dominót, azaz belátjuk, hogy $c=0$-ra a tétel igaz.
+  - type: formula
+    lead-in: |
+      Ez viszont nyilvánvalóan teljesül a [peano-szorzas] 1. pontjának háromszori alkalmazásával:
+    content: |
+      (a\cdot b) \cdot \underbrace{0}_{=c} = 0 = a\cdot 0 = a \cdot (b \cdot \underbrace{0}_{=c})

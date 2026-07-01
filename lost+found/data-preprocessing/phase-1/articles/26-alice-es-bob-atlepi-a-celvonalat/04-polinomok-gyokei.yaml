@@ -1,0 +1,108 @@
+type: section
+name: 04-polinomok-gyokei
+title: Polinomok gyökei
+
+references:
+  modularis-osszeadas-es-szorzas:
+    target:
+      type: definition
+      name: modularis-osszeadas-es-szorzas
+  oszthatosag:
+    target:
+      type: definition
+      name: oszthatosag
+  polinomfuggveny:
+    target:
+      type: definition
+      name: polinomfuggveny
+
+body:
+  - type: narrative
+    content: |
+      Egy adott gyűrű feletti polinom szempontjából fontos szerepük van azoknak a gyűrűelemeknek, amelyekhez a
+      polinomhoz tartozó polinomfüggvény a gyűrű ***nullelemét*** rendeli hozzá. Erről szól az alábbi definíció.
+  - type: embed
+    target:
+      type: definition
+      name: polinomok-gyokei
+  - type: narrative
+    content: |
+      A előző szakaszban szereplő $f=(0,0,3,0,0,\ldots)$ polinomnak például az egész számok $\Z$ gyűrűjében
+      egyetlen gyöke van: a $0$ egész szám, hiszen $F(0)=3\cdot 0^2=0$, de bármilyen más számot behelyettesítve az
+      eredmény nem nulla. Ezzel szemben a $Z_4$ gyűrűben van egy további gyöke is, méghozzá a $2$, hiszen ebben a
+      gyűrűben $F(2)=3\cdot 2^2=0$. A $g=(0,2,1,0,0,\ldots)$ polinomnak $\Z$-ben már két gyöke is van, méghozzá a
+      $0$ és a $-2$ egész számok, míg a $Z_4$ gyűrűben a $0$ és a $2$ egész számok teljesítik a feltételt.
+  - type: narrative
+    content: |
+      Bármely $R$ gyűrű felett a ***nullapolinomnak*** nyilván minden $R$-beli elem gyöke, hiszen a
+      [polinomfuggveny] alapján a hozzátartozó polinomfüggvény minden együtthatója $0_R$, és így ő az $R$ gyűrű
+      minden eleméhez a nullelemet rendeli hozzá. Számunkra érdekesebb kérdés, hogy egy $R$ feletti ***nemnulla
+      polinomnak*** maximum hány gyöke lehet $R$-ben. A szakasz hátralévő részében meg fogjuk mutatni, hogy ez
+      összefüggésben van a polinom fokával.
+  - type: narrative
+    content: |
+      Előbb azonban szükségünk van egy fontos tételre. Felhívjuk a figyelmet, hogy a tétel megfogalmazásához
+      felhasználhatjuk az ***oszthatóság*** [oszthatosag]ját, hiszen ez a fogalom minden gyűrűben, így
+      természetesen a polinomgyűrűkben is értelmes. A továbbiakban csak azt az esetet fogjuk vizsgálni, amikoris a
+      vizsgált gyűrű ***egységelemes***.
+  - type: embed
+    target:
+      type: theorem
+      name: polinom-gyokenek-feltetele
+  - type: embed
+    target:
+      type: proof
+      name: polinom-gyokenek-feltetele-bizonyitas
+  - type: narrative
+    content: |
+      Mostmár rátérhetünk arra, hogy egy nemnulla polinom gyökeinek száma milyen összefüggésben van a polinom
+      fokával. Felhívjuk a figyelmet, hogy ez a tétel ***csak nullosztómentes gyűrűk esetén érvényes***! Amennyiben
+      ez nem teljesül, akkor meglehetősen furcsa dolgok történhetnek, amint azt a tétel igazolása után egy egyszerű
+      példában látni fogjuk.
+  - type: embed
+    target:
+      type: theorem
+      name: polinom-gyokeinek-szama
+  - type: embed
+    target:
+      type: proof
+      name: polinom-gyokeinek-szama-bizonyitas
+  - type: narrative
+    content: |
+      Most nézzünk egy egyszerű példát arra az esetre, ha a ***nullosztómentesség nem teljesülne***.
+  - type: formula
+    lead-in: |
+      Például vegyük a $Z_8$ gyűrűt a [modularis-osszeadas-es-szorzas]ban bevezetett ***moduláris*** összeadással
+      és szorzással, és tekintsük azt a $Z_8$ fölötti másodfokú polinomot, amelyhez az alábbi polinomfüggvény
+      tartozik:
+    content: |
+      F(x)=x^2+7
+  - type: formula
+    lead-in: |
+      Mivel a $Z_8$ gyűrűnek mindössze $8$ eleme van, ezért próbálgatással könnyen megtalálhatjuk az összes
+      gyököt:
+    content: |
+      \begin{aligned}F(0)&=0^2+7=0+7=7 \\ F(1)&=1^2+7=1+7=0 \\ F(2)&=2^2+7=4+7=3 \\ F(3)&=3^2+7=1+7=0 \\
+      F(4)&=4^2+7=0+7=7 \\ F(5)&=5^2+7=1+7=0 \\ F(6)&=6^2+7=4+7=3 \\ F(7)&=7^2+7=1+7=0\end{aligned}
+  - type: narrative
+    content: |
+      A gyökök tehát az $1$, $3$, $5$ és $7$ egész számok, azaz $4$ darab van belőlük, pedig a polinom csak
+      másodfokú volt. A problémát a nullosztómentesség hiánya okozza. Emiatt ugyanis nem mindegy, hogy milyen
+      sorrendben emeljük ki a gyöktényezőket. Az iménti bizonyítás gondolatmenetét követve például emeljük ki
+      elsőként az $1$-hez tartozó gyöktényezőt, amelyhez ugye az $F_1(x)=x-1$ polinomfüggvény tartozik.
+  - type: formula
+    lead-in: |
+      Ekkor a polinomfüggvények szintjén az alábbi felbontást kapjuk:
+    content: |
+      F(x)=x^2+7=\underbrace{(x-1)}_{=F_1(x)}\cdot \underbrace{(x-7)}_{=Q_1(x)}
+  - type: formula
+    lead-in: |
+      Ebbe behelyettesítve a $3$-at az eredmény valóban nulla, miközben a $Q_1(3)$ tényező ***nemnulla***:
+    content: |
+      F(3)=\underbrace{(3-1)}_{=F_1(3)=2}\cdot \underbrace{(3-7)}_{=Q_1(3)=4}=2\cdot 4=0
+  - type: narrative
+    content: |
+      Így viszont a $3$-hoz tartozó gyöktényezőt már nem tudjuk kiemelni a $q_1$ polinomból, hiszen annak ő már nem
+      gyöke. Az persze továbbra is igaz marad, hogy egy $n$-edfokú polinomból legfeljebb $n$ darab gyöktényezőt
+      lehet kiemelni, azonban a nullosztómentesség hiánya miatt ezeken kívül létezhetnek még további gyöktényezők
+      is, amelyek tehát rejtve maradnak.

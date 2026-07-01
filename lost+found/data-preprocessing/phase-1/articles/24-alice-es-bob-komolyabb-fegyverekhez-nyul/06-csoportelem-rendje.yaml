@@ -1,0 +1,95 @@
+type: section
+name: 06-csoportelem-rendje
+title: Csoportelem rendje
+
+references:
+  reszcsoport-feltetele:
+    target:
+      type: theorem
+      name: reszcsoport-feltetele
+
+body:
+  - type: narrative
+    content: |
+      Az előző szakaszban tehát kiterjesztettük a hatványozást a $0$ és a negatív kitevőkre is minden olyan elem
+      esetén, amelynek létezik inverze a szóbanforgó műveletre nézve. Minthogy egy csoportban minden elemnek
+      létezik inverze a csoportműveletre nézve, ezért az előző szakaszban bizonyított összefüggések nyilván
+      érvényesek lesznek bármilyen csoportban.
+  - type: narrative
+    content: |
+      Számunkra elsősorban a véges csoportok az érdekesek, mint amilyen például a $\Z/n\Z$ maradékosztálygyűrű
+      multiplikatív csoportja is. Vizsgáljuk meg például a $(\Z/10\Z)^{\times}$ multiplikatív csoport elemeinek
+      hatványait.
+  - type: formula
+    lead-in: |
+      Az alábbi táblázat minden sorában egy-egy csoportelem hatványai szerepelnek az első néhány pozitív kitevőre,
+      amely kitevőknek az egyes oszlopok felelnek meg:
+    content: |
+      \begin{array}{c|cccccc} &1&2&3&4&5&6 \\ \hline [1]_{10} & [1]_{10} & [1]_{10} & [1]_{10} & [1]_{10} &
+      [1]_{10} & [1]_{10} \\ [3]_{10} & [3]_{10} & [9]_{10} & [7]_{10} & [1]_{10} & [3]_{10} & [9]_{10} \\ [7]_{10}
+      & [7]_{10} & [9]_{10} & [3]_{10} & [1]_{10} & [7]_{10} & [9]_{10} \\ [9]_{10} & [9]_{10} & [1]_{10} &
+      [9]_{10} & [1]_{10} & [9]_{10} & [1]_{10} \end{array}
+  - type: narrative
+    content: |
+      Például a $[3]_{10}$ maradékosztály harmadik hatványa a $[3^3]_{10}=[27]_{10}=[7]_{10}$ maradékosztály, amely
+      a táblázat második sorának harmadik oszlopában szerepel.
+  - type: narrative
+    content: |
+      A táblázatot figyelve észrevehetünk egy furcsa jelenséget: egy adott elemnek meghatározott számú különböző
+      hatványa van, amelyek periodikusan ismétlődnek a kitevő növelésével. A maradékosztályoknak egy fontos
+      tulajdonsága, hogy összesen hány különböző hatványuk létezik a maradékosztálygyűrű multiplikatív
+      csoportjában. Ez elvezet az ***elemrend*** fogalmához, amelyet az alábbi definícióban tetszőleges csoportra
+      &ndash; tehát nem csak a maradékosztálygyűrűk multiplikatív csoportjaira &ndash; fogalmazunk meg.
+  - type: embed
+    target:
+      type: definition
+      name: csoportelem-rendje
+  - type: formula
+    lead-in: |
+      Az alábbiakban a fenti táblázat alapján felsoroltuk a $(\Z/10\Z)^{\times}$ multiplikatív csoport elemeinek
+      rendjeit:
+    content: |
+      \begin{aligned}o([1]_{10})&=1 \\ o([3]_{10})&=4 \\ o([7]_{10})&=4 \\ o([9]_{10})&=2\end{aligned}
+  - type: narrative
+    content: |
+      Most igazoljuk az elemrenddel kapcsolatos legfontosabb összefüggéseket:
+  - type: embed
+    target:
+      type: theorem
+      name: csoportelem-rendjere-vonatkozo-osszefuggesek
+  - type: embed
+    target:
+      type: proof
+      name: csoportelem-rendjere-vonatkozo-osszefuggesek-bizonyitas
+  - type: narrative
+    content: |
+      A részcsoportok kapcsán szó volt róla, hogy hogyan lehet könnyen ellenőrizni azt, hogy egy csoport valamely
+      $H$ részhalmaza részcsoportot alkot-e vagy sem. Ennek feltételeit a [reszcsoport-feltetele]ben határoztuk
+      meg. Eszerint elegendő azt ellenőrizni, hogy $H$ zárt-e a csoportműveletre, és az elletettképzésre nézve,
+      valamint tartalmazza-e a csoport egységelemét. Az imént bizonyított elemrendre vonatkozó összefüggések
+      alapján most igazoljuk, hogy ***véges csoportok*** esetén a műveleti zártságból már következik a másik két
+      feltétel.
+  - type: embed
+    target:
+      type: theorem
+      name: reszcsoport-feltetele-veges-csoportok-eseten
+  - type: embed
+    target:
+      type: proof
+      name: reszcsoport-feltetele-veges-csoportok-eseten-bizonyitas
+  - type: embed
+    target:
+      type: remark
+      name: reszcsoport-feltetele-veges-csoportok-eseten-megjegyzes
+  - type: narrative
+    content: |
+      Végül ismertetünk egy további egyszerű következményt, amely az egyes elemek rendjei és a csoport rendje
+      között mond ki egy, a továbbiakban hasznos összefüggést.
+  - type: embed
+    target:
+      type: theorem
+      name: elem-rendje-es-csoport-rendje
+  - type: embed
+    target:
+      type: proof
+      name: elem-rendje-es-csoport-rendje-bizonyitas

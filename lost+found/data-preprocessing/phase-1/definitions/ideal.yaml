@@ -1,0 +1,23 @@
+type: definition
+name: ideal
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen adva egy $R$ gyűrű, valamint annak egy $I$ részhalmaza, amely részgyűrű $R$-ben. Tegyük fel továbbá,
+      hogy $r$ az $R$ gyűrű egy tetszőleges &ndash; tehát nem feltétlenül $I$-beli &ndash; eleme.
+  - type: narrative
+    content: |
+      Amennyiben az $I$ részgyűrű tetszőleges $a$ eleme esetén az $r\cdot a$ szorzat is $I$-ben van, akkor azt
+      mondjuk, hogy $I$ ***balideál*** $R$-ben.
+  - type: narrative
+    content: |
+      Amennyiben az $I$ részgyűrű tetszőleges $a$ eleme esetén az $a\cdot r$ szorzat is $I$-ben van, akkor azt
+      mondjuk, hogy $I$ ***jobbideál*** $R$-ben.
+  - type: narrative
+    content: |
+      Amennyiben egy $I$ részgyűrű egyszerre bal- és jobbideál, akkor azt mondjuk, hogy $I$ ***kétoldali ideál***,
+      vagy egyszerűen csak ***ideál*** $R$-ben. Ezt így jelöljük: $I\triangleleft R$.
+  - type: narrative
+    content: |
+      A nullgyűrű és maga a teljes $R$ nyilvánvalóan ideálok $R$-ben. Ezeket ***triviális ideáloknak*** nevezzük.

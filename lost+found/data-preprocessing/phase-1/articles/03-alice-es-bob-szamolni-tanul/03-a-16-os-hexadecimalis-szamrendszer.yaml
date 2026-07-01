@@ -1,0 +1,32 @@
+type: section
+name: 03-a-16-os-hexadecimalis-szamrendszer
+title: A 16-os (hexadecimális) számrendszer
+
+body:
+  - type: narrative
+    content: |
+      Annak érdekében, hogy ne kelljen állandóan olyan sok bináris számjegyet leírnunk, bevezethetünk egy praktikus
+      rövidítést. Ha a biteket képzeletben 4-esével csoportosítjuk, és ezeket a csoportokat egy-egy szimbólummal
+      helyettesítjük, akkor egy sokkal rövidebb írásmódot kapunk. Ez az ábrázolás épp a 16-os (vagy más néven
+      ***hexadecimális***) számrendszernek felel meg, mivel 4 bináris helyiértéken épp 16 féle bitsorozat írható
+      le. Méghozzá pontosan azok, amelyek megfelelnének a 0, 1, 2, …, 15 darab kavics elhelyezésének az adott
+      csoportnak megfelelő 16-os számrendszerbeli helyiértéken.
+  - type: narrative
+    content: |
+      A hexadecimális számjegyek jelöléséhez 16 különböző szimbólumra van szükségünk. Ezért a szokásos **0**,
+      **1**, **2**, …, **9** szimbólumok mellé be kell vezetnünk 6 darab további szimbólumot is: **A**, **B**,
+      **C**, **D**, **E** és **F** (vagy ezek kisbetűs változatai), amelyek rendre a 10, 11, 12, 13, 14 és 15
+      kavics elhelyezését jelentik. Amikor egy hexadecimális számot leírunk, akkor általában a számjegyek
+      felsorolása elé a **"0x"** prefixumot szoktuk írni a 16-os számrendszer jelölésére.
+  - type: formula
+    lead-in: |
+      Az alábbi ábrán a 2019-es szám bináris leírásának hexadecimális rövidítése látható:
+    content: |
+      \underbrace{0111}_{\text{7}}\underbrace{1110}_{\text{E}}\underbrace{0011}_{\text{3}}=\text{0x7E3}
+  - type: narrative
+    content: |
+      Ehhez hasonlóan az előző részben ismertetett ASCII kódtábla szerint kódolt **Bob** üzenet 24 bites kódját a
+      **0x42, 0x6F, 0x62** hexadecimális számsorozattal is leírhatjuk. Ne feledjük azonban, hogy ez csupán a
+      bitsorozatok leírásának egy rövidítése. A digitális áramkörök ettől függetlenül természetesen továbbra is
+      2-es számrendszerben számolnak. Most vizsgáljuk meg, hogyan mi van egy informatikai eszköz memóriájában vagy
+      például egy bináris adatokat tartalmazó file-ban.

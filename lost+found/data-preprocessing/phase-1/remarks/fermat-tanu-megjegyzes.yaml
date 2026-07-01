@@ -1,0 +1,33 @@
+type: remark
+name: fermat-tanu-megjegyzes
+references:
+  euler-fermat-tetel-megforditasa:
+    target:
+      type: theorem
+      name: euler-fermat-tetel-megforditasa
+  redukalt-maradekosztaly-feltetele:
+    target:
+      type: theorem
+      name: redukalt-maradekosztaly-feltetele
+content:
+  - type: narrative
+    content: |
+      A definícióban nem kell külön kikötni, hogy $a$ és $n$ legyen relatív prím &ndash; ami a
+      [redukalt-maradekosztaly-feltetele] értelmében azt jelentené, hogy $[a]_n$ egy ***redukált maradékosztály***
+      &ndash;, hiszen ha nem ez lenne a helyzet, akkor az szintén tanúsítaná $n$ összetettségét. Ez ugyanis
+      egyrészt azt jelentené, hogy az $(a,n)$ kitüntetett közös osztó különbözne az egységektől. Másrészt az $n\mid
+      a$ feltételből az is következik, hogy ez a közös osztó $n$-től &ndash; és így $n$ asszociáltjaitól &ndash; is
+      különbözne. Ez nyilvánvaló is, hiszen $(a,n)=n$ azt jelentené, hogy mégiscsak teljesül az $n|a$ oszthatóság.
+      Mármost ha az $(a,n)$ kitüntetett közös osztó egyben $n$-nek is osztója, akkor $n$-nek lenne az egységektől
+      és a saját asszociáltjaitól különböző osztója is, azaz nem lehetne prím.
+  - type: narrative
+    content: |
+      Nem mellesleg megjegyezzük, hogy az $a^{n-1}\equiv 1\pmod n$ kongruencia a [euler-fermat-tetel-megforditasa]
+      értelmében amúgysem teljesülhetne, amennyiben $[a]_n$ nem egy redukált maradékosztály, azaz $(a,n)\eq 1$. Ez
+      tehát azt jelenti, hogy ***NEM Fermat-tanú csak redukált maradékosztály lehet***. Az alábbi ábrán ezek
+      elhelyezkedése látható az összes modulo $n$ maradékosztályok között. Az összes többi maradékosztály
+      ***Fermat-tanú***, ami ezen a halmazon kívül van &ndash; kivéve persze a $[0]_n$ maradékosztályt.
+  - type: figure
+    src: nem_fermat_tanuk_elhelyezkedese.jpg
+    alt: A nem Fermat-tanúk elhelyezkedése
+    caption: A nem Fermat-tanúk elhelyezkedése

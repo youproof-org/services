@@ -1,0 +1,93 @@
+type: section
+name: 06-rendezesi-relaciok
+title: Rendezési relációk
+
+references:
+  rendezett-halmaz:
+    target:
+      type: definition
+      name: rendezett-halmaz
+
+body:
+  - type: narrative
+    content: |
+      A most következő néhány definíció egy-egy speciális tulajdonságot követel meg egy relációtól. Az első például
+      azt, hogy bármely elem relációban álljon önmagával:
+  - type: embed
+    target:
+      type: definition
+      name: reflexiv-relacio
+  - type: narrative
+    content: |
+      A második definíció azt követeli meg egy relációtól, hogy két különböző elem esetén a közöttük lévő reláció
+      &ndash; ha egyáltalán létezik &ndash; iránya egyértelmű legyen:
+  - type: embed
+    target:
+      type: definition
+      name: antiszimmetrikus-relacio
+  - type: narrative
+    content: |
+      Másként megfogalmazva ha egy antiszimmetrikus reláció mindkét irányban fennáll két elem között, akkor a két
+      elem azonos. Megjegyezzük azonban, hogy ***visszafelé nem feltétlenül teljesül***, hogy $a=b$ esetén
+      bármelyik irányban is fennáll a reláció. Ezt a fentebb definiált reflexivitási tulajdonság hivatott
+      biztosítani.
+  - type: narrative
+    content: |
+      A harmadik definíció azt követeli meg, hogy az elempárok azon tulajdonsága, miszerint egymással relációban
+      állnak, "láncszerűen" öröklődjön. Például: ha én "magasabb vagyok" az apámnál, apám pedig "magasabb" az
+      anyámnál, akkor én "magasabb vagyok" az anyámnál. Ezt fejezi ki az alábbi definíció:
+  - type: embed
+    target:
+      type: definition
+      name: tranzitiv-relacio
+  - type: narrative
+    content: |
+      Végül a negyedik definíció azt követeli meg, hogy két tetszőleges elemet kiválasztva azok mindenképpen
+      legyenek egymással "összehasonlíthatók" az adott reláció segítségével.
+  - type: embed
+    target:
+      type: definition
+      name: trichotom-relacio
+  - type: narrative
+    content: |
+      Ezek a definíciók tehát mind egy-egy speciális követelményt fogalmaznak meg egy adott relációval
+      kapcsolatban. Például az előző szakaszban a ***kő-papír-olló*** játékkal kapcsolatban definiált $\succ$
+      reláció nyilvánvalóan ***nem reflexív***, hiszen ha a két játékos ugyanazt mutatja &ndash; legyen az akár
+      $\text{kő}$, akár $\text{papír}$, akár $\text{olló}$ &ndash;, az eredmény döntetlen lesz. De ***nem is
+      tranzitív***, hiszen például $\text{papír} \succ \text{kő}$ és $\text{kő} \succ \text{olló}$, de
+      $\text{papír} \ succ \text{olló}$. Végül a ***trichotómia sem teljesül*** ugyanazon okok miatt, mint a
+      reflexivitás. Viszont ***antiszimmetrikus***, hiszen ha a két játékos különbözőt mutat, akkor biztosan csak
+      az egyikük fog nyerni.
+  - type: narrative
+    content: |
+      Most bevezetjük a ***rendezett halmaz*** fogalmát, majd a definíció után megmutatjuk az elnevezés jogosságát:
+  - type: embed
+    target:
+      type: definition
+      name: rendezett-halmaz
+  - type: narrative
+    content: |
+      Minket jelenleg csak a ***teljes rendezések***, és ennek megfelelően a ***rendezett halmazok*** érdekelnek,
+      részbenrendezett halmazokkal egyelőre nem foglalkozunk. Vizsgáljuk meg tehát, hogy miért nevezhetünk jogosan
+      "rendezésnek" egy olyan relációt, amely teljesíti a fenti definícióban szereplő mind a 4 kritériumot.
+  - type: narrative
+    content: |
+      Tegyük fel, hogy van egy valamilyen $H$ halmazon értelmezett rendezési reláció, amelyet a $\leq$ szimbólummal
+      jelölünk. Ne társítsunk most semmilyen számokkal kapcsolatos jelentést ehhez a szimbólumhoz, az $a\leq b$
+      kifejezést egyszerűen csak olvassuk úgy, hogy "$a$ legfeljebb annyiadik elem a sorban, mint $b$".
+  - type: ordered-list
+    lead-in: |
+      Ezek után a [rendezett-halmaz]ban szereplő 4 kritériumot így is olvashatjuk:
+    items:
+      - '***Reflexivitás:*** Tetszőleges elem "legfeljebb annyiadik a sorban", mint önmaga.'
+      - '***Antiszimmetria:*** Ha az $a$ elem "legfeljebb annyiadik a sorban", mint a $b$ elem, és a $b$ elem is "legfeljebb annyiadik a sorban", mint az $a$ elem, akkor a két elem megegyezik.'
+      - '***Tranzitivitás:*** Ha az $a$ elem "legfeljebb annyiadik a sorban", mint a $b$ elem, amely pedig "legfeljebb annyiadik a sorban", mint a $c$ elem, akkor az $a$ elem "legfeljebb annyiadik a sorban", mint a $c$ elem.'
+      - '***Trichotómia:*** Bármely két elemről el lehet dönteni, hogy melyikük van "legfeljebb annyiadik helyen a sorban", mint a másik.'
+  - type: narrative
+    content: |
+      Ha végiggondoljuk, akkor pontosan ez az, amit elvárunk egy olyan relációtól, amelynek a segítségével egy
+      egyértelmű sorrendet szeretnénk felállítani egy halmaz elemei között.
+  - type: narrative
+    content: |
+      Most nézzük meg, hogyan tudunk egy ilyen tulajdonságokkal rendelkező relációt megadni a természetes számok
+      $\N$ halmazán.

@@ -1,0 +1,30 @@
+type: theorem
+name: osszeg-es-szorzatpolinom-foka
+proofs:
+  - osszeg-es-szorzatpolinom-foka-bizonyitas
+remarks: []
+references:
+  nullosztomentes-gyuru:
+    target:
+      type: definition
+      name: nullosztomentes-gyuru
+  polinomok:
+    target:
+      type: definition
+      name: polinomok
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ tetszőleges kommutatív gyűrű, és jelölje $R[x]$ az $R$ feletti polinomok halmazát, továbbá
+      legyenek $f$ és $g$ tetszőleges ***nemnulla*** polinomok.
+  - type: ordered-list
+    lead-in: |
+      Ekkor a [polinomok]ban bevezetett polinomok közötti műveletekre teljesülnek az alábbiak:
+    items:
+      - 'Ha $\deg(f)\gt \deg(g)$, akkor $\deg(f+g)=\deg(f)$.'
+      - 'Ha $\deg(f)=\deg(g)$, akkor $\deg(f+g)\leq \deg(f)$.'
+      - 'Ha $f\cdot g\eq 0$, akkor $\deg(f\cdot g)\leq \deg(f)+\deg(g)$.'
+      - 'Ha $R$ ***nullosztómentes*** (lásd a [nullosztomentes-gyuru]t), akkor
+        $\deg(f\cdot g)= \deg(f)+\deg(g)$.'
+      - 'Ha $R$ ***egységelemes***, és $f$ vagy $g$ ***főegyütthatója az egységelem***, akkor $\deg(f\cdot g)=
+        \deg(f)+\deg(g)$.'

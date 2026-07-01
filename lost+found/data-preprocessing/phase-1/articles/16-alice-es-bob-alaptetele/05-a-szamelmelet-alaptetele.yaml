@@ -1,0 +1,105 @@
+type: section
+name: 05-a-szamelmelet-alaptetele
+title: A számelmélet alaptétele
+
+body:
+  - type: narrative
+    content: |
+      Az előző szakasz elején láttuk, hogy a $\Z$ gyűrűben egy egész szám adott esetben többféleképpen bontható fel
+      két egész szám szorzatára. Most képzeljük el, hogy az így kapott egész számokat további egész számokra
+      bontjuk, és ezt a felbontást mindaddig folytatjuk minden ágon, ameddig felbonthatatlan számba nem ütközünk.
+      Az előző szakasz alapján innen már nem érdemes tovább folytatni a felbontást (ha egyáltalán lehetséges),
+      hiszen oszthatóságra vonatkozó újabb információt már nem fogunk kapni.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán a $100$ egész szám néhány felbontását láthatjuk a $\Z$ gyűrűben:
+    src: 05-a-100-egesz-szam-felbontasa.jpg
+    alt: A 100 egész szám felbontása (1. példa)
+    caption: A 100 egész szám felbontása (1. példa)
+  - type: figure
+    src: 06-a-100-egesz-szam-felbontasa.jpg
+    alt: A 100 egész szám felbontása (2. példa)
+    caption: A 100 egész szám felbontása (2. példa)
+  - type: figure
+    src: 07-a-100-egesz-szam-felbontasa.jpg
+    alt: A 100 egész szám felbontása (3. példa)
+    caption: A 100 egész szám felbontása (3. példa)
+  - type: narrative
+    content: |
+      Nagyon úgy tűnik, hogy furcsamód minden így kapott felbontás &ndash; amennyiben a tényezők sorrendjétől és
+      egymással való asszociáltságától eltekintünk &ndash; megegyezik. A következő részekben látni fogjuk, a $\Z$
+      gyűrűben történetesen valóban teljesül, hogy minden $0$-tól és egységtől különböző elem ***egyértelműen***
+      írható fel felbonthatatlanok szorzataként. Ez azonban egyáltalán nem magától értetődő tulajdonsága egy
+      gyűrűnek. Például a ***páros számok*** $2\Z$ gyűrűjében a $100$ egyrészt felírható $2\cdot 50$-ként, másrészt
+      pedig $10\cdot 10$-ként, és ez a két felbontás "lényegesen" különbözik egymástól.
+  - type: narrative
+    content: |
+      Az egyértelmű felbonthatóság &ndash; azaz a számelmélet alaptételének &ndash; teljesülése vagy nem
+      teljesülése egy adott gyűrűben szoros összefüggésben van a prímek és a felbonthatatlanok közötti viszonnyal.
+      Még mielőtt ezt részletesen megvizsgálnánk, először is fogalmazzuk meg mostmár precízen, hogy mikor mondjuk
+      egy integritástartományra azt, hogy teljesül benne a ***számelmélet alaptétele***.
+  - type: embed
+    target:
+      type: definition
+      name: szamelmelet-alaptetele
+  - type: narrative
+    content: |
+      A számelmélet alaptétele tehát tulajdonképpen két dolgot állít. Egyrészt azt állítja, hogy minden nemnulla és
+      nem egység elemnek ***létezik*** felbontása. Másrészt pedig azt, hogy ez a felbontás "néhány apróságtól
+      eltekintve" ***egyértelmű***.
+  - type: narrative
+    content: |
+      Most adunk egy ***szükséges feltételt*** ahhoz, hogy egy integritástartományban teljesüljön a számelmélet
+      alaptétele. A szükségesség azt jelenti, hogy ***ha ez a feltétel nem teljesül, akkor az alaptétel sem***.
+      Azonban önmagában ebből a feltételből még nem következik, hogy a gyűrű "alaptételes".
+  - type: embed
+    target:
+      type: theorem
+      name: szamelmelet-alaptetelenek-szukseges-feltetele
+  - type: embed
+    target:
+      type: proof
+      name: szamelmelet-alaptetelenek-szukseges-feltetele-bizonyitas
+  - type: narrative
+    content: |
+      Megjegyezzük azonban, hogy habár a fenti feltétel csak szükséges, de nem elégséges feltétel az alaptételhez,
+      azonban "nem hiányzik sok" hozzá, hogy elégséges legyen. Ugyanis a feltétel csak azt nem garantálja, hogy
+      minden (nem nulla és nem egység) elemnek ***létezik-e*** felbontása. Az alábbi tétel szerint ha viszont
+      létezik felbontás, akkor annak ***egyértelműségét*** már garantálja.
+  - type: embed
+    target:
+      type: theorem
+      name: felbontas-egyertelmusegenek-elegseges-feltetele
+  - type: embed
+    target:
+      type: proof
+      name: felbontas-egyertelmusegenek-elegseges-feltetele-bizonyitas
+  - type: narrative
+    content: |
+      Az előző szakaszban a prímek és a felbonthatatlan elemek viszonyát vizsgáltuk, és megállapítottuk, hogy
+      ***egységelemes*** integritástartományokban minden prím felbonthatatlan. Akkor feltettük a kérdést, hogy
+      vajon mi a helyzet az olyan integritástartományokkal, amelyekben ***nem létezik egységelem***?
+  - type: narrative
+    content: |
+      Tekintve, hogy ez a kérdés a számelmélet alaptételének teljesülése szempontjából fontos, ezért inkább azt
+      érdemes megvizsgálni, hogy teljesülhet-e egyáltalán az alaptétel ilyen integritástartományokban? Erre ad
+      választ a következő tétel.
+  - type: embed
+    target:
+      type: theorem
+      name: szamelmelet-alaptetele-nem-egysegelemes-integritastartomanyokban
+  - type: embed
+    target:
+      type: proof
+      name: szamelmelet-alaptetele-nem-egysegelemes-integritastartomanyokban-bizonyitas
+  - type: narrative
+    content: |
+      A fentiek alapján nem egységelemes integritástartományokban teljesen mindegy, hogy mi a prímek és a
+      felbonthatatlan elemek viszonya, hiszen ezekben amúgysem teljesülhet az alaptétel.
+  - type: narrative
+    content: |
+      Így már nagyjából teljes a kép azzal kapcsolatban, hogy mikor teljesülhet a számelmélet alaptétele egy
+      integritástartományban. Erre adtunk ebben a szakaszban egy szükséges feltételt. Ez a feltétel a teljes
+      alaptételhez ugyan nem volt elégséges, azonban az egyértelműségi részhez már igen. Létezik olyan feltétel is
+      az alaptétel teljesüléséhez, amely szükséges és egyben elégséges is. Ez azonban túlmutat ennek a résznek a
+      keretein, és az úgynevezett ideálok elméletéhez vezet, így azt egy későbbi részben fogjuk bemutatni.

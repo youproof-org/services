@@ -1,0 +1,10 @@
+type: theorem
+name: euklideszi-gyuruben-letezik-kituntetett-kozos-oszto
+proofs:
+  - euklideszi-gyuruben-letezik-kituntetett-kozos-oszto-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Ha egy $R$ integritástartomány ***euklidészi gyűrű***, akkor bármely két $R$-beli elemnek ***létezik
+      kitüntetett közös osztója***.

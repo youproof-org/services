@@ -1,0 +1,65 @@
+type: section
+name: 03-valoszinuleg-prim
+title: „Valószínűleg” prím?!
+
+references:
+  fermat-tanuk-szama:
+    target:
+      type: theorem
+      name: fermat-tanuk-szama
+  kis-fermat-tetel:
+    target:
+      type: theorem
+      name: kis-fermat-tetel
+
+body:
+  - type: narrative
+    content: |
+      Ez az egész elsőre teljesen értelmetlennek tűnik, ezért most vizsgáljuk meg, hogy miről is van szó
+      tulajdonképpen. Képzeljük el, hogy a bemenő $n$ egész szám valójában összetett, ám ezt szeretné minél jobban
+      eltitkolni előlünk. Mi azonban a ***kis Fermat-tételből*** ([kis-fermat-tetel]) tudjuk, hogy $n$ esetleges
+      összetettségét egy ***Fermat-tanú*** egyértelműen leleplezné.
+  - type: narrative
+    content: |
+      Ezért az összes ***nemnulla*** modulo $n$ maradékosztályt szépen bedobáljuk egy képzeletbeli kalapba, majd
+      becsukjuk a szemünket, és teljesen véletlenszerűen kihúzunk közülük egyet. Olyan ez, akárcsak egy
+      lottósorsolás. Ez lenne tehát az algoritmus ***2. lépése***. A ***3. lépésben*** azt vizsgáljuk meg, hogy egy
+      redukált maradékosztályt húztunk-e ki. Annak, hogy nem, gyakorlatilag 0 az esélye, de ha mégis, akkor ez
+      leleplezi $n$-et, ráadásul még egy osztóját is megkapjuk. Majdnem biztos azonban, hogy tovább kell mennünk a
+      ***4. lépésre***.
+  - type: narrative
+    content: |
+      Ezen a ponton már tudjuk, hogy a kiválasztott maradékosztály egy redukált maradékosztály. Ebben a lépésben
+      azt ellenőrizzük le, hogy véletlenül nem egy ***Fermat-tanút*** találtunk-e. Ha igen &ndash; azaz a vizsgált
+      kongruencia nem teljesült &ndash; akkor $n$ lelepleződött, hiszen a ***kis Fermat-tétel*** miatt biztosan
+      összetett. Ha azonban ***nem Fermat-tanút*** fogtunk ki &ndash; azaz a vizsgált kongruencia teljesül &ndash;,
+      akkor nem tudunk semmi biztosat mondani $n$-ről, ugyanis a ***kis Fermat-tétel megfordítása nem igaz***.
+  - type: narrative
+    content: |
+      Azt viszont az előző szakaszban bizonyított [fermat-tanuk-szama] alapján tudjuk, hogy a kalapban lévő
+      redukált maradékosztályoknak ***legalább a fele*** &ndash; ám a tapasztalat alapján általában ennél jóval
+      nagyobb része &ndash; ***Fermat-tanú***. Így annak valószínűsége meglehetősen kicsi, hogy pont belehúztunk
+      abba a néhány kósza nem Fermat-tanúba, miközben $n$ összetett. Ennél sokkal valószínűbb, hogy $n$ ténylegesen
+      prím, és emiatt valóban nincs egyetlen Fermat-tanú sem abban a bizonyos kalapban. Ám biztosat ezen a ponton
+      nem tudunk mondani, és ez az oka ennek a meglehetősen furcsán hangzó ***"valószínűleg prím"*** válasznak.
+  - type: narrative
+    content: |
+      A Fermat-tanúk számára vonatkozó, a [fermat-tanuk-szama]ben bizonyított alsó becslés ugyan önmagában nem túl
+      erős, azonban Alice és Bob megteheti, hogy többször is húz a kalapból. A Fermat-tanúság ellenőrzése ugyanis
+      &ndash; mint említettük &ndash; az ***ismételt négyzetreemelések módszerével*** rendkívül gyorsan
+      elvégezhető. Tegyük fel, hogy a lehető legrosszabb a helyzet, és a redukált maradékosztályoknak mindössze
+      csak a fele Fermat-tanú. Ekkor 50% annak valószínűsége, hogy főhőseink egy véletlenszerű választással pont a
+      másik feléből választanak egy redukált maradékosztályt. Annak pedig már csak 25%, hogy ez kétszer egymás után
+      is megtörténik. Az, hogy egy újabb, harmadik húzással sem találunk Fermat-tanút, már csak 12.5%
+      valószínűséggel következik be. És így tovább, minden újabb húzással megfeleződik annak valószínűsége, hogy
+      tévesen prímszámmá nyilvánítjuk $n$-et.
+  - type: narrative
+    content: |
+      Tegyük fel például, hogy 100 teljesen véletlenszerűen kiválasztott redukált maradékosztály egyike sem
+      bizonyul Fermat-tanúnak. Ennek már csupán annyi az esélye, mint 100-szor zsinórban eltalálni, hogy egy
+      feldobott pénzérme fej vagy írás lesz-e. Ez nagyságrendileg kevésbé valószínű, mint hogy valakinek 3-szor
+      egymás után telitalálata lesz az 5-ös lottón.
+  - type: narrative
+    content: |
+      Van azonban ***egy kis probléma*** ezzel a prímteszttel: sajnos léteznek olyan összetett számok, amelyeket
+      nem lehet ilyen módon kiszűrni.

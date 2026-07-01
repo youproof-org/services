@@ -1,0 +1,564 @@
+<!-- wp:paragraph -->
+<p><strong><em>Az </em></strong><a rel="noreferrer noopener" aria-label="előző részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/11-peano-axiomarendszer-termeszetes-szam-muvelet-osszeadas-kommutativitas-asszociativitas-teljes-indukcio/" target="_blank"><strong><em>előző részben</em></strong></a><strong><em> kitöröltünk mindent a fejünkből, amit az általános iskolában a számokról tanultunk, és elkezdtük felépíteni a modern kriptográfiai eljárások alapját jelentő számelméletet a semmiből. Mindössze 4 egyszerű állításból indultunk ki, amelyeket Peano-axiómáknak nevezünk, és amelyek rögzítik a pozitív egész számok és a 0 alapvető tulajdonságait. Ezek halmazát természetes számoknak nevezzük és [latex]\N[/latex]-nel jelöljük. Szigorúan az axiómákat használva bevezettünk az [latex]\N[/latex] halmazon egy összeadásnak nevezett műveletet, amelyről megmutattuk, hogy – az axiómák logikai következményeként – valóban teljesíti az általános iskolában jól megszokott tulajdonságokat. De vajon mi minden következik még ebből a 4 axiómából? Milyen alaptulajdonságai vannak a szorzás műveletének és mi az oka, hogy ezek valóban teljesülnek? Mik azok a relációk és hogy jön ide a „kő-papír-olló” nevű játék? Mit nevezünk rendezett halmaznak és hogyan vezethetjük be a „kisebb-nagyobb” fogalmát a természetes számok között? Ebben a részben erről lesz szó...</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"className":"prerequisite-warning"} -->
+<p class="prerequisite-warning">Figyelem! Ez a rész erőteljesen épít az <a rel="noreferrer noopener" aria-label="előző részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/11-peano-axiomarendszer-termeszetes-szam-muvelet-osszeadas-kommutativitas-asszociativitas-teljes-indukcio/" target="_blank">előző részben</a> bevezetett alábbi definíciókra és tételekre, amelyekkel elkezdtük a számelmélet felépítését:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-axiomarendszer" type="recall-collapsed" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-osszeadas" type="recall-collapsed" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-osszeadas-kommutativitas" type="recall-collapsed" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-osszeadas-asszociativitas" type="recall-collapsed" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph {"className":"prerequisite-warning"} -->
+<p class="prerequisite-warning">E definíciók és tételek kontextusba helyezése miatt erőteljesen ajánlott tehát elolvasni az <a href="https://youproof.hu/kriptografia/11-peano-axiomarendszer-termeszetes-szam-muvelet-osszeadas-kommutativitas-asszociativitas-teljes-indukcio/" target="_blank" rel="noreferrer noopener" aria-label="előző részt (új fülön nyitja meg)">előző részt</a>. A teljes cikksorozat elejét <a rel="noreferrer noopener" aria-label="itt (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/1-alapfogalmak-caesar-vigenere-enigma-kulcsmegosztas/" target="_blank">itt</a> találod.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"dropCap":true} -->
+<p class="has-drop-cap">A matematika igazi természete kezdett el kibontakozni az előző részben. Nevezetesen: kiindulunk néhány egyszerű állításból, amelyeket igaznak fogadunk el – ez jelen példánkban a Peano-axiómarendszer 4 állítása. Nem azért fogadjuk el őket igaznak, mert valamiféle abszolút igazságokat állítanak – olyan talán nem is létezik, ha belegondolunk –, hanem azért, mert ezek rögzítik a felépítendő elmélet „játékszabályait”, akárcsak a sakkban. A fogalmainkat szigorúan az axiómákból építjük fel, és csak olyan további állításokat fogadunk el igaznak, amelyeket szigorú logikai érveléssel az axiómákra, az azok segítségével felépített fogalmakra, vagy korábban már bizonyított állításokra tudunk visszavezetni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ennek a tudománynak épp ez adja az erősségét is. Minden más természettudomány alapja ugyanis a kísérletezés. Akárhány kísérletet is végzünk, soha nem lehetünk teljesen biztosak egy tudományos elmélet igazságában, arra csupán megerősítést kapunk. Ha azonban akárcsak egyetlen kísérlet is megcáfolja az elméletünket, azt azonnal dobhatjuk ki a kukába. Ezzel szemben egy matematikai állítás igazsága <strong><em>örök érvényű</em></strong>. Egy bizonyított állítás igaz marad, ameddig világ a világ, arra nyugodtan lehet tovább építkezni, és nincs szükség arra, hogy azt kísérletekkel megerősítsük. Az előző részben például a Peano-axiómák segítségével bevezettük az <strong><em>összeadás</em></strong> fogalmát, és bizonyítottuk annak kommutativitását és asszociativitását. A továbbiakban tehát nyugodtan építkezhetünk ezekre a tulajdonságokra.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Építkezzünk hát tovább, és kényelmi okok miatt vezessünk be egy újabb műveletet az [latex]\N[/latex] halmazon.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4 id="peano-multiplication">A természetes számok szorzása</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Képzeljük el azt a szituációt, amikor egy számot önmagával sokszor kell összeadni. Jó volna valamilyen módon rövidíteni az olyan jellegű kifejezéseket, mint például ez: [latex]a+a+a+a+a[/latex]. Itt az [latex]a[/latex] számot 5-ször adtuk össze önmagával, ami – valljuk be – eléggé kényelmetlen. Ezt elkerülendő, most bevezetünk egy „szorzásnak” nevezett műveletet, amelyet [latex]\cdot[/latex]-tal fogunk jelölni. A fenti kifejezést például így rövidíthetjük: [latex]a \cdot 5[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A szorzás műveletével kapcsolatban azonnal rögzíthetünk két megállapodást. Először is állapodjunk meg abban, hogy mi legyen az eredmény akkor, ha valamit 0-val szorzunk meg. Ezt ugye a fenti értelmezés alapján egy 0 tagú összegként foghatjuk fel. Természetes tehát, ha rögzítjük, hogy tetszőleges [latex]a[/latex] esetén [latex]a \cdot 0[/latex] eredménye 0 legyen. A másik megállapodásunk pedig legyen az, hogy ha egy [latex]a[/latex] számot egy [latex]b[/latex] szám <strong><em>rákövetkezőjével</em></strong> szorozzuk meg, akkor az ennek megfelelő összegben éppen 1-gyel többször szerepeljen [latex]a[/latex], mintha csak [latex]b[/latex]-vel szoroztunk volna.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ennek megfelelően az alábbi definícióval vezetjük be a szorzás műveletét:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-szorzas" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez alapján kiszámítható bármely két természetes szám szorzata. Amennyiben például [latex]\N[/latex] elemeit a szokásos módon, 10-es számrendszerben jelöljük, akkor a [latex]2 \cdot 3[/latex] szorzat az alábbi lépésekben fejthető ki szigorúan a fenti definíció szerint:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}2 \cdot 0&amp;=0 \\ 2 \cdot 1&amp;=2 \cdot s(0)=(2 \cdot 0) + 2 = 0 + 2 = 2 \\ 2 \cdot 2&amp;=2 \cdot s(1) = (2 \cdot 1) + 2=2+2=4 \\ 2 \cdot 3&amp;=2 \cdot s(2)=(2 \cdot 2) + 2=4 + 2=6 \end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Értelmeztünk tehát egy műveletet az [latex]\N[/latex] halmazon, amelyet önkényesen „szorzásnak” neveztünk, és a [latex]\cdot[/latex] műveleti jellel jelöltünk. Az összeadáshoz hasonlóan vizsgáljuk hát meg, hogy ez valóban teljesíti-e azokat a jól megszokott tulajdonságokat, amelyeket általános iskolai tanulmányaink alapján elvárnánk tőle.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A szorzás kommutativitása</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Általános iskolában megtanultuk, hogy az összeadáshoz hasonlóan a szorzás esetén is felcserélhető a két tényező sorrendje. Első jogos kérdés tehát, hogy vajon a [yp_element slug="peano-szorzas" type="link" /]ban ismertetett „szorzásnak” nevezett művelet teljesíti-e ezt a kritériumot?</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ennek megmutatásához két segédtételre lesz szükségünk. Az <strong><em>első segédtétel</em></strong> azt mondja ki, hogy a definíció 1. pontjában szereplő esetben a tényezők felcserélhetők – azaz, hogy az [latex]a \cdot 0[/latex]-hoz hasonlóan a [latex]0 \cdot a[/latex] eredménye is 0 lesz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-szorzas-kommutativitas-0-lemma" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez ugyan magától értetődőnek tűnik, de ismételten felhívjuk a figyelmet arra, hogy mindenben kételkednünk kell, amit nem vezettünk vissza az axiómákra, az azokból alkotott definíciókra vagy korábban már bizonyított állításokra. Márpedig a [latex]\cdot[/latex]-tal jelölt Peano-szorzás jelenleg nem több pusztán egy általunk kreált definíciónál. A bizonyításhoz az előző részben már jól bejáratott <strong><em>teljes indukciót</em></strong> alkalmazzuk, amelynek használatát a 4. Peano-axióma teszi lehetővé:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-szorzas-kommutativitas-0-lemma-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A kommutativitáshoz szükséges <strong><em>második segédtétel</em></strong> lényegében azt mondja ki, hogy mi történik a Peano-szorzás definíciójának ([yp_element slug="peano-szorzas" type="link" /]) 2. pontjában szereplő képlettel, ha felcseréljük a tényezőket:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-szorzas-kommutativitas-lemma" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-szorzas-kommutativitas-lemma-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezután bizonyítjuk a szorzás kommutativitását:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-szorzas-kommutativitas" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-szorzas-kommutativitas-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Látható tehát, hogy a [yp_element slug="peano-szorzas" type="link" /]ban értelmezett „szorzásnak” nevezett művelet valóban kommutatív, ahogy azt az általános iskolában már megszokhattuk tőle.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most nézzünk meg egy rendkívül fontos kapcsolatot az előző részben definiált „összeadás” és a mostani részben definiált „szorzás” nevű műveletek között. Ez a tulajdonság szintén jól ismert az általános iskolából, most viszont vizsgáljuk meg, hogy tulajdonképpen miért is van ez így.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Az összeadás és a szorzás kapcsolata</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Biztosan sokan emlékeznek még általános iskolából az úgynevezett <strong><em>„zárójelfelbontási szabályra”</em></strong>. Tegyük fel, hogy van két darab kétváltozós műveletünk egy valamilyen [latex]H[/latex] halmazon. Jelöljük az egyik műveletet [latex]\circ[/latex]-rel, a másikat pedig [latex]\bullet[/latex]-tal. Szándékosan választottam két semleges szimbólumot annak érdekében, hogy nehogy véletlenül bárki bármilyen konkrét műveletre asszociáljon. Tegyük fel, hogy a következő kifejezést kell kiértékelnünk a [latex]H[/latex] halmaz [latex]a[/latex], [latex]b[/latex] és [latex]c[/latex] elemeire:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a\bullet (b \circ c)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ennek a kifejezésnek a kiértékelését mutatja az alábbi ábra:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":2845} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_12_disztributiv_muvelet_1.jpg" alt="Disztributív művelet kiértékelése (1. változat)" class="wp-image-2845"/><figcaption>Disztributív művelet kiértékelése (1. változat)</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Elképzelhető, hogy a [latex]\circ[/latex] és a [latex]\bullet[/latex] művelet olyan, hogy a fenti kifejezés átalakítható erre:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](a\bullet b)\circ (a\bullet c)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ennek a kifejezésnek a kiértékelését mutatja az alábbi ábra:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":2846} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_12_disztributiv_muvelet_2.jpg" alt="Disztributív művelet kiértékelése (2. változat)" class="wp-image-2846"/><figcaption>Disztributív művelet kiértékelése (2. változat)</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Látható, hogy a két fenti kifejezés kiértékelése teljesen máshogyan történik. Első esetben először a [latex]\circ[/latex] műveletet kell elvégezni [latex]b[/latex]-re és [latex]c[/latex]-re, majd ennek az eredményét kell össze-[latex]\bullet[/latex]-ozni [latex]a[/latex]-val balról. Második esetben viszont először össze-[latex]\bullet[/latex]-ozzuk [latex]b[/latex]-t és [latex]c[/latex]-t [latex]a[/latex]-val balról, majd az így kapott két eredményt [latex]\circ[/latex]-özzük össze.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Amennyiben a [latex]\circ[/latex] és [latex]\bullet[/latex] műveletek olyanok, hogy tetszőleges [latex]a[/latex]-ra, [latex]b[/latex]-re és [latex]c[/latex]-re a két fenti kifejezés végeredménye <strong><em>mindig </em></strong>megegyezik egymással, azaz</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a\bullet (b \circ c) = (a\bullet b) \circ (a\bullet c)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>teljesül, akkor azt mondjuk, hogy a [latex]\bullet[/latex] művelet <strong><em>baldisztributív</em></strong> a [latex]\circ[/latex] műveletre nézve. Amennyiben</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](b \circ c)\bullet a = (b\bullet a) \circ (c\bullet a)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>teljesül, akkor azt mondjuk, hogy a [latex]\bullet[/latex] művelet <strong><em>jobbdisztributív</em></strong> a [latex]\circ[/latex] műveletre nézve. Amennyiben mindkét azonosság egyszerre teljesül, akkor egyszerűen azt mondjuk, hogy a [latex]\bullet[/latex] művelet <strong><em>disztributív </em></strong>a [latex]\circ[/latex] műveletre nézve.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ha például a [latex]\bullet[/latex] művelet kommutatív, akkor automatikusan mindkét oldali disztributivitás teljesül. Az állítás megfordítása azonban nem feltétlenül igaz, azaz a kétoldali disztributivitásból nem következik a [latex]\bullet[/latex] művelet kommutativitása.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezen kívül a disztributivitási kapcsolat két művelet között általában nem szimmetrikus. Például ha a [latex]\bullet[/latex] művelet disztributív a [latex]\circ[/latex] műveletre nézve, abból még nem következik, hogy a [latex]\circ[/latex] művelet is disztributív a [latex]\bullet[/latex] műveletre nézve. Elképzelhetőek azonban olyan algebrai struktúrák, amelyekben még ez a szimmetria is teljesül. Például a halmazműveletek közül a <a rel="noreferrer noopener" aria-label="metszetképzés (új fülön nyitja meg)" href="https://hu.wikipedia.org/wiki/Metszet_(halmazelm%C3%A9let)" target="_blank">metszetképzés</a> ([latex]\cap[/latex]) és az <a href="https://hu.wikipedia.org/wiki/Uni%C3%B3_(halmazelm%C3%A9let)" target="_blank" rel="noreferrer noopener" aria-label="unió (új fülön nyitja meg)">unió</a> ([latex]\cup[/latex]) műveletei kölcsönösen disztributívak egymásra nézve:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}A\cap (B\cup C) &amp;= (A\cap B)\cup (A\cap C) \\ A\cup (B\cap C) &amp;= (A\cup B)\cap (A\cup C)\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most nézzük meg, hogy disztributivitási szempontból mit tudunk elmondani a [yp_element slug="peano-osszeadas" type="link" /] szerinti „összeadásnak” és a [yp_element slug="peano-szorzas" type="link" /] szerinti „szorzásnak” nevezett műveletekről.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-szorzas-disztributivitas" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-szorzas-disztributivitas-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mostantól tehát nyugodtan alkalmazhatjuk az általános iskolából már jól ismert zárójelfelbontási szabályt, mivel a Peano-axiómák segítségével értelmezett két műveletünk teljesíti ezt a követelményt is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A Peano-szorzás asszociativitása</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Most vizsgáljuk meg, hogy az összeadáshoz hasonlóan vajon a szorzás is asszociatív-e.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-szorzas-asszociativitas" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-szorzas-asszociativitas-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezzel megmutattuk, hogy a Peano-axiómák segítségével bevezetett mindkét műveletünk az elvárt módon viselkedik. A fejezet további részében az [latex]\N[/latex] halmazban fogunk egy kicsit rendetrakni. Ez szükséges lesz ugyanis ahhoz az absztrakcióhoz, amelyet a sorozat következő részében fogunk majd meglépni, és amelynek a segítségével nemcsak összeadni és szorozni, hanem kivonni is fogunk tudni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="relations"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Kő-papír-olló</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A Peano-axiómákkal definiált [latex]\N[/latex] halmaz jelenleg nem több csupán egy „zsáknál”, amelyben ott csücsül a végtelen sok természetes szám. E számkör kibővítéséhez azonban szükségünk lesz egy olyan fogalomra, amelynek a segítségével ezeket az objektumokat valamilyen módon sorba tudjuk állítani. Szeretnénk olyan kijelentéseket tenni, miszerint egy [latex]a[/latex] szám „előrébb van” ebben a képzeletbeli sorban, mint egy [latex]b[/latex] szám.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>kétváltozós műveletekhez</em></strong> ([yp_element slug="ketvaltozos-muvelet" type="link" /]) hasonlóan szükségünk lesz tehát egy olyan képzeletbeli dobozra, amelybe ha felül bedobunk két tetszőleges számot az [latex]\N[/latex] halmazból, akkor alul kipottyan egy <strong>igen</strong> vagy egy <strong>nem</strong> válasz egy adott eldöntendő kérdésre. Például arra a kérdésre, hogy [latex]a[/latex] „előrébb van-e” a természetes számok halmazában, mint [latex]b[/latex]? Ez nagyon hasonló azokhoz a <a rel="noreferrer noopener" aria-label="Turing-gépekhez (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/6-turing-gep-formalis-nyelv-rekurzivan-felsorolhato-rekurziv-megallasi-problema#turing-machine" target="_blank">Turing-gépekhez</a>, amelyeket a 6. részben <a rel="noreferrer noopener" aria-label="formális nyelvek felismeréséhez (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/6-turing-gep-formalis-nyelv-rekurzivan-felsorolhato-rekurziv-megallasi-problema#turing-machine-language" target="_blank">formális nyelvek felismeréséhez</a> használtunk. Jelen esetben azonban a bemenet nem egy szimbólumsorozat, hanem két természetes szám, a kimenet pedig egy <strong>igen</strong> vagy egy <strong>nem</strong> válasz lesz. Ezt szemlélteti az alábbi ábra:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":2848} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_12_relacio.jpg" alt="Kétváltozós reláció" class="wp-image-2848"/><figcaption>Kétváltozós reláció</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Az olyan kétbemenetű dobozokat, amelyek választ adnak valamilyen eldöntendő kérdésre a két felül bedobott szám közötti kapcsolatról, <strong><em>kétváltozós relációknak</em></strong> nevezzük. A fenti ábrán látható doboz például egy kétváltozós relációt reprezentál, amely relációt önkényesen [latex]R[/latex]-rel jelöltünk, de választhattunk volna bármilyen más szimbólumot is. Most nézzük meg, hogyan tudjuk általánosságban megfogalmazni, hogy matematikailag tulajdonképpen mit is nevezünk relációnak.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ennek megértéséhez fontos először tisztázni a <strong><em>„rendezett pár”</em></strong> fogalmát. Emlékezzünk vissza, hogy egy kétváltozós műveletet egy olyan függvényként definiáltuk ([yp_element slug="ketvaltozos-muvelet" type="link" /]), amely az adott művelet alaphalmazából származó elemekből alkotott összes létező ún. <strong><em>rendezett párhoz</em></strong> hozzárendel egy-egy elemet szintén ebből az alaphalmazból. Vegyük például a már jól ismert [latex]\N[/latex] halmazt, és válasszunk ki belőle két tetszőleges elemet, mondjuk [latex]1[/latex]-et és [latex]2[/latex]-t. Ebből a két elemből kétféleképpen tudunk egy rendezett párt alkotni, mivel nem mindegy, hogy melyik hol foglal helyet ebben a párban (ezért hívjuk <strong><em>rendezett</em></strong> párnak). Az egyik ilyen párt [latex](1; 2)[/latex]-vel, a másikat pedig [latex](2; 1)[/latex]-gyel jelöljük. Az [latex](1; 2)[/latex] és a [latex](2; 1)[/latex] rendezett párok tehát <strong><em>különbözőek</em></strong>, mivel nem azonos a bennük szereplő elemek sorrendje.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egy tetszőleges [latex]H[/latex] halmaz elemeiből alkotott összes létező rendezett pár szintén egy halmazt alkot. Ezt a halmazt [latex]H\times H[/latex]-val jelöljük (kimondva: [latex]H[/latex] „kereszt” [latex]H[/latex]). Tegyük fel például, hogy a [latex]H[/latex] halmaz a [latex]\text{kő}[/latex], a [latex]\text{papír}[/latex] és az [latex]\text{olló}[/latex] szavakat tartalmazza. Ekkor a [latex]H\times H[/latex] halmaz az alábbi 9 rendezett párt fogja tartalmazni: [latex](\text{kő}; \text{kő})[/latex], [latex](\text{kő}; \text{papír})[/latex], [latex](\text{kő}; \text{olló})[/latex], [latex](\text{papír}; \text{kő})[/latex], [latex](\text{papír}; \text{papír})[/latex], [latex](\text{papír}; \text{olló})[/latex], [latex](\text{olló}; \text{kő})[/latex], [latex](\text{olló}; \text{papír})[/latex], és [latex](\text{olló}; \text{olló})[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezek után a kétváltozós reláció fogalmát így definiáljuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="ketvaltozos-relacio" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az előző példánál maradva definiáljunk egy relációt a [latex]\text{kő}[/latex], a [latex]\text{papír}[/latex] és az [latex]\text{olló}[/latex] szavakat tartalmazó [latex]H[/latex] halmazon. Jelöljük például a [latex]\succ[/latex] szimbólummal a [latex]H\times H[/latex] halmaznak azt a részhalmazát, amely csak a [latex](\text{kő}; \text{olló})[/latex], [latex](\text{olló}; \text{papír})[/latex] és [latex](\text{papír}; \text{kő})[/latex] rendezett párokat tartalmazza. A definícióban szereplő jelöléssel például írhatjuk azt, hogy [latex]\text{kő} \succ \text{olló}[/latex]. Ezt szavakkal így mondhatjuk: "[latex]\text{kő}[/latex] üti [latex]\text{olló}[/latex]-t". Vegyük észre, hogy az imént épp a matematikai leírását adtuk meg a jól ismert kő-papír-olló játék ütési szabályainak.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Amikor egy végtelen halmazon értelmezünk valamilyen relációt, akkor természetesen nem tudjuk megtenni, hogy felsoroljuk az összes olyan párt, amelyek relációban állnak egymással. Ilyen esetekben valamilyen szabályt adunk meg arra vonatkozóan, hogy mikor tekintünk két elemet egymással relációban állónak, és mikor nem. Hamarosan bevezetünk majd egy relációt az [latex]\N[/latex] halmazon, amelynek a segítségével sorba fogjuk tudni rendezni [latex]\N[/latex] elemeit – azaz a természetes számokat. Előbb azonban vizsgáljuk meg, hogy pontosan mit értünk <strong><em>rendezési reláció</em></strong> alatt.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4 id="ordered-set">Rendezési relációk</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A most következő néhány definíció egy-egy speciális tulajdonságot követel meg egy relációtól. Az első például azt, hogy bármely elem relációban álljon önmagával:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="reflexiv-relacio" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A második definíció azt követeli meg egy relációtól, hogy két különböző elem esetén a közöttük lévő reláció – ha egyáltalán létezik – iránya egyértelmű legyen:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="antiszimmetrikus-relacio" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Másként megfogalmazva ha egy antiszimmetrikus reláció mindkét irányban fennáll két elem között, akkor a két elem azonos. Megjegyezzük azonban, hogy <strong><em>visszafelé nem feltétlenül teljesül</em></strong>, hogy [latex]a=b[/latex] esetén bármelyik irányban is fennáll a reláció. Ezt a fentebb definiált reflexivitási tulajdonság hivatott biztosítani.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A harmadik definíció azt követeli meg, hogy az elempárok azon tulajdonsága, miszerint egymással relációban állnak, „láncszerűen” öröklődjön. Például: ha én „magasabb vagyok” az apámnál, apám pedig „magasabb” az anyámnál, akkor én „magasabb vagyok” az anyámnál. Ezt fejezi ki az alábbi definíció:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="tranzitiv-relacio" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Végül a negyedik definíció azt követeli meg, hogy két tetszőleges elemet kiválasztva azok mindenképpen legyenek egymással „összehasonlíthatók” az adott reláció segítségével.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="trichotom-relacio" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezek a definíciók tehát mind egy-egy speciális követelményt fogalmaznak meg egy adott relációval kapcsolatban. Például az előző szakaszban a <strong><em>kő-papír-olló</em></strong> játékkal kapcsolatban definiált [latex]\succ[/latex] reláció nyilvánvalóan <strong><em>nem reflexív</em></strong>, hiszen ha a két játékos ugyanazt mutatja – legyen az akár [latex]\text{kő}[/latex], akár [latex]\text{papír}[/latex], akár [latex]\text{olló}[/latex] –, az eredmény döntetlen lesz. De <strong><em>nem is tranzitív</em></strong>, hiszen például [latex]\text{papír} \succ \text{kő}[/latex] és [latex]\text{kő} \succ \text{olló}[/latex], de [latex]\text{papír} \
+succ \text{olló}[/latex]. Végül a <strong><em>trichotómia sem teljesül</em></strong> ugyanazon okok miatt, mint a reflexivitás. Viszont <strong><em>antiszimmetrikus</em></strong>, hiszen ha a két játékos különbözőt mutat, akkor biztosan csak az egyikük fog nyerni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most bevezetjük a <strong><em>rendezett halmaz</em></strong> fogalmát, majd a definíció után megmutatjuk az elnevezés jogosságát:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="rendezett-halmaz" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Minket jelenleg csak a <strong><em>teljes rendezések</em></strong>, és ennek megfelelően a <strong><em>rendezett halmazok</em></strong> érdekelnek, részbenrendezett halmazokkal egyelőre nem foglalkozunk. Vizsgáljuk meg tehát, hogy miért nevezhetünk jogosan „rendezésnek” egy olyan relációt, amely teljesíti a fenti definícióban szereplő mind a 4 kritériumot.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel, hogy van egy valamilyen [latex]H[/latex] halmazon értelmezett rendezési reláció, amelyet a [latex]\leq[/latex] szimbólummal jelölünk. Ne társítsunk most semmilyen számokkal kapcsolatos jelentést ehhez a szimbólumhoz, az [latex]a\leq b[/latex] kifejezést egyszerűen csak olvassuk úgy, hogy „[latex]a[/latex] legfeljebb annyiadik elem a sorban, mint [latex]b[/latex]”. Ezek után a [yp_element slug="rendezett-halmaz" type="link" /]ban szereplő 4 kritériumot így is olvashatjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} -->
+<ol><li><strong><em>Reflexivitás:</em></strong> Tetszőleges elem „legfeljebb annyiadik a sorban”, mint önmaga.</li><li><strong><em>Antiszimmetria:</em></strong> Ha az [latex]a[/latex] elem „legfeljebb annyiadik a sorban”, mint a [latex]b[/latex] elem, és a [latex]b[/latex] elem is „legfeljebb annyiadik a sorban”, mint az [latex]a[/latex] elem, akkor a két elem megegyezik.</li><li><strong><em>Tranzitivitás:</em></strong> Ha az [latex]a[/latex] elem „legfeljebb annyiadik a sorban”, mint a [latex]b[/latex] elem, amely pedig „legfeljebb annyiadik a sorban”, mint a [latex]c[/latex] elem, akkor az [latex]a[/latex] elem „legfeljebb annyiadik a sorban”, mint a [latex]c[/latex] elem.</li><li><strong><em>Trichotómia:</em></strong> Bármely két elemről el lehet dönteni, hogy melyikük van „legfeljebb annyiadik helyen a sorban”, mint a másik.</li></ol>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>Ha végiggondoljuk, akkor pontosan ez az, amit elvárunk egy olyan relációtól, amelynek a segítségével egy egyértelmű sorrendet szeretnénk felállítani egy halmaz elemei között.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most nézzük meg, hogyan tudunk egy ilyen tulajdonságokkal rendelkező relációt megadni a természetes számok [latex]\N[/latex] halmazán.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A természetes számok rendezési relációja</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A természetes számok [latex]\N[/latex]-nel jelölt halmazán definiáljuk az alábbi relációt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="termeszetes-szamok-rendezese" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Látható, hogy ennek az új fogalomnak a bevezetéséhez közvetett módon kizárólag az előző részben ismertetett <strong><em>Peano-axiómákat</em></strong> ([yp_element slug="peano-axiomarendszer" type="link" /]), közvetlenül pedig az az alapján értelmezett <strong><em>összeadás nevű műveletet</em></strong> ([yp_element slug="peano-osszeadas" type="link" /]) használtuk. Ezt szem előtt tartva tehát egyelőre semmit nem mondhatunk még erről a most bevezetett relációról, kiváltképpen azt nem, hogy ez <strong><em>valóban egy rendezési reláció lenne</em></strong>. Ezt ugyanis először <strong><em>bizonyítani kell</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Nézzük először a [latex]\leq[/latex] reláció <strong><em>reflexivitását</em></strong>:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="termeszetes-szamok-rendezesi-relacioja-reflexiv" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="termeszetes-szamok-rendezesi-relacioja-reflexiv-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>tranzitivitás</em></strong> hasonlóan egyszerűen adódik:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="termeszetes-szamok-rendezesi-relacioja-tranzitiv" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="termeszetes-szamok-rendezesi-relacioja-tranzitiv-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az <strong><em>antiszimmetria</em></strong> ([yp_element slug="antiszimmetrikus-relacio" type="link" /]) igazolásához először két segédtételre lesz szükségünk. Ezek közül az első egy olyan állítás, amely a későbbiekben is hasznos lesz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-osszeg-egyszerusites" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ne feledjük, hogy csak a már rendelkezésünkre álló fogalmakra és tételekre, valamint az axiómákra hivatkozhatunk. Tekintve, hogy <strong><em>„kivonás” egyelőre nem létezik</em></strong>, más úton kell bizonyítanunk a fenti állítást.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-osszeg-egyszerusites-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A második segédtétel – amelyre szükségünk lesz az antiszimmetria igazolásához – azt mondja ki, hogy mi az az egyetlen eset, amikor egy összeg eredménye 0 lehet.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-nullosszeg-tagjai" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezt egy új bizonyítási módszerrel igazoljuk, amelyet <strong><em>indirekt bizonyításnak</em></strong> nevezünk. Ilyenkor nem magát az állítást igazoljuk, hanem megmutatjuk, hogy miért nem lehet hamis.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-nullosszeg-tagjai-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="peano-osszeg-egyszerusites" type="link" /] és a [yp_element slug="peano-nullosszeg-tagjai" type="link" /] felhasználásával mostmár igazolhatjuk a [latex]\leq[/latex] reláció <strong><em>antiszimmetriáját</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="termeszetes-szamok-rendezesi-relacioja-antiszimmetrikus" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="termeszetes-szamok-rendezesi-relacioja-antiszimmetrikus-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Már csak a <strong><em>trichotómia</em></strong> igazolása van hátra. Ez az alábbi segédállításból fog következni:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="termeszetes-szamok-rendezesi-relacioja-lemma" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="termeszetes-szamok-rendezesi-relacioja-lemma-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ebből már következik a [latex]\leq[/latex] reláció <strong><em>trichotómiája</em></strong>, ezért most ezt mondjuk ki:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="termeszetes-szamok-rendezesi-relacioja-trichotom" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="termeszetes-szamok-rendezesi-relacioja-trichotom-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [latex]\leq[/latex] reláció tehát teljesíti mindazon követelményeket, amelyeket a [yp_element slug="rendezett-halmaz" type="link" /] megkövetel tőle. Ezért mostmár nyugodtan kijelenthetjük, hogy a [yp_element slug="termeszetes-szamok-rendezese" type="link" /]ban jogosan neveztük ezt a relációt <strong><em>rendezésnek</em></strong>, és jogosan nevezhetjük az [latex]\N[/latex] halmazt <strong><em>rendezett halmaznak</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Hol tartunk most?</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Ezen a ponton álljunk meg egy pillanatra, és szedjük össze, hogy jelenleg hol tartunk a számelmélet felépítésében, amit ugye a semmiből kezdtünk el az <a rel="noreferrer noopener" aria-label="előző részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/11-peano-axiomarendszer-termeszetes-szam-muvelet-osszeadas-kommutativitas-asszociativitas-teljes-indukcio/" target="_blank">előző részben</a>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A Peano-axiómarendszer 4 állításával bevezettük a természetes számok halmazát:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-axiomarendszer" type="recall-collapsed" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezen a halmazon bevezettünk két műveletet az alábbi definíciók szerint:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-osszeadas" type="recall-collapsed" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-szorzas" type="recall-collapsed" show_title="true" show_link_to_article="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Bizonyítottuk, hogy e két művelet engedelmeskedik az általános iskolából már jól ismert számolási szabályoknak:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-osszeadas-kommutativitas" type="recall-collapsed" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-osszeadas-asszociativitas" type="recall-collapsed" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-szorzas-kommutativitas" type="recall-collapsed" show_title="true" show_link_to_article="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-szorzas-asszociativitas" type="recall-collapsed" show_title="true" show_link_to_article="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-szorzas-disztributivitas" type="recall-collapsed" show_title="true" show_link_to_article="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A 4 alapművelet közül tehát a két legfontosabb (az <strong><em>összeadás</em></strong> és a <strong><em>szorzás</em></strong>) már többé-kevésbé rendelkezésünkre áll. A <strong><em>kivonás</em></strong> azonban sajnos a természetes számok [latex]\N[/latex] halmazán <strong><em>nem művelet</em></strong> (lásd a [yp_element slug="ketvaltozos-muvelet" type="link" /]), mivel bizonyos esetekben kivezet belőle. Például nincs olyan természetes szám, amely a [latex]2-5[/latex] különbségképzés eredménye lenne (a [latex]-3[/latex] ugyanis nem természetes szám, holott a [latex]2[/latex] és az [latex]5[/latex] is az).</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Kinőttük tehát az [latex]\N[/latex] halmazt, ezért a következő részben át fogunk térni egy [latex]\N[/latex]-nél <strong><em>bővebb számkörbe</em></strong>, amelyben már gond nélkül fogunk tudni kivonást is végezni. Sajnos azonban <strong><em>osztásról</em></strong> általánosságban még itt sem fogunk tudni beszélni – legalábbis nem a megszokott értelemben. Cserébe viszont elkezdhetünk majd végre ismerkedni azokkal a számokkal, amelyek alapvető szerepet játszanak a kriptográfiai eljárásokban, és úgy általában az egész számelméletben.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A számkör bővítésének előkészítése érdekében bevezettünk egy relációt az [latex]\N[/latex] halmazon:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="termeszetes-szamok-rendezese" type="recall-collapsed" show_title="true" show_link_to_article="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Végül – az indirekt bizonyítás módszerét bemutatva – megmutattuk, hogy ez a reláció egy teljes rendezést valósít meg a természetes számok között:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="termeszetes-szamok-rendezesi-relacioja-reflexiv" type="recall-collapsed" show_title="true" show_link_to_article="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="termeszetes-szamok-rendezesi-relacioja-tranzitiv" type="recall-collapsed" show_title="true" show_link_to_article="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="termeszetes-szamok-rendezesi-relacioja-antiszimmetrikus" type="recall-collapsed" show_title="true" show_link_to_article="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="termeszetes-szamok-rendezesi-relacioja-trichotom" type="recall-collapsed" show_title="true" show_link_to_article="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A következő részben kilépünk a természetes számok köréből egy sokkal előnyösebb algebrai tulajdonságokkal bíró számkörbe. Ennek keretében bemutatjuk azt az absztrakciós utat, amelyet az emberiség hajnalán őseinknek is meg kellett tenniük, és ezzel párhuzamosan megismerkedünk néhány absztrakt algebrai fogalommal. Ezek segítségével általánosabb módon tudjuk majd tárgyalni azokat a számelméleti összefüggéseket, amelyek végül a prímszámok elméletén keresztül elvezetnek minket napjaink biztonságos kommunikációjának alapjaihoz.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A következő részt <a href="https://youproof.hu/kriptografia/13-adossag-ekvivalenciarelacio-ekvivalencia-osztaly-egesz-szam-homomorfizmus-beagyazas-negativ-szam/">itt</a> találod...</em></strong></p>
+<!-- /wp:paragraph -->

@@ -1,0 +1,18 @@
+type: theorem
+name: kituntetett-kozos-oszto-kiemelesi-tulajdonsaga
+proofs:
+  - kituntetett-kozos-oszto-kiemelesi-tulajdonsaga-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ egy tetszőleges ***integritástartomány***, amelyben ***bármely két elemnek létezik kitüntetett
+      közös osztója***.
+  - type: formula
+    lead-in: |
+      Ekkor tetszőleges $a$, $b$ és $c$ elemekre érvényes az alábbi összefüggés:
+    content: |
+      (ac,bc)\sim (a,b)\cdot c
+  - type: narrative
+    content: |
+      Azaz $(ac,bc)$ és $(a,b)c$ mindig egymás asszociáltjai.

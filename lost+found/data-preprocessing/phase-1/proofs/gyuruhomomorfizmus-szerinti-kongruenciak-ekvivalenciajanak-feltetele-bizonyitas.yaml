@@ -1,0 +1,42 @@
+type: proof
+name: gyuruhomomorfizmus-szerinti-kongruenciak-ekvivalenciajanak-feltetele-bizonyitas
+remarks: []
+references:
+  gyuruhomomorfizmus-magja-es-kepe:
+    target:
+      type: definition
+      name: gyuruhomomorfizmus-magja-es-kepe
+content:
+  - type: narrative
+    content: |
+      Az áttekinthetőség kedvéért most az összeadást a $+$, az ellentettképzést és a kivonást pedig a $-$
+      szimbólummal fogjuk jelölni mindhárom gyűrű esetén. Mindig gondoljuk azonban végig, hogy az adott
+      kifejezésben szereplő műveleti jelek éppen melyik gyűrűre vonatkoznak. Ezzel szemben a nullelemek között
+      továbbra is jelölésbeli különbségeket fogunk tenni. Ez alapján az $R$ gyűrű nullelemét $0_R$, az $S$ gyűrű
+      nullelemét $0_S$, a $T$ gyűrű nullelemét pedig $0_T$ fogja jelölni.
+  - type: narrative
+    content: |
+      Először is tegyük fel, hogy $\ker f=\ker g$, azaz a két gyűrűhomomorfizmus magja megegyezik. Az $a\equiv
+      b\pod f$ reláció a [gyuruhomomorfizmus-magja-es-kepe] utánis megjegyzés alapján pontosan azt jelenti, hogy az
+      $a-b$ különbség benne van az $f$ gyűrűhomomorfizmus magjában.
+  - type: narrative
+    content: |
+      Mivel azonban azt mondtuk, hogy $\ker f=\ker g$ &ndash; azaz $f$ és $g$ magjának ugyanazok az elemei &ndash;,
+      így az $a-b$ különbség benne van a $g$ gyűrűhomomorfizmus magjában is. Ez viszont ismét a
+      [gyuruhomomorfizmus-magja-es-kepe] utánis megjegyzés alapján pontosan azt jelenti, hogy teljesül az $a\equiv
+      b\pod g$ kongruencia.
+  - type: narrative
+    content: |
+      Amennyiben tehát $\ker f=\ker g$, akkor a két gyűrűhomomorfizmus szerinti kongruencia egyszerre teljesül vagy
+      nem teljesül, azaz teljesen ekvivalens egymással.
+  - type: narrative
+    content: |
+      ***Visszafelé:*** Tegyük most fel, hogy a két kongruencia egymással ekvivalens. A fentiekhez hasonló
+      lépéseket alkalmazva egyrészt azt fogjuk kapni, hogy az $a\equiv b\pod f$ kongruencia ***pontosan akkor***
+      teljesül, ha az $a-b$ különbség benne van az $f$ magjában. Ehhez hasonlóan az $a\equiv b\pod g$ kongruencia
+      ***pontosan akkor*** teljesül, ha az $a-b$ benne van a $g$ magjában. Ha tehát a két kongruencia ekvivalens
+      egymással, akkor az $a-b$ különbség pontosan akkor van benne $f$ magjában, amikor benne van $g$ magjában is.
+      Ez ugye tetszőleges $a$ és $b$ elempárra teljesül, így speciálisan azokban az esetekben is, amikor $b=0_R$.
+      Ez viszont azt jelenti, hogy tetszőleges $a=a-0_R$ pontosan akkor van benne $f$ magjában, amikor $g$ magjában
+      is benne van. A $\ker f$ és $\ker g$ halmazoknak tehát pontosan ugyanazok az elemei, azaz a két halmaz
+      valóban megegyezik.

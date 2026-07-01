@@ -1,0 +1,17 @@
+type: theorem
+name: maradekok-gyuruje
+proofs:
+  - maradekok-gyuruje-bizonyitas
+remarks: []
+references:
+  modularis-osszeadas-es-szorzas:
+    target:
+      type: definition
+      name: modularis-osszeadas-es-szorzas
+content:
+  - type: narrative
+    content: |
+      Tetszőleges $m\eq 0$ egész szám esetén legyen $Z_m$ a [modularis-osszeadas-es-szorzas] szerinti ***modulo m
+      maradékok*** halmaza, és jelölje $\oplus$ és $\odot$ az ezen a halmazon definiált ***moduláris összeadás és
+      szorzás*** műveletét. Ekkor $Z_m$ egy ***kommutatív gyűrűt*** alkot ezzel a két művelettel, amely $|m|\eq 1$
+      esetén ***egységelemes***.

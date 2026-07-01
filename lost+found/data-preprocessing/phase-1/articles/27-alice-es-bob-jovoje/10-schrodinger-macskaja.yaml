@@ -1,0 +1,51 @@
+type: section
+name: 10-schrodinger-macskaja
+title: Schrödinger macskája
+
+body:
+  - type: narrative
+    content: |
+      A kvantummechanika egy rendszer pillanatnyi állapotát az úgynevezett ***hullámfüggvénnyel*** ábrázolja, ami a
+      mérhető tulajdonságok valószínűségi eloszlását írja le. Például egy, a fenti kísérletben szereplő fotonnak
+      nincs konkrét térbeli pozíciója, a hullámfüggvény ehelyett azt írja le, hogy hol milyen valószínűséggel van a
+      foton. És itt nem arról van szó, hogy a mérőeszközök behatárolt pontosságát modelleznénk egy ilyenfajta
+      matematikai leírással. Ehelyett a kvantummechanika azt állítja, hogy a foton a hullámfüggvény által leírt
+      mértékekben ***egyszerre mindenhol jelen van***.
+  - type: narrative
+    content: |
+      Ezt a jelenséget ***szuperpozíciónak*** nevezzük. A kvantummechanika abból indul ki, hogy a kísérletben
+      szereplő fotonról csak két dolgot tudunk: elhagyja a fotonágyút, és nekiütközik az ernyőnek. Minden, ami ezek
+      között történt ***teljes rejtély***. Sőt, a kvantummechanika szerint mindaddig, amíg nem tudjuk, hogy mit
+      csinál egy részecske &ndash; azaz amíg meg nem mérjük &ndash;, addig tulajdonképpen mindent egyidejűleg
+      csinál, azaz ***szuperpozíciós állapotban van***. Azáltal, hogy detektort helyezünk a résekhez,
+      tulajdonképpen egy mérést hajtunk végre, amely megváltoztatja a foton hullámfüggvényét. Ebben a pillanatban a
+      hullámfüggvény egyetlen pontban, konkrétan a mért értéknél sűrűsödik össze, és minden egyéb helyen nulla lesz
+      az értéke. Ezt a jelenséget a ***hullámfüggvény összeomlásának nevezzük***. Ilyenkor tehát a szuperpozíciós
+      állapot egyetlen konkrét állapotba roskad össze, és ez az oka annak, hogy az ernyőn érzékelt mintázat is
+      teljesen más lesz, mint a detektorok nélküli esetben.
+  - type: narrative
+    content: |
+      Ennek a meglehetősen őrültségnek tűnő elképzelésnek a szemléltetésére találta ki Erwin Schrödinger a
+      ***"Schrödinger macskája"*** néven ismeretes gondolatkísérletet. Habár ez sem hangzik kevésbé őrültségnek, a
+      kvantummechanika szerint az elemi részecskék szintjén valóban így működik a világunk. Képzeljünk el egy
+      dobozban lévő macskát, amelynek két lehetséges állapota van: él vagy pedig halott. Amikor a láda még nyitva
+      van, akkor egyértelműen látjuk, hogy a macska él, azaz ilyenkor nincs szuperpozíciós állapotban. Most
+      beteszünk a macska mellé egy nagyon törékeny ciánfiolát, és lezárjuk a ládát. Ettől a pillanattól kezdve nem
+      látjuk a macskát, nem tudjuk, hogy milyen állapotban van. Hétköznapi szóhasználattal élve vagy életben van,
+      vagy halott, nem lehet tudni. Ezzel szemben a kvantummechanika szerint a macska ***egyszerre élő és
+      halott***, azaz ***szuperpozíciós állapotban van***. Tegyük fel, hogy ismét kinyitjuk a ládát, hogy
+      szemrevételezzük a macskát. Ekkor &ndash; és a kvantummechanika szerint csakis ekkor &ndash; a macska vagy az
+      egyik, vagy a másik állapotba kerül, és ebben a pillanatban a szuperpozíció egyetlen konkrét állapotba
+      roskad.
+  - type: narrative
+    content: |
+      Noha mindez teljes képtelenségnek tűnik, ennek ellenére jelenleg ez minden idők legsikeresebb tudományos
+      elmélete, ezért jobb ha megbarátkozik vele az Olvasó. Például ez teszi lehetővé, hogy a fizikusok képesek
+      legyenek kiszámítani egy atomerőműben végbemenő nukleáris folyamatok következményeit. Csak ez az elmélet
+      magyarázza az élőlények genetikai kódját tartalmazó DNS csodáit és a napsütést. Kizárólag ez teszi lehetővé
+      annak a lézernek a megtervezését, amely a lejátszóba helyezett DVD és BluRay lemezeket elolvassa. Ez az
+      alapja a tranzisztor és a dióda működésének, amelyek nélkülözhetetlenek az elektronikában, és amelyek az
+      integrált áramkörök &ndash; és így a számítógépeink &ndash; építőkövei. És ez lehet az alapja egy olyan
+      elképesző számítási kapacitással rendelkező eszköz, az úgynevezett ***kvantumszámítógép*** működésének is,
+      amely eddig soha nem látott mértékű forradalmat hozhat főként a mesterséges intelligencia területén. Ez az
+      eszköz azonban komoly fenyegetést is jelent az egész világ számára.

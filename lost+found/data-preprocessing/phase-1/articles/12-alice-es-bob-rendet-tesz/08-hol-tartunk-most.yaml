@@ -1,0 +1,98 @@
+type: section
+name: 08-hol-tartunk-most
+title: Hol tartunk most?
+
+references:
+  ketvaltozos-muvelet:
+    target:
+      type: definition
+      name: ketvaltozos-muvelet
+
+body:
+  - type: narrative
+    content: |
+      Ezen a ponton álljunk meg egy pillanatra, és szedjük össze, hogy jelenleg hol tartunk a számelmélet
+      felépítésében, amit ugye a semmiből kezdtünk el az előző részben.
+  - type: narrative
+    content: |
+      A Peano-axiómarendszer 4 állításával bevezettük a természetes számok halmazát:
+  - type: recall
+    target:
+      type: definition
+      name: peano-axiomarendszer
+  - type: narrative
+    content: |
+      Ezen a halmazon bevezettünk két műveletet az alábbi definíciók szerint:
+  - type: recall
+    target:
+      type: definition
+      name: peano-osszeadas
+  - type: recall
+    target:
+      type: definition
+      name: peano-szorzas
+  - type: narrative
+    content: |
+      Bizonyítottuk, hogy e két művelet engedelmeskedik az általános iskolából már jól ismert számolási
+      szabályoknak:
+  - type: recall
+    target:
+      type: theorem
+      name: peano-osszeadas-kommutativitas
+  - type: recall
+    target:
+      type: theorem
+      name: peano-osszeadas-asszociativitas
+  - type: recall
+    target:
+      type: theorem
+      name: peano-szorzas-kommutativitas
+  - type: recall
+    target:
+      type: theorem
+      name: peano-szorzas-asszociativitas
+  - type: recall
+    target:
+      type: theorem
+      name: peano-szorzas-disztributivitas
+  - type: narrative
+    content: |
+      A 4 alapművelet közül tehát a két legfontosabb (az ***összeadás*** és a ***szorzás***) már többé-kevésbé
+      rendelkezésünkre áll. A ***kivonás*** azonban sajnos a természetes számok $\N$ halmazán ***nem művelet***
+      (lásd a [ketvaltozos-muvelet]), mivel bizonyos esetekben kivezet belőle. Például nincs olyan természetes
+      szám, amely a $2-5$ különbségképzés eredménye lenne (a $-3$ ugyanis nem természetes szám, holott a $2$ és az
+      $5$ is az).
+  - type: narrative
+    content: |
+      Kinőttük tehát az $\N$ halmazt, ezért a következő részben át fogunk térni egy $\N$-nél ***bővebb
+      számkörbe***, amelyben már gond nélkül fogunk tudni kivonást is végezni. Sajnos azonban ***osztásról***
+      általánosságban még itt sem fogunk tudni beszélni &ndash; legalábbis nem a megszokott értelemben. Cserébe
+      viszont elkezdhetünk majd végre ismerkedni azokkal a számokkal, amelyek alapvető szerepet játszanak a
+      kriptográfiai eljárásokban, és úgy általában az egész számelméletben.
+  - type: narrative
+    content: |
+      A számkör bővítésének előkészítése érdekében bevezettünk egy relációt az $\N$ halmazon:
+  - type: recall
+    target:
+      type: definition
+      name: termeszetes-szamok-rendezese
+  - type: narrative
+    content: |
+      Végül &ndash; az indirekt bizonyítás módszerét bemutatva &ndash; megmutattuk, hogy ez a reláció egy teljes
+      rendezést valósít meg a természetes számok között:
+  - type: recall
+    target:
+      type: theorem
+      name: termeszetes-szamok-rendezesi-relacioja-reflexiv
+  - type: recall
+    target:
+      type: theorem
+      name: termeszetes-szamok-rendezesi-relacioja-tranzitiv
+  - type: recall
+    target:
+      type: theorem
+      name: termeszetes-szamok-rendezesi-relacioja-antiszimmetrikus
+  - type: recall
+    target:
+      type: theorem
+      name: termeszetes-szamok-rendezesi-relacioja-trichotom

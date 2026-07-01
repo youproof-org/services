@@ -1,0 +1,17 @@
+type: theorem
+name: teljes-rendezesek-pozitivitastartomanyainak-metszete
+proofs:
+  - teljes-rendezesek-pozitivitastartomanyainak-metszete-bizonyitas
+remarks: []
+references:
+  rendezett-gyuru:
+    target:
+      type: definition
+      name: rendezett-gyuru
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy $(R,+,\cdot )$ egy olyan ***nullosztómentes*** gyűrű, amely ***teljesen rendezhető***
+      &ndash; azaz létezik legalább egy, a [rendezett-gyuru] szerinti rendezési axiómákat kielégítő teljes rendezés
+      a gyűrű $R$ alaphalmazán. Ekkor minden ***nemnulla elem*** önmagával vett szorzata, valamint az összes ilyen
+      szorzatból képzett akárhánytagú összeg pozitív a gyűrű ***bármely teljes rendezésére nézve***.

@@ -1,0 +1,65 @@
+type: section
+name: 01-a-kis-fermat-tetel
+title: A kis Fermat-tétel
+
+body:
+  - type: narrative
+    content: |
+      A kis Fermat-tétel egy fontos számelméleti tétel, amelyet Pierre de Fermat fedezett fel 1636-ban. Fermat-nak
+      bosszantó szokása volt, hogy bizonyítás nélkül közölte felfedezéseit kortársaival, mintegy kihívást intézve
+      hozzájuk: jöjjenek rá ők is a bizonyításra. Fermat szokásához híven a kis Fermat-tételre sem adott
+      bizonyítást. Ezt bizonyíthatóan elsőként Gottfried Wilhelm Leibniz német matematikus írta le egy dátumozatlan
+      kéziratban, ahol azt is állította, hogy már 1683 előtt is ismert bizonyítást e tételre. A tétel nevében
+      szereplő "kis" jelzőt a híres nevezetes nagy Fermat-tételtől való megkülönböztetés miatt szokás használni. Ez
+      utóbbi egészen 1995-ig "nagy Fermat-sejtés" néven volt ismeretes, mivel csak ekkor &ndash; mintegy 350 évvel
+      később &ndash; sikerült bizonyítást adni rá.
+  - type: narrative
+    content: |
+      Visszatérve a kis Fermat-tételre, az egy viszonylag egyszerű számelméleti tétel, amely moduláris hatványokról
+      szól, méghozzá azokban az esetekben, amikoris a modulus egy valamilyen pozitív $p$ prímszám. Fermat azt
+      vizsgálta, hogy egy tetszőleges $a$ egész szám moduláris hatványai hogyan alakulnak ebben a modulo $p$
+      óraaritmetikában. Észrevette, hogy minden olyan esetben, amikor a kitevő megegyezik a $p$ modulussal, akkor
+      az $a$ egész szám $p$-edik moduláris hatványa is épp megegyezik $a$-val.
+  - type: narrative
+    content: |
+      Vizsgáljuk meg például, hogy az $a=2$ egész szám moduláris hatványai hogyan alakulnak a kitevőknek megfelelő
+      óraaritmetikákban.
+  - type: formula
+    lead-in: |
+      Nyilakkal jelöltük meg azokat a sorokat, amelyekben a kitevő és a modulus prímszám:
+    content: |
+      \begin{aligned}\to 2^2&\equiv 2\pmod 2 \\ \to 2^3&\equiv 2\pmod 3 \\ 2^4&\equiv 0\pmod 4 \\ \to 2^5&\equiv
+      2\pmod 5 \\ 2^6&\equiv 4\pmod 6 \\ \to 2^7&\equiv 2\pmod 7 \\ 2^8&\equiv 0\pmod 8 \\ 2^9&\equiv 8\pmod 9 \\
+      2^{10}&\equiv 4\pmod{10} \\ \to 2^{11}&\equiv 2\pmod{11} \\ &\vdots \end{aligned}
+  - type: narrative
+    content: |
+      Valóban úgy tűnik, hogy a prím kitevők esetében a $2$ hatványai mindig kongruensek lesznek $2$-vel a
+      kitevőnek megfelelő óraaritmetikában.
+  - type: narrative
+    content: |
+      Az alábbi tétel második állítása éppen azt fogalmazza meg, hogy ez bármilyen alap &ndash; tehát nem csak a
+      $2$ &ndash;, továbbá bármilyen pozitív prím kitevő esetén így van. Amennyiben $a$ és $p$ relatív prímek,
+      akkor érvényes az első állítás is, amely a kis Fermat-tétel gyakoribb alakja.
+  - type: embed
+    target:
+      type: theorem
+      name: kis-fermat-tetel
+  - type: embed
+    target:
+      type: proof
+      name: kis-fermat-tetel-bizonyitas
+  - type: embed
+    target:
+      type: remark
+      name: kis-fermat-tetel-megjegyzes
+  - type: narrative
+    content: |
+      Ráadásul az iménti megjegyzésben szereplő $n=561$ ellenpélda különleges abból a szempontból, hogy esetében
+      nemcsak az $a=2$, hanem ***tetszőleges*** $a$ alap esetén is teljesül az $a^n\equiv a\pmod n$ kongruencia,
+      ennek ellenére mégsem prím. Ez egyben azt is jelenti, hogy a ***tétel megfordítása nem igaz!***
+  - type: narrative
+    content: |
+      Azon túlmenően, hogy a most ismertetett ***kis Fermat-tétel*** fontos szerepet játszik az RSA-algoritmus
+      helyességének igazolásában, Alice-nak és Bob-nak is nagy hasznára lesz a kulcsgeneráláshoz szükséges óriási
+      &ndash; a gyakorlatban többszázjegyű &ndash; prímszámok kereséséhez. Erről a következő részben lesz szó, most
+      azonban ismerkedjünk meg egy másik, az RSA működése szempontjából fontos kérdéssel.

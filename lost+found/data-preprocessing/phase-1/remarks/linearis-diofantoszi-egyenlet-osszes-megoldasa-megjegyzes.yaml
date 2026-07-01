@@ -1,0 +1,13 @@
+type: remark
+name: linearis-diofantoszi-egyenlet-osszes-megoldasa-megjegyzes
+content:
+  - type: narrative
+    content: |
+      A tételben szereplő ***2. és 3. állítást*** egyben is megfogalmazhatjuk az alábbi módon:
+  - type: formula
+    lead-in: |
+      Ha az $ax+my=b$ lineáris diofantoszi egyenlet ***valamelyik*** $x=s$, $y=t$ megoldását már ismerjük, akkor az
+      alábbi képlet segítségével megkaphatjuk az ***összes*** megoldást, amennyiben a $k$ paraméterrel
+      végigszaladunk az összes létező egész számon:
+    content: |
+      \begin{aligned}x&=s+k\cdot \frac{m}{(a,m)} \\ y&=t-k\cdot \frac{a}{(a,m)}\end{aligned}

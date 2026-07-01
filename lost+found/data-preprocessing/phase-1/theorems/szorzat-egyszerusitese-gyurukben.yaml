@@ -1,0 +1,20 @@
+type: theorem
+name: szorzat-egyszerusitese-gyurukben
+proofs:
+  - szorzat-egyszerusitese-gyurukben-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $(R, +, \cdot )$ tetszőleges (nem feltétlenül kommutatív) ***nullosztómentes*** gyűrű a szokásos
+      jelölésekkel.
+  - type: ordered-list
+    lead-in: |
+      Ekkor bármely $a$, $b$ és $c\eq 0$ elemek esetén teljesülnek az alábbiak:
+    items:
+      - 'Ha $a\cdot c = b\cdot c$, akkor $a=b$.'
+      - 'Ha $c\cdot a = c\cdot b$, akkor $a=b$.'
+  - type: narrative
+    content: |
+      ***Igaz a tétel megfordítása is:*** Amennyiben tetszőleges $a$, $b$ és $c\eq 0$ elemek esetén teljesül a
+      fenti két tulajdonság, akkor az $(R,+,\cdot )$ gyűrű nullosztómentes.

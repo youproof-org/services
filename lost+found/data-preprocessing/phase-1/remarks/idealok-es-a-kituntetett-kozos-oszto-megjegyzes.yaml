@@ -1,0 +1,8 @@
+type: remark
+name: idealok-es-a-kituntetett-kozos-oszto-megjegyzes
+content:
+  - type: narrative
+    content: |
+      Az Olvasót eddig esetleg zavarhatta, hogy az $a$ és $b$ elemeket tartalmazó legszűkebb ideált ugyanúgy
+      $(a,b)$-vel jelöljük, mint e két elem kitüntetett közös osztóját. Ez a tétel pontosan ennek az okára világít
+      rá.

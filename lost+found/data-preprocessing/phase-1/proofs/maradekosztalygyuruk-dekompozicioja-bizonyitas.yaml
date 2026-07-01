@@ -1,0 +1,98 @@
+type: proof
+name: maradekosztalygyuruk-dekompozicioja-bizonyitas
+remarks: []
+references:
+  egesz-szamok-maradekosztalygyurui:
+    target:
+      type: theorem
+      name: egesz-szamok-maradekosztalygyurui
+  gyuruhomomorfizmus:
+    target:
+      type: definition
+      name: gyuruhomomorfizmus
+  gyuruk-direkt-szorzata:
+    target:
+      type: theorem
+      name: gyuruk-direkt-szorzata
+  kinai-maradektetel-alternativ:
+    target:
+      type: theorem
+      name: kinai-maradektetel-alternativ
+  kinai-maradektetel-megforditasa:
+    target:
+      type: theorem
+      name: kinai-maradektetel-megforditasa
+content:
+  - type: narrative
+    content: |
+      Az $f$ függvényről a [kinai-maradektetel-alternativ]ben igazoltuk, hogy minden $\Z/p\Z \times \Z/q\Z$-beli
+      rendezett párhoz ***pontosan egy*** $\Z/pq\Z$-beli maradékosztályt rendel hozzá. Méghozzá azt a
+      maradékosztályt, amely a rendezett pár két komponensének a metszete.
+  - type: narrative
+    content: |
+      A [kinai-maradektetel-megforditasa]ben pedig azt mutattuk meg, hogy ilymódon minden $\Z/pq\Z$-beli
+      maradékosztály ***pontosan egy*** $\Z/p\Z \times \Z/q\Z$-beli rendezett párhoz lehet hozzárendelve, amelyet
+      ráadásul épp a $g$ függvény segítségével kaphatunk meg.
+  - type: narrative
+    content: |
+      Ez egyrészt azt jelenti, hogy a $\Z/p\Z \times \Z/q\Z$ halmaz elemei kölcsönösen egyértelmű megfeleltetésben
+      állnak a $\Z/pq\Z$ halmaz elemeivel. Másrészt pedig azt jelenti, hogy e kölcsönösen egyértelmű megfeleltetést
+      az $f$ függvény segítségével az egyik, míg a $g$ függvény segítségével a másik irányban kaphatjuk meg. Más
+      szavakkal az $f$ és $g$ függvények épp egymás megfordításai.
+  - type: figure
+    lead-in: |
+      Ezt az alábbi ábra mutatja:
+    src: f_es_g_egymashoz_valo_viszonya.jpg
+    alt: Az f és g függvények egymáshoz való viszonya
+    caption: Az $f$ és $g$ függvények egymáshoz való viszonya
+  - type: narrative
+    content: |
+      Így már csak azt kell igazolni, hogy $f$ és $g$ ***művelettartó leképezések*** (lásd a
+      [gyuruhomomorfizmus]t). Annak érdekében, hogy világos legyen, melyik műveletet melyik gyűrűben kell
+      elvégezni, a $\Z/pq\Z$ maradékosztálygyűrű összeadását és szorzását jelöljük a $\boxplus$ és $\boxdot$, míg a
+      $\Z/p\Z \times \Z/q\Z$ gyűrű összeadását és szorzását a $\oplus$ és $\odot$ szimbólumokkal.
+  - type: formula
+    lead-in: |
+      Ezeket a jelöléseket bevezetve azt kell igazolni, hogy tetszőleges $a$, $b$, $c$ és $d$ egész számokra
+      teljesülnek az alábbiak:
+    content: |
+      \begin{aligned}f(([a]_p;[b]_q) \oplus ([c]_p;[d]_q)) &= f(([a]_p;[b]_q))\boxplus f(([c]_p;[d]_q)) \\
+      f(([a]_p;[b]_q) \odot ([c]_p;[d]_q)) &= f(([a]_p;[b]_q))\boxdot f(([c]_p;[d]_q)) \\ g([a]_{pq} \boxplus
+      [b]_{pq}) &= g([a]_{pq})\oplus g([b]_{pq}) \\ g([a]_{pq} \boxdot [b]_{pq}) &= g([a]_{pq})\odot
+      g([b]_{pq})\end{aligned}
+  - type: narrative
+    content: |
+      Kezdjük a $g$ függvénnyel.
+  - type: formula
+    lead-in: |
+      Az erre vonatkozó két állítás baloldalait a [egesz-szamok-maradekosztalygyurui] és a $g$ függvény képletének
+      felhasználásával az alábbi módon lehet kifejteni (itt a $+$ és $\cdot$ szimbólumok a szokásos egészek közötti
+      összeadást és szorzást jelölik):
+    content: |
+      \begin{aligned}g([a]_{pq} \boxplus [b]_{pq}) &= g([a+b]_{pq})=([a+b]_p;[a+b]_q) \\ g([a]_{pq} \boxdot
+      [b]_{pq}) &= g([a\cdot b]_{pq})=([a\cdot b]_p;[a\cdot b]_q)\end{aligned}
+  - type: formula
+    lead-in: |
+      Míg a jobboldalakból ezt kapjuk:
+    content: |
+      \begin{aligned}g([a]_{pq})\oplus g([b]_{pq}) &= ([a]_p;[a]_q)\oplus ([b]_p;[b]_q) \\ g([a]_{pq})\odot
+      g([b]_{pq}) &= ([a]_p;[a]_q)\odot ([b]_p;[b]_q)\end{aligned}
+  - type: narrative
+    content: |
+      A [gyuruk-direkt-szorzata] alapján a kapott rendezett párokat komponensenként kell összeadni illetve
+      összeszorozni. Az első komponenshez szükséges összeadást és szorzást a modulo $p$, míg a második komponenshez
+      szükséges összeadást és szorzást a modulo $q$ maradékosztálygyűrűben kell elvégezni.
+  - type: formula
+    lead-in: |
+      Ismételten a [egesz-szamok-maradekosztalygyurui] felhasználásával így az alábbit kapjuk:
+    content: |
+      \begin{aligned}g([a]_{pq})\oplus g([b]_{pq}) &= ([a+b]_p;[a+b]_q) \\ g([a]_{pq})\odot g([b]_{pq}) &= ([a\cdot
+      b]_p;[a\cdot b]_q)\end{aligned}
+  - type: narrative
+    content: |
+      A $g$-re vonatkozó két állítás bal- és jobboldalai tehát megegyeznek, azaz a $g$ függvény tartja mindkét
+      műveletet, így ő egy ***gyűrűizomorfizmus*** $\Z/pq\Z$ és $\Z/p\Z \times \Z/q\Z$ között.
+  - type: narrative
+    content: |
+      Mivel az $f$ függvény a $g$ függvény megfordítása, ezért a [gyuruhomomorfizmus] utáni megjegyzés alapján ő is
+      egy ***gyűrűizomorfizmus*** a két gyűrű között, csak épp a másik irányba képez.

@@ -1,0 +1,18 @@
+type: definition
+name: pozitiv-es-negativ-egesz-szamok
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy $n$ egy természetes szám, és $n\eq 0$.
+  - type: narrative
+    content: |
+      Ekkor a $\Z$ halmaz $[(n;0)]$ alakban felírható elemeit ***pozitív egész számoknak*** nevezzük, és így
+      jelöljük: $n$ vagy $+n$.
+  - type: narrative
+    content: |
+      A $\Z$ halmaz $[(0;n)]$ alakban felírható elemeit ***negatív egész számoknak*** nevezzük és így jelöljük:
+      $-n$.
+  - type: narrative
+    content: |
+      A $\Z$ halmaz $[(0;0)]$ alakban felírható elemét ***nullának*** nevezzük, és így jelöljük: $0$.

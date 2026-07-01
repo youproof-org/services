@@ -1,0 +1,62 @@
+type: proof
+name: szorzat-egyszerusitese-gyurukben-bizonyitas
+remarks: []
+references:
+  gyuruk-alapveto-tulajdonsagai:
+    target:
+      type: theorem
+      name: gyuruk-alapveto-tulajdonsagai
+  nullosztomentes-gyuru:
+    target:
+      type: definition
+      name: nullosztomentes-gyuru
+content:
+  - type: narrative
+    content: |
+      Nézzük az ***1. tulajdonság*** bizonyítását.
+  - type: formula
+    lead-in: |
+      Az $ac=bc$ egyenlet mindkét oldalához adjuk hozzá $bc$ ellentettjét (amely ugye a 3. gyűrűaxióma miatt
+      létezik):
+    content: |
+      ac+(-(bc))=0
+  - type: formula
+    lead-in: |
+      A baloldal második tagja a [gyuruk-alapveto-tulajdonsagai] 3. pontja miatt így is írható:
+    content: |
+      ac+(-b)c=0
+  - type: formula
+    lead-in: |
+      Az egyenlet baloldala az 5. gyűrűaxióma miatt átírható erre:
+    content: |
+      (a+(-b))c=0
+  - type: narrative
+    content: |
+      Mivel a gyűrű nullosztómentes, ezért nem létezik benne jobboldali nullosztó, így $c$ sem lehet az. Ez a
+      [nullosztomentes-gyuru] miatt azt jelenti, hogy nem létezik olyan nem $0$ elem, amelyet $c$-vel jobbról
+      megszorozva a nullelemet kapnánk. Másként fogalmazva a fenti egyenlet csak akkor teljesülhet, ha $a+(-b)=0$.
+      Mindkét oldalhoz $b$-t adva megkapjuk a tételben szereplő 1. tulajdonságot: $a=b$.
+  - type: narrative
+    content: |
+      A ***2. tulajdonság*** ugyanezen a módon igazolható, csak ekkor a baloldali disztributivitást és a baloldali
+      nullosztó fogalmát kell felhasználni.
+  - type: narrative
+    content: |
+      ***Most bizonyítjuk a tétel megfordítását.*** Ez ugye azt állítja, ***hogyha*** teljesül a tételbeli mindkét
+      tulajdonság egy gyűrűre, ***akkor*** a gyűrű nullosztómentes. Vizsgáljuk meg külön-külön, mi a következménye
+      az 1. és a 2. tulajdonság teljesülésének.
+  - type: narrative
+    content: |
+      ***Ha az 1. tulajdonság teljesül, akkor*** az azt jelenti, hogy tetszőleges $a$, $b$ és $c\eq 0$ elemek
+      esetén az $ac=bc$ állításból következik az $a=b$ állítás. Speciálisan, ha $b$ történetesen épp a gyűrű
+      nulleleme, akkor tetszőleges $a$ és $c\eq 0$ elemek esetén az $ac=0c$ állításból következne az $a=0$ állítás.
+      Ezt a [gyuruk-alapveto-tulajdonsagai] 1. pontja miatt úgy is megfogalmazhatjuk, hogy tetszőleges $a$ és $c\eq
+      0$ elemek esetén az $ac=\underbrace{0}_{=0c}$ állításból következne az $a=0$ állítás. A
+      [nullosztomentes-gyuru] miatt ez épp azt jelenti, hogy a gyűrűben ***nem létezik jobboldali nullosztó***.
+  - type: narrative
+    content: |
+      ***Ha a 2. tulajdonság teljesül, akkor*** ugyanilyen gondolatmenetet követve azt kapjuk, hogy a gyűrűben
+      ***nem létezik baloldali nullosztó***.
+  - type: narrative
+    content: |
+      ***Ha tehát mindkét tulajdonság teljesül, akkor a gyűrű nullosztómentes***.

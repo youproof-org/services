@@ -1,0 +1,135 @@
+<!-- wp:paragraph -->
+<p><strong>Az 1. tulajdonság:</strong> Az egységelem a szorzás neutrális eleme. A [yp_element slug="neutralis-elem" type="link" /] szerint ezzel tehát bármilyen [latex]a[/latex] elemet megszorozva az eredmény marad [latex]a[/latex]. Ez épp azt jelenti, hogy [latex]a|a[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A 2. tulajdonság:</em></strong> Az, hogy fennáll az [latex]a|a[/latex] oszthatóság azt jelenti, hogy létezik olyan [latex]x[/latex] gyűrűelem, amelyre teljesül az [latex]a\cdot x=a[/latex] egyenlet. Ezt az egyenletet bármely [latex]r[/latex] gyűrűelemmel megszorozva ezt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a\cdot x\cdot r=a\cdot r[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel azonban a gyűrű nullosztómentes, ezért a [yp_element slug="szorzat-egyszerusitese-gyurukben" type="link" /] miatt mindkét oldalt lehet egyszerűsíteni [latex]a[/latex]-val. Így ezt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x\cdot r=r[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]x[/latex] elemre tehát igaz lesz, hogy őt bármilyen [latex]r[/latex] gyűrűelemmel megszorozva [latex]r[/latex]-et kapunk eredményül. Más szavakkal [latex]x[/latex] a gyűrű egységeleme.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>A 3. tulajdonság:</strong> A [yp_element slug="gyuruk-alapveto-tulajdonsagai" type="link" /] 1. pontja alapján bármely [latex]a[/latex] elemet a nullelemmel szorozva a nullelemet kapjuk eredményül. Ez épp azt jelenti, hogy [latex]a|0[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>A 4. tulajdonság:</strong> Mivel az imént bizonyított 3. tulajdonság alapján minden gyűrűelem osztója a nullelemnek, így nyilván maga a nullelem is. Ha tehát [latex]a=0[/latex], akkor fennáll a [latex]0|a[/latex] oszthatóság. <strong><em>Visszafelé:</em></strong> ha fennáll a [latex]0|a[/latex] oszthatóság, akkor ez azt jelenti, hogy létezik olyan [latex]k[/latex] gyűrűelem, amelyre [latex]0\cdot k=a[/latex] teljesül. Ebből viszont a [yp_element slug="gyuruk-alapveto-tulajdonsagai" type="link" /] 1. pontja miatt [latex]a=0[/latex] következik.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Az 5. tulajdonság:</strong> Az, hogy fennállnak az [latex]a|b[/latex] és a [latex]b|c[/latex] oszthatóságok azt jelenti, hogy léteznek olyan [latex]k_1[/latex] és [latex]k_2[/latex] gyűrűelemek, amelyekre teljesülnek az alábbi egyenletek:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a\cdot k_1&amp;=b\\b\cdot k_2&amp;=c\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A második egyenletbe [latex]b[/latex] helyére behelyettesítve az első egyenlet baloldalát ezt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{(a\cdot k_1)}_{=b}\cdot k_2=c[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel azonban a [yp_element slug="gyuru-test" type="link" /]ban megfogalmazott 4. gyűrűaxióma alapján a szorzás asszociatív, ezért ennek az egyenletnek a baloldala átzárójelezhető:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a\cdot (k_1\cdot k_2)=c[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Létezik tehát olyan gyűrűelem, amellyel [latex]a[/latex]-t megszorozva [latex]c[/latex]-t kapunk (nevezetesen a [latex]k_1\cdot k_2[/latex]). Ez viszont épp azt jelenti, hogy [latex]a|c[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>A 6. tulajdonság:</strong> Az, hogy fennállnak az [latex]a|b[/latex] és az [latex]a|c[/latex] oszthatóságok azt jelenti, hogy léteznek olyan [latex]k_1[/latex] és [latex]k_2[/latex] gyűrűelemek, amelyekre teljesülnek az alábbi egyenletek:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a\cdot k_1&amp;=b\\a\cdot k_2&amp;=c\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezt a két egyenletet egymással összeadva, illetve az elsőből a másodikat kivonva a következőket kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}ak_1+ak_2&amp;=b+c \\ ak_1-ak_2&amp;=b-c\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel azonban a [yp_element slug="gyuru-test" type="link" /]ban megfogalmazott 5. gyűrűaxióma alapján teljesülnek a disztributivitási szabályok, ezért ennek a két egyenletnek a baloldalai átírhatók az alábbi módon:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a\cdot (k_1+k_2)&amp;=b+c \\ a\cdot (k_1-k_2)&amp;=b-c\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Eszerint tehát léteznek olyan gyűrűelemek, amelyekkel [latex]a[/latex]-t megszorozva [latex]b+c[/latex]-t illetve [latex]b-c[/latex]-t kapunk (nevezetesen a [latex]k_1+k_2[/latex] illetve a [latex]k_1-k_2[/latex]). Ez viszont épp azt jelenti, hogy [latex]a|b+c[/latex] illetve [latex]a|b-c[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>A 7. tulajdonság:</strong> Az, hogy fennáll az [latex]a|b[/latex] oszthatóság azt jelenti, hogy létezik olyan [latex]k[/latex] gyűrűelem, amelyre teljesül az alábbi egyenlet:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a\cdot k = b[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az egyenlet mindkét oldalát a [latex]c[/latex] gyűrűelemmel megszorozva ezt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](a\cdot k)\cdot c = b\cdot c[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel azonban a [yp_element slug="gyuru-test" type="link" /]ban megfogalmazott 4. gyűrűaxióma alapján a szorzás asszociatív, ezért ennek az egyenletnek a baloldala átzárójelezhető:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a\cdot (k\cdot c) = b\cdot c[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Létezik tehát olyan gyűrűelem, amellyel [latex]a[/latex]-t megszorozva [latex]bc[/latex]-t kapunk (nevezetesen a [latex]kc[/latex]). Ez viszont épp azt jelenti, hogy [latex]a|bc[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Végül a 8. tulajdonság:</strong> Az, hogy fennáll az [latex]a|b[/latex] oszthatóság azt jelenti, hogy létezik olyan [latex]k[/latex] gyűrűelem, amelyre teljesül az alábbi egyenlet:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a\cdot k = b[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Viszont a [yp_element slug="gyuruk-alapveto-tulajdonsagai" type="link" /] 2., 3. és 4. pontjai miatt ekkor az alábbi egyenletek is teljesülnek:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a\cdot(-k)&amp;=(-b) \\ (-a)\cdot k&amp;=(-b)\\ (-a)\cdot (-k)&amp;=-(-b)=b\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez viszont épp azt jelenti, hogy fennállnak az [latex]a|(-b)[/latex], [latex](-a)|(-b)[/latex] és [latex](-a)|b[/latex] oszthatóságok.</p>
+<!-- /wp:paragraph -->

@@ -1,0 +1,63 @@
+type: section
+name: 05-muvelet-bevezetese-az-latex-n-latex-halmazon
+title: 'Művelet bevezetése az [latex]\N[/latex] halmazon'
+
+body:
+  - type: narrative
+    content: |
+      Először is tisztázzuk, hogy pontosan mit értünk ***művelet*** alatt. Minket most speciálisan az olyan
+      műveletek érdekelnek, amelyeknek két bemenetük van, de az alábbi definíció általánosítható lenne tetszőleges
+      számú bemenetre is.
+  - type: embed
+    target:
+      type: definition
+      name: ketvaltozos-muvelet
+  - type: narrative
+    content: |
+      Az általános iskolában ezt olyan képzeletbeli gépekkel szokták szemléltetni, amelyeknek a tetején 2, az alján
+      pedig 1 lyuk van. Ha a $H$ halmaz két tetszőleges elemét beledobjuk a gép tetején lévő lyukakba, akkor a gép
+      alján kipottyan az eredmény, amely szintén a $H$ halmaz eleme kell legyen.
+  - type: figure
+    lead-in: |
+      Ez látható az alábbi ábrán:
+    src: 06-ketvaltozos-muvelet.jpg
+    alt: Kétváltozós művelet
+    caption: Kétváltozós művelet
+  - type: narrative
+    content: |
+      Egy műveletnél tehát meg kell mondanunk azt is, hogy milyen halmazon értelmezzük. Fontos, hogy a művelet "ne
+      vezessen ki" ebből a halmazból. Ez alapján a szokásos ***összeadás a páratlan számok halmazán nem művelet***,
+      mivel például a $3+5$ eredménye nem páratlan, azaz nem eleme az alaphalmaznak. A páros számok halmazán
+      azonban az összeadás már művelet, hiszen páros számok összege is páros.
+  - type: narrative
+    content: |
+      Most definiáljuk, hogy mit értünk ***összeadás, mint művelet*** alatt az előzőekben bemutatott $\N$ halmazon,
+      azaz a természetes számok között. Ne feledjük, hogy mivel kitöröltünk a fejünkből mindent (ugye?!), amit a
+      természetes számokról tudni véltünk, ezért csak a Peano-axiómákat használhatjuk ennek az új fogalomnak a
+      bevezetésére:
+  - type: embed
+    target:
+      type: definition
+      name: peano-osszeadas
+  - type: narrative
+    content: |
+      Ez a definíció tehát két dolgot mond. Egyrészt tetszőleges számhoz 0-t adva az eredmény nem változik.
+      Másrészt pedig ha egy tetszőleges $a$ számhoz egy szintén tetszőleges $b$ szám rákövetkezőjét adjuk hozzá,
+      akkor az eredmény megegyezik annak rákövetkezőjével, mintha $a$-hoz csak $b$-t adtunk volna hozzá. Figyeljük
+      meg, hogy semmi mást nem használtunk fel ehhez a definícióhoz, csak a Peano-axiómarendszerben ismertetett
+      0-val jelölt elemet, valamint az $s$ rákövetkezés függvényt, mint alapfogalmakat.
+  - type: narrative
+    content: |
+      Ez alapján kiszámítható bármely két természetes szám összege.
+  - type: formula
+    lead-in: |
+      Amennyiben például $\N$ elemeit a szokásos módon, 10-es számrendszerben jelöljük, akkor a $2+3$ összeg az
+      alábbi lépésekben fejthető ki szigorúan a fenti definíció szerint:
+    content: |
+      \begin{aligned}2+0&=2 \\ 2+1&=2+s(0)=s(2+0)=s(2)=3 \\ 2+2&=2+s(1)=s(2+1)=s(3)=4 \\ 2+3&=2+s(2)=s(2+2)=s(4)=5
+      \end{aligned}
+  - type: narrative
+    content: |
+      Értelmeztünk tehát egy műveletet az $\N$ halmazon, amelyet önkényesen "összeadásnak" neveztünk, és a $+$
+      műveleti jellel jelöltünk. Vizsgáljuk hát meg, hogy ez valóban teljesíti-e azokat a jól megszokott
+      tulajdonságokat, amelyeket általános iskolai tanulmányaink alapján elvárnánk tőle.

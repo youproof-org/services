@@ -1,0 +1,36 @@
+type: section
+name: 06-diffie-hellman-protokoll-festekekkel
+title: Diffie-Hellman protokoll festékekkel
+
+body:
+  - type: narrative
+    content: |
+      A fentiek megértéséhez most egy egyszerű analógiát ismertetünk. Ennek ugyan semmi köze nem lesz a
+      kriptográfiához, ám jól szemlélteti az egyirányú függvények működését. Képzeljük el, hogy Alice és Bob most
+      nem számokkal, hanem festékekkel dolgozik. A közös titok, amelyben meg szeretnének egyezni, egy adott színű
+      festékkeverék. Ennek érdekében először megegyeznek egy közös kiinduló színben. Ebben a példában ez legyen
+      mondjuk egy-egy liter fehér festék.
+  - type: narrative
+    content: |
+      Most mindketten kiválasztanak maguknak egy-egy liter festéket valamilyen titkos színből, és hozzákeverik a
+      náluk lévő fehér festékhez, de nem árulják el még egymásnak sem, hogy mi volt a titkos szín. Ezután az így
+      képződött színkeveréket elküldik egymásnak postán. Bob-hoz kerül tehát Alice, Alice-hoz pedig Bob keveréke.
+      Végül a kapott keverékhez ismét hozzáöntenek mindketten egy-egy liter festéket a saját titkos színükből. Így
+      mindkettejüknél lesz 3 liter festékkeverék, amelyekben 1 liter fehér festék van összekeverve 1-1 literrel
+      Alice és Bob titkos festékéből. Következésképp a végső festékkeverék mindkettejüknél ugyanolyan színű kell
+      legyen, ez lesz tehát a közös titok.
+  - type: figure
+    lead-in: |
+      Ez a folyamat látható az alábbi ábrán:
+    src: 09-diffie-hellman-kulcscsere-festekekkel.jpg
+    alt: Diffie-Hellman kucscsere protokoll – festék analógia
+    caption: Diffie-Hellman kucscsere protokoll – festék analógia
+  - type: narrative
+    content: |
+      Vegyük észre, hogy Eve megint hasonló szituációban van, mint a modulo hatványozásra épülő példában.
+      Nevezetesen: hiába ismeri a kiinduló fehér színt, és hiába kukkant bele az egymásnak küldött köztes
+      keverékekbe, ezekkel az információkkal nem tud mihez kezdeni, mivel nem ezek alkotják a kulcsot. Ahhoz, hogy
+      Eve is elő tudja állítani a végső színkeveréket, ismernie kéne Alice és Bob titkos színei közül legalább az
+      egyiket. Ehhez azonban külön kéne tudnia választani ezeket a kiinduló fehér színtől, amikor a köztes
+      keverékeket elfogja a kommunikációs csatornán. Ez Eve számára gyakorlatilag lehetetlen feladat, tekintve,
+      hogy a festékkeverés egy egyirányú művelet.

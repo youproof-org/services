@@ -1,0 +1,23 @@
+type: theorem
+name: csoporthomomorfizmusok-strukturatarto-tulajdonsagai
+proofs:
+  - csoporthomomorfizmusok-strukturatarto-tulajdonsagai-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyenek $G$ és $H$ tetszőleges csoportok, $f:G\to H$ pedig egy ***szürjektív csoporthomomorfizmus*** e két
+      csoport között, és vezessük be az $N=\ker f$ jelölést.
+  - type: ordered-list
+    lead-in: |
+      Ekkor teljesülnek az alábbiak:
+    items:
+      - 'A $H$ részcsoportjai ***kölcsönösen egyértelmű*** megfeleltetésben állnak $G$ azon részcsoportjaival,
+        amelyek $N$-et teljes egészében tartalmazzák. Egy $L\leq H$ részcsoporthoz az $f^{-1}(L)$ teljes inverz
+        kép, mint $G$-beli, $N$-et tartalmazó részcsoport tartozik. A továbbiakban legyenek $K\leq G$ és $L\leq
+        H$ ebben az értelemben egymásnak megfelelő részcsoportok.'
+      - 'A $K$ szerinti baloldali mellékosztályok az $L$ szerinti baloldali mellékosztályok ***teljes inverz
+        képei*** $f$ szerint, és ez a megfeleltetés szintén ***kölcsönösen egyértelmű***.'
+      - 'Ugyanez mondható el a jobboldali mellékosztályokról is.'
+      - 'Az $L$ részcsoport akkor és csak akkor ***normálosztó*** $H$-ban, ha $K$ normálosztó $G$-ben, és ilyenkor
+        a $G/K$ és $H/L$ ***faktorcsoportok izomorfak***.'

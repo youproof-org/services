@@ -1,0 +1,75 @@
+<!-- wp:paragraph -->
+<p>Előzetesen felhívjuk az Olvasó figyelmét, hogy a bizonyítás leírásában a [yp_element slug="komplexusmuveletek" type="link" /]ban szereplő <strong><em>komplexusszorzást</em></strong> és a [latex]G[/latex] csoport <strong><em>szorzásnak nevezett műveletét</em></strong> jelölésben is élesen meg fogjuk különböztetni egymástól, mivel ki szeretnénk hangsúlyozni, hogy nagyon nem ugyanarról van szó. Míg előbbit simán egymás után írással, addig utóbbit a [latex]\cdot[/latex] szimbólummal fogjuk jelölni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egyrészt az <strong><em>1. feltétel</em></strong> – miszerint [latex]a_1[/latex] ugyanabban az [latex]N[/latex] szerinti baloldali mellékosztályban van, mint [latex]a_2[/latex] – a [yp_element slug="mellekosztalyok" type="link" /] alapján azt jelenti, hogy az [latex]a_1N[/latex] és az [latex]a_2N[/latex] halmazok megegyeznek, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a_1N=a_2N[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ehhez hasonlóan a <strong><em>2. feltétel</em></strong> az alábbi halmazegyenlőséget jelenti:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]b_1N=b_2N[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezek alapján tehát azt kell bizonyítanunk, hogy az [latex](a_1\cdot b_1)N[/latex] és az [latex](a_2\cdot b_2)N[/latex] halmazok is megegyeznek. Az [latex](a_1\cdot b_1)N[/latex] halmaz elemeit ugye a [yp_element slug="komplexusmuveletek" type="link" /] alapján úgy kapjuk meg, hogy az [latex](a_1\cdot b_1)\cdot x[/latex] kifejezésbe [latex]x[/latex] helyére az [latex]N[/latex] normálosztó összes elemét behelyettesítjük. Ez a kifejezés viszont a [yp_element slug="csoport" type="link" /] alapján a csoportművelet <strong><em>asszociativitása</em></strong> miatt átzárójelezhető:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a_1\cdot (b_1\cdot x)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha most itt csak a zárójelben lévő kifejezést tekintjük, és ebbe helyettesítjük be [latex]N[/latex] összes elemét, akkor tulajdonképpen a [latex]b_1N[/latex] baloldali mellékosztályt, mint halmazt kapjuk. Ebből következően az [latex](a_1\cdot b_1)N[/latex] halmaz elemeit úgy is megkaphatjuk, hogy az [latex]a_1\cdot y[/latex] kifejezésbe [latex]y[/latex] helyére a [latex]b_1N[/latex] baloldali mellékosztály elemeit helyettesítjük be. Vagyis fennáll az alábbi halmazegyenlőség:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](a_1\cdot b_1)N=a_1(b_1N)=\ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>2. feltételből</em></strong> következően viszont a [latex]b_1N[/latex] halmaz megegyezik a [latex]b_2N[/latex] halmazzal, ami viszont – lévén, hogy [latex]N[/latex] <strong><em>normálosztó</em></strong> – a [yp_element slug="normaloszto" type="link" /] alapján megegyezik az [latex]Nb_2[/latex] halmazzal, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots=a_1(Nb_2)=\ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ennek a halmaznak az elemeit tehát úgy kapjuk meg, hogy az [latex]a_1\cdot y[/latex] kifejezésbe [latex]y[/latex] helyére az [latex]Nb_2[/latex] jobboldali mellékosztály elemeit helyettesítjük be, amelynek az elemeit viszont úgy kapjuk, hogy az [latex]x\cdot b_2[/latex] kifejezésbe [latex]x[/latex] helyére az [latex]N[/latex] normálosztó elemeit helyettesítjük be. Azaz lényegében az [latex]a_1\cdot (x\cdot b_2)[/latex] kifejezésbe helyettesítettük be [latex]N[/latex] elemeit, amely kifejezés viszont ismét az <strong><em>asszociativitás</em></strong> miatt átzárójelezhető, tehát ugyanazt a halmazt kapjuk, ha az [latex](a_1\cdot x)\cdot b_2[/latex] kifejezésbe helyettesítjük be [latex]N[/latex] elemeit.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ha most itt ismét csak a zárójelben lévő kifejezést tekintjük, és ebbe helyettesítjük be [latex]N[/latex] összes elemét, akkor tulajdonképpen az [latex]a_1N[/latex] baloldali mellékosztályt, mint halmazt kapjuk. Ebből következően az [latex]a_1(Nb_2)[/latex] halmaz elemeit úgy is megkaphatjuk, hogy az [latex]y\cdot b_2[/latex] kifejezésbe [latex]y[/latex] helyére az [latex]a_1N[/latex] baloldali mellékosztály elemeit helyettesítjük be. Vagyis a fenti halmazegyenlőségi sorozatot tovább folytathatjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots=(a_1N)b_2=\ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>2. feltételből</em></strong> következően viszont az [latex]a_1N[/latex] halmaz megegyezik az [latex]a_2N[/latex] halmazzal, ami viszont – lévén, hogy [latex]N[/latex] <strong><em>normálosztó</em></strong> – a [yp_element slug="normaloszto" type="link" /] alapján megegyezik az [latex]Na_2[/latex] halmazzal, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots=(Na_2)b_2=\ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A fenti, a csoportművelet <strong><em>asszociativitására</em></strong> építő gondolatmenetet megismételve ez viszont az [latex]N(a_2\cdot b_2)[/latex] jobboldali mellékosztállyal lesz azonos, ami viszont meg fog egyezni az [latex](a_2\cdot b_2)N[/latex] baloldali mellékosztállyal, hiszen [latex]N[/latex] ugye <strong><em>normálosztó</em></strong>:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots=N(a_2\cdot b_2)=(a_2\cdot b_2)N[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Tehát valóban megkaptuk a tétel állítását, miszerint az [latex](a_1\cdot b_1)N[/latex] és az [latex](a_2\cdot b_2)N[/latex] baloldali mellékosztályok megegyeznek, vagy másként fogalmazva az [latex]a_1\cdot b_1[/latex] szorzat valóban ugyanabban a baloldali mellékosztályban van, mint az [latex]a_2\cdot b_2[/latex] szorzat.</p>
+<!-- /wp:paragraph -->

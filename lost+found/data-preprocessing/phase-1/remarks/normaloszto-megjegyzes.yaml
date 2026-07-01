@@ -1,0 +1,23 @@
+type: remark
+name: normaloszto-megjegyzes
+references:
+  csoport:
+    target:
+      type: definition
+      name: csoport
+  komplexusmuveletek:
+    target:
+      type: definition
+      name: komplexusmuveletek
+content:
+  - type: narrative
+    content: |
+      ***Figyelem!*** A definíció ***NEM*** azt mondja, hogy tetszőleges $n\in N$ esetén $a\cdot n=n\cdot a$.
+      ***EHELYETT*** mindössze annyit állít, hogyha elvégezzük a [komplexusmuveletek] szerint értelmezett $aN$ és
+      $Na$ komplexusszorzásokat, akkor ***ugyanazt a két HALMAZT*** kapjuk eredményül. Ez az elemek szintjén
+      pusztán annyit jelent, hogy minden $n\in N$-hez ***létezik*** olyan $m_1$ és $m_2$ elem az $N$
+      részcsoportban, hogy egyrészt $a\cdot n=m_1\cdot a$, másrészt $n\cdot a=a\cdot m_2$.
+  - type: narrative
+    content: |
+      Természetesen ***Abel-csoportok*** esetén ([csoport]) a részcsoport és a normálosztó fogalma egybeesik,
+      hiszen ezekben a csoportokban bármely $g$ és $h$ elemek esetén $g\cdot h=h\cdot g$ teljesül.

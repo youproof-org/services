@@ -1,0 +1,919 @@
+<!-- wp:paragraph -->
+<p><strong><em>Az <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/20-kongruencia-redukalt-maradekosztaly-euler-fuggveny-linearis-kongruencia-maradekrendszer-euler-fermat-tetel/" target="_blank">előző részben</a> azt vizsgáltuk meg, hogy a&nbsp;<a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/18-modularis-aritmetika-homomorfizmus-kongruencia-reszgyuru-ideal-maradekosztalygyuru/" target="_blank">18. részben</a>&nbsp;bevezetett kongruencia, maradékosztály és maradékosztálygyűrű fogalmai mit jelentenek az egész számok esetében. Láthattuk, hogy a kongruenciákkal nagyjából ugyanúgy kell számolni, mint a hagyományos egyenletekkel, de azért bizonyos esetekben vigyázni kell. Ezután megismerkedtünk az Euler-féle&nbsp;[latex]\varphi[/latex]-függvénnyel, amely a modulo&nbsp;[latex]m[/latex]&nbsp;redukált maradékosztályok számát adja meg. Végül az úgynevezett lineáris kongruenciák megoldhatóságának feltételeit, valamint az Euler-Fermat tételt ismertük meg. Ugyanis az ebben a részben ismertetett RSA-eljárás esetén ezek teremtik meg a nyilvános és titkos kulcsok közötti számelméleti kapcsolatot.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>De vajon hogyan lehet a legnagyobb közös osztó kiszámítására szolgáló euklidészi algoritmust lineáris kongruenciák megoldásához is használni? Hogyan kell kiszámítani az Euler-féle [latex]\varphi[/latex]-függvény értékét egy adott számra, és milyen információra van ehhez szükség? Hogyan működik az RSA nevű aszimmetrikus kulcsú rejtjelező eljárás? Ebben a részben erről lesz szó...</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"className":"prerequisite-warning"} -->
+<p class="prerequisite-warning">Figyelem! Ez a rész erőteljesen épít a <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/17-euklideszi-algoritmus-maradekos-osztas-legnagyobb-kozos-oszto-euklideszi-gyuru/" target="_blank">17.</a>, <a href="https://youproof.hu/kriptografia/19-foidealgyuruk-generalt-ideal-foideal-szamelmelet-alaptetele-halmaz-halmazrendszer-metszet-unio/" target="_blank" rel="noreferrer noopener">19.</a> és <a href="https://youproof.hu/kriptografia/20-kongruencia-redukalt-maradekosztaly-euler-fuggveny-linearis-kongruencia-maradekrendszer-euler-fermat-tetel/" target="_blank" rel="noreferrer noopener">20. részekben</a> felépített alábbi definíciókra, valamint a hozzájuk kapcsolódó tételekre:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="euklideszi-gyuru" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="foidealgyuruk" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-kozotti-kongruencia" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-maradekosztalyai" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="redukalt-maradekosztaly" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="euler-fuggveny" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="linearis-kongruenciak" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="bezout-lemma" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph {"className":"prerequisite-warning"} -->
+<p class="prerequisite-warning">Ezek kontextusba helyezése miatt erőteljesen ajánlott elolvasni a <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/17-euklideszi-algoritmus-maradekos-osztas-legnagyobb-kozos-oszto-euklideszi-gyuru/" target="_blank">17.</a>, <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/19-foidealgyuruk-generalt-ideal-foideal-szamelmelet-alaptetele-halmaz-halmazrendszer-metszet-unio/" target="_blank">19.</a> és <a href="https://youproof.hu/kriptografia/20-kongruencia-redukalt-maradekosztaly-euler-fuggveny-linearis-kongruencia-maradekrendszer-euler-fermat-tetel/" target="_blank" rel="noreferrer noopener">20. részeket</a>, mivel gyakran hivatkozni fogunk rájuk. A teljes cikksorozat elejét <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/1-alapfogalmak-caesar-vigenere-enigma-kulcsmegosztas/" target="_blank">itt</a> találod.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"dropCap":true} -->
+<p class="has-drop-cap">Kezdjük tehát a lineáris kongruenciák megoldásával. Rögzítsünk egy [latex]m\gt 0[/latex] <strong><em>pozitív</em></strong> modulust. A [yp_element slug="linearis-kongruenciak" type="link" /] és az utána lévő megjegyzés alapján egy [latex]ax\equiv b\pmod m[/latex] lineáris kongruencia egy megoldása alatt egy olyan <strong><em>modulo [latex]m[/latex] maradékosztályt</em></strong> értünk, amelynek bármely elemét behelyettesítve [latex]x[/latex] helyére a kongruencia fennáll. A [yp_element slug="linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga" type="link" /] alapján a fenti lineáris kongruencia akkor és csak akkor oldható meg – azaz létezik ilyen maradékosztály –, ha megoldható az alábbi úgynevezett <strong><em>lineáris diofantoszi egyenlet</em></strong>:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]ax+my=b[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ebben az esetben tehát megoldás alatt olyan <strong><em>EGÉSZ számpárt</em></strong> értünk, amelyet a fenti egyenletbe [latex]x[/latex] és [latex]y[/latex] helyére behelyettesítve fennáll az egyenlet. Ha tehát egy ilyen egyenletet meg tudunk oldani, akkor bármilyen lineáris kongruenciát is meg tudunk oldani. Azok mindegyike ugyanis egy-egy ilyen egyenletre vezethető vissza. Nézzünk is egy gyors példát egy lineáris diofantoszi egyenlethez vezető egyszerű problémára.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/7-algoritmus-bonyolultsag-problemaosztalyok-polinomialis-exponencialis-p-np-sejtes-tanu-tetel/" target="_blank">7.</a>, <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/10-publikus-privat-kulcs-digitalis-alairas-kriptografiai-hash-fuggveny-szuletesnap-paradoxon-tanusitvany/" target="_blank">10.</a> és <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/13-adossag-ekvivalenciarelacio-ekvivalencia-osztaly-egesz-szam-homomorfizmus-beagyazas-negativ-szam/" target="_blank">13. részekben</a> szó volt már a messzi-messzi Kompánia országáról. Tegyük fel, hogy ebben az országban az emberek aranytallérokon kívül bankjegyeket is használnak fizetőeszközként. Igenám, csakhogy ebben a furcsa országban mindössze kétféle címlet létezik: 79 és 47 aranytallér névértékű bankjegy. Tegyük fel, hogy Alice kinézett valamilyen ajándékot Bob-nak, amely 10000 aranytallérba kerül, viszont csak bankjegyek vannak nála. Kérdés, hogy Alice ki tudja-e fizetni pontosan az összeget ezen bankjegyek segítségével, és ha igen, akkor hányféleképpen? Keressük tehát az alábbi lineáris diofantoszi egyenlet megoldásait:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{79}_{=a}\cdot x+\underbrace{47}_{=m}\cdot y=\underbrace{10000}_{=b}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ne feledjük, hogy [latex]x[/latex]-nek és [latex]y[/latex]-nak is <strong><em>EGÉSZ </em></strong>számnak kell lennie, ráadásul <strong><em>NEMNEGATÍV</em></strong> egésznek, mivel a kifizetendő bankjegyek számáról van szó. A [yp_element slug="linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga" type="link" /] alapján a fenti egyenlet akkor és csak akkor oldható meg, ha az [latex](a,m)=(79,47)[/latex] kitüntetett közös osztó osztója az egyenlet jobboldalának, azaz [latex]b=10000[/latex]-nek. Előszöris tehát ki kell számítanunk a [latex](79,47)[/latex] kitüntetett közös osztót annak érdekében, hogy eldöntsük, egyáltalán létezik-e megoldás.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/17-euklideszi-algoritmus-maradekos-osztas-legnagyobb-kozos-oszto-euklideszi-gyuru#euclidean-algorithm" target="_blank">17. részben</a> ismertettük az <strong><em>euklidészi algoritmus</em></strong> alapgondolatát, amely pontosan erre való. Azt is megmutattuk, hogy ez az eljárás minden olyan gyűrűn végrehajtható, amelynek elemei között valamilyen absztrakt értelemben elvégezhető a <strong><em>maradékos osztás</em></strong>. Ezeket a [yp_element slug="euklideszi-gyuru" type="link" /]ban <strong><em>euklidészi gyűrűknek</em></strong> neveztük el, és a [yp_element slug="euklideszi-gyuruben-letezik-kituntetett-kozos-oszto" type="link" /] bizonyításában általánosságban is ismertettük az euklidészi algoritmus menetét. Eszerint bármely [latex]a[/latex] és [latex]b[/latex] gyűrűelem kitüntetett közös osztóját megkapjuk az alábbi maradékos osztások során kapott utolsó nemnulla maradékként:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a&amp;=k_1b+r_1\\b&amp;=k_2r_1+r_2\\_1&amp;=k_3r_2+r_3\\_2&amp;=k_4r_3+r_4\\&amp;\vdots\\_{n-2}&amp;=k_nr_{n-1}+r_n\\_{n-1}&amp;=k_{n+1}r_n+0\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez jelen esetben tehát [latex]r_n[/latex] lesz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}(a,b)&amp;=(b,r_1)=(r_1,r_2)=\ldots\\\ldots&amp;=(r_{n-1},r_n)=(r_n,0)=r_n\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt is megmutattuk, hogy az eljárás garantáltan végetér véges számú lépés után, mivel a kapott maradékok <strong><em>euklidészi normája</em></strong> egy szigorúan monoton csökkenő sorozatot alkot a természetes számok halmazán, és így a [yp_element slug="termeszetes-szamok-minimumtetele" type="link" /] miatt előbb-utóbb biztosan eléri a [latex]0[/latex]-t.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az egész számok [latex]\Z[/latex] gyűrűjében a [yp_element slug="egesz-szamok-abszoluterteke" type="link" /] szerinti <strong><em>abszolútérték-függvény</em></strong> a [yp_element slug="abszolutertek-euklideszi-norma" type="link" /] értelmében egy <strong><em>euklidészi norma</em></strong> – azaz [latex]\Z[/latex] euklidészi gyűrű –, és így ezen a gyűrűn alkalmazható az euklidészi algoritmus. Végrehajtva az algoritmus lépéseit a [latex]79[/latex] és [latex]47[/latex] bemeneti számokon, az alábbi maradékos osztásokat kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}79&amp;=1\cdot 47+32 \\ 47&amp;=1\cdot 32+15 \\ 32&amp;=2\cdot 15+2 \\ 15&amp;=7\cdot 2+1 \\ 2&amp;=2\cdot 1+0\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az utolsó nemnulla maradék lesz a két bemeneti szám kitüntetett közös osztója, azaz jelen esetben [latex](79,47)=1[/latex]. Ez a szám természetesen osztója a [latex]79x+47y=10000[/latex] diofantoszi egyenlet jobboldalának, következésképp ennek az egyenletnek a [yp_element slug="linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga" type="link" /] értelmében létezik megoldása. A következő szakaszokban megmutatjuk, hogy egyrészt hogyan található meg egy megoldás az <strong><em>euklidészi algoritmus</em></strong> segítségével, másrészt, hogy ebből hogyan számítható ki az összes többi.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="extended-euclidean-algorithm"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A kibővített euklidészi algoritmus</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga" type="link" /]ben igazoltuk, hogy az [latex]ax+my=b[/latex] lineáris diofantoszi egyenlet megolhatóságának szükséges és elégséges feltétele, hogy az egyenlet jobboldala – azaz [latex]b[/latex] – osztható legyen az [latex](a,m)[/latex] kitüntetett közös osztóval. Az elégségesség bizonyításához az előző részben bemutatott <strong><em>Bézout-lemma</em></strong> ([yp_element slug="bezout-lemma" type="link"]) volt a kulcs, amely kimondja, hogy ez a kitüntetett közös osztó <strong><em>minden főideálgyűrűben</em></strong> kifejezhető [latex](a,m)=au+mv[/latex] alakban alkalmasan választott [latex]u[/latex] és [latex]v[/latex] gyűrűelemek segítségével. Amennyiben tehát fennáll az [latex](a,m)|b[/latex] oszthatóság, az azt jelenti, hogy létezik olyan [latex]t[/latex] gyűrűelem, hogy teljesül az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](a,m)\cdot t=b[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezt összevetve a <strong><em>Bézout-lemmával</em></strong> a következőt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](\underbrace{au+mv}_{=(a,m)})\cdot t=b[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Felbontva a zárójelet végsősoron megkapjuk az [latex]ax+my=b[/latex] lineáris diofantoszi egyenlet egy megoldását:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a\cdot \underbrace{(ut)}_{=x}+m\cdot \underbrace{(vt)}_{=y}=b[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Először tehát meg kell határoznunk az [latex]u[/latex] és [latex]v[/latex] együtthatókat. A <strong><em>Bézout-lemma</em></strong> ([yp_element slug="bezout-lemma" type="link" /]) főideálgyűrűk esetén ugyan garantálja ezek létezését, azonban a bizonyítás nem konstruktív abban az értelemben, hogy nem mutat eljárást ezek kiszámítására. Szerencsére az <strong><em>eulidészi gyűrűk</em></strong> esetén – amelyek ugye a [yp_element slug="euklideszi-gyuru-foidealgyuru" type="link" /] értelmében mindannyian főideálgyűrűk – egy ilyen eljárást is kapunk a kezünkbe, amennyiben a <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/17-euklideszi-algoritmus-maradekos-osztas-legnagyobb-kozos-oszto-euklideszi-gyuru#euclidean-algorithm" target="_blank">17. részben</a> ismertetett <strong><em>euklidészi algoritmust</em></strong> egy kicsit kibővítjük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezért most két bizonyítást mutatunk a <strong><em>Bézout-lemma euklidészi gyűrűkre vonatkoztatott változatára</em></strong>. Az első bizonyítás automatikusan adódik a már említett [yp_element slug="bezout-lemma" type="link" /]ből, ez azonban tehát csak a keresett [latex]u[/latex] és [latex]v[/latex] együtthatók <strong><em>létezését</em></strong> garantálja. Ezzel szemben a második bizonyítás konstruktív, mivel ismerteti a kibővített euklidészi algoritmust, amelynek segítségével ezeket az együtthatókat ki is számíthatjuk. Cserébe viszont nem minden főideálgyűrűn, hanem csak <strong><em>euklidészi gyűrűkön</em></strong> működik.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="bezout-lemma-euklideszi-gyurukben" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="bezout-lemma-euklideszi-gyurukben-bizonyitas-1" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="bezout-lemma-euklideszi-gyurukben-bizonyitas-2" custom_title="Bizonyítás a kibővített euklidészi algoritmussal" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az iménti bizonyításban látott <strong><em>kibővitett euklidészi algoritmus</em></strong> tehát abban különbözik a <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/17-euklideszi-algoritmus-maradekos-osztas-legnagyobb-kozos-oszto-euklideszi-gyuru#euclidean-algorithm" target="_blank">17. részben</a> ismertetett eredeti algoritmustól, hogy itt nem csak a futás során kapott [latex]r_1[/latex], [latex]r_2[/latex], ..., [latex]r_n[/latex] maradékokat számítjuk ki, hanem a [latex]k_1[/latex], [latex]k_2[/latex], ..., [latex]k_n[/latex] <strong><em>hányadosokat</em></strong> is felhasználjuk e maradékok lineáris kombinációs előállításához.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Hogy ne csak a levegőbe beszéljünk, térjünk most vissza a <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/17-euklideszi-algoritmus-maradekos-osztas-legnagyobb-kozos-oszto-euklideszi-gyuru#euclidean-algorithm" target="_blank">17. részben</a> bemutatott példához, és futtassuk le ezúttal a kibővített euklidészi algoritmust a [latex]12\space 439\space 705\space 049[/latex] és a [latex]15\space 828\space 713\space 003[/latex] egész számokra. A feladat ismét e két szám kitüntetett közös osztójának kiszámítása. Jelöljük ezt most [latex]d[/latex]-vel. Ezúttal azonban ki is szeretnénk fejezni a [latex]d[/latex] kitüntetett közös osztót e két szám lineáris kombinációjaként. Azaz keressük az alábbi egyenletben szereplő [latex]u[/latex] és [latex]v[/latex] együtthatókat:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]d=15\space 828\space 713\space 003\cdot u + 12\space 439\space 705\space 049\cdot v[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ehhez megint használhatunk bármilyen kalkulátort, csak most az osztási maradékokon kívül a hányadosokat is ki kell számolnunk. Ehhez a két számot egyszerűen elosztjuk egymással, és az eredményből a tizedesjegyeket levágva kapjuk meg a keresett hányadost. Ez az <strong><em>egész osztásnak</em></strong> nevezett művelet – itt nem részletezett digitális áramköri okok miatt – az osztási maradék kiszámításához hasonlóan egy számítógép számára rendkívül gyorsan elvégezhető. Ezek után az [latex]u_i[/latex] és [latex]v_i[/latex] együtthatókat az iménti bizonyításban szereplő módon számíthatjuk ki. Az első két lépés együtthatóit tehát az alábbi képletekkel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{ll}u_1=1 &amp; u_2=-k_2 \\ v_1=-k_1 &amp; v_2=1+k_1k_2\end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A további lépések együtthatóit pedig a megelőző két lépés együtthatóiból az alábbi képlettel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}u_i&amp;=u_{i-2}-k_iu_{i-1} \\ v_i&amp;=v_{i-2}-k_iv_{i-1}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezek alapján az alábbi táblázat mutatja az algoritmus futását:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{c|c|c|c|c|c|c}i &amp; r_{i-2} &amp; r_{i-1} &amp; r_i &amp; k_i &amp; u_i &amp; v_i \\ \hline 1 &amp; 15828713003 &amp; 12439705049 &amp; 3389007954 &amp; 1 &amp; 1 &amp; -1 \\ \hline 2 &amp; 12439705049 &amp; 3389007954 &amp; 2272681187 &amp; 3 &amp; -3 &amp; 4 \\ \hline 3 &amp; 3389007954 &amp; 2272681187 &amp; 1116326767 &amp; 1 &amp; 4 &amp; -5 \\ \hline 4 &amp; 2272681187 &amp; 1116326767 &amp; 40027653 &amp; 2 &amp; -11 &amp; 14 \\ \hline 5 &amp; 1116326767 &amp; 40027653 &amp; 35580136 &amp; 27 &amp; 301 &amp; -383 \\ \hline 6 &amp; 40027653 &amp; 35580136 &amp; 4447517 &amp; 1 &amp; -312 &amp; 397 \\ \hline 7 &amp; 35580136 &amp; 4447517 &amp; 0 &amp; - &amp; - &amp; -\end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A kitüntetett közös osztó az utolsó nemnulla maradék lett a 6. sorban – [latex]4\space 447\space 517[/latex] –, ennek lineáris kombinációs együtthatói pedig ugyanebben a sorban találhatók:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]4\space 447\space 517 = \overbrace{(-312)}^{=u}\cdot 15\space 828\space 713\space 003 + \overbrace{397}^{=v}\cdot 12\space 439\space 705\space 049[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:heading {"level":4} -->
+<h4 id="linear-diophantine-equation-solution">Lineáris diofantoszi egyenlet megoldásai</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Most vizsgáljuk meg, hogy a kibővített euklidészi algoritmus segítségével hogyan kapható meg egy lineáris diofantoszi egyenlet <strong><em>összes</em></strong> megoldása. Az alábbi tételben ezt a kérdést válaszoljuk meg.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="linearis-diofantoszi-egyenlet-osszes-megoldasa" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="linearis-diofantoszi-egyenlet-osszes-megoldasa-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="linearis-diofantoszi-egyenlet-osszes-megoldasa-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most térjünk vissza a kompániai példánkhoz, és az iménti tétel alapján határozzuk meg, hogy hányféleképpen tudja Alice kifizetni a Bob-nak szánt 10000 aranytalléros ajándékot, amennyiben csak 79 és 47 aranytallér névértékű bankjegyek állnak rendelkezésére. Keressük tehát a <strong><em>nemnegatív egész</em></strong> megoldásait az alábbi lineáris diofantoszi egyenletnek:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{79}_{=a}\cdot x + \underbrace{47}_{=m}\cdot y=\underbrace{10000}_{=b}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt már az euklidészi algoritmus segítségével kiszámítottuk, hogy a [latex](79,47)[/latex] kitüntetett közös osztó [latex]1[/latex], aminek nyilván többszöröse az egyenlet jobboldalán szereplő [latex]10000[/latex]. Így tehát ennek az egyenletnek létezik egész megoldása. Kérdés, hogy vajon <strong><em>nemnegatív</em></strong> egész megoldás is létezik-e, és ha igen, akkor mennyi?</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az imént bizonyított [yp_element slug="linearis-diofantoszi-egyenlet-osszes-megoldasa" type="link" /] 1. pontja alapján az <strong><em>egyik</em></strong> megoldást a <strong><em>kibővített euklidészi algoritmus</em></strong> segítségével határozhatjuk meg, amelyből aztán a 2. és 3. pont értelmében könnyedén előállíthatjuk az <strong><em>összes</em></strong> megoldást. Ezekből már látni fogjuk, hogy van-e közöttük olyan, amely esetén [latex]x[/latex] is és [latex]y[/latex] is nemnegatív. Futtassuk hát le a két együtthatón a <strong><em>kibővített euklidészi algoritmust</em></strong>, és állítsuk elő a kitüntetett közös osztójukat a lineáris kombinációjukként:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{c|c|c|c|c|c|c}i &amp; r_{i-2} &amp; r_{i-1} &amp; r_i &amp; k_i &amp; u_i &amp; v_i \\ \hline 1 &amp; 79 &amp; 47 &amp; 32 &amp; 1 &amp; 1 &amp; -1 \\ \hline 2 &amp; 47 &amp; 32 &amp; 15 &amp; 1 &amp; -1 &amp; 2 \\ \hline 3 &amp; 32 &amp; 15 &amp; 2 &amp; 2 &amp; 3 &amp; -5 \\ \hline 4 &amp; 15 &amp; 2 &amp; 1 &amp; 7 &amp; -22 &amp; 37 \\ \hline 5 &amp; 2 &amp; 1 &amp; 0 &amp; - &amp; - &amp; -\end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A megkapott lineáris kombináció tehát az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](79,47) = \underbrace{(-22)}_{=u}\cdot 79 + \underbrace{37}_{=v}\cdot 47=1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Minthogy fennáll az oszthatóság a [latex](79,47)[/latex] kitüntetett közös osztó és az egyenlet jobboldala – azaz [latex]10000[/latex] – között, ezért létezik a [latex]\frac{10000}{(79,47)}[/latex] hányados, amelyre teljesül az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](79,47)\cdot \frac{10000}{(79,47)}=10000[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A hányadost egy <strong><em>egész osztással</em></strong> kiszámítva, valamint felhasználva az imént előállított <strong><em>lineáris kombinációt</em></strong>, az alábbit kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](\underbrace{79\cdot (-22)+47\cdot 37}_{=(79,47)})\cdot \underbrace{10000}_{=\frac{10000}{(79,47)}}=10000[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A baloldalon lévő zárójelet felbontva tulajdonképpen megkaptuk a [latex]79x+47y=10000[/latex] egyenlet egyik megoldását:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{79}_{=a}\cdot \underbrace{(-220000)}_{=x} + \underbrace{47}_{=m}\cdot \underbrace{370000}_{=y}=\underbrace{10000}_{=b}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ebben a megoldásban az [latex]x[/latex] sajnos negatív, így ez nem egy jó megoldás számunkra. A [yp_element slug="linearis-diofantoszi-egyenlet-osszes-megoldasa" type="link" /] 2. és 3. pontjai alapján azonban az alábbi képlet segítségével megkapjuk az <strong><em>összes</em></strong> megoldást, amennyiben a [latex]k[/latex] paraméterrel végigszaladunk az összes létező egész számon:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}x&amp;=-220000+47k \\ y&amp;=370000-79k\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mi alapvetően lusták vagyunk, így nem szeretnénk a [latex]k[/latex] paraméter végtelen sok lehetséges értékét végigvizsgálni azért, hogy megtudjuk, mikor kapunk nemnegatív számot [latex]x[/latex]-re és [latex]y[/latex]-ra egyaránt. Ehelyett az alábbi egyenlőtlenségeket írjuk fel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}0\leq \overbrace{-220000+47k}^{=x} \\ 0\leq \underbrace{370000-79k}_{=y}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezeket megoldva azt kapjuk, hogy mindössze a [latex]k=4681[/latex], [latex]k=4682[/latex] és a [latex]k=4683[/latex] esetekben kapunk nemnegatív megoldást.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Alice tehát háromféleképpen tudja kifizetni a 10000 aranytallért a Bobnak szánt ajándékra, amennyiben csak 79 és 47 aranytallér névértékű bankjegyek vannak nála:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}10000&amp;=7\cdot 79+201\cdot 47=\\&amp;=54\cdot 79+122\cdot 47=\\&amp;=101\cdot 79+43\cdot 47\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Félretéve a szöveges feladatot, most próbáljuk meg a [latex]79x+47y=10000[/latex] diofantoszi egyenlet összes megoldását – amelyekbe tehát mostmár a negatívakat is beleértjük – egy kétdimenziós koordináta-rendszerben ábrázolni, ahol a két tengely a megoldásokhoz tartozó [latex]x[/latex] és [latex]y[/latex] értékeket jelenti. A megoldásokat szolgáltató fentebbi képletből látható, hogy ha egy adott megoldásból kiindulva a [latex]k[/latex] értékét [latex]1[/latex]-gyel megnöveljük, akkor az így kapott új megoldáshoz tartozó [latex]x[/latex] értéke [latex]47[/latex]-tel nő, míg az [latex]y[/latex] értéke [latex]79[/latex]-cel csökken.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Így tehát a megoldások mindannyian egy ferdén lefelé tartó egyenes mentén fognak elhelyezkedni. Az alábbi ábrán a [latex]k[/latex] paraméternek az adott megoldásokhoz tartozó értékeit is feltüntettük:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":5852,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_21_linearis_diofantoszi_egyenlet_megoldasai.jpg" alt="Lineáris diofantoszi egyenlet megoldásai" class="wp-image-5852"/><figcaption>Lineáris diofantoszi egyenlet megoldásai</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Ebből szépen látható, hogy mindössze a [latex]k=4681[/latex], [latex]k=4682[/latex] és a [latex]k=4683[/latex] értékekhez tartozó megoldások esnek a jobb-felső síknegyedbe – amikoris mindkét koordináta pozitív.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az ebben a szakaszban ismertetett módszerrel tehát bármilyen lineáris diofantoszi egyenletet, és így a [yp_element slug="linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga" type="link" /] alapján bármilyen lineáris kongruenciát meg tudunk oldani. Így az <strong><em>RSA kriptográfiai eljárás</em></strong> egyik fontos összetevője már a kezünkben van. Most ismerkedjünk meg egy másik fontos összetevővel.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="euler-function"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Az Euler-féle [latex]\varphi[/latex]-függvény kiszámítása</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Az <strong><em>RSA-algoritmus</em></strong> másik fontos összetevőjeként ebben a szakaszban megtanuljuk, hogy hogyan lehet kiszámítani a [yp_element slug="euler-fuggveny" type="link" /]ban ismertetett Euler-féle [latex]\varphi[/latex]-függvény értékét bármilyen tetszőleges pozitív egész számra. A definíció szerint egy [latex]m[/latex] pozitív egész szám esetén ez a függvény a <strong><em>modulo [latex]m[/latex] redukált maradékosztályok számát</em></strong> adja meg. A [yp_element slug="redukalt-maradekosztaly" type="link" /] alapján ezek épp a [yp_element slug="egesz-szamok-maradekosztalygyurui" type="link" /]ben definiált [latex]\Z/m\Z[/latex] maradékosztálygyűrű azon elemei, amelyek invertálhatók a maradékosztályok közötti szorzásra nézve.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az előző részben a [yp_element slug="euler-fuggveny-alternativ-definicio" type="link" /]ben megmutattuk, hogy ez a szám éppenséggel megegyezik a [latex]0[/latex] és [latex]m[/latex] közötti, <strong><em>[latex]m[/latex]-hez relatív prímek számával</em></strong>, amely tehát az Euler-féle [latex]\varphi[/latex]-függvénynek egy alternatív definícióját adja. Például a [latex]0[/latex] és [latex]18[/latex] közötti, [latex]18[/latex]-hoz relatív prímek halmaza az alábbi számhalmaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\{1; 5; 7; 11; 13; 17\}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezek száma [latex]6[/latex], így tehát [latex]\varphi(18)=6[/latex]. Az alábbi tételben a [latex]\varphi[/latex]-függvény egy fontos tulajdonságát igazoljuk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="euler-fuggveny-szorzattarto-tulajdonsaga" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="euler-fuggveny-szorzattarto-tulajdonsaga-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Például próbáljuk ez alapján meghatározni a [latex]\varphi(77)[/latex] értékét. Ehhez a [latex]77[/latex] prímtényezős felbontását, valamint az iménti tételt használva az alábbi adódik:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\varphi(77)=\varphi(7\cdot 11)=\varphi(7)\cdot \varphi(11)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha feltételezzük, hogy a [latex]\varphi(7)=6[/latex] és a [latex]\varphi(11)=10[/latex] értékeket <strong><em>valahogyan</em></strong> kiszámítottuk, akkor a [latex]\varphi(77)=60[/latex] végeredmény már könnyen adódik. Az alábbiakban ezt a <strong><em>„valahogyan”</em></strong>-t vizsgáljuk meg. Ehhez azonban szükségünk lesz az alábbi segédtételre.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="primhatvanyhoz-relativ-primek" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="primhatvanyhoz-relativ-primek-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ennek segítségével mostmár tetszőleges prímszámra – vagy még általánosabban <strong><em>tetszőleges prímhatványra</em></strong> – könnyedén ki tudjuk számítani az Euler-féle [latex]\varphi[/latex]-függvény értékét</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="euler-fuggveny-primhatvanyokra" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="euler-fuggveny-primhatvanyokra-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ennek és a [yp_element slug="euler-fuggveny-szorzattarto-tulajdonsaga" type="link" /]nek a segítségével mostmár bármilyen [latex]m\gt 0[/latex] pozitív egész szám esetén könnyedén ki tudjuk számítani a [latex]\varphi(m)[/latex] értéket. Ehhez „mindössze” az [latex]m[/latex] egész szám prímtényezős felbontására van szükségünk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel például, hogy szeretnénk kiszámítani a [latex]\varphi(93\ 372\ 871)[/latex] értéket. Tegyük fel továbbá, hogy ismerjük a [latex]93\ 372\ 871[/latex] prímtényezős felbontását:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]93\ 372\ 871=5387\cdot 17333[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezután alkalmazhatjuk a fenti két tételt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}\varphi(93\ 372\ 871)&amp;=\varphi(5387)\cdot \varphi(17333)=\\&amp;=5386\cdot 17332=93\ 350\ 152\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha tehát ismerjük a bemeneti [latex]m[/latex] egész szám prímtényezős felbontását, akkor könnyedén ki tudjuk számítani a [latex]\varphi(m)[/latex] értéket. Ami viszont kriptográfiai szempontból hasonlóan fontos: <strong><em>Ha nem ismerjük [latex]m[/latex] prímtényezős felbontását, akkor nem ismeretes hatékony algoritmus [latex]\varphi(m)[/latex] kiszámításához.</em></strong> Ez lényeges szerepet játszik az <strong><em>RSA rejtjelező eljárás</em></strong> esetén. Mielőtt azonban ezt ismertetnénk, szükségünk van egy harmadik összetevőre is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="modular-exponentiation"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Az ismételt négyzetreemelések módszere</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A <a href="https://youproof.hu/kriptografia/18-modularis-aritmetika-homomorfizmus-kongruencia-reszgyuru-ideal-maradekosztalygyuru/">18. részben</a> többek között a <strong><em>Diffie-Hellman kulcscsere protokoll</em></strong> kapcsán merült fel – ebben a részben pedig az <strong><em>RSA eljárás</em></strong> kapcsán fog felmerülni – az igény arra, hogy hatékonyan tudjunk hatványozni az úgynevezett <strong><em>óraaritmetikában</em></strong>. Egy ott szereplő példa volt annak meghatározása, hogy a [latex]2^{328}[/latex] hatvány mennyi maradékot ad [latex]11[/latex]-gyel osztva. Megmutattuk, hogy ez tulajdonképpen a [yp_element slug="modularis-osszeadas-es-szorzas" type="link" /] szerinti [latex]\Z_{11}[/latex] gyűrűben elvégzett hatványozásnak felel meg, méghozzá a [latex]\bmod_{11}[/latex] maradékképző függvény művelettartó tulajdonságai miatt.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Eszerint tehát ahelyett, hogy először a [latex]\Z[/latex] gyűrűben számítanánk ki a [latex]2^{328}[/latex] hatványt, és vennénk ennek a bődületesen nagy számnak a [latex]11[/latex]-gyel való osztási maradékát, a [latex]\Z_{11}[/latex] gyűrűben végezzük el az alábbi [latex]328[/latex] tényezős moduláris szorzást. Ezt képlettel kifejezve:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\bmod_{11}(\underbrace{2\cdot 2\cdot \ldots \cdot 2}_{\text{328 darab}})=\underbrace{\bmod_{11}(2)\odot \bmod_{11}(2)\odot \ldots \odot \bmod_{11}(2)}_{\text{328 darab}}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez azért szerencsés, mert így számolgatás közben nem fogunk olyan óriási részeredményeket kapni, amelyek túllépik a számítógép számábrázolási határait. A gyakorlatban azonban a kitevő nagyságrendje a többszázjegyű számok körében mozog, így ez a módszer beláthatatlanul sok moduláris szorzást igényel. Most egy olyan módszert fogunk mutatni, amelynek a segítségével még ezek az óriási kitevős moduláris hatványok is pillanatok alatt kiszámíthatók. Ez az <strong><em>ismételt négyzetre emelések módszere</em></strong> néven ismeretes, és a moduláris hatványozás [yp_element slug="hatvanyozas-azonossagai" type="link" /] szerinti azonosságait használja ki igen trükkös módon.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Maradjunk továbbra is a [latex]\bmod_{11}(2^{328})[/latex] moduláris hatvány kiszámításának példájánál. Első lépésként a [latex]328[/latex]-as kitevőt felírjuk kettes számrendszerben:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]328 \to 101001000‬[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A különböző számrendszerekről részletesen a <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/3-szamrendszerek-binaris-hexadecimalis-szamabrazolas-bitmap/" target="_blank">3. részben</a> volt szó. Az ott leírtaknak megfelelően ez tulajdonképpen a [latex]328[/latex] felírása bizonyos 2-hatványok összegeként. Ebben az összegben épp azok a 2-hatványok szerepelnek, amelyeknek megfelelő helyiértéken [latex]1[/latex]-es áll a fenti bináris számábrázolásban. Azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]328=2^8+2^6+2^3‬[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ennek az összegnek a tagjaiból a [yp_element slug="gyuru-test" type="link" /] 5. pontjának megfelelő <strong><em>disztributivitási szabályt</em></strong> alkalmazva kiemelhetjük a [latex]2^3[/latex] hatványt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]328=(2^5+2^3+1)‬\cdot 2^3[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ehhez hasonlóan a zárójelben maradt összeg első két tagjából ismételten kiemelhető a [latex]2^3[/latex] hatvány:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]328=((2^2+1)\cdot 2^3+1)‬\cdot 2^3[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Így tehát az eredeti [latex]\bmod_{11}(2^{328})[/latex] moduláris hatvány felírható a következőképpen:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\bmod_{11}(2^{328})=\bmod_{11}(2^{((2\cdot 2+1)\cdot 2\cdot 2\cdot 2+1)‬\cdot 2\cdot 2\cdot 2})[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A hatványozás azonosságairól szóló [yp_element slug="hatvanyozas-azonossagai" type="link" /] 2. és 3. pontjai alapján ez így írható fel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\bmod_{11}(2^{328})=\bmod_{11}((((((((2^2)^2\cdot 2)^2)^2)^2\cdot 2)^2)^2)^2)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azaz egy olyan műveletsorozatot kell elvégeznünk, amelynek minden lépésében az előző lépésben kapott részeredményt vagy négyzetre emeljük, vagy pedig megszorozzuk a [latex]2[/latex] alappal. Ebben a konkrét példában egy dupla négyzetreemelés után először szorozni kell. Ezután következik egy tripla négyzetreemelés, aztán ismét egy szorzás, végül megint egy tripla négyzetreemelés.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Minthogy a [latex]\bmod_{11}[/latex] maradékképző függvény a [yp_element slug="maradekkepzes-gyuruhomomorfizmus" type="link" /] alapján egy gyűrűhomomorfizmus az egész számok [latex]\Z[/latex] gyűrűje és a [latex]\Z_{11}[/latex] gyűrű között, ezért ez a műveletsorozat a [latex]\Z_{11}[/latex] gyűrűben is elvégezhető. Ezt az alábbiakban el is végezzük lépésenként:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}\bmod_{11}&amp;(2^2)=4 \\ \bmod_{11}&amp;(4^2)=5 \\ \bmod_{11}&amp;(5\cdot 2)=10 \\ \bmod_{11}&amp;(10^2)=1 \\ \bmod_{11}&amp;(1^2)=1 \\ \bmod_{11}&amp;(1^2)=1 \\ \bmod_{11}&amp;(1\cdot 2)=2 \\ \bmod_{11}&amp;(2^2)=4 \\ \bmod_{11}&amp;(4^2)=5 \\ \bmod_{11}&amp;(5^2)=3 \end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azaz a [latex]\bmod_{11}(2^{328})=3[/latex] végeredményt [latex]327[/latex] helyett megkaptuk mindössze [latex]10[/latex] darab moduláris szorzásból.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most vizsgáljuk meg az imént leírt módszer lépésszámát általánosságban is. Tegyük fel, hogy a [latex]\bmod_{m}(a^x)[/latex] moduláris hatványt szeretnénk meghatározni. Lépésszám alatt most értelemszerűen a szükséges moduláris szorzások számát értjük. Ezt az [latex]x[/latex] kitevő nagysága határozza meg, amelyről most tegyük fel, hogy [latex]n[/latex] darab számjeggyel írható le a kettes számrendszerben. A legrosszabb eset nyilván az, amikor minden bináris számjegy értéke [latex]1[/latex], hiszen ekkor az összes neki megfelelő 2-hatvány szerepel az összegben:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x=2^{n-1}+2^{n-2}+2^{n-3}+\ldots +2^3+2^2+2^1+1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A sorozatos kiemelések hatására egy olyan kifejezést kapunk, amely [latex]n-2[/latex] darab egymásba ágyazott zárójelet tartalmaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}x&amp;=(2^{n-2}+2^{n-3}+\ldots +2^2+2^1+1)\cdot 2+1=\\&amp;=((2^{n-3}+2^{n-4}+\ldots +2^1+1)\cdot 2+1)\cdot 2+1=\\&amp;\vdots \\&amp;=\underbrace{((\ldots (}_{n-2 \text{ darab}}2+1)\cdot 2 + 1)\cdot 2 +\ldots +1)\cdot 2 + 1\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azaz mind az [latex]n-2[/latex] darab zárójel esetén az addigi részeredményhez hozzá kell adni [latex]1[/latex]-et, majd az egészet megszorozni [latex]2[/latex]-vel. Végül az utolsó lépésben mégegyszer hozzá kell adni az egészhez [latex]1[/latex]-et. Mivel ez a kifejezés a [latex]\bmod_m(a^x)[/latex] moduláris hatvány kitevőjében szerepel, ezért a [yp_element slug="hatvanyozas-azonossagai" type="link" /] 2. és 3. pontjai alapján ennek a hatványnak a kiszámítása összesen [latex]2n-1[/latex] darab moduláris szorzásból megúszható. Ráadásul ez a lehető legrosszabb eset, amikor a kitevő bináris számábrázolásában minden bit értéke [latex]1[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez tehát azt jelenti, hogy mind a <strong><em>Diffie-Hellman kulcscsere protokoll</em></strong>, mind pedig a következő szakaszban bemutatott <strong><em>RSA-eljárás</em></strong> során előforduló moduláris hatványokat rendkívül gyorsan ki tudjuk számítani még abban az esetben is, ha több ezer bites számokról van szó. Ugyanis legrosszabb esetben is a kitevő bináris számjegyei számának duplája lesz az elvégzendő moduláris szorzások száma.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Az <a href="https://www.mtholyoke.edu/courses/quenell/s2003/ma139/js/powermod.html" target="_blank" rel="noreferrer noopener">itt</a> lévő oldalon egy hasznos kis kalkulátor található, amelynek a segítségével a további numerikus példákban szereplő moduláris hatványokat tudjuk majd kiszámítani a most ismertetett módszerrel.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Eddig tehát megismertük a továbbiakban fontos 3 összetevőt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li>lineáris kongruenciák megoldása</li><li>az Euler-féle [latex]\varphi[/latex]-függvény kiszámítása</li><li>az ismételt négyzetreemelések módszere</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>Ezek után minden készen áll arra, hogy megismerkedjünk az emberiség egyik legfontosabb találmányával.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="rsa"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A Rivest-Shamir-Adleman (RSA) aszimmetrikus kulcsú rejtjelező eljárás</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/9-diffie-hellman-protokoll-egyiranyu-fuggveny-modularis-aritmetika-asszimmetrikus-kulcs#asymmetric-cryptography" target="_blank">9. részben</a> mutattuk be az <strong><em>aszimmetrikus kulcsú rejtjelezés</em></strong> forradalmian új gondolatát. Ezt most pár mondatban átismételjük, ám javasoljuk az Olvasónak a hivatkozott rész átolvasását. A nagy ötlet ugye az volt, hogy a fogadó oldalon az üzenet visszafejtéséhez más kulcsot kelljen használni, mint amivel a küldő oldal titkosította azt. Ekkor ugyanis nincs szükség arra, hogy a fogadó és a küldő oldal előzetesen megállapodjon egy közös kulcsban.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezt sok esetben egyébként nem is tudnák megtenni. Gondoljunk csak például arra, amikor valamilyen külföldi webáruházban vásárolunk. Ez a vásárlás végén átirányít minket egy olyan bank fizetőoldalára, amelynek nem is vagyunk az ügyfelei. Ilyenkor a böngészőnknek a begépelt bankkártyaadatokat titkosítva kell elküldenie a bank szerverére, hiszen rendkívül érzékeny adatokról van szó. Amennyiben nem létezne aszimmetrikus kulcsú titkosítás, akkor a folyamat itt meg is akadna. Szükség lenne ugyanis egy közös kulcsra a vásárló és a bank közötti kommunikáció titkosításához. Az <strong><em>RSA-eljárásnak</em></strong> köszönhetően azonban ilyenre nincs szükség, mivel a böngésző a bank <strong><em>publikus kulcsával</em></strong> – amely tehát bárki számára elérhető – titkosíthatja az elküldendő bankkártyaadatokat, amelyet azután csak a bank fog tudni visszafejteni a saját <strong><em>titkos kulcsával</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Visszatérve főszereplőinkhez:</em></strong> Tegyük fel, hogy Alice szeretne Bob-nak elküldeni egy [latex]x[/latex] üzenetet. Ehhez előkeresi a nyilvános kulcstárból Bob [latex]K_b[/latex] <strong><em>publikus kulcsát</em></strong>, és ezzel paraméterezi az [latex]E[/latex] rejtjelező függvényt. Ily módon előáll az [latex]y[/latex] kódszöveg, amelyet elküld Bob-nak. Ezt az üzenetet kizárólag Bob tudja visszafejteni, mivel a [latex]K_b[/latex] publikus kulcshoz tartozó [latex]k_b[/latex] <strong><em>privát kulcsot</em></strong> csak ő ismeri. Bob tehát a [latex]k_b[/latex] privát kulccsal paraméterezve a [latex]D[/latex] dekódoló függvényt könnyedén vissza tudja állítani az eredeti [latex]x[/latex] üzenetet, míg a privát kulcsot nem ismerő támadó számára ez gyakorlatilag lehetetlen. Ez a folyamat látható az alábbi ábrán:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":2084,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_9_asszimetrikus_kulcsu_rejtjelezo_modell.jpg" alt="Aszimmetrikus kulcsú rejtjelező modell" class="wp-image-2084"/><figcaption>Aszimmetrikus kulcsú rejtjelező modell</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Az 1970-es évek nagy kérdése volt, hogy vajon mik lehetnek az ábrán szereplő [latex]E[/latex] és [latex]D[/latex] függvények – ha egyáltalán léteznek ilyenek. Az úttörő eredmény az alábbi képen látható <strong><em><a rel="noreferrer noopener" href="https://en.wikipedia.org/wiki/Ron_Rivest" target="_blank">Ronald Linn Rivest</a></em></strong>, <strong><em><a rel="noreferrer noopener" href="https://en.wikipedia.org/wiki/Adi_Shamir" target="_blank">Adi Shamir</a></em></strong> és <strong><em><a rel="noreferrer noopener" href="https://en.wikipedia.org/wiki/Leonard_Adleman" target="_blank">Leonard Max Adleman</a></em></strong> érdeme, akik 1977-ben publikálták az úgynevezett <strong><em>Rivest-Shamir-Adleman (RSA) algoritmust</em></strong>, amely talán az emberiség egyik legnagyobb horderejű felfedezése volt – legalábbis a társadalmunkra gyakorolt hatását tekintve mindenképpen.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":5712,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_21_shamir_rivest_adleman.jpg" alt="Adi Shamir (balra), Ron Rivest (középen) és Len Adleman (jobbra)" class="wp-image-5712"/><figcaption>Adi Shamir (balra), Ron Rivest (középen) és Len Adleman (jobbra)</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Az alábbiakban – mostmár a szükséges számelméleti ismeretekkel felvértezve – ismertetjük ennek az eljárásnak a részleteit, majd az egészet egy egyszerű példán szemléltetjük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>RSA-kulcspár generálása</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Előszöris Bobnak szüksége lesz egy publikus és egy privát részből álló kulcspárra. Ezek előállítását <strong><em>kulcsgenerálásnak</em></strong> nevezzük. Ehhez Bob keres magának <strong><em>két különböző, elegendően nagy prímszámot</em></strong>. Az „elegendően nagy” manapság tipikusan 1024 vagy 2048 bináris számjeggyel ábrázolható prímeket jelent. Ez tízes számrendszerben körülbelül a 300-600 számjegyű számok nagyságrendje. Arról egy következő részben lesz szó, hogy Bob hogyan képes ilyen nagyságrendű prímeket találni viszonylag hamar, ezért ezt a problémát egyelőre tegyük félre. Jelöljük a Bob által talált, és persze a lehető legnagyobb <strong><em>titokban tartott két prímet</em></strong> [latex]p[/latex]-vel és [latex]q[/latex]-val. Bob ezután összeszorozza ezt a két prímszámot. Az így kapott [latex]m=p\cdot q[/latex] egész számot <strong><em>modulusnak</em></strong> fogjuk nevezni a továbbiakban, amelyet <strong><em>nem szükséges titokban tartani</em></strong>, az ugyanis a publikus kulcs része lesz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Második lépésként </strong>Bob kiszámítja az <strong><em>Euler-féle [latex]\varphi[/latex]-függvény</em></strong> értékét az [latex]m[/latex] modulusra, azaz kiszámítja a [latex]\varphi(m)[/latex] értéket. A [latex]p[/latex] és [latex]q[/latex] prímszámok ismeretében ezt a [yp_element slug="euler-fuggveny-szorzattarto-tulajdonsaga" type="link" /], valamint a [yp_element slug="euler-fuggveny-primhatvanyokra" type="link" /] alapján könnyen meg tudja tenni:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\varphi(m)=(p-1)\cdot (q-1)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Bob az így kiszámolt [latex]\varphi(m)[/latex] értéket szintén a lehető legnagyobb <strong><em>titokban tartja</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Harmadik lépésként</strong> Bob választ egy tetszőleges [latex]0[/latex] és [latex]\varphi(m)[/latex] közötti [latex]e[/latex] egész számot, amely <strong><em>relatív prím</em></strong> [latex]\varphi(m)[/latex]-hez. A [yp_element slug="redukalt-maradekosztaly-feltetele" type="link" /] alapján ez tehát azt jelenti, hogy Bob választ egy modulo [latex]\varphi(m)[/latex] redukált maradékosztályt, a keresett [latex]e[/latex] szám pedig ennek a legkisebb pozitív reprezentánseleme lesz. Megint más megfogalmazásban a <strong><em>gyűrűk homomorfizmustétele</em></strong> ([yp_element slug="gyuruk-homomorfizmustetele" type="link" /]) miatt a keresett [latex]e[/latex] szám tulajdonképpen a [latex]\Z_{\varphi(m)}[/latex] gyűrű valamelyik invertálható eleme lesz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezt Bob szintén hatékonyan ki tudja választani, mivel szerencsére – itt nem részletezett analitikus számelméleti okok miatt – viszonylag gyakori, hogy két tetszőlegesen kiválasztott egész szám egymáshoz relatív prím. Így Bob megteheti, hogy véletlenszerűen választ a [latex]0[/latex] és [latex]\varphi(m)[/latex] közötti számok közül, majd az <a href="#extended-euclidean-algorithm">euklidészi algoritmus</a> segítségével kiszámítja a kiválasztott szám és [latex]\varphi(m)[/latex] kitüntetett közös osztóját. Ha ez egy egység – azaz a választott szám relatív prím [latex]\varphi(m)[/latex]-hez –, akkor megvan a keresett [latex]e[/latex], ha pedig nem, akkor Bob megismétli az eljárást egy másik véletlenszerűen választott számmal mindaddig, amíg nem talál egy [latex]\varphi(m)[/latex]-hez relatív prím számot. Az említett analitikus számelméleti összefüggések miatt ez majdnem biztosan már néhány lépés után megtörténik. Az így kapott [latex]e[/latex] számot <strong><em>nem szükséges titokban tartani</em></strong>, az ugyanis a publikus kulcs része lesz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Negyedik lépésként</em></strong> Bob kiszámítja az előző lépésben kiválasztott [latex]e[/latex] szám multiplikatív inverzét a [latex]\Z_{\varphi(m)}[/latex] gyűrűben. Ehhez meg kell oldania az alábbi lineáris kongruenciát:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]e\cdot x\equiv 1\pmod{\varphi(m)}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="linearis-kongruenciak" type="link" /] alapján a kongruencia megoldása egy modulo [latex]\varphi(m)[/latex] maradékosztály lesz, amely – lévén, hogy [latex]e[/latex] relatív prím [latex]\varphi(m)[/latex]-hez – a [yp_element slug="linearis-kongruenciak-megoldasai-es-megoldasszama" type="link" /] miatt <strong><em>egyértelmű</em></strong> lesz. Az [latex]e[/latex] szám [latex]\Z_{\varphi(m)}[/latex]-beli multiplikatív inverze ennek az eredményül kapott maradékosztálynak a legkisebb pozitív eleme lesz, amelyet a továbbiakban [latex]d[/latex]-vel fogunk jelölni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A [latex]d[/latex] kiszámításához a [yp_element slug="linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga" type="link" /] szerint Bobnak tulajdonképpen az [latex]ex+\varphi(m)y=1[/latex] lineáris diofantoszi egyenletet kell megoldania, amelyhez a [yp_element slug="linearis-diofantoszi-egyenlet-osszes-megoldasa" type="link" /] 1. pontja alapján a <strong><em>kibővített euklidészi algoritmust</em></strong> használhatja. Bob a kapott [latex]d[/latex] számot <strong><em>titokban tartja</em></strong>, az ugyanis a privát kulcs része lesz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A kulcsgenerálás ezzel befejeződött.</em></strong> Bob kulcspárja a következő lesz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li><strong><em>Bob publikus kulcsa:</em></strong> Az [latex]m[/latex] modulusból és az [latex]e[/latex] egész számból álló [latex](m;e)[/latex] számpár.</li><li><strong><em>Bob privát kulcsa:</em></strong> Az [latex]m[/latex] modulusból és a [latex]d[/latex] egész számból álló [latex](m;d)[/latex] számpár.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>Bob mostmár akár meg is semmisítheti az eredetileg választott [latex]p[/latex] és [latex]q[/latex] prímszámokat, valamint a belőlük kiszámított [latex]\varphi(m)[/latex] értéket, azokra ugyanis a továbbiakban nem feltétlenül van szüksége. A következő részben látni fogjuk azonban, hogy a [latex]p[/latex] és [latex]q[/latex] számok segítségével Bob hogyan tudja jelentősen felgyorsítani a dekódolás folyamatát. Mindenesetre biztonságos helyen kell ezeket tárolnia, ugyanis a segítségükkel a publikus kulcsból a fentiek alapján hatékonyan kiszámítható a privát kulcs, így nem lenne jó, ha illetéktelen kezekbe kerülnének. Nélkülük azonban jelenlegi számelméleti ismereteink alapján ez egy belátható időn belül nem kivitelezhető feladat még a világ összes számítási kapacitásával sem. Ehhez ugyanis prímtényezőire kéne bontani a publikus kulcsban szereplő [latex]m[/latex] modulust, vagy valamilyen más módon kiszámítani a [latex]\varphi(m)[/latex] értéket, ami ugye a [latex]d[/latex] szám meghatározásához kell.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Bob a kulcspárjának publikus részét – azaz az [latex](m;e)[/latex] számpárt – nyilvánosságra hozhatja, ugyanis ennek segítségével lehet majd a neki szánt bizalmas üzeneteket titkosítani. Ezzel szemben a kulcspár titkos részét – azaz az [latex](m;d)[/latex] számpárt – a lehető legnagyobb titokban kell tartania, ugyanis a titkosított üzeneteket kizárólag ezzel lehet majd visszafejteni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="rsa-encoding-decoding"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>RSA-kódolás és dekódolás</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Az RSA esetén mind a rejtjelezés, mind pedig a visszafejtés során tulajdonképpen egy-egy <strong><em>moduláris hatványozást</em></strong> kell elvégezni. Ennek módjáról az <strong><em>ismételt négyzetreemelések módszerének</em></strong> kapcsán egy fentebbi szakaszban volt szó bővebben. Ha Alice valamilyen üzenetet vagy adathalmazt szeretne küldeni Bob-nak, akkor előszöris kikeresi a nyilvános kulcstárból Bob publikus kulcsát. Az ebben szereplő [latex]m[/latex] modulus fogja kijelölni a [latex]\Z_m[/latex] gyűrűt, amiben majd moduláris hatványozást el kell végezni, az [latex]e[/latex] szám pedig a kódoláshoz használandó kitevő lesz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A rejtjelezni kívánt üzenetet Alice valamilyen egyezményes vagy szabványos módon egy, a [latex]\Z_m[/latex] gyűrű elemeiből álló számsorozattá alakítja át, amelyet <strong><em>előkódolásnak</em></strong> nevezünk. Ez sokféleképpen történhet, a technikai részletekre itt nem térünk ki, ám a következő szakaszban fogunk mutatni erre egy egyszerű példát. A lényeg, hogy Bob ebből a számsorozatból egyértelműen tudja majd rekonstruálni az eredeti üzenetet. Az RSA szempontjából tehát a nyílt szöveg tulajdonképpen egy [latex]x_1, x_2, x_3, \ldots[/latex] számsorozat, amelynek tagjai a [latex]\Z_m[/latex] gyűrű elemei, azaz [latex]m[/latex]-nél kisebb <strong><em>nemnegatív</em></strong> egész számok. Az Alice által használt [latex]E[/latex] <strong><em>rejtjelező függvény</em></strong> tehát az alábbi moduláris hatványozás lesz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]E(x)=\bmod_m(x^e)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Itt [latex]x[/latex] jelöli a nyílt szöveget alkotó számsorozat soron következő tagját, az [latex]e[/latex] kitevő és az [latex]m[/latex] modulus pedig Bob publikus kulcsát alkotják. Alice tehát a bemeneti [latex]x_1, x_2, x_3, \ldots[/latex] nyílt számsorozatból (<strong><em>nyíltszövegből</em></strong>) a Bob [latex](m;e)[/latex] <strong><em>publikus kulcsával</em></strong> paraméterezett [latex]E[/latex] rejtjelező függvény segítségével előállítja az [latex]y_1, y_2, y_3, \ldots[/latex] rejtjelezett számsorozatot (<strong><em>kódszöveget</em></strong>):</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}y_1&amp;=\bmod_m({x_1}^e) \\ y_2&amp;=\bmod_m({x_2}^e) \\ y_3&amp;=\bmod_m({x_3}^e) \\ &amp;\vdots \end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az így kapott [latex]y_1, y_2, y_3, \ldots[/latex] számsorozatot Alice átküldi a nembiztonságos kommunikációs csatornán Bob-nak. A Bob által használt [latex]D[/latex] dekódolófüggvény nagyon hasonlít a rejtjelező függvényhez. Az egyetlen különbség, hogy ezúttal Bob [latex](m;d)[/latex] privát kulcsával kell paraméterezni a moduláris hatványozást:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]D(y)=\bmod_m(y^d)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Bob tehát a bemeneti [latex]y_1, y_2, y_3, \ldots[/latex] rejtjelezett számsorozatból (<strong><em>kódszövegből</em></strong>) a saját [latex](m;d)[/latex] <strong><em>privát kulcsával</em></strong> paraméterezett [latex]D[/latex] visszafejtő függvény segítségével „varázslatos módon” visszakapja az Alice által közölni kívánt [latex]x_1, x_2, x_3, \ldots[/latex] nyílt számsorozatot (<strong><em>nyíltszöveget</em></strong>):</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}x_1&amp;=\bmod_m({y_1}^d) \\ x_2&amp;=\bmod_m({y_2}^d) \\ x_3&amp;=\bmod_m({y_3}^d) \\ &amp;\vdots \end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A visszakapott számsorozatból végül Bob az egyezmény vagy szabvány szerinti <strong><em>előkódolás megfordításával</em></strong> megkapja az eredeti üzenetet vagy adathalmazt.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A következő részben fogjuk igazolni, hogy az imént említett „varázslat” valójában nem a véletlen műve, hanem az eddig megismert számelméleti összefüggések következménye.</em></strong> Most azonban nézzünk egy egyszerű példát az RSA-rejtjelező használatára.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="rsa-example"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Példa RSA-rejtjelezésre</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel, hogy Alice egy bizalmas üzenetet szeretne elküldeni Bob-nak. Az egyszerűség kedvéért Alice és Bob megegyeznek, hogy a kommunikációhoz az angol ábécé betűit használják írásjelek és szóközök nélkül, az üzenet végét pedig a <strong>#</strong> karakter fogja jelezni. A bizalmas üzenet ezek alapján a következő:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"align":"center","className":"typewriter"} -->
+<p class="has-text-align-center typewriter">sziabobmiahelyzet#</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ahhoz, hogy Alice ezt az üzenetet egy digitális kommunikációs csatornán átküldhesse, valamilyen módon egy bináris jelsorozattá kell alakítania azt. Ez történhet például az <strong><em>ASCII kódrendszer</em></strong> alapján, amelyről bővebben a <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/2-informacio-adat-ascii-entropia-forraskodolas-digitalizalas/" target="_blank">2. részben</a> volt szó. Mi most az egyszerűség kedvéért egy ennél egyszerűbb kódrendszert fogunk használni, amely csak az angol ábécé kisbetűit és az üzenet végét jelző <strong><em>#</em></strong> karaktert tartalmazza. Ez összesen 27 szimbólum, amely 5 bites szavakkal ábrázolható. Az alábbi táblázat első oszlopa a kódolandó szimbólumokat, a második és harmadik oszlop pedig a hozzájuk rendelt számokat tartalmazza tizes és kettes számrendszerben. A számrendszerekről bővebben a <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/3-szamrendszerek-binaris-hexadecimalis-szamabrazolas-bitmap/" target="_blank">3. részben</a> volt szó:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{c|c|c} \text{symbol} &amp; \text{decimal} &amp; \text{binary} \\ \hline a &amp; 0 &amp; 00000 \\ b &amp; 1 &amp; 00001 \\ c &amp; 2 &amp; 00010 \\ d &amp; 3 &amp; 00011 \\ e &amp; 4 &amp; 00100 \\ f &amp; 5 &amp; 00101 \\ g &amp; 6 &amp; 00110 \\ h &amp; 7 &amp; 00111 \\ i &amp; 8 &amp; 01000 \\ j &amp; 9 &amp; 01001 \\ k &amp; 10 &amp; 01010 \\ l &amp; 11 &amp; 01011 \\ m &amp; 12 &amp; 01100 \\ n &amp; 13 &amp; 01101 \\ o &amp; 14 &amp; 01110 \\ p &amp; 15 &amp; 01111 \\ q &amp; 16 &amp; 10000 \\ r &amp; 17 &amp; 10001 \\ s &amp; 18 &amp; 10010 \\ t &amp; 19 &amp; 10011 \\ u &amp; 20 &amp; 10100 \\ v &amp; 21 &amp; 10101 \\ w &amp; 22 &amp; 10110 \\ x &amp; 23 &amp; 10111 \\ y &amp; 24 &amp; 11000 \\ z &amp; 25 &amp; 11001 \\ \# &amp; 26 &amp; 11010  \end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezek alapján a <strong>sziabobmiahelyzet#</strong> üzenetből az alábbi 90 bit hosszú bináris jelsorozat lesz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}&amp;\underbrace{10010}_{\text{s}} \underbrace{11001}_{\text{z}} \underbrace{01000}_{\text{i}} \underbrace{00000}_{\text{a}} \underbrace{00001}_{\text{b}} \underbrace{01110}_{\text{o}} \underbrace{00001}_{\text{b}} \\ &amp;\underbrace{01100}_{\text{m}} \underbrace{01000}_{\text{i}} \underbrace{00000}_{\text{a}} \underbrace{00111}_{\text{h}} \underbrace{00100}_{\text{e}} \underbrace{01011}_{\text{l}} \underbrace{11000}_{\text{y}} \\ &amp;\underbrace{11001}_{\text{z}} \underbrace{00100}_{\text{e}} \underbrace{10011}_{\text{t}} \underbrace{11010}_{\#} \end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel a kommunikációs csatornát a szemtelen Eve lehallgatja, ezért Alice kénytelen titkosítani ezt a jelsorozatot. Sajnos azonban ezúttal Alice-nak és Bob-nak nincs módja személyes találkozót megbeszélni annak érdekében, hogy valamilyen közös szimmetrikus kulcsban meg tudjanak állapodni, ahogy tették azt az <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/1-alapfogalmak-caesar-vigenere-enigma-kulcsmegosztas/" target="_blank">1. részben</a>. De ez nem is jelent problémát, hiszen ismerik a fentebb leírt aszimmetrikus kulcsú <strong><em>RSA eljárást</em></strong>. Alice ezért megkéri Bob-ot, hogy generáljon magának egy <strong><em>aszimmetrikus kulcspárt</em></strong>, és annak <strong><em>publikus részét</em></strong> küldje el neki a kommunikációs csatornán keresztül, hogy azzal titkosítani tudja számára a fenti bizalmas üzenetet.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Bob ezért választ magának két különböző prímszámot. Tegyük fel, hogy Bob a [latex]p=211[/latex] és [latex]q=139[/latex] prímszámokat választotta. A gyakorlatban persze a választott prímszámoknak többszázjegyűeknek kell lenniük a megfelelő biztonság érdekében, azonban most a példa kedvéért maradjunk ezeknél. Bob e két prímszám összeszorzásával meghatározza az [latex]m[/latex] modulust és a [latex]\varphi(m)[/latex] értéket:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}m&amp;=p\cdot q=211\cdot 139=29329 \\  \varphi(m)&amp;=(p-1)\cdot (q-1)=210\cdot 138=28980\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Bob választ továbbá egy [latex]\varphi(m)[/latex]-hez <strong><em>relatív prím</em></strong> [latex]e[/latex] számot. Ezt a leírtaknak megfelelően úgy tudja megtenni, hogy választ egy véletlen számot [latex]0[/latex] és [latex]\varphi(m)[/latex] között, majd az <strong><em>euklidészi algoritmus</em></strong> segítségével leellenőrzi, hogy a választott szám valóban relatív prím-e [latex]\varphi(m)[/latex]-hez. Ez majdnem biztosan teljesülni fog már elsőre. Ha esetleg mégsem, akkor újabb véletlenszámokkal próbálkozik mindaddig, amíg nem talál egy megfelelőt. Tegyük fel, hogy Bob az [latex]e=187[/latex] számot választotta.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ha [latex]e[/latex] valóban relatív prím [latex]\varphi(m)[/latex]-hez, akkor ki kell számítani a multiplikatív inverzét a [latex]\Z_{\varphi(m)}[/latex] gyűrűben, azaz meg kell oldani az alábbi lineáris kongruenciát:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{187}_{=e} \cdot d\equiv 1\pmod {\underbrace{28980}_{=\varphi(m)}}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ennek a kongruenciának a [yp_element slug="linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga" type="link" /] alapján az alábbi lineáris diofantoszi egyenlet felel meg:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{187}_{=e}\cdot d+\underbrace{28980}_{=\varphi(m)}\cdot y=1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Szerencsére a <strong><em>kibővített euklidészi algoritmus</em></strong> egyszerre számítja ki az [latex](e,\varphi(m))[/latex] kitüntetett közös osztót, és állítja elő azt [latex]e[/latex] és [latex]\varphi(m)[/latex] lineáris kombinációjaként. Bob tehát lefuttatja a kibővitett euklidészi algoritmust:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{c|c|c|c|c|c|c}i &amp; r_{i-2} &amp; r_{i-1} &amp; r_i &amp; k_i &amp; u_i &amp; v_i \\ \hline 1 &amp; 28980 &amp; 187 &amp; 182 &amp; 154 &amp; 1 &amp; -154 \\ \hline 2 &amp; 187 &amp; 182 &amp; 5 &amp; 1 &amp; -1 &amp; 155 \\ \hline 3 &amp; 182 &amp; 5 &amp; 2 &amp; 36 &amp; 37 &amp; -5734 \\ \hline 4 &amp; 5 &amp; 2 &amp; 1 &amp; 2 &amp; -75 &amp; 11623 \\ \hline 5 &amp; 2 &amp; 1 &amp; 0 &amp; - &amp; - &amp; -\end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az utolsó nemnulla maradék [latex]1[/latex], így [latex]e=187[/latex] valóban relatív prím [latex]\varphi(m)=28980[/latex]-hoz, továbbá Bob megkapta a <strong><em>Bézout-lemma</em></strong> szerinti lineáris kombinációs együtthatókat is (lásd a [yp_element slug="bezout-lemma-euklideszi-gyurukben" type="link" /]t), azaz lényegében a fenti lineáris diofantoszi egyenlet egy megoldását:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{28980}_{=\varphi(m)}\cdot \underbrace{(-75)}_{=y} + \underbrace{187}_{=e}\cdot \underbrace{11623}_{=d}=1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Megvan tehát a keresett [latex]d=11623[/latex]. <strong><em>A kulcsgenerálás ezzel befejeződött.</em></strong> Bob kulcspárja a következő:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li><strong><em>Bob publikus kulcsa:</em></strong> Az [latex]m=29329[/latex] modulus és az [latex]e=187[/latex] egész szám.</li><li><strong><em>Bob privát (titkos) kulcsa:</em></strong> Az [latex]m=29329[/latex] modulus és a [latex]d=11623[/latex] egész szám.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>Ezek után Bob elküldi Alice-nak a kulcspár publikus részét – vagy akár elérhetővé teszi azt bárki számára egy nyilvános kulcstárban –, a titkos részét azonban szigorúan titokban tartja.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Alice-nak tehát az elküldendő bináris jelsorozatot a [latex]\Z_m=\Z_{29329}[/latex] gyűrű elemeinek sorozatává kell alakítania. Ez egy olyan számsorozatot jelent, amelynek minden tagja nemnegatív és kisebb az [latex]m=29329[/latex] modulusnál. Egy rövid számolgatás után azt kapja, hogy a 14 bites számok biztosan megfelelnek ennek a kritériumnak, hiszen [latex]2^{14}=16384[/latex]. Ezzel szemben a 15 bites számok között már előfordulhatnának a modulusnál esetleg nagyobb számok is, mivel [latex]2^{15}=32768[/latex]. Így tehát Alice az üzenetet 14 bit hosszú részekre darabolja.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az elküldendő bitsorozat 90 bit hosszú, így az utolsó darab 6 bitből fog állni. A fennmaradó 8 bitet Alice nyugodtan kitöltheti véletlenszerűen választott bitekkel, mivel a vételi oldalon Bob az üzenet végét jelző <strong>#</strong> karakterből egyértelműen azonosítani tudja majd ezeket az eldobható biteket. Így tehát az Alice által titkosítandó számsorozat a következő:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}10010110010100 &amp;\to x_1=9620 \\ 00000000001011 &amp;\to x_2=11 \\ 10000010110001 &amp;\to x_3=8369 \\ 00000000001110 &amp;\to x_4=14 \\ 01000101111000 &amp;\to x_5=4472 \\ 11001001001001 &amp;\to x_6=12873 \\ 111010\overbrace{01101001}^{\text{kitöltés}} &amp;\to x_7=14953\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Alice ezután a Bob publikus kulcsát alkotó [latex]m=29329[/latex] modulus és [latex]e=187[/latex] kitevő segítségével kiszámítja a titkosított számsorozatot. Ezeket a moduláris hatványokat Alice a fentebb ismertetett <strong><em>ismételt négyzetreemelés módszerének</em></strong> segítségével hatékonyan tudja kiszámítani. Az Olvasó ezeket a számításokat maga is elvégezheti az <a href="https://www.mtholyoke.edu/courses/quenell/s2003/ma139/js/powermod.html" target="_blank" rel="noreferrer noopener">itt</a> található kalkulátor segítségével:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}y_1&amp;=\bmod_{29329}({9620}^{187})=7812 \\ y_2&amp;=\bmod_{29329}({11}^{187})=869 \\ y_3&amp;=\bmod_{29329}({8369}^{187})=445 \\ y_4&amp;=\bmod_{29329}({14}^{187})=25123 \\ y_5&amp;=\bmod_{29329}({4472}^{187})=2090 \\ y_6&amp;=\bmod_{29329}({12873}^{187})=24726 \\ y_7&amp;=\bmod_{29329}({14953}^{187})=9793 \\ \end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezután Alice az így kapott [latex]y_1,y_2,\ldots,y_7[/latex] számokat kettes számrendszerben ábrázolja az eredeti számsorozathoz hasonlóan. Most azonban már előfordulhat bármilyen szám [latex]0[/latex] és [latex]m=29329[/latex] között, így Alice kénytelen 15 bitet használni:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}001111010000100‬ &amp;\gets y_1=7812 \\ 000‭001101100101‬ &amp;\gets y_2=869 \\ ‭000000110111101‬ &amp;\gets y_3=445 \\ ‭‭110001000100011‬‬ &amp;\gets y_4=25123 \\ ‭000100000101010‬ &amp;\gets y_5=2090 \\ ‭110000010010110‬ &amp;\gets y_6=24726 \\ ‭010011001000001‬ &amp;\gets y_7=9793\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezeket a 15 bites darabokat Alice szépen egymás után fűzi, és az így kapott 105 bites <strong><em>titkosított bitsorozatot</em></strong> elküldi Bob-nak a kommunikációs csatornán keresztül. Ne feledjük, hogy az Alice által használt, Bob-hoz tartozó publikus kulcs csak a titkosításhoz elegendő. A kulcs titkos része nélkül maga Alice sem tudná visszafejteni ezt az üzenetet.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Példa RSA-dekódolásra</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Most nézzük meg, hogy mit tud kezdeni ezzel a titkosított bitsorozattal a vételi oldalon lévő Bob, illetve a kommunikációs csatornát pofátlanul lehallgató Eve.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Bob publikus kulcsát mindketten ismerik. Bob nyilván, hiszen ő maga generálta azt az előző szakaszban. Eve pedig akkor értesül róla, amikor Bob közli azt Alice-szal a kommunikációs csatornán keresztül, vagy pedig közvetlenül letölti a nyilvános kulcstárból. Így tehát mindketten ismerik az [latex]m=29329[/latex] modulust, azaz tudják, hogy az Alice által elküldött titkosított bitsorozatot 15 bites részekre kell darabolni ahhoz, hogy megkapják a [latex]0[/latex] és [latex]29329[/latex] közötti számokból álló [latex]y_1,y_2,\ldots,y_7[/latex] sorozatot, amely tehát a következő:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}001111010000100‬ &amp;\to y_1=7812 \\ 000‭001101100101‬ &amp;\to y_2=869 \\ ‭000000110111101‬ &amp;\to y_3=445 \\ ‭‭110001000100011‬‬ &amp;\to y_4=25123 \\ ‭000100000101010‬ &amp;\to y_5=2090 \\ ‭110000010010110‬ &amp;\to y_6=24726 \\ ‭010011001000001‬ &amp;\to y_7=9793\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ebből a Bob <strong><em>titkos kulcsát</em></strong> alkotó [latex]m=29329[/latex] modulus és [latex]d=11623[/latex] kitevő segítségével lehet kiszámítani az eredeti számsorozatot. Ezeket a moduláris hatványokat Bob a fentebb ismertetett <strong><em>ismételt négyzetreemelés módszerének</em></strong> segítségével hatékonyan tudja kiszámítani, az Olvasó pedig az <a href="https://www.mtholyoke.edu/courses/quenell/s2003/ma139/js/powermod.html" target="_blank" rel="noreferrer noopener">itt</a> található kalkulátorral ellenőrizheti:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}x_1&amp;=\bmod_{29329}({7812}^{11623})=9620 \\ x_2&amp;=\bmod_{29329}({869}^{11623})=11 \\ x_3&amp;=\bmod_{29329}({445}^{11623})=8369 \\ x_4&amp;=\bmod_{29329}({25123}^{11623})=14 \\ x_5&amp;=\bmod_{29329}({2090}^{11623})=4472 \\ x_6&amp;=\bmod_{29329}({24726}^{11623})=12873 \\ x_7&amp;=\bmod_{29329}({9793}^{11623})=14953 \\ \end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Bob tehát valóban visszakapta az Alice által küldött eredeti számsorozatot. Eve azonban ezen a ponton bajba kerül, mivel nem ismeri a [latex]d=11623[/latex] kitevőt, hiszen azt Bob mindvégig titokban tartotta. Sebaj, gondolja Eve, és megkísérli kiszámítani a publikus kulcsból a titkos kulcsot, pontosan úgy, ahogyan Bob tette a kulcsgenerálás során. Ehhez Eve-nek meg kéne tudnia határozni az [latex]e=187[/latex] egész szám multiplikatív inverzét a [latex]\Z_{\varphi(m)}[/latex] gyűrűben, hiszen ez épp a keresett [latex]d[/latex] kitevő lesz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Igenám, csakhogy a [latex]\varphi(m)[/latex] értékének meghatározásához Eve-nek a [yp_element slug="euler-fuggveny-szorzattarto-tulajdonsaga" type="link" /] és a [yp_element slug="euler-fuggveny-primhatvanyokra" type="link" /] alapján szüksége volna az [latex]m=29329[/latex] modulus prímtényezős felbontására. Nem ismeretes ugyanis olyan algoritmikus módszer, amellyel a [latex]\varphi(m)[/latex] értéke hatékonyan kiszámítható [latex]m[/latex] prímtényezőinek ismerete nélkül. Ezért Eve sajnos (szerencsére) kénytelen megkeresni [latex]m[/latex] prímtényezőit, amelyre szintén nem ismert hatékony algoritmus. Így ez a feladat az idők végezetéig is eltarthat neki a világ összes számítógépével, amennyiben a Bob által választott prímszámok megfelelően nagyok.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezzel szemben Bob azért volt képes olyan gyorsan meghatározni [latex]\varphi(m)[/latex]-et, és így a [latex]d[/latex] titkos kitevőt, mivel ő ismerte a [latex]p=211[/latex] és [latex]q=139[/latex] prímtényezőket. Nyilván, hiszen azokat ő maga választotta, és a kulcsgenerálás során ezek szorzatából képezte az [latex]m=29329[/latex] modulust. Természetesen – mint már említettük – a gyakorlatban a választott prímszámoknak többszázjegyűeknek kell lenniük a megfelelő biztonsági szint eléréséhez.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Bob tehát minden gond nélkül ki tudta számítani az [latex]x_1, x_2, \ldots, x_7[/latex] számsorozatot. És ami még fontosabb: mivel kizárólag ő ismeri a [latex]d=11623[/latex] titkos kitevőt, ezért rajta kívül bárki más, aki az üzenet megfejtésével próbálkozik Eve-vel azonos helyzetben találja magát.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]x_1, x_2, \ldots, x_7[/latex] számsorozatból már viszonylag egyszerűen megkapható az Alice által elküldött karaktersorozat. A modulusból ugyanis tudható, hogy Alice 14 bites számokat használt, amikor előállította ezt a sorozatot:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}10010110010100 &amp;\gets x_1=9620 \\ 00000000001011 &amp;\gets x_2=11 \\ 10000010110001 &amp;\gets x_3=8369 \\ 00000000001110 &amp;\gets x_4=14 \\ 01000101111000 &amp;\gets x_5=4472 \\ 11001001001001 &amp;\gets x_6=12873 \\ 11101001101001 &amp;\gets x_7=14953\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Bob ezeket a biteket összefűzi, és az így kapott bitsorozatból a kódábécé alapján dekódolja az üzenetet. Amikor az üzenet végét jelző <strong>#</strong> karakterhez ér, a fennmaradó kitöltő biteket eldobja:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}&amp;\underbrace{10010}_{\text{s}} \underbrace{11001}_{\text{z}} \underbrace{01000}_{\text{i}} \underbrace{00000}_{\text{a}} \underbrace{00001}_{\text{b}} \underbrace{01110}_{\text{o}} \underbrace{00001}_{\text{b}} \\ &amp;\underbrace{01100}_{\text{m}} \underbrace{01000}_{\text{i}} \underbrace{00000}_{\text{a}} \underbrace{00111}_{\text{h}} \underbrace{00100}_{\text{e}} \underbrace{01011}_{\text{l}} \underbrace{11000}_{\text{y}} \\ &amp;\underbrace{11001}_{\text{z}} \underbrace{00100}_{\text{e}} \underbrace{10011}_{\text{t}} \underbrace{11010}_{\#} \underbrace{01101001}_{\text{eldobható}} \end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezután pedig válaszolhat Alice-nak ugyanezen a módon. Ekkor azonban Alice publikus kulcsával kell rejtjeleznie a választ, amelyet viszont csak Alice fog tudni visszafejteni a saját titkos kulcsával. Alice-nak és Bob-nak tehát nincs szükségük biztonságos csatornára – például személyes találkozó – ahhoz, hogy egy közös kulcsban megegyezzenek, amelyet aztán egy valamilyen szimmetrikus kulcsú rejtjelező eljáráshoz használhatnak. Az <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/1-alapfogalmak-caesar-vigenere-enigma-kulcsmegosztas/" target="_blank">1. részben</a> ismertetett <strong><em>kulcsmegosztás problémája</em></strong> tehát megoldódni látszik. Van azonban még egy probléma, amelyet meg kell oldani.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>RSA partnerhitelesítés és digitális aláírás</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Korábban volt szó bővebben arról, hogy egy <strong><em>aktív támadó</em></strong> – például <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/5-one-time-pad-passziv-aktiv-tamado-haromutas-kulcsforgalom/" target="_blank">Mallory</a> – ezt a rendszert könnyedén kijátszhatja. Ő ugyanis képes elérni, hogy Alice a Bob-nak szánt üzenetek kódolásához Mallory publikus kulcsát használja, miközben azt gondolja, hogy az valójában Bob publikus kulcsa. Alice-nak emiatt meg kell tudnia győződnie arról, hogy a kódoláshoz használt publikus kulcs valóban Bob publikus kulcsa, és nem pedig Mallory-é, aki csak azt hazudja magáról, hogy ő Bob. Ezt <strong><em>partnerhitelesítésnek</em></strong> nevezzük, és a hozzá kapcsolódó problémakört részletesen kifejtettük a <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/10-publikus-privat-kulcs-digitalis-alairas-kriptografiai-hash-fuggveny-szuletesnap-paradoxon-tanusitvany/" target="_blank">10. részben</a>. A megoldást a <strong><em>digitális aláírások</em></strong> jelentik, amelynek lényegét most röviden átismételjük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egy aszimmetrikus kulcsú rejtjelezési eljárás esetén a kulcspár nyilvános részével kódolt üzeneteket kizárólag ugyanezen kulcspár titkos részével lehet dekódolni. Most igazolni fogjuk, hogy az RSA esetében <strong><em>a kulcsok szerepe felcserélhető</em></strong>. Nevezetesen: a kulcspár titkos részével kódolt üzeneteket kizárólag a kulcspár nyilvános részével lehet dekódolni. Az alábbi egyenlet a publikus kulcscsal való kódolás, majd a privát kulcscsal való dekódolás műveletének egymás után való alkalmazását írja le. Tegyük fel, hogy ennek eredményeként valóban az eredeti [latex]x[/latex] üzenetet kapjuk vissza – ezt természetesen a következő részben igazolni fogjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\bmod_m((\underbrace{\bmod_m(x^e)}_{=y})^d)=x[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Minthogy a [latex]\bmod_m[/latex] maradékképző függvény a [yp_element slug="maradekkepzes-gyuruhomomorfizmus" type="link" /] alapján egy gyűrűhomomorfizmus az egész számok [latex]\Z[/latex] gyűrűje és a [latex]\Z_m[/latex] gyűrű között, ezért a zárójelen belüli [latex]y=\bmod_m(x^e)[/latex] hatványozás a [latex]\Z_m[/latex] gyűrűben is elvégezhető. Ugyanezen okok miatt a [latex]d[/latex] kitevővel való külső [latex]x=\bmod_m(y^d)[/latex] hatványozás szintén elvégezhető a [latex]\Z_m[/latex] gyűrűben.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ha tehát ezt a két egymás utáni hatványozást a [latex]\Z_m[/latex] gyűrűben értjük, akkor az alábbi egyenlet írható fel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{(x^e)^d}_{\Z_m \text{ gyűrűben}}=x[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A hatványozás azonosságairól szóló [yp_element slug="hatvanyozas-azonossagai" type="link" /] bármilyen kommutatív gyűrű esetén alkalmazható, így nyilván a [latex]\Z_m[/latex] gyűrű esetén is. Ennek 2. pontja alapján az alábbit kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](x^e)^d=x^{e\cdot d}=x^{d\cdot e}=(x^d)^e = x[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Vagyis valóban, ha először kódolunk egy üzenetet egy kulcspár titkos részével, majd ezt dekódoljuk ugyanazon kulcspár publikus részével, akkor szintén az eredeti üzenetet kapjuk vissza. Ez alkalmassá teszi az RSA eljárást <strong><em>digitális aláírások</em></strong> képzéséhez is. Ha ugyanis egy bitsorozat dekódolható például Bob publikus kulcsával, akkor azt csak egy olyan résztvevő kódolhatta, aki Bob titkos kulcsának birtokában volt. Márpedig ha Bob nem teljesen bolond, és valóban sosem adja ki a kezéből a titkos kulcsát, akkor ez bizonyíték arra, hogy az adott üzenetet kizárólag ő küldhette. A digitális aláíráson alapuló <strong><em>partnerhitelesítésről</em></strong> a <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/10-publikus-privat-kulcs-digitalis-alairas-kriptografiai-hash-fuggveny-szuletesnap-paradoxon-tanusitvany/" target="_blank">10. részben</a> volt szó részletesen, így azt itt nem ismételjük meg.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ebben a részben tehát megtanultunk lineáris diofantoszi egyenleteket megoldani a kibővített euklidészi algoritmus segítségével. Ezután az Euler-féle [latex]\varphi[/latex]-függvény kiszámításához szükséges összefüggéseket tisztáztuk. Végül a moduláris hatványozáshoz mutattunk egy igen hatékony módszert, az úgynevezett ismételt négyzetreemelések módszerét. Ezután ismertettük az RSA-algoritmus részleteit, amelyet egy konkrét példán ki is próbáltunk.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ebből úgy tűnik, hogyha egy üzenetet egy kulcspár valamelyik tagjával – legyen az akár a publikus, akár a titkos kulcs – kódolunk, majd az így kapott eredményt dekódoljuk a kulcspár másik tagjával, akkor varázslatos módon az eredeti üzenetet kapjuk vissza. A következő részben matematikai bizonyítást adunk arra, hogy ez az összefüggés valóban bármilyen, az ismertetett kritériumoknak megfelelő kulcspár, továbbá bármilyen üzenet esetén fennáll. Ezután megismerjük azokat a módszereket, amelyek segítségével viszonylag könnyedén találhatunk többszázjegyű prímszámokat az RSA kulcsok generálásához.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A következő részt <a href="https://youproof.hu/kriptografia/22-kinai-maradektetel-konguenciarendszerek-kis-fermat-tetel-rsa-bizonyitas-gyuruk-direkt-szorzata-rsa-dekodolas/">itt</a> találod...</em></strong></p>
+<!-- /wp:paragraph -->

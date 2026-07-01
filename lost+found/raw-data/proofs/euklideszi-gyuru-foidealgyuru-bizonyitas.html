@@ -1,0 +1,36 @@
+<!-- wp:paragraph -->
+<p>Legyen [latex]R[/latex] egy tetszőleges <strong><em>euklidészi gyűrű</em></strong>, [latex]I[/latex] pedig egy tetszőleges ideál [latex]R[/latex]-ben. Azt kell megmutatnunk, hogy létezik olyan [latex]r\in R[/latex] elem, amely generálja [latex]I[/latex]-t, azaz amelyre [latex]I=(r)[/latex] teljesül. Jelöljük az [latex]R[/latex] euklidészi gyűrű nullelmét [latex]0_R[/latex]-rel. Ha [latex]I[/latex] csak a nullelemből áll, akkor [latex]I=(0)[/latex] nyilván teljesül. Feltehetjük tehát, hogy [latex]I[/latex] nem csak a nullelemből áll.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]R[/latex] euklidészi gyűrű, ezért ennek elemein értelmezhető egy [latex]f:R\to\N[/latex] <strong><em>euklidészi norma</em></strong>, amely eleget tesz a [yp_element slug="euklideszi-gyuru" type="link" /]ban szereplő feltételeknek. Az [latex]f[/latex] euklidészi norma tehát az [latex]I[/latex] ideál minden <strong><em>nemnulla</em></strong> eleméhez hozzárendel valamilyen pozitív egész számot. A [yp_element slug="termeszetes-szamok-minimumtetele" type="link" /] alapján ennek a számhalmaznak mindenképpen van minimuma függetlenül attól, hogy [latex]I[/latex] végtelen sok elemet tartalmaz-e vagy sem. Legyen [latex]b[/latex] az [latex]I[/latex] ideál egy olyan <strong><em>nemnulla</em></strong> eleme, amelyhez az [latex]f[/latex] euklidészi norma épp ezt a minimumot rendeli hozzá. Azt kell megmutatni, hogy [latex]b[/latex] generálja az [latex]I[/latex] ideált, azaz [latex]I=(b)[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az egyrészt nyilvánvaló, hogy mivel [latex]b\in I[/latex], ezért [latex]b[/latex]-nek bármilyen többszöröse is [latex]I[/latex]-ben van. Ez az ideál definíciójából következik ([yp_element slug="ideal" type="link" /]). Másrészt azt kell még igazolnunk, hogy [latex]I[/latex]-nek ezeken kívül nincs is más eleme. Tegyük fel tehát, hogy [latex]a\in I[/latex], és mutassuk meg, hogy [latex]a[/latex] szükségképpen többszöröse [latex]b[/latex]-nek. Mivel [latex]b\
+eq 0_R[/latex], és [latex]R[/latex] euklidészi gyűrű, ezért [latex]a[/latex] és [latex]b[/latex] között a [yp_element slug="euklideszi-gyuru" type="link" /] 2. pontja alapján elvégezhető a <strong><em>maradékos osztás</em></strong>. Azaz létezik olyan [latex]k[/latex] <strong><em>hányados</em></strong> és [latex]r[/latex] <strong><em>maradék</em></strong>, amelyekre teljesülnek az alábbi feltételek:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a&amp;=k\cdot b+r \\ f(r)&amp;\lt f(b)\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az egyenletből az [latex]r[/latex] maradékot kifejezve ezt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]r=a-k\cdot b[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]I[/latex] ideál és [latex]b\in I[/latex], ezért a [yp_element slug="ideal" type="link" /] alapján [latex]kb\in I[/latex] is teljesül. Másrészt tudjuk, hogy [latex]a\in I[/latex], és így a [yp_element slug="reszgyuru-feltetele" type="link" /] 1. és 4. pontja alapján az [latex]r=a-kb[/latex] maradék szintén benne van [latex]I[/latex]-ben.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Vegyük észre, hogy a maradékos osztás [latex]f(r)\lt f(b)[/latex] feltétele miatt az [latex]r[/latex] egy olyan eleme az [latex]I[/latex] ideálnak, amelynek euklidészi normája szigorúan kisebb [latex]b[/latex] euklidészi normájánál. Márpedig azt mondtuk, hogy [latex]I[/latex]-ben nincs olyan elem, amelynek euklidészi normája a [latex]b[/latex] euklidészi normájánál kisebb, de még mindig pozitív. Ezért kizárólag [latex]f(r)=0[/latex] lehetséges, ami a [yp_element slug="euklideszi-gyuru" type="link" /] 1. pontja alapján azt jelenti, hogy [latex]r=0_R[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]a[/latex] és [latex]b[/latex] közötti maradékos osztást elvégezve tehát a maradék csak a nullelem lehet, azaz valójában teljesül a [latex]b|a[/latex] oszthatóság. Az [latex]a[/latex] elem tehát többszöröse [latex]b[/latex]-nek, és így [latex]a\in (b)[/latex] teljesül. Más szavakkal a [latex]b[/latex] elem tényleg <strong><em>generálja</em></strong> az [latex]I[/latex] ideált, azaz [latex]I=(b)[/latex]. Minthogy ez a gondolatmenet tetszőleges ideállal végigjátszható, ezért [latex]R[/latex] <strong><em>valóban főideálgyűrű</em></strong>, ahogyan a tétel állítja.</p>
+<!-- /wp:paragraph -->

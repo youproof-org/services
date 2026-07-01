@@ -1,0 +1,51 @@
+<!-- wp:paragraph -->
+<p>Ismételten teljes indukciót alkalmazunk, ám ezúttal a [latex]b[/latex]-re vonatkozóan. Tegyük fel, hogy az állítás igaz valamilyen [latex]b=n[/latex] természetes számra. Az tehát az <strong><em>indukciós feltétel</em></strong>, hogy [latex]a+n=n+a[/latex]. Azt kell bizonyítanunk, hogy ebben az esetben [latex]b=s(n)[/latex]-re is igaz lesz, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a+\underbrace{s(n)}_{=b} = \underbrace{s(n)}_{=b}+a[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="peano-osszeadas" type="link" /] 2. pontja miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a+s(n) = s(a+n) = \ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az indukciós feltétel miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots =s(n+a)= \ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ismételten a [yp_element slug="peano-osszeadas" type="link" /] 2. pontja miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots = n + s(a) = \ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Végül a korábban már bizonyított [yp_element slug="peano-osszeadas-kommutativitas-lemma" type="link" /] miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots = s(n) + a[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Vagyis azt kaptuk, hogy valóban [latex]a + \underbrace{s(n)}_{=b} = \underbrace{s(n)}_{=b} + a[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Felállítottuk tehát a dominósort, és beláttuk, hogy bármely dominó felborítása esetén a soron következő dominó is fel fog borulni. Az első dominót pedig már fel is boríttottuk, ugyanis a [yp_element slug="peano-osszeadas-kommutativitas-0-lemma" type="link" /] alapján az állítás igaz&nbsp;[latex]b=0[/latex]-ra.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Borul tehát az első dominó, és vele együtt a teljes dominósor, azaz minden&nbsp;[latex]a[/latex] és [latex]b[/latex] számra igaz, hogy [latex]a+b=b+a[/latex].</p>
+<!-- /wp:paragraph -->

@@ -1,0 +1,69 @@
+type: proof
+name: szamelmelet-alaptetele-nem-egysegelemes-integritastartomanyokban-bizonyitas
+remarks: []
+references:
+  egyseg-letezesenek-szukseges-es-elegseges-feltetele:
+    target:
+      type: theorem
+      name: egyseg-letezesenek-szukseges-es-elegseges-feltetele
+  felbonthatatlan-elem:
+    target:
+      type: definition
+      name: felbonthatatlan-elem
+  oszthatosag-tulajdonsagai:
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+  szamelmelet-alaptetelenek-szukseges-feltetele:
+    target:
+      type: theorem
+      name: szamelmelet-alaptetelenek-szukseges-feltetele
+content:
+  - type: narrative
+    content: |
+      Mivel nem létezik egységelem, így a [egyseg-letezesenek-szukseges-es-elegseges-feltetele] értelmében egység
+      sem létezik. Azaz ha van felbonthatatlan elem, akkor neki még &ndash; a [felbonthatatlan-elem] szerinti
+      értelemben vett &ndash; triviális felbontása sem létezik. Azzal az esettel nem kell foglalkoznunk, hogy mi
+      van akkor, ha egyáltalán nem létezik felbonthatatlan elem. Ebben az esetben ugyanis ***nem teljesülne a
+      számelmélet alaptételének felbonthatóságról szóló része***, hiszen ha nincs felbonthatatlan elem, akkor
+      semmilyen elemet sem lehet felbontani ilyen nem létező elemek szorzatára.
+  - type: narrative
+    content: |
+      Az általánosság megsértése nélkül feltételezhetjük tehát, hogy létezik felbonthatatlan elem. A következő
+      kérdés, hogy vajon prímtulajdonságú elem létezik-e? Tegyük fel, hogy létezik, és nézzük meg, hogy ennek mik
+      lennének a következményei. Legyen például $p$ egy prímtulajdonságú elem. Ő nyilván osztója bármelyik
+      többszörösének, azaz tetszőleges $a\eq 0$ gyűrűelemre fennáll a $p|pa$ oszthatóság (meg nyilván $a=0$-ra is,
+      ám ez az eset számunkra most nem annyira érdekes).
+  - type: narrative
+    content: |
+      Ebből viszont $p$ prímtulajdonsága miatt következik, hogy a $p|p$ és $p|a$ oszthatóságok közül legalább az
+      egyik teljesül. Mivel nem létezik egységelem, ezért a [oszthatosag-tulajdonsagai] 2. pontja miatt a $p|p$
+      oszthatóság lehetetlen, így szükségképpen teljesül $p|a$. Azaz létezik olyan $a_1$ elem, amelyre $p\cdot a_1
+      = a$. Tekintve, hogy nem létezik egység, így $a_1$ sem lehet az, vagyis az $a$ elem biztosan nem
+      felbonthatatlan.
+  - type: narrative
+    content: |
+      De ha fennáll a $p|\underbrace{p\cdot a_1}_{=a}$ oszthatóság, akkor a prímtulajdonságot kihasználva és az
+      előző gondolatmenetet megismételve adódik, hogy fennáll a $p|a_1$ oszthatóság is. Azaz létezik olyan $a_2$
+      elem, amelyre teljesül, hogy $p\cdot a_2=a_1$, és mivel $a_2$ szintén nem egység, ezért $a_1$ sem
+      felbonthatatlan.
+  - type: narrative
+    content: |
+      Ezt az eljárást a végtelenségig folytathatjuk anélkül, hogy felbonthatatlan elembe ütköznénk.
+  - type: figure
+    lead-in: |
+      Az így kialakuló végtelen oszthatósági láncot mutatja az alábbi ábra:
+    src: vegtelen_oszthatosagi_lanc.jpg
+    alt: Végtelen oszthatósági lánc
+    caption: Végtelen oszthatósági lánc
+  - type: narrative
+    content: |
+      Ha tehát feltételezzük, hogy létezik prímtulajdonságú elem, akkor ennek többszörösei biztosan nem bonthatók
+      fel felbonthatatlanok szorzatára, azaz ***nem teljesül a számelmélet alaptételének felbonthatóságról szóló
+      része***.
+  - type: narrative
+    content: |
+      Ha viszont azt feltételezzük, hogy nem létezik prím, akkor pedig a
+      [szamelmelet-alaptetelenek-szukseges-feltetele]ben megfogalmazott szükséges feltétel nem teljesül, hiszen
+      egyetlen felbonthatatlan sem lehet prím, ha prímek nem is léteznek. Azaz ilyenkor a ***számelmélet
+      alaptételének egyértelműségről szóló része nem fog teljesülni***.

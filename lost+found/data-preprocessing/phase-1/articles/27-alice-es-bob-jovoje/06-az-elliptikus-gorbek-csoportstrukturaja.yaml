@@ -1,0 +1,155 @@
+type: section
+name: 06-az-elliptikus-gorbek-csoportstrukturaja
+title: Az elliptikus görbék csoportstruktúrája
+
+references:
+  csoport:
+    target:
+      type: definition
+      name: csoport
+  csoporthomomorfizmus:
+    target:
+      type: definition
+      name: csoporthomomorfizmus
+
+body:
+  - type: narrative
+    content: |
+      Az elliptikus görbéknek mindössze az elnevezésükben van közük az ellipszisekhez, eredetileg ugyanis
+      ellipszisek ívhosszának kiszámításához használtak hozzájuk hasonló egyenleteket. A matematikai részletek
+      kidolgozását továbbra is mellőzve ***elliptikus görbének*** nevezünk tehát minden olyan harmadfokú algebrai
+      görbét a projektív síkon, amely a már említett "símasági" feltételeknek eleget tesz. Ebben a szakaszban végig
+      a $\mathbb{Q}$ számtest feletti, tehát ***racionális elliptikus görbékről*** lesz szó. Egy ilyen görbe
+      pontjai alatt mindig a ***racionális pontokat*** fogjuk érteni egy apró kiegészítéssel, amelyre hamarosan
+      kitérünk. A harmadfokúságot már tisztáztuk az algebrai síkgörbék esetén.
+  - type: formula
+    lead-in: |
+      Eszerint egy elliptikus görbe egyenletének általános alakja az alábbi:
+    content: |
+      ax^3+bx^2y+cxy^2+dy^3+ex^2+fxy+gy^2+hx+iy+j=0
+  - type: narrative
+    content: |
+      Mint már említettük, "símasági" feltételek alatt nem túl precízen azt értjük, hogy a görbe bizonyos
+      értelemben "szép folytonos", és "folytonosan is görbül". Ezeket egészen pontosan a matematika analízis
+      eszközeivel lehetne megfogalmazni, amitől most szintén eltekintünk.
+  - type: narrative
+    content: |
+      Belátható, hogy egy ilyen görbének mindig van egy nyílt komponense, amely "végtelen távolról érkezik" egy jól
+      meghatározott irányból, tesz néhány kanyart, majd az érkezésivel ellentétes irányban "távozik a végtelenbe".
+      Mivel a projektív síkon vagyunk, ezért ez az előző szakasz fényében azt jelenti, hogy a görbe mindig
+      "áthalad" egy ***ideális ponton*** is, amelyet szintén a görbe egy pontjának, azaz racionális pontnak
+      tekintünk. A paraméterektől függően továbbá a görbének lehet még egy különálló komponense is, ami egy zárt
+      görbe.
+  - type: formula
+    lead-in: |
+      A $\mathbb{Q}$ számtest feletti elliptikus görbék egyenlete egy úgynevezett koordináta-transzformációval a
+      fenti általános alakról minden esetben az alábbi jóval egyszerűbb, úgynevezett ***Weierstrass-féle
+      normálalakra*** hozható, amelynek hatására a görbe szimmetrikus lesz az $x$ tengelyre:
+    content: |
+      y^2=x^3+ax+b
+  - type: narrative
+    content: |
+      Természetesen egy ilyen átalakítás során a görbe formája teljesen megváltozik, viszont az alapvető
+      struktúrája &ndash; amelyre hamarosan rátérünk &ndash; lényegében azonos marad az eredeti görbe
+      struktúrájával.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrákon két elliptikus görbe látható különböző $a$ és $b$ paraméterekkel:
+    src: 06-elliptikus-gorbe-a-1-b-2.jpg
+    alt: Elliptikus görbe (a=-1, b=2)
+    caption: Elliptikus görbe ($a=-1$, $b=2$)
+  - type: figure
+    src: 07-elliptikus-gorbe-a-2-b-1.jpg
+    alt: Elliptikus görbe (a=-2, b=1)
+    caption: Elliptikus görbe ($a=-2$, $b=1$)
+  - type: narrative
+    content: |
+      A másodfokú görbék esetén ha a görbének egy $P$ racionális pontját már ismerjük, akkor ebből könnyen
+      megtalálhatjuk az összes többit, ugyanis bármely $P$-re illeszkedő racionális meredekségű egyenes garantáltan
+      egy másik racionális pontban metszi a görbét. Ezzel szemben egy elliptikus görbe racionális pontjainak
+      megtalálása azért sokkal nehezebb, mivel egy adott racionális pontra illeszkedő egyenes két másik pontban is
+      metszheti a görbét, és egyáltalán nem biztos, hogy bármelyikük is racionális pont lesz. Némi számolgatással
+      belátható viszont, hogy amennyiben egy egyenes a görbét két racionális pontban is metszi, akkor a harmadik
+      metszéspont szintén racionális lesz.
+  - type: narrative
+    content: |
+      Ez elvezet minket egy furcsa, "összeadásnak" nevezett művelethez, amelyet az elliptikus görbe ***racionális
+      pontjain*** fogunk értelmezni. Mint már említettük, ezek közé soroljuk azt az ***ideális pontot*** is,
+      amelyen a görbe áthalad. Ez a Weierstrass-féle normálalak esetén a függőleges irányhoz tartozó ideális pont
+      lesz. A pontok közötti ***"összeadást"*** a $\oplus$ szimbólummal fogjuk jelölni annak érdekében, hogy
+      megkülönböztessük a szokásos összeadástól, amelyhez természetesen nincs semmi köze. E művelet definíciójához
+      szükségünk lesz a görbe egy tetszőlegesen választott $\mathcal{O}$ pontjára, amelyet ***referenciapontnak***
+      fogunk nevezni.
+  - type: ordered-list
+    lead-in: |
+      Ez tipikusan a görbe ideális pontja szokott lenni, és ebben az esetben egy $P$ és $Q$ pont ***összegén*** azt
+      a $P\oplus Q$-val jelölt pontot értjük, amelyet az alábbi módon kapunk meg:
+    items:
+      - 'Kössük össze egymással a $P$ és $Q$ pontot egy egyenessel. Ha $Q=\mathcal{O}$, akkor értelemszerűen ez a $P$ ponton átmenő függőleges egyenes lesz. Ha $P=Q$, akkor az egyenes legyen a görbe érintője a $P=Q$ pontnál.'
+      - 'Az előző lépésben kapott egyenes egy további $R$ pontban fogja metszeni a görbét, amely a fentebb leírtak alapján szintén egy racionális pont &ndash; vagy függőleges egyenes esetén az $\mathcal{O}$ ideális pont &ndash; lesz.'
+      - 'Az előző lépésben kapott $R$ pont $x$ tengelyre vetített tükörképét nevezzük a $P$ és $Q$ pontok ***összegének***. Ennek jele: $P\oplus Q$.'
+  - type: figure
+    lead-in: |
+      Az alábbi ábrákon két egymástól különböző pont összeadása, valamint egy úgynevezett "pontduplázás", azaz egy
+      pont önmagával való összeadása látható:
+    src: 08-ket-pont-osszeadasa.jpg
+    alt: Két pont összeadása
+    caption: Két pont összeadása
+  - type: figure
+    src: 09-pontduplazas.jpg
+    alt: Pontduplázás
+    caption: Pontduplázás
+  - type: narrative
+    content: |
+      Ha az $\mathcal{O}$ referenciapontnak nem a görbe ideális pontját választjuk, akkor a 3. lépést egy kicsit
+      bonyolultabban kéne megfogalmazni. Ilyenkor ugyanis az $R$ és $\mathcal{O}$ által kijelölt egyenes és a görbe
+      harmadik metszéspontja lenne a $P\oplus Q$ összeg. Természetesen ha $\mathcal{O}$ ideális pont, akkor ez az
+      egyenes épp függőleges, és mivel a görbe szimmetrikus az $x$ tengelyre, ezért ez valóban tükrözést jelent. Mi
+      a továbbiakban az $\mathcal{O}$ referenciapont alatt mindig a görbe ideális pontját fogjuk érteni.
+  - type: narrative
+    content: |
+      Az nyilvánvaló, hogy a $\oplus$ művelet ***kommutatív***, hiszen teljesen mindegy, hogy az 1. lépésben a $P$
+      pontot kötjük össze a $Q$ ponttal, vagy fordítva, eredményként ugyanazt az $R$ metszéspontot kapjuk, amelynek
+      tükörképe &ndash; azaz $P\oplus Q$ &ndash; ugyanaz lesz.
+  - type: narrative
+    content: |
+      Ugyan elsőre nem látszik, de az $\mathcal{O}$ referenciapont ***neutrális elemként*** viselkedik a $\oplus$
+      műveletre nézve. Ezenkívül az is igaz, hogy a görbe bármely pontját összeadva az $x$ tengelyre vetített
+      tükörképével, eredményül az $\mathcal{O}$ neutrális elemet kapjuk.
+  - type: figure
+    lead-in: |
+      Azaz minden pontnak van ***ellentettje*** a $\oplus$ műveletre nézve:
+    src: 10-neutralis-elem.jpg
+    alt: Neutrális elem
+    caption: Neutrális elem
+  - type: figure
+    src: 11-pont-ellentettje.jpg
+    alt: Pont ellentettje
+    caption: Pont ellentettje
+  - type: narrative
+    content: |
+      A $\oplus$ pontösszeadás tehát egy olyan kommutatív művelet, amelyre nézve létezik neutrális elem, és minden
+      elemnek létezik ellentettje. Ezek a tulajdonságok a [csoport]ben szereplő ***csoportaxiómákra***
+      emlékeztetnek minket, habár az asszociativitást még nem igazoltuk. Mivel ez egyáltalán nem magától értetődő,
+      ezért ezt most nem is fogjuk megtenni.
+  - type: formula
+    lead-in: |
+      Mindenesetre a $\oplus$ művelet valóban teljesíti az ***asszociativitást*** is, azaz a görbe tetszőleges $A$,
+      $B$ és $C$ pontjaira teljesül az alábbi:
+    content: |
+      A\oplus (B\oplus C)=(A\oplus B)\oplus C
+  - type: narrative
+    content: |
+      Így tehát elmondható, hogy minden racionális elliptikus görbe pontjainak halmaza a fent bevezetett $\oplus$
+      műveletre nézve egy ***Abel-csoportot*** alkot. Természetesen egy olyan elliptikus görbén is szinte ugyanígy
+      be lehetne vezetni a $\oplus$ műveletet, amely a szakasz elején szereplő teljesen általános alakban van
+      megadva. Az így kapott Abel-csoport azonban izomorf (lásd a [csoporthomomorfizmus]t) lenne azzal az
+      Abel-csoporttal, amit akkor kapunk, ha a görbét a Weierstrass-féle normálalakba transzformáljuk.
+  - type: narrative
+    content: |
+      Így tehát bármilyen elliptikus görbe vizsgálata visszavezethető egy Weierstrass-féle normálalakban megadott
+      elliptikus görbe vizsgálatára. Ráadásul ez nem csak a racionális számtest, hanem &ndash; néhány kivételes
+      esettől eltekintve &ndash; tetszőleges $T$ test felett értelmezett elliptikus görbékre igaz. Kriptográfiai
+      szempontból számunkra a véges testek feletti görbék lesznek érdekesek. Előbb azonban maradjunk még egy kicsit
+      a racionális számtest feletti görbéknél, és ismerkedjünk meg a fentebb már említett egymillió dollárt érő
+      ***Birch és Swinnerton-Dyer sejtés*** állításával egy kicsit részletesebben.

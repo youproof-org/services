@@ -1,0 +1,64 @@
+type: section
+name: 07-egy-meglepo-fordulat
+title: Egy meglepő fordulat
+
+body:
+  - type: narrative
+    content: |
+      2015 novemberében Babai László, a Chicagoi Egyetem professzora bejelentette, hogy egy úgynevezett
+      kvázipolinomiális időkomplexitású algoritmust talált a matematikusokat évtizedek óta foglalkoztató
+      ***gráf-izomorfizmus problémára***. A "kvázipolinomiális" fogalmát itt most nem részletezzük, azonban
+      megpróbáljuk érzékeltetni a felfedezés jelentőségét.
+  - type: narrative
+    content: |
+      Egy $G$ és $H$ gráfra akkor mondjuk, hogy ***izomorfak*** egymással, ha a csúcshalmazaik között ***létezik
+      olyan kölcsönösen egyértelmű megfeleltetés, amely megőrzi az éleket illetve azok hiányát is***. Ha tehát
+      $G$-ben veszünk két szomszédos csúcsot, akkor a nekik megfeleltetett csúcsok szintén szomszédosak lesznek
+      $H$-ban. Ugyanígy ha a két csúcs nem volt szomszédos $G$-ben, akkor a nekik megfeleltetett csúcsok szintén
+      nem szomszédosak $H$-ban. A ***kölcsönösen egyértelműség*** pedig azt jelenti, hogy $G$ minden csúcsához
+      pontosan egy csúcs van hozzárendelve $H$-ban, és $H$ minden csúcsa pontosan egy $G$-beli csúcshoz van
+      hozzárendelve. Ilyenkor azt mondjuk, hogy a két gráf ***lényegében ugyanaz***, maximum máshogyan lettek
+      felrajzolva, vagy máshogyan neveztük el a csúcsaikat. Ilyenkor ezt a két csúcshalmaz közötti strúktúratartó
+      megfeleltetést (vagy ha úgy tetszik, függvényt) ***izomorfizmusnak*** nevezzük.
+  - type: narrative
+    content: |
+      Az alábbi ábrán látható két gráf például izomorf egymással, még ha ez nem is látszik elsőre.
+  - type: figure
+    lead-in: |
+      Az izomorfizmus alapján egymáshoz rendelt csúcsokat azonos számokkal láttuk el:
+    src: 12-izomorf-grafok.jpg
+    alt: Izomorf gráfok (példa)
+    caption: Izomorf gráfok (példa)
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán látható két gráf viszont nem izomorf egymással:
+    src: 13-nem-izomorf-grafok.jpg
+    alt: Nem izomorf gráfok (példa)
+    caption: Nem izomorf gráfok (példa)
+  - type: narrative
+    content: |
+      A ***gráf-izomorfizmus probléma*** ezek után így fogalmazható meg: adott két gráf, és el kell dönteni, hogy
+      izomorfak-e vagy sem. Mindezidáig nagyon úgy tűnt, hogy ez egy rendkívül nehéz algoritmikus feladat nagy
+      gráfok esetén. Ilyen esetekben korábban mindig az történt, hogy egy nehéznek tűnő problémáról vagy
+      bebizonyosodott, hogy mégis hatékonyan kezelhető (azaz $P$-beli), vagy pedig az, hogy NP-teljes.
+  - type: narrative
+    content: |
+      Sokáig nyitott volt például az a kérdés, hogy egy egész számról eldönthető-e hatékonyan, hogy prímszám-e vagy
+      összetett. 2002-ben azonban 3 indiai matematikus, Manindra Agrawal, Neeraj Kayal és Nitin Saxena felfedeztek
+      egy polinomiális algoritmust ennek eldöntésére. Ennek neve a felfedezők neveinek kezdőbetűi után
+      ***AKS-algoritmus***. Eddig is voltak természetesen prímtesztelő algoritmusok, hiszen &ndash; mint azt később
+      látni fogjuk &ndash; fontos jelentőségük van a rejtjelezésben. De ezek mind csak bizonyos valószínűséggel
+      adják meg a választ, azonban ritkán előfordulhat, hogy tévednek. A gyakorlatban továbbra is ezeket a
+      potenciálisan tévedő eljárásokat használjuk prímtesztelésre, mivel jóval gyorsabbak, mint az AKS-algoritmus,
+      és a tévedés valószínűsége az alkalmazás szempontjából elhanyagolható. Az AKS-algoritmusnak inkább elméleti
+      jelentősége van, mivel megmutatta, hogy egy addig nehéznek tartott probléma nemhogy nem NP-teljes, de
+      egyenesen $P$-beli. Jóval gyakoribbak azonban azok az esetek, amikor egy nehéznek gondolt problémáról
+      kiderül, hogy valóban NP-teljes.
+  - type: narrative
+    content: |
+      Babai publikációját éppen ezért a matematikus társadalom, mint az évtized legnagyobb számítástudományi
+      áttörését ünnepelte. Ebből az eredményből ugyanis nagyon úgy tűnik &ndash; még ha egyértelműen nem is
+      következik belőle &ndash;, hogy ***a gráf-izomorfizmus problémája se nem NP-teljes, se nem $P$-beli***, azaz
+      valahol a kettő között helyezkedhet el. Ha ez valóban így van, akkor ez lenne az első ilyen tulajdonságú
+      probléma, amit felfedeztek, ráadásul a $P \neq NP$ sejtésre is megadná végre a választ. Erre azonban egyelőre
+      még várni kell.

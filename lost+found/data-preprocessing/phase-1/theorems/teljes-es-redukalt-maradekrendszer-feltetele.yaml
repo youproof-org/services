@@ -1,0 +1,24 @@
+type: theorem
+name: teljes-es-redukalt-maradekrendszer-feltetele
+proofs:
+  - teljes-es-redukalt-maradekrendszer-feltetele-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $m\gt 0$ tetszőleges ***pozitív ***egész szám.
+  - type: ordered-list
+    lead-in: |
+      Egy egész számokból álló $H$ halmaz ***akkor és csak akkor*** alkot ***modulo $m$ teljes maradékrendszert***,
+      ha teljesülnek az alábbi feltételek:
+    items:
+      - 'A $H$ halmaz elemeinek száma $m$.'
+      - 'A $H$ halmaz tetszőleges $a$ és $b$ elemeire $a\eq b$ esetén $a\ \cancel{\equiv}\ b\pmod m$.'
+  - type: ordered-list
+    lead-in: |
+      A $H$ halmaz ***akkor és csak akkor*** alkot ***modulo $m$ redukált maradékrendszert***, ha teljesülnek az
+      alábbi feltételek:
+    items:
+      - 'A $H$ halmaz elemeinek száma $\varphi(m)$.'
+      - 'A $H$ halmaz tetszőleges $a$ és $b$ elemeire $a\eq b$ esetén $a\ \cancel{\equiv}\ b\pmod m$.'
+      - 'A $H$ halmaz minden eleme relatív prím $m$-hez.'

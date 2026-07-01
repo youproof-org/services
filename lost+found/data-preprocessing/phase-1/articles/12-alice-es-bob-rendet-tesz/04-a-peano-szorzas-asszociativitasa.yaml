@@ -1,0 +1,22 @@
+type: section
+name: 04-a-peano-szorzas-asszociativitasa
+title: A Peano-szorzás asszociativitása
+
+body:
+  - type: narrative
+    content: |
+      Most vizsgáljuk meg, hogy az összeadáshoz hasonlóan vajon a szorzás is asszociatív-e.
+  - type: embed
+    target:
+      type: theorem
+      name: peano-szorzas-asszociativitas
+  - type: embed
+    target:
+      type: proof
+      name: peano-szorzas-asszociativitas-bizonyitas
+  - type: narrative
+    content: |
+      Ezzel megmutattuk, hogy a Peano-axiómák segítségével bevezetett mindkét műveletünk az elvárt módon
+      viselkedik. A fejezet további részében az $\N$ halmazban fogunk egy kicsit rendetrakni. Ez szükséges lesz
+      ugyanis ahhoz az absztrakcióhoz, amelyet a sorozat következő részében fogunk majd meglépni, és amelynek a
+      segítségével nemcsak összeadni és szorozni, hanem kivonni is fogunk tudni.

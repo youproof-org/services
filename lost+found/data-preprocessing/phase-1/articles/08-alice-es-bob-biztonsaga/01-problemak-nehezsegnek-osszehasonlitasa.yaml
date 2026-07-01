@@ -1,0 +1,59 @@
+type: section
+name: 01-problemak-nehezsegnek-osszehasonlitasa
+title: Problémák nehézségének összehasonlítása
+
+body:
+  - type: narrative
+    content: |
+      Ennek megértéséhez döntési problémák helyett ismét az őket reprezentáló nyelvekre koncentrálunk, és
+      bevezetjük az úgynevezett ***Karp-redukció*** fogalmát. Képzeljük el, hogy van két ***rekurzív nyelvünk***,
+      nevezzük őket $L$-nek és $K$-nak. Ezen kívül tegyük fel, hogy $f$ egy olyan ***rekurzív függvény***, amely az
+      összes $L$-beli jelsorozathoz $K$-beli jelsorozatot, míg az összes $L$-en kívüli jelsorozathoz $K$-n kívüli
+      jelsorozatot rendel. Az előző részben a tanú-tétel bizonyításánál alkalmazott ***"akkor és csak akkor"***
+      típusú mondatszerkezettel ez így fogalmazható meg: egy tetszőleges $x$ jelsorozat **akkor és csak akkor**
+      mondata az $L$ nyelvnek, **ha** az $f(x)$ jelsorozat mondata a $K$ nyelvnek.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán egy ilyen tulajdonságú függvény által megvalósított hozzárendelés látható két konkrét
+      jelsorozatra:
+    src: 01-karp-redukcio-fuggveny.jpg
+    alt: Nyelvbetartozást megtartó függvény
+    caption: Nyelvbetartozást megtartó függvény
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán viszont egy olyan függvény látható, amely megsérti ezt a szabályt, mivel egy olyan $y$
+      jelsorozatot is a $K$ nyelvbe képez, amely nem mondata az $L$ nyelvnek:
+    src: 02-karp-redukcio-fuggveny-hibas.jpg
+    alt: Nyelvbetartozást megsértő függvény
+    caption: Nyelvbetartozást megsértő függvény
+  - type: narrative
+    content: |
+      Mint ahogyan azt az előző részben már láttuk, az ***"akkor és csak akkor"*** a matematikában egy igen szigorú
+      mondatszerkezet, és sokkal többet jelent annál, mint egy sima ***"ha … akkor"*** típusú mondat. A fenti
+      ***"akkor és csak akkor"*** típusú állítás egyrészt azt jelenti, hogy **ha** egy $x$ jelsorozat eleme az $L$
+      nyelvnek, **akkor** az $f(x)$ jelsorozat eleme a $K$ nyelvnek. Ezen túlmenően azonban azt is jelenti, hogy
+      **ha** egy $x$ jelsorozat **nem** eleme az $L$ nyelvnek, **akkor** az $f(x)$ jelsorozat **sem** eleme a $K$
+      nyelvnek (ez utóbbi tulajdonságot sérti meg a második ábrán látható függvény). Azaz vagy egyszerre mindkettő
+      állítás teljesül, vagy egyik sem, de olyan nincs, hogy az egyik igen, a másik pedig nem. De miért is olyan jó
+      dolog ilyen függvényt találni?
+  - type: narrative
+    content: |
+      Képzeljük el azt a szituációt, hogy egy olyan algoritmust szeretnénk készíteni, amely eldönti az $L$ nyelvbe
+      tartozást, de sehogyan sem jövünk rá a megoldásra. Van viszont algoritmusunk a $K$ nyelvbe tartozás
+      eldöntésére. Ha sikerülne találnunk egy olyan rekurzív $f$ függvényt, amely teljesíti a fenti tulajdonságot,
+      akkor tulajdonképpen meglenne az algoritmusunk $L$ eldöntésére is. Ha ugyanis egy $x$ jelsorozatra el kell
+      dönteni, hogy $L$-be tartozik-e, nincs más dolgunk, mint kiszámítani az $f(x)$ jelsorozatot, majd erre a
+      jelsorozatra lefuttatni a már létező, $K$-ba tartozást eldöntő algoritmust. Ennek **"igen"** vagy **"nem"**
+      válasza egyben megválaszolja az $x$ jelsorozat $L$-be tartozásának kérdését is az $f$ függvény fenti
+      tulajdonsága miatt. Ráadásul minden $x$ jelsorozatra véges időn belül megkapjuk a választ, hiszen az $f$
+      függvény rekurzív, tehát létezik olyan őt kiszámító Turing-gép, amely soha nem keveredik végtelen ciklusba.
+  - type: narrative
+    content: |
+      Ha a fentieken kívül az $f$ függvényre még az is teljesül, hogy polinomiális időkomplexitású Turing-géppel
+      kiszámítható, akkor azt mondjuk, hogy az $f$ függvény az $L$ nyelv ***Karp-redukciója*** a $K$ nyelvre. Ennek
+      a fogalomnak a segítségével lényegében összehasonlíthatóvá válnak a döntési problémák a nehézségük
+      szempontjából. Egy ilyen Karp-redukció létezése ugyanis azt jelenti, hogy az $L$ nyelv felismerése ***nem
+      lényegesen nehezebb***, mint a $K$ nyelv felismerése, leszámítva egy polinomiális időkomplexitású kis extra
+      munkát, amit az $f$ függvény kiszámítása jelent. Az $L$ nyelv Karp-redukcióját a $K$ nyelvre így jelöljük: $L
+      \prec K$. Most példaként megadunk egy Karp-redukciót a 3-színezhetőség és a k-függetlenség eldöntésének
+      problémája között.

@@ -1,0 +1,55 @@
+<!-- wp:paragraph -->
+<p>Most is teljes indukciót alkalmazunk. Tegyük fel, hogy az állítás igaz valamilyen&nbsp;[latex]a=n[/latex] természetes számra. Az tehát az&nbsp;<strong><em>indukciós feltétel</em></strong>, hogy [latex]n+0=0+n[/latex]. Azt kell bizonyítanunk, hogy ekkor&nbsp;[latex]a=s(n)[/latex]-re is igaz lesz, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{s(n)}_{=a}+0=0+\underbrace{s(n)}_{=a}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A korábban bizonyított [yp_element slug="peano-osszeadas-kommutativitas-lemma" type="link" /] miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]s(n)+0=n+s(0)= \ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="peano-osszeadas" type="link" /] 2. pontja miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots =s(n+0)= \ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az indukciós feltétel miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots =s(0+n)= \ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Végül szintén a [yp_element slug="peano-osszeadas" type="link" /] 2. pontja miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots =0+s(n)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Vagyis azt kaptuk, hogy valóban [latex]\underbrace{s(n)}_{=a} + 0 = 0 + \underbrace{s(n)}_{=a}[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Felállítottuk tehát a dominósort, és beláttuk, hogy bármely dominó felborítása esetén a soron következő dominó is fel fog borulni. Ezért most felborítjuk az első dominót, azaz igazoljuk, hogy az állítás igaz [latex]a=0[/latex]-ra. Ez viszont nyilvánvalóan teljesül:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{0}_{=a}+0=0+\underbrace{0}_{=a}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Borul tehát az első dominó, és vele együtt a teljes dominósor, azaz minden [latex]a[/latex] számra igaz, hogy [latex]a+0=0+a[/latex].</p>
+<!-- /wp:paragraph -->

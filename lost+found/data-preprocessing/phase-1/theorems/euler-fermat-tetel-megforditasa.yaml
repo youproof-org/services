@@ -1,0 +1,17 @@
+type: theorem
+name: euler-fermat-tetel-megforditasa
+proofs:
+  - euler-fermat-tetel-megforditasa-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $m\gt 0$ tetszőleges ***pozitív***, $a$ pedig egy tetszőleges egész szám.
+  - type: formula
+    lead-in: |
+      Tegyük fel, hogy ***létezik*** olyan $k\gt 0$ pozitív kitevő, amelyre teljesül az alábbi kongruencia:
+    content: |
+      a^k\equiv 1\pmod m
+  - type: narrative
+    content: |
+      Ekkor $a$ ***relatív prím*** $m$-hez.

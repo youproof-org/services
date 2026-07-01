@@ -1,0 +1,75 @@
+<!-- wp:paragraph -->
+<p>Az [latex]f(K)[/latex] halmaz a [yp_element slug="kep-teljes-inverz-kep" type="link" /] alapján nyilván részhalmaza [latex]H[/latex]-nak, ezért csak a [yp_element slug="reszcsoport-feltetele" type="link" /] feltételeinek teljesülését kell ellenőrizni [latex]f(K)[/latex]-ra.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>1. feltétel: [latex]f(K)[/latex] zárt a [latex]H[/latex] csoport műveletére nézve</strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Legyenek [latex]a[/latex] és [latex]b[/latex] az [latex]f(K)[/latex] halmaz két tetszőleges eleme. A [yp_element slug="kep-teljes-inverz-kep" type="link" /] alapján minden [latex]f(K)[/latex]-beli elemhez létezik olyan elem [latex]K[/latex]-ban, amelynek épp ő az [latex]f[/latex] szerinti képe. Így [latex]a[/latex]-hoz és [latex]b[/latex]-hez is léteznek olyan [latex]x_a\in K[/latex] és [latex]x_b\in K[/latex] elemek, amelyekre teljesülnek az alábbiak:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}f(x_a)&amp;=a \\ f(x_b)&amp;=b\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ám ekkor – mivel [latex]K[/latex] részcsoport [latex]G[/latex]-ben – a [yp_element slug="reszcsoport-feltetele" type="link" /] 1. pontja alapján az [latex]x_ax_b[/latex] szorzat is benne van [latex]K[/latex]-ban. Ez viszont ugyancsak a [yp_element slug="kep-teljes-inverz-kep" type="link" /] alapján azt jelenti, hogy e szorzat [latex]f[/latex] szerinti képe viszont benne van [latex]f(K)[/latex]-ban, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f(x_ax_b)\in f(K)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel azonban [latex]f[/latex] csoporthomomorfizmus, ezért igaz az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f(x_ax_b)=f(x_a)\cdot f(x_b)=a\cdot b\in f(K)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Tehát az [latex]a[/latex] és [latex]b[/latex] elemek szorzata is [latex]f(K)[/latex]-ban van, ami így valóban zárt a [latex]H[/latex] csoport műveletére nézve.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>2. feltétel: [latex]f(K)[/latex] tartalmazza a [latex]H[/latex] csoport egységelemét</strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]K[/latex] részcsoport [latex]G[/latex]-ben, ezért a [yp_element slug="reszcsoport-feltetele" type="link" /] 2. pontja alapján tartalmazza [latex]G[/latex] egységelemét, amelyet most jelöljünk [latex]e_G[/latex]-vel. A [yp_element slug="csoporthomomorfizmus-egysegelem-es-inverzkepzestarto" type="link" /] 1. pontja szerint az [latex]e_G[/latex] egységelem [latex]f[/latex] szerinti képe a [latex]H[/latex] csoport egységeleme, amelyet most jelöljünk [latex]e_H[/latex]-val. De mivel [latex]e_H[/latex] egy [latex]K[/latex]-beli elem – nevezetesen [latex]e_G[/latex] – képe, ezért a [yp_element slug="kep-teljes-inverz-kep" type="link" /] szerint szükségképpen benne van [latex]f(K)[/latex]-ban.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>3. feltétel: [latex]f(K)[/latex] zárt a [latex]H[/latex]-beli inverzképzésre</strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Legyen [latex]a[/latex] az [latex]f(K)[/latex] halmaz tetszőleges eleme. A [yp_element slug="kep-teljes-inverz-kep" type="link" /] alapján minden [latex]f(K)[/latex]-beli elemhez létezik olyan elem [latex]K[/latex]-ban, amelynek épp ő az [latex]f[/latex] szerinti képe. Így [latex]a[/latex]-hoz is létezik olyan [latex]x_a\in K[/latex] elem, amelyre teljesül az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f(x_a)=a[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ám ekkor – mivel [latex]K[/latex] részcsoport [latex]G[/latex]-ben – a [yp_element slug="reszcsoport-feltetele" type="link" /] 3. pontja alapján az [latex]x_a^{-1}[/latex] inverz is benne van [latex]K[/latex]-ban. Ez viszont ugyancsak a [yp_element slug="kep-teljes-inverz-kep" type="link" /] alapján azt jelenti, hogy ennek [latex]f[/latex] szerinti képe viszont benne van [latex]f(K)[/latex]-ban, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f(x_a^{-1})\in f(K)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel azonban [latex]f[/latex] csoporthomomorfizmus, ezért a [yp_element slug="csoporthomomorfizmus-egysegelem-es-inverzkepzestarto" type="link" /] 2. pontja igaz az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f(x_a^{-1})=(f(x_a))^{-1}=a^{-1}\in f(K)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Tehát az [latex]a[/latex] elem [latex]H[/latex]-beli inverze is [latex]f(K)[/latex]-ban van, ami így valóban zárt a [latex]H[/latex]-beli inverzképzésre nézve.</p>
+<!-- /wp:paragraph -->

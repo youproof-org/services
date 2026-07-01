@@ -1,0 +1,66 @@
+type: section
+name: 04-az-adatok-tomorithetosegenek-elvi-korlatai
+title: Az adatok tömöríthetőségének elvi korlátai
+
+body:
+  - type: narrative
+    content: |
+      Az információelmélet egyik fontos területe az úgynevezett ***forráskódolással*** foglalkozik. Ennek fő
+      kérdése az, hogy egy információforrásból érkező szimbólumsorozatot milyen módszerrel célszerű bitsorozattá
+      alakítani oly módon, hogy annak hossza lehetőleg minél kisebb legyen. Ennek gyakorlati alkalmazását mindenki
+      ismeri, aki használt már valamilyen adattömörítési eljárást. Ezeknek egyik fajtája a ***veszteségmentes
+      tömörítés***, amely azt garantálja, hogy a tömörítés során nem veszik el információ. Ez a gyakorlatban azt
+      jelenti, hogy az eredeti bitsorozat teljes egészében visszaállítható a tömörített bitsorozatból. Érezhetően
+      kell lennie egy ***alsó korlát***nak arra vonatkozóan, hogy egy bitsorozatot milyen mértékben lehet
+      veszteségmentesen tömöríteni.
+  - type: narrative
+    content: |
+      Ezt az alsó korlátot határozza meg az információs entrópia. Minél nagyobb egy adott bitsorozat entrópiája, az
+      annál kevésbé lesz tömöríthető. Ennek érzékeltetésére elvégeztem egy viszonylag egyszerű ***kísérletet***. Az
+      Internetről kimásoltam Madách Imre &ndash; Az ember tragédiája című művét és az egészet elhelyeztem egy
+      szöveges file-ba. Ennek a file-nak a mérete 199612 byte lett. Ezek után létrehoztam két másik ugyanilyen
+      méretű file-t. Az egyik teljesen véletlenszerű byte-okat tartalmazott, a másik pedig periodikusan ugyanazt az
+      5 byte-ot ismételgette teljes hosszában. Mindhárom file-ra lefuttattam a mindenki által jól ismert ***ZIP***
+      nevű tömörítő eljárást, és megvizsgáltam, hogy melyiket milyen mértékben sikerült tömöríteni.
+  - type: unordered-list
+    lead-in: |
+      Az alábbi eredmények születtek:
+    items:
+      - "**Az ember tragédiája:** 81884 byte (az eredeti méret 41 %-a)"
+      - "**Véletlenszerű:** 199835 byte (az eredeti méret 100,1 %-a)"
+      - "**Periodikus:** 480 byte (az eredeti méret 0,2 %-a)"
+  - type: narrative
+    content: |
+      Az eredményekből egyértelműen látható az összefüggés a három különböző forrás entrópiája és tömöríthetősége
+      között. Madách műve a hossza miatt viszonylag reprezentatív statisztikai mintát ad a magyar nyelvről.
+      Látható, hogy kevesebb, mint a felére össze lehetett nyomni még egy olyan általános tömörítővel is, mint a
+      ZIP. Ez arról árulkodik, hogy az emberi nyelven íródott szövegek entrópiája nem túl magas a sok redundancia
+      és szabályosság miatt.
+  - type: narrative
+    content: |
+      Ezzel szemben az ugyanolyan hosszú, de teljesen véletlenszerű byte-okkal megtöltött inputot egyáltalán nem
+      sikerült tömöríteni. Sőt, a tömörített file még hosszabb is lett, mint az eredeti. Ezt a kis növekedést az
+      okozza, hogy a ZIP eljárás egyfajta szótárat próbál építeni a bemenetből annak érdekében, hogy a gyakran
+      előforduló byte sorozatokat rövidebbekkel helyettesítse. Ezt a szótárat viszont tárolni kell a tömörített
+      file-ban, és ennek van bizonyos adminisztrációs költsége. Mivel azonban ennek a véletlenszerű forrásnak az
+      entrópiája nagyon magas, ezért a tömörítés hatásfoka itt gyakorlatilag 0 volt, az eljárás során felépített
+      szótár pedig csak a helyet foglalta.
+  - type: narrative
+    content: |
+      Végül a harmadik forrásból jövő információt az 500-ad részére tudta tömöríteni a ZIP. Ez nem is meglepő,
+      hiszen ez a file 5 darab byte periodikus ismétléséből állt, vagyis nem sok információ volt benne. Az entrópia
+      &ndash; azaz a byte-onkénti átlagos információtartalom &ndash; tehát ebben az esetben majdnem 0 volt.
+  - type: narrative
+    content: |
+      A fenti kísérlet tehát rávilágít arra, hogy az információs entrópia egyértelműen meghatároz egyfajta elvi
+      alsó korlátot, aminél tömörebben nem lehet leírni az adott információt.
+  - type: narrative
+    content: |
+      Amennyiben ezt a korlátot mégis át szeretnénk lépni, akkor kompromisszumot vagyunk kénytelenek kötni. Ennek
+      ugyanis az az ára, hogy az eredeti adat nem állítható vissza teljes egészében a tömörített adatból. Az
+      úgynevezett ***veszteséges tömörítések*** esetén tehát információ veszik el a tömörítés során. Cserébe
+      viszont a tömörítés hatásfoka lényegesen nagyobb lehet attól függően, hogy mekkora és milyen jellegű
+      veszteséget engedünk meg. Erre a legkézenfekvőbb példák a hang-, kép- és videótömörítési eljárások. Egy
+      ***JPEG***-be mentett kép esetén például a dekódolás után nem kapjuk vissza pixelről pixelre az eredeti
+      képet, csak egy ahhoz olyannyira hasonlót, hogy az apró különbségeket nem veszi észre a szemünk. Egy
+      ***MP3*** tömörítő a fülünk fogyatékosságait használja ki hasonló módon hangok tömörítéséhez.

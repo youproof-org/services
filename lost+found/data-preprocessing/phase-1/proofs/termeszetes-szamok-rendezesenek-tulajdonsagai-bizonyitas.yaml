@@ -1,0 +1,48 @@
+type: proof
+name: termeszetes-szamok-rendezesenek-tulajdonsagai-bizonyitas
+remarks: []
+references:
+  peano-osszeadas-asszociativitas:
+    target:
+      type: theorem
+      name: peano-osszeadas-asszociativitas
+  peano-osszeadas-kommutativitas:
+    target:
+      type: theorem
+      name: peano-osszeadas-kommutativitas
+  peano-szorzas-disztributivitas:
+    target:
+      type: theorem
+      name: peano-szorzas-disztributivitas
+  termeszetes-szamok-rendezese:
+    target:
+      type: definition
+      name: termeszetes-szamok-rendezese
+content:
+  - type: formula
+    lead-in: |
+      Az $a\leq b$ reláció a [termeszetes-szamok-rendezese] miatt azt jelenti, hogy létezik olyan $k$ természetes
+      szám, amelyre teljesül az alábbi:
+    content: |
+      a+k=b
+  - type: formula
+    lead-in: |
+      Az egyenlet mindkét oldalához $c$-t hozzáadva, illetve mindkét oldalt $c$-vel megszorozva ezeket kapjuk:
+    content: |
+      \begin{aligned}(a+k)+c &= b+c \\ (a+k)c &= bc\end{aligned}
+  - type: formula
+    lead-in: |
+      A két egyenlet baloldalai a Peano-összeadás asszociativitása ([peano-osszeadas-asszociativitas]) és
+      kommutativitása ([peano-osszeadas-kommutativitas]), valamint a Peano-szorzás disztributivitása
+      ([peano-szorzas-disztributivitas]) miatt így írhatók:
+    content: |
+      \begin{aligned}(a+c)+k &= b+c \\ ac+kc &= bc\end{aligned}
+  - type: narrative
+    content: |
+      Egyrészt  létezik tehát olyan természetes szám (nevezetesen $k$), amelyet $a+c$-hez adva $b+c$-t kapunk.
+      Másrészt pedig létezik olyan természetes szám is (nevezetesen $kc$), amelyet $ac$-hez adva $bc$-t kapunk.
+  - type: formula
+    lead-in: |
+      Ez a [termeszetes-szamok-rendezese] alapján éppen azt jelenti, hogy:
+    content: |
+      \begin{aligned}a+c &\leq b+c \\ ac &\leq bc\end{aligned}

@@ -1,0 +1,596 @@
+<!-- wp:paragraph -->
+<p><strong><em>Az <a aria-label="undefined (opens in a new tab)" href="https://youproof.hu/kriptografia/23-primteszteles-fermat-primteszt-miller-rabin-primteszt-carmichael-szam-univerzalis-alprim-fermat-faktorizacio/" target="_blank" rel="noreferrer noopener">előző részben</a> felhívtuk Alice és Bob figyelmét néhány olyan dologra, amelyekre érdemes odafigyelniük a <a aria-label="undefined (opens in a new tab)" href="https://youproof.hu/kriptografia/21-rsa-algoritmus-kibovitett-euklideszi-algoritmus-euler-fuggveny-kulcsgeneralas-ismetelt-negyzetreemeles-modszere/" target="_blank" rel="noreferrer noopener">21. részben</a> ismertetett RSA-kulcsok generálásakor. Ismertettünk továbbá néhány olyan módszert, amelyeknek a segítségével Alice és Bob kellően nagy prímszámokat tud találni ezekhez a kulcsokhoz. Elsőként az „iskolás módszert” vizsgáltuk meg, amely a prímszámok definíciójának megfelelően osztáspróbákon alapul. Láttuk, hogy ez nem egy járható út, mivel a kérdéses számtartományban túlságosan sokáig tart. Ezután bemutattuk az úgynevezett Fermat-prímtesztet, amely ennél jóval gyorsabb, cserébe viszont nagyon kis valószínűséggel ugyan, de tévedhet. Az igazi hátránya azonban az, hogy léteznek olyan univerzális álprímeknek nevezett számok, amelyek esetén viszont majdnem biztosan hibás eredményt ad. Ezért megismerkedtünk a Miller-Rabin-prímteszttel, amely a Fermat-prímteszt egy továbbfejlesztett változata. Ez látszólag olyan számokra is működik, amelyek esetén a Fermat-prímteszt csődöt mond.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>De vajon mi az oka annak, hogy a Miller-Rabin-prímtesztre nézve egyáltalán nem léteznek univerzális álprímek? Milyen fegyverek állnak Alice és Bob rendelkezésére egy ilyen jellegű kérdés megválaszolásához? Mik azok a csoportok és mivel foglalkozik a csoportelmélet? Mit állít a Lagrange-tétel, és mi köze a Miller-Rabin-prímteszthez? Ebben a részben erről lesz szó...</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"className":"prerequisite-warning"} -->
+<p class="prerequisite-warning">Figyelem! Ez a rész erőteljesen épít a <a href="https://youproof.hu/kriptografia/18-modularis-aritmetika-homomorfizmus-kongruencia-reszgyuru-ideal-maradekosztalygyuru/" target="_blank" aria-label="undefined (opens in a new tab)" rel="noreferrer noopener">18.</a>, <a href="https://youproof.hu/kriptografia/20-kongruencia-redukalt-maradekosztaly-euler-fuggveny-linearis-kongruencia-maradekrendszer-euler-fermat-tetel/" target="_blank" aria-label="undefined (opens in a new tab)" rel="noreferrer noopener">20.</a>, <a href="https://youproof.hu/kriptografia/22-kinai-maradektetel-konguenciarendszerek-kis-fermat-tetel-rsa-bizonyitas-gyuruk-direkt-szorzata-rsa-dekodolas/" target="_blank" aria-label="undefined (opens in a new tab)" rel="noreferrer noopener">22.</a> és <a href="https://youproof.hu/kriptografia/23-primteszteles-fermat-primteszt-miller-rabin-primteszt-carmichael-szam-univerzalis-alprim-fermat-faktorizacio/" target="_blank" aria-label="undefined (opens in a new tab)" rel="noreferrer noopener">23. részekben</a> felépített alábbi definíciókra, valamint a hozzájuk kapcsolódó tételekre:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="hatvanyozas-azonossagai" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="redukalt-maradekosztaly" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="kinai-maradektetel" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="maradekosztalygyuruk-dekompozicioja" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="carmichael-szamok" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="miller-rabin-tanu" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph {"className":"prerequisite-warning"} -->
+<p class="prerequisite-warning">Ezek kontextusba helyezése miatt erőteljesen ajánlott elolvasni a <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/18-modularis-aritmetika-homomorfizmus-kongruencia-reszgyuru-ideal-maradekosztalygyuru/" target="_blank">18.</a>, <a href="https://youproof.hu/kriptografia/20-kongruencia-redukalt-maradekosztaly-euler-fuggveny-linearis-kongruencia-maradekrendszer-euler-fermat-tetel/" target="_blank" rel="noreferrer noopener">20.</a>, <a href="https://youproof.hu/kriptografia/22-kinai-maradektetel-konguenciarendszerek-kis-fermat-tetel-rsa-bizonyitas-gyuruk-direkt-szorzata-rsa-dekodolas/" target="_blank" rel="noreferrer noopener">22.</a> és <a href="https://youproof.hu/kriptografia/23-primteszteles-fermat-primteszt-miller-rabin-primteszt-carmichael-szam-univerzalis-alprim-fermat-faktorizacio/" target="_blank" rel="noreferrer noopener">23. részeket</a>, mivel gyakran hivatkozni fogunk rájuk. A teljes cikksorozat elejét <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/1-alapfogalmak-caesar-vigenere-enigma-kulcsmegosztas/" target="_blank">itt</a> találod.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"dropCap":true} -->
+<p class="has-drop-cap">Amikor a <a aria-label="undefined (opens in a new tab)" href="https://youproof.hu/kriptografia/11-peano-axiomarendszer-termeszetes-szam-muvelet-osszeadas-kommutativitas-asszociativitas-teljes-indukcio/" target="_blank" rel="noreferrer noopener">11. részben</a> elkezdtük a számelmélet felépítését, viszonylag hamar eljutottunk arra a felismerésre, hogy bizonyos, az egész számokkal kapcsolatos fogalmakat célszerű absztrakt szinten kezelni. Így jutottunk el a <a aria-label="undefined (opens in a new tab)" href="https://youproof.hu/kriptografia/14-egesz-szam-szorzas-absztrakt-algebra-neutralis-elem-inverz-kivonas-gyuru-ferdetest-test/" target="_blank" rel="noreferrer noopener">14. részben</a> a <strong><em>neutrális elem</em></strong> ([yp_element slug="neutralis-elem" type="link" /]), az <strong><em>inverz</em></strong> ([yp_element slug="inverz-elem" type="link" /]) és végül a <strong><em>gyűrű</em></strong> ([yp_element slug="gyuru-test" type="link" /]) fogalmához. Ezáltal általános érvényű összefüggéseket tudtunk feltárni, amelyek az <strong><em>ideálok elméletén</em></strong> (<a href="https://youproof.hu/kriptografia/18-modularis-aritmetika-homomorfizmus-kongruencia-reszgyuru-ideal-maradekosztalygyuru/">1</a><a aria-label="undefined (opens in a new tab)" href="https://youproof.hu/kriptografia/18-modularis-aritmetika-homomorfizmus-kongruencia-reszgyuru-ideal-maradekosztalygyuru/" target="_blank" rel="noreferrer noopener">8</a><a href="https://youproof.hu/kriptografia/18-modularis-aritmetika-homomorfizmus-kongruencia-reszgyuru-ideal-maradekosztalygyuru/">.</a> és <a aria-label="undefined (opens in a new tab)" href="https://youproof.hu/kriptografia/19-foidealgyuruk-generalt-ideal-foideal-szamelmelet-alaptetele-halmaz-halmazrendszer-metszet-unio/" target="_blank" rel="noreferrer noopener">19. rész</a>) keresztül elvezettek minket a <strong><em>számelmélet alaptételével</em></strong> kapcsolatos alapvető fontosságú felismerésekhez. Végül a <a aria-label="undefined (opens in a new tab)" href="https://youproof.hu/kriptografia/20-kongruencia-redukalt-maradekosztaly-euler-fuggveny-linearis-kongruencia-maradekrendszer-euler-fermat-tetel/" target="_blank" rel="noreferrer noopener">20.</a>, <a aria-label="undefined (opens in a new tab)" href="https://youproof.hu/kriptografia/21-rsa-algoritmus-kibovitett-euklideszi-algoritmus-euler-fuggveny-kulcsgeneralas-ismetelt-negyzetreemeles-modszere/" target="_blank" rel="noreferrer noopener">21.</a>, és <a aria-label="undefined (opens in a new tab)" href="https://youproof.hu/kriptografia/22-kinai-maradektetel-konguenciarendszerek-kis-fermat-tetel-rsa-bizonyitas-gyuruk-direkt-szorzata-rsa-dekodolas/" target="_blank" rel="noreferrer noopener">22. részekben</a> az így megszerzett ismereteket alkalmazhattuk az egész számok [latex]\Z[/latex] gyűrűjére. Ezáltal részletesen megismerhettük a napjainkban leggyakrabban használt titkosítási eljárás, az <strong><em>RSA-algoritmus</em></strong> működését.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Azonban az <a aria-label="undefined (opens in a new tab)" href="https://youproof.hu/kriptografia/23-primteszteles-fermat-primteszt-miller-rabin-primteszt-carmichael-szam-univerzalis-alprim-fermat-faktorizacio/" target="_blank" rel="noreferrer noopener">előző részben</a> ismertetett prímtesztelő eljárásokkal kapcsolatban felmerült egy olyan kérdés, amelyet még nem válaszoltunk meg. Nevezetesen: vajon a <a aria-label="undefined (opens in a new tab)" href="https://youproof.hu/kriptografia/23-primteszteles-fermat-primteszt-miller-rabin-primteszt-carmichael-szam-univerzalis-alprim-fermat-faktorizacio#miller-rabin-primality-test" target="_blank" rel="noreferrer noopener">Miller-Rabin-prímteszt</a> – ellentétben a <a aria-label="undefined (opens in a new tab)" href="https://youproof.hu/kriptografia/23-primteszteles-fermat-primteszt-miller-rabin-primteszt-carmichael-szam-univerzalis-alprim-fermat-faktorizacio#fermat-primality-test" target="_blank" rel="noreferrer noopener">Fermat-prímteszttel</a> – valóban képes-e kiszűrni az <strong><em>univerzális álprímeket</em></strong> ([yp_element slug="carmichael-szamok" type="link" /])?</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ahhoz, hogy ezt a kérdést megválaszolhassuk, meg kell ismerkednünk az absztrakt algebra egyik fontos fegyverével, az úgynevezett <strong><em>csoportelmélettel</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4 id="group-theory-introduction">A csoportelmélet megszületése</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>csoportelmélet</em></strong> keletkezése a XIX. század első felére tehető <a aria-label="undefined (opens in a new tab)" href="https://en.wikipedia.org/wiki/Niels_Henrik_Abel" target="_blank" rel="noreferrer noopener">Niels Henrik Abel</a> és <a aria-label="undefined (opens in a new tab)" href="https://en.wikipedia.org/wiki/%C3%89variste_Galois" target="_blank" rel="noreferrer noopener">Évariste Galois</a> úttörő munkásságának köszönhetően. Munkájukat az akkori matematika egyik központi témája inspirálta, amely arról szólt, hogy különféle típusú egyenleteket hogyan lehet megoldani. A kor matematikusai az egyes egyenlettípusokra olyan megoldóképleteket kerestek, amelyekben csak a négy alapművelet és az úgynevezett gyökvonás művelete szerepelhet, méghozzá véges sokszor. Egy ilyen általános megoldóképlet azért jó dolog, mert a segítségével bárki meg tud oldani <strong><em>bármilyen</em></strong>, az adott típusba tartozó egyenletet. Egyszerűen csak annyi a dolga, hogy a képletben szereplő betűk helyére beírja a konkrét egyenlet paramétereit, a megfelelő sorrendben elvégzi a képlet által leírt műveletsorozatot, és varázslatos módon megkapja a végeredményt.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tekintsük például a legegyszerűbb egyenlettípust, az úgynevezett <strong><em>elsőfokú egyenleteket</em></strong>. Egy ilyen egyenlet általános formája a következőképpen néz ki:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]ax+b=0[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Itt [latex]a\
+eq 0[/latex] és [latex]b[/latex] valamilyen konkrét számok, az [latex]x[/latex] pedig azt az ismeretlen számot (vagy esetleg számokat) jelöli, amelyet (vagy amelyeket) keresünk. Minden olyan egyenletet, amely ilyen alakra hozható, <strong><em>elsőfokú egyenletnek</em></strong> nevezünk. Az „elsőfokú” elnevezés itt azt fejezi ki, hogy egy ilyen egyenletben az [latex]x[/latex] ismeretlen az első hatványon szerepel. Az elsőfokú egyenlet általános megoldóképlete a következő:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x=\frac{-b}{a}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha például valamilyen konkrét számítási feladat kapcsán mondjuk a [latex]3x-6=0[/latex] egyenletet kell megoldanunk, akkor egy ilyen megoldóképlettel a zsebünkben könnyű dolgunk van. Elsőként meg kell határoznunk, hogy az egyenletben szereplő számok az egyenlet általános formájában melyik betűknek felelnek meg. Itt például [latex]a=3[/latex] és [latex]b=-6[/latex]. Ezután már csak be kell helyettesítenünk a megoldóképletbe ezeket a számokat, és meg is kapjuk a végeredményt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x=\frac{-b}{a}=\frac{-(-6)}{3}=\frac{6}{3}=2[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Valóban, ha az eredeti [latex]3x-6=0[/latex] egyenletbe az ismeretlen helyére behelyettesítjük az [latex]x=2[/latex] megoldást, akkor tényleg fennáll az egyenlőség a két oldal között. Továbbá a megoldóképlet implicit módon azt is meghatározza, hogy összesen hány megoldás van. Elsőfokú egyenletek esetén mindig egyetlen megoldás létezik.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egy ennél bonyolultabb egyenlettípust alkotnak az úgynevezett <strong><em>másodfokú egyenletek</em></strong>. Ezek általános alakja a következő:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]ax^2+bx+c=0[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Egy másodfokú egyenletben tehát már az ismeretlen mennyiség második hatványa is szerepel. Anélkül, hogy belemennénk az indoklás részleteibe, megadjuk a másodfokú egyenlet megoldóképletét:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}x_1&amp;=\frac{-b+\sqrt{b^2-4ac}}{2a} \\ x_2&amp;=\frac{-b-\sqrt{b^2-4ac}}{2a}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A megoldások száma tehát ebben az esetben 2, 1 vagy 0 lesz attól függően, hogy a gyökjel alatt pozitív, 0 vagy negatív szám szerepel. Tekintsük például az alábbi másodfokú egyenletet:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x^2+2x-3=0[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Itt ugye [latex]a=1[/latex], [latex]b=2[/latex] és [latex]c=-3[/latex]. Ezeket behelyettesítve a megoldóképletbe az [latex]x_1=-3[/latex] és az [latex]x_2=1[/latex] megoldásokat kapjuk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egyenletek egy még bonyolultabb típusait képviselik az úgynevezett <strong><em>harmad- és negyedfokú egyenletek</em></strong>. Ezek általános alakjai a következők:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}ax^3+bx^2+cx+d&amp;=0 \\ ax^4+bx^3+cx^2+dx+e&amp;=0\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A harmad- és negyedfokú egyenletek megoldóképleteit a XVI. század elején fedezték fel itáliai matematikusok, amelyekről <a aria-label="undefined (opens in a new tab)" href="https://hu.wikipedia.org/wiki/Harmadfok%C3%BA_egyenlet" target="_blank" rel="noreferrer noopener">itt</a> és <a aria-label="undefined (opens in a new tab)" href="https://hu.wikipedia.org/wiki/Negyedfok%C3%BA_egyenlet" target="_blank" rel="noreferrer noopener">itt</a> olvashatunk bővebben. Ezek a megoldóképletek azonban már annyira bonyolultak, hogy a gyakorlatban az ilyen típusú egyenleteket – amennyiben szükséges – közelítő módszerekkel oldjuk meg. A matematikusokat azonban ez egyáltalán nem zavarta abban, hogy kitartóan keressék az ötöd- és magasabbfokú egyenletek megoldóképleteit.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A XIX. század elején még mindig nem sikerült ezen a téren semmi eredményt felmutatni, mígnem <a aria-label="undefined (opens in a new tab)" href="https://en.wikipedia.org/wiki/Niels_Henrik_Abel" target="_blank" rel="noreferrer noopener">Niels Henrik Abel</a> 1824-ben egy meglepő cikket publikált. Ebben igazolta, hogy az <strong><em>ötöd- és magasabbfokú egyenletekhez nem létezik</em></strong> általánosan működő <strong><em>megoldóképlet</em></strong>. Ez persze nem azt jelenti, hogy <strong><em>megoldás</em></strong> sem létezik, hanem azt, hogy a megoldások nem fejezhetők ki az egyenlet paramétereinek a segítségével egy véges sok műveletet tartalmazó zárt képletben. Nem sokkal ezután <a aria-label="undefined (opens in a new tab)" href="https://en.wikipedia.org/wiki/%C3%89variste_Galois" target="_blank" rel="noreferrer noopener">Évariste Galois</a> általánosságban is megadta az egyenletek algebrai megoldhatóságának kritériumait. Ezt a korszakalkotó munkát manapság <a aria-label="undefined (opens in a new tab)" href="https://hu.wikipedia.org/wiki/Galois-elm%C3%A9let" target="_blank" rel="noreferrer noopener">Galois-elmélet</a> néven ismerjük, amely azóta a számelmélet egy jelentős eszközévé vált.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Többek között a Galois-elmélet vezetett el a <strong><em>csoport</em></strong> fogalmának megalkotásához. Időközben aztán kiderült, hogy ez a fogalom rengeteg más matematikai területen is alapvető szerepet játszik. Például az úgynevezett <strong><em>szimmetriacsoportok</em></strong> segítségével vizsgálni lehet különböző bonyolult alakzatok szimmetriáit, amelyek sokmindent elárulnak magukról az alakzatokról is. Ennek fontos alkalmazásai vannak többek között a kémiában – kristályrácsok szerkezetének elmélete – és a fizikában – a téridő szimmetriáinak vizsgálata. Később <a aria-label="undefined (opens in a new tab)" href="https://hu.wikipedia.org/wiki/Felix_Christian_Klein" target="_blank" rel="noreferrer noopener">Félix Klein</a> a geometriának is alapvető eszközévé tette a csoportokat, de fontos szerepet játszanak a matematika egyik legabsztraktabb területén, az algebrai topológiában is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Minthogy ennyire különböző területeken jelennek meg, a XIX. század végére kiderült, hogy a csoportokat egyszerre, egymáshoz való viszonyaikban célszerű vizsgálni. Megszületett az absztrakt csoport fogalma, és az lett a feladat, hogy az általános csoportoknak minél jobban feltárjuk a szerkezetét, és olyan struktúratételeket bizonyítsunk, amelyek alapján az alkalmazásokban felmerülő kérdésekre válaszolni lehet.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Például az olyan kérdésekre is, hogy vajon a Miller-Rabin-prímteszt képes-e kiszűrni minden univerzális álprímet? Ismerkedjünk meg ezért most a csoportelmélet néhány alapvető fogalmával és összefüggésével.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4 id="group-theory-introduction">Csoportelméleti gyorstalpaló</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="gyuru-test" type="link" /]ban megismerkedtünk a <strong><em>gyűrű</em></strong> fogalmával, amely eddigi vizsgálataink tárgyát képezte. Egy gyűrű tulajdonképpen nem más, mint egy halmaz, amelyen értelmezve van két művelet, és ezek a műveletek teljesítenek néhány egyszerű követelményt, amelyeket gyűrűaxiómáknak nevezünk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>csoportok</em></strong> a gyűrűkhöz hasonló algebrai struktúrák, azonban alaphalmazukon nem kettő, hanem csak egy művelet van értelmezve. Az alábbi definíció tartalmazza azokat a követelményeket – a <strong><em>csoportaxiómákat</em></strong> –, amelyeknek e művelet meg kell feleljen.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="csoport" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Például az egész számok [latex]\Z[/latex] halmaza Abel-csoportot alkot a szokásos összeadásra nézve. Ebben a csoportban a neutrális elem a [latex]0[/latex] egész szám, egy [latex]a[/latex] egész szám inverze pedig az ellentettje, azaz [latex]-a[/latex], hiszen őket összeadva épp a neutrális elemet, azaz a [latex]0[/latex] egész számot kapjuk eredményül.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A [latex]\Z[/latex] halmaz a szorzásra nézve viszont <strong><em>nem alkot csoportot</em></strong>. Igaz ugyan, hogy a szorzásra nézve létezik neutrális elem – az [latex]1[/latex] egész szám –, azonban rajta és a [latex]-1[/latex]-en kívül más egész számnak nem létezik inverze. A csak az [latex]1[/latex]-ből és a [latex]-1[/latex]-ből álló kételemű halmaz viszont már csoportot alkot a szorzásra nézve is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A most következő tétel egy fontos összefüggést mond ki két elem inverzei és a szorzatuk inverze között. A tételt teljes általánosságban, azaz nem kimondottan csoportokra fogalmazzuk meg.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="szorzat-inverze" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="szorzat-inverze-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az imént megismert csoport és félcsoport fogalmának segítségével az alábbi definícióban egyrészt jóval egyszerűbb módon megadhatjuk a [yp_element slug="gyuru-test" type="link" /]ban szereplő gyűrűaxiómákat. Másrészt újabb fontos, gyűrűkkel kapcsolatos csoportelméleti fogalmakkal is megismerkedünk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="gyuru-additiv-es-multiplikativ-csoportja" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="gyuru-additiv-es-multiplikativ-csoportja-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az iménti megjegyzés alapján tehát egy kommutatív, egységelemes gyűrű invertálható elemei csoportot alkotnak a gyűrű szorzására nézve. Számunkra ebben a részben főként a [yp_element slug="egesz-szamok-maradekosztalygyurui" type="link" /]ben definiált <strong><em>modulo [latex]n[/latex] maradékosztálygyűrű multiplikatív csoportja</em></strong> lesz érdekes. Ez a [yp_element slug="redukalt-maradekosztaly" type="link" /] alapján épp a <strong><em>redukált maradékosztályokból</em></strong> áll.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Például a [latex]\Z/10\Z[/latex] maradékosztálygyűrű multiplikatív csoportját [latex](\Z/10\Z)^{\times}[/latex]-vel jelöljük, és az alábbi 4 elemből áll:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](\Z/10\Z)^{\times}=\{[1]_{10}; [3]_{10}; [7]_{10}; [9]_{10}\}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="egesz-szamok-maradekosztalygyurui" type="link" /]ben definiált maradékosztályok közötti szorzás műveleti táblája így néz ki ebben a csoportban:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{c|cccc}\odot &amp; [1]_{10} &amp; [3]_{10} &amp; [7]_{10} &amp; [9]_{10}  \\ \hline  [1]_{10} &amp; [1]_{10} &amp; [3]_{10} &amp; [7]_{10} &amp; [9]_{10}  \\  [3]_{10} &amp; [3]_{10} &amp; [9]_{10} &amp; [1]_{10} &amp; [7]_{10}  \\  [7]_{10} &amp; [7]_{10} &amp; [1]_{10} &amp; [9]_{10} &amp; [3]_{10}  \\ [9]_{10} &amp; [9]_{10} &amp; [7]_{10} &amp; [3]_{10} &amp; [1]_{10}  \end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Látható, hogy valóban minden elemnek létezik inverze. Például a [latex][7]_{10}[/latex] maradékosztály inverze a [latex][3]_{10}[/latex] maradékosztály, hiszen az ő szorzatuk az [latex][1]_{10}[/latex] maradékosztály, amely a [latex](\Z/10\Z)^{\times}[/latex] csoport neutrális eleme.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4 id="subgroups">Részcsoportok</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="reszgyuru" type="link" /]ban megismerkedtünk a <strong><em>részgyűrű</em></strong> fogalmával. Ott arról volt szó, hogy egy gyűrű műveleteit az eredeti alaphalmaz helyett annak egy részhalmazára is leszűkíthetjük. Példaként a páros számok [latex]2\Z[/latex] halmazát hoztuk fel. A szokásos összeadás és szorzás ugye a teljes [latex]\Z[/latex] halmazon van értelmezve. Azonban ez a két művelet „nem vezet ki” az ennél szűkebb [latex]2\Z[/latex] halmazból sem, hiszen bármely két páros szám összege és szorzata is páros. Így a [latex]2\Z[/latex] halmaz az eredeti [latex]\Z[/latex] gyűrű műveleteinek szűkített változataival maga is gyűrűt alkot, azaz <strong><em>részgyűrűje</em></strong> az eredeti [latex]\Z[/latex] gyűrűnek.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Hasonló értelemben vett részstruktúrákról természetesen beszélhetünk csoportok esetén is. Itt is ugyanarról van szó azzal a különbséggel, hogy egy csoportban csak egy műveletünk van.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="reszcsoport" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="reszcsoport-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Például a fentebb már szereplő [latex](\Z/10\Z)^{\times}[/latex] multiplikatív csoport esetén az alábbi kételemű halmaz egy valódi részcsoportot alkot:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]G=\{[1]_{10}; [9]_{10}\}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha a [latex](\Z/10\Z)^{\times}[/latex] szorzótáblájából kihagyjuk a két-két középső sort és oszlopot, akkor megkapjuk ennek a részcsoportnak a szorzótábláját:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{c|cc}\odot &amp; [1]_{10} &amp; [9]_{10}  \\ \hline  [1]_{10} &amp; [1]_{10} &amp; [9]_{10} \\ [9]_{10} &amp; [9]_{10} &amp; [1]_{10}  \end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel csupán kételemű halmazról van szó, ezért az Olvasó maga is könnyen leellenőrizheti, hogy valóban teljesülnek a [yp_element slug="csoport" type="link" /]ban szereplő csoportaxiómák.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezt azonban nem kell minden olyan alkalommal megtenni, amikor egy részhalmazról el szeretnénk dönteni, hogy részcsoport-e vagy sem. Az alábbi tétel a [yp_element slug="reszgyuru-feltetele" type="link" /] mintájára egy sok esetben a csoportaxiómáknál könnyebben ellenőrizhető feltételrendszert ad ehhez. A bizonyítás szinte szóról szóra megegyezik a [yp_element slug="reszgyuru-feltetele" type="link" /] bizonyításával.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="reszcsoport-feltetele" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="reszcsoport-feltetele-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Lagrange tétele</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Ebben a szakaszban egy kulcsfontosságú tételt fogunk igazolni, amely egy tetszőleges véges csoport illetve annak részcsoportjainak elemszáma között mond ki egy fontos összefüggést. Először azonban tisztázzuk, hogy pontosan mit értünk egy csoport elemszámán.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="csoport-rendje" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most bevezetünk egy fontos relációt egy adott [latex]G[/latex] csoport elemei között, amely relációt [latex]G[/latex] egy adott részcsoportja segítségével határozunk meg. Továbbá igazoljuk, hogy ez egy <strong><em>ekvivalenciareláció</em></strong> ([yp_element slug="ekvivalenciarelacio" type="link" /]), amely tehát ekvivalencia-osztályokra bontja a [latex]G[/latex] csoportot. Ez az ekvivalenciareláció némileg speciálisabb formában korábban már szerepelt a [yp_element slug="ideal-szerinti-kongruencia" type="link" /]ban, ahol őt <strong><em>ideál szerinti kongruenciának</em></strong> hívtuk. Erre a tétel utáni megjegyzésben bővebben is kitérünk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="mellekosztalyok" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="mellekosztalyok-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="mellekosztalyok-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mostmár megfogalmazhatjuk azt a véges csoportok részcsoportjainak elemszámára vonatkozó fontos összefüggést, amely kulcsfontosságú lesz annak igazolásához, miszerint a Miller-Rabin-prímtesztre nézve nem léteznek univerzális álprímek. Ez az összefüggés <a href="https://hu.wikipedia.org/wiki/Joseph_Louis_Lagrange" target="_blank" aria-label="undefined (opens in a new tab)" rel="noreferrer noopener">Joseph Louis Lagrange</a> olasz születésű francia matematikustól származik, és igen fontos a matematika egyéb területein is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="lagrange-tetele" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="lagrange-tetele-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="lagrange-tetele-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Negatív kitevős hatványok</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Az <a aria-label="undefined (opens in a new tab)" href="https://youproof.hu/kriptografia/23-primteszteles-fermat-primteszt-miller-rabin-primteszt-carmichael-szam-univerzalis-alprim-fermat-faktorizacio#common-modulus-attack" target="_blank" rel="noreferrer noopener">előző rész</a> végén felhívtuk Alice és Bob figyelmét arra, hogy nagyon nem szerencsés, ha több – vagy akár az összes – felhasználónak az RSA-kulcsgenerálás során ugyanazokat a prímszámokat, és így ugyanazt a modulust választják. Ezáltal ugyanis egy potenciális támadónak a <strong><em>Bézout-lemma</em></strong> ([yp_element slug="bezout-lemma-euklideszi-gyurukben" type="link" /]) felhasználásával lehetősége nyílik arra, hogy kizárólag publikusan elérhető információkból – tehát az RSA feltörése nélkül – megfejthessen titkos üzeneteket. Ez abban az esetben lehetséges, ha egy adott felhasználó ugyanazt az [latex]x[/latex] nyílt üzenetet (például egy körlevelet) legalább 2 másik olyan felhasználónak is elküld, akik azonos modulust használnak.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Szinte majdnem biztos ugyanis, hogy e két felhasználó [latex]e_1[/latex] és [latex]e_2[/latex] publikus kitevője egymáshoz relatív prím. Azaz kitüntetett közös osztójuk [latex]1[/latex], ami a <strong><em>Bézout-lemma</em></strong> alapján az euklidészi algoritmus segítségével hatékonyan meg tudja találni azokat az [latex]u[/latex] és [latex]v[/latex] egész számokat, amelyekre teljesül az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]u\cdot e_1 + v\cdot e_2=(e_1, e_2)=1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mármost ha e két felhasználó azonos modulust használ, akkor a nekik küldött [latex]y_1[/latex] és [latex]y_2[/latex] kódszövegekből, továbbá a támadó által kiszámított [latex]u[/latex] és [latex]v[/latex] egész számokból a <strong><em>hatványozás azonosságairól</em></strong> szóló [yp_element slug="hatvanyozas-azonossagai" type="link" /] valamint a <strong><em>kongruencia tulajdonságairól</em></strong> szóló [yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" type="link" /] alapján elvileg könnyedén megkapható az [latex]x[/latex] nyílt üzenet:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](\underbrace{x^{e_1}}_{\equiv y_1})^u\cdot (\underbrace{x^{e_2}}_{\equiv y_2})^v = x^{\overbrace{u\cdot e_1 + v\cdot e_2}^{=1}}\equiv x\pmod m[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Megemlítettük ugyanakkor, hogy mivel a kitevőben szereplő [latex]e_1[/latex] és [latex]e_2[/latex] számok mindketten pozitívak, ezért [latex]u[/latex] és [latex]v[/latex] közül pontosan az egyik szükségképpen <strong><em>negatív</em></strong>, és így az említett két tételt nem használhattuk volna.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezért ebben a szakaszban kiterjesztjük a hatványozás fogalmát csak pozitív kitevőkről <strong><em>tetszőleges egész kitevőkre</em></strong> is. Ez olyan esetekben tehető meg, amikor a művelet – amelynek ugye a többszöri elvégzését értjük a hatványozás alatt – rendelkezik neutrális elemmel és invertálható. Az alábbi definícióban ezt teljes általánosságban fogalmazzuk meg.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-kitevos-hatvany" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-kitevos-hatvany-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most igazoljuk, hogy a pozitív kitevős hatványozás azonosságairól szóló [yp_element slug="hatvanyozas-azonossagai" type="link" /] összefüggései érvényben maradnak tetszőleges egész kitevők esetén is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-kitevos-hatvanyozas-azonossagai" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-kitevos-hatvanyozas-azonossagai-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Így tehát a közös modulusokon és a Bézout-lemmán alapuló támadás valóban működik azokban az esetekben, amikor az [latex]x[/latex] üzenet által reprezentált [latex][x]_m[/latex] maradékosztály invertálható, azaz ő egy redukált maradékosztály. Joggal merülhet fel a kérdés, hogy vajon mi a helyzet akkor, ha [latex][x]_m[/latex] <strong><em>nem redukált</em></strong> maradékosztály, hiszen ekkor nem értelmezhetők az ő negatív kitevős hatványai.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Nos az a helyzet, hogy ekkor amúgyis sokkal nagyobb a baj, hiszen ha [latex]x[/latex]-nek van [latex]1[/latex]-től különböző közös osztója az [latex]m[/latex] modulussal, akkor nyilván az [latex]x^{e_1}[/latex] és [latex]x^{e_2}[/latex] hatványoknak is van. Ők viszont a támadó birtokába jutott [latex]y_1[/latex] és [latex]y_2[/latex] kódszövegekkel kongruensek modulo [latex]m[/latex], és így a [yp_element slug="redukalt-maradekosztaly-feltetele" type="link" /] alapján [latex][y_1]_m[/latex] és [latex][y_2]_m[/latex] sem lehetnek redukált maradékosztályok. Márpedig ekkor a támadó az euklidészi algoritmus segítségével könnyedén megkaphatja [latex]y_1[/latex] (vagy [latex]y_2[/latex]) és [latex]m[/latex] kitüntetett közös osztóját, tehát végülis [latex]m[/latex] egyik prímtényezőjét. Ebből könnyedén kiszámíthatja a másik prímtényezőt, és ezek birtokában a titkos kulcsot. Sőt, ugyanezt a küldő fél is megteheti, hiszen ugye maga az eredeti [latex]x[/latex] üzenet sem volt relatív prím [latex]m[/latex]-hez.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Akkor ezek szerint mégsem lenne biztonságos az RSA?</em></strong> Hiszen ez alapján ha sikerül találni egy <strong><em>nem redukált</em></strong> modulo [latex]m[/latex] maradékosztályt, akkor lényegében az euklidészi algoritmus lefuttatásával a titkos kulcshoz szükséges prímtényezők is kiszámíthatók. Nos, ez valóban így van, pusztán annyi a gond, hogy ehhez találni kéne egy nem redukált maradékosztályt. Márpedig ez gyakorlatilag olyan, mintha tűt keresnénk a szénakazalban – ráadásul a szóban forgó számok nagyságrendje miatt hatványozottan. Másként fogalmazva egy euklidészi algoritmusnyi időt leszámítva nem könnyebb ilyen maradékosztályt találni, mintha eleve magukat a prímtényezőket kezdenénk el keresgélni. Tehát nyugodtan feltételezhetjük, hogy a támadóhoz kerülő [latex]y_1[/latex] és [latex]y_2[/latex] kódszövegek relatív prímek a modulushoz, ennek teljesülése ugyanis gyakorlatilag biztos.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most azonban térjünk vissza a csoportelmélethez, és ismerkedjünk meg egy újabb fontos fogalommal, amelyre szükségünk lesz a Miller-Rabin-prímteszttel kapcsolatos bizonyításhoz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Csoportelem rendje</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Az előző szakaszban tehát kiterjesztettük a hatványozást a [latex]0[/latex] és a negatív kitevőkre is minden olyan elem esetén, amelynek létezik inverze a szóbanforgó műveletre nézve. Minthogy egy csoportban minden elemnek létezik inverze a csoportműveletre nézve, ezért az előző szakaszban bizonyított összefüggések nyilván érvényesek lesznek bármilyen csoportban.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Számunkra elsősorban a véges csoportok az érdekesek, mint amilyen például a [latex]\Z/n\Z[/latex] maradékosztálygyűrű multiplikatív csoportja is. Vizsgáljuk meg például a [latex](\Z/10\Z)^{\times}[/latex] multiplikatív csoport elemeinek hatványait. Az alábbi táblázat minden sorában egy-egy csoportelem hatványai szerepelnek az első néhány pozitív kitevőre, amely kitevőknek az egyes oszlopok felelnek meg:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{c|cccccc} &amp;1&amp;2&amp;3&amp;4&amp;5&amp;6 \\ \hline [1]_{10} &amp; [1]_{10} &amp; [1]_{10} &amp; [1]_{10} &amp; [1]_{10} &amp; [1]_{10} &amp; [1]_{10} \\ [3]_{10} &amp; [3]_{10} &amp; [9]_{10} &amp; [7]_{10} &amp; [1]_{10} &amp; [3]_{10} &amp; [9]_{10} \\ [7]_{10} &amp; [7]_{10} &amp; [9]_{10} &amp; [3]_{10} &amp; [1]_{10} &amp; [7]_{10} &amp; [9]_{10} \\ [9]_{10} &amp; [9]_{10} &amp; [1]_{10} &amp; [9]_{10} &amp; [1]_{10} &amp; [9]_{10} &amp; [1]_{10} \end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Például a [latex][3]_{10}[/latex] maradékosztály harmadik hatványa a [latex][3^3]_{10}=[27]_{10}=[7]_{10}[/latex] maradékosztály, amely a táblázat második sorának harmadik oszlopában szerepel.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A táblázatot figyelve észrevehetünk egy furcsa jelenséget: egy adott elemnek meghatározott számú különböző hatványa van, amelyek periodikusan ismétlődnek a kitevő növelésével. A maradékosztályoknak egy fontos tulajdonsága, hogy összesen hány különböző hatványuk létezik a maradékosztálygyűrű multiplikatív csoportjában. Ez elvezet az <strong><em>elemrend</em></strong> fogalmához, amelyet az alábbi definícióban tetszőleges csoportra – tehát nem csak a maradékosztálygyűrűk multiplikatív csoportjaira – fogalmazunk meg.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="csoportelem-rendje" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az alábbiakban a fenti táblázat alapján felsoroltuk a [latex](\Z/10\Z)^{\times}[/latex] multiplikatív csoport elemeinek rendjeit:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}o([1]_{10})&amp;=1 \\ o([3]_{10})&amp;=4 \\ o([7]_{10})&amp;=4 \\ o([9]_{10})&amp;=2\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most igazoljuk az elemrenddel kapcsolatos legfontosabb összefüggéseket:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="csoportelem-rendjere-vonatkozo-osszefuggesek" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="csoportelem-rendjere-vonatkozo-osszefuggesek-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A részcsoportok kapcsán szó volt róla, hogy hogyan lehet könnyen ellenőrizni azt, hogy egy csoport valamely [latex]H[/latex] részhalmaza részcsoportot alkot-e vagy sem. Ennek feltételeit a [yp_element slug="reszcsoport-feltetele" type="link" /]ben határoztuk meg. Eszerint elegendő azt ellenőrizni, hogy [latex]H[/latex] zárt-e a csoportműveletre, és az elletettképzésre nézve, valamint tartalmazza-e a csoport egységelemét. Az imént bizonyított elemrendre vonatkozó összefüggések alapján most igazoljuk, hogy <strong><em>véges csoportok</em></strong> esetén a műveleti zártságból már következik a másik két feltétel.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="reszcsoport-feltetele-veges-csoportok-eseten" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="reszcsoport-feltetele-veges-csoportok-eseten-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="reszcsoport-feltetele-veges-csoportok-eseten-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Végül ismertetünk egy további egyszerű következményt, amely az egyes elemek rendjei és a csoport rendje között mond ki egy, a továbbiakban hasznos összefüggést.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="elem-rendje-es-csoport-rendje" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="elem-rendje-es-csoport-rendje-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Egész számok p-adikus rendje</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>E rövid csoportelméleti bevezető után a csoport rendje és a csoportelem rendje mellé a kóbor apácák megtévesztésére most bevezetünk egy harmadik rendfogalmat, amelyet egy hasznos moduláris aritmetikai összefüggés bizonyításához fogunk felhasználni. Az <a aria-label="undefined (opens in a new tab)" href="https://youproof.hu/kriptografia/23-primteszteles-fermat-primteszt-miller-rabin-primteszt-carmichael-szam-univerzalis-alprim-fermat-faktorizacio#miller-rabin-primality-test" target="_blank" rel="noreferrer noopener">előző részben</a> a Miller-Rabin-prímteszt alapgondolatának ismertetése kapcsán lényegében már találkoztunk vele. Ott arról volt szó, hogy adva volt egy [latex]n[/latex] pozitív páratlan szám, és azt kellett meghatározni, hogy ebben az esetben az [latex]n-1[/latex] páros szám hányszor osztható [latex]2[/latex]-vel. Azaz kerestük azt az [latex]e\geq 1[/latex] kitevőt, amely esetén az [latex]n-1[/latex] páros szám még osztható [latex]2^e[/latex]-vel, viszont [latex]2^{e+1}[/latex]-gyel már nem. Most ezt általánosítjuk [latex]2[/latex] helyett tetszőleges pozitív [latex]p[/latex] prímszámra.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szam-p-adikus-rendje" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Visszatérve a Miller-Rabin-prímteszt példájára, amennyiben tehát az [latex]n-1[/latex] páratlan szám felírható [latex]2^ek[/latex] alakban, ahol [latex]k[/latex] már páratlan, akkor a mostani jelölésünkkel ezt így írhatjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]v_2(n-1)=e[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [latex]2[/latex] prímszám esetén ezt a mennyiséget speciálisan <strong><em>diadikus rendnek</em></strong> nevezzük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most egy hasznos segédtételt ismertetünk, amely azzal a kérdéssel foglalkozik, hogyha két egész számnak vesszük valamilyen hatványát, és képezzük ezek különbségét, akkor mi lesz ennek a különbségnek a [latex]p[/latex]-adikus rendje, amennyiben a két egész szám első hatványainak különbségére már ismerjük ezt a mennyiséget. Ez az összefüggés <a aria-label="undefined (opens in a new tab)" href="https://brilliant.org/wiki/lifting-the-exponent/" target="_blank" rel="noreferrer noopener">"Lifting the exponent lemma"</a> néven ismeretes. Mi ennek most egy speciális esetét ismertetjük, amikoris a hatványkitevő megegyezik a [latex]p[/latex] prímszámmal.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="p-edik-hatvanyok-kulonbsegenek-p-adikus-rendje" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="p-edik-hatvanyok-kulonbsegenek-p-adikus-rendje-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most az imént bizonyított lemma segítségével egy olyan moduláris aritmetikai összefüggést fogunk igazolni, amely kulcsfontosságú lesz a következő szakaszban.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="prim-modulus-hatvanyozasa" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="prim-modulus-hatvanyozasa-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A nem Miller-Rabin-tanúk csoportja</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Most használjuk fel az eddig tanultakat ahhoz, hogy igazolni tudjunk egy alsó becslést a Miller-Rabin-tanúk számára. Ezzel egyúttal az is világossá válik, hogy erre a prímtesztre nézve nem léteznek a Carmichael-számokhoz ([yp_element slug="carmichael-szamok" type="link" /]) hasonló univerzális álprímek.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="gyuru-additiv-es-multiplikativ-csoportja" type="link" /] utáni megjegyzésben megmutattuk, hogy bármilyen gyűrűben a szorzásra nézve invertálható elemek halmaza csoportot alkot. Így például egy adott [latex]n\gt 1[/latex] páratlan egész szám esetén a modulo [latex]n[/latex] redukált maradékosztályok is csoportot alkotnak, amelyet [latex](\Z/n\Z)^{\times}[/latex]-vel jelöltünk. Érdekes kérdés, hogyha [latex]n[/latex] összetett, akkor vajon a redukált maradékosztályok csoportjában a <strong><em>nem Miller-Rabin-tanúk</em></strong> részcsoportot alkotnak-e.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Nos általában nem ez a helyzet. Nézzük például az [latex]n=65[/latex] esetét. Az Olvasó maga is leellenőrizheti a [yp_element slug="miller-rabin-tanu" type="link" /] alapján, hogy például a [latex][8]_{65}[/latex] és a [latex][18]_{65}[/latex] redukált maradékosztályok nem Miller-Rabin-tanúk. Kiszámítva a definícióban szereplő [latex]e[/latex] kitevőt és [latex]k[/latex] páratlan számot [latex]e=6[/latex] és [latex]k=1[/latex] adódik, hiszen [latex]65-1=2^6\cdot 1[/latex]. Ezekkel ellenőrizve a Miller-Rabin-kongruenciákat, azok közül mind a [latex][8]_{65}[/latex], mind pedig a [latex][18]_{65}[/latex] maradékosztály esetén valóban teljesül a harmadik:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{cc}\begin{aligned}8\ \cancel{\equiv}\ 1 &amp;\pmod{65} \\ 8\ \cancel{\equiv}\ -1 &amp;\pmod{65} \\ 8^2\equiv -1&amp;\pmod{65} \\ &amp;\vdots\end{aligned} &amp; \begin{aligned}18\ \cancel{\equiv}\ 1 &amp;\pmod{65} \\ 18\ \cancel{\equiv}\ -1 &amp;\pmod{65} \\ 18^2\equiv -1&amp;\pmod{65} \\ &amp;\vdots \end{aligned}\end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ugyanakkor kettejük szorzata, azaz a [latex][8]_{65}\cdot [18]_{65}=[14]_{65}[/latex] maradékosztály már Miller-Rabin-tanú, hiszen a [latex][14]_{65}[/latex]-re a Miller-Rabin-kongruenciák közül egyik sem teljesül:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}14\ &amp;\cancel{\equiv}\ 1 \pmod{65} \\ 14\ &amp;\cancel{\equiv}\ -1 \pmod{65} \\ 14^2\ &amp;\cancel{\equiv}\ -1\pmod{65} \\ 14^{2^2}\ &amp;\cancel{\equiv}\ -1\pmod{65} \\ 14^{2^3}\ &amp;\cancel{\equiv}\ -1\pmod{65} \\ 14^{2^4}\ &amp;\cancel{\equiv}\ -1\pmod{65} \\ 14^{2^5}\ &amp;\cancel{\equiv}\ -1\pmod{65}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azaz a nem Miller-Rabin-tanúk halmazára nem teljesül a műveleti zártság, és így részcsoport sem lehet. Van azonban egy speciális eset, amikor a nem Miller-Rabin-tanúk mégiscsak részcsoportot alkotnak. Nevezetesen amikor [latex]n[/latex] valamilyen prímhatvány. Az alábbi tételben ennél még többet is igazolunk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="nem-miller-rabin-tanuk-csoportja-primhatvanyok-eseten" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="nem-miller-rabin-tanuk-csoportja-primhatvanyok-eseten-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:heading {"level":4} -->
+<h4>De mi a helyzet általános esetben?</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Az előző szakaszban tehát igazoltuk, hogy prímhatványok esetén a nem Miller-Rabin-tanúk pont egy <strong><em>valódi részcsoportot</em></strong> alkotnak a [latex](\Z/n\Z)^{\times}[/latex] multiplikatív csoportban. Mint ahogy azt is láttuk, hogy általános esetben sajnos nem ez a helyzet. Szerencsére azonban a következő tételben mutatunk egy olyan <strong><em>valódi részcsoportot</em></strong>, amely egyéb redukált maradékosztályok mellett tartalmazza az összes nem Miller-Rabin-tanút. Hamarosan világossá válik, hogy ez miért olyan fontos.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A Miller-Rabin-tanúk száma</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Az előző két szakaszban igazolt két tétel következményeként most már könnyedén tudunk alsó becslést adni a Miller-Rabin-tanúk számára vonatkozóan.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="miller-rabin-tanuk-szama" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="miller-rabin-tanuk-szama-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Hasonlítsuk össze ezt az állítást a Fermat-tanúk számára vonatkozó [yp_element slug="fermat-tanuk-szama" type="link" /] állításával. Ott mindössze annyit állítottunk, hogy <strong><em>ha</em></strong> [latex]n[/latex]-hez <strong><em>létezik</em></strong> Fermat-tanú, <strong><em>akkor</em></strong> a redukált maradékosztályoknak legalább a fele az. Ez tehát nem minden összetett [latex]n[/latex]-re érvényes, hanem csak azokra, amelyekhez <strong><em>létezik</em></strong> Fermat-tanú. A [yp_element slug="carmichael-szamok" type="link" /]ban ismertetett <strong><em>Carmichael-számok</em></strong> például olyan összetett számok, amelyekhez egyáltalán nincsen Fermat-tanú.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezzel szemben az imént bizonyított állítás <strong><em>minden összetett</em></strong> [latex]n[/latex]-re érvényes, azaz Miller-Rabin-tanúja minden összetett számnak van, méghozzá – ahogy láttuk – eléggé sok. Így a Miller-Rabin-prímtesztre nézve valóban nem léteznek univerzális álprímek.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ebben a részben tehát megismerkedtünk az absztrakt algebra egy igen hatékony eszköztárának, az úgynevezett csoportelméletnek az alapjaival. Bevezettük a csoport és a részcsoport fogalmát, továbbá definiáltuk, hogy mit értünk egy csoport illetve egy csoportelem rendje alatt. Ezután a mellékosztály fogalmának segítségével igazoltuk Lagrange tételét, amely egy fontos oszthatósági kapcsolatot mond ki egy csoport és a részcsoportok illetve csoportelemek rendjei között. Végül ezt felhasználva megmutattuk, hogy bármilyen páratlan összetett szám esetén a redukált maradékosztályoknak legalább a fele Miller-Rabin-tanú. Azaz erre a tesztre nézve nem léteznek univerzális álprímek, így gyakorlatilag szinte nincs esélye annak, hogy tévedjen.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A hátralévő részekben kicsit mélyebb módszerekkel azt fogjuk igazolni, hogy valójában még jobb a helyzet, és a redukált maradékosztályoknak nemhogy a fele, de legalább a háromnegyede Miller-Rabin-tanú. Ehhez a csoporthomomorfizmus fogalmával, valamint a Carmichael-számok néhány fontos tulajdonságával fogunk megismerkedni. Ezzel befejezzük számelméleti vizsgálatainkat, és a cikksorozat lezárásaként adunk némi ízelítőt abból, hogy mi vár Alice-ra és Bob-ra a – nem is olyan távoli – jövőben.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A következő részt <a href="https://youproof.hu/kriptografia/25-homomorfizmus-normaloszto-faktorcsoport-generalt-reszcsoport-ciklikus-csoport/">itt</a> találod...</em></strong></p>
+<!-- /wp:paragraph -->

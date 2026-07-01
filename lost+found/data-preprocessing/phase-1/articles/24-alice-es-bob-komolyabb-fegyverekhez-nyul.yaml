@@ -1,0 +1,123 @@
+type: chapter
+name: 24-alice-es-bob-komolyabb-fegyverekhez-nyul
+title: Alice és Bob komolyabb fegyverekhez nyúl
+
+references:
+  carmichael-szamok:
+    target:
+      type: definition
+      name: carmichael-szamok
+  gyuru-test:
+    target:
+      type: definition
+      name: gyuru-test
+  inverz-elem:
+    target:
+      type: definition
+      name: inverz-elem
+  neutralis-elem:
+    target:
+      type: definition
+      name: neutralis-elem
+
+abstract:
+  - type: narrative
+    content: |
+      Az előző részben felhívtuk Alice és Bob figyelmét néhány olyan dologra, amelyekre érdemes odafigyelniük a 21.
+      részben ismertetett RSA-kulcsok generálásakor. Ismertettünk továbbá néhány olyan módszert, amelyeknek a
+      segítségével Alice és Bob kellően nagy prímszámokat tud találni ezekhez a kulcsokhoz. Elsőként az "iskolás
+      módszert" vizsgáltuk meg, amely a prímszámok definíciójának megfelelően osztáspróbákon alapul. Láttuk, hogy
+      ez nem egy járható út, mivel a kérdéses számtartományban túlságosan sokáig tart. Ezután bemutattuk az
+      úgynevezett Fermat-prímtesztet, amely ennél jóval gyorsabb, cserébe viszont nagyon kis valószínűséggel ugyan,
+      de tévedhet. Az igazi hátránya azonban az, hogy léteznek olyan univerzális álprímeknek nevezett számok,
+      amelyek esetén viszont majdnem biztosan hibás eredményt ad. Ezért megismerkedtünk a
+      Miller-Rabin-prímteszttel, amely a Fermat-prímteszt egy továbbfejlesztett változata. Ez látszólag olyan
+      számokra is működik, amelyek esetén a Fermat-prímteszt csődöt mond.
+  - type: narrative
+    content: |
+      De vajon mi az oka annak, hogy a Miller-Rabin-prímtesztre nézve egyáltalán nem léteznek univerzális álprímek?
+      Milyen fegyverek állnak Alice és Bob rendelkezésére egy ilyen jellegű kérdés megválaszolásához? Mik azok a
+      csoportok és mivel foglalkozik a csoportelmélet? Mit állít a Lagrange-tétel, és mi köze a
+      Miller-Rabin-prímteszthez? Ebben a részben erről lesz szó...
+prerequisite-warning:
+  - type: narrative
+    content: |
+      Figyelem! Ez a rész erőteljesen épít a 18., 20., 22. és 23. részekben felépített alábbi definíciókra,
+      valamint a hozzájuk kapcsolódó tételekre:
+  - type: recall
+    target:
+      type: theorem
+      name: hatvanyozas-azonossagai
+  - type: recall
+    target:
+      type: definition
+      name: redukalt-maradekosztaly
+  - type: recall
+    target:
+      type: theorem
+      name: kinai-maradektetel
+  - type: recall
+    target:
+      type: theorem
+      name: maradekosztalygyuruk-dekompozicioja
+  - type: recall
+    target:
+      type: definition
+      name: carmichael-szamok
+  - type: recall
+    target:
+      type: definition
+      name: miller-rabin-tanu
+  - type: narrative
+    content: |
+      Ezek kontextusba helyezése miatt erőteljesen ajánlott elolvasni a 18., 20., 22. és 23. részeket, mivel
+      gyakran hivatkozni fogunk rájuk. A teljes cikksorozat elejét itt találod.
+prologue:
+  - type: narrative
+    content: |
+      Amikor a 11. részben elkezdtük a számelmélet felépítését, viszonylag hamar eljutottunk arra a felismerésre,
+      hogy bizonyos, az egész számokkal kapcsolatos fogalmakat célszerű absztrakt szinten kezelni. Így jutottunk el
+      a 14. részben a ***neutrális elem*** ([neutralis-elem]), az ***inverz*** ([inverz-elem]) és végül a
+      ***gyűrű*** ([gyuru-test]) fogalmához. Ezáltal általános érvényű összefüggéseket tudtunk feltárni, amelyek az
+      ***ideálok elméletén*** (18. és 19. rész) keresztül elvezettek minket a ***számelmélet alaptételével***
+      kapcsolatos alapvető fontosságú felismerésekhez. Végül a 20., 21., és 22. részekben az így megszerzett
+      ismereteket alkalmazhattuk az egész számok $\Z$ gyűrűjére. Ezáltal részletesen megismerhettük a napjainkban
+      leggyakrabban használt titkosítási eljárás, az ***RSA-algoritmus*** működését.
+  - type: narrative
+    content: |
+      Azonban az előző részben ismertetett prímtesztelő eljárásokkal kapcsolatban felmerült egy olyan kérdés,
+      amelyet még nem válaszoltunk meg. Nevezetesen: vajon a Miller-Rabin-prímteszt &ndash; ellentétben a
+      Fermat-prímteszttel &ndash; valóban képes-e kiszűrni az ***univerzális álprímeket*** ([carmichael-szamok])?
+  - type: narrative
+    content: |
+      Ahhoz, hogy ezt a kérdést megválaszolhassuk, meg kell ismerkednünk az absztrakt algebra egyik fontos
+      fegyverével, az úgynevezett ***csoportelmélettel***.
+sections:
+  - 01-a-csoportelmelet-megszuletese
+  - 02-csoportelmeleti-gyorstalpalo
+  - 03-reszcsoportok
+  - 04-lagrange-tetele
+  - 05-negativ-kitevos-hatvanyok
+  - 06-csoportelem-rendje
+  - 07-egesz-szamok-p-adikus-rendje
+  - 08-a-nem-miller-rabin-tanuk-csoportja
+  - 09-de-mi-a-helyzet-altalanos-esetben
+  - 10-a-miller-rabin-tanuk-szama
+
+epilogue:
+  - type: narrative
+    content: |
+      Ebben a részben tehát megismerkedtünk az absztrakt algebra egy igen hatékony eszköztárának, az úgynevezett
+      csoportelméletnek az alapjaival. Bevezettük a csoport és a részcsoport fogalmát, továbbá definiáltuk, hogy
+      mit értünk egy csoport illetve egy csoportelem rendje alatt. Ezután a mellékosztály fogalmának segítségével
+      igazoltuk Lagrange tételét, amely egy fontos oszthatósági kapcsolatot mond ki egy csoport és a részcsoportok
+      illetve csoportelemek rendjei között. Végül ezt felhasználva megmutattuk, hogy bármilyen páratlan összetett
+      szám esetén a redukált maradékosztályoknak legalább a fele Miller-Rabin-tanú. Azaz erre a tesztre nézve nem
+      léteznek univerzális álprímek, így gyakorlatilag szinte nincs esélye annak, hogy tévedjen.
+  - type: narrative
+    content: |
+      A hátralévő részekben kicsit mélyebb módszerekkel azt fogjuk igazolni, hogy valójában még jobb a helyzet, és
+      a redukált maradékosztályoknak nemhogy a fele, de legalább a háromnegyede Miller-Rabin-tanú. Ehhez a
+      csoporthomomorfizmus fogalmával, valamint a Carmichael-számok néhány fontos tulajdonságával fogunk
+      megismerkedni. Ezzel befejezzük számelméleti vizsgálatainkat, és a cikksorozat lezárásaként adunk némi
+      ízelítőt abból, hogy mi vár Alice-ra és Bob-ra a &ndash; nem is olyan távoli &ndash; jövőben.

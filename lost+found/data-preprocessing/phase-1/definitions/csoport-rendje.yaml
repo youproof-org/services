@@ -1,0 +1,19 @@
+type: definition
+name: csoport-rendje
+remarks: []
+references:
+  reszcsoport:
+    target:
+      type: definition
+      name: reszcsoport
+content:
+  - type: narrative
+    content: |
+      Egy $G$ ***csoport rendje*** alatt a benne lévő elemek számát értjük. Pontosabban fogalmazva ha $G$ csak
+      véges sok elemet tartalmaz, és elemeinek száma $n$, akkor azt mondjuk, hogy $G$ ***véges***, és ***rendje***
+      $n$. Ezt így jelöljük: $|G|=n$. Ezzel szemben ha $G$ végtelen sok elemet tartalmaz, akkor ***végtelen rendű
+      csoportról*** beszélünk. Ezt így jelöljük: $|G|=\infty$.
+  - type: narrative
+    content: |
+      Mivel egy csoport részcsoportjai a [reszcsoport] értelmében maguk is csoportok, ezért egy ***részcsoport
+      rendje*** alatt szintén a fenti értelemben vett rendet értjük.

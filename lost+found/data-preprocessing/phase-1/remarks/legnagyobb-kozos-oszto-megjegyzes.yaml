@@ -1,0 +1,13 @@
+type: remark
+name: legnagyobb-kozos-oszto-megjegyzes
+references:
+  oszthatosag-tulajdonsagai:
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+content:
+  - type: narrative
+    content: |
+      A definícióból következik, hogy $a=b=0$ esetén nem létezik az $(a,b)$ legnagyobb közös osztó, hiszen a
+      $0$-nak minden egész szám osztója (lásd a [oszthatosag-tulajdonsagai] 3. pontját), így közöttük nincs
+      legnagyobb.

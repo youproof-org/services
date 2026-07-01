@@ -1,0 +1,80 @@
+type: proof
+name: mellekosztalyok-bizonyitas
+remarks: []
+references:
+  ekvivalenciarelacio:
+    target:
+      type: definition
+      name: ekvivalenciarelacio
+  komplexusmuveletek:
+    target:
+      type: definition
+      name: komplexusmuveletek
+  reflexiv-relacio:
+    target:
+      type: definition
+      name: reflexiv-relacio
+  reszcsoport-feltetele:
+    target:
+      type: theorem
+      name: reszcsoport-feltetele
+  szimmetrikus-relacio:
+    target:
+      type: definition
+      name: szimmetrikus-relacio
+  szorzat-inverze:
+    target:
+      type: theorem
+      name: szorzat-inverze
+  tranzitiv-relacio:
+    target:
+      type: definition
+      name: tranzitiv-relacio
+content:
+  - type: narrative
+    content: |
+      A [ekvivalenciarelacio] alapján azt kell tehát bizonyítani, hogy a $\sim$ szimbólummal jelölt reláció
+      reflexív ([reflexiv-relacio]), tranzitív ([tranzitiv-relacio]) és szimmetrikus ([szimmetrikus-relacio]). Az
+      alábbiakban legyenek $a$, $b$ és $c$ a $G$ csoport tetszőleges elemei, az egységelemet pedig jelöljük
+      $e$-vel. A bizonyítás során végig arra fogunk támaszkodni, hogy $H$ részcsoport $G$-ben.
+  - type: narrative
+    content: |
+      Mivel nyilván $a^{-1}a=e$ teljesül, és a $G$ csoport egységeleme a [reszcsoport-feltetele] 2. pontja alapján
+      benne van a $H$ részcsoportban, ezért fennáll az $a\sim a$ reláció, így az ***reflexív***.
+  - type: narrative
+    content: |
+      Ha $a^{-1}b$ és $b^{-1}c$ benne vannak $H$-ban, akkor a [reszcsoport-feltetele] 1. pontja alapján az ő
+      szorzatuk is benne van $H$-ban.
+  - type: formula
+    lead-in: |
+      Az ő szorzatuk viszont épp az $a^{-1}c$ elem, hiszen:
+    content: |
+      a^{-1}\cdot \underbrace{b\cdot b^{-1}}_{=e}\cdot c=a^{-1}ec=a^{-1}c
+  - type: narrative
+    content: |
+      Így tehát az $a\sim b$ és $b\sim c$ relációkból következik az $a\sim c$ reláció, azaz teljesül a
+      ***tranzitivitás*** is.
+  - type: narrative
+    content: |
+      Végül ha $a^{-1}b$ benne van $H$-ban, akkor a [reszcsoport-feltetele] 3. pontja alapján az ő inverze, is
+      benne van $H$-ban.
+  - type: formula
+    lead-in: |
+      Az ő inverze viszont a [szorzat-inverze] szerint épp $b^{-1}a$, hiszen:
+    content: |
+      (a^{-1}b)^{-1}=b^{-1}(a^{-1})^{-1}=b^{-1}a
+  - type: narrative
+    content: |
+      Vagyis $a\sim b$-ből következik $b\sim a$, ami épp a ***szimmetriát*** jelenti.
+  - type: narrative
+    content: |
+      A $\sim$ reláció tehát valóban egy ekvivalenciareláció, amely a $G$ csoport alaphalmazát
+      ekvivalencia-osztályokra bontja. Ezek lesznek a $H$ szerinti baloldali mellékosztályok. A $g$ elemet
+      tartalmazó mellékosztály pontosan azokból az $x$ elemekből fog állni, amelyekre teljesül a $g\sim x$ reláció.
+      A tétel szövege alapján ez pontosan azt jelenti, hogy a $g^{-1}x$ szorzat benne van $H$-ban. Ez viszont a
+      [komplexusmuveletek]ban bevezetett komplexusműveletek nyelvén pontosan azt jelenti, hogy $x$ benne van a $gH$
+      halmazban.
+  - type: narrative
+    content: |
+      A tétel jobboldali mellékosztályokra vonatkozó állítása pontosan ugyanezzel a gondolatmenettel igazolható,
+      csak ott a szorzásokat fordított sorrendben kell felírni.

@@ -1,0 +1,30 @@
+type: section
+name: 13-gyuruk-es-testek
+title: Gyűrűk és testek
+
+body:
+  - type: narrative
+    content: |
+      Most az eddig tanult fogalmakkal felvértezve ismerkedjünk meg azokkal az algebrai fogalmakkal, amelyekre
+      további számelméleti vizsgálataink során gyakran fogunk hivatkozni.
+  - type: embed
+    target:
+      type: definition
+      name: gyuru-test
+  - type: narrative
+    content: |
+      Felhívnánk a figyelmet arra, hogy a fenti definícióban semmit nem tételeztünk fel az $R$ halmazról és a két
+      műveletről azon kívül, hogy teljesülnek rájuk a definícióban szereplő gyűrűaxiómák. Az, hogy "összeadásnak"
+      és "szorzásnak" neveztük a két műveletet, egyáltalán nem azt jelenti, hogy ezeknek adott esetben bármiféle
+      közük van az ebben és az előző részben bevezetett egész számok közötti összeadáshoz és szorzáshoz. Az $R$
+      halmaz elemei még csak nem is feltétlenül számok.
+  - type: narrative
+    content: |
+      A gyűrűk és a testek vizsgáltával az absztrakt algebra foglalkozik. Ezek a fejünkben élő számfogalom egyfajta
+      általánosításai, absztrakciói. Célszerű azonban a jól megszokott $(\Z ,\oplus , \odot )$ algebrai struktúrára
+      gondolni, amikor például gyűrűkre vonatkozó általános összefüggésekről beszélünk. Mint látni fogjuk, ezek az
+      összefüggések ***bármilyen*** más gyűrűre ugyanúgy érvényesek lesznek. Ilyen értelemben az absztrakt algebra
+      igen hatékony fegyverként bevethető lesz konkrét &ndash; azaz nem absztrakt &ndash; problémák megoldására is.
+      Éppen ezért a tágabb értelemben vett számelmélet főként a gyűrűket, illeve azok szerkezetét vizsgálja. A
+      továbbiakban ezért mi is általános gyűrűkre vonatkozó összefüggéseket fogunk bizonyítani, amennyire csak
+      lehetséges.

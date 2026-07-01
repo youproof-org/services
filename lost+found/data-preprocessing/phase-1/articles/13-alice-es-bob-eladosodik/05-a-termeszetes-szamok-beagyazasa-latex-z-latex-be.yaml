@@ -1,0 +1,193 @@
+type: section
+name: 05-a-termeszetes-szamok-beagyazasa-latex-z-latex-be
+title: 'A természetes számok beágyazása [latex]\Z[/latex]-be'
+
+references:
+  peano-axiomarendszer:
+    target:
+      type: definition
+      name: peano-axiomarendszer
+  peano-osszeadas:
+    target:
+      type: definition
+      name: peano-osszeadas
+  peano-szorzas:
+    target:
+      type: definition
+      name: peano-szorzas
+  termeszetes-szamok-rendezese:
+    target:
+      type: definition
+      name: termeszetes-szamok-rendezese
+
+body:
+  - type: narrative
+    content: |
+      Most tehát egyrészt van egy $\N$-nel jelölt halmazunk a rajta értelmezett két művelettel és a $\leq$
+      relációval, amelyek definiálásához áttételesen vagy közvetlenül a Peano-axiómákat ([peano-axiomarendszer])
+      használtuk. Ennek elemeit ***természetes számoknak*** neveztük. Másrészt van egy $\Z$-vel jelölt halmazunk,
+      amelynek elemei az $\N\times \N$ halmazon értelmezett $\sim$-vel jelölt reláció ekvivalencia-osztályai.
+      Ezeket az ekvivalencia-osztályokat &ndash; bármilyen furcsa egyelőre, de &ndash; ***egész számoknak***
+      neveztük.
+  - type: narrative
+    content: |
+      Látható, hogy $\N$ és $\Z$ a mostani értelmezésünk szerint két, teljesen más jellegű objektumokat tartalmazó
+      halmaz, így nyilván ***egyik sem lehet részhalmaza a másiknak***. Mivel mi jelenleg az eddig megismert
+      természetes számok általánosításán dolgozunk, ezért ***ez nem elfogadható*** számunkra. Egy általánosítás
+      során ugyanis az a kívánatos, hogy a speciálisabb kiindulási objektumok halmaza az általánosabb objektumok
+      halmazának részhalmaza legyen.
+  - type: narrative
+    content: |
+      Az eddigi $\N$-nek nevezett halmazról tehát át szeretnénk térni a továbbiakban egy olyan halmazra, amely
+      $\Z$-nek valamilyen részhalmaza, és ***"ugyanúgy viselkedik"***, mint a "régi" $\N$ halmaz. Az "ugyanúgy
+      viselkedik" kifejezés jelentésére hamarosan rátérünk, de az már biztos, hogy szükségünk van egy függvényre,
+      amely a "régi" és az "új" $\N$ halmaz elemeit ***kölcsönösen egyértelműen megfelelteti egymással***. Jelöljük
+      most átmenetileg a "régi" halmazt $\N_1$-gyel, az "újat" $\N_2$-vel (amely ugye már része $\Z$-nek), a
+      közöttük lévő kölcsösen egyértelmű függvényt pedig $f$-fel.
+  - type: figure
+    lead-in: |
+      Ez az elrendezés látható az alábbi ábrán:
+    src: 04-kolcsonosen-egyertelmu-megfeleltetes-n1-es.jpg
+    alt: Kölcsönösen egyértelmű megfeleltetés N1 és N2 között
+    caption: 'Kölcsönösen egyértelmű megfeleltetés $\N_1$ és $\N_2$ között'
+  - type: narrative
+    content: |
+      A ***kölcsönösen egyértelműség*** tehát azt jelenti, hogy minden $\N_2$-beli elem pontosan egy &ndash; azaz
+      se nem több, se nem kevesebb &ndash; $\N_1$-beli elemhez legyen hozzárendelve az $f$ függvény által, és
+      fordítva, minden $\N_1$-beli elemhez legyen hozzárendelve pontosan egy $\N_2$-beli elem.
+  - type: narrative
+    content: |
+      Most térjünk rá arra a kérdésre, hogy mit jelent az, hogy $\N_2$ ***"ugyanúgy viselkedik"***, mint $\N_1$.
+      Vegyük észre, hogy az $\N_1$ halmaz nem csupán egy halmaz, hanem definiálva van rajta egy $+$-szal és egy
+      $\cdot$-tal jelölt művelet ([peano-osszeadas] és [peano-szorzas]), valamint egy $\leq$-val jelölt rendezési
+      reláció ([termeszetes-szamok-rendezese]).
+  - type: narrative
+    content: |
+      Annak érdekében, hogy az általánosítási projektünk teljes legyen, be szeretnénk vezetni a $\Z$ halmazon is
+      két műveletet, valamint egy teljes rendezést. De nem akárhogyan, hanem úgy, hogy amennyiben ezt a két új
+      műveletet, valamint az új rendezési relációt csak az $\N_2$ halmazon vizsgáljuk &ndash; amely ugye $\Z$
+      részhalmaza &ndash;, akkor azok "ugyanúgy viselkedjenek", mint a régi $\N_1$ halmazon értelmezett műveleteink
+      és rendezési relációnk. Az absztrakt algebrában ilyenkor azt mondjuk, hogy az $\N_1$ és az $\N_2$ halmazok
+      közötti $f$ leképezés egy ***művelet- és rendezéstartó leképezés*** &ndash; vagy összefoglaló néven
+      ***struktúratartó leképezés*** &ndash; kell legyen.
+  - type: narrative
+    content: |
+      Vezessünk be tehát a $\Z$ halmazon is két műveletet, és egyelőre jelöljük az egyiket $\oplus$-szal, a másikat
+      pedig $\odot$-tal, amelyek rendre a régi $\N_1$ halmazon értelmezett $+$ és $\cdot$ műveletek megfelelői
+      lesznek. Az alábbi ábrán láthatjuk, mit jelent pontosan az, hogy az $f$ leképezés ***"tartja"*** a $+$
+      műveletet.
+  - type: figure
+    lead-in: |
+      A $\cdot$ művelet "tartása" ugyanígy értelmezhető:
+    src: 05-muvelettarto-lekepezes.jpg
+    alt: Művelettartó leképezés
+    caption: Művelettartó leképezés
+  - type: narrative
+    content: |
+      Ha tehát a régi $\N_1$ halmaz két tetszőleges $a$ és $b$ elemei esetén a $+$ művelet eredménye a szintén
+      $\N_1$-beli $a+b$ elem, akkor elvárjuk az $f$ leképzéstől, hogy az $\N_2$-beli $f(a)$ és $f(b)$ elemek esetén
+      az $f(a)\oplus f(b)$ művelet eredménye a szintén $\N_2$-beli $f(a+b)$ elem legyen. Azaz tetszőleges
+      $\N_1$-beli elemek közötti $+$ művelet eredményének képe épp az eredeti elemek képei közötti $\oplus$ művelet
+      eredménye legyen. A $\cdot$ és az újonnan bevezetett $\odot$ műveletek tekintetében ugyanezt várjuk el az $f$
+      leképezéstől.
+  - type: narrative
+    content: |
+      A műveletekhez hasonlóan vezessünk be egy relációt is a $\Z$ halmazon, amelyet egyelőre jelöljünk
+      $\lesssim$-vel. Ez a régi $\N_1$ halmazon értelmezett $\leq$ reláció megfelelője lesz a $\Z$ halmazban.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán láthatjuk, mit jelent az, hogy az $f$ leképezés ***"tartja"*** a $\leq$ relációt:
+    src: 06-relaciotarto-lekepezes.jpg
+    alt: Relációtartó leképezés
+    caption: Relációtartó leképezés
+  - type: narrative
+    content: |
+      Azaz tetszőleges $\N_1$-beli elemek között ***pontosan akkor*** teljesüljön a $\leq$ reláció, ha az
+      $\N_2$-beli képeik között teljesül a $\lesssim$ reláció.
+  - type: narrative
+    content: |
+      Az absztrakt algebrában ezek a különleges, "tartási tulajdonságokkal" rendelkező függvények vagy leképezések
+      központi jelentőségűek. Segítségükkel ugyanis a különböző úgynevezett ***algebrai struktúrák*** (azaz
+      műveletekkel és/vagy relációkkal ellátott halmazok) mélyebb szerkezete vizsgálható anélkül, hogy elvesznénk
+      az egyes konkrét reprezentációk részleteiben. Ezért fontos, hogy megismerkedjünk az alábbi fogalmakkal,
+      amelyek tehát alapvetőek az algebrában:
+  - type: embed
+    target:
+      type: definition
+      name: homomorfizmus-izomorfizmus-beagyazas
+  - type: narrative
+    content: |
+      Ezzel a szóhasználattal élve tehát szeretnénk egy ***injektív homomorfizmust*** &ndash; azaz egy
+      ***beágyazást*** &ndash; létesíteni a régi $\N_1$ és az imént megkonstruált $\Z$ halmaz között. Ekkor
+      $\Z$-nek az $\N_2$ részhalmaza ***izomorf*** lenne a régi $\N_1$ halmazzal a $+$ és a $\cdot$ műveletek,
+      valamint a $\leq$ reláció tekintetében. Az izomorfia ebben az esetben azt jelentené, hogy az $\N_1$ és az
+      $\N_2$ halmazok feletti algebrai struktúrák lényegében azonosak lennének &ndash; attól eltekintve, hogy
+      másként jelöljük az elemeiket, a műveleteket és a rendezési relációkat.
+  - type: narrative
+    content: |
+      A beágyazáshoz tehát két dolgot kell tennünk. Először is definiálnunk kell egy $f:\N_1 \to \Z$ függvényt.
+      Ezután pedig értelmeznünk kell a $\Z$ halmazon az újdonsült $\oplus$ és $\odot$ műveleteket, valamint a
+      $\lesssim$ relációt úgy, hogy $f$ az $\N_1$ halmaz $\Z$-be való beágyazását valósítsa meg, és $\N_1$ képe épp
+      az $\N_2$ halmaz legyen $\Z$-n belül. Amint ez megvan, onnantól kezdve az eddigi $\N_1$ halmaz helyett
+      nyugodtan tekinthetjük majd $\N_2$-t a ***természetes számok halmazának***. Az izomorfia miatt ugyanis arra
+      ugyanúgy érvényesek lesznek a Peano-axiómák és minden eddig bizonyított tételünk. Ezen kívül nyugodtan
+      használhatjuk majd azokat a jelöléseket, amelyeket az általános iskolából már megszokhattunk.
+  - type: narrative
+    content: |
+      Intuitív módon konstruáljuk most meg az $f:\N_1 \to \Z$ függvényt, amely a beágyazást fogja megvalósítani.
+      Ehhez megint a vagyoni helyzetekre vonatkozó analógiára gondoljunk.
+  - type: unordered-list
+    lead-in: |
+      Legyen szó bármilyen vagyoni helyzetről, az alábbi 3 eset lehetséges:
+    items:
+      - 'Az ügyfélnek több betétje van a banknál, mint hitele.'
+      - 'Az ügyfélnek kevesebb betétje van a banknál, mint hitele.'
+      - 'Az ügyfélnek ugyanannyi a betétje, mint a hitele.'
+  - type: narrative
+    content: |
+      A következő tétel arról szól, hogy bármely vagyoni helyzet mindhárom esetben biztosan reprezentálható egy
+      olyan számpárral is, amelynek az egyik komponense $0$.
+  - type: embed
+    target:
+      type: theorem
+      name: ekvivalencia-osztalyok-reprezentansa
+  - type: embed
+    target:
+      type: proof
+      name: ekvivalencia-osztalyok-reprezentansa-bizonyitas
+  - type: narrative
+    content: |
+      Ez tehát azt jelenti, hogy a $\Z$ halmazban lévő összes $[(a;b)]$-vel jelölt ekvivalencia-osztály (azaz egész
+      szám) leírható $[(n;0)]$, $[(0;n)]$ vagy $[(0;0)]$ alakban is. Ezekre hamarosan az alábbi &ndash; az
+      általános iskolában már megszokott &ndash; megnevezéseket és jelöléseket fogjuk használni:
+  - type: embed
+    target:
+      type: definition
+      name: pozitiv-es-negativ-egesz-szamok
+  - type: narrative
+    content: |
+      Egyelőre azonban maradjunk még az ekvivalencia-osztályokat használó jelölésnél.
+  - type: formula
+    lead-in: |
+      A fentebb már említett $f:\N_1 \to \Z$ ***beágyazófüggvényt*** az alábbi módon fogjuk definiálni:
+    content: |
+      f(n)=[(n;0)]
+  - type: narrative
+    content: |
+      Ahogy az alábbi ábrán látható, a beágyazófüggvény az $\N_1$ elemeihez &ndash; amiket egészen idáig
+      ***természetes számoknak*** neveztünk &ndash; a nulla és a pozitív egész számokat felelteti meg.
+  - type: figure
+    lead-in: |
+      Ezek alkotják az $\N_2$ részhalmazt a $\Z$ halmazon belül:
+    src: 07-termeszetes-szamok-beagyazasa-z-be.jpg
+    alt: Természetes számok beágyazása Z-be
+    caption: 'Természetes számok beágyazása $\Z$-be'
+  - type: narrative
+    content: |
+      Az is látható, hogy a negatív egész számoknak nincs megfelelője a természetes számok között, ez tehát egy
+      ***valódi beágyazás***. Ez épp megfelel az elvárásainknak, tekintve, hogy most a számfogalom bővítését
+      hajtjuk végre éppen. Most már csak azt kell biztosítani, hogy a $\oplus$ és $\odot$ műveleteket, valamint a
+      $\lesssim$ relációt úgy definiáljuk a $\Z$ halmazon, hogy azok $\N_2$-re való megszorításai épp az $\N_1$
+      halmazon értelmezett $+$ és $\cdot$ műveletek, valamint a $\leq$ reláció megfelelői legyenek. Azaz &ndash;
+      algebrai szóhasználattal és jelölésmóddal élve &ndash; ***az $(\N_1 ,+,\cdot , \leq)$ algebrai struktúra
+      legyen izomorf az $(\N_2 , \oplus , \odot , \lesssim )$ algebrai struktúrával***.

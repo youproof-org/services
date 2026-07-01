@@ -1,0 +1,15 @@
+type: definition
+name: halmazrendszerek
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $H$ egy tetszőleges halmaz, valamint jelöljük $\mathcal{H}$-val azt a halmazt, amelynek elemei $H$-nak
+      bizonyos részhalmazai &ndash; de nem feltétlenül az összes. Ekkor a $\mathcal{H}$ halmazt egy ***$H$ feletti
+      halmazrendszernek***, magát a $H$ halmazt pedig e halmazrendszer ***alaphalmazának*** nevezzük.
+  - type: narrative
+    content: |
+      Speciálisan azt a $H$ feletti halmazrendszert, amely a $H$ összes részhalmazaiból áll &ndash; beleértve a két
+      nemvalódi részhalmazt is &ndash;, a $H$ halmaz ***hatványhalmazának*** nevezzük, és így jelöljük:
+      $\mathcal{P}(H)$. A $H$ feletti halmazrendszerek tehát ***pontosan a $\mathcal{P}(H)$ hatványhalmaz
+      részhalmazai***.

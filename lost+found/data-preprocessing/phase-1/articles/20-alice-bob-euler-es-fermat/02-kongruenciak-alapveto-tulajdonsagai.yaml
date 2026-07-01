@@ -1,0 +1,150 @@
+type: section
+name: 02-kongruenciak-alapveto-tulajdonsagai
+title: Kongruenciák alapvető tulajdonságai
+
+references:
+  egesz-szamok-kozotti-kongruencia-tulajdonsagai:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia-tulajdonsagai
+  gyuru-test:
+    target:
+      type: definition
+      name: gyuru-test
+  hatvanyozas-azonossagai:
+    target:
+      type: theorem
+      name: hatvanyozas-azonossagai
+  oszthatosag-tulajdonsagai:
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+
+body:
+  - type: narrative
+    content: |
+      Az egész számok közötti kongruencia-fogalom tehát az ideál szerinti kongruencia-fogalom egy speciális esete,
+      amelynek az előző szakaszban egy intuitív, osztási maradékokkal kapcsolatos értelmezését kaptuk. Az alábbi
+      tételben összegyűjtöttük ennek a relációnak az alapvető tulajdonságait. Ezek mindegyikét valamilyen általános
+      formában már igazoltuk a 18. részben.
+  - type: embed
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia-tulajdonsagai
+  - type: embed
+    target:
+      type: proof
+      name: egesz-szamok-kozotti-kongruencia-tulajdonsagai-bizonyitas
+  - type: embed
+    target:
+      type: remark
+      name: egesz-szamok-kozotti-kongruencia-tulajdonsagai-megjegyzes
+  - type: narrative
+    content: |
+      Eszerint tehát az összeadás, kivonás és szorzás műveletére vonatkozóan a kongruenciák ugyanúgy viselkednek,
+      mint az egyenlőségek. Ha például adva van egy szorzásokból, összeadásokból és kivonásokból felépített
+      kifejezés, és ennek bármilyen összetevőjét lecseréljük egy $m$ modulus szerint vele kongruens kifejezéssel,
+      akkor az így kapott kifejezés kongruens lesz az eredetivel szintén az $m$ modulus szerint. Vegyünk egy
+      egyszerű példát.
+  - type: formula
+    lead-in: |
+      Tekintsük például az alábbi kifejezést:
+    content: |
+      3^{3n+1}\cdot 5^{2n+1}+2^{5n+1}\cdot 11^n
+  - type: narrative
+    content: |
+      Tegyük fel, hogy valamilyen okból kifolyólag azt kell bizonyítanunk, hogy ez a kifejezés $n$ tetszőleges
+      pozitív egész értéke esetén osztható $17$-tel &ndash; legyen bármi is az az ok.
+  - type: formula
+    lead-in: |
+      Ez kongruenciával kifejezve az alábbit jelenti:
+    content: |
+      3^{3n+1}\cdot 5^{2n+1}+2^{5n+1}\cdot 11^n \equiv 0 \pmod{17}
+  - type: narrative
+    content: |
+      A hatványozás azonosságairól szóló [hatvanyozas-azonossagai] 2. és 3.
+  - type: formula
+    lead-in: |
+      pontjai alapján a baloldali kifejezést átalakítva az alábbit kapjuk:
+    content: |
+      27^n\cdot 25^n\cdot 15 + 32^n\cdot 11^n\cdot 2 \equiv 0 \pmod{17}
+  - type: narrative
+    content: |
+      Nézzük először a baloldal első tagját, azaz a $27^n\cdot 25^n\cdot 15$ kifejezést. A $15\equiv 15\pmod{17}$
+      kongruencia nyilván teljesül a [egesz-szamok-kozotti-kongruencia-tulajdonsagai] 1. pontja miatt. Továbbá,
+      mivel teljesülnek a $27\equiv -7\pmod{17}$ és a $25\equiv 8\pmod{17}$ kongruenciák, ezért ugyanezen tétel 8.
+      pontja miatt teljesülnek a $27^n\equiv (-7)^n\pmod{17}$ és a $25^n\equiv 8^n\pmod{17}$ kongruenciák is. De
+      ekkor az így kapott 3 kongruenciát az 5.
+  - type: formula
+    lead-in: |
+      pont miatt összeszorozhatjuk, azaz teljesül az alábbi kongruencia is:
+    content: |
+      27^n\cdot 25^n\cdot 15 \equiv (-7)^n\cdot 8^n\cdot 15 \pmod{17}
+  - type: formula
+    lead-in: |
+      Ugyanígy az eredeti kongruencia baloldalának második tagját is lecserélhetjük egy vele kongruens
+      kifejezéssel:
+    content: |
+      32^n\cdot 11^n\cdot 2 \equiv (-2)^n\cdot (-6)^n\cdot 2 \pmod{17}
+  - type: narrative
+    content: |
+      Az így kapott két kongruenciát a [egesz-szamok-kozotti-kongruencia-tulajdonsagai] 4.
+  - type: formula
+    lead-in: |
+      pontja miatt összeadhatjuk, így az alábbi kongruenciát kapjuk:
+    content: |
+      \begin{aligned}&27^n\cdot 25^n\cdot 15 + 32^n\cdot 11^n\cdot 2 \equiv \\ \equiv \ &(-7)^n\cdot 8^n\cdot 15 +
+      (-2)^n\cdot (-6)^n\cdot 2 \pmod{17}\end{aligned}
+  - type: narrative
+    content: |
+      E konguencia jobboldala ismét a hatványozás azonosságairól szóló [hatvanyozas-azonossagai] 1.
+  - type: formula
+    lead-in: |
+      pontja miatt így írható fel:
+    content: |
+      \begin{aligned}&(-7)^n\cdot 8^n\cdot 15 + (-2)^n\cdot (-6)^n\cdot 2 \equiv \\ \equiv \ &(-56)^n\cdot 15 +
+      12^n\cdot 2 \pmod{17}\end{aligned}
+  - type: narrative
+    content: |
+      Mivel $(-56)\equiv (-5)\pmod{17}$, valamint $12\equiv (-5)\pmod{17}$, ezért ismételten alkalmazva a
+      [egesz-szamok-kozotti-kongruencia-tulajdonsagai] 4., 5. és 8.
+  - type: formula
+    lead-in: |
+      pontjait, ezt kapjuk:
+    content: |
+      \begin{aligned}&(-56)^n\cdot 15 + 12^n\cdot 2 \equiv \\ \equiv \ &(-5)^n\cdot 15 + (-5)^n\cdot 2
+      \pmod{17}\end{aligned}
+  - type: narrative
+    content: |
+      Erre már alkalmazhatjuk a gyűrűkre érvényes disztributivitási axiómát ([gyuru-test] 5.
+  - type: formula
+    lead-in: |
+      pont):
+    content: |
+      (-5)^n\cdot 15 + (-5)^n\cdot 2 \equiv (-5)^n\cdot 17 \pmod{17}
+  - type: formula
+    lead-in: |
+      Végül, mivel $17\equiv 0\pmod{17}$, ezért teljesül az alábbi kongruencia is:
+    content: |
+      (-5)^n\cdot 17\equiv 0\pmod{17}
+  - type: formula
+    lead-in: |
+      Végeredményben tehát a sorozatos átalakításokat elvégezve, és az így kapott kifejezések részeit velük
+      kongruens részkifejezésekkel helyettesítve az alábbi kifejezés valóban tetszőleges $n$ pozitív egész szám
+      esetén osztható $17$-tel:
+    content: |
+      3^{3n+1}\cdot 5^{2n+1}+2^{5n+1}\cdot 11^n
+  - type: narrative
+    content: |
+      Valljuk be, hogy kongruenciák nélkül ennek és az ehhez hasonló kérdéseknek a megválaszolása sokkal nehezebb
+      lenne. Kénytelenek lennénk $n$-re vonatkozó teljes indukciót alkalmazni, amiből persze az oszthatóságról
+      szóló [oszthatosag-tulajdonsagai] állításait használva ugyanezt az eredményt kapnánk, csak épp egy sokkal
+      kényelmetlenebb úton. Ehelyett azonos átalakításokat és a kongruenciák tulajdonságait használva egy ilyen
+      kérdés megválaszolása pár sorban megoldható.
+  - type: formula
+    lead-in: |
+      Most gyakorlásképpen vegyük át mégegyszer a fenti levezetést egyben:
+    content: |
+      \begin{aligned}3^{3n+1}\cdot 5^{2n+1}+2^{5n+1}\cdot 11^n &= \\ = 27^n\cdot 25^n\cdot 15 + 32^n\cdot 11^n\cdot
+      2 &\equiv \\ \equiv \ (-7)^n\cdot 8^n\cdot 15 + (-2)^n\cdot (-6)^n\cdot 2 &= \\ = (-56)^n\cdot 15 + 12^n\cdot
+      2 &\equiv \\ \equiv (-5)^n\cdot 15 + (-5)^n\cdot 2 &= \\ = (-5)^n\cdot 17 &\equiv 0\pmod{17}\end{aligned}

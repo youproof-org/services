@@ -1,0 +1,20 @@
+type: definition
+name: komplexusmuveletek
+remarks:
+  - komplexusmuveletek-megjegyzes
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy $H$ egy tetszőleges részhalmaza egy valamilyen $G$ halmaznak, valamint legyen $g$ egy
+      tetszőleges $G$-beli elem.
+  - type: narrative
+    content: |
+      Amennyiben a $G$ halmazon értelmezve van egy $\cdot$-tal vagy egymás után írással jelölt, szorzásnak nevezett
+      művelet, akkor $g\cdot H$-val vagy $gH$-val jelöljük azt a halmazt, amelynek elemei úgy képződnek, hogy $H$
+      minden elemével balról összeszorozzuk a $g$ elemet. Ehhez hasonlóan $H\cdot g$-vel vagy $Hg$-vel jelöljük azt
+      a halmazt, amelynek elemei úgy képződnek, hogy $H$ minden elemével jobbról összeszorozzuk a $g$ elemet. Az
+      így képzett $gH$ és $Hg$ halmazokat a $H$ halmaz $g$ elemmel vett ***komplexusszorzatának*** nevezzük.
+  - type: narrative
+    content: |
+      Ehhez hasonlóan amennyiben a műveletet $\cdot$ helyett $+$ jelöli, akkor a $g+H$ és $H+g$ halmazokat a $H$
+      halmaz $g$ elemmel vett ***komplexusösszegének*** nevezzük.

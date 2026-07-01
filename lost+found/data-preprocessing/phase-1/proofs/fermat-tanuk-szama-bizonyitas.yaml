@@ -1,0 +1,52 @@
+type: proof
+name: fermat-tanuk-szama-bizonyitas
+remarks: []
+references:
+  fermat-tanu-es-nem-fermat-tanu-szorzata:
+    target:
+      type: theorem
+      name: fermat-tanu-es-nem-fermat-tanu-szorzata
+  kulonbozo-maradekosztalyok-szorzasa-redukalt-maradekosztallyal:
+    target:
+      type: theorem
+      name: kulonbozo-maradekosztalyok-szorzasa-redukalt-maradekosztallyal
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy összesen $k$ darab olyan modulo $n$ redukált maradékosztály van, amely ***nem
+      Fermat-tanú***.
+  - type: formula
+    lead-in: |
+      Legyenek például ezek az alábbiak, amelyek tehát páronként különböző redukált maradékosztályok:
+    content: |
+      \begin{aligned}&[a_1]_n \\ &[a_2]_n \\ &[a_3]_n \\ &\vdots \\ &[a_k]_n \end{aligned}
+  - type: narrative
+    content: |
+      Tegyük fel továbbá, hogy $n$-nek ***létezik legalább egy Fermat-tanúja*** a redukált maradékosztályok között.
+  - type: formula
+    lead-in: |
+      Legyen ez például az alábbi redukált maradékosztály:
+    content: |
+      [b]_n
+  - type: formula
+    lead-in: |
+      Amennyiben ezzel a $[b]_n$ Fermat-tanúval végigszorozzuk a fenti $k$ darab nem Fermat-tanút, akkor az alábbi
+      maradékosztályokat kapjuk, amelyek a [fermat-tanu-es-nem-fermat-tanu-szorzata] alapján szintén mindannyian
+      Fermat-tanúk és redukált maradékosztályok:
+    content: |
+      \begin{aligned}[b]_n &\odot [a_1]_n \\ [b]_n &\odot [a_2]_n \\ [b]_n &\odot [a_3]_n \\ &\vdots \\ [b]_n
+      &\odot [a_k]_n \end{aligned}
+  - type: narrative
+    content: |
+      Mivel a szorzáshoz használt $[b]_n$ egy redukált maradékosztály, továbbá az $[a_1]_n$, $[a_2]_n$, ...,
+      $[a_k]_n$ redukált maradékosztályok páronként különbözőek voltak, emiatt a
+      [kulonbozo-maradekosztalyok-szorzasa-redukalt-maradekosztallyal] alapján az eredményül kapott szorzatok is
+      páronként különböző redukált maradékosztályok. Ráadásul ezek az $[a_1]_n$, $[a_2]_n$, ..., $[a_k]_n$ redukált
+      maradékosztályoktól is biztosan különböznek, hiszen azok nem is voltak Fermat-tanúk.
+  - type: narrative
+    content: |
+      Ha tehát teljesül a tétel feltétele, miszerint $n$-hez létezik legalább egy Fermat-tanú a redukált
+      maradékosztályok között, akkor minden nem Fermat-tanúhoz elő tudunk állítani egy-egy újabb Fermat-tanút
+      szintén a redukált maradékosztályok között. Más szavakkal a redukált maradékosztályok között minimum annyi
+      Fermat-tanú van, mint ahány nem Fermat-tanú, ráadásul létezhetnek további Fermat-tanúk is. A modulo $n$
+      redukált maradékosztályoknak tehát valóban legalább a fele Fermat-tanú.

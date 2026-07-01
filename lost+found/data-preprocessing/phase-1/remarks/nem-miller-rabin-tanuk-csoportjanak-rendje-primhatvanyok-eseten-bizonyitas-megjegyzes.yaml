@@ -1,0 +1,9 @@
+type: remark
+name: nem-miller-rabin-tanuk-csoportjanak-rendje-primhatvanyok-eseten-bizonyitas-megjegyzes
+content:
+  - type: narrative
+    content: |
+      A bizonyításban megkonstruált $f$ függvény által megvalósított leképezés természetesen függeni fog attól,
+      hogy pontosan milyen reprezentánsrendszert választunk $G_{p^c}$-hez. Maga a tény azonban, hogy ez egy
+      ***kölcsönösen egyértelmű*** megfeleltetés lesz $G_{p^c}$ és $G_{p^{c+1}}$ között, természetesen a
+      reprezentánsrendszer megválasztásától függetlenül igaz lesz.

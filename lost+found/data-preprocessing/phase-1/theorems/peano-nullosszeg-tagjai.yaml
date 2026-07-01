@@ -1,0 +1,9 @@
+type: theorem
+name: peano-nullosszeg-tagjai
+proofs:
+  - peano-nullosszeg-tagjai-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      A természetes számok körében ha $a+b=0$, akkor $a=0$ **és** $b=0$.

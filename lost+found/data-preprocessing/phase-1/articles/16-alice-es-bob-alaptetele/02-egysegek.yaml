@@ -1,0 +1,63 @@
+type: section
+name: 02-egysegek
+title: Egységek
+
+references:
+  oszthatosag-tulajdonsagai:
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+
+body:
+  - type: narrative
+    content: |
+      Az oszthatóság tulajdonságairól szóló imént bizonyított [oszthatosag-tulajdonsagai] 4. pontja alapján egy
+      gyűrű nulleleme egyfajta szélsőséget képvisel. Ő ugyanis ***kizárólag saját magának*** osztója. A másik
+      szélsőséget azok a gyűrűelemek képviselik, amelyek viszont ***a gyűrű minden elemének*** osztói. Ezeknek
+      külön nevük is van.
+  - type: embed
+    target:
+      type: definition
+      name: egyseg
+  - type: embed
+    target:
+      type: remark
+      name: egyseg-megjegyzes
+  - type: narrative
+    content: |
+      Az alábbi tétel arra ad választ, hogy mikor létezik egyáltalán egység egy gyűrűben.
+  - type: embed
+    target:
+      type: theorem
+      name: egyseg-letezesenek-szukseges-es-elegseges-feltetele
+  - type: embed
+    target:
+      type: proof
+      name: egyseg-letezesenek-szukseges-es-elegseges-feltetele-bizonyitas
+  - type: narrative
+    content: |
+      Azt tehát már tudjuk, hogy egy ***kommutatív, nullosztómentes gyűrűben pontosan akkor létezik egység, ha
+      egységelem is létezik***. Például az előző szakaszban vizsgált $2\Z$ gyűrűben emiatt ***nem létezik
+      egység***, hiszen egységelem sem létezik.
+  - type: narrative
+    content: |
+      A most következő tétel ahhoz nyújt segítséget, hogy egy ***kommutatív, egységelemes gyűrűben*** megtaláljuk
+      az összes egységet. Ehhez mindössze az egységelem ismerete szükséges, a nullosztómentesség nem.
+  - type: embed
+    target:
+      type: theorem
+      name: egysegek-es-egysegelem-viszonya
+  - type: embed
+    target:
+      type: proof
+      name: egysegek-es-egysegelem-viszonya-bizonyitas
+  - type: narrative
+    content: |
+      Egy ***kommutatív, egységelemes gyűrűben tehát az egységek pontosan az egységelem osztói***. Az egész számok
+      $\Z$ gyűrűjében ez alapján tehát az $1$-en és a $-1$-en kívül nincs más egység, hiszen az $1$ egész számnak
+      nincs más osztója.
+  - type: narrative
+    content: |
+      Megjegyezzük még, hogy az utóbbi két tétel semmit nem mond az egységekről abban az esetben, ha a gyűrű csak
+      kommutatív, de nem egységelemes, és a nullosztómentesség sem teljesül. Az általunk vizsgált esetekben azonban
+      ilyen nem fog előfordulni.

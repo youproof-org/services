@@ -1,0 +1,9 @@
+type: remark
+name: csoporthomomorfizmusok-ciklikussagtarto-tulajdonsaga-megjegyzes
+content:
+  - type: narrative
+    content: |
+      ***Figyelem, a tétel megfordítása nem igaz!*** Triviális ellenpéldaként tekintsünk egy olyan $f:G\to H$
+      csoporthomomorfizmust, amely egy ***nem ciklikus*** $G$ csoport elemeit egy olyan $H$ csoportba képzi,
+      amelynek mindössze egyetlen eleme van, méghozzá az egységelem. Ekkor a mindössze egyetlen elemből álló $H$
+      csoport nyilvánvalóan ciklikus, ám $G$ &ndash; mint említettük &ndash; nem az.

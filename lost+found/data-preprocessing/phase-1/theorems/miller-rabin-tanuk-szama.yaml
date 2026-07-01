@@ -1,0 +1,10 @@
+type: theorem
+name: miller-rabin-tanuk-szama
+proofs:
+  - miller-rabin-tanuk-szama-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $n\gt 1$ egy tetszőleges páratlan egész szám. Ha $n$ összetett, akkor a modulo $n$ redukált
+      maradékosztályoknak ***legalább a fele*** Miller-Rabin-tanú.

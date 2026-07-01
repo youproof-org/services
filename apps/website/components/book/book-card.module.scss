@@ -1,0 +1,38 @@
+@use 'variables' as *;
+
+.link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.card {
+  border: 1px solid $black;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  padding: 2rem;
+  max-width: $max-width-card;
+  transition: box-shadow 0.2s;
+
+  &:hover {
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  }
+}
+
+.label {
+  font-size: 0.75rem;
+  font-weight: $font-light;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.title {
+  font-size: 1.25rem;
+}
+
+.subtitle {
+  font-size: 0.875rem;
+  font-weight: $font-light;
+  margin-top: 0.5rem;
+  color: $gray-500;
+}

@@ -1,0 +1,112 @@
+type: section
+name: 07-a-kicsi-kodolo-kulcsok-problemaja
+title: A kicsi kódoló kulcsok problémája
+
+references:
+  gyuruk-direkt-szorzata:
+    target:
+      type: theorem
+      name: gyuruk-direkt-szorzata
+  kinai-maradektetel-alternativ:
+    target:
+      type: theorem
+      name: kinai-maradektetel-alternativ
+  kinai-maradektetel-megforditasa:
+    target:
+      type: theorem
+      name: kinai-maradektetel-megforditasa
+
+body:
+  - type: narrative
+    content: |
+      A 22. részben a RSA dekódolás gyorsítási lehetőségei kapcsán megemlítettük, hogy az RSA biztonsága nem függ a
+      publikus $e$ kódoló kitevő megválasztásától. Az ***ismételt négyzetreemelések módszerét*** vizsgálva a 21.
+      részben megállapítottuk, hogy célszerű olyan kitevőt választani, amelynek bináris számábrázolásában kevés
+      számú $1$-es bit szerepel. Emiatt racionális megfontolásnak tűnhet, ha a megvalósítás során úgy döntünk, hogy
+      egy viszonylag alacsony számtartományból választjuk ki a rendszer felhasználóihoz tartozó $e$ publikus
+      kitevőket a kulcsgenerálás során. Ez azonban bizonyos körülmények között a nyílt üzenet kiszámítására adhat
+      lehetőséget egy támadó számára anélkül, hogy feltörné a titkosító kódolást.
+  - type: narrative
+    content: |
+      Tegyük fel ugyanis, hogy egy sokfelhasználós rendszerről van szó, és kicsi az a számtartomány, amelyből
+      kisorsoljuk a felhasználók számára a publikus $e$ kitevőt. Ekkor előfordulhat, hogy több felhasználó is
+      ugyanazt a kitevőt kapja. Tegyük fel, hogy $k$ darab felhasználó kapta ugyanazt az $e$ kitevőt.
+      Szerencsétlen, ugyanakkor nem túl ritka esetekben még az is megeshet, hogy $e\leq k$ is teljesül. Ez
+      látszólag nem jelent problémát, hiszen természetesen más és más prímpárokat sorsolunk hozzájuk, tehát e $k$
+      darab felhasználóhoz különböző modulusok és dekódoló kitevők fognak tartozni.
+  - type: narrative
+    content: |
+      Képzeljük el azonban, hogy valaki egy bizalmas körlevelet küld felhasználók egy csoportjának, amelybe
+      történetesen a fenti $k$ darab felhasználó is beletartozik. Ebben az esetben tehát az $x$ nyílt szöveg
+      ugyanaz lesz. A küldő fél egyenként előkeresi a publikus kulcstárból a címzettek publikus kulcsait, és
+      mindenki számára egyedileg kódolja az üzenetet a 21. részben leírt módon.
+  - type: formula
+    lead-in: |
+      A szerencsétlenül járt $k$ darab felhasználónak kiküldött $y_1$, $y_2$, ..., $y_k$ rejtett üzenetekből a
+      támadó az alábbi kongruenciarendszert tudja felírni:
+    content: |
+      \begin{aligned}y_1&\equiv x^e\pmod{m_1} \\ y_2&\equiv x^e\pmod{m_2} \\ &\vdots \\ y_k&\equiv
+      x^e\pmod{m_k}\end{aligned}
+  - type: narrative
+    content: |
+      Ebben a kongruenciarendszerben a támadó számára egyedül az $x$ nyílt üzenet ismeretlen, hiszen egyrészt a
+      felhasználókhoz tartozó $e$ kitevő és a modulusok számára is elérhetők a publikus kulcstárból, másrészt pedig
+      az $y_1$, $y_2$, ..., $y_k$ rejtett üzeneteket a kommunikációs csatorna lehallgatásával ismeri meg. Most
+      megmutatjuk, hogy a támadó a fent ismertetett szerencsétlen körülmények fennállása esetén ebből a
+      kongruenciarendszerből egy pillanat alatt megkaphatja az $x$ nyílt üzenetet.
+  - type: narrative
+    content: |
+      Azt mindjárt az elején feltehetjük, hogy az $m_1$, $m_2$, ..., $m_k$ modulusok ***páronként relatív
+      prímek***. Ezek ugyanis véletlenszerűen sorsolt prímpárok szorzataiként állnak elő, így annak gyakorlatilag
+      nincs esélye, hogy van közöttük két olyan, amelynek közös legalább az egyik prímtényezője. Emlékeztetnénk az
+      olvasót a ***kínai maradéktételhez*** kapcsolódó [kinai-maradektetel-alternativ]re, valamint a
+      [kinai-maradektetel-megforditasa]re, amelyek így már alkalmazhatók.
+  - type: narrative
+    content: |
+      Ezek többszöri alkalmazásával azt kapjuk, hogy a $\Z/m_1\Z \times \Z/m_2\Z \times \ldots \times \Z/m_k\Z$
+      szorzatgyűrű (lásd a [gyuruk-direkt-szorzata]t) elemei kölcsönösen egyértelmű megfeleltetésben állnak a
+      $\Z/m_1m_2\ldots m_k\Z$ maradékosztálygyűrű elemeivel.
+  - type: formula
+    lead-in: |
+      A fenti kongruenciarendszer a szorzatgyűrűben tulajdonképpen az alábbi elemet írja le:
+    content: |
+      ([x^e]_{m_1};[x^e]_{m_2};\ldots;[x^e]_{m_k})
+  - type: formula
+    lead-in: |
+      Ennek a $\Z/m_1m_2\ldots m_k\Z$ maradékosztálygyűrűben a [kinai-maradektetel-megforditasa] alapján az alábbi
+      maradékosztály felel meg:
+    content: |
+      [x^e]_{m_1\cdot m_2\cdot \ldots \cdot m_k}
+  - type: narrative
+    content: |
+      Vegyük észre azonban, hogy az $x$ nyílt üzenetet a küldő az ***előkódolás*** során úgy választotta meg, hogy
+      az $0$ és a legkisebb modulus közé essen. Az ***előkódolásról*** a 21. részben írtunk bővebben.
+  - type: formula
+    lead-in: |
+      Teljesülnek tehát az alábbi egyenlőtlenségek:
+    content: |
+      \begin{aligned}0\leq x &\lt m_1 \\ 0\leq x&\lt m_2 \\ &\vdots \\ 0\leq x &\lt m_k\end{aligned}
+  - type: formula
+    lead-in: |
+      Mivel azt mondtuk, hogy szerencsétlen módon az $e\leq k$ egyenlőtlenség is fennáll, ezért ebben az esetben
+      nyilván teljesül az alábbi is:
+    content: |
+      0\leq x^e \lt m_1m_2\ldots m_k
+  - type: narrative
+    content: |
+      Így a támadó valójában az $[x^e]_{m_1m_2\ldots m_k}$ maradékosztály legkisebb nemnegatív reprezentánselemét
+      kapja meg, amely nem más, mint a nyílt üzenetnek ténylegesen az $e$-edik hatványa &ndash; és nem pedig annak
+      modulo megfelelője. Ebből viszont az $x$ nyílt üzenetet már egyszerűen megkaphatja.
+  - type: narrative
+    content: |
+      Alice-nak és Bob-nak tehát azt javasolhatjuk, hogy a kulcsgeneráláskor semmiképpen se korlátozzák az $e$
+      kitevőt egy szűk számtartományra, nehogy a fenti kellemetlenségben legyen részük. A kódolás gyorsasága
+      szempontjából a lényeg úgyis az, hogy kevés számú $1$-es legyen $e$ bináris ábrázolásában, nem pedig az, hogy
+      ő maga kicsi legyen. Ezen túlmenően amikor ugyanazt az üzenetet nagyszámú résztvevőnek továbbítjuk, akkor
+      célszerű az üzenet egyes példányaiba valamilyen véletlentől függő elemet is belevinni. Például megtehetjük,
+      hogy az utolsó valahány biten hasznos tartalom helyett elhelyezünk egy véletlenszámot.
+  - type: narrative
+    content: |
+      Ennek az az előnye, hogy így az eredeti $x$ üzenet egyes példányai különböző kódolandó nyílt üzenetekké
+      válnak, amivel a fenti támadás lehetőségét egycsapásra kiiktattuk. Természetesen ekkor a küldő és fogadó
+      félnek meg kell egyezniük egymással, hogy melyek lesznek a haszontalan bitek.

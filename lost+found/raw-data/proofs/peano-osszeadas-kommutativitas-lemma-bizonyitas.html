@@ -1,0 +1,75 @@
+<!-- wp:paragraph -->
+<p>A teljes indukciót a [latex]b[/latex]-re fogjuk alkalmazni. Első lépésként feltesszük, hogy az állítás már igaz valamilyen [latex]b=n[/latex] természetes számra, azaz [latex]a+s(n)=s(a)+n[/latex]. Ezt <strong><em>indukciós feltételnek</em></strong> nevezzük. Azt kell bizonyítanunk, hogy ebben az esetben [latex]b=s(n)[/latex]-re is igaz lesz, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a+s(\underbrace{s(n)}_{=b}) = s(a) + \underbrace{s(n)}_{=b}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most nézzük meg, hogy a baloldali kifejezésből milyen lépéseken keresztül tudunk eljutni a jobboldali kifejezéshez. Először is a [yp_element slug="peano-osszeadas" type="link" /] 2. pontja miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a+s(s(n)) = s(a+s(n)) = \ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az indukciós feltétel miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots =s(s(a) + n)= \ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Végül szintén a [yp_element slug="peano-osszeadas" type="link" /] 2. pontja miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots = s(a) + s(n)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Vagyis azt kaptuk, hogy valóban [latex]a+s(\underbrace{s(n)}_{=b}) = s(a) + \underbrace{s(n)}_{=b}[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Felállítottuk tehát a dominósort, és beláttuk, hogy bármely dominó felborítása esetén a soron következő dominó is fel fog borulni. De mit sem érnénk ezzel a ténnyel, ha nem borítanánk fel az első dominót. Ezért most azt igazoljuk, hogy az állítás igaz [latex]b=0[/latex]-ra, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a+s(0) = s(a) + 0[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az [yp_element slug="peano-osszeadas" type="link" /] 2. pontja miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a + s(0) = s(a+0) = \ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ugyanezen definíció 1. pontja miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots = s(a) = \ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>És ismét ugyanezen definíció 1. pontja miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots = s(a) + 0[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Vagyis azt kaptuk, hogy valóban [latex]a+s(0) = s(a) + 0[/latex], borul tehát az első dominó, és vele együtt a teljes dominósor.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ha ugyanis az állítás igaz [latex]b=0[/latex]-ra, akkor igaz lesz [latex]b=1[/latex]. De ha igaz [latex]b=1[/latex]-re, akkor igaz lesz [latex]b=2[/latex]-re is. És így tovább, mivel láttuk, hogy ha igaz [latex]b=n[/latex]-re, akkor igaz lesz [latex]b=s(n)[/latex]-re is, ezért ez az igazság a rákövetkezésen keresztül tovább öröklődik egészen a végtelenségig.</p>
+<!-- /wp:paragraph -->

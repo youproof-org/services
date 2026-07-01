@@ -1,0 +1,10 @@
+type: definition
+name: antiszimmetrikus-relacio
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen adott egy $H$ halmaz és egy ezen a halmazon értelmezett $R$ reláció, valamint tegyük fel, hogy $a$ és
+      $b$ a $H$ halmaz tetszőleges, de ***egymástól különböző elemei*** &ndash; azaz $a\eq b$. Ha minden ilyen
+      esetben $aRb$ és $bRa$ közül ***legfeljebb az egyik*** teljesül, akkor azt mondjuk, hogy az $R$ reláció
+      ***antiszimmetrikus***.

@@ -1,0 +1,15 @@
+type: theorem
+name: euklideszi-algoritmus-alapgondolata
+proofs:
+  - euklideszi-algoritmus-alapgondolata-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ egy tetszőleges ***integritástartomány***.
+  - type: formula
+    lead-in: |
+      Ekkor ha valamely $a$ és $b$ elemeknek létezik az $(a,b)$ kitüntetett közös osztója, akkor tetszőleges $k$
+      elem esetén érvényes az alábbi összefüggés:
+    content: |
+      (a,b)=(b, a-kb)

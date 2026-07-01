@@ -1,0 +1,9 @@
+type: theorem
+name: foidealgyurukben-teljesul-a-szamelmelet-alaptetele
+proofs:
+  - foidealgyurukben-teljesul-a-szamelmelet-alaptetele-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Minden ***főideálgyűrűben*** teljesül a számelmélet alaptétele.

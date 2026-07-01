@@ -1,0 +1,15 @@
+type: theorem
+name: termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel
+proofs:
+  - termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel-bizonyitas
+remarks: []
+references:
+  termeszetes-szamparok-ekvivalenciarelacioja:
+    target:
+      type: definition
+      name: termeszetes-szamparok-ekvivalenciarelacioja
+content:
+  - type: narrative
+    content: |
+      A [termeszetes-szamparok-ekvivalenciarelacioja]ban szereplő $\sim$ reláció két tetszőleges $(a;b)$ és $(c;d)$
+      számpárok között ***akkor és csak akkor*** teljesül, ha $a+d=b+c$.

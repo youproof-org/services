@@ -1,0 +1,23 @@
+type: remark
+name: relativ-primek-megjegyzes
+references:
+  minden-prim-felbonthatatlan:
+    target:
+      type: theorem
+      name: minden-prim-felbonthatatlan
+content:
+  - type: narrative
+    content: |
+      ***Figyelem! Ez a fogalom nem azonos sem a felbonthatatlanok sem pedig a prímek fogalmával.*** Abból ugyanis,
+      hogy két elem egymáshoz relatív prím, még nem következik, hogy közülük bármelyik is akár felbonthatatlan,
+      akár prím lenne. Például a $\Z$ gyűrűben a $8$ és a $9$ egész számoknak nincs a $-1$-en és az $1$-en (tehát a
+      gyűrű egységein) kívül más közös osztójuk, így relatív prímek. Ám egyikük sem felbonthatatlan (és így a
+      [minden-prim-felbonthatatlan] miatt nem is prím), hiszen a $8=2\cdot 4$ és a $9=3\cdot 3$ nemtriviális
+      felbontások.
+  - type: narrative
+    content: |
+      Megjegyezzük még, hogy ***egységelemes integritástartomány esetén az az állítás, miszerint $a$ és $b$ relatív
+      prím ekvivalens azzal az állítással, hogy $(a,b)\sim 1$.*** Hiszen egyrészt ha létezik egységelem, akkor
+      léteznek egységek is, amelyek minden elemnek osztói, így $a$-nak és $b$-nek közös osztói. Másrészt más közös
+      osztójuk nem is lehet, mivel relatív prímek. Ebből következik, hogy ***pontosan az egységek a kitüntetett
+      közös osztók***, mivel ők egymásnak is osztói.

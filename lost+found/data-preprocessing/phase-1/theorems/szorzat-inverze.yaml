@@ -1,0 +1,31 @@
+type: theorem
+name: szorzat-inverze
+proofs:
+  - szorzat-inverze-bizonyitas
+remarks: []
+references:
+  inverz-elem:
+    target:
+      type: definition
+      name: inverz-elem
+  neutralis-elem:
+    target:
+      type: definition
+      name: neutralis-elem
+content:
+  - type: narrative
+    content: |
+      Legyen $H$ egy tetszőleges halmaz, amelyen értelmezve van egy $*$-gal jelölt ***asszociatív*** művelet, és
+      tegyük fel, hogy létezik $H$-ban ***neutrális elem*** ([neutralis-elem]) erre a műveletre nézve. Legyenek
+      továbbá $x$ és $y$ a $H$ halmaz két olyan eleme, amelyek ***invertálhatók*** ([inverz-elem]) a $*$ műveletre
+      nézve. Jelöljük ezek inverzeit rendre $x^{-1}$-gyel és $y^{-1}$-gyel.
+  - type: formula
+    lead-in: |
+      Ekkor teljesül az alábbi azonosság:
+    content: |
+      (x*y)^{-1}=y^{-1}*x^{-1}
+  - type: formula
+    lead-in: |
+      Ha $x$ és $y$ felcserélhetők, azaz $x*y=y*x$, akkor teljesül az alábbi azonosság is:
+    content: |
+      (x*y)^{-1}=x^{-1}*y^{-1}

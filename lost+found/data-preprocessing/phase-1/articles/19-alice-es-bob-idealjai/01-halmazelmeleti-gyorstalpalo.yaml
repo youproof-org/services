@@ -1,0 +1,146 @@
+type: section
+name: 01-halmazelmeleti-gyorstalpalo
+title: Halmazelméleti gyorstalpaló
+
+references:
+  halmazmuveletek:
+    target:
+      type: definition
+      name: halmazmuveletek
+  ketvaltozos-muvelet:
+    target:
+      type: definition
+      name: ketvaltozos-muvelet
+  peano-axiomarendszer:
+    target:
+      type: definition
+      name: peano-axiomarendszer
+  reszhalmaz:
+    target:
+      type: definition
+      name: reszhalmaz
+
+body:
+  - type: narrative
+    content: |
+      A ***halmaz*** a matematika egyik legalapvetőbb fogalma, melyet leginkább az "összesség" illetve "sokaság"
+      szavakkal tudunk körülírni. Ezt a fogalmat nem definiáljuk, mivel ***alapfogalom***. Ez ahhoz hasonlatos,
+      mint ahogyan a természetes számokat bevezettük a 11. részben. Ha visszaemlékszünk, ott sem mondtuk meg, hogy
+      konkrétan mik azok a természetes számok. Pusztán annyit állítottunk róluk, hogy egy $\N$-nel jelölt halmaz
+      elemei, amelyek eleget tesznek 4 egyszerű tulajdonságnak. Ezeket a tulajdonságokat ***Peano-axiómáknak***
+      neveztük és a [peano-axiomarendszer]ban soroltuk fel őket. Minden, amit az elmúlt részekben tárgyaltunk,
+      ennek a mindössze 4 axiómának a következménye, vagy legalábbis abból eredeztethető.
+  - type: narrative
+    content: |
+      Míg a természetes és az általánosabb egész számokkal a számelmélet, addig a halmazok tulajdonságaival a
+      ***halmazelmélet*** foglalkozik. Végsősoron minden, a matematika által vizsgált objektum halmaz, de
+      legalábbis megadható olyan modellje, amely kizárólag a halmazelmélet alapfogalmait használja. Így annak
+      ellenére, hogy csak a 19. századra fejlődött ki, a halmazelmélet mára a modern matematika minden ágának
+      &ndash; a matematikai logika mellett &ndash; az alapja lett.
+  - type: narrative
+    content: |
+      A halmazelmélet korai változatát, az úgynevezett ***naív halmazelméletet*** Georg Cantor és Richard Dedekind
+      úttörő munkásságának köszönhetjük. Mi ebben a részben elsősorban ezzel fogunk foglalkozni a könnyebb
+      érthetőség kedvéért. Ugyanakkor megemlítjük, hogy a 20. század elején a naív halmazelméletben bizonyos
+      szélsőséges esetekben komoly logikai ellentmondásokat fedeztek fel, amely az egész matematikát megrengette,
+      így szükségessé vált a halmazelméletet is axiomatikus alapokra helyezni. Ebben a cikksorozatban azonban erre
+      nem fogunk kitérni bővebben. Az általunk használt halmazelméleti eszköztár ugyanis az axiomatikus
+      halmazelméletben is ugyanaz lenne.
+  - type: narrative
+    content: |
+      Minden matematikai elmélet valamilyen objektumokkal, illetve azok tulajdonságaival foglalkozik. Például a
+      számelméletben ezek az objektumok lehetnek mondjuk az egész számok, egy tulajdonság pedig a 2-vel való
+      oszthatóság. A halmazelmélet ennél absztraktabb módon tekint a világra: számára csak objektumok és
+      tulajdonságok vannak. ***Halmaznak*** nevezzük azon objektumok összességét, amelyekre teljesül valamilyen
+      közös tulajdonság. Ám azzal, hogy konkrétan mik ezek az objektumok és a szóban forgó tulajdonság, a
+      halmazelmélet szintjén már nem foglalkozunk. Ezt úgy is meg lehet fogalmazni, hogy magát a tulajdonságot
+      &ndash; bármi legyen is az &ndash; egy ***halmazként***, azokat az objektumokat pedig &ndash; bármik legyenek
+      is azok &ndash;, amelyekre az e halmaz által reprezentált tulajdonság teljesül, a ***halmaz elemeiként***
+      képzeljük el.
+  - type: narrative
+    content: |
+      Az alábbi definíció nem határozza meg a most ismertetett ***"halmaz"*** és ***"eleme lenni"*** fogalmak
+      jelentését, mivel azok formális logikai szempontból ***alapfogalmak***, így ez lehetetlen lenne. Ehelyett
+      csak az ezekre vonatkozó jelöléseket ismerteti, valamint definiál néhány kapcsolódó fogalmat is, amelyek
+      viszont már nem alapfogalmak:
+  - type: embed
+    target:
+      type: definition
+      name: halmazelmeleti-alapfogalmak
+  - type: embed
+    target:
+      type: remark
+      name: halmazelmeleti-alapfogalmak-megjegyzes
+  - type: narrative
+    content: |
+      Az ***univerzális halmaz*** definíciójában szerepelő, kissé homályos ***"minden vizsgált objektum"***
+      megfogalmazás talán zavaró lehet. Az, hogy ezalatt pontosan mit értünk, mindig attól függ, hogy pontosan
+      milyen matematikai objektumokat vizsgálunk a halmazelmélet eszközeivel. Vizsgálhatjuk például az egész
+      számokat, amikoris az univerzális halmaz az egész számok $\Z$ halmaza lesz. De vizsgálhatjuk például egy
+      valamilyen $H$ halmaz bizonyos részhalmazait is. Ebben az esetben az univerzális halmaz $H$-nak a vizsgált
+      részhalmazaiból fog állni. Ilyen úgynevezett ***halmazrendszerekről*** lesz szó a következő szakaszban,
+      azután pedig az ott szerzett ismereteket gyűrűk ideáljainak vizsgálatához fogjuk felhasználni.
+  - type: narrative
+    content: |
+      Az imént bevezetett halmazelméleti alapfogalmak segítségével most bevezetünk egy fontos relációt két halmaz
+      között.
+  - type: embed
+    target:
+      type: definition
+      name: reszhalmaz
+  - type: narrative
+    content: |
+      Például az egész számok $\Z$ halmazának egy valódi részhalmazát alkotják a páros számok. Részhalmaz, mert
+      minden páros szám egyben egész szám is, és valódi részhalmaz, mert van olyan egész szám, amely nem páros.
+  - type: embed
+    target:
+      type: remark
+      name: reszhalmaz-megjegyzes
+  - type: narrative
+    content: |
+      Halmazok között értelmezhetünk kétváltozós műveleteket (lásd a [ketvaltozos-muvelet]t). Ezek tehát két
+      tetszőleges halmazból képeznek egy újabb halmazt, méghozzá az alábbiak szerint.
+  - type: embed
+    target:
+      type: definition
+      name: halmazmuveletek
+  - type: formula
+    lead-in: |
+      Ha például $A=\{1;2;3\}$, $B=\{3;4;5\}$, és az $U$ univerzumnak a pozitív egész számokat tekintjük, akkor az
+      imént definiált halmazműveletek az alábbi halmazokat adják:
+    content: |
+      \begin{aligned}A\cup B&=\{1;2;3;4;5\} \\ A\cap B&=\{3\} \\ A\setminus B&=\{1;2\} \\ B\setminus A&=\{4;5\} \\
+      \overline{A}&=\{4;5;6;\ldots\} \\ \overline{B}&=\{1;2;6;7;8;\ldots\}\end{aligned}
+  - type: narrative
+    content: |
+      A halmazokat, illetve azok viszonyait az úgynevezett Venn-diagramok segítségével ábrázolhatjuk. Itt a
+      halmazokat különböző síkidomok (körök, téglalapok, ellipszisek), míg a halmazok elemeit pontok
+      reprezentálják. Az univerzális halmazt legtöbbször az ábrát körülvevő tégalalappal jelöljük. A Venn-diagram
+      általában csak néhány halmaz szemléltetésére alkalmas, mivel sok egymást kölcsönösen metsző halmaz esetén az
+      ábra elbonyolódik, vagy nem is lehetséges az összes metszetet ábrázolni.
+  - type: figure
+    lead-in: |
+      Az alábbi Venn-diagramokon a fenti példában szereplő halmazműveleteket és a [reszhalmaz] szerinti
+      tartalmazási relációt szemléltettük:
+    src: 01-halmazmuveletek-szemleltetese-venn-diagramokon.jpg
+    alt: Halmazműveletek szemléltetése Venn-diagramokon
+    caption: Halmazműveletek szemléltetése Venn-diagramokon
+  - type: figure
+    src: 02-tartalmazasi-relacio-szemleltetese-venn-diagramon.jpg
+    alt: Tartalmazási reláció szemléltetése Venn-diagramon
+    caption: Tartalmazási reláció szemléltetése Venn-diagramon
+  - type: narrative
+    content: |
+      A [halmazmuveletek] szerinti halmazműveletekre érvényesek az alábbi tulajdonságok.
+  - type: embed
+    target:
+      type: theorem
+      name: halmazmuveletek-tulajdonsagai
+  - type: narrative
+    content: |
+      Az alábbi bizonyítás gondolatmeneteinek könnyebb megértése érdekében javasoljuk az Olvasónak a fentebb már
+      említett Venn-diagramok használatát.
+  - type: embed
+    target:
+      type: proof
+      name: halmazmuveletek-tulajdonsagai-bizonyitas

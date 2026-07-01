@@ -1,0 +1,11 @@
+type: theorem
+name: szamelmelet-alaptetele-nem-egysegelemes-integritastartomanyokban
+proofs:
+  - szamelmelet-alaptetele-nem-egysegelemes-integritastartomanyokban-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ egy ***integritástartomány***, amelyben ***nem létezik egységelem***. Ekkor $R$-ben ***nem
+      teljesül*** a számelmélet alaptétele. Másként fogalmazva az alaptétel csak egységelemes
+      integritástartományokban teljesülhet.

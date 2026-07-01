@@ -1,0 +1,20 @@
+type: theorem
+name: generalt-reszgyuru-es-ideal
+proofs:
+  - generalt-reszgyuru-es-ideal-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ egy tetszőleges gyűrű, továbbá $X$ az $R$ gyűrűnek egy ***tetszőleges részhalmaza***. Jelöljük
+      $\mathcal{X}$-szel azt az $R$ fölötti halmazrendszert, amelynek elemei pontosan azok a részgyűrűk $R$-ben,
+      amelyek tartalmazzák $X$-et.
+  - type: narrative
+    content: |
+      Ekkor ***$\mathcal{X}$-ben létezik pontosan egy legszűkebb elem***, amelyet az ***$X$ által generált
+      részgyűrűnek*** nevezünk, és $\lang X\ang$-szel jelölünk. Ilyenkor azt mondjuk, hogy az $X$ részhalmaz
+      ***generálja*** ezt a bizonyos részgyűrűt &ndash; amely természetesen lehet maga a teljes $R$ is, mint
+      triviális részgyűrű.
+  - type: narrative
+    content: |
+      Ugyanilyen értelemben beszélhetünk az ***$X$ által generált bal-, jobb- vagy kétoldali ideálról*** is.

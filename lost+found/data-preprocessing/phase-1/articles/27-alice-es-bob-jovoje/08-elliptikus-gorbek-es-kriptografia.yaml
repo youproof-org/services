@@ -1,0 +1,165 @@
+type: section
+name: 08-elliptikus-gorbek-es-kriptografia
+title: Elliptikus görbék és kriptográfia
+
+references:
+  egesz-kitevos-hatvany:
+    target:
+      type: definition
+      name: egesz-kitevos-hatvany
+  egesz-szamok-maradekosztalygyurui:
+    target:
+      type: theorem
+      name: egesz-szamok-maradekosztalygyurui
+  modularis-osszeadas-es-szorzas:
+    target:
+      type: definition
+      name: modularis-osszeadas-es-szorzas
+
+body:
+  - type: narrative
+    content: |
+      A Birch és Swinnerton-Dyer sejtéssel kapcsolatos kitérő után röviden ismertetjük, hogy hogyan lehet az
+      elliptikus görbéket a kriptográfiában hasznosítani. Ehhez a szokásos racionális elliptikus görbék helyett
+      ***véges testek feletti elliptikus görbéket*** kell használnunk. Véges testekre az előző szakaszban már
+      láttunk példát. Ilyen véges test például a [modularis-osszeadas-es-szorzas] szerinti $Z_p$ gyűrű, amennyiben
+      $p$ prímszám. Ebben a testben gyakorlatilag a 9. részben bemutatott ***óraaritmetika*** alapján kell
+      számolni, és szerkezetileg teljesen megegyezik a [egesz-szamok-maradekosztalygyurui]ben ismertetett $\Z/p\Z$
+      maradékosztálygyűrűvel.
+  - type: narrative
+    content: |
+      Lehet találni azonban olyan véges testet is, amelynek mérete nem prímszám, hanem valamilyen prímhatvány. Itt
+      viszont már nem működik az óraaritmetika, ezért ebben az esetben egy némileg komplikáltabb konstrukcióra van
+      szükség, amelynek részleteitől most eltekintünk. Továbbá azt is meg lehet mutatni, hogy minden véges test
+      prím vagy prímhatvány méretű, sőt, minden azonos méretű véges test izomorf egymással. Ez tehát azt jelenti,
+      hogy az elemek száma egyértelműen meghatározza a testet. Így például nincs értelme erről vagy arról a 8
+      elemet tartalmazó testről beszélni, hiszen ezek lényegében &ndash; izomorfiától eltekintve &ndash; ugyanazok.
+  - type: narrative
+    content: |
+      Általánosságban ha $q$ valamilyen prím vagy prímhatvány, akkor ***a $q$ elemű testet*** $\mathbb{F}_q$-val
+      jelöljük. Ennek megfelelően egy $\mathbb{F}_q$ feletti $E$ elliptikus görbe által meghatározott csoport jele
+      $E(\mathbb{F}_q)$. Az $E(\mathbb{F}_q)$ csoport tehát egyrészt tartalmaz egy $\mathcal{O}$-val jelölt
+      "végtelen távoli" pontot, amely a csoport neutrális eleme.
+  - type: formula
+    lead-in: |
+      Másrészt pedig azokat az $(x;y)$ rendezett párokat tartalmazza, amelyeknek $x$ és $y$ komponensei az
+      $\mathbb{F}_q$ test elemei, és amelyek teljesítik az alábbi Weierstrass-egyenletet:
+    content: |
+      y^2=x^3+ax+b
+  - type: narrative
+    content: |
+      Itt $a$ és $b$ a görbe paraméterei, amelyek szintén az $\mathbb{F}_q$ test elemei, továbbá a képletben
+      szereplő összeadások, szorzások és hatványozások alatt e test műveleteit kell érteni.
+  - type: narrative
+    content: |
+      Egy ilyen véges test feletti elliptikus görbe pontjai között ugyanúgy értelmezni lehet a $\oplus$
+      szimbólummal jelölt összeadást, mint a racionális elliptikus görbék esetén. A racionális esetben a
+      koordinátáikkal adott $P=(x_p;y_p)$ és $Q=(x_q;y_q)$ pontok összegének kiszámítása egy egyszerű
+      koordináta-geometriai feladat, amelynek itt csak a vázlatát ismertetjük.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán látható, hogy ehhez ki kell számítani a $P$ és $Q$ pontokra illeszkedő $f$ egyenes és az
+      elliptikus görbe $R$ metszéspontját, majd ezt tükrözni kell az $x$ tengelyre:
+    src: 14-pontok-osszegenek-kiszamitasa.jpg
+    alt: Pontok összegének kiszámítása
+    caption: Pontok összegének kiszámítása
+  - type: narrative
+    content: |
+      Előszöris fel kell írnunk az $f$ egyenes egyenletét.
+  - type: formula
+    lead-in: |
+      Ez ugye egy elsőfokú síkgörbe, amely az alábbi alakban írható fel valamilyen $c$, $d$ és $e$ együtthatókkal:
+    content: |
+      cx+dy+e=0
+  - type: narrative
+    content: |
+      A $c$ és $d$ együtthatók közül az egyik biztosan nemnulla, máskülönben a görbe nem lenne elsőfokú. Tegyük
+      fel, hogy $c\ eq 0$. Ha nem ez lenne a helyzet, akkor értelemszerűen a $d\ eq 0$-val kell hasonlóan
+      számolnunk.
+  - type: formula
+    lead-in: |
+      Az egyenlet mindkét oldalát $c$-vel elosztva az alábbit kapjuk, ahol $D=\frac{d}{c}$ és $E=\frac{e}{c}$:
+    content: |
+      x+Dy+E=0
+  - type: narrative
+    content: |
+      Mivel a $P$ és $Q$ pontok rajta vannak az egyenesen, ezért ezek koordinátái kielégítik ezt az egyenletet. Így
+      őket behelyettesítve egy két egyenletből álló kétismeretlenes egyenletrendszert kapunk, amelyet megoldva
+      megkapjuk a $D$ és $E$ együtthatókat. Az $f$ egyenes és az elliptikus görbe keresett $R$ metszéspontja
+      egyrészt szintén kielégíti ezt az egyenletet, másrészt pedig kielégíti az elliptikus görbe egyenletét is. Ez
+      ismét egy kétismeretlenes, két egyenletből álló rendszer, amelyet megoldva megkapjuk az $R=(x_r;y_r)$ pont
+      koordinátáit. Ezt kell tükröznünk az $x$ tengelyre ahhoz, hogy megkapjuk a $P\oplus Q$ pontot, ami annyit
+      jelent, hogy vesszük az $y_r$ koordináta ellentettjét.
+  - type: narrative
+    content: |
+      Szokásos iskolás módszerekkel könnyen belátható, hogy az eljárás során végig olyan kifejezéseket kapunk,
+      amelyekben csak a négy alapművelet szerepel. Még akkor is ez a helyzet, amikor $P=Q$, azaz amikor a görbe
+      érintőjével kell számolnunk. További szélsőséges eset, amikor a kapott egyenes függőleges, mivel ekkor az
+      ideális $\mathcal{O}$ pontban fogja metszeni a görbét. Mindenesetre a $P\oplus Q$ pontra kapott képletben
+      minden esetben csak a négy alapművelet szerepel. Ha most elvonatkoztatunk a geometriai tartalomtól, valamint
+      attól, hogy a racionális számok $\mathbb{Q}$ testében számoltunk, akkor ezek a képletek nyilván átvihetők
+      tetszőleges test feletti elliptikus görbékre is. Így az $\mathbb{F}_q$ véges test feletti elliptikus görbék
+      pontjai közötti összeadás képletét is megkaptuk, csak ilyenkor az adott test műveleteivel kell számolnunk. Ha
+      például $q$ prím &ndash; azaz $\mathbb{F}_q\simeq Z_q$ &ndash;, akkor az összeadásokat, és szorzásokat
+      modulo $q$ kell elvégeznünk, továbbá a kivonások és osztások alatt modulo $q$ ellentett- és inverzképzést
+      kell értenünk. Ha $q$ nem prím, hanem valamilyen prímhatvány, akkor persze némileg bonyolultabb a helyzet, de
+      a képletünk akkor is ugyanúgy működik.
+  - type: narrative
+    content: |
+      E képlettel tehát tulajdonképpen az $E(\mathbb{F}_q)$ csoport műveletének elvégzésére kaptunk egy eljárást.
+      Ezt a csoportot ***kriptográfiai primitívek*** képzésére szeretnénk használni, ezért szükségünk lesz egy
+      egyirányú függvényre, amely e csoport elemein, azaz a csoportot meghatározó elliptikus görbe pontjain van
+      értelmezve.
+  - type: formula
+    lead-in: |
+      Ez az egyirányú függvény a következő: tegyük fel, hogy adva van egy $P$ pont az elliptikus görbén, amelyet
+      önmagával $n$-szer összeadunk, azaz:
+    content: |
+      \underbrace{P\oplus P\oplus \ldots \oplus P}_{\text{n darab}}=nP
+  - type: narrative
+    content: |
+      Vegyük észre, hogy ez a [egesz-kitevos-hatvany] alapján tulajdonképpen a $P$ pont $n$-edik "hatványa" az
+      $E(\mathbb{F}_q)$ csoportban, csak épp a definíció utáni megjegyzésben említett ***additív írásmódot***
+      alkalmaztuk, amikoris nem "hatványról", hanem "többszörösről" beszélünk. Ha egy támadó csak a $P$ és $nP$
+      pontokat ismeri, akkor az $n$ "kitevő" kiszámításához tulajdonképpen a ***diszkrét logaritmus problémájával
+      (DLP)*** kell szembenéznie, ami &ndash; mint láttuk &ndash; reménytelen feladat, ha kellően nagy a csoport.
+  - type: narrative
+    content: |
+      A 9. részben ismertettük a ***Diffie-Hellman kulcscsere protokollt***, amelynek biztonságát tulajdonképpen a
+      $Z_p$ test multiplikatív csoportján értelmezett DLP nehézsége adta. Most nézzük meg, hogyan néz ki ugyanez
+      az eljárás, ha azt az $E(\mathbb{F}_q)$ csoporton értelmezzük.
+  - type: ordered-list
+    lead-in: |
+      Ezt az eljárást ***ECDH (Elliptic Curve Diffie-Hellman) protokollnak*** nevezzük:
+    items:
+      - 'Alice és Bob szeretnének egy nembiztonságos csatornán keresztül megállapodni egy közös titokban, amelyet egy titkosítási eljárás szimmetrikus kulcsaként használhatnának. Ez a közös titok egy véges test feletti elliptikus görbe egy pontja lesz. Először tehát megbeszélik, hogy pontosan melyik elliptikus görbét és melyik testet használják, továbbá megegyeznek egy kiindulási $P$ pontban. Ezeket nem kell titokban tartaniuk, így ezt nyugodtan megtárgyalhatják a nembiztonságos csatornán keresztül is.'
+      - 'Mindketten választanak maguknak egy-egy egész számot, amelyet ***titokban tartanak***, még egymással sem közlik azt. Tegyük fel, hogy Alice az $n$, Bob pedig az $m$ egész számot választotta magának.'
+      - 'Alice kiszámítja az $nP$ pontot a görbén, és az eredményt átküldi Bobnak. Bob ehhez hasonlóan kiszámítja az $mP$ pontot, és az eredményt átküldi Alice-nak.'
+      - 'Alice a kapott $mP$ pontból a titkos $n$ szám ismeretében kiszámítja az $n(mP)$ pontot. Ehhez hasonlóan Bob a kapott $nP$ pontból a titkos $m$ szám ismeretében kiszámítja az $m(nP)$ pontot.'
+      - 'Az ***egész kitevős hatványozás azonosságairól*** szóló [egesz-kitevos-hatvanyozas-azonossagai] 2. pontja miatt az előző lépésben kapott két pont meg fog egyezni, és ez lesz a ***közös titok***. Persze itt az additív irásmód miatt hatvány helyett többszörösről beszélünk, de a [egesz-kitevos-hatvanyozas-azonossagai] azonosságai ugyanúgy érvényesek, bárhogy is hívjuk ezt a műveletet.'
+      - 'Ha Eve időközben lehallgatja a csatornát, akkor mindössze a használt elliptikus görbét, a kiindulási $P$ pontot, valamint a csatornán átküldött $nP$ és $mP$ pontokat ismeri meg. Ahhoz, hogy ő is birtokába kerüljön a közös titoknak, ki kéne számítania az $n$ vagy az $m$ egész számot, azaz egy ***DLP-feladatot*** kellene megoldania az $E(\mathbb{F}_q)$ csoportban, amit belátható időn belül nem tud kivitelezni.'
+  - type: narrative
+    content: |
+      Ez mind szép és jó, viszont a 9. részben azt is megemlítettük, hogy egy úgynevezett ***közbeékelődéses
+      támadással (man-in-the-middle attack)*** egy aktív támadó (például Mallory) el tudja hitetni Alice-szal és
+      Bob-bal, hogy egymással állapodnak meg egy közös titokban, miközben valójában mindketten a támadóval
+      beszélnek. Ez a támadás természetesen az ECDH esetén is ugyanúgy működik, azonban szerencsére létezik
+      ***elliptikus görbéken alapuló digitális aláírás (ECDSA &ndash; Elliptic Curve Digital Signature
+      Algorithm)*** is, amely partnerhitelesítést biztosít. Ismert továbbá ***elliptikus görbéken alapuló
+      aszimmetrikus kulcsú rejtjelezési eljárás*** is. Ezek az eljárások szintén az $E(\mathbb{F}_q)$ csoporton
+      értelmezett DLP nehézségén alapulnak, a részletekre azonban nem térünk ki.
+  - type: narrative
+    content: |
+      Az elliptikus görbéknek köszönhetően tehát Alice és Bob merőben újfajta, és &ndash; egyelőre legalábbis úgy
+      tűnik &ndash; biztonságosabb eszközöket kapott a kezébe titkai elrejtéséhez. Az RSA-hoz képest az
+      ***elliptikus görbéken alapuló kriptográfia (ECC &ndash; Elliptic Curve Cryptography)*** hosszabb távon is
+      fenntartható a sokkal rövidebb kulcsméreteknek köszönhetően, emiatt napjainkban egyre inkább ez válik a de
+      facto szabvánnyá az Interneten. Manapság már a legtöbb webböngésző is támogatja ezeket az algoritmusokat.
+  - type: narrative
+    content: |
+      Nem lehetünk ugyanakkor teljesen nyugodtak, mivel a 20. század első felében az anyagot alkotó elemi
+      részecskék elméletében egy addig soha nem látott forradalom kezdett el körvonalazódni. Megszületett ugyanis a
+      ***kvantummechanika***, amely abszolút felborította addigi világképünket, és úgy általában az egész fizikát.
+      Ez az új tudomány olyan teljesen új elveken működő számítástechnikai eszközöket jósol, amelyeknek
+      elképzelhetetlen számítási kapacitása a jelenlegi, algoritmikus bonyolultságon alapuló kriptográfiai
+      eljárásaink végét fogja jelenteni.

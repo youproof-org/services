@@ -1,0 +1,17 @@
+type: theorem
+name: gyuruhomomorfizmus-szerinti-kongruencia-ekvivalenciarelacio
+proofs:
+  - gyuruhomomorfizmus-szerinti-kongruencia-ekvivalenciarelacio-bizonyitas
+remarks: []
+references:
+  gyuruhomomorfizmus-szerinti-kongruencia:
+    target:
+      type: definition
+      name: gyuruhomomorfizmus-szerinti-kongruencia
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy adva van egy $f:R\to S$ ***gyűrűhomomorfizmus*** valamilyen $R$ és $S$ gyűrűk között. Ekkor
+      a [gyuruhomomorfizmus-szerinti-kongruencia]ban bevezetett $f$ szerinti kongruencia egy
+      ***ekvivalenciareláció*** az $R$ gyűrű elemei között. Az ehhez tartozó ekvivalencia-osztályokat ***$f$
+      szerinti kongruenciaosztályoknak*** vagy ***$f$ szerinti maradékosztályoknak*** nevezzük.

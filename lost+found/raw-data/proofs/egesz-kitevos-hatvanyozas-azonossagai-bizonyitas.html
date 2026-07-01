@@ -1,0 +1,271 @@
+<!-- wp:paragraph -->
+<p><strong><em>Tegyük fel először, hogy [latex]n[/latex] és [latex]k[/latex] mindketten pozitívak.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ekkor az <strong><em>1., 2., és 3. tulajdonságok</em></strong> igazolása szinte szóról szóra megegyezik a [yp_element slug="hatvanyozas-azonossagai" type="link" /] bizonyításának gondolatmenetével. Mindössze két különbség van. Egyrészt most a tétel szövegéből tudjuk, hogy a [latex]\cdot[/latex] művelet asszociatív, emiatt nem kell hivatkoznunk a [yp_element slug="gyuru-test" type="link" /] szerinti 4. gyűrűaxiómára – amit amúgy nem is tudnánk megtenni, hiszen most nem gyűrűről van szó. Másrészt pedig az <strong><em>1. tulajdonság</em></strong> esetén ugyancsak a tétel szövegéből tudjuk, hogy [latex]ab=ba[/latex], így nem kell hivatkoznunk a művelet kommutativitására sem.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>4. tulajdonsághoz</em></strong> az inverz elem [yp_element slug="inverz-elem" type="link" /]ja alapján az alábbi két dolgot kell igazolni (itt [latex]e[/latex]-vel jelöltük a [latex]\cdot[/latex] művelet neutrális elemét):</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a^{-n}\cdot a^n&amp;=e \\ a^n\cdot a^{-n}&amp;=e\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Egyrészt a [yp_element slug="egesz-kitevos-hatvany" type="link" /] alapján [latex]a^{-n}=(a^{-1})^n[/latex], továbbá [latex]a[/latex] és [latex]a^{-1}[/latex] felcserélhetők, hiszen a [yp_element slug="inverz-elem" type="link" /] szerint [latex]a\cdot a^{-1}=a^{-1}\cdot a=e[/latex]. Másrészt, mivel az <strong><em>1. tulajdonságot</em></strong> már bizonyítottuk pozitív [latex]n[/latex] esetén, ezért ezt most felhasználhatjuk. Ez alapján egyrészt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{-n}\cdot a^n=(a^{-1})^n\cdot a^n =(a^{-1}\cdot a)^n=e^n=e[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Másrészt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^n\cdot a^{-n}=a^n\cdot (a^{-1})^n =(a\cdot a^{-1})^n=e^n=e[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Így tehát pozitív [latex]n[/latex] esetén [latex]a^n[/latex] és [latex]a^{-n}[/latex] valóban egymás inverzei.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Most tegyük fel, hogy a két kitevő közül legalább az egyik [latex]0[/latex].</em></strong> Ekkor a [yp_element slug="egesz-kitevos-hatvany" type="link" /]ból azonnal adódik mind a 4 tulajdonság. Ha például [latex]n=0[/latex]:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} -->
+<ol><li>[latex](a\cdot b)^0=e^0=e=e\cdot e=a^0\cdot b^0[/latex], méghozzá függetlenül attól, hogy [latex]a[/latex] és [latex]b[/latex] felcserélhető-e vagy nem.</li><li>[latex](a^0)^k=e^k=e=a^0=a^{0\cdot k}[/latex]. Itt az [latex]e^k=e[/latex] lépésnél kihasználtuk, hogy a neutrális elem önmaga inverze, így ez valóban teljesül függetlenül attól, hogy [latex]k[/latex] pozitív, negatív vagy esetleg [latex]0[/latex].</li><li>[latex]a^0\cdot a^k=e\cdot a^k=a^k=a^{0+k}[/latex]</li><li>Egyrészt mivel a [latex]0[/latex] ellentettje önmaga, azaz [latex]0=-0[/latex], ezért [latex]a^{-0}=a^0=e[/latex]. Másrészt mivel a neutrális elem önmaga inverze, ezért [latex](a^0)^{-1}=e^{-1}=e[/latex]. Vagyis valóban [latex]a^{-0}=(a^0)^{-1}[/latex].</li></ol>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>Ha pedig [latex]k=0[/latex], akkor a <strong><em>2. és 3. tulajdonságok</em></strong> nyilván teljesülnek, hiszen egyrészt [latex](a^n)^0=e=a^0=a^{n\cdot 0}[/latex], másrészt [latex]a^n\cdot a^0=a^n\cdot e=a^n=a^{n+0}[/latex]. Az <strong><em>1. és 4. tulajdonságokkal</em></strong> ebben az esetben nem kell foglalkoznunk, mivel azokban nem szerepel a [latex]k[/latex] kitevő.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><em style="font-weight: bold;">Már csak azok az esetek maradtak, amikor a két kitevő közül legalább az egyik negatív. Legyen például [latex]n[/latex] negatív.</em> Az átláthatóság érdekében vezessük be az [latex]m=-n[/latex] jelölést. Ekkor [latex]m[/latex] pozitív, és ezt a továbbiakban kihasználjuk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Most igazoljuk az 1. tulajdonságot negatív [latex]n[/latex]-re.</em></strong> A bevezetett jelölésünket alkalmazhatjuk: [latex](ab)^n=(ab)^{-m}[/latex]. Mivel ugye [latex]m[/latex] pozitív, ezért felhasználhatjuk a <strong><em>4. tulajdonságot</em></strong>, hiszen azt pozitív kitevőkre már igazoltuk. Ez alapján tehát:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](ab)^{-m}=((ab)^m)^{-1}=\ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A külső zárójelen belüli kifejezésre ugyancsak [latex]m[/latex] pozitivitása miatt alkalmazható az <strong><em>1. tulajdonság</em></strong>, hiszen azt szintén igazoltuk pozitív kitevőkre:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots=(a^mb^m)^{-1}=\ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel a tétel szövege alapján most azt feltételezzük, hogy [latex]a[/latex] és [latex]b[/latex] felcserélhetők, ezért ebből következik, hogy a zárójelen belüli [latex]a^m[/latex] és [latex]b^m[/latex] szintén felcserélhetők. Ezek szorzata ugyanis az alábbi [latex]2m[/latex] tényezős szorzat:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{a\cdot a\cdot \ldots \cdot a}_{\text{m darab}} \cdot \underbrace{b\cdot b\cdot \ldots \cdot b}_{\text{m darab}}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Itt egymás mellett álló [latex]a[/latex] és [latex]b[/latex] tényezők cserélgetésével nyilván elérhető, hogy minden [latex]b[/latex] tényező a baloldalra kerüljön. Mivel tehát [latex]a^m[/latex] és [latex]b^m[/latex] felcserélhetők, ezért a [yp_element slug="szorzat-inverze" type="link" /] alapján az [latex](a^mb^m)^{-1}[/latex] kifejezés tovább alakítható:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots=(a^m)^{-1}\cdot (b^m)^{-1}=\ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most viszont ismét lehet alkalmazni a <strong><em>4. tulajdonságot</em></strong>, hiszen [latex]m[/latex] pozitív:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots=a^{-m}\cdot b^{-m}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Összefoglalva azt kaptuk tehát, hogy [latex](ab)^{-m}=a^{-m}b^{-m}[/latex]. Visszafelé alkalmazva az [latex]m=-n[/latex] jelölést, ez végülis az <strong><em>1. tulajdonságnak</em></strong> felel meg.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Most a 4. tulajdonságot igazoljuk negatív [latex]n[/latex] esetén.</em></strong> Maradjunk továbbra is az [latex]m=-n[/latex] jelölésnél. Mivel [latex]m[/latex] pozitív, és a <strong><em>4. tulajdonságot</em></strong> pozitív kitevőkre már igazoltuk, ezért igaz az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{-m}=(a^m)^{-1}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Visszafelé alkalmazva az [latex]m=-n[/latex] jelölést ez tehát azt jelenti, hogy, hogy [latex]a^n[/latex] és [latex]a^{-n}[/latex] negatív [latex]n[/latex] esetén is egymás inverzei. Tehát a <strong><em>4. tulajdonság</em></strong> szerinti [latex]a^{-n}=(a^n)^{-1}[/latex] összefüggés valóban teljesül negatív [latex]n[/latex] esetén is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Most igazoljuk a 2. tulajdonságot negatív [latex]n[/latex]-re és pozitív [latex]k[/latex]-ra.</em></strong> Maradjunk továbbra is az [latex]m=-n[/latex] jelölésnél, azaz [latex](a^n)^k=(a^{-m})^k[/latex]. Ekkor mivel [latex]m[/latex] pozitív, ezért a [yp_element slug="egesz-kitevos-hatvany" type="link" /] alapján:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](a^{-m})^k=((a^{-1})^{m})^k=\ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha most [latex]k[/latex] pozitív, akkor alkalmazhatjuk a pozitív kitevőkre már bizonyított <strong><em>2. tulajdonságot</em></strong>. Eszerint tehát:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots=(a^{-1})^{mk}=\ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel pedig [latex]m[/latex] is és [latex]k[/latex] is pozitív, ezért [latex]mk[/latex] is az, vagyis ismét a [yp_element slug="egesz-kitevos-hatvany" type="link" /] alapján:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots=a^{-mk}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Visszafelé alkalmazva az [latex]m=-n[/latex] jelölést, ez végülis a <strong><em>2. tulajdonságnak</em></strong> felel meg.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Most igazoljuk a 2. tulajdonságot negatív [latex]n[/latex]-re és szintén negatív [latex]k[/latex]-ra.</em></strong> Maradjunk továbbra is az [latex]m=-n[/latex] jelölésnél, de emellé vezessük be az [latex]l=-k[/latex] jelölést is, azaz [latex](a^n)^k=(a^{-m})^{-l}[/latex]. Ekkor mivel [latex]m[/latex] pozitív, ezért a [yp_element slug="egesz-kitevos-hatvany" type="link" /] alapján:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](a^{-m})^{-l}=((a^{-1})^{m})^{-l}=\ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Alkalmazhatjuk a már igazolt <strong><em>4. tulajdonságot</em></strong>:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots=(((a^{-1})^{m})^l)^{-1}=\ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]m[/latex] is és [latex]l[/latex] is pozitív, ezért alkalmazhatjuk a pozitív kitevőkre már igazolt <strong><em>2. tulajdonságot</em></strong>:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots=((a^{-1})^{ml})^{-1}=\ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Itt ugye [latex]ml[/latex] pozitív, ezért ismét a [yp_element slug="egesz-kitevos-hatvany" type="link" /] alapján:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots=(a^{-ml})^{-1}=\ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Végül ismét a már igazolt <strong><em>4. tulajdonság</em></strong> miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots=((a^{ml})^{-1})^{-1}=a^{ml}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Visszafelé alkalmazva az [latex]m=-n[/latex] és az [latex]l=-k[/latex] jelöléseket, ez végülis a <strong><em>2. tulajdonságnak</em></strong> felel meg.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Végül igazolni kell a 2. tulajdonságot pozitív [latex]n[/latex]-re és negatív [latex]k[/latex]-ra.</em></strong> Ismét vezessük be az [latex]l=-k[/latex] jelölést, azaz [latex](a^n)^k=(a^n)^{-l}[/latex]. Ekkor a már igazolt <strong><em>4. tulajdonság</em></strong> miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](a^n)^{-l}=((a^n)^l)^{-1}=\ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]n[/latex] és [latex]l[/latex] pozitívak, és a <strong><em>2. tulajdonságot</em></strong> már igazoltuk pozitív kitevőkre, ezért az ebben az esetben alkalmazható:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots=(a^{nl})^{-1}=\ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez viszont újból a <strong><em>4. tulajdonság</em></strong> miatt az alábbival egyezik meg:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots=a^{-nl}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Visszafelé alkalmazva az [latex]l=-k[/latex] jelölést, ez végülis a <strong><em>2. tulajdonságnak</em></strong> felel meg.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Már csak a 3. tulajdonságot kell bizonyítani azokban az esetekben, amikor [latex]n[/latex] és [latex]k[/latex] közül legalább az egyik negatív.</em></strong> Mivel itt [latex]n[/latex] és [latex]k[/latex] szerepe teljesen szimmetrikus, ezért csak azt az esetet fogjuk igazolni, amikor <strong><em>[latex]n[/latex] negatív, [latex]k[/latex] pedig bármi más</em></strong>. Fordított esetben – tehát amikor [latex]k[/latex] negatív, [latex]n[/latex] pedig bármi más – ugyanezt a gondolatmenetet kellene végigjátszani [latex]k[/latex] és [latex]n[/latex] szerepének felcserélésével. A [latex]k=0[/latex] esettől most nyugodtan eltekinthetünk, hiszen azt már igazoltuk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Vezessük be a jól megszokott [latex]m=-n[/latex] jelölést, azaz [latex]a^na^k=a^{-m}a^k[/latex]. Ekkor ugye [latex]m[/latex] pozitív lesz, tehát a [yp_element slug="egesz-kitevos-hatvany" type="link" /] szerint az alábbi szorzatot kaptuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{-m}\cdot a^k=(a^{-1})^ma^k=\underbrace{a^{-1}a^{-1}\ldots a^{-1}}_{\text{m darab}}\cdot a^k[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ha [latex]k[/latex] negatív</em></strong>, akkor vezessük be ismét az [latex]l=-k[/latex] jelölést is. Ekkor a fenti szorzatban további [latex]l[/latex] darab, tehát összesen [latex]m+l[/latex] darab [latex]a^{-1}[/latex] tényező fog szerepelni. Mivel [latex]m+l[/latex] pozitív, ezért:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{-m}a^{-l}=(a^{-1})^{m+l}=a^{-(m+l)}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Visszafelé alkalmazva az [latex]m=-n[/latex] és az [latex]l=-k[/latex] jelöléseket, a kitevőben végülis valóban [latex]n+k[/latex] szerepel, ahogyan a <strong><em>3. tulajdonság</em></strong> állítja.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ha [latex]k[/latex] pozitív</em></strong>, akkor a fenti szorzatban [latex]m[/latex] darab [latex]a^{-1}[/latex] tényező és [latex]k[/latex] darab [latex]a[/latex] tényező szerepel, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{-m}\cdot a^k=\underbrace{a^{-1}a^{-1}\ldots a^{-1}}_{\text{m darab}}\cdot \underbrace{aa\ldots a}_{\text{k darab}}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az egymás mellett álló [latex]a[/latex] és [latex]a^{-1}[/latex] tényezők ugye szép sorban kiütik egymást, mivel egymás inverzei. Kérdés tehát, hogy melyikből van több. <strong><em>Ha [latex]m\leq k[/latex]</em></strong>, akkor legalább annyi [latex]a[/latex] tényező van, mint [latex]a^{-1}[/latex] tényező, így ebben az esetben az [latex]a[/latex] tényezőkből fog megmaradni [latex]k-m[/latex] darab. Azaz ebben az esetben:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{-m}\cdot a^k=a^{k-m}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Visszafelé alkalmazva az [latex]m=-n[/latex] jelölést, a kitevőben végülis valóban [latex]n+k[/latex] szerepel, ahogyan a <strong><em>3. tulajdonság</em></strong> állítja.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ha viszont [latex]m\gt k[/latex]</em></strong>, akkor több [latex]a^{-1}[/latex] tényező van, mint [latex]a[/latex], ezért ebben az esetben az [latex]a^{-1}[/latex] tényezőkből fog megmaradni [latex]m-k[/latex] darab. Azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{-m}\cdot a^k=(a^{-1})^{m-k}=\ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]m-k[/latex] kitevő [latex]m\gt k[/latex] miatt biztosan pozitív, ezért a [yp_element slug="egesz-kitevos-hatvany" type="link" /] alapján ezt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots=a^{-(m-k)}=a^{k-m}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Visszafelé alkalmazva az [latex]m=-n[/latex] jelölést, a kitevőben ebben az esetben is [latex]n+k[/latex] szerepel, ahogyan a <strong><em>3. tulajdonság</em></strong> állítja.</p>
+<!-- /wp:paragraph -->

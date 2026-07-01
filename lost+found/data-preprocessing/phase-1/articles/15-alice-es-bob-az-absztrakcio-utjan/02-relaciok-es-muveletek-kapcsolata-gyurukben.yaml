@@ -1,0 +1,108 @@
+type: section
+name: 02-relaciok-es-muveletek-kapcsolata-gyurukben
+title: Relációk és műveletek kapcsolata gyűrűkben
+
+references:
+  ketvaltozos-relacio:
+    target:
+      type: definition
+      name: ketvaltozos-relacio
+  rendezett-halmaz:
+    target:
+      type: definition
+      name: rendezett-halmaz
+  termeszetes-szamok-rendezese:
+    target:
+      type: definition
+      name: termeszetes-szamok-rendezese
+
+body:
+  - type: narrative
+    content: |
+      A 12. részben tisztáztuk az úgynevezett ***rendezési relációk*** és a ***rendezett halmazok*** fogalmát.
+      Ezeknek a fogalmaknak a segítségével absztrakt szinten tudunk beszélni ***"kisebb-nagyobb"-jellegű
+      viszonyokról*** tetszőleges halmaz elemei között. Most ezt a kérdéskört szeretnénk kiterjeszteni általános
+      gyűrűkre &ndash; és természetesen speciálisan az egész számok gyűrűjére &ndash; is. Azt javaslom az
+      Olvasónak, hogy a folytatás előtt ismételje át az alábbi kapcsolódó fogalmakat:
+  - type: recall
+    target:
+      type: definition
+      name: ketvaltozos-relacio
+  - type: recall
+    target:
+      type: definition
+      name: reflexiv-relacio
+  - type: recall
+    target:
+      type: definition
+      name: antiszimmetrikus-relacio
+  - type: recall
+    target:
+      type: definition
+      name: tranzitiv-relacio
+  - type: recall
+    target:
+      type: definition
+      name: trichotom-relacio
+  - type: recall
+    target:
+      type: definition
+      name: rendezett-halmaz
+  - type: narrative
+    content: |
+      A [rendezett-halmaz] alapján rendezett halmaz alatt tehát dióhéjban egy olyan, kétváltozós relációval
+      ([ketvaltozos-relacio]) ellátott halmazt értünk, amelynek elemei között e reláció segítségével valamilyen
+      egyértelmű sorrend állítható fel. Mivel egy gyűrű is tulajdonképpen egy halmaz, így ez a fogalom nyilván
+      ezekre is értelmezhető. Csakhogy a gyűrűk rendelkeznek két művelettel is. Ezért az ő esetükben egy rendezési
+      relációtól azt is elvárjuk, hogy bizonyos értelemben "jól viselkedjenek" ezekkel a műveletekkel.
+  - type: narrative
+    content: |
+      Hogy ez alatt pontosan mit értünk, azt egy példán keresztül világítjuk meg. Vizsgáljuk meg például, hogy a
+      természetes számok $\N$ halmazán értelmezett [termeszetes-szamok-rendezese] szerinti rendezési reláció milyen
+      kapcsolatban van az összeadás és a szorzás műveletével. Erről szól az alábbi tétel.
+  - type: embed
+    target:
+      type: theorem
+      name: termeszetes-szamok-rendezesenek-tulajdonsagai
+  - type: embed
+    target:
+      type: proof
+      name: termeszetes-szamok-rendezesenek-tulajdonsagai-bizonyitas
+  - type: narrative
+    content: |
+      Egy ehhez hasonló tulajdonság általánosságban is hasznos lehet egy műveletekkel ellátott algebrai struktúra
+      alaphalmazán értelmezett reláció esetén. Erről szól az alábbi definíció.
+  - type: embed
+    target:
+      type: definition
+      name: relacio-kompatibilitasa-muvelettel
+  - type: narrative
+    content: |
+      Ezzel a szóhasználattal élve tehát a fenti tétel úgy is megfogalmazható, hogy a természetes számok rendezési
+      relációja kompatibilis a Peano-összeadás és a Peano-szorzás műveletével.
+  - type: narrative
+    content: |
+      Most nézzük, mit tudunk elmondani egy gyűrű alaphalmazán értelmezett rendezési reláció és a gyűrű két
+      műveletének viszonyáról. Tegyük hát fel, hogy $(R,+,\cdot )$ egy gyűrű. Kérdés, hogy vajon ***létezhet-e
+      olyan részbenrendezés*** a gyűrű alaphalmazán, ***amely mindkét művelettel kompatibilis***? Ennek
+      megválaszolásához az alábbi segédtételre lesz szükségünk.
+  - type: embed
+    target:
+      type: theorem
+      name: gyuru-reszbenrendezesenek-tulajdonsagai
+  - type: embed
+    target:
+      type: proof
+      name: gyuru-reszbenrendezesenek-tulajdonsagai-bizonyitas
+  - type: narrative
+    content: |
+      Ez alapján úgy néz ki, hogy nem mindegy, hogy egy egyenlőtlenség mindkét oldalát egy adott elemmel, vagy
+      annak ellentettjével szorozzuk-e meg. Ezt a sajnálatos tényt fogalmazza meg az alábbi tétel.
+  - type: embed
+    target:
+      type: theorem
+      name: szorzas-rendezesfordito-gyuruben
+  - type: embed
+    target:
+      type: proof
+      name: szorzas-rendezesfordito-gyuruben-bizonyitas

@@ -1,0 +1,81 @@
+type: proof
+name: oszthatosag-es-rendezesi-relacio-kapcsolata-bizonyitas
+remarks: []
+references:
+  egesz-szamok-rendezese:
+    target:
+      type: definition
+      name: egesz-szamok-rendezese
+  egesz-szamok-szorzasa:
+    target:
+      type: definition
+      name: egesz-szamok-szorzasa
+  ekvivalencia-osztalyok-reprezentansa:
+    target:
+      type: theorem
+      name: ekvivalencia-osztalyok-reprezentansa
+  oszthatosag:
+    target:
+      type: definition
+      name: oszthatosag
+  oszthatosag-tulajdonsagai:
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+  pozitiv-es-negativ-egesz-szamok:
+    target:
+      type: definition
+      name: pozitiv-es-negativ-egesz-szamok
+  tranzitiv-relacio:
+    target:
+      type: definition
+      name: tranzitiv-relacio
+  trichotom-relacio:
+    target:
+      type: definition
+      name: trichotom-relacio
+content:
+  - type: narrative
+    content: |
+      Az biztos, hogy $a\eq 0$, hiszen máskülönben $b=0$ lenne a [oszthatosag-tulajdonsagai] 4. pontja miatt. A
+      rendezési reláció trichotómiájából (lásd a [trichotom-relacio]t), valamint $a\eq 0$-ból következően $a\lt 0$
+      vagy $a\gt 0$ közül pontosan az egyik teljesül.
+  - type: narrative
+    content: |
+      Az $a\lt 0$ esettel nem kell különösebben foglalkoznunk, hiszen ekkor $0\lt b$ miatt nyilván következik
+      $a\leq b$ a rendezési reláció tranzitivitása miatt (lásd a [tranzitiv-relacio]t).
+  - type: narrative
+    content: |
+      Nézzük tehát a $0\lt a$ esetet.
+  - type: formula
+    lead-in: |
+      Az oszthatóság [oszthatosag]ja miatt $a|b$-ből következik, hogy létezik olyan $k$ egész szám, amelyre
+      teljesül az alábbi egyenlet:
+    content: |
+      a\cdot k = b
+  - type: narrative
+    content: |
+      A [pozitiv-es-negativ-egesz-szamok] szerinti pozitív és negatív egész számok, valamint a $0$ a
+      [ekvivalencia-osztalyok-reprezentansa] értelmében lefedik a teljes $\Z$ halmazt.
+  - type: formula
+    lead-in: |
+      Emiatt az egészek szorzásának [egesz-szamok-szorzasa]ja alapján egy szorzat előjele az alábbiak szerint
+      alakulhat a tényezők előjelének függvényében:
+    content: |
+      \begin{aligned}\text{pozitív}\cdot \text{pozitív} &= \text{pozitív} \\ \text{pozitív}\cdot \text{negatív} &=
+      \text{negatív} \\ \text{negatív}\cdot \text{pozitív} &= \text{negatív} \\ \text{negatív}\cdot \text{negatív}
+      &= \text{pozitív} \end{aligned}
+  - type: narrative
+    content: |
+      Mivel a fenti egyenletben $a$ is és $b$ is pozitív, ezért szükségképpen $k$ is pozitív kell legyen, azaz
+      $0\lt k$.
+  - type: formula
+    lead-in: |
+      Továbbá az egyenlet a disztributivitási szabályok miatt átalakítható a következőképpen:
+    content: |
+      a\cdot k=a\cdot (1+k-1)=a+a\cdot (k-1)=b
+  - type: narrative
+    content: |
+      Itt teljesül, hogy $0\leq a\cdot (k-1)$, hiszen $a$ ugye pozitív, $k-1$ pedig pozitív vagy $0$. Létezik tehát
+      olyan természetes szám (vagy más szavakkal nemnegatív egész szám), amelyet $a$-hoz adva $b$-t kapunk,
+      nevezetesen az $a\cdot (k-1)$. Ez viszont a [egesz-szamok-rendezese] miatt épp azt jelenti, hogy $a\leq b$.

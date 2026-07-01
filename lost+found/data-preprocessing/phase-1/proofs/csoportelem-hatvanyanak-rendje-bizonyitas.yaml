@@ -1,0 +1,62 @@
+type: proof
+name: csoportelem-hatvanyanak-rendje-bizonyitas
+remarks: []
+references:
+  csoportelem-rendjere-vonatkozo-osszefuggesek:
+    target:
+      type: theorem
+      name: csoportelem-rendjere-vonatkozo-osszefuggesek
+  egesz-kitevos-hatvanyozas-azonossagai:
+    target:
+      type: theorem
+      name: egesz-kitevos-hatvanyozas-azonossagai
+  egesz-szamok-kozotti-kongruencia:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia
+  egesz-szamok-kozotti-kongruencia-egyszerusitese:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia-egyszerusitese
+content:
+  - type: narrative
+    content: |
+      A [csoportelem-rendjere-vonatkozo-osszefuggesek] 4. pontja alapján tehát azt a ***legkisebb pozitív*** $m$
+      kitevőt keressük, amellyel a $g^k$ elemet hatványozva a csoport $e$-vel jelölt egységelemét kapjuk.
+  - type: formula
+    lead-in: |
+      Ez a hatvány a [egesz-kitevos-hatvanyozas-azonossagai] 2. pontja alapján a $g$ elem $mk$-adik hatványa lesz,
+      azaz felírható az alábbi egyenlet:
+    content: |
+      (g^k)^m=g^{mk}=e
+  - type: formula
+    lead-in: |
+      Ez a [csoportelem-rendjere-vonatkozo-osszefuggesek] 2. pontja alapján akkor és csak akkor teljesül, ha
+      fennáll az alábbi kongruencia:
+    content: |
+      mk\equiv 0\pmod d
+  - type: formula
+    lead-in: |
+      Mivel itt mind a baloldal, mind pedig a jobboldal osztható $k$-val, ezért alkalmazható a kongruenciák
+      egyszerűsítéséről szóló [egesz-szamok-kozotti-kongruencia-egyszerusitese], miszerint fennáll az alábbi
+      kongruencia is:
+    content: |
+      m\equiv 0\pmod{\frac{d}{(d,k)}}
+  - type: formula
+    lead-in: |
+      Ez a [egesz-szamok-kozotti-kongruencia] 3. pontja alapján azt jelenti, hogy teljesül az alábbi oszthatóság:
+    content: |
+      \frac{d}{(d,k)}|m
+  - type: narrative
+    content: |
+      Mármost azt mondtuk, hogy $m$ az a ***legkisebb*** pozitív egész szám, amely teljesíti ezt az oszthatóságot.
+      Így tehát ő nem más, mint maga $\frac{d}{(d,k)}$.
+  - type: formula
+    lead-in: |
+      Azaz $g^k$ rendjére megkaptuk a tételben szereplő képletet:
+    content: |
+      o(g^k)=m=\frac{d}{(d,k)}
+  - type: narrative
+    content: |
+      Ez valóban akkor és csak akkor fog megegyezni $o(g)=d$-vel, ha a $(d,k)$ kitüntetett közös osztó $1$, azaz
+      $k$ relatív prím $d$-hez.

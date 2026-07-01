@@ -1,0 +1,64 @@
+type: proof
+name: gyuruk-direkt-szorzata-bizonyitas
+remarks: []
+references:
+  gyuru-test:
+    target:
+      type: definition
+      name: gyuru-test
+content:
+  - type: narrative
+    content: |
+      A [gyuru-test]ban felsorolt gyűrűaxiómákat kell ellenőrizni:
+  - type: formula
+    lead-in: |
+      A $\oplus$ művelet ***kommutativitása*** könnyedén adódik az $R_1$, $R_2$, ..., $R_n$ gyűrűkön értelmezett
+      összeadások ugyanezen tulajdonságából:
+    content: |
+      \begin{aligned}(&a_1;\ldots;a_n)\oplus(b_1;\ldots;b_n)=\\ &= (a_1+b_1;\ldots;a_n+b_n)
+      =\\&=(b_1+a_1;\ldots;b_n+a_n) =\\&= (b_1;\ldots;b_n) \oplus (a_1;\ldots;a_n)\end{aligned}
+  - type: formula
+    lead-in: |
+      Hasonlóképpen adódik a $\oplus$ művelet ***asszociativitása***:
+    content: |
+      \begin{aligned}((&a_1;\ldots;a_n)\oplus(b_1;\ldots;b_n))\oplus(c_1;\ldots;c_n) =\\&=
+      (a_1+b_1;\ldots;a_n+b_n)\oplus(c_1;\ldots;c_n) =\\&=((a_1+b_1)+c_1;\ldots;(a_n+b_n)+c_n) =\\&=
+      (a_1+(b_1+c_1);\ldots;a_n+(b_n+c_n))
+      =\\&=(a_1;\ldots;a_n)\oplus(b_1+c_1;\ldots;b_n+c_n)=\\&=(a_1;\ldots;a_n)\oplus((b_1;\ldots;b_n)\oplus(c_1;\ldots;c_n))\end{aligned}
+  - type: formula
+    lead-in: |
+      És a $\odot$ művelet ***asszociativitása*** is:
+    content: |
+      \begin{aligned}((&a_1;\ldots;a_n)\odot(b_1;\ldots;b_n))\odot(c_1;\ldots;c_n) =\\&= (a_1\cdot
+      b_1;\ldots;a_n\cdot b_n)\odot(c_1;\ldots;c_n) =\\&=((a_1\cdot b_1)\cdot c_1;\ldots;(a_n\cdot b_n)\cdot c_n)
+      =\\&= (a_1\cdot (b_1\cdot c_1);\ldots;a_n\cdot (b_n\cdot c_n)) =\\&=(a_1;\ldots;a_n)\odot(b_1\cdot
+      c_1;\ldots;b_n\cdot c_n)=\\&=(a_1;\ldots;a_n)\odot((b_1;\ldots;b_n)\odot(c_1;\ldots;c_n))\end{aligned}
+  - type: narrative
+    content: |
+      Továbbá a két művelet közötti mindkét oldali ***disztributivitás*** is teljesül.
+  - type: formula
+    lead-in: |
+      Nézzük először a baloldali disztributivitást, a jobboldali disztributivitás ugyanígy igazolható:
+    content: |
+      \begin{aligned}(&a_1;\ldots;a_n)\odot((b_1;\ldots;b_n)\oplus(c_1;\ldots;c_n))=\\&=(a_1;\ldots;a_n)\odot
+      (b_1+c_1;\ldots;b_n+c_n)=\\&=(a_1\cdot(b_1+c_1);\ldots;a_n\cdot
+      (b_n+c_n))=\\&=(a_1b_1+a_1c_1;\ldots;a_nb_n+a_nc_n)=\\&=(a_1b_1;\ldots;a_nb_n)\oplus
+      (a_1c_1;\ldots;a_nc_n)=\\&=((a_1;\ldots;a_n)\odot (b_1;\ldots;b_n))\oplus ((a_1;\ldots;a_n)\odot
+      (c_1;\ldots;c_n))\end{aligned}
+  - type: narrative
+    content: |
+      Végül igazoljuk a ***nullelemre*** és az ***ellentett elemre*** vonatkozó állításokat. Legyen
+      $(a_1;\ldots;a_n)$ az $R_1\times \ldots \times R_n$ halmaz egy tetszőleges eleme.
+  - type: formula
+    lead-in: |
+      Ezt az $(0_{R_1};\ldots;0_{R_n})$ elemmel összeadva az eredmény valóban nem változik, hiszen minden
+      komponensben a megfelelő gyűrű nullelemével való összeadás fog szerepelni:
+    content: |
+      \begin{aligned}(&a_1;\ldots;a_n)\oplus(0_{R_1};\ldots;0_{R_n})=\\&=(a_1+0_{R_1};\ldots;a_n+0_{R_n})=\\&=(a_1;\ldots;a_n)\end{aligned}
+  - type: formula
+    lead-in: |
+      Ehhez hasonlóan az $(a_1;\ldots;a_n)$ elemet a $(-a_1;\ldots;-a_n)$ elemmel összeadva az eredmény valóban a
+      $(0_{R_1};\ldots;0_{R_n})$ elem lesz, hiszen minden komponensben az adott komponens és annak a megfelelő
+      gyűrűben vett ellentettjének összege fog szerepelni:
+    content: |
+      \begin{aligned}(&a_1;\ldots;a_n)\oplus(-a_1;\ldots;-a_n)=\\&=(a_1-a_1;\ldots;a_n-a_n)=\\&=(0_{R_1};\ldots;0_{R_n})\end{aligned}

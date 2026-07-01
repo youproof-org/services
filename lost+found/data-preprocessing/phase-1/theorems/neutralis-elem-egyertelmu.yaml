@@ -1,0 +1,10 @@
+type: theorem
+name: neutralis-elem-egyertelmu
+proofs:
+  - neutralis-elem-egyertelmu-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Egy tetszőleges $R$ alaphalmazon értelmezett bármilyen $*$ műveletre nézve ***legfeljebb egy*** neutrális
+      elem létezik. Más szavakkal a neutrális elem ***egyértelmű***, amennyiben létezik.

@@ -1,0 +1,201 @@
+type: proof
+name: nem-miller-rabin-tanuk-es-nem-fermat-tanuk-viszonya-nem-primhatvanyok-eseten-bizonyitas
+remarks: []
+references:
+  carmichael-szamok:
+    target:
+      type: definition
+      name: carmichael-szamok
+  egesz-szamok-kozotti-kongruencia-tulajdonsagai:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia-tulajdonsagai
+  egesz-szamok-maradekosztalygyurui:
+    target:
+      type: theorem
+      name: egesz-szamok-maradekosztalygyurui
+  fermat-tanu:
+    target:
+      type: definition
+      name: fermat-tanu
+  hatvanyozas-azonossagai:
+    target:
+      type: theorem
+      name: hatvanyozas-azonossagai
+  kinai-maradektetel:
+    target:
+      type: theorem
+      name: kinai-maradektetel
+  maradekosztalygyuruk-dekompozicioja:
+    target:
+      type: theorem
+      name: maradekosztalygyuruk-dekompozicioja
+  nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten:
+    target:
+      type: theorem
+      name: nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten
+  reszcsoport-feltetele-veges-csoportok-eseten:
+    target:
+      type: theorem
+      name: reszcsoport-feltetele-veges-csoportok-eseten
+content:
+  - type: narrative
+    content: |
+      A [fermat-tanu] utáni megjegyzés alapján ***nem Fermat-tanú*** csak redukált maradékosztály lehet, ezért
+      fennáll az $F_n\sube (\Z/n\Z)^{\times}$ tartalmazási reláció. Így az $F_n\leq (\Z/n\Z)^{\times}$ részcsoport
+      reláció igazolásához a [reszcsoport-feltetele-veges-csoportok-eseten] alapján csak azt kell megmutatni, hogy
+      $F_n$ ***nemüres*** és ***zárt*** a $(\Z/n\Z)^{\times}$-beli csoportműveletre nézve. Az első feltétel nyilván
+      teljesül, hiszen $1^{n-1}\equiv 1\pmod n$, és így az $[1]_n$ maradékosztály a [fermat-tanu] értelmében nem
+      Fermat-tanú, azaz benne van $F_n$-ben.
+  - type: narrative
+    content: |
+      Legyen most $[a]_n$ és $[b]_n$ az $F_n$ halmaz két tetszőleges eleme.
+  - type: formula
+    lead-in: |
+      Mivel ők nem Fermat-tanúk, ezért a [fermat-tanu] alapján teljesül az alábbi két kongruencia:
+    content: |
+      \begin{aligned}a^{n-1}&\equiv 1\pmod n \\ b^{n-1}&\equiv 1\pmod n\end{aligned}
+  - type: narrative
+    content: |
+      A két kongruenciát a [egesz-szamok-kozotti-kongruencia-tulajdonsagai] 5. pontja miatt összeszorozhatjuk.
+  - type: formula
+    lead-in: |
+      Alkalmazva a ***hatványozás azonosságairól*** szóló [hatvanyozas-azonossagai] 1. pontját, az alábbi
+      kongruenciát kapjuk:
+    content: |
+      (ab)^{n-1}\equiv 1\pmod n
+  - type: narrative
+    content: |
+      Így a [fermat-tanu] alapján az $[ab]_n$ maradékosztály szintén ***nem Fermat-tanú***, azaz benne van
+      $F_n$-ben. Mivel a [egesz-szamok-maradekosztalygyurui] alapján az $[ab]_n$ maradékosztály épp az $[a]_n$ és
+      $[b]_n$ maradékosztályok szorzata, ezért $F_n$ valóban zárt a $(\Z/n\Z)^{\times}$ csoport műveletére nézve,
+      azaz részcsoport $(\Z/n\Z)^{\times}$-ben.
+  - type: narrative
+    content: |
+      Ha most $n$ nem Carmichael-szám, akkor a [carmichael-szamok] alapján létezik $n$-hez tartozó Fermat-tanú a
+      redukált maradékosztályok között, vagyis a $(\Z/n\Z)^{\times}$ csoportban, amely viszont így nincs benne
+      $F_n$-ben. Ilyenkor tehát $F_n$ ***valódi részcsoport***. Ezzel szemben ha $n$ Carmichael-szám, akkor egyik
+      redukált maradékosztály sem Fermat-tanú, azaz ilyenkor $F_n=(\Z/n\Z)^{\times}$.
+  - type: narrative
+    content: |
+      ***Azt kell még igazolni***, hogy $H_n$ valódi részcsoport $F_n$-ben. Azt a
+      [nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten] 2. pontja alapján már tudjuk, hogy $H_n$
+      részcsoport $(\Z/n\Z)^{\times}$-ben, ami a [reszcsoport-feltetele-veges-csoportok-eseten] értelmében azt
+      jelenti, hogy $H_n$ zárt a $(\Z/n\Z)^{\times}$ csoport műveletére nézve. Így már csak azt kell megmutatni,
+      hogy fennáll a $H_n\sub F_n$ szigorú tartalmazási reláció.
+  - type: narrative
+    content: |
+      ***Ehhez először azt igazoljuk***, hogy $H_n\sube F_n$. Legyen ezért $[a]_n$ a $H_n$ halmaz tetszőleges
+      eleme, és mutassuk meg, hogy $[a]_n\in F_n$.
+  - type: formula
+    lead-in: |
+      Mivel $[a]_n\in H_n$, ezért a tétel szövege alapján:
+    content: |
+      a^{2^{j_{\text{max}}}k} \equiv \pm 1\pmod n
+  - type: formula
+    lead-in: |
+      Akár $1$, akár $-1$ szerepel a jobboldalon, a kongruenciát négyzetre emelve a következőt kapjuk:
+    content: |
+      a^{2^{j_{\text{max}}+1}k} \equiv 1\pmod n
+  - type: narrative
+    content: |
+      Mivel a tétel szövegéből tudjuk, hogy $j_{\text{max}}\leq e-1$, ezért az egyenlőtlenség mindkét oldalához
+      $1$-et adva $j_{\text{max}}+1\leq e$ adódik.
+  - type: formula
+    lead-in: |
+      Így ha a fenti kongruencia mindkét oldalát valahányszor négyzetre emeljük (sőt $j_{\text{max}}+1=e$ esetén
+      még csak nem is kell négyzetre emelnünk egyszer sem), akkor előbb-utóbb eljutunk az itt látható utolsó
+      kongruenciáig:
+    content: |
+      \begin{aligned}a^{2^{j_{\text{max}}+1}}k &\equiv 1\pmod n \\ a^{2^{j_{\text{max}}+2}}k &\equiv 1\pmod n \\
+      a^{2^{j_{\text{max}}+3}}k &\equiv 1\pmod n \\ &\vdots \\ a^{2^ek} &\equiv 1\pmod n\end{aligned}
+  - type: narrative
+    content: |
+      Minthogy a tétel szövegéből tudjuk, hogy $n-1=2^ek$, ezért ez az utolsó kongruencia a [fermat-tanu] alapján
+      épp azt jelenti, hogy $[a]_n$ nem Fermat-tanú, azaz benne van $F_n$-ben, és így $H_n\sube F_n$.
+  - type: narrative
+    content: |
+      ***Végezetül megmutatjuk***, hogy ez valójában egy szigorú tartalmazási reláció, azaz mutatni fogunk egy
+      olyan redukált maradékosztályt, amely benne van $F_n$-ben, de nincs benne $H_n$-ben. A munka felét már
+      elvégeztük a [nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten] 4. állításának bizonyításában, ott
+      ugyanis már mutattunk egy olyan $[a]_n$ redukált maradékosztályt, amely nincs benne $H_n$-ben.
+  - type: figure
+    lead-in: |
+      Most igazoljuk, hogy ez a bizonyos $[a]_n$ viszont benne van $F_n$-ben, azaz a következő a helyzet:
+    src: reszcsoport_viszonyok.jpg
+    alt: A Hn és Fn részcsoportok viszonya
+    caption: A $H_n$ és $F_n$ részcsoportok viszonya
+  - type: narrative
+    content: |
+      Ismételjük át az említett bizonyítás gondolatmenetét. Felhasználtuk, hogy $n$-nek legalább két prímtényezője
+      van, hiszen nem prímhatvány. Azaz felírható $n=p^cm$ alakban, ahol $p$ az egyik prímtényező, $c\geq 1$
+      valamilyen pozitív kitevő, $m\gt 1$ valamilyen páratlan egész szám, továbbá $p^c$ és $m$ relatív prímek.
+  - type: formula
+    lead-in: |
+      Ekkor ugye érvényes a ***kínai maradéktétel*** ([kinai-maradektetel]), amelynek következményeként a
+      [maradekosztalygyuruk-dekompozicioja] alapján fennáll az alábbi ***gyűrűizomorfizmus***:
+    content: |
+      \Z/n\Z \simeq \Z/p^c\Z \times \Z/m\Z
+  - type: formula
+    lead-in: |
+      A tétel szövegéből ugye azt is tudjuk, hogy a $j_{\text{max}}$ kitevőhöz létezik olyan $s$ egész szám,
+      amelyre teljesül az alábbi kongruencia:
+    content: |
+      s^{2^{j_{\text{max}}}}\equiv -1\pmod n
+  - type: formula
+    lead-in: |
+      Továbbá az említett bizonyításban azt is megmutattuk, hogy ekkor az $s^{2^{j_{\text{max}}}}$ hatvány
+      $-1$-gyel kongruens modulo $p^c$ is, azaz:
+    content: |
+      s^{2^{j_{\text{max}}}}\equiv -1\pmod{p^c}
+  - type: narrative
+    content: |
+      Ezt az $s$ egész számot használtuk fel az említett $[a]_n$ redukált maradékosztály megkonstruálásához.
+  - type: formula
+    lead-in: |
+      Azt mondtuk, hogy $[a]_n$ legyen az a maradékosztály a $\Z/n\Z$ gyűrűben, amelyhez a
+      [maradekosztalygyuruk-dekompozicioja]ben szereplő $g$ gyűrűizomorfizmus épp az $([s]_{p^c};[1]_m)$
+      maradékosztálypárt rendeli hozzá a $\Z/p^c\Z \times \Z/m\Z$ szorzatgyűrűből, azaz:
+    content: |
+      [a]_n \xmapsto{g} ([s]_{p^c};[1]_m)
+  - type: formula
+    lead-in: |
+      Ha most a bal- és a jobboldalon álló kifejezést is $2^{j_{\text{max}}}k$-adik hatványra emeljük, akkor $g$
+      ***művelettartó tulajdonsága*** miatt érvényes lesz az alábbi hozzárendelés is:
+    content: |
+      [a^{2^{j_{\text{max}}}k}]_n \xmapsto{g} ([s^{2^{j_{\text{max}}}k}]_{p^c};[1^{2^{j_{\text{max}}}k}]_m)
+  - type: narrative
+    content: |
+      Mivel $k$ páratlan, és az $s^{2^{j_{\text{max}}}}$ hatvány $-1$-gyel kongruens modulo $p^c$, ezért ez
+      teljesülni fog az $s^{2^{j_{\text{max}}}k}$ hatványra is.
+  - type: formula
+    lead-in: |
+      Így tehát a fenti hozzárendelés az alábbira egyszerűsödik:
+    content: |
+      [a^{2^{j_{\text{max}}}k}]_n \xmapsto{g} ([-1]_{p^c};[1]_m)
+  - type: formula
+    lead-in: |
+      Ha most a bal- és jobboldalon álló kifejezéseket elkezdjük sorozatosan négyzetre emelni, akkor $g$
+      művelettartó tulajdonsága miatt érvényesek lesznek az alábbi hozzárendelések is:
+    content: |
+      \begin{aligned}[a^{2^{j_{\text{max}}}k}]_n &\xmapsto{g} ([-1]_{p^c};[1]_m) \\ [a^{2^{j_{\text{max}}+1}k}]_n
+      &\xmapsto{g} ([1]_{p^c};[1]_m) \\ [a^{2^{j_{\text{max}}+2}k}]_n &\xmapsto{g} ([1]_{p^c};[1]_m) \\
+      [a^{2^{j_{\text{max}}+3}k}]_n &\xmapsto{g} ([1]_{p^c};[1]_m) \\ &\vdots\end{aligned}
+  - type: formula
+    lead-in: |
+      A tétel szövegéből tudjuk, hogy $j_{\text{max}}\lt e$, ezért a sorozatos négyzetre emeléseket folytatva
+      előbb-utóbb eljutunk az itt látható utolsó hozzárendelésig:
+    content: |
+      [a^{\overbrace{2^ek}^{=n-1}}]_n \xmapsto{g} ([1]_{p^c};[1]_m)
+  - type: formula
+    lead-in: |
+      Mivel a [maradekosztalygyuruk-dekompozicioja] alapján a $g$ gyűrűizomorfizmus a jobboldalon látható
+      $([1]_{p^c};[1]_m)$ maradékosztálypárt épp az $[1]_n$ maradékosztályhoz rendeli hozzá, ezért a baloldalon
+      álló $[a^{n-1}]_n$ maradékosztály szükségképpen megegyezik az $[1]_n$ maradékosztállyal, azaz teljesül az
+      alábbi kongruencia:
+    content: |
+      a^{n-1}\equiv 1\pmod n
+  - type: narrative
+    content: |
+      Így az $[a]_n$ maradékosztály a [fermat-tanu] értelmében nem Fermat-tanú, azaz benne van $F_n$-ben, tehát
+      valóban fennáll a $H_n\sub F_n$ ***szigorú tartalmazási*** reláció.

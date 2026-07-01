@@ -1,0 +1,8 @@
+type: definition
+name: reflexiv-relacio
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen adott egy $H$ halmaz és egy ezen a halmazon értelmezett $R$ reláció. Ha $H$ ***minden*** $a$ elemére
+      teljesül, hogy $aRa$, akkor azt mondjuk, hogy az $R$ reláció ***reflexív***.

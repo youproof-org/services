@@ -1,0 +1,64 @@
+<!-- wp:paragraph -->
+<p><strong><em>Nézzük először a tétel második felét.</em></strong> Itt csak annyit kell feltételeznünk, hogy a gyűrű kommutatív és egységelemes. Tegyük most fel, hogy valamely [latex]a[/latex] és [latex]b[/latex] elemekhez létezik olyan [latex]e[/latex] egység, hogy [latex]a\cdot e=b[/latex] – azaz a [latex]b[/latex] elem az [latex]a[/latex] elem egységszerese. Feladatunk megmutatni, hogy ekkor [latex]a\sim b[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]a\cdot e=b[/latex] egyrészt a [yp_element slug="oszthatosag" type="link" /] alapján épp azt jelenti, hogy <strong><em>teljesül az [latex]a|b[/latex] oszthatóság</em></strong>. Másrészt, mivel [latex]e[/latex] egység, ezért a [yp_element slug="egysegek-es-egysegelem-viszonya" type="link" /] alapján ő osztója az egységelemnek, azaz teljesül az [latex]e|1[/latex] oszthatóság is. Ez szintén a [yp_element slug="oszthatosag" type="link" /] miatt épp azt jelenti, hogy létezik olyan [latex]f[/latex] gyűrűelem, amelyre teljesül az alábbi egyenlet:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]e\cdot f=1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha ezzel az [latex]f[/latex] elemmel megszorozzuk a [latex]b[/latex] gyűrűelemet, ezt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]b\cdot f=\underbrace{a\cdot e}_{=b}\cdot f[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel azonban [latex]e[/latex] és [latex]f[/latex] szorzata épp az egységelemet adja, ezért végülis:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]b\cdot f=a\cdot \underbrace{e\cdot f}_{=1}=a[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez a [yp_element slug="oszthatosag" type="link" /] miatt épp azt jelenti, hogy <strong><em>teljesül a [latex]b|a[/latex] oszthatóság is</em></strong>. Ebből viszont a [yp_element slug="asszocialtsag-egysegelemes-gyuruben" type="link" /] miatt következik, hogy [latex]a\sim b[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Most a tétel megfordítását bizonyítjuk.</em></strong> Ehhez már fel kell használnunk a <strong><em>nullosztómentességet</em></strong> is. Most azt tegyük fel, hogy valamely [latex]a[/latex] és [latex]b[/latex] elemek esetén teljesül az [latex]a\sim b[/latex] asszociáció. Azt fogjuk megmutatni, hogy ekkor az [latex]a[/latex] és [latex]b[/latex] elemek egymás egységszeresei. Ha [latex]a=0[/latex], akkor a [yp_element slug="asszocialtsag-tulajdonsagai" type="link" /] 3. pontja miatt szükségképpen [latex]b=0[/latex], és ezek nyilván egymás egységszeresei. Így a továbbiakban feltesszük, hogy [latex]a\
+eq 0[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mivel teljesül az [latex]a\sim b[/latex] asszociáció, és a gyűrű egységelemes, ezért a [yp_element slug="asszocialtsag-egysegelemes-gyuruben" type="link" /] alapján teljesülnek az [latex]a|b[/latex] és a [latex]b|a[/latex] oszthatóságok. Ez épp azt jelenti, hogy léteznek olyan [latex]k_1[/latex] és [latex]k_2[/latex] gyűrűelemek, amelyekre teljesülnek az alábbi egyenletek:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a\cdot k_1&amp;=b \\ b\cdot k_2&amp;=a\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A második egyenletbe [latex]b[/latex] helyére az elsőt behelyettesítve, valamint a jobboldali [latex]a[/latex]-t az egységelemmel megszorozva ezt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{a\cdot k_1}_{=b}\cdot k_2=a\cdot 1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel a gyűrű <strong><em>nullosztómentes</em></strong>, ezért a [yp_element slug="szorzat-egyszerusitese-gyurukben" type="link" /] alapján mindkét oldalt egyszerűsíthetjük [latex]a[/latex]-val (amiről ugye feltettük, hogy nem nulla):</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]k_1\cdot k_2=1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [latex]k_1[/latex] és a [latex]k_2[/latex] tehát mindketten osztói az egységelemnek, és így a [yp_element slug="egysegek-es-egysegelem-viszonya" type="link" /] értelmében mindketten egységek. Vagyis az [latex]a[/latex] és [latex]b[/latex] elemek valóban egymás egységszeresei.</p>
+<!-- /wp:paragraph -->

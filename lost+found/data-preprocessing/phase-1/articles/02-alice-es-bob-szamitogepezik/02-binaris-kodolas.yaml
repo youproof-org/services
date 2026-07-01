@@ -1,0 +1,91 @@
+type: section
+name: 02-binaris-kodolas
+title: Bináris kódolás
+
+body:
+  - type: narrative
+    content: |
+      Az informatikai eszközök az információ leírására technikai okok miatt egy, a fentinél sokkal szerényebb
+      szimbólumkészletet kénytelenek használni. Ez a szimbólumkészlet mindössze 2 elemű. E szimbólumok fizikai
+      megjelenési formái a legkülönfélébbek lehetnek a használt médiumtól függően: alacsony vagy magas
+      feszültségérték egy vezetéken, lyuk vagy lyuk hiánya egy DVD-n vagy lyukkártyán, egy rádióhullám vagy
+      fénysugár valamilyen fizikai jellemzőjének alacsony vagy magas értéke, stb. Ezeket összefoglaló néven
+      ***bináris jelek***nek vagy ***bináris szimbólumok***nak nevezzük, utalva arra, hogy mindössze 2 féle van
+      belőlük. A bináris szimbólumok konkrét fizikai megjelenési formáival főként a híradástechnika tudománya
+      foglalkozik. Ebben a cikksorozatban ettől elvonatkoztatunk, és egyszerűen a ***0*** vagy ***1***, illetve az
+      ***igaz*** vagy ***hamis*** szimbólumokkal fogunk rájuk hivatkozni.
+  - type: narrative
+    content: |
+      Az informatikában az információ leírása (tehát az adat) nem más, mint bináris szimbólumok egymás után írt
+      sorozata. Hasonlóan az írott nyelvhez, ahol viszont betűket használunk szimbólumként. Egy ilyen sorozat által
+      reprezentált ***adat mennyiségén*** a sorozat hosszát értjük, melynek mértékegysége &ndash; az információ
+      mértékegységéhez hasonlóan &ndash; szintén a bit. Például a **010000100110111101100010** sorozat egy 24 bites
+      adatot reprezentál. Látható, hogy az adatmennyiség mérése egy viszonylag egyszerű dolog. De vajon mi az az
+      információ, amit ez a 24 bites adat leír, és ennek az információnak mi a mennyisége?
+  - type: narrative
+    content: |
+      Az első kérdésre a válasz attól függ, hogy mi az a közös egyezmény (szabvány) amely alapján a küldő fél a
+      "fejében" lévő információt épp ezzel a 24 bittel írta le. A fogadó félnek ez alapján kell értelmeznie ezt a
+      sorozatot annak érdekében, hogy ő is ugyanazon információ birtokába kerüljön. Ez jelen példában egy, az
+      Egyesült Államokban az 1960-as években kidolgozott és szabványosított kódrendszer alapján történt. Ennek a
+      szabványnak a neve ***American Standard Code for Information Interchange (ASCII)***.
+  - type: narrative
+    content: |
+      Az ***ASCII kódrendszer*** alkalmazásának célja eredetileg a távgépírókon és távnyomtatókon való felhasználás
+      volt. A szöveget egy villamos írógéphez hasonló eszközbe gépelték, amely az ASCII kódtábla alapján bináris
+      szimbólumsorozattá alakította az üzenetet. Ezt elektromos jelek formájában továbbította a telefonvonalon
+      keresztül a fogadó állomásnak, amely általában egy nyomtató volt. A fogadó állomás szintén az ASCII kódtábla
+      alapján a papírra nyomtatta a bináris szimbólumsorozat által leírt betűket és egyéb karaktereket.
+  - type: narrative
+    content: |
+      Lényeges, hogy a karakterek bináris sorozatokká való leképezése egységesen történjen. Ha például a 65-ös
+      ASCII kódot elküldik, akkor a fogadó eszköznek ezt minden esetben **A** karakternek kell értelmeznie.
+      Máskülönben lehetetlenné válna szövegek tárolása, kinyomtatása vagy átvitele egy másik gépre. Az ASCII
+      kódtábla 128 különböző karaktert a 0-127 közötti előjel nélküli egész számokra képezi le. Ezek közül a 32-127
+      közötti rész tartalmazza a látható karaktereket, tehát a kis- és nagybetűket valamint különböző írásjeleket
+      és a számokat. A 0-31 közötti rész különböző nem látható vezérlőkaraktert tartalmaz (pl. soremelés, törlés,
+      adatátvitel végének jelzése, stb.).
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán az ASCII kódtábla látható karaktereket tartalmazó része látható:
+    src: 01-ascii-kodtabla.jpg
+    alt: ASCII kódtábla (részlet)
+    caption: ASCII kódtábla (részlet)
+  - type: narrative
+    content: |
+      Az **A** karakter ASCII-kódja például a 65. Ez kettes számrendszerben felírva épp a **01000001** bináris
+      sorozatnak felel meg (a számrendszerekről bővebben a következő részben lesz szó). Az ASCII kódtábla alapján
+      az eredeti **010000100110111101100010** sorozat tehát úgy értelmezendő, hogy azt 8 bites csoportokra osztjuk
+      (ezeket **byte**-oknak nevezik), és mindegyik ilyen csoportra megkeressük a neki megfelelő karaktert a
+      kódtáblában. Ezek alapján a kódolt szöveg a **Bob** volt, mivel a **01000010** byte a **66**-os, a
+      **01101111** byte a **111**-es, végül a **01100010** byte a **98**-as ASCII kódnak felel meg.
+  - type: narrative
+    content: |
+      Az eredeti ASCII kódtábla nem használta ki mind a 8 bitet, így ezzel mindössze 128 féle karaktert lehet
+      kódolni. Később a 8. bit kihasználásával ezt kibővítették újabb 128 karakterrel, amelybe bekerültek a
+      leggyakoribb nyugat-európai nyelvek ékezetes betűi és további speciális karakterek. Ennek neve ***ISO
+      8859-1***, vagy más néven ***Latin-1*** kódolás. Ám ez még mindig nem tartalmazza például a magyar **ő** és
+      **ű** karaktereket. Napjainkban a még újabb ***Unicode*** szabvány használata a legelterjedtebb, amely 8
+      helyett 16 bitet használ a karakterek kódolására. Ez 65536 különböző szimbólum kódolását teszi lehetővé, és
+      ezáltal egy egységes kódtáblába foglalja a világ különböző nyelveinek legtöbb szimbólumát.
+  - type: narrative
+    content: |
+      De mi történik akkor, ha a fogadó fél nem ugyanolyan szabvány alapján értelmez egy bináris adatot, mint ami
+      alapján azt a küldő kódolta? Próbáljunk megnyitni egy MP3 file-t egy egyszerű szövegszerkesztővel, például
+      Notepad-dal. Az MP3 file-ban lévő bináris adatot a Notepad egyszerű ASCII kódolású szövegként próbálja meg
+      értelmezni és megjeleníteni.
+  - type: figure
+    lead-in: |
+      Ez a következő ábrán látható "szöveget" eredményezi:
+    src: 02-mp3-adat-ascii-ban.png
+    alt: MP3 adat ASCII formátumban megnyitva
+    caption: MP3 adat ASCII formátumban megnyitva
+  - type: narrative
+    content: |
+      Ez nyilvánvalóan egy értelmetlen zagyvaság. Azonban ez nem jelenti azt, hogy az MP3 file-ban lévő binárisan
+      kódolt adatnak ne lenne információtartalma. Mindössze arról van szó, hogy az információ itt nem egy szöveg,
+      hanem egy, az MP3 szabvány alapján tömörített hang. Következésképp az értelmezéséhez nem az ASCII, hanem az
+      MP3 szabványt kell követni. Amennyiben a Notepad helyett egy olyan szoftvert &ndash; például egy
+      médialejátszót &ndash; használunk, amely ismeri az MP3 szabványt, akkor ugyanennek a bitsorozatnak az
+      "információtartalma" egy, a számítógéphez kötött megfelelő hangrendszeren felcsendülő techno zene formájában
+      fog materializálódni.

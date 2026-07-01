@@ -1,0 +1,22 @@
+type: theorem
+name: csoporthomomorfizmus-egysegelem-es-inverzkepzestarto
+proofs:
+  - csoporthomomorfizmus-egysegelem-es-inverzkepzestarto-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen adva egy $(G,\cdot)$ és egy $(H,\odot)$ csoport, valamint egy közöttük lévő $f:G\to H$
+      ***csoporthomomorfizmus***.
+  - type: ordered-list
+    lead-in: |
+      Ekkor igazak az alábbiak:
+    items:
+      - 'Ha rendre $e_G$ és $e_H$ jelöli a $G$ és $H$ csoportok egységelemét, akkor $f(e_G)=e_H$.'
+      - 'Ha a $-1$ kitevő az inverzképzést jelöli a megfelelő csoportban, akkor tetszőleges $G$-beli $a$ elem
+        esetén $f(a^{-1})=(f(a))^{-1}$.'
+  - type: narrative
+    content: |
+      ***Szavakkal:*** egy csoporthomomorfizmus az inverzképzést és az egységelemet is tartja. Azaz egyrészt a $G$
+      csoport egységelemének képe a $H$ csoport egységeleme, másrészt bármely $G$-beli elem $G$-beli inverzének
+      képe az elem képének $H$-beli inverze.

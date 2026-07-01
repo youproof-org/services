@@ -1,0 +1,17 @@
+type: theorem
+name: ekvivalenciarelacio-tulajdonsagai
+proofs:
+  - ekvivalenciarelacio-tulajdonsagai-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy $H$ egy tetszőleges halmaz, valamint $R$ egy tetszőleges ekvivalenciareláció ezen a
+      halmazon. Képezzük a $H$ halmaznak egy osztályozását a következőképpen: tetszőleges $a$ és $b$ elemek
+      ***pontosan akkor*** kerüljenek egy osztályba, ha $aRb$ teljesül. Ekkor ***ez az osztályozás egy partíció***
+      lesz.
+  - type: narrative
+    content: |
+      ***Megfordítva:*** Tekintsük a $H$ halmaznak egy tetszőleges partícióját. Képezzünk egy $S$ relációt ezen a
+      halmazon a következőképpen: tetszőleges $a$ és $b$ elemekre $aSb$ ***pontosan akkor*** teljesüljön, ha $a$ és
+      $b$ az adott partíció ugyanazon osztályában vannak. Ekkor $S$ egy ***ekvivalenciareláció*** lesz.

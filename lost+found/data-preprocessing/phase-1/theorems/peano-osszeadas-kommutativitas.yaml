@@ -1,0 +1,11 @@
+type: theorem
+name: peano-osszeadas-kommutativitas
+proofs:
+  - peano-osszeadas-kommutativitas-bizonyitas
+remarks: []
+content:
+  - type: formula
+    lead-in: |
+      Az $\N$ tetszőleges $a$ és $b$ elemeire igaz az alábbi összefüggés:
+    content: |
+      a+b = b+a

@@ -1,0 +1,165 @@
+type: chapter
+name: 26-alice-es-bob-atlepi-a-celvonalat
+title: Alice és Bob átlépi a célvonalat
+
+references:
+  ciklikus-csoportok:
+    target:
+      type: definition
+      name: ciklikus-csoportok
+  ciklikus-csoportok-strukturatetele:
+    target:
+      type: theorem
+      name: ciklikus-csoportok-strukturatetele
+  csoport:
+    target:
+      type: definition
+      name: csoport
+  egesz-szamok-maradekosztalyai:
+    target:
+      type: theorem
+      name: egesz-szamok-maradekosztalyai
+  gyuru-additiv-es-multiplikativ-csoportja:
+    target:
+      type: definition
+      name: gyuru-additiv-es-multiplikativ-csoportja
+
+abstract:
+  - type: narrative
+    content: |
+      Az előző részben kibővítettük csoportelméleti eszköztárunkat, és megismerkedtünk a csoporthomomorfizmusok, a
+      normálosztók és a faktorcsoportok fogalmával. Ezek tárgyalása során fontos párhuzamokra világítottunk rá,
+      hiszen a 18. részben gyakorlatilag pontosan ugyanezt az utat jártuk végig a gyűrűhomomorfizmusok, az ideálok
+      és a faktorgyűrűk (vagy maradékosztálygyűrűk) ismertetésekor. Kitértünk továbbá az úgynevezett ciklikus
+      csoportokra, és teljes mértékben feltártuk ezek szerkezetét. Ebben a részben a megismert csoportelméleti
+      eszközök egy fontos alkalmazását mutatjuk be. Lényegesen javítani fogunk ugyanis a Miller-Rabin-tanúk számára
+      vonatkozó eddigi alsó becslésünkön, amelyet a 24. részben adtunk meg.
+  - type: narrative
+    content: |
+      De vajon mit nevezünk primitív gyöknek, és mi köze ennek a Diffie-Hellman kulcscsere protokollhoz? Milyen
+      esetekben ciklikus egy maradékosztálygyűrű multiplikatív csoportja? Mit állít az úgynevezett
+      Korselt-kritérium a Carmichael-számokról? Hogyan lehet igazolni, hogy a redukált maradékosztályoknak legalább
+      a háromnegyede Miller-Rabin-tanú? Mi a következménye, ha az RSA kulcsok generálásához véletlenül prímek
+      helyett Carmichael-számokat használunk? Ebben a részben erről lesz szó...
+prerequisite-warning:
+  - type: narrative
+    content: |
+      Figyelem! Ez a rész erőteljesen épít a 24. és 25. részben felépített alábbi definíciókra, valamint a hozzájuk
+      kapcsolódó tételekre:
+  - type: recall
+    target:
+      type: definition
+      name: csoport
+  - type: recall
+    target:
+      type: definition
+      name: reszcsoport
+  - type: recall
+    target:
+      type: theorem
+      name: mellekosztalyok
+  - type: recall
+    target:
+      type: definition
+      name: csoporthomomorfizmus
+  - type: recall
+    target:
+      type: definition
+      name: csoporthomomorfizmus-magja-es-kepe
+  - type: recall
+    target:
+      type: definition
+      name: normaloszto
+  - type: recall
+    target:
+      type: theorem
+      name: faktorcsoport
+  - type: recall
+    target:
+      type: definition
+      name: kep-teljes-inverz-kep
+  - type: recall
+    target:
+      type: theorem
+      name: csoporthomomorfizmusok-strukturatarto-tulajdonsagai
+  - type: recall
+    target:
+      type: definition
+      name: ciklikus-csoportok
+  - type: narrative
+    content: |
+      Ezek kontextusba helyezése miatt erőteljesen ajánlott elolvasni a 24. és 25. részt, mivel gyakran hivatkozni
+      fogunk rájuk. A teljes cikksorozat elejét itt találod.
+prologue:
+  - type: narrative
+    content: |
+      Az előző rész végén igazoltuk, hogy az egész számok $\Z$ gyűrűjének, valamint tetszőleges $m\geq 0$ esetén a
+      $\Z/m\Z$ maradékosztálygyűrűnek az ***additív csoportja*** ciklikus, továbbá, hogy ezeken kívül &ndash;
+      izomorfiától eltekintve &ndash; nem is létezik más ciklikus csoport. Előbbit az $1$ egész szám, utóbbit pedig
+      az $[1]_m$ maradékosztály generálja. Nyilván, hiszen ezeknek vagy ellentettjeiknek az önmagukkal való
+      valahányszori összeadása előállítja az adott gyűrű minden elemét.
+  - type: narrative
+    content: |
+      Felmerült azonban a kérdés, hogy vajon mi a helyzet ugyanezen gyűrűk ***multiplikatív csoportjával***. A $\Z$
+      gyűrű esetén ebben a tekintetben egyszerű a dolgunk. A [gyuru-additiv-es-multiplikativ-csoportja] utáni
+      megjegyzés alapján ugyanis egy kommutatív, egységelemes gyűrű multiplikatív csoportja pontosan az egységekből
+      áll. Ezek a $\Z$ gyűrűben a $+1$ és $-1$ egész számok lesznek. Az Olvasó a [csoport] és a
+      [ciklikus-csoportok] alapján könnyedén leellenőrizheti, hogy ez a kételemű halmaz egy ciklikus csoportot
+      alkot az egészek közötti szorzással, mint művelettel. A generátorelem ebben az esetben a $-1$ egész szám,
+      hiszen ennek hatványai kiadják a teljes csoportot. Ezzel szemben a $+1$ egész szám ***nem generátorelem***,
+      mivel az csak az egyelemű triviális részcsoportot generálja &ndash; azt, amelyikben csak a $+1$ szerepel.
+  - type: narrative
+    content: |
+      Mármost ha a $\Z^{\times}$ kételemű multiplikatív csoport ***ciklikus***, akkor a
+      [ciklikus-csoportok-strukturatetele] alapján izomorf a $\Z^+$ vagy a $(\Z/m\Z)^+$ additív csoportok
+      valamelyikével. A $\Z^+$ csoport rendje végtelen, így ezt kizárhatjuk. A [egesz-szamok-maradekosztalyai]
+      alapján $m=0$ esetén végtelen sok, míg $m\gt 0$ esetén pontosan $m$ darab modulo $m$ maradékosztály létezik.
+  - type: formula
+    lead-in: |
+      Ez alapján tehát kizárásos alapon csak az $m=2$ eset lehetséges, azaz fennáll az alábbi izomorfia:
+    content: |
+      \Z^{\times} \simeq (\Z/2\Z)^+
+  - type: formula
+    lead-in: |
+      A $\Z^{\times}$ multiplikatív csoport műveleti tábláját az alábbi táblázatban láthatjuk:
+    content: |
+      \begin{array}{c|cc} \cdot & 1 & -1 \\ \hline 1 & 1 & -1 \\ -1 & -1 & 1 \end{array}
+  - type: formula
+    lead-in: |
+      A $(\Z/2\Z)^+$ additív csoport műveleti táblája pedig a következő:
+    content: |
+      \begin{array}{c|cc} + & [0]_2 & [1]_2 \\ \hline [0]_2 & [0]_2 & [1]_2 \\ [1]_2 & [1]_2 & [0]_2 \end{array}
+  - type: narrative
+    content: |
+      Látható, hogy mindössze az elemek és a művelet elnevezésében van különbség a két csoport között, de ettől
+      eltekintve teljesen ugyanúgy viselkednek, azaz ***izomorfak*** egymással.
+sections:
+  - 01-primitiv-gyok
+  - 02-polinomok
+  - 03-polinomfuggvenyek
+  - 04-polinomok-gyokei
+  - 05-primitiv-gyok-letezese
+  - 06-primitiv-gyokok-es-a-diffie-hellman-kulcscsere-protokoll
+  - 07-carmichael-szamok-tulajdonsagai
+  - 08-a-nem-miller-rabin-tanuk-csoportjanak-rendje
+  - 09-mit-kezdjunk-a-carmichael-szamokkal
+  - 10-az-eddigi-eredmenyek-osszefoglalasa
+  - 11-az-aks-primteszt
+  - 12-carmichael-szamok-es-az-rsa
+
+epilogue:
+  - type: narrative
+    content: |
+      Ebben a részben megismerkedtünk a polinomok és polinomgyűrűk fogalmával. Az itt megismert összefüggéseket
+      felhasználva igazoltuk, hogy prím modulus esetén mindig létezik primitív gyök. Ezután a Carmichael-számokat
+      jellemeztük az úgynevezett Korselt-kritérium segítségével, majd ezt felhasználva lényegesen javítottunk a
+      Miller-Rabin-prímteszt hibabecslésén. Végül megvizsgáltuk azt a kérdést, hogy miért jelent súlyos biztonsági
+      kockázatot, ha az RSA kulcsok generálásakor véletlenül Carmichael-számokat használunk.
+  - type: narrative
+    content: |
+      Ezzel számelméleti vizsgálataink végére értünk. A sorozat utolsó részében arról fogunk mesélni, hogy a talán
+      nem is olyan távoli jövőben az úgynevezett kvantumszámítógépek milyen kihívások elé fogják állítani
+      főhőseinket, és mik azok a módszerek, amelyek segítségével megbírkózhatnak e kihívásokkal.
+  - type: narrative
+    content: |
+      Az utolsó részt itt találod...

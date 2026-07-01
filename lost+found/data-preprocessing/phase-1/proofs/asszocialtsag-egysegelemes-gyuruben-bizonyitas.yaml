@@ -1,0 +1,24 @@
+type: proof
+name: asszocialtsag-egysegelemes-gyuruben-bizonyitas
+remarks: []
+references:
+  asszocialtsag-tulajdonsagai:
+    target:
+      type: theorem
+      name: asszocialtsag-tulajdonsagai
+  oszthatosag-tulajdonsagai:
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+content:
+  - type: narrative
+    content: |
+      ***Az egyik irányt*** már bizonyítottuk a [asszocialtsag-tulajdonsagai] 4. pontjában.
+  - type: narrative
+    content: |
+      ***Most nézzük a másik irányt***, azaz tegyük fel, hogy a gyűrű egységelemes, és $a\sim b$. A
+      [oszthatosag-tulajdonsagai] 1. pontja alapján egységelemes gyűrűkben minden elem osztója önmagának, így tehát
+      fennállnak az $a|a$ valamint a $b|b$ oszthatóságok. Mivel azonban $a$ és $b$ egymás asszociáltjai, ezért
+      pontosan ugyanazok az osztóik. Ha tehát fennáll az $a|a$ oszthatóság, akkor szükségképpen fennáll az $a|b$
+      oszthatóság is. Ugyanilyen okból ha fennáll a $b|b$ oszthatóság, akkor szükségképpen fennáll a $b|a$
+      oszthatóság is.

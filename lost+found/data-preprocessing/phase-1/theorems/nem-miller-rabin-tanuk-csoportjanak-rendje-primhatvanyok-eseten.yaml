@@ -1,0 +1,23 @@
+type: theorem
+name: nem-miller-rabin-tanuk-csoportjanak-rendje-primhatvanyok-eseten
+proofs:
+  - nem-miller-rabin-tanuk-csoportjanak-rendje-primhatvanyok-eseten-bizonyitas
+remarks: []
+references:
+  nem-miller-rabin-tanuk-csoportja-primhatvanyok-eseten:
+    target:
+      type: theorem
+      name: nem-miller-rabin-tanuk-csoportja-primhatvanyok-eseten
+content:
+  - type: narrative
+    content: |
+      Legyen $p$ tetszőleges ***pozitív, páratlan prímszám***, $c$ pedig tetszőleges ***pozitív kitevő***. A
+      [nem-miller-rabin-tanuk-csoportja-primhatvanyok-eseten]nek megfelelően jelöljük $G_{p^c}$-vel azon modulo
+      $p^c$ maradékosztályok halmazát, amelyek ***NEM Miller-Rabin-tanúi*** $p^c$-nek. Ekkor $G_{p^c}$ ugye a
+      [nem-miller-rabin-tanuk-csoportja-primhatvanyok-eseten] 2. pontja alapján a $(\Z/p^c\Z)^{\times}$
+      multiplikatív csoport egy részcsoportja.
+  - type: formula
+    lead-in: |
+      E részcsoport rendje minden pozitív $c$ kitevő esetén $p-1$, azaz:
+    content: |
+      |G_{p^c}|=p-1

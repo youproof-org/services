@@ -1,0 +1,105 @@
+type: proof
+name: egesz-szamok-teljes-rendezese-egyertelmu-bizonyitas
+remarks: []
+references:
+  egesz-szamok-gyuruje:
+    target:
+      type: theorem
+      name: egesz-szamok-gyuruje
+  pozitiv-es-negativ-egesz-szamok:
+    target:
+      type: definition
+      name: pozitiv-es-negativ-egesz-szamok
+  pozitivitastartomany:
+    target:
+      type: definition
+      name: pozitivitastartomany
+  pozitivitastartomany-szukseges-es-elegseges-feltetele:
+    target:
+      type: theorem
+      name: pozitivitastartomany-szukseges-es-elegseges-feltetele
+  rendezesek-es-pozitivitastartomanyok-kapcsolata:
+    target:
+      type: theorem
+      name: rendezesek-es-pozitivitastartomanyok-kapcsolata
+  teljes-rendezes-szukseges-es-elegseges-feltetele:
+    target:
+      type: theorem
+      name: teljes-rendezes-szukseges-es-elegseges-feltetele
+  teljes-rendezesek-pozitivitastartomanyainak-metszete:
+    target:
+      type: theorem
+      name: teljes-rendezesek-pozitivitastartomanyainak-metszete
+  termeszetes-szamok-beagyazasa-osszegtarto:
+    target:
+      type: theorem
+      name: termeszetes-szamok-beagyazasa-osszegtarto
+  termeszetes-szamok-beagyazasa-szorzattarto:
+    target:
+      type: theorem
+      name: termeszetes-szamok-beagyazasa-szorzattarto
+content:
+  - type: narrative
+    content: |
+      A [pozitiv-es-negativ-egesz-szamok]ban az egész számok halmazát 3 részre osztottuk: ***pozitív*** egész
+      számok, ***negatív*** egész számok és a $0$ egész szám. A pozitív egész számok halmazát jelöljük a
+      továbbiakban $P$-vel, a negatív egész számok halmazát pedig $-P$-vel. A $P$ halmaz nem tartalmazza a gyűrű
+      nullelemét, azaz a $0$ egész számot, valamint a [termeszetes-szamok-beagyazasa-osszegtarto] és a
+      [termeszetes-szamok-beagyazasa-szorzattarto] miatt zárt a $(\Z ,+,\cdot )$ gyűrű összeadására és szorzására.
+      Mivel a gyűrű nullosztómentes, ezért a [pozitivitastartomany-szukseges-es-elegseges-feltetele] alapján annyi
+      már bizonyos, hogy a $P$ halmaz valóban egy ***részbenrendezés pozitivitástartománya***.
+  - type: narrative
+    content: |
+      A [egesz-szamok-gyuruje] bizonyítása alapján a $P$-ben lévő egész számok ellentettjei épp a $-P$-ben lévő
+      egész számok. Így a [pozitivitastartomany] utáni megjegyzés miatt a $P$-hez tartozó rendezés
+      ***negativitástartománya*** épp a $-P$ halmaz, aminek tehát ***nincs közös eleme*** $P$-vel. Mivel a $P$ és a
+      $-P$ halmazok ketten együtt tartalmazzák a $0$ egész számon kívüli ***összes*** egész számot, így a
+      [teljes-rendezes-szukseges-es-elegseges-feltetele] alapján a $P$ halmazhoz tartozó rendezés ***valójában egy
+      teljes rendezés***.
+  - type: narrative
+    content: |
+      Már csak azt kell belátni, hogy ***ez az egyetlen***, a rendezési axiómákat is kielégítő teljes rendezés.
+      Tegyük fel ezért indirekt, hogy egy másik ilyen teljes rendezés is létezik az egész számok gyűrűjén. Jelöljük
+      az ehhez tartozó pozitivitástartományt $Q$-val, a negativitástartományt pedig $-Q$-val. Mivel rendezésről van
+      szó, ezért a $Q$ és a $-Q$ halmazoknak ***szintén nincs közös elemük***, továbbá &ndash; mivel ez a
+      hipotetikus rendezés teljes &ndash; ketten együtt tartalmazzák a $0$ egész számon kivüli ***összes*** egész
+      számot. A [rendezesek-es-pozitivitastartomanyok-kapcsolata] alapján az indirekt feltevésünk pontosan azt
+      jelenti, hogy a $P$ és $Q$ pozitivitástartományok különbözőek.
+  - type: narrative
+    content: |
+      Vegyük észre azonban, hogy a [teljes-rendezesek-pozitivitastartomanyainak-metszete] alapján mindazon egész
+      számok, amelyek felírhatók egy ***akármilyen*** egész szám önmagával vett szorzataként, vagy ilyen szorzatok
+      akárhánytagú összegeként, benne vannak mind a $P$, mind pedig a $Q$ halmazban. Ez viszont igaz minden
+      $P$-beli egész számra.
+  - type: formula
+    lead-in: |
+      Az első néhány példa alapján az Olvasó is könnyen megértheti, miért:
+    content: |
+      \begin{aligned}1&=1\cdot 1 \\ 2&=1\cdot 1 + 1\cdot 1 \\ 3&=1\cdot 1 + 1\cdot 1 + 1\cdot 1 \\ &\ldots
+      \end{aligned}
+  - type: narrative
+    content: |
+      Az tehát már bizonyos, hogy $P$ része $Q$-nak. Ebből viszont következik, hogy $-P$ is része $-Q$-nak. Hiszen
+      ha egy tetszőleges $a$ nemnulla egész szám benne van $-P$-ben, akkor az ellentettje benne van $P$-ben.
+      Azonban $P$ része $Q$-nak, így tehát ez az ellentett benne van $Q$-ban is. Ekkor viszont maga $a$ benne van
+      $-Q$-ban.
+  - type: figure
+    lead-in: |
+      A szituáció tehát valójában a következő:
+    src: Z_teljes_rendezeseinek_pozitivitastartomanyai.jpg
+    alt: Teljes rendezések pozitivitás- és negativitástartományai Z-n
+    caption: Teljes rendezések pozitivitás- és negativitástartományai $\Z$-n
+  - type: narrative
+    content: |
+      Az indirekt feltételezésünk ugye az volt, hogy a $P$ és a $Q$ halmazok különböznek. Azaz létezik olyan $x$
+      nemnulla egész szám, amely benne van $Q$-ban, de nincs benne $P$-ben. Egyrészt, mivel $Q$-nak és $-Q$-nak
+      nincs közös eleme, ezért ha $x$ benne van $Q$-ban, akkor nincs benne $-Q$-ban. Másrészt, mivel $P$ és $-P$
+      ketten együtt tartalmazzák az összes nemnulla egész számot, ezért ha $x$ nincs benne $P$-ben, akkor benne van
+      $-P$-ben. Mivel azonban $-P$ része $-Q$-nak, ezért ha $x$ benne van $-P$-ben, akkor benne van $-Q$-ban is.
+  - type: narrative
+    content: |
+      Az indirekt feltételezésünkből tehát az következik, hogy létezik olyan egész szám, amely benne is van
+      $-Q$-ban, és nincs is benne. Ez teljes képtelenség, így csak az a feltételezésünk lehet hibás, miszerint $P$
+      és $Q$ különböznek, azaz valójában $P$ és $Q$ megegyeznek. Ekkor viszont a
+      [rendezesek-es-pozitivitastartomanyok-kapcsolata] miatt a hozzájuk tartozó teljes rendezések is megegyeznek.
+      ***Az egész számok gyűrűje tehát valóban csak egyféleképpen rendezhető teljesen.***

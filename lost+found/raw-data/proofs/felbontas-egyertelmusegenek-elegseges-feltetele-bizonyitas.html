@@ -1,0 +1,39 @@
+<!-- wp:paragraph -->
+<p>Tekintsük ugyanis egy felbontható [latex]x[/latex] elem két tetszőleges felbontását:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x=p_1\cdot p_2\cdot \ldots \cdot p_n = q_1\cdot q_2\cdot \ldots \cdot q_k[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt kell bizonyítani, hogy a kétféle felbontásban ugyanannyi felbonthatatlan tényező van, és minden baloldali tényezőnek van egy asszociált párja a jobboldali felbontásban. Kezdjük [latex]p_1[/latex]-gyel.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mivel jelen esetben minden felbonthatatlan prímtulajdonságú, ezért [latex]p_1[/latex] is az, amely ugye a fenti egyenlet alapján osztója a jobboldali [latex]q_1\cdot \ldots \cdot q_k[/latex] szorzatnak. A prímtulajdonság miatt ekkor osztója e szorzat legalább egy tényezőjének is. Az általánosság megsértése nélkül feltételezhetjük, hogy ez a tényező [latex]q_1[/latex]. Ha mégsem ez lenne a helyzet, akkor a megfelelő módon átsorszámozzuk a jobboldali tényezőket.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Teljesül tehát a [latex]p_1|q_1[/latex] oszthatóság, de mivel [latex]q_1[/latex] felbonthatatlan, ezért ez a [yp_element slug="felbonthatatlan-elem" type="link" /] alapján csak úgy teljesülhet, ha [latex]q_1=p_1\cdot e_1[/latex], ahol [latex]e_1[/latex] valamilyen egység. Az egység létezéséből a [yp_element slug="egyseg-letezesenek-szukseges-es-elegseges-feltetele" type="link" /] miatt következik, hogy a gyűrű egységelemes. Ekkor azonban alkalmazható a [yp_element slug="asszocialtsag-es-egysegek-kapcsolata" type="link" /], amely szerint [latex]p_1[/latex] és [latex]q_1[/latex] egymás asszociáltjai – azaz megtaláltuk [latex]p_1[/latex] asszociált párját a jobboldalon. Az egyenletünk – amelyet a nullosztómentesség miatt egyszerűsíthetjük [latex]p_1[/latex]-gyel – most így néz ki:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\cancel{p_1}\cdot p_2\cdot \ldots \cdot p_n = \underbrace{\cancel{p_1}\cdot e_1}_{=q_1}\cdot q_2\cdot \ldots \cdot q_k[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezután [latex]p_2[/latex]-vel folytatjuk ugyanezt az eljárást, majd [latex]p_3[/latex]-mal, stb. Az előbb látott gondolatmenet alapján mindegyikhez megtaláljuk az asszociált párját a jobboldalon. Amikor az utolsó baloldali tényezővel is megtörtént az egyszerűsítés, akkor az egyenlet baloldalán az egységelem marad, a jobboldalon pedig az egyszerűsítések során előálló [latex]n[/latex] darab egységtényező. Kérdés, hogy ezeken az egységeken kívül marad-e még további tényező a jobboldalon? Például:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]1=e_1\cdot e_2\cdot \ldots \cdot e_n\cdot \underbrace{q_{n+1}\cdot q_{n+2} \cdot \ldots \cdot q_k}_{?}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha ez így lenne, akkor az azt jelentené, hogy a [latex]q_{n+1}[/latex], [latex]q_{n+2}[/latex], ..., [latex]q_k[/latex] tényezők mindegyike osztója lenne az egységelemnek, tehát végsősoron ők mind egységek lennének (a [yp_element slug="egysegek-es-egysegelem-viszonya" type="link" /] értelmében). Ez viszont lehetetlen, hiszen ezek a tényezők felbonthatatlanok, és így a [yp_element slug="felbonthatatlan-elem" type="link" /] szerint nem lehetnek egységek.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezért az egyszerűsítési eljárás során a baloldali és a jobboldali tényezők egyszerre fogynak el, és eközben mindegyik baloldali tényezőhöz megtaláljuk az ő asszociált párját a jobboldalon. Az [latex]x[/latex] elem két felbontása tehát sorrendtől és asszociáltságtól eltekintve valóban megegyezik.</p>
+<!-- /wp:paragraph -->

@@ -1,0 +1,207 @@
+type: section
+name: 05-a-miller-rabin-primteszt
+title: A Miller-Rabin prímteszt
+
+references:
+  egesz-szamok-kozotti-kongruencia:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia
+  miller-rabin-tanu:
+    target:
+      type: definition
+      name: miller-rabin-tanu
+  primtulajdonsagu-elem:
+    target:
+      type: definition
+      name: primtulajdonsagu-elem
+
+body:
+  - type: narrative
+    content: |
+      Ebben a szakaszban a Fermat-prímtesztünket fogjuk egy kicsit feljavítani annak érdekében, hogy a
+      Carmichael-számokat is ki tudjuk szűrni. Előszöris szögezzük le, hogy a továbbiakban csak a ***páratlan***
+      $n$-ekkel fogunk foglalkozni. Ez nem jelent tényleges megszorítást, hiszen az utolsó számjegyből azonnal
+      látszik, hogy páratlan vagy páros-e a bemenetünk. Ez utóbbi esetben nyilván megállhatunk, és összetettnek
+      nyilváníthatjuk a számunkat, hiszen az osztható $2$-vel.
+  - type: narrative
+    content: |
+      Az általánosság megsértése nélkül feltételezhetjük tehát, hogy $n\gt 1$ egy páratlan egész szám. Ekkor
+      azonban az $a^{n-1}\equiv 1\pmod n$ Fermat-kongruenciában szereplő $n-1$ kitevő biztosan páros lesz.
+  - type: formula
+    lead-in: |
+      Vagyis létezik olyan $k_1$ egész szám, amelyre teljesül az alábbi &ndash; és ezt meg is kapjuk, ha $n-1$-et
+      "elosztjuk" $2$-vel:
+    content: |
+      n-1 = 2\cdot k_1
+  - type: narrative
+    content: |
+      Ezután $k_1$-re vizsgáljuk meg, hogy páratlan-e vagy páros.
+  - type: formula
+    lead-in: |
+      Utóbbi esetben hasonlóképpen tovább bonthatjuk $n-1$-et, azaz létezni fog olyan $k_2$ egész szám, amelyre
+      teljesül az alábbi:
+    content: |
+      n-1 = 2\cdot 2\cdot k_2
+  - type: narrative
+    content: |
+      És így tovább mindaddig bontjuk tovább a jobboldali tényezőt, amíg páratlan számot nem kapunk. Ez garantáltan
+      be fog következni véges számú lépés után, máskülönben $n-1$ prímtényezős felbontásában végtelen sok $2$-es
+      tényező szerepelne, ami lehetetlen. Tegyük fel, hogy $e$ darab lépés után egy valamilyen $k$ páratlan számot
+      kapunk.
+  - type: formula
+    lead-in: |
+      Ekkor $n-1$-re az alábbi kifejezést kaptuk:
+    content: |
+      n-1=\underbrace{2\cdot 2\cdot \ldots \cdot 2}_{e \text{ darab}}\cdot k=2^e\cdot k
+  - type: formula
+    lead-in: |
+      Például ha az $n=561$ Carmichael-szám a bemenetünk, akkor $n-1=560$-ra az iménti felbontás után $e=4$ és
+      $k=35$ adódik, hiszen:
+    content: |
+      \begin{aligned}n-1=560&=2\cdot 280=\\&=2^2\cdot 140=\\&=2^3\cdot 70=\\&=2^4\cdot 35\end{aligned}
+  - type: formula
+    lead-in: |
+      Ilymódon kiszámítva az $e$ és $k$ értékét, a Fermat-tesztben használt $a^{n-1}\equiv 1\pmod n$ kongruencia az
+      alábbi alakot ölti:
+    content: |
+      a^{2^e\cdot k}\equiv 1\pmod n
+  - type: narrative
+    content: |
+      Amennyiben tehát $[a]_n$ egy redukált maradékosztály és $n$ prím, akkor teljesül a fenti kongruencia. Ez
+      viszont a [egesz-szamok-kozotti-kongruencia] 3.
+  - type: formula
+    lead-in: |
+      pontja alapján azt jelenti, hogy $n$ osztója az alábbi kifejezésnek:
+    content: |
+      a^{2^e\cdot k}-1
+  - type: narrative
+    content: |
+      Most ezt a kifejezést fogjuk szorzattá alakítani a következő tétel segítségével.
+  - type: embed
+    target:
+      type: theorem
+      name: miller-rabin-szorzat
+  - type: embed
+    target:
+      type: proof
+      name: miller-rabin-szorzat-bizonyitas
+  - type: narrative
+    content: |
+      Tegyük fel például, hogy továbbra is az $n=561$ Carmichael-szám a bemenetünk. Az $n-1=560$-ból ugye már
+      korábban kiszámítottuk az $e=4$ és $k=35$ értékeket.
+  - type: formula
+    lead-in: |
+      Ekkor az $a^{n-1}-1=a^{560}-1$ kifejezés az iménti tétel alapján így alakítható szorzattá:
+    content: |
+      a^{560}-1=(a^{35}-1)\cdot (a^{35}+1)\cdot (a^{70}+1)\cdot (a^{140}+1)\cdot (a^{280}+1)
+  - type: narrative
+    content: |
+      Ha tehát $[a]_{561}$ egy tetszőleges redukált maradékosztály, és az $n=561$ egy prímszám lenne, akkor ő
+      garantáltan osztója lenne a baloldali $a^{560}-1$ kifejezésnek. Természetesen ez az oszthatóság teljesülhet
+      egészen más okból is, és &ndash; minthogy az $n=561$ egy Carmichael-szám &ndash; jelen esetben teljesül is
+      bármilyen $[a]_{561}$ redukált maradékosztályra. A Fermat-prímteszt ezen a ponton annak rendje és módja
+      szerint meg is bukik, hiszen néhány véletlenszerűen kiválasztott $[a]_{561}$ redukált maradékosztály
+      vizsgálata után tévesen arra a következtetésre jut, hogy az $n=561$ "valószínűleg prím".
+  - type: narrative
+    content: |
+      Ezen a ponton a ***Miller-Rabin-prímteszt*** továbbmegy, és az $n=561$ esetleges ***prímtulajdonságát***
+      ([primtulajdonsagu-elem]) próbálja meg cáfolni a kiválasztott $[a]_{561}$ redukált maradékosztály
+      segítségével. Ha ugyanis $n=561$ osztója a baloldali $a^{560}-1$ egész számnak, akkor a ***prímtulajdonság***
+      miatt a [primtulajdonsagu-elem] utáni megjegyzés alapján osztója kell legyen ***legalább az egyik***
+      jobboldalon szereplő tényezőnek is.
+  - type: formula
+    lead-in: |
+      Azaz teljesülnie kell az alábbi oszthatóságok közül legalább egynek tetszőleges $[a]_{561}$ redukált
+      maradékosztály esetén:
+    content: |
+      \begin{aligned}561&|a^{35}-1 \\ 561&|a^{35}+1 \\ 561&|a^{70}+1 \\ 561&|a^{140}+1 \\
+      561&|a^{280}+1\end{aligned}
+  - type: narrative
+    content: |
+      Ez viszont a [egesz-szamok-kozotti-kongruencia] 3.
+  - type: formula
+    lead-in: |
+      pontja alapján azt jelenti, hogy teljesülnie kell ***legalább az egyik*** alábbi kongruenciának tetszőleges
+      $[a]_{561}$ redukált maradékosztály esetén:
+    content: |
+      \begin{aligned}a^{35}&\equiv +1\pmod{561} \\ a^{35}&\equiv -1\pmod{561} \\ a^{70}&\equiv -1\pmod{561} \\
+      a^{140}&\equiv -1\pmod{561} \\ a^{280}&\equiv -1\pmod{561} \end{aligned}
+  - type: narrative
+    content: |
+      Más megfogalmazásban ez azt jelenti, hogy amennyiben találunk egy olyan $[a]_{561}$ redukált maradékosztályt,
+      amely esetén a fenti kongruenciák közül ***egyik sem*** teljesül, akkor az $n=561$ biztosan ***nem lehet
+      prím***. Egy ilyen maradékosztály tehát ***"leleplezi"*** vagy ***"tanúsítja"*** az $n=561$ összetettségét.
+      Vizsgáljuk meg például a $[2]_{561}$ redukált maradékosztályt, azaz legyen $a=2$.
+  - type: formula
+    lead-in: |
+      Az itt lévő kalkulátor segítségével leellenőrizhetjük a fenti kongruenciákat:
+    content: |
+      \begin{aligned}2^{35} \equiv 263 \ &\cancel{\equiv}\ +1\pmod{561} \\ 2^{35} \equiv 263 \ &\cancel{\equiv}\
+      -1\pmod{561} \\ 2^{70}\equiv 166 \ &\cancel{\equiv}\ -1\pmod{561} \\ 2^{140}\equiv 67 \ &\cancel{\equiv}\
+      -1\pmod{561} \\ 2^{280}\equiv 1 \ &\cancel{\equiv}\ -1\pmod{561} \end{aligned}
+  - type: narrative
+    content: |
+      Minthogy egyetlen kongruencia sem teljesül, ezért az eddigi okfejtés alapján az $n=561$ Carmichael-szám
+      ***biztosan összetett***, azaz megbukott a Miller-Rabin-prímteszten.
+  - type: narrative
+    content: |
+      Az eljárás általános megfogalmazásához most bevezetünk egy új tanú fogalmat.
+  - type: embed
+    target:
+      type: definition
+      name: miller-rabin-tanu
+  - type: embed
+    target:
+      type: remark
+      name: miller-rabin-tanu-megjegyzes
+  - type: narrative
+    content: |
+      Felmerül a kérdés, hogy vajon a tanúk körének tágítását nem vittük-e túlzásba. Azaz nem lehetséges-e, hogy ha
+      Fermat-tanúja nem is, de Miller-Rabin-tanúja már lehet esetleg prímszámoknak is. Az alábbi tétel szerint
+      szerencsére nem ez a helyzet.
+  - type: embed
+    target:
+      type: theorem
+      name: primszamnak-nincs-miller-rabin-tanuja
+  - type: embed
+    target:
+      type: proof
+      name: primszamnak-nincs-miller-rabin-tanuja-bizonyitas
+  - type: ordered-list
+    lead-in: |
+      Ezekután ismertetjük a Miller-Rabin-prímtesztelő eljárást, amely tehát a Fermat-prímtesztnek a
+      továbbfejlesztett változata:
+    items:
+      - 'Az algoritmus bemenete egy $n\gt 1$ ***páratlan*** egész szám, amelyről el kellene dönteni, hogy prím-e vagy összetett.'
+      - 'Válasszunk véletlenszerűen egy tetszőleges $1$ és $n$ közötti $a$ egész számot, azaz $1\lt a\lt n$.'
+      - 'A [euklideszi-gyuruben-letezik-kituntetett-kozos-oszto] bizonyításában ismertetett ***euklidészi algoritmus*** segítségével számítsuk ki az $(a,n)$ kitüntetett közös osztót. Ha $(a,n)\
+eq 1$, akkor az algoritmus leáll a következő válasszal: ***az $n$ egész szám biztosan összetett, és az egyik osztója $(a,n)$.*** Ha $(a,n)=1$, akkor folytassuk a 4. lépéstől.'
+      - 'Képezzük azt az $e\geq 1$ kitevőt és $k\geq 1$ páratlan számot, amelyre $n-1=2^e\cdot k$ teljesül.'
+      - 'A 21. részben ismertetett ***ismételt négyzetreemelések módszerével*** ellenőrizzük le, hogy az $[a]_n$ maradékosztályra teljesül-e legalább az egyik a [miller-rabin-tanu]ban felsorolt kongruenciák közül. Amennyiben ***nem*** teljesül egyetlen kongruencia sem, akkor Miller-Rabin-tanút találtunk, és az algoritmus leáll a következő válasszal: ***az $n$ egész szám biztosan összetett, de nem találtuk meg egyetlen osztóját sem***. Amennyiben teljesül legalább az egyik kongruencia, akkor az algoritmus a következő válasszal áll le: ***az $n$ egész szám "valószínűleg" prím***.'
+  - type: narrative
+    content: |
+      ***Már megint csak "valószínűleg" prím?*** &ndash; kérdezhetné teljes joggal az Olvasó. Látszólag valóban nem
+      kerültünk közelebb a prímek azonosításához, hiszen ismét csak összetett számokat tudunk egyértelműen
+      leleplezni. Ha azonban szerencsétlenül épp egy olyan maradékosztályt sikerült kihúzni a kalapból, amely nem
+      Miller-Rabin-tanú, akkor ismét csak annyit mondhatunk, hogy a kérdéses szám ***"valószínűleg" prím***.
+  - type: narrative
+    content: |
+      Ez valóban így van, azonban a Fermat-prímteszthez hasonlóan itt is megtehetjük, hogy többször húzunk a
+      kalapból. Ezen túlmenően a Miller-Rabin-tanú [miller-rabin-tanu]ja utáni megjegyzés alapján egy adott $n$-hez
+      tartozó Miller-Rabin-tanúk köre biztosan nem szűkebb, mint az ugyanezen $n$-hez tartozó Fermat-tanúk köre.
+      Sőt, azt is láthattuk, hogy az $n=561$-nek egyáltalán nincs Fermat-tanúja &ndash; hiszen Carmichael-számról
+      van szó. Ezzel szemben például a $[2]_{561}$ maradékosztály "lebuktatja" ezt a számot is, hiszen ő egy
+      Miller-Rabin-tanú, amely bizonyítja az $561$ összetettségét.
+  - type: narrative
+    content: |
+      Úgy tűnik tehát, mintha a Miller-Rabin-prímteszt elől még a Carmichael-számok sem tudnának "elbújni", ami
+      kétségkívül hatalmas előrelépés. De vajon tényleg nem léteznek univerzális álprímek erre a tesztre nézve?
+      Sajnos ahhoz, hogy ezt megválaszolhassuk, az absztrakt algebra egy rendkívül fontos ágának, nevezetesen az
+      úgynevezett ***csoportelméletnek*** az eszköztárára lesz szükségünk. Így ezt csak a következő részben tudjuk
+      majd igazolni.
+  - type: narrative
+    content: |
+      Most azonban térjünk vissza egy kicsit az RSA-kulcsgenerálás kérdésköréhez. Nem árt ugyanis, ha felhívjuk
+      Alice és Bob figyelmét néhány fontos dologra, amire vigyázniuk kell, ha nem akarják, hogy Eve és Mallory
+      borsot törjön az orruk alá.

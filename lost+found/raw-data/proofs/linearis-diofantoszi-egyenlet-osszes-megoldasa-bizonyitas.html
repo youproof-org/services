@@ -1,0 +1,302 @@
+<!-- wp:paragraph -->
+<p>Az általánosság megsértése nélkül feltehetjük, hogy az [latex]m\
+eq 0[/latex] feltétel teljesül. Ha ugyanis mégsem így lenne, akkor a tétel szövege alapján szükségképpen teljesül az [latex]a\
+eq 0[/latex] feltétel, és az alábbi gondolatmenet az [latex]a[/latex] és [latex]m[/latex] együtthatók szerepének felcserélésével ugyanígy végigjátszható. Először az [latex]m\gt 0[/latex] esetet igazoljuk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Az 1. állítás az [latex]m\gt 0[/latex] esetben:</strong> Mivel az egyenlet megoldható, ezért a [yp_element slug="linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga" type="link" /] alapján teljesül az [latex](a,m)|b[/latex] oszthatóság. Vagyis létezik olyan egész szám, amellyel az [latex](a,m)[/latex] kitüntetett közös osztót megszorozva [latex]b[/latex]-t kapunk. Jelöljük ezt az egész számot [latex]\frac{b}{(a,m)}[/latex]-mel, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](a,m)\cdot \frac{b}{(a,m)} = b[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="bezout-lemma-euklideszi-gyurukben" type="link" /] alapján az [latex](a,m)[/latex] kitüntetett közös osztó felírható az [latex]a[/latex] és [latex]m[/latex] egész számok lineáris kombinációjaként. Azaz léteznek olyan [latex]u[/latex] és [latex]v[/latex] egész együtthatók, hogy teljesül az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](a,m)=au+mv[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezt összevetve az előző egyenlettel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](\underbrace{au+mv}_{=(a,m)})\cdot \frac{b}{(a,m)} = a\cdot (\underbrace{u\cdot \frac{b}{(a,m)}}_{=x}) + m\cdot (\underbrace{v\cdot \frac{b}{(a,m)}}_{=y}) = b[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azaz megkaptuk az [latex]ax+my=b[/latex] lineáris diofantoszi egyenlet egy megoldását:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}x&amp;=u\frac{b}{(a,m)} \\ y&amp;=v\frac{b}{(a,m)}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]u[/latex] és [latex]v[/latex] együtthatók a [yp_element slug="bezout-lemma-euklideszi-gyurukben" type="link" /] bizonyításában szereplő <strong><em>kibővített euklidészi algoritmussal</em></strong> hatékonyan kiszámíthatók.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>A 2. állítás <strong>az [latex]m\gt 0[/latex] esetben</strong>:</strong> Tegyük fel, hogy az [latex]x=s[/latex], [latex]y=t[/latex] számpár egy megoldása az [latex]ax+my=b[/latex] egyenletnek, és helyettesítsük be ugyanebbe az egyenletbe az állításban szereplő számpárt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a\cdot(\underbrace{s+k\cdot \frac{m}{(a,m)}}_{=x})+m\cdot (\underbrace{t-k\cdot \frac{a}{(a,m)}}_{=y})=b[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A zárójeleket felbontva az alábbit kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]as+ka\cdot \frac{m}{(a,m)}+mt-km\cdot \frac{a}{(a,m)}=b[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Szorozzuk meg mindkét oldalt az [latex](a,m)[/latex] kitüntetett közös osztóval:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]as\cdot (a,m)+ka\cdot \frac{m}{(a,m)}\cdot (a,m)+mt\cdot (a,m)-km\cdot \frac{a}{(a,m)}\cdot (a,m)=b\cdot (a,m)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A tétel szövege alapján [latex]\frac{m}{(a,m)}\cdot (a,m)=m[/latex] és [latex]\frac{a}{(a,m)}\cdot (a,m)=a[/latex], ezért az alábbit kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]as\cdot (a,m)+\cancel{kam}+mt\cdot (a,m)-\cancel{kma}=b\cdot (a,m)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]m\
+eq 0[/latex], és teljesül az [latex](a,m)|m[/latex] oszthatóság – hiszen [latex](a,m)[/latex] közös osztó –, ezért az oszthatóság tulajdonságairól szóló [yp_element slug="oszthatosag-tulajdonsagai" type="link" /] 4. pontja miatt [latex](a,m)\
+eq 0[/latex], és így a [yp_element slug="szorzat-egyszerusitese-gyurukben" type="link" /] alapján az egyenlet mindkét oldalát lehet egyszerűsíteni vele:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]as+mt=b[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez viszont teljesül, mivel az [latex]x=s[/latex], [latex]y=t[/latex] számpárról tudjuk, hogy megoldása az [latex]ax+my=b[/latex] egyenletnek.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>A 3. állítás <strong>az [latex]m\gt 0[/latex] esetben</strong>:</strong> Tegyük fel, hogy az [latex]x=s_1[/latex], [latex]y=t_1[/latex] számpár, valamint az [latex]x=s_2[/latex], [latex]y=t_2[/latex] számpár is megoldása az [latex]ax+my=b[/latex] egyenletnek. Ez a [yp_element slug="linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga" type="link" /] alapján azt jelenti, hogy az [latex][s_1]_m[/latex] és az [latex][s_2]_m[/latex] maradékosztály is megoldása az [latex]ax\equiv b\pmod m[/latex] lineáris kongruenciának, azaz tejesülnek az alábbi kongurenciák:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}as_1&amp;\equiv b\pmod m \\ as_2&amp;\equiv b\pmod m\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" type="link" /] 4. pontja miatt ez a két kongruencia kivonható egymásból. A másodikat az elsőből kivonva ezt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a\cdot (s_2-s_1)\equiv 0\pmod m[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A kongruenciák egyszerűsítéséről szóló [yp_element slug="egesz-szamok-kozotti-kongruencia-egyszerusitese" type="link" /] alapján mindkét oldalt egyszerűsíthetjük [latex]a[/latex]-val, amennyiben az [latex]m[/latex] modulust is egyszerűsítjük az [latex](a,m)[/latex] kitüntetett közös osztóval. Ezt végrehajtva a következőt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]s_2-s_1\equiv 0\pmod{\frac{m}{(a,m)}}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez a kongruencia a [yp_element slug="egesz-szamok-kozotti-kongruencia" type="link" /] 3. pontja alapján épp azt jelenti, hogy teljesül az alábbi oszthatóság:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\frac{m}{(a,m)}|s_2-s_1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az oszthatóság [yp_element slug="oszthatosag" type="link" /] definíciója alapján ez épp azt jelenti, hogy létezik olyan [latex]k[/latex] egész szám, amelyre teljesül az alábbi egyenlet:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]k\cdot \frac{m}{(a,m)}=s_2-s_1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mindkét oldalhoz [latex]s_1[/latex]-et adva megkapjuk a tételben szereplő képletet [latex]s_2[/latex]-re:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]s_2=s_1+k\cdot \frac{m}{(a,m)}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mostmár csak a [latex]t_2[/latex]-t kellene valahogy kifejezni [latex]t_1[/latex]-ből. Azt ugye tudjuk, hogy az [latex]x=s_1[/latex], [latex]y=t_1[/latex] számpár, valamint az [latex]x=s_2[/latex], [latex]y=t_2[/latex] számpár is megoldása az [latex]ax+my=b[/latex] egyenletnek, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}as_1+mt_1&amp;=b \\ as_2+mt_2&amp;=b\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A második egyenletből az elsőt kivonva az alábbit kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a(s_2-s_1)+m(t_2-t_1)=0[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]s_2[/latex]-re fentebb megkapott képletet behelyettesíthetjük:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a(\underbrace{s_1+k\cdot \frac{m}{(a,m)}}_{=s_2}-s_1)+m(t_2-t_1)=0[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\cancel{as_1}+ak\cdot \frac{m}{(a,m)}-\cancel{as_1}+m(t_2-t_1)=0[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A tétel szövege alapján [latex]\frac{m}{(a,m)}\cdot (a,m)=m[/latex], ezért mindkét oldalt az [latex](a,m)[/latex] kitüntetett közös osztóval megszorozva ezt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]akm+m\cdot (a,m)\cdot (t_2-t_1)=0[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]m\
+eq 0[/latex], ezért a [yp_element slug="szorzat-egyszerusitese-gyurukben" type="link" /] alapján az egyenlet mindkét oldalát lehet egyszerűsíteni vele:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]ak+(a,m)\cdot (t_2-t_1)=0[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mindkét oldalból [latex]ak[/latex]-t levonva ezt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](a,m)\cdot (t_2-t_1)=-ak[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A tétel szövege alapján [latex]\frac{a}{(a,m)}\cdot (a,m)=a[/latex], így:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](a,m)\cdot (t_2-t_1)=-k\cdot \underbrace{\frac{a}{(a,m)}\cdot (a,m)}_{=a}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]m\
+eq 0[/latex], és teljesül az [latex](a,m)|m[/latex] oszthatóság – hiszen [latex](a,m)[/latex] közös osztó –, ezért az oszthatóság tulajdonságairól szóló [yp_element slug="oszthatosag-tulajdonsagai" type="link" /] 4. pontja miatt [latex](a,m)\
+eq 0[/latex], és így a [yp_element slug="szorzat-egyszerusitese-gyurukben" type="link" /] alapján az egyenlet mindkét oldalát lehet egyszerűsíteni vele:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]t_2-t_1=-k\cdot \frac{a}{(a,m)}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mindkét oldalhoz [latex]t_1[/latex]-et adva megkapjuk a tételben szereplő képletet [latex]t_2[/latex]-re:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]t_2=t_1-k\cdot \frac{a}{(a,m)}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A tételt tehát igazoltuk [latex]m\gt 0[/latex] esetben, ezért most vizsgáljuk meg az [latex]m\lt 0[/latex] esetet.</em></strong> Ilyenkor a [yp_element slug="pozitivitastartomany" type="link" /] utáni megjegyzés alapján [latex]-m\gt 0[/latex], amit a továbbiakban erősen ki fogunk használni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Az 1. állítás <strong>az [latex]m\lt 0[/latex] esetben</strong>:</strong> Mivel [latex]-m\gt 0[/latex], ezért az [latex]ax+(-m)y=b[/latex] egyenlet egy megoldását az <strong><em>1. állítás</em></strong> eddigi bizonyítása alapján kiszámíthatjuk a kibővített euklidészi algoritmus segítségével. Tegyük fel, hogy eredményként az [latex]x=s[/latex], [latex]y=t[/latex] számpárt kapjuk, azaz teljesül az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]as+(-m)t=b[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="gyuruk-alapveto-tulajdonsagai" type="link" /] 3. pontja alapján az egyenlet baloldala átírható a következőképpen:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]as+m(-t)=b[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azaz megkaptuk az eredeti [latex]ax+my=b[/latex] egyenlet egy megoldását: [latex]x=s[/latex] és [latex]y=-t[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>A 2. állítás <strong><strong>az [latex]m\lt 0[/latex] esetben</strong></strong>:</strong> Tegyük fel, hogy az [latex]x=s[/latex], [latex]y=t[/latex] számpár megoldása az [latex]ax+my=b[/latex] egyenletnek. Ekkor az előbbihez hasonló módon az [latex]x=s[/latex], [latex]y=-t[/latex] számpár megoldása az [latex]ax+(-m)y=b[/latex] egyenletnek. Mivel [latex]-m\gt 0[/latex], ezért a <strong><em>2. állítás</em></strong> eddigi bizonyítása alapján tetszőleges [latex]k[/latex] egész szám esetén az alábbi számpár is megoldása az [latex]ax+(-m)y=b[/latex] egyenletnek:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}x&amp;=s+k\cdot \frac{-m}{(a,-m)}=s-k\cdot \frac{m}{(a,-m)} \\ y&amp;=-t-k\cdot \frac{a}{(a,-m)}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="asszocialtsag-tulajdonsagai" type="link" /] 1. pontja alapján [latex]m[/latex] és az ellentettje asszociáltak – azaz pontosan ugyanazok az osztóik és a többszöröseik –, emiatt teljesül az [latex](a,-m)=(a,m)[/latex] egyenlőség, vagyis az [latex]ax+(-m)y=b[/latex] egyenlet iménti megoldása átírható így:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}x&amp;=s-k\cdot \frac{m}{(a,m)} \\ y&amp;=-t-k\cdot \frac{a}{(a,m)}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ekkor azonban az alábbi számpár megoldása az eredeti [latex]ax+my=b[/latex] egyenletnek:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}x&amp;=s-k\cdot \frac{m}{(a,m)} \\ y&amp;=t+k\cdot \frac{a}{(a,m)}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha tehát kiválasztunk egy tetszőleges [latex]l[/latex] egész számot, akkor az iménti gondolatmenetet a [latex]k=-l[/latex] helyettesítéssel végigjátszva az eredeti [latex]ax+my=b[/latex] egyenlet egy [latex]x=s[/latex], [latex]y=t[/latex] megoldásából valóban egy újabb megoldást kapunk a tételben szereplő képlettel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}x&amp;=s+l\cdot \frac{m}{(a,m)} \\ y&amp;=t-l\cdot \frac{a}{(a,m)}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong>Végül a 3. állítás <strong><strong>az [latex]m\lt 0[/latex] esetben</strong></strong>:</strong> Tegyük fel, hogy az [latex]x=s_1[/latex], [latex]y=t_1[/latex] számpár és az [latex]x=s_2[/latex], [latex]y=t_2[/latex] számpár két tetszőleges megoldása az [latex]ax+my=b[/latex] egyenletnek. Ekkor az előbbihez hasonló módon az [latex]x=s_1[/latex], [latex]y=-t_1[/latex] számpár és az [latex]x=s_2[/latex], [latex]y=-t_2[/latex] számpár megoldása az [latex]ax+(-m)y=b[/latex] egyenletnek. Mivel [latex]-m\gt 0[/latex], ezért a <strong><em>3. állítás</em></strong> eddigi bizonyítása alapján létezik olyan [latex]k[/latex] egész szám, amelyre teljesülnek az alábbiak:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}s_2&amp;=s_1+k\cdot \frac{-m}{(a,-m)}=s_1-k\cdot \frac{m}{(a,-m)} \\ -t_2&amp;=-t_1-k\cdot \frac{a}{(a,-m)}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Továbbra is érvényes marad a második egyenlet, ha vesszük mindkét oldal ellentettjét. Továbbá igaz, hogy a [yp_element slug="asszocialtsag-tulajdonsagai" type="link" /] 1. pontja alapján [latex]m[/latex] és az ellentettje asszociáltak – azaz pontosan ugyanazok az osztóik és a többszöröseik –, emiatt teljesül az [latex](a,-m)=(a,m)[/latex] egyenlőség. Vagyis a fenti egyenletek átírhatók így:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}s_2&amp;=s_1-k\cdot \frac{m}{(a,m)} \\ t_2&amp;=t_1+k\cdot \frac{a}{(a,m)}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]l=-k[/latex] választással élve tehát valóban találtunk olyan egész számot, amely esetén az eredeti [latex]ax+my=b[/latex] egyenlet bármely két [latex]x=s_1[/latex], [latex]y=t_1[/latex] és [latex]x=s_2[/latex], [latex]y=t_2[/latex] megoldásai között fennáll a tételben szereplő alábbi összefüggés:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}s_2&amp;=s_1+l\cdot \frac{m}{(a,m)} \\ t_2&amp;=t_1-l\cdot \frac{a}{(a,m)}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p></p>
+<!-- /wp:paragraph -->

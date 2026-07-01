@@ -1,0 +1,33 @@
+type: definition
+name: halmazelmeleti-alapfogalmak
+remarks:
+  - halmazelmeleti-alapfogalmak-megjegyzes
+content:
+  - type: narrative
+    content: |
+      A halmazelmélet mindössze két alapfogalmat használ. Ezek: a ***"halmaz"*** és az ***"eleme lenni"*** reláció.
+      A halmazokat konvencionálisan nyomtatott nagybetűkkel jelöljük. Például: $A$.
+  - type: narrative
+    content: |
+      Azt, hogy egy vizsgált $a$ objektum ***eleme*** az $A$ halmaznak, így jelöljük: $a\in A$. Azt, hogy $a$
+      ***nem eleme*** $A$-nak, így jelöljük: $a\otin A$. E két állítás közül minden esetben pontosan az egyik
+      teljesül.
+  - type: narrative
+    content: |
+      Két halmazra akkor mondjuk, hogy ***egyenlőek*** egymással, ha pontosan ugyanazok az elemeik. Ha tehát $A$ és
+      $B$ halmazok, akkor az $A=B$ kifejezés azt jelenti, hogy minden $a$ objektum esetén $a\in A$ ***akkor és csak
+      akkor*** teljesül, ha $a\in B$ is teljesül.
+  - type: narrative
+    content: |
+      Azt a halmazt, amelynek egyetlen eleme sincsen, ***üres halmaznak*** nevezzük, és így jelöljük: $\empty$. Ha
+      tehát $A=\empty$, akkor minden $a$ objektum esetén $a\otin A$.
+  - type: narrative
+    content: |
+      Ezzel szemben azt a halmazt, amelynek minden vizsgált objektum eleme, ***univerzális halmaznak***,
+      ***tárgyalási univerzumnak***, vagy egyszerűen csak ***univerzumnak*** nevezzük, és így jelöljük: $U$. Tehát
+      minden $a$ objektum esetén $a\in U$.
+  - type: narrative
+    content: |
+      Egy ***halmaz (elemeinek) megadása*** kapcsos zárójelek között történik. Erre néhány példa látható a
+      definíció utáni megjegyzésben. Bármilyen leírást is használunk, akkor mondjuk, hogy ***megadtunk*** egy
+      halmazt, ha a tárgyalási univerzum minden objektumáról el lehet dönteni, hogy eleme-e vagy nem.

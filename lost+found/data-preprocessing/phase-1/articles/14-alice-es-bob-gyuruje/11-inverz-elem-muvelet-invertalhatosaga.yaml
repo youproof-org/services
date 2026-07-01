@@ -1,0 +1,62 @@
+type: section
+name: 11-inverz-elem-muvelet-invertalhatosaga
+title: Inverz elem, művelet invertálhatósága
+
+body:
+  - type: narrative
+    content: |
+      Maradjunk továbbra is az $R$ halmaznál és a rajta értelmezett $*$ műveletnél, és tegyük fel, hogy létezik
+      erre a műveletre nézve neutrális elem, amelyet jelöljünk $n$-nel. A példa kedvéért átmenetileg azt is
+      feltételezzük, hogy a $*$ művelet asszociatív. Tegyük fel, hogy elvégeztük az $a*b$ műveletet, melynek
+      eredményeképp kaptunk egy $c$ elemet. Elképzelhető, hogy szeretnénk ***megfordítani***, vagy tudományosabban
+      fogalmazva ***invertálni*** a $b$-vel való $*$-ozás folyamatát. Azaz szeretnénk találni egy olyan elemet
+      $b$-hez, amellyel ha össze-$*$-ozzuk a $c$-t, akkor visszakapjuk az eredeti $a$ elemet. Jelöljük ezt a
+      keresett elemet $b^{-1}$-gyel.
+  - type: figure
+    lead-in: |
+      Az invertálás folyamata látható az alábbi ábrán:
+    src: 04-muveletvegzes-invertalasa.jpg
+    alt: Műveletvégzés invertálása
+    caption: Műveletvégzés invertálása
+  - type: narrative
+    content: |
+      Mivel átmenetileg feltételeztük, hogy a $*$ művelet asszociatív, ezért lényegében egy olyan $b^{-1}$ elemet
+      keresünk, amelyre teljesül, hogy $b*b^{-1}=n$.
+  - type: formula
+    lead-in: |
+      Így valóban meg tudjuk fordítani a $b$-vel való műveletvégzést, hiszen az asszociativitás miatt:
+    content: |
+      (\underbrace{a*b}_{=c})*b^{-1} = a*(\underbrace{b*b^{-1}}_{=n}) = a
+  - type: narrative
+    content: |
+      Azt szeretnénk tehát, hogy a $b*b^{-1}$ művelet eredménye épp az $n$ neutrális elem legyen. A $*$ művelet
+      asszociativitását mindössze azért feltételeztük átmenetileg, hogy a fenti átzárójelezést meg tudjuk lépni.
+      Így a $b^{-1}$-gyel való $*$-ozás valóban visszaszolgáltatja nekünk az eredeti $a$ elemet. Nem asszociatív
+      esetben ez nem feltétlenül van így, ám a most következő fogalom enélkül a "képesség" nélkül is fontos:
+  - type: embed
+    target:
+      type: definition
+      name: inverz-elem
+  - type: narrative
+    content: |
+      Természetesen kommutatív művelet esetén nincs értelme külön jobb- vagy baloldali inverz elemről beszélni,
+      hiszen ott minden jobboldali inverz elem egyben baloldali is, és fordítva. Megjegyezzük még, hogy a neutrális
+      elem fogalmával ellentétben ***itt nem egyetlen***, az $R$ halmazra nézve ***globális elemről van szó***,
+      amely rendelkezik az "inverzséggel", mint tulajdonsággal. Inverz elemről beszélni csak akkor van értelme, ha
+      megmondjuk azt is, hogy ***melyik $R$-beli elemnek*** keressük az inverzét.
+  - type: narrative
+    content: |
+      Rögtön felmerülhet a kérdés, hogyha egy adott elemhez egy műveletre nézve létezik inverz, akkor vajon az
+      egyértelmű-e. Ezt válaszolja meg az alábbi tétel:
+  - type: embed
+    target:
+      type: theorem
+      name: inverz-elem-egyertelmu
+  - type: embed
+    target:
+      type: proof
+      name: inverz-elem-egyertelmu-bizonyitas
+  - type: narrative
+    content: |
+      A neutrális elemmel ellentétben tehát egy adott elem inverze csak akkor egyértelmű, ha a művelet
+      ***asszociatív***, általánosságban azonban ez nem feltétlenül van így.

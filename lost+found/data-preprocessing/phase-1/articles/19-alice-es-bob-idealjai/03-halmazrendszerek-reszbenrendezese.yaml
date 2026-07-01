@@ -1,0 +1,179 @@
+type: section
+name: 03-halmazrendszerek-reszbenrendezese
+title: Halmazrendszerek részbenrendezése
+
+references:
+  antiszimmetrikus-relacio:
+    target:
+      type: definition
+      name: antiszimmetrikus-relacio
+  reflexiv-relacio:
+    target:
+      type: definition
+      name: reflexiv-relacio
+  rendezett-halmaz:
+    target:
+      type: definition
+      name: rendezett-halmaz
+  tranzitiv-relacio:
+    target:
+      type: definition
+      name: tranzitiv-relacio
+  trichotom-relacio:
+    target:
+      type: definition
+      name: trichotom-relacio
+
+body:
+  - type: narrative
+    content: |
+      A 12. részben a természetes számok $\leq$ szimbólummal jelölt rendezési relációjának kapcsán általánosságban
+      is szó volt az úgynevezett ***részbenrendezésekről és részbenrendezett halmazokról***. Javasoljuk az
+      Olvasónak, hogy a továbbolvasás előtt ismételje át az ott tanult fogalmakat. A [rendezett-halmaz]ban
+      részbenrendezésnek hívtuk azokat a relációkat, amelyek egyszerre ***reflexívek*** ([reflexiv-relacio]),
+      ***antiszimmetrikusak*** ([antiszimmetrikus-relacio]) és ***tranzitívak*** ([tranzitiv-relacio]).
+  - type: narrative
+    content: |
+      Az alábbi tétel alapján bármilyen $\mathcal{H}$ halmazrendszer is tulajdonképpen nem más, mint egy
+      részbenrendezett halmaz.
+  - type: embed
+    target:
+      type: theorem
+      name: reszhalmaz-reszbenrendezes
+  - type: embed
+    target:
+      type: proof
+      name: reszhalmaz-reszbenrendezes-bizonyitas
+  - type: narrative
+    content: |
+      A részbenrendezett halmazok ábrázolására szolgál az úgynevezett Hasse-diagram. Egy ilyen diagramon a halmaz
+      elemeit pontok reprezentálják, és két pont között pontosan akkor megy él, ha ők "közvetlenül egymás után
+      vannak" a vizsgált részbenrendezés szerinti "nagyságrendi sorban". Azt, hogy melyikük a "kisebb" vagy
+      "nagyobb" úgy ábrázoljuk, hogy a "nagyobb" elemet feljebb rajzoljuk az ábrán. Ez az ábrázolásmód azért
+      működik, mert a részbenrendezés "irányát" követve annak tranzitivitása miatt soha nem fordulhat elő, hogy egy
+      pontból kiindulva oda visszatérnénk.
+  - type: narrative
+    content: |
+      Tekintsük például az előző szakaszban fehozott $H=\{1;2;3\}$ alaphalmazt, és képezzük ennek a
+      $\mathcal{P}(H)$ hatványhalmazát.
+  - type: figure
+    lead-in: |
+      Ez ugye egy halmazrendszer $H$ felett, amelynek a Hasse-diagramja az alábbi ábrán látható:
+    src: 05-hatvanyhalmaz-hasse-diagramja.jpg
+    alt: Hatványhalmaz Hasse-diagramja
+    caption: Hatványhalmaz Hasse-diagramja
+  - type: narrative
+    content: |
+      A diagramon az is jól látszik, hogy a $\sube$ rendezési relációra nem teljesül a trichotómia
+      ([trichotom-relacio]). A trichotómia ugye azt követeli meg, hogy bármely két elem összehasonlítható legyen
+      egymással. Az egész számok $\Z$ gyűrűjének vagy a természetes számok $\N$ halmazának rendezése teljesíti ezt
+      az extra tulajdonságot is, ezért neveztük őket teljes rendezésnek. Ezzel szemben a $\sube$ reláció ***nem egy
+      teljes rendezés***, hiszen például az $\{1;2\}$ és a $\{2;3\}$ részhalmazok között egyik irányban sem
+      teljesül a tartalmazás, így ők nem összehasonlíthatók. A fenti diagramon ez úgy mutatkozik meg, hogy egyikből
+      sem tudunk eljutni a másikba az éleken keresztül, amennyiben csak lentről felfelé haladhatunk. De például a
+      $\{2\}$ és az $\{1;2;3\}$ részhalmazok között fennáll a tartalmazási reláció, hiszen $\{2\}$-ből felfelé
+      kiindulva két lépés után az $\{1;2;3\}$-hoz érkezünk.
+  - type: narrative
+    content: |
+      A $\mathcal{P}(H)$ halmazrendszer Hasse-diagramját vizsgálva feltűnhet, hogy az egész számok $\Z$ gyűrűjének
+      rendezésével ellentétben itt létezik "legkisebb" és "legnagyobb" elem. A "legkisebb" elem szerepét itt az
+      üres halmaz tölti be, hiszen nincs másik olyan halmaz, amely "szűkebb" lenne nála. Ehhez hasonlóan a
+      "legnagyobb" elem maga a $H$ alaphalmaz, hiszen nincs másik olyan halmaz, amely "bővebb" lenne nála. Az
+      alábbi definíció ezeket a fogalmakat tisztázza.
+  - type: embed
+    target:
+      type: definition
+      name: halmazrendszer-minimuma-es-maximuma
+  - type: narrative
+    content: |
+      Talán egy kicsit furcsa lehet, hogy a definíció megkülönbözteti a "minimális" és a "legkisebb", valamint a
+      "maximális" és a "legnagyobb" fogalmát. Ennek személtetéséhez vizsgáljunk most két halmazrendszert a
+      $H=\{1;2;3;4\}$ halmaz felett. Az egyik legyen a teljes $\mathcal{P}(H)$ hatványhalmaz, a másikat pedig
+      jelöljük $\mathcal{H}$-val, és tartalmazza $H$-nak csak a ***valódi részhalmazait***. Az alábbi ábrákon
+      egymás alatt láthatjuk e két halmazrendszer Hasse-diagramjait.
+  - type: figure
+    src: 06-teljes-hatvanyhalmaz-hasse-diagramja.jpg
+    alt: Teljes hatványhalmaz Hasse-diagramja
+    caption: Teljes hatványhalmaz Hasse-diagramja
+  - type: figure
+    src: 07-valodi-reszhalmazokbol-allo-halmazrendszer-hasse-diagramja.jpg
+    alt: Valódi részhalmazokból álló halmazrendszer Hasse-diagramja
+    caption: Valódi részhalmazokból álló halmazrendszer Hasse-diagramja
+  - type: narrative
+    content: |
+      Látható, hogy ***minimuma és maximuma*** mindkét halmazrendszernek van. A $\mathcal{P}(H)$ halmazrendszer
+      minimuma a $\empty$-val jelölt üres halmaz, maximuma pedig a teljes $H=\{1;2;3;4\}$ alaphalmaz. A
+      $\mathcal{H}$ halmazrendszernek szintén van minimuma és maximuma is, ráadásul több is. Minimuma például az
+      összes egyelemű részhalmaz, hiszen nincs olyan halmaz $\mathcal{H}$-ban, amely ezek bármelyikének valódi
+      részhalmaza lenne. Ehhez hasonlóan maximuma az összes háromelemű részhalmaz, hiszen nincs olyan halmaz
+      $\mathcal{H}$-ban, amelynek ezek bármelyike valódi részhalmaza lenne.
+  - type: narrative
+    content: |
+      Ezzel szemben ***legszűkebb illetve legbővebb*** eleme csak a $\mathcal{P}(H)$ halmazrendszernek van,
+      méghozzá szintén az üres halmaz és a teljes $H$ alaphalmaz. Előbbi ugyanis a halmazrendszer minden elemének
+      részhalmaza, utóbbinak pedig a halmazrendszer minden eleme részhalmaza. Ezzel szemben a $\mathcal{H}$
+      halmazrendszerben nem találunk ilyen értelemben legszűkebb és legbővebb elemeket.
+  - type: narrative
+    content: |
+      A minimum (illetve maximum) esetén tehát csak annyit követelünk meg, hogy ne legyen náluk szűkebb (vagy
+      bővebb) halmaz a rendszerben. De mivel létezhetnek olyan halmazok, amelyek egymással nem összehasonlíthatók a
+      $\sube$ reláció szerint, ezért létezhet több minimum (illetve maximum) is a rendszerben, ahogyan azt a fenti
+      példa mutatja. A legszűkebb (illetve legbővebb) halmaz fogalma ennél szigorúbb feltételt határoz meg, ezektől
+      ugyanis megköveteljük, hogy bármelyik másik halmazzal összehasonlíthatóak legyenek. Most megmutatjuk, hogy ha
+      egyáltalán létezik legszűkebb (illetve legbővebb) halmaz egy rendszerben, akkor az egyértelmű.
+  - type: embed
+    target:
+      type: theorem
+      name: halmazrendszer-legkisebb-es-legnagyobb-eleme-egyertelmu
+  - type: embed
+    target:
+      type: proof
+      name: halmazrendszer-legkisebb-es-legnagyobb-eleme-egyertelmu-bizonyitas
+  - type: narrative
+    content: |
+      Az iménti tétel szerint tehát egy halmazrendszerben ***legfeljebb egy*** legszűkebb, illetve ***legfeljebb
+      egy*** legbővebb elem létezhet. Jogosan teheti fel a kérdést az Olvasó, hogy miféle elvetemült halmazrendszer
+      lehet az, amelyben egyáltalán nem léteznek ilyen tulajdonságú halmazok. Azt még csak-csak el lehet képzelni,
+      hogy nincs legbővebb halmaz. Például az egész számok $\Z$ halmaza felett könnyen találhatunk olyan
+      halmazrendszert, amelynek nincs legbővebb eleme.
+  - type: formula
+    lead-in: |
+      Ilyen például az alábbi halmazokból álló rendszer:
+    content: |
+      \begin{aligned}A_0&=\empty \\ A_1&=\{1\} \\ A_2&=\{1;2\} \\ A_3&=\{1;2;3\} \\ A_4&=\{1;2;3;4\} \\ &\vdots
+      \end{aligned}
+  - type: narrative
+    content: |
+      Látható, hogy ebben a halmazsorozatban minden elem valódi részhalmaza a rákövetkező elemnek, így ebben a $\Z$
+      feletti halmazrendszerben nem létezik legbővebb elem. Ezzel szemben elsőre nehéz elképzelni egy olyan
+      halmazrendszert $\Z$ felett, amelynek ne lenne legszűkebb eleme. Meglepő módon azonban ilyen is létezik.
+  - type: formula
+    lead-in: |
+      Vegyük például az alábbi konstrukciót:
+    content: |
+      \begin{aligned}A_0 &=\Z \\ A_1&=\Z\setminus \{1\} \\ A_2&=\Z\setminus\{1;2\} \\ A_3&=\Z\setminus \{1;2;3\} \\
+      A_4&=\Z\setminus \{1;2;3;4\} \\ &\vdots \end{aligned}
+  - type: narrative
+    content: |
+      Ennek a sorozatnak az első eleme tehát a teljes $\Z$ halmaz, amelyből szép sorban elkezdünk kidobálni egyre
+      több, de mindig véges számú egész számot. Nyilvánvalóan ebben a sorozatban minden elem valódi részhalmaza a
+      sorozatban előtte lévő elemnek, így ebben a $\Z$ feletti halmazrendszerben nem létezik legszűkebb elem.
+  - type: narrative
+    content: |
+      De elképzelhetünk egy olyan halmazrendszert is, amelynek alaphalmazát egy síkra rajzolt szakasz pontjai
+      alkotják, és amely az alábbi $A_0$, $A_1$, $A_2$, $A_3$, ...
+  - type: figure
+    lead-in: |
+      halmazsorozatból áll:
+    src: 08-szakasz-feletti-halmazrendszer.jpg
+    alt: Szakasz feletti halmazrendszer
+    caption: Szakasz feletti halmazrendszer
+  - type: narrative
+    content: |
+      Ennek a sorozatnak minden eleme az eredeti szakasz feleakkora részéből áll, mint az őt megelőző elem. Azaz a
+      sorozatban minden elem valódi részhalmaza a sorozatban előtte lévő elemnek, így ebben a rendszerben sincs
+      legszűkebb elem.
+  - type: narrative
+    content: |
+      A további szakaszokban az eddig szerzett halmazelméleti ismereteinket ***gyűrűk ideáljainak*** vizsgálatához
+      fogjuk felhasználni.

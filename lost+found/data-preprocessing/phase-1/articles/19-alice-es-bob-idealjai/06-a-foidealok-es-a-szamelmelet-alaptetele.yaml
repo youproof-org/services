@@ -1,0 +1,112 @@
+type: section
+name: 06-a-foidealok-es-a-szamelmelet-alaptetele
+title: A főideálok és a számelmélet alaptétele
+
+references:
+  euklideszi-norma-egyenlotlensegi-tulajdonsaga:
+    target:
+      type: theorem
+      name: euklideszi-norma-egyenlotlensegi-tulajdonsaga
+  euklideszi-norma-szigoru-egyenlotlensegenek-feltetele:
+    target:
+      type: theorem
+      name: euklideszi-norma-szigoru-egyenlotlensegenek-feltetele
+  felbontas-egyertelmusegenek-elegseges-feltetele:
+    target:
+      type: theorem
+      name: felbontas-egyertelmusegenek-elegseges-feltetele
+  felbonthatatlan-elem:
+    target:
+      type: definition
+      name: felbonthatatlan-elem
+  szamelmelet-alaptetele:
+    target:
+      type: definition
+      name: szamelmelet-alaptetele
+  szamelmelet-alaptetele-nem-egysegelemes-integritastartomanyokban:
+    target:
+      type: theorem
+      name: szamelmelet-alaptetele-nem-egysegelemes-integritastartomanyokban
+  szamelmelet-alaptetelenek-szukseges-feltetele:
+    target:
+      type: theorem
+      name: szamelmelet-alaptetelenek-szukseges-feltetele
+  termeszetes-szamok-minimumtetele:
+    target:
+      type: theorem
+      name: termeszetes-szamok-minimumtetele
+
+body:
+  - type: narrative
+    content: |
+      Most vizsgáljuk meg, hogy az iménti észrevételeknek mi köze van a ***számelmélet alaptételéhez***. Ahhoz,
+      hogy a számelmélet alaptétele teljesüljön egy integritástartományon alapvetően két dolog kell: a prímtényezős
+      felbontás ***létezése***, illetve annak ***egyértelműsége***. Ezt precízen a [szamelmelet-alaptetele]ban
+      fogalmaztuk meg.
+  - type: narrative
+    content: |
+      Az ***egyértelműségi állításra*** már mutattunk egy olyan feltételt, amely ***szükséges és egyben elégséges
+      is***. A [szamelmelet-alaptetelenek-szukseges-feltetele] és a
+      [felbontas-egyertelmusegenek-elegseges-feltetele] alapján az ***egyértelműségi állítás*** akkor és csak akkor
+      teljesül egy $R$ integritástartományon, ha $R$ ***minden felbonthatatlan eleme prímtulajdonságú***. Ez tehát
+      biztosan része lesz annak a feltételrendszernek, amely pontosan meghatározza, hogy mikor teljesül az
+      alaptétel és mikor nem. Nem érünk azonban sokat az egyértelműségi garanciával, ha magának a prímtényezős
+      felbontásnak a ***létezése*** nem garantált. Ebben a szakaszban arról lesz szó, hogy a ***létezéshez*** mire
+      van szükség pontosan.
+  - type: narrative
+    content: |
+      Ehhez elevenítsük fel egy kicsit a 17. részben definiált ***euklidészi gyűrű*** fogalmát. Ezeknek az
+      integritástartományoknak az volt a speciális tulajdonságuk, hogy minden elemükhöz hozzá tudtunk rendelni egy
+      nemnegatív egész mérőszámot, az úgynevezett ***euklidészi normát***. Méghozzá olymódon, hogy egyrészt bármely
+      kéttényezős szorzat tényezőinek a normája ***legfeljebb akkora*** legyen, mint magának a szorzatnak normája
+      ([euklideszi-norma-egyenlotlensegi-tulajdonsaga]), másrészt ***egyenlőség akkor és csak akkor*** teljesüljön,
+      ha valamelyik tényező ***egység*** ([euklideszi-norma-szigoru-egyenlotlensegenek-feltetele]).
+  - type: ordered-list
+    lead-in: |
+      Tulajdonképpen ez garantálja a prímtényezős felbontás létezését, hiszen bármely $a$ elem esetén az alábbi 3
+      eset lehetséges:
+    items:
+      - 'Az $a$ elem egyáltalán nem bontható szorzatra.'
+      - 'Az $a$ elemnek csak triviális felbontása létezik.'
+      - 'Az $a$ elemnek létezik nemtriviális $a=bc$ felbontása.'
+  - type: narrative
+    content: |
+      Az 1. és a 2. esetben $a$-t ***felbonthatatlan elemnek*** neveztük ([felbonthatatlan-elem]), amelynek a
+      prímtényezős felbontása alatt a [szamelmelet-alaptetele] szerint önmagát, mint egytényezős szorzatot értjük.
+      A probléma a 3. esettel lehet, méghozzá akkor, ha a $bc$ szorzat tényezői a ***végtelenségig bonthatók***
+      tovább ***nemtriviális módon***. A [szamelmelet-alaptetele-nem-egysegelemes-integritastartomanyokban]
+      bizonyításában mutattunk is egy ilyen példát.
+  - type: narrative
+    content: |
+      Az euklidészi gyűrűkben azonban az euklidészi norma említett tulajdonságai szerencsére ezt megakadályozzák.
+      Ez ugyanis azt jelentené, hogy a "felbontási fában" lefelé haladva egy olyan, gyűrűelemekből álló végtelen
+      sorozatot tudnánk mutatni, amelyben az elemeknek egyre kisebb és kisebb az ***euklidészi normájuk***. Ez
+      viszont lehetetlen, hiszen az euklidészi norma értékkészlete a természetes számok $\N$ halmaza, márpedig a
+      [termeszetes-szamok-minimumtetele]ben megmutattuk, hogy $\N$ bármely részhalmazának létezik minimuma. Egy idő
+      után tehát a "felbontási fa" minden ágán garantáltan "bele kell ütköznünk" egy olyan elembe, amely tovább már
+      nem bontható nemtriviálisan. Habár megemlítettük, hogy létezik olyan alaptételes gyűrű is, amely nem
+      euklidészi, ám a "felbonthatatlan elembe ütközés garanciájának" alapgondolata talán átmenthető erre az
+      általános esetre is.
+  - type: narrative
+    content: |
+      Ehhez a ***főideálok*** jelentik a kulcsot. Ugye azt szeretnénk, hogy bármely elem felbontási fájának minden
+      ágán előbb-utóbb garantáltan beleütközzünk egy felbonthatatlan elembe. Ehhez az kell, hogy a gyűrű bármely
+      részhalmazában ***létezzen "minimális" elem oszthatósági reláció szerint***. Az előző szakaszban felvázolt
+      példa alapján ez pontosan akkor fog teljesülni, ha ***létezik "maximális" főideál a tartalmazási reláció
+      szerint***.
+  - type: narrative
+    content: |
+      ***Ezt fogalmazza meg precízen az alábbi tétel, amely tehát egy szükséges és elégséges feltételrendszert ad a
+      számelmélet alaptételére bármilyen integritástartomány esetén.***
+  - type: embed
+    target:
+      type: theorem
+      name: szamelmelet-alaptetelenek-szukseges-es-elegseges-feltetele
+  - type: embed
+    target:
+      type: proof
+      name: szamelmelet-alaptetelenek-szukseges-es-elegseges-feltetele-bizonyitas
+  - type: narrative
+    content: |
+      Ezzel végérvényesen lezárthatjuk a számelmélet alaptételének kérdését, hiszen az iménti tétel segítségével
+      már bármilyen integritástartományról egyértelműen eldönthető, hogy alaptételes-e vagy sem.

@@ -1,0 +1,404 @@
+<!-- wp:paragraph -->
+<p><strong><em>Az <a rel="noreferrer noopener" aria-label="előző részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/6-turing-gep-formalis-nyelv-rekurzivan-felsorolhato-rekurziv-megallasi-problema/" target="_blank">előző részben</a> megismerkedtünk a formális nyelvek és a Turing-gép fogalmával és láttuk, hogy a Turing-gépeket hogyan lehet optimalizálási vagy döntési problémák megoldására használni. A továbbiakban döntési problémákról, illetve azok „nehézségéről” lesz szó. Az előző részben láttuk, hogy minden döntési problémának megfeleltethető egy valamilyen véges ábécé feletti formális nyelv. Amennyiben a probléma egyes példányait (azaz az eldöntendő kérdéseket) ezen ábécé elemeiből alkotott jelsorozatokkal reprezentáljuk, úgy az algoritmikus feladat annak eldöntése, hogy egy adott jelsorozat mondata-e egy adott nyelvnek vagy sem. Azokat neveztük algoritmikusan eldönthető problémáknak, amelyek esetén a nyelvbe tartozás kérdése eldönthető Turing-géppel anélkül, hogy az végtelen ciklusba keveredne. A továbbiakban csak ilyen problémákkal foglalkozunk. De vajon mikor tekinthető egy döntési probléma „nehéznek” vagy „könnyűnek”? Mi számít vízválasztónak ilyen tekintetben? Valóban léteznek igazán „nehéz” problémák, vagy csupán ügyetlenek vagyunk? Mit mond erről a számítástudomány – és talán az egész matematika – egyik legfontosabb megoldatlan sejtése? Ebben a részben erről lesz szó...</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"className":"prerequisite-warning"} -->
+<p class="prerequisite-warning">Figyelem! Erősen ajánlott elolvasni az <a rel="noreferrer noopener" aria-label="előző részét (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/6-turing-gep-formalis-nyelv-rekurzivan-felsorolhato-rekurziv-megallasi-problema/" target="_blank">előző részt</a> az alábbiak megértéséhez. A teljes cikksorozat elejét <a href="https://youproof.hu/kriptografia/1-alapfogalmak-caesar-vigenere-enigma-kulcsmegosztas/" target="_blank" rel="noreferrer noopener" aria-label=" (új fülön nyitja meg)">itt</a> találod.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"dropCap":true} -->
+<p class="has-drop-cap">Egy adott feladat esetén nem egyszerűen az a cél, hogy találjunk rá egy algoritmust. Az is fontos, hogy az algoritmus bizonyos szempontból minél jobb legyen. Az algoritmust megvalósító Turing-gép szempontjából a „jóságot” kétféleképpen mérhetjük. Mérhetjük egyrészt, hogy a Turing-gép a végrehajtás során mennyi cellát használ fel a szalagjaiból, azaz hogy legalább mekkora tárolókapacitásra van szüksége ahhoz, hogy a döntést meghozza. Ezt a Turing-gép <strong><em>tárkomplexitásának</em></strong> nevezzük. Másrészt mérhetjük azt is, hogy a Turing-gépnek a döntésig hány elemi lépést kell megtennie. Ezt a Turing-gép <strong><em>időkomplexitásának</em></strong> nevezzük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Igazából az érdekel minket, hogy a bemenet méretének függvényében e két mennyiség milyen gyorsan növekszik. Habár adott esetben mindkét érték fontos lehet, mi az egyszerűség kedvéért a továbbiakban elsősorban az időkomplexitást fogjuk vizsgálni. Nézzünk először egy példát, hogy lássuk, pontosan miről is van szó.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="graph-coloring"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Gráfok színezése</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A távoli Kompánia ország lakói között vannak, akik utálják egymást, és vannak, akik nem. Ez az állítás persze minden országra igaz, de mi most szorítkozzunk Kompániára. Feltételezzük, hogy két ember közötti utálat vagy nem utálat kölcsönös, azaz vagy mindkettő utálja a másikat, vagy egyik sem. Az algoritmikus döntési feladat annak eldöntése, hogy felosztható-e az egész ország két pártra úgy, hogy az azonos pártban lévők ne utálják egymást.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezt ábrázolhatjuk egy úgynevezett „utálatgráffal”, amely csúcsokból és élekből áll. A <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/4-csatornakodolas-hibajavito-kod-kodelmelet-hamming-tavolsag#graph" target="_blank">gráfokról</a> bővebben már volt szó korábban a csatornamodellek kapcsán. Ebben a példában a gráf minden csúcsa egy-egy embert jelképez, és két csúcs akkor van összekötve éllel, ha a nekik megfelelő két ember utálja egymást. Jelöljük az egyik pártot <em>0</em>-val, a másikat pedig <em>1</em>-gyel. Ekkor a feladat annak eldöntése, hogy az „utálatgráf” csúcsai megjelölhetők-e <em>1</em>-gyel vagy <em>0</em>-val úgy, hogy két szomszédos csúcs soha ne kapjon ugyanolyan jelölést. Ezt a gráfelméletben szemléletesen <strong><em>színezésnek</em></strong> nevezzük. A kérdés tehát így hangzik: kiszínezhetőek-e egy adott gráf csúcsai <em>2</em> színnel úgy, hogy a szomszédos csúcsok ne legyenek azonos színűek? Amennyiben ez megtehető egy adott gráfra, akkor azt mondjuk, hogy a gráf <strong><em>2-színezhető</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi gráf például nem <em>2</em>-színezhető:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":1587} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_7_nem_2szinezheto_graf.jpg" alt="Nem 2-színezhető gráf (példa)" class="wp-image-1587"/><figcaption>Nem 2-színezhető gráf (példa)</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Ezzel szemben az alábbi gráf <em>2</em>-színezhető, a csúcsokhoz rendelt számok pedig egy helyes <em>2</em>-színezést jelölnek:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":1589} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_7_2szinezheto_graf.jpg" alt="2-színezhető gráf (példa)" class="wp-image-1589"/><figcaption>2-színezhető gráf (példa)</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Most próbáljunk meg algoritmust adni a 2-színezhetőség eldöntésére. A könnyebb érthetőség miatt az algoritmust nem egy Turing-gép szabályrendszerének szintjén, hanem természetes nyelven fogjuk leírni. Elemi lépéseknek az alábbiakat fogjuk tekinteni:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li>Tetszőleges csúcs színének olvasása és írása.</li><li>Tetszőleges csúcs szomszédainak lekérdezése.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>Első ötletünk az lehet, hogy szisztematikusan végigpróbálgatjuk az összes lehetséges színezést. Ha egy színezéssel megvagyunk, akkor leellenőrizzük, hogy a kapott színezés helyes-e, vagy nem. Ezt úgy tudjuk megtenni, hogy minden csúcs színére megvizsgáljuk, hogy különbözik-e a szomszédos csúcsok színeitől. Amennyiben egy adott színezés esetén ez minden csúcsra teljesül, akkor nyilván találtunk egy helyes <em>2</em>-színezést. Ekkor a döntési algoritmus kimenete <strong>„igen”</strong>. Amennyiben ilyen színezést nem találtunk, úgy a kimenet <strong>„nem”</strong>. Ez az algoritmus nyilvánvalóan tetszőleges bemeneti gráf esetén véges sok lépés alatt eldönti a kérdést. A gráf csúcsainak száma ugyanis véges, ezért a lehetséges színezések száma – amelyeket ugye egyenként ellenőrizni kell – is véges.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ha most az előző részben ismertetett <a rel="noreferrer noopener" aria-label="Turing-gép (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/6-turing-gep-formalis-nyelv-rekurzivan-felsorolhato-rekurziv-megallasi-problema#turing-machine" target="_blank">Turing-gép</a> szintjén vizsgáljuk a kérdést, akkor a bemeneti gráfot egy valamilyen véges ábécé szimbólumaiból alkotott jelsorozat formájában kell a Turing-gép bemeneti szalagjára írni. Miután a Turing-gép végzett, a kimeneti szalagon ott lesz az <strong>„igen”</strong> vagy <strong>„nem”</strong> választ reprezentáló jelsorozat. Nyilvánvalóan szerkeszthető olyan Turing-gép erre a döntési feladatra, amely soha nem kerül végtelen ciklusba. Például a fenti, minden lehetséges színezést kipróbáló buta algoritmusunk „Turing-gépesített” változata. Az előző rész alapján elmondhatjuk tehát, hogy a <em>2</em>-színezhető gráfok leírásaiból alkotott formális nyelv <strong><em><a rel="noreferrer noopener" aria-label=" (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/6-turing-gep-formalis-nyelv-rekurzivan-felsorolhato-rekurziv-megallasi-problema#turing-machine-language" target="_blank">rekurzív</a></em></strong>, vagy más néven <strong><em>algoritmikusan eldönthető</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez mind szép és jó, a gond csak az, hogy viszonylag sokáig tart. Ha például Kompánia lakosainak száma <em>100</em> (ami azért nem túl sok), akkor <em>2</em><sup><em>100</em></sup> lehetséges színezés van. Ha brutálisan gyors számítógépünk van, ami másodpercenként <em>100 milliárd</em> színezést tud megvizsgálni, akkor is több, mint <em>400 milliárd</em> évig tartana az algoritmus futása. Ennyi időt még akkor sem vagyunk hajlandók várni, ha nagyon nem szeretnénk egypártrendszert. Az algoritmusunk tehát hiába működik elméletben, a gyakorlatban használhatatlan.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egy ennél némileg hatékonyabb eljárást ismertetünk az alábbiakban. Válasszunk ki egy tetszőleges csúcsot, és színezzük ki <em>0</em>-val. Az már biztos, hogy a kiszínezett csúcs szomszédait <em>1</em>-gyel kell színeznünk, ezért színezzük is ki őket. És így tovább, az eddig már kiszínezett csúcsok összes, eddig még ki nem színezett szomszédját színezzük mindig ellenkező színnel. Folytassuk ezt az eljárást addig, ameddig minden csúcsot ki nem színeztünk. Ekkor az algoritmus eredménye legyen <strong>„igen”</strong>. Előfordulhat, hogy menet közben találunk egy olyan csúcsot, amelyet ha kiszíneznénk az épp soron következő színnel, akkor megsértenénk a színezési szabályt. Ekkor az algoritmus eredménye legyen <strong>„nem”</strong>. Könnyen belátható, hogy ez az algoritmus is helyes eredményt fog adni. Vizsgáljuk meg az időkomplexitását, amely ugye a szükséges lépések számát jelenti.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az eljárás lépésszáma arányos a gráfban lévő élek számával. A legrosszabb eset nyilván az, amikor minden csúcs minden más csúccsal össze van kötve. Ekkor van ugyanis a gráfban a lehető legtöbb él. Ebben a legrosszabb esetben tehát egy [latex]n[/latex] csúcsú gráfnak egészen pontosan</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\dfrac{n\cdot (n-1)}{2}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>darab éle van. Azaz az eljárásunk a <em>100</em> lakosú Kompánia utálatgráfjára legfeljebb <em>4950</em> lépés alatt végez. Egy számítógéppel ez egy pillanat alatt elvégezhető, ezért ez már valóban egy használható algoritmus. Most hasonlítsuk össze az előbbi „buta” és az utóbbi „okos” algoritmus időkomplexitását általánosságban.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="algorithm-time-complexity"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Az algoritmusok időkomplexitásának mérése</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Vegyük észre, hogy gyakorlatilag lényegtelen, hogy a két algoritmust egy primitív Turing-gép leírásának szintjén, vagy a fenti magasabbszintű leírások alapján vizsgáljuk. A kettő között csak annyi a különbség, hogy mit tekintünk elemi lépésnek. Elképzelhető, hogy egy Turing-gép primitív lépéseiben számolva az előző szakaszban kiszámolt lépésszámoknak a többszörösét kapnánk. Az azonban elmondható, hogy ez a szorzó tényező nem, vagy csak elhanyagolható mértékben függ a bemeneti gráf méretétől. Feltéve persze, hogy értelmes formában írtuk le a Turing-gép bemeneti szalagján a gráfot a használt ábécé szimbólumaival.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egy algoritmus komplexitásának mérésekor tehát elsősorban nem konkrét lépésszámokra vagyunk kíváncsiak. Ilyenkor alapvetően az a lényeges számunkra, hogy a bemenet méretének növelésével <strong><em>milyen gyorsan növekszik</em></strong> a végrehajtáshoz szükséges lépésszám. Ezt az algoritmus <strong><em>skálázódásának</em></strong> nevezzük. Egy olyan „vízválasztót” keresünk tehát, amely elválasztja egymástól a „gyors” és a „lassú” algoritmusokat.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Jelöljük a bemenet méretét [latex]n[/latex]-nel. Azt, hogy [latex]n[/latex] adott esetben pontosan mire vonatkozik az határozza meg, hogy milyen szinten vizsgáljuk az algoritmust. Egy Turing-gép primitív szintjén például jelölheti a bemeneti jelsorozat szimbólumainak számát. Mi most egy ennél absztraktabb szinten vizsgáljuk a fenti két algoritmust. Gráfalgoritmusokról lévén szó, célszerű az [latex]n[/latex] mennyiséget valamilyen módon a bemeneti gráf méretéhez kötni. Jelölje például [latex]n[/latex] a gráf csúcsainak számát.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Célunk, hogy találjunk egy olyan [latex]n[/latex]-től függő [latex]f(n)[/latex] mennyiséget, amelyet a tényleges lépésszám biztosan nem fog meghaladni „elegendően nagy” [latex]n[/latex] értékektől kezdve. Más szavakkal valamilyen módon <strong><em>felső becslést</em></strong> szeretnénk adni a szükséges lépésszámra a bemenet méretének függvényében.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az első, „buta” algoritmusnál láttuk, hogy a lépésszám [latex]n[/latex] csúcsú gráf esetén egy olyan mennyiséggel becsülhető felülről, amely [latex]2^n[/latex]-nel arányos. Az olyan függvényeket, ahol a változó mennyiség (amely jelen esetben [latex]n[/latex]) a kitevőben is előfordul, <strong><em>exponenciális függvényeknek</em></strong> nevezzük. Ezzel szemben a második, „okos” algoritmus esetén a lépésszám egy [latex]n^2[/latex]-tel arányos mennyiséggel becsülhető felülről. Az olyan függvényeket, ahol a változónak csak valamilyen rögzített kitevőjű hatványai fordulnak elő, <strong><em>polinomiális függvényeknek</em></strong> nevezzük. Mindkét függvénycsaládnak megvan az a tulajdonsága, hogy zárt a négy alapműveletre. Például két tetszőleges polinomiális függvény összege és szorzata is polinomiális, és ugyanez a zártság igaz az exponenciális függvényekre is. </p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezen kívül igaz az is, hogy <strong><em>bármilyen exponenciális függvény</em></strong> – feltéve, hogy az alapja <em>1</em>-nél nagyobb – előbb-utóbb <strong><em>minden polinomiális függvénynél gyorsabban kezd el növekedni</em></strong>. Vegyük például az [latex]1.1^n[/latex] és az [latex]n^5[/latex] függvényeket. Az első egy <em>1</em>-hez közeli alapú (tehát relatíve lassan növekvő) exponenciális függvény, a második pedig egy viszonylag magas kitevőjű (tehát relatíve gyorsan növekvő) polinomiális függvény. Az alábbi ábrán e két függvény grafikonja látható:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":1591} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_7_exponencialis_vs_polinomialis.jpg" alt="Exponenciális és polinomiális függvények összehasonlítása" class="wp-image-1591"/><figcaption>Exponenciális és polinomiális függvények összehasonlítása</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Látható, hogy kezdetben ugyan az exponenciális függvény a polinomiális függvény alatt marad, [latex]n\approx 300[/latex] körül azonban végül „beelőzi” azt, és onnantól már sokkal nagyobb sebességgel növekszik. De választhattunk volna egy még lassabban növekvő exponenciális függvényt (például [latex]1.001^n[/latex]) és egy még gyorsabban növekvő polinomiális függvényt (például [latex]n^{100}[/latex]). Azokra ugyanúgy igaz lenne, hogy az előbbi „beelőzi” az utóbbit, maximum ez [latex]n[/latex] magasabb értékénél következik be.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezek után a Turing-gép fogalmára lefordítva meg tudjuk adni egy algoritmus „hatékonyságát”. Tegyük fel, hogy egy probléma megoldására alkottunk egy Turing-gépet. Ha a probléma egy példányának reprezentációja (a fenti példában egy konkrét gráf leírása) a Turing-gép bemeneti szalagján [latex]n[/latex] „betűből” áll, és a Turing-gép legfeljebb [latex]f(n)[/latex] lépésben be tudja fejezni a számolást tetszőleges bemenetre, de ennél gyorsabban nem, akkor azt mondjuk, hogy <strong><em>a Turing-gép időkomplexitása</em></strong> [latex]f(n)[/latex]. Ha [latex]f(n)[/latex] egy valamilyen polinomiális függvénnyel felülről becsülhető, akkor azt mondjuk, hogy <strong><em>a Turing-gép polinomiális időkomplexitású</em></strong>. Ha [latex]f(n)[/latex] polinomiális függvénnyel nem, csak exponenciális függvénnyel becsülhető felülről, akkor <strong><em>a Turing-gép exponenciális időkomplexitású</em></strong>. A továbbiakban a „probléma” és a „formális nyelv” szavakat, valamint az „algoritmus” és a „Turing-gép” szavakat szinonimaként fogjuk használni. Az <a rel="noreferrer noopener" aria-label="előző részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/6-turing-gep-formalis-nyelv-rekurzivan-felsorolhato-rekurziv-megallasi-problema#turing-machine-language" target="_blank">előző részben</a> ugyanis láttuk, hogy ezek gyakorlatilag ugyanazt jelentik.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A gyakorlatban felmerülő problémák esetén egy algoritmus hatékonyságának általában egy jó vízválasztója az, hogy <strong><em>polinomiális vagy exponenciális időkomplexitású-e</em></strong>. Elképzelhető azonban, hogy a szóba jövő bemenet-méretek esetén jobb egy exponenciális időkomplexitású algoritmus, mint egy polinomiális. Az előző grafikonon például láthattuk, hogy egy relatíve lassan növő exponenciális függvény értéke egy ideig alatta maradhat egy relatíve gyorsan növő polinomiális függvény értékének. Amennyiben ez a két függvény két különböző algoritmus időkomplexitását jelöli, úgy elmondható, hogy az exponenciális algoritmus mindaddig hatékonyabb a polinomiálisnál, ameddig [latex]n[/latex] értéke 300 alatt marad (bármit is jelentsen [latex]n[/latex] a bemenet méretére vonatkozóan).</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Amennyiben tudható, hogy a bemenet mérete biztosan az [latex]n&lt;300[/latex] értéktartomány alatt fog maradni az algoritmus használata során, úgy nyilvánvalóan ebben a konkrét esetben sokkal jobban megéri az exponenciális algoritmust alkalmazni. Ettől függetlenül nagy általánosságban elmondható, hogy <strong><em>a polinomiális algoritmusokat tekinthetjük „hatékony”, míg az exponenciálisakat „rossz” algoritmusoknak</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A P problémaosztály</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Most módosítsuk egy kicsit a Kompániára vonatkozó feladatunkat. Ezúttal ne <em>2</em>, hanem <em>3</em> pártra próbáljuk meg szétosztani a lakosságot úgy, hogy az egy pártba kerülők ne utálják egymást. Az ide tartozó döntési probléma: kiszínezhetők-e egy adott gráf csúcsai <em>3</em> színnel úgy, hogy az azonos színű csúcsok között ne legyen él? Amennyiben ez megtehető egy adott gráfra, akkor azt mondjuk, hogy a gráf <strong><em>3-színezhető</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi gráf például nem színezhető ki <em>3</em> színnel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":1593} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_7_nem_3szinezheto_graf.jpg" alt="Nem 3-színezhető gráf (példa)" class="wp-image-1593"/><figcaption>Nem 3-színezhető gráf (példa)</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Ezzel szemben az alábbi gráf <em>3</em>-színezhető, a csúcsokhoz rendelt számok pedig egy helyes <em>3</em>-színezést jelölnek:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":1595} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_7_3szinezheto_graf.jpg" alt="3-színezhető gráf (példa)" class="wp-image-1595"/><figcaption>3-színezhető gráf (példa)</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>A korábbi, <em>2</em>-színezhetőségre vonatkozó döntési problémára lehetett exponenciális és polinomiális időkomplexitású algoritmust <strong><em>is</em></strong> találni. <strong><em>A 3-színezhetőség eldöntésére azonban sajnos nem ismerünk exponenciálisnál gyorsabb algoritmust</em></strong>. Nem tudjuk, hogy létezik-e egyáltalán – csak esetleg még nem találta meg senki –, vagy pedig elméletileg sem létezhet ilyen algoritmus. Ha ez utóbbi a helyzet, akkor nem csak a jelenleg ismert algoritmusok „rosszak”, hanem <strong><em>maga a probléma is „nehéz”</em></strong>. Ezt jelenleg azonban csak sejtjük. Ezzel szemben a <em>2</em>-színezhetőség eldöntése „könnyű”, mert létezik rá polinomiális algoritmus.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="independent-set-problem"></div>
+<!-- /wp:html -->
+
+<!-- wp:paragraph -->
+<p>Egy másik gráfelméletből ismert fontos probléma az úgynevezett <strong><em>független csúcsok problémája</em></strong>. Elhelyezhető-e a sakktáblán <em>8</em> vezér úgy, hogy ne üssék egymást? Az alábbi ábra mutatja, hogy ez lehetséges, de aki maga próbálta ezt a rejtvényt megfejteni, tudja, hogy nem olyan könnyű egy ilyen elhelyezést megtalálni:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":1597} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_7_fuggetlen_csucsok_sakktabla.jpg" alt="Független csúcsok problémája a sakktáblán" class="wp-image-1597"/><figcaption>Független csúcsok problémája a sakktáblán</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Ez a feladat is megfogalmazható a gráfok nyelvén. A sakktábla mezői legyenek a gráf csúcsai, és két csúcsot akkor kössünk össze éllel, ha az egyik mezőről a vezér egy lépéssel el tud jutni a másikba, azaz a másik mezőt „ütni” tudja. Az általános, már gráfokra vonatkozó probléma így szól: adott egy gráf és egy [latex]k[/latex] egész szám, a kérdés pedig az, hogy ki lehet-e választani a gráfból [latex]k[/latex] darab csúcsot úgy, hogy ezek között a csúcsok között ne legyen él. Ezt úgy mondjuk, hogy <strong><em>található-e a gráfban [latex]k[/latex] darab független csúcs</em></strong>. Azokat a gráfokat, amelyekre ez teljesül, <strong><em>k-független gráfoknak</em></strong> nevezzük. <strong><em>A k-függetlenség eldöntésére sem ismert exponenciálisnál gyorsabb algoritmus</em></strong>, tehát ez is egy „nehéz” probléma, legalábbis annak tűnik.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Azokat a rekurzív nyelveket, amelyek eldöntésére létezik polinomiális időkomplexitású <strong><em>determinisztikus Turing-gép</em></strong>, egy osztályba soroljuk, amelyet [latex]P[/latex]-vel jelölünk, és a <strong><em>polinomiális időben eldönthető nyelvek osztályának</em></strong> nevezünk. Lényegében az összes hatékonyan kezelhető döntési problémához tartozó nyelv [latex]P[/latex]-beli. Ilyen volt például a <em>2</em>-színezhetőségről szóló probléma. A <em>3</em>-színezhetőség és a <em>k</em>-függetlenség problémájáról azonban nem tudjuk, hogy vajon [latex]P[/latex]-ben vannak-e.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Amit viszont tudunk róluk, hogy – sok más rendkívül fontos algoritmikus problémával együtt – egy [latex]P[/latex]-nél általánosabb problémaosztályba tartoznak. Ezért most ezzel a problémaosztállyal ismerkedünk meg. Ennek keretében felfrissítjük emlékeinket a 6. részben már említett <a rel="noreferrer noopener" aria-label="nemdeterminisztikus Turing-gépekkel (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/6-turing-gep-formalis-nyelv-rekurzivan-felsorolhato-rekurziv-megallasi-problema#non-deterministic-turing-machine" target="_blank">nemdeterminisztikus Turing-gépekkel</a> kapcsolatban.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Az NP problémaosztály</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>nemdeterminisztikus Turing-gépek</em></strong> mindössze abban különböznek a determinisztikus Turing-gépektől, hogy ezek kerülhetnek olyan helyzetbe, amikor egynél több állapotváltási szabály előfeltétele is teljesül. Így ezekben a helyzetekben a gépünk választhat, hogy melyik szabályt fogja alkalmazni. Innen ered a neve is, ugyanis a gép további sorsa ezekben a helyzetekben <strong><em>nem determinált</em></strong> (nem egyértelműen meghatározott). Az alábbi ábrákon egy-egy olyan determinisztikus és nemdeterminisztikus Turing-gép futása látható, amelyek egy-egy [latex]x[/latex] bemeneti jelsorozat adott nyelvbe tartozását döntik el (azaz az eredményük egy <strong>„igen”</strong> vagy egy <strong>„nem”</strong> válasz):</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":1599} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_7_determinisztikus_szamitasi_utvonal.jpg" alt="Determinisztikus Turing-gép számítási útvonala" class="wp-image-1599"/><figcaption>Determinisztikus Turing-gép számítási útvonala</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:image {"align":"center","id":1600} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_7_nemdeterminisztikus_szamitasi_utvonal.jpg" alt="Nemdeterminisztikus Turing-gép számítási útvonalai" class="wp-image-1600"/><figcaption>Nemdeterminisztikus Turing-gép számítási útvonalai</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Az egyes csúcsok az adott Turing-gép különböző helyzeteit jelölik, amelyekbe a döntés meghozatala során kerül. Látható, hogy a determinisztikus Turing-gép mindig csak egy szabályt alkalmazhat, ezért a döntéshez vezető út egyértelmű. A nemdeterminisztikus testvére azonban a fenti példában 2 helyen is kétféle számítási úton folytathatja a futását. Tekintve, hogy a kimeneti szalagon megjelenő <strong>„igen”</strong> vagy egy <strong>„nem”</strong> válasz függhet attól, hogy végül melyik útvonalat választotta, a nemdeterminisztikus Turing-gépeket látszólag nem igazán lehet nyelvek felismerésére használni. Legalábbis nem abban az értelemben, ahogyan az előző részben definiáltuk <a rel="noreferrer noopener" aria-label="a Turing-gép által felismert nyelvet (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/6-turing-gep-formalis-nyelv-rekurzivan-felsorolhato-rekurziv-megallasi-problema#turing-machine-language" target="_blank">a Turing-gép által felismert nyelvet</a>. Az ott szereplő definíció determinisztikus Turing-gépekre vonatkozott, ezért most általánosítjuk ezt a definíciót a nemdeterminisztikus esetre is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tekintsünk most egy [latex]M[/latex] <strong><em>nemdeterminisztikus Turing-gépet</em></strong>. Ha [latex]M[/latex] összes lehetséges számítási útvonalát egyszerre vizsgáljuk, akkor kétféle eset lehetséges:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li>Van legalább <em>1</em> olyan számítási útvonal, amely mentén a Turing-gép nem kerül végtelen ciklusba, és az eredmény <strong>„igen”</strong>.</li><li>Ilyen számítási útvonal nincs, azaz a Turing-gép <strong><em>minden</em></strong> számítási útvonala vagy a <strong>„nem”</strong> válasszal végződik, vagy végtelen ciklusba kerül.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>Az első esetben azt mondjuk, hogy <strong><em>a nemdeterminisztikus Turing-gép elfogadta</em></strong> az [latex]x[/latex] jelsorozatot, míg a második esetben <strong><em>elutasította</em></strong> azt. Hasonlóan a determinisztikus Turing-gépek esetéhez, azok a bemeneti jelsorozatok, amelyeket a nemdeterminisztikus Turing-gép a fenti értelemben elfogad, egy részhalmazt alkotnak az összes bemeneti jelsorozat között. Ezt a részhalmazt <strong><em>a nemdeterminisztikus Turing-gép által felismert nyelvnek</em></strong> nevezzük és [latex]L_M[/latex]-mel jelöljük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Nyilván a nemdeterminisztikus esetben is csak azokkal a Turing-gépekkel érdemes foglalkoznunk, amelyek <strong><em>nem keverednek végtelen ciklusba</em></strong> egyetlen lehetséges számítási útvonalon sem. Másként fogalmazva ez azt jelenti, hogy a leghosszabb számítási útvonal hossza is felülről becsülhető valamilyen, a bemenet [latex]n[/latex] hosszától függő véges [latex]f(n)[/latex] mennyiséggel. Amennyiben ilyen felső becslésnek megadható egy polinomiális függvény, akkor azt mondjuk, hogy <strong><em>a nemdeterminisztikus Turing-gép polinomiális időkomplexitású</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Azokat a rekurzív nyelveket, amelyek eldöntésére létezik polinomiális időkomplexitású <strong><em>nemdeterminisztikus Turing-gép</em></strong>, egy osztályba soroljuk, amelyet [latex]NP[/latex]-vel jelölünk, és a <strong><em>nemdeterminisztikusan polinomiális időben eldönthető nyelvek osztályának</em></strong> nevezzük (innen ered tehát az [latex]NP[/latex] rövidítés). A [latex]P[/latex] nyelvosztály nyilván része [latex]NP[/latex]-nek, ha ugyanis egy nyelv determinisztikus Turing-géppel eldönthető polinomiális időben, akkor nemdeterminisztikus Turing-géppel „méginkább” eldönthető.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Jogosan vetődhet fel az Olvasóban a kérdés, hogy mi értelme nemdeterminisztikus döntési algoritmusokkal foglalkozni, amikor ez nem egy realisztikus számítási modell. Hiszen a számítási útvonalakat úgyis csak egyenként tudnánk „bejárni” egy valódi számítógéppel?</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Emlékezzünk azonban, hogy az előző részben a <a rel="noreferrer noopener" aria-label="Church-Turing tézis (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/6-turing-gep-formalis-nyelv-rekurzivan-felsorolhato-rekurziv-megallasi-problema#church-turing" target="_blank">Church-Turing tézis</a> kapcsán már megemlítettük a kvantumszámítógépeket. Ezek egy olyan – most még többnyire csak elméletben létező – számítási modellt valósítanak meg, amely kihasználja az elemi részecskék szintjén jelentkező nagyon furcsa jelenségeket. Ezeket a kvantumfizika írja le, és nagyjából arról van szó, hogy egy elemi részecske nem feltétlenül van mindig egy adott állapotban, hanem bizonyos körülmények között egy úgynevezett <strong><em>szuperpozíciós állapotba</em></strong> kerülhet. Tegyük fel például, hogy egy ilyen részecske valamilyen irányú „pörgése” a bináris <strong>1</strong>, a fordított irányú „pörgése” pedig a bináris <strong>0</strong> szimbólumot jelenti. Ezeket a „kvantumbit” kifejezés alapján <strong><em>qubit-eknek</em></strong> nevezzük. Amennyiben több qubit-et is sikerül szuperpozíciós állapotba hozni, úgy egy ilyen rendszer <strong><em>párhuzamosan</em></strong> tud számításokat végezni a qubit-állapotok összes lehetséges kombinációján.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egy ilyen gép tehát nagyon hasonló számítási modellt valósítana meg, mint a <strong><em>nemdeterminisztikus Turing-gép</em></strong>, amelynek rengeteg párhuzamos számítási útvonalat kell <strong><em>egyszerre</em></strong> vizsgálnia. A fő technikai problémát az okozza, hogy a szuperpozíció egy nagyon érzékeny állapot, és a rendszer a legapróbb külső behatásra egy konkrét állapotba „zuhanhat”, véget vetve a kvantumszámításnak. Vannak egészen ígéretes eredmények, azonban ez a technológia még igencsak gyerekcipőben jár.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A [latex]P[/latex] problémaosztályról szóló előző szakaszban megemlítettük, hogy a <strong><em>3-színezhetőség</em></strong> és a <strong><em>k-függetlenség</em></strong> problémájáról – sok egyéb más, a gyakorlatban rendkívül fontos probléma mellett – nem tudjuk, hogy vajon [latex]P[/latex]-beliek-e. Azt viszont nemsokára látni fogjuk, hogy ha [latex]P[/latex]-be nem is tartoznak bele feltétlenül, az [latex]NP[/latex] problémaosztályba azonban igen. Kérdés, hogy hogyan tudjuk bizonyítani egy döntési problémáról – pontosabban az őt reprezentáló formális nyelvről –, hogy [latex]NP[/latex]-beli. Ez ugyanis igen nehézkesnek tűnik a fenti, <strong><em>nemdeterminisztikus számítási modellre</em></strong> építő definíció alapján. Ezért most megismerkedünk az [latex]NP[/latex] nyelvosztály egy másik definíciójával, amely a sokkal könnyebben kezelhető <strong><em>determinisztikus Turing-gépekre</em></strong> épít.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A tanú-tétel</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Képzeljük el, hogy a <em>3</em>-színezhetőség eldöntését próbáljuk megoldani egy konkrét, viszonylag nagy gráfra. Hatékony algoritmus hiányában helyzetünk reménytelennek tűnik. Tegyük fel azonban, hogy valahonnan hozzájutunk egy olyan <strong><em>plusz információhoz, amelynek helyességét már hatékonyan le tudjuk ellenőrizni</em></strong>. Például támad egy sejtésünk, vagy valaki megsúg nekünk bizonyos információkat a megoldásról. Ezt a plusz információt <strong><em>tanúnak (vagy súgásnak)</em></strong> nevezzük. A tanúval szemben két fontos követelményünk van:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li>Ne legyen túl hosszú az eredeti bemenet méretéhez képest. Ez pontosabban fogalmazva azt jelenti, hogy ha az eredeti bemeneti jelsorozat [latex]x[/latex], a tanút leíró jelsorozat pedig [latex]t[/latex], akkor megköveteljük, hogy [latex]t[/latex] hossza [latex]x[/latex] hosszának <strong><em>legfeljebb polinomiális függvénye</em></strong> legyen.</li><li>Megköveteljük továbbá, hogy a tanú helyessége legyen leellenőrizhető <strong><em>polinomiális időkomplexitású DETERMINISZTIKUS Turing-géppel</em></strong>.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>A „súgás” elnevezés arra utal, hogy e plusz információnak <strong><em>csak a létezése</em></strong> a feltétel. Annak eredetével kapcsolatosan azonban <strong><em>nincs semmilyen kiszámíthatósági feltételezésünk</em></strong>. Az olyan döntési problémák osztályát szintén [latex]NP[/latex]-vel jelöljük, amelyek esetén az <strong>„igen”</strong> válasznak létezik hatékonyan ellenőrizhető tanúja.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>tanú-tétel</em></strong> azt állítja, hogy a <strong><em>NEMDETERMINISZTIKUSAN polinomiális eldönthetőségre</em></strong>, és a <strong><em>DETERMINISZTIKUSAN polinomiális ellenőrizhetőségre</em></strong> épülő két látszólag teljesen különböző definíció ugyanazt a nyelvosztályt határozza meg, így mindegy, hogy melyiket nevezzük [latex]NP[/latex]-nek. Mielőtt a bizonyítás vázlatára rátérnénk, nézzük meg egy konkrét példán, hogy hogyan kell értelmezni a tanú fogalmára épülő definíciót.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A már említett <strong><em>3-színezhetőség</em></strong> eldöntése reménytelenül nehéz feladatnak tűnik, ha csak a bemeneti gráf áll rendelkezésre. Ha azonban kapunk hozzá egy konkrét színezést, mint tanút (vagy más néven súgást), annak helyessége már könnyen leellenőrizhető. Továbbá az is nyilvánvaló, hogy csak a <em>3</em>-színezhető gráfokhoz létezik helyes színezés, azaz tanú. Végezetül, egy színezés leírható a bemeneti gráf méretéhez képest „nem túl hosszan”, hiszen csak az egyes csúcsokhoz rendelt színeket kell felsorolni. Ehhez hasonlóan a <strong><em>k-függetlenség</em></strong> problémája esetén <em>k</em> darab független csúcs felsorolása szintén megfelelő tanú, hiszen könnyen leellenőrizhető, hogy azok valóban függetlenek-e. A <em>3</em>-színezhetőség és a <em>k</em>-függetlenség problémája tehát a második definíció alapján mindketten az [latex]NP[/latex] problémaosztályba tartoznak.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egy [latex]NP[/latex]-beli [latex]L[/latex] nyelv esetén egy adott [latex]x[/latex] bemeneti jelsorozat [latex]L[/latex]-be tartozásának eldöntése felfogható egy <strong><em>bírósági analógiával</em></strong> is. Képzeljünk el egy <strong><em>bírót</em></strong>, aki elé oda kerül az [latex]x[/latex] jelsorozat, mint <strong><em>vádlott</em></strong>. A vád az, hogy [latex]x[/latex] mondata az [latex]L[/latex] nyelvnek. A kérdés eldöntésére a bírónak <strong><em>polinomiális időkorlátja</em></strong> van, azaz kissé türelmetlen, és segítségre van szüksége, hogy időben meg tudja hozni az <strong><em>ítéletet</em></strong>. Ekkor jelentkezik egy <strong><em>rejtélyes tanú</em></strong>, aki terhelő vallomást tesz az [latex]x[/latex] vádlottra. A <strong><em>bírónak így csak ellenőriznie kell</em></strong>, hogy a vallomás tényleg bizonyítja-e a vádat. Nem kell azonban foglalkoznia a tanú megkeresésével, amely mai tudásunk szerint sok fontos esetben nem is tehető meg polinomiális időben.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Látható, hogy ez a tanú fogalmára építő második definíció igen hasznos, hiszen segítségével lényegesen könnyebben tudjuk bizonyítani adott nyelvekre, hogy [latex]NP[/latex]-beliek, mintha a nemdeterminisztikus Turing-gépekkel kellene szórakoznunk. Ahhoz azonban, hogy ezt a piszkos kis trükköt legálisan használhassuk, még bizonyítanunk kell a tanú-tételt.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Először azonban <strong><em>fogalmazzuk meg újra a tanú-tétel állítását</em></strong>, de ezúttal a matematika nyelvén. Bonyolultnak fog tűnni, de valójában ugyanarról van szó, mint amiről eddig beszéltünk. Érdemes végigkövetni, hogy szokjuk egy kicsit ezt a szigorú nyelvezetet.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel, hogy adva van egy [latex]L[/latex] nyelv, és azt szeretnénk bizonyítani, hogy ez a nyelv [latex]NP[/latex]-ben van-e vagy nem. Az [latex]NP[/latex] nyelvosztály első definíciója alapján tehát keresnünk kellene egy olyan <strong><em>polinomiális időkomplexitású NEMDETERMINISZTIKUS Turing-gépet</em></strong>, amely eldönti az [latex]L[/latex]-be tartozást, vagy pedig bizonyítani, hogy ilyen Turing-gép nem létezik. Mi nem ezt az utat fogjuk választani az [latex]NP[/latex]-beliség eldöntésére, ugyanis nem szeretnénk nemdeterminisztikus Turing-gépekkel bajlódni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ehelyett [latex]L[/latex]-ből konstruálni fogunk egy másik [latex]K[/latex] nyelvet, és azt fogjuk vizsgálni, hogy ez a [latex]K[/latex] nyelv eldönthető-e <strong><em>polinomiális időkomplexitású DETERMINISZTIKUS Turing-géppel</em></strong> (azaz, hogy [latex]P[/latex]-beli-e). Most nézzük meg, hogy milyen jelsorozatokat tartalmazzon ez a [latex]K[/latex] nyelv.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tartalmazzon [latex]K[/latex] olyan [latex]x[/latex] és [latex]t[/latex] <strong><em>jelsorozatokból álló párokat</em></strong>, amelyeknél [latex]t[/latex] hossza az [latex]x[/latex] hosszának <strong><em>legfeljebb polinomiális függvénye</em></strong>, azaz [latex]t[/latex] ne legyen „túl hosszú” [latex]x[/latex]-hez képest. Hogy az éppen használt ábécé segítségével hogyan lehet ilyen párokat leírni, az most részletkérdés. A lényeg, hogy a pár összetevőit (tehát az [latex]x[/latex] és [latex]t[/latex] jelsorozatokat) egyértelműen be lehessen azonosítani a [latex]K[/latex]-beli szavakban. Mi a továbbiakban az [latex](x,t)[/latex] jelölést fogjuk használni ezekre a párokra, függetlenül attól, hogy ez konkrétan hogyan néz ki a [latex]K[/latex] nyelv ábécéjével leírva. A [latex]t[/latex] jelsorozatot az [latex]x[/latex] jelsorozat <strong><em>tanújának</em></strong> fogjuk nevezni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Teljesüljön ezen kívül a [latex]K[/latex] és [latex]L[/latex] nyelvekre a következő: egy tetszőleges [latex]x[/latex] jelsorozat <strong><em>akkor és csak akkor</em></strong> tartozzon [latex]L[/latex]-be, ha <strong><em>létezik</em></strong> olyan [latex]t[/latex] <strong><em>tanú</em></strong>, amely esetén az [latex](x,t)[/latex] jelsorozat [latex]K[/latex]-ba tartozik. Amennyiben ilyen tanú nem létezik egy adott [latex]x[/latex]-hez, akkor [latex]x[/latex] ne tartozzon [latex]L[/latex]-be. Mégegyszer hangsúlyozzuk, hogy <strong><em>a tanúnak csak a létezése a feltétel</em></strong>. A megtalálásának mikéntjéről nem feltételezünk semmit, de azt gondoljuk, hogy az „nehéz”.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>tanú-tétel</em></strong> ezek után a következőt állítja: az [latex]L[/latex] nyelv <strong><em>akkor és csak akkor</em></strong> van [latex]NP[/latex]-ben, <strong><em>ha</em></strong> a [latex]K[/latex] nyelv [latex]P[/latex]-ben van. Vegyük észre, hogy ha ez igaz, akkor egy <strong><em>nemdeterminisztikus</em></strong> Turing-gép létezésének bizonyítása helyett egy <strong><em>determinisztikus</em></strong> Turing-gép létezését kell bizonyítanunk egy nyelv [latex]NP[/latex]-beliségének eldöntéséhez, ami sok esetben jóval egyszerűbb. Most vizsgáljuk meg, hogy miért igaz ez a tétel.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="witness-theorem-proof"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A tanú-tétel bizonyítása (vázlat)</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Itt csak a <strong><em>tanú-tétel</em></strong> bizonyításának alapötletét ismertetjük, a részletek ugyanis főként technikai jellegűek, és csak elterelnék a figyelmet a gondolatmenetről.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tekintve, hogy ez egy <strong><em>„akkor és csak akkor”</em></strong> típusú állítás, ezért a bizonyítás két részből fog állni. <strong><em>Egyrész</em></strong> bizonyítani kell, hogy <strong><em>ha</em></strong> a [latex]K[/latex] nyelv [latex]P[/latex]-ben van, <strong><em>akkor</em></strong> az [latex]L[/latex] nyelv [latex]NP[/latex]-beli. <strong><em>Másrészt</em></strong> azt is bizonyítani kell, hogy az [latex]L[/latex] nyelv [latex]NP[/latex]-belisége semmilyen más esetben nem fordulhat elő, <strong><em>csak akkor</em></strong>, ha a [latex]K[/latex] nyelv [latex]P[/latex]-beli. Másként fogalmazva bizonyítani kell a <strong><em>másik irányú következtetést is</em></strong>, azaz azt, hogy <strong><em>ha</em></strong> az [latex]L[/latex] nyelv [latex]NP[/latex]-ben van, <strong><em>akkor</em></strong> a [latex]K[/latex] nyelv [latex]P[/latex]-beli.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Kezdjük ez utóbbival, azaz tegyük fel az [latex]L[/latex] nyelvről, hogy [latex]NP[/latex]-ben van. Ez azt jelenti, hogy polinomiális időkomplexitású <strong>nemdeterminisztikus</strong> Turing-géppel eldönthető, ezért bármely, a nyelvbe tartozó [latex]x[/latex] jelsorozathoz (de csak azokhoz) létezik legalább <em>1</em> olyan számítási útvonal, amelyet követve a számolás végeredménye az <strong>„igen”</strong> válasz. Az alábbi ábrán egy ilyen útvonal látható:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":1602} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_7_nyelv_felismerese_nemdeterminisztikusan.jpg" alt="Nyelv felismerése nemdeterminisztikus Turing-géppel" class="wp-image-1602"/><figcaption>Nyelv felismerése nemdeterminisztikus Turing-géppel</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Építsünk most egy olyan <strong>determinisztikus</strong> Turing-gépet, amely az [latex]x[/latex] bemeneten kívül megkapja még ennek az útvonalnak a leírását is valamilyen formában. Jelöljük ezt a gépet [latex]M[/latex]-mel. Az [latex]M[/latex] gép legyen olyan, hogy szimulálja a nemdeterminisztikus testvérének működését, de minden olyan szituációban, ahol a nemdeterminisztikus gép számítási útvonala elágazik, [latex]M[/latex] a kapott útvonal-leírás szerinti úton haladjon tovább a számítással. A technikai részleteket az Olvasóra bízom, de viszonylag könnyen belátható, hogy egyrészt az útvonal leírható „nem túl hosszan”, azaz úgy, hogy hossza az [latex]x[/latex] bemenet hosszának <strong><em>polinomiális függvénye</em></strong> legyen. Másrészt szintén viszonylag könnyen belátható, hogy az [latex]M[/latex] <strong>determinisztikus</strong> Turing-gép időkomplexitása szintén polinomiális, tekintve hogy az eredeti <strong>nemdeterminisztikus</strong> gép időkomplexitása is polinomiális volt.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez azt jelenti, hogy az útvonal leírása megfelel a tanúval szemben támasztott követelményeknek. Ezen kívül az is igaz, hogy csak azokra az [latex]x[/latex] jelsorozatokhoz van ilyen tanú, amelyek [latex]L[/latex]-ben vannak. Az eredeti <strong>nemdeterminisztikus</strong> Turing-gép ugyanis az egyéb jelsorozatokat nem fogadja el, így az ilyen jelsorozatokra nincs <strong>„igen”</strong> végződésű számítási útvonal, következésképp az azt leíró tanú sem létezhet.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A tanú tétel másik felének bizonyításához azt kell belátni, hogy <strong><em>ha</em></strong> az [latex]L[/latex] nyelvhez tartozó jelsorozatokhoz (de csak azokhoz) létezik tanú a fenti értelemben, <strong><em>akkor</em></strong> az [latex]L[/latex] nyelv polinomiális időkomplexitású <strong>nemdeterminisztikus</strong> Turing-géppel eldönthető. Vegyünk tehát egy tetszőleges [latex]x[/latex] bemeneti jelsorozatot, és építsünk egy olyan <strong>nemdeterminisztikus</strong> gépet, amely [latex]x[/latex]-et elfogadja, ha az [latex]L[/latex] nyelvhez tartozik, és elutasítja, ha nem.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Azt mondtuk, hogy az [latex]x[/latex] jelsorozat akkor és csak akkor tartozik [latex]L[/latex]-hez, ha létezik hozzá egy ezt bizonyító tanú. Ha tehát a készülő gépünk végig tudná vizsgálni az összes olyan jelsorozatot, amely tanúként szóba jöhet, akkor el tudná dönteni az [latex]x[/latex] jelsorozat [latex]L[/latex]-be tartozását is. Szerencsére az ilyen lehetséges tanúkból véges sok van, mivel azt mondtuk, hogy a tanú „nem túl hosszú” [latex]x[/latex]-hez képest. Ha például az [latex]x[/latex] jelsorozat hossza [latex]n[/latex] szimbólum, akkor a keresett tanú – ha egyáltalán létezik – maximum [latex]f(n)[/latex] darab szimbólummal leírható, ahol [latex]f[/latex] egy valamilyen rögzített polinomiális függvény.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A készülő <strong>nemdeterminisztikus</strong> gépünknek tehát nincs más dolga, mint különböző számítási útvonalakon előállítani az <strong><em>összes lehetséges</em></strong> tanújelöltet, és mindegyik számítási útvonalon leellenőrizni, hogy az adott tanújelölt bizonyítja-e az [latex]x[/latex] jelsorozat [latex]L[/latex]-be tartozását. Ehhez az ellenőrzéshez pedig használhatja a feltételünk szerint létező polinomiális időkomplexitású <strong>determinisztikus</strong> Turing-gépet. Tegyük fel például, hogy a bináris ábécét használjuk, és az [latex]x[/latex] jelsorozat hosszúsága alapján maximum <em>3</em> szimbólum hosszú tanújelöltek jöhetnek szóba. Ekkor a <strong>nemdeterminisztikus</strong> gépünk számítási útvonalai a következőképpen alakulnak:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":1604} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_7_tanujeloltek_tesztelese_nemdeterminisztikusan.jpg" alt="Tanújelöltek tesztelése nemdeterminisztikus Turing-géppel" class="wp-image-1604"/><figcaption>Tanújelöltek tesztelése nemdeterminisztikus Turing-géppel</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>A működés első felében annyiszor ágazik el minden útvonal, ahány szimbólumból a lehetséges tanújelöltek állnak. Erről ugye tudjuk, hogy az [latex]x[/latex] bemenet hosszának polinomiális függvénye. A működés második felében – miután minden lehetséges tanújelölt előállt valamelyik útvonalon – le kell futtatni mindegyik számítási ágon az adott [latex]t[/latex] tanút ellenőrző polinomiális időkomplexitású <strong>determinisztikus</strong> Turing-gépet, azaz innentől kezdve már nem fognak tovább ágazni az útvonalak. Ennek a szakasznak a hossza ugye az [latex](x,t)[/latex] összetett jelsorozat hosszának polinomiális függvénye.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az így megkonstruált <strong>nemdeterminisztikus</strong> Turing-gépnek az összlépésszáma tehát végsősoron szintén az eredeti [latex]x[/latex] bemenet hosszának polinomiális függvénye az összes lehetséges számítási útvonalon. Az is igaz továbbá, hogy ez a gép akkor és csak akkor fogja elfogadni az [latex]x[/latex] bemenetet, ha van <strong>„igen”</strong> végződésű számítási útvonala. Ez viszont akkor és csak akkor lehetséges, ha az [latex]x[/latex] jelsorozathoz létezik az ő [latex]L[/latex]-be tartozását bizonyító tanú.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ezzel bizonyítottuk</em></strong> az [latex]NP[/latex] nyelvosztály kétféle definíciójának ekvivalenciáját. A továbbiakban tehát nyugodtan használhatjuk a tanú létezését megkövetelő definíciót, amikor egy adott nyelv [latex]NP[/latex]-be tartozását akarjuk igazolni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most pedig rátérhetünk a számítástudomány egyik legfontosabb <strong><em>megoldatlan problémájára</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4 id="p-np-conjecture">Az egymillió dolláros megoldatlan probléma</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Az nyilvánvaló, hogy a [latex]P[/latex] problémaosztály mind az első, mind pedig a második definíció alapján is része az [latex]NP[/latex] problémaosztálynak. Ha ugyanis a bíró maga is meg tudja oldani a feladatot polinomiális időben, akkor nincs más dolga, mint a kapott megoldást összehasonlítani a tanú „vallomásával”, és <strong>„igen”</strong>-t ítélni egyezés esetén.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Érdekes kérdés viszont, hogy vajon valódi tartalmazásról van-e szó, vagy <strong><em>a két problémaosztály valójában egy és ugyanaz lenne?</em></strong> Vajon ha egy feladat megoldásának az ellenőrzésére van hatékony eljárás, akkor szükségképpen létezik-e hatékony eljárás magának a megoldásnak a megtalálására is? Amennyiben ez igaz lenne, annak <strong><em>rendkívül messzemenő következményei lennének</em></strong> nemcsak a matematika számos területén, hanem más tudományokban is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A választ nem tudjuk, de alapos okunk van feltételezni, hogy [latex]P \
+eq NP[/latex], azaz vannak nemcsak nehéznek tűnő, hanem <strong><em>valóban nehezen megoldható</em></strong>, viszont <strong><em>hatékonyan ellenőrizhető</em></strong> feladatok. Ez jelenleg a számítástudomány, de talán az egész matematika egyik <strong><em>legfontosabb megválaszolatlan kérdése</em></strong>. A [latex]P \
+eq NP[/latex]-sejtés egyike az úgynevezett <a rel="noreferrer noopener" aria-label="Millenniumi Problémáknak (új fülön nyitja meg)" href="https://hu.wikipedia.org/wiki/Millenniumi_probl%C3%A9m%C3%A1k" target="_blank">Millenniumi Problémáknak</a> is. Ez hét olyan matematikai problémát takar, amelyek megoldására 2000-ben magas pénzjutalommal járó díjat alapított az amerikai Clay Matematikai Intézet. Ezek közül hat még mindig megfejtésre vár – köztük a [latex]P \
+eq NP[/latex]-sejtés is –, amelyekért a dicsőségen túl egyenként <strong><em>egymillió amerikai dollár</em></strong> is jár.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi két ábrán az eddig megismert „bonyolultságtérképünk”, valamint az ebben a részben bemutatott <em>2</em>-színezhetőség, <em>3</em>-színezhetőség és <em>k</em>-függetlenség problémájának elhelyezkedése látható ezen a térképen a [latex]P \
+eq NP[/latex] sejtésre adható két lehetséges válasz esetére:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":1607} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_7_p_nem_egyenlo_np.jpg" alt="Bonyolultságtérkép P nem egyenlő NP esetén" class="wp-image-1607"/><figcaption>Bonyolultságtérkép [latex]P \
+eq NP[/latex] esetén</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:image {"align":"center","id":1609} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_7_p_egyenlo_np.jpg" alt="Bonyolultságtérkép P egyenlő NP esetén" class="wp-image-1609"/><figcaption> Bonyolultságtérkép [latex]P=NP[/latex] esetén</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A következő részben megismerkedünk egy fontos fogalommal, amelynek a segítségével az algoritmikus problémákat össze tudjuk majd hasonlítani „nehézség” szempontjából. Ennek kapcsán megismerkedünk az [latex]NP[/latex] problémaosztály „krémjével”, azokkal a problémákkal, amelyek bizonyos tekintetben a legnehezebb [latex]NP[/latex]-beli feladatoknak tűnnek. Ekkor fog világossá válni, hogy miért valószínűsítjük annyira, hogy [latex]P[/latex] nem azonos [latex]NP[/latex]-vel, még ha egzakt bizonyításunk nincs is erre. A kérdés többek között azért is rendkívül fontos, mivel a modern információbiztonsági és rejtjelezési eljárások <a href="https://youproof.hu/kriptografia/5-one-time-pad-passziv-aktiv-tamado-haromutas-kulcsforgalom/" target="_blank" rel="noreferrer noopener" aria-label=" (új fülön nyitja meg)">5. részben</a> említett algoritmikus biztonsága alapvetően ezen áll vagy bukik.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A következő részt <a href="https://youproof.hu/kriptografia/8-karp-redukcio-np-teljes-np-nehez-cook-levin-tetel-logikai-halozatok-graf-izomorfizmus/">itt</a> találod...</em></strong></p>
+<!-- /wp:paragraph -->

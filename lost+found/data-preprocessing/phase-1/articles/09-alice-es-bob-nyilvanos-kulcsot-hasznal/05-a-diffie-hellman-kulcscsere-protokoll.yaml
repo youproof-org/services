@@ -1,0 +1,81 @@
+type: section
+name: 05-a-diffie-hellman-kulcscsere-protokoll
+title: A Diffie-Hellman kulcscsere protokoll
+
+body:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy Alice és Bob szeretnének megegyezni egy közös kulcsban, amelyet aztán egy valamilyen
+      szimmetrikus kulcsú titkosításhoz fognak használni. A korábbi részekben már láttuk, hogy az Alice és Bob
+      közötti kommunikáció gyakorlatilag számok küldözgetéséből áll, így a rejtjelező és dekódoló komponensekre
+      nyugodtan tekinthetünk matematikai függvényekként. Alice és Bob feladata tehát megegyezni egy egész számban,
+      amellyel ezeket a függvényeket paraméterezni fogják. Jelen esetben azonban nem tudnak egymással személyesen
+      találkozni, így a kulcsban való megegyezést egy nembiztonságos csatornán keresztül kell megoldaniuk.
+  - type: narrative
+    content: |
+      Alice ezért felhívja Bob-ot telefonon, és megállapodnak egy egyirányú függvényben.
+  - type: formula
+    lead-in: |
+      Legyen ez az egyirányú függvény például az előző szakaszból már ismerős modulo 11 hatványozás:
+    content: |
+      f(n) = 2^n \pmod{11}
+  - type: narrative
+    content: |
+      Miután ezt megbeszélték, mindketten kiválasztanak maguknak egy-egy titkos kitevőt, ezt azonban titokban
+      tartják még egymás előtt is. Tegyük fel, hogy Alice az $a=4$, míg Bob a $b=8$ titkos kitevőt választja
+      magának. Most mindketten alkalmazzák ezekre a kitevőkre a megbeszélt egyirányú függvényt, és az eredményt
+      elküldik egymásnak. Alice tehát elküldi a 5-ös számot Bob-nak &ndash; mivel $2^a=2^4=5 \pmod{11}$ &ndash;,
+      Bob pedig elküldi a 3-as számot Alice-nak &ndash; mivel $2^b=2^8=3 \pmod{11}$.
+  - type: narrative
+    content: |
+      Végül a kapott számot mindketten a saját titkos kitevőjükre emelik szintén modulo 11 számolva. Alice ugye a
+      3-as számot kapta Bob-tól, a saját titkos kitevője $a=4$, ezért ő a $3^4 = 4 \pmod{11}$ értéket fogja kapni
+      végeredményül. Bob ehhez hasonlóan jár el: ő a 5-ös számot kapta Alice-tól, a saját titkos kitevője $b=8$,
+      így az általa kiszámított végeredmény a $5^8 = 4\pmod{11}$ lesz. Láss csodát: mindketten ugyanúgy a 4-es
+      számot kapták végeredményül. Ez lesz tehát a közös $k$ kulcs.
+  - type: figure
+    lead-in: |
+      A kulcscsere folyamat az alábbi ábrán látható:
+    src: 08-diffie-hellman-kulcscsere.jpg
+    alt: Diffie-Hellman kulcscsere protokoll
+    caption: Diffie-Hellman kulcscsere protokoll
+  - type: narrative
+    content: |
+      Mielőtt azt a kérdést megválaszolnánk, hogy hogyan kaphatta Alice és Bob is ugyanazt az eredmény, először
+      vizsgáljuk meg, hogy mit lát ebből az egészből Eve. Róla ugye korábbról már tudjuk, hogy minden olyan
+      üzenetnek ő is a birtokába kerül, amely áthalad a kommunikációs csatornán. Az első ilyen alkalom az, amikor
+      Alice telefonon megbeszéli Bob-bal azt az egyirányú függvényt, amely alapján a kulcscserét végre fogják
+      hajtani. Eve tehát megtudja, hogy Alice és Bob az $f(n)=2^n \pmod{11}$ függvényt fogják használni.
+  - type: narrative
+    content: |
+      Ezután Eve elfogja az Alice által Bob-nak küldött 5-ös és a Bob által Alice-nak küldött 3-as számot, és
+      nyilván szeretné ő is kiszámítani a közös kulcsot. Eve-nek ezen a ponton két választása van: vagy az $5^b
+      \pmod{11}$ vagy pedig a $3^a \pmod{11}$ értéket számítja ki. Mindegy melyiket választja, hiszen mindkettő
+      ugyanazt az eredmény &ndash; a kulcsot &ndash; adja. A probléma csak annyi, hogy Eve nem ismeri sem az $a$,
+      sem pedig a $b$ kitevőt, hiszen ezeket Alice és Bob nem közölte egymással.
+  - type: narrative
+    content: |
+      Eve mindössze 2 dolgot tud az $a$ és $b$ kitevőkről. Egyrészt az Alice által Bob-nak küldött 5-ös számból
+      tudja, hogy $2^a=5 \pmod{11}$. Másrészt pedig a Bob által Alice-nak küldött 3-as számból tudja, hogy $2^b=3
+      \pmod{11}$. Bármelyik kitevőt is szeretné kiszámítani, ***kénytelen megoldani a fentebb ismertetett diszkrét
+      logaritmus problémáját***. Ez azonban jóval nagyobb számok esetén &ndash; mint tudjuk &ndash; gyakorlatilag
+      lehetetlen feladat a számára még a világ összes számítógépével is. Ezzel szemben Alice-nak és Bob-nak
+      mindössze két modulo hatványozást kell csak elvégeznie, amely &ndash; ahogy azt majd egy későbbi részben
+      látni fogjuk &ndash; egy algoritmikusan könnyű feladat számukra.
+  - type: narrative
+    content: |
+      Most vizsgáljuk meg, hogy miből adódik a Diffie-Hellman protokoll helyessége. Bob ugye megkapja Alice-tól a
+      $2^a \pmod{11}$ számot, és ezt hatványozza a saját titkos kitevőjével. Azaz végeredményként a $(2^a)^b
+      \pmod{11}$ kulcsot fogja kapni. Ehhez hasonlóan Alice megkapja Bob-tól a $2^b \pmod{11}$ számot, és ezt
+      hatványozza a saját titkos kitevőjével. Azaz végeredményként a $(2^b)^a \pmod{11}$ kulcsot fogja kapni.
+  - type: formula
+    lead-in: |
+      A Diffie-Hellman protokoll ezek után nyilván akkor helyes, ha ez a két szám ugyanaz, vagyis:
+    content: |
+      (2^a)^b = (2^b)^a \pmod{11}
+  - type: narrative
+    content: |
+      Erre a figyelmetlen olvasó &ndash; aki jól megtanulta általános iskolában a hatványozás azonosságait &ndash;
+      rögtön rávágná, hogy nyilvánvalóan teljesül. Vigyázzunk azonban, itt ugyanis nem a hagyományos, hanem modulo
+      11 hatványozás történik. Szerencsére ezek az összefüggések a moduláris aritmetikában is érvényesek, ez
+      azonban korántsem magától értetődő. Ennek részleteiről majd egy későbbi részben lesz szó.

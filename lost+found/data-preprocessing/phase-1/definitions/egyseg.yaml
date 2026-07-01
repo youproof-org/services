@@ -1,0 +1,9 @@
+type: definition
+name: egyseg
+remarks:
+  - egyseg-megjegyzes
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ egy tetszőleges ***kommutatív gyűrű***. Ha egy adott $e$ gyűrűelem esetén minden $a$ gyűrűelemre
+      teljesül az $e|a$ oszthatósági reláció, akkor az $e$ elemet ***egységnek*** nevezzük.

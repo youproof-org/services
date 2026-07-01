@@ -1,0 +1,14 @@
+type: theorem
+name: reszcsoport-feltetele
+proofs:
+  - reszcsoport-feltetele-bizonyitas
+remarks: []
+content:
+  - type: ordered-list
+    lead-in: |
+      Egy tetszőleges $G$ csoport valamely $H$ részhalmaza ***akkor és csak akkor*** részcsoport $G$-ben, ha
+      teljesülnek az alábbi feltételek:
+    items:
+      - '$H$ zárt a $G$ csoport műveletére.'
+      - '$H$ tartalmazza a $G$ csoport egységelemét.'
+      - '$H$ zárt a $G$-beli inverzképzésre.'

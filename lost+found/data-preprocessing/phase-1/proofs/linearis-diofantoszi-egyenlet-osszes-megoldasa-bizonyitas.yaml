@@ -1,0 +1,307 @@
+type: proof
+name: linearis-diofantoszi-egyenlet-osszes-megoldasa-bizonyitas
+remarks: []
+references:
+  asszocialtsag-tulajdonsagai:
+    target:
+      type: theorem
+      name: asszocialtsag-tulajdonsagai
+  bezout-lemma-euklideszi-gyurukben:
+    target:
+      type: theorem
+      name: bezout-lemma-euklideszi-gyurukben
+  egesz-szamok-kozotti-kongruencia:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia
+  egesz-szamok-kozotti-kongruencia-egyszerusitese:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia-egyszerusitese
+  egesz-szamok-kozotti-kongruencia-tulajdonsagai:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia-tulajdonsagai
+  gyuruk-alapveto-tulajdonsagai:
+    target:
+      type: theorem
+      name: gyuruk-alapveto-tulajdonsagai
+  linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga:
+    target:
+      type: theorem
+      name: linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga
+  oszthatosag:
+    target:
+      type: definition
+      name: oszthatosag
+  oszthatosag-tulajdonsagai:
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+  pozitivitastartomany:
+    target:
+      type: definition
+      name: pozitivitastartomany
+  szorzat-egyszerusitese-gyurukben:
+    target:
+      type: theorem
+      name: szorzat-egyszerusitese-gyurukben
+content:
+  - type: narrative
+    content: |
+      Az általánosság megsértése nélkül feltehetjük, hogy az $m\eq 0$ feltétel teljesül. Ha ugyanis mégsem így
+      lenne, akkor a tétel szövege alapján szükségképpen teljesül az $a\eq 0$ feltétel, és az alábbi gondolatmenet
+      az $a$ és $m$ együtthatók szerepének felcserélésével ugyanígy végigjátszható. Először az $m\gt 0$ esetet
+      igazoljuk.
+  - type: narrative
+    content: |
+      **Az 1. állítás az $m\gt 0$ esetben:** Mivel az egyenlet megoldható, ezért a
+      [linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga] alapján teljesül az $(a,m)|b$
+      oszthatóság. Vagyis létezik olyan egész szám, amellyel az $(a,m)$ kitüntetett közös osztót megszorozva $b$-t
+      kapunk.
+  - type: formula
+    lead-in: |
+      Jelöljük ezt az egész számot $\frac{b}{(a,m)}$-mel, azaz:
+    content: |
+      (a,m)\cdot \frac{b}{(a,m)} = b
+  - type: narrative
+    content: |
+      A [bezout-lemma-euklideszi-gyurukben] alapján az $(a,m)$ kitüntetett közös osztó felírható az $a$ és $m$
+      egész számok lineáris kombinációjaként.
+  - type: formula
+    lead-in: |
+      Azaz léteznek olyan $u$ és $v$ egész együtthatók, hogy teljesül az alábbi:
+    content: |
+      (a,m)=au+mv
+  - type: formula
+    lead-in: |
+      Ezt összevetve az előző egyenlettel:
+    content: |
+      (\underbrace{au+mv}_{=(a,m)})\cdot \frac{b}{(a,m)} = a\cdot (\underbrace{u\cdot \frac{b}{(a,m)}}_{=x}) +
+      m\cdot (\underbrace{v\cdot \frac{b}{(a,m)}}_{=y}) = b
+  - type: formula
+    lead-in: |
+      Azaz megkaptuk az $ax+my=b$ lineáris diofantoszi egyenlet egy megoldását:
+    content: |
+      \begin{aligned}x&=u\frac{b}{(a,m)} \\ y&=v\frac{b}{(a,m)}\end{aligned}
+  - type: narrative
+    content: |
+      Az $u$ és $v$ együtthatók a [bezout-lemma-euklideszi-gyurukben] bizonyításában szereplő ***kibővített
+      euklidészi algoritmussal*** hatékonyan kiszámíthatók.
+  - type: formula
+    lead-in: |
+      **A 2. állítás az $m\gt 0$ esetben**: Tegyük fel, hogy az $x=s$, $y=t$ számpár egy megoldása az $ax+my=b$
+      egyenletnek, és helyettesítsük be ugyanebbe az egyenletbe az állításban szereplő számpárt:
+    content: |
+      a\cdot(\underbrace{s+k\cdot \frac{m}{(a,m)}}_{=x})+m\cdot (\underbrace{t-k\cdot \frac{a}{(a,m)}}_{=y})=b
+  - type: formula
+    lead-in: |
+      A zárójeleket felbontva az alábbit kapjuk:
+    content: |
+      as+ka\cdot \frac{m}{(a,m)}+mt-km\cdot \frac{a}{(a,m)}=b
+  - type: formula
+    lead-in: |
+      Szorozzuk meg mindkét oldalt az $(a,m)$ kitüntetett közös osztóval:
+    content: |
+      as\cdot (a,m)+ka\cdot \frac{m}{(a,m)}\cdot (a,m)+mt\cdot (a,m)-km\cdot \frac{a}{(a,m)}\cdot (a,m)=b\cdot
+      (a,m)
+  - type: formula
+    lead-in: |
+      A tétel szövege alapján $\frac{m}{(a,m)}\cdot (a,m)=m$ és $\frac{a}{(a,m)}\cdot (a,m)=a$, ezért az alábbit
+      kapjuk:
+    content: |
+      as\cdot (a,m)+\cancel{kam}+mt\cdot (a,m)-\cancel{kma}=b\cdot (a,m)
+  - type: formula
+    lead-in: |
+      Mivel $m\eq 0$, és teljesül az $(a,m)|m$ oszthatóság &ndash; hiszen $(a,m)$ közös osztó &ndash;, ezért az
+      oszthatóság tulajdonságairól szóló [oszthatosag-tulajdonsagai] 4. pontja miatt $(a,m)\eq 0$, és így a
+      [szorzat-egyszerusitese-gyurukben] alapján az egyenlet mindkét oldalát lehet egyszerűsíteni vele:
+    content: |
+      as+mt=b
+  - type: narrative
+    content: |
+      Ez viszont teljesül, mivel az $x=s$, $y=t$ számpárról tudjuk, hogy megoldása az $ax+my=b$ egyenletnek.
+  - type: narrative
+    content: |
+      **A 3. állítás az $m\gt 0$ esetben**: Tegyük fel, hogy az $x=s_1$, $y=t_1$ számpár, valamint az $x=s_2$,
+      $y=t_2$ számpár is megoldása az $ax+my=b$ egyenletnek.
+  - type: formula
+    lead-in: |
+      Ez a [linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga] alapján azt jelenti, hogy az
+      $[s_1]_m$ és az $[s_2]_m$ maradékosztály is megoldása az $ax\equiv b\pmod m$ lineáris kongruenciának, azaz
+      tejesülnek az alábbi kongurenciák:
+    content: |
+      \begin{aligned}as_1&\equiv b\pmod m \\ as_2&\equiv b\pmod m\end{aligned}
+  - type: narrative
+    content: |
+      A [egesz-szamok-kozotti-kongruencia-tulajdonsagai] 4. pontja miatt ez a két kongruencia kivonható egymásból.
+  - type: formula
+    lead-in: |
+      A másodikat az elsőből kivonva ezt kapjuk:
+    content: |
+      a\cdot (s_2-s_1)\equiv 0\pmod m
+  - type: narrative
+    content: |
+      A kongruenciák egyszerűsítéséről szóló [egesz-szamok-kozotti-kongruencia-egyszerusitese] alapján mindkét
+      oldalt egyszerűsíthetjük $a$-val, amennyiben az $m$ modulust is egyszerűsítjük az $(a,m)$ kitüntetett közös
+      osztóval.
+  - type: formula
+    lead-in: |
+      Ezt végrehajtva a következőt kapjuk:
+    content: |
+      s_2-s_1\equiv 0\pmod{\frac{m}{(a,m)}}
+  - type: formula
+    lead-in: |
+      Ez a kongruencia a [egesz-szamok-kozotti-kongruencia] 3. pontja alapján épp azt jelenti, hogy teljesül az
+      alábbi oszthatóság:
+    content: |
+      \frac{m}{(a,m)}|s_2-s_1
+  - type: formula
+    lead-in: |
+      Az oszthatóság [oszthatosag] definíciója alapján ez épp azt jelenti, hogy létezik olyan $k$ egész szám,
+      amelyre teljesül az alábbi egyenlet:
+    content: |
+      k\cdot \frac{m}{(a,m)}=s_2-s_1
+  - type: formula
+    lead-in: |
+      Mindkét oldalhoz $s_1$-et adva megkapjuk a tételben szereplő képletet $s_2$-re:
+    content: |
+      s_2=s_1+k\cdot \frac{m}{(a,m)}
+  - type: narrative
+    content: |
+      Mostmár csak a $t_2$-t kellene valahogy kifejezni $t_1$-ből.
+  - type: formula
+    lead-in: |
+      Azt ugye tudjuk, hogy az $x=s_1$, $y=t_1$ számpár, valamint az $x=s_2$, $y=t_2$ számpár is megoldása az
+      $ax+my=b$ egyenletnek, azaz:
+    content: |
+      \begin{aligned}as_1+mt_1&=b \\ as_2+mt_2&=b\end{aligned}
+  - type: formula
+    lead-in: |
+      A második egyenletből az elsőt kivonva az alábbit kapjuk:
+    content: |
+      a(s_2-s_1)+m(t_2-t_1)=0
+  - type: formula
+    lead-in: |
+      Az $s_2$-re fentebb megkapott képletet behelyettesíthetjük:
+    content: |
+      a(\underbrace{s_1+k\cdot \frac{m}{(a,m)}}_{=s_2}-s_1)+m(t_2-t_1)=0
+  - type: formula
+    lead-in: |
+      Azaz:
+    content: |
+      \cancel{as_1}+ak\cdot \frac{m}{(a,m)}-\cancel{as_1}+m(t_2-t_1)=0
+  - type: formula
+    lead-in: |
+      A tétel szövege alapján $\frac{m}{(a,m)}\cdot (a,m)=m$, ezért mindkét oldalt az $(a,m)$ kitüntetett közös
+      osztóval megszorozva ezt kapjuk:
+    content: |
+      akm+m\cdot (a,m)\cdot (t_2-t_1)=0
+  - type: formula
+    lead-in: |
+      Mivel $m\eq 0$, ezért a [szorzat-egyszerusitese-gyurukben] alapján az egyenlet mindkét oldalát lehet
+      egyszerűsíteni vele:
+    content: |
+      ak+(a,m)\cdot (t_2-t_1)=0
+  - type: formula
+    lead-in: |
+      Mindkét oldalból $ak$-t levonva ezt kapjuk:
+    content: |
+      (a,m)\cdot (t_2-t_1)=-ak
+  - type: formula
+    lead-in: |
+      A tétel szövege alapján $\frac{a}{(a,m)}\cdot (a,m)=a$, így:
+    content: |
+      (a,m)\cdot (t_2-t_1)=-k\cdot \underbrace{\frac{a}{(a,m)}\cdot (a,m)}_{=a}
+  - type: formula
+    lead-in: |
+      Mivel $m\eq 0$, és teljesül az $(a,m)|m$ oszthatóság &ndash; hiszen $(a,m)$ közös osztó &ndash;, ezért az
+      oszthatóság tulajdonságairól szóló [oszthatosag-tulajdonsagai] 4. pontja miatt $(a,m)\eq 0$, és így a
+      [szorzat-egyszerusitese-gyurukben] alapján az egyenlet mindkét oldalát lehet egyszerűsíteni vele:
+    content: |
+      t_2-t_1=-k\cdot \frac{a}{(a,m)}
+  - type: formula
+    lead-in: |
+      Mindkét oldalhoz $t_1$-et adva megkapjuk a tételben szereplő képletet $t_2$-re:
+    content: |
+      t_2=t_1-k\cdot \frac{a}{(a,m)}
+  - type: narrative
+    content: |
+      ***A tételt tehát igazoltuk $m\gt 0$ esetben, ezért most vizsgáljuk meg az $m\lt 0$ esetet.*** Ilyenkor a
+      [pozitivitastartomany] utáni megjegyzés alapján $-m\gt 0$, amit a továbbiakban erősen ki fogunk használni.
+  - type: narrative
+    content: |
+      **Az 1. állítás az $m\lt 0$ esetben**: Mivel $-m\gt 0$, ezért az $ax+(-m)y=b$ egyenlet egy megoldását az
+      ***1. állítás*** eddigi bizonyítása alapján kiszámíthatjuk a kibővített euklidészi algoritmus segítségével.
+  - type: formula
+    lead-in: |
+      Tegyük fel, hogy eredményként az $x=s$, $y=t$ számpárt kapjuk, azaz teljesül az alábbi:
+    content: |
+      as+(-m)t=b
+  - type: formula
+    lead-in: |
+      A [gyuruk-alapveto-tulajdonsagai] 3. pontja alapján az egyenlet baloldala átírható a következőképpen:
+    content: |
+      as+m(-t)=b
+  - type: narrative
+    content: |
+      Azaz megkaptuk az eredeti $ax+my=b$ egyenlet egy megoldását: $x=s$ és $y=-t$.
+  - type: narrative
+    content: |
+      **A 2. állítás az $m\lt 0$ esetben**: Tegyük fel, hogy az $x=s$, $y=t$ számpár megoldása az $ax+my=b$
+      egyenletnek. Ekkor az előbbihez hasonló módon az $x=s$, $y=-t$ számpár megoldása az $ax+(-m)y=b$ egyenletnek.
+  - type: formula
+    lead-in: |
+      Mivel $-m\gt 0$, ezért a ***2. állítás*** eddigi bizonyítása alapján tetszőleges $k$ egész szám esetén az
+      alábbi számpár is megoldása az $ax+(-m)y=b$ egyenletnek:
+    content: |
+      \begin{aligned}x&=s+k\cdot \frac{-m}{(a,-m)}=s-k\cdot \frac{m}{(a,-m)} \\ y&=-t-k\cdot
+      \frac{a}{(a,-m)}\end{aligned}
+  - type: formula
+    lead-in: |
+      A [asszocialtsag-tulajdonsagai] 1. pontja alapján $m$ és az ellentettje asszociáltak &ndash; azaz pontosan
+      ugyanazok az osztóik és a többszöröseik &ndash;, emiatt teljesül az $(a,-m)=(a,m)$ egyenlőség, vagyis az
+      $ax+(-m)y=b$ egyenlet iménti megoldása átírható így:
+    content: |
+      \begin{aligned}x&=s-k\cdot \frac{m}{(a,m)} \\ y&=-t-k\cdot \frac{a}{(a,m)}\end{aligned}
+  - type: formula
+    lead-in: |
+      Ekkor azonban az alábbi számpár megoldása az eredeti $ax+my=b$ egyenletnek:
+    content: |
+      \begin{aligned}x&=s-k\cdot \frac{m}{(a,m)} \\ y&=t+k\cdot \frac{a}{(a,m)}\end{aligned}
+  - type: formula
+    lead-in: |
+      Ha tehát kiválasztunk egy tetszőleges $l$ egész számot, akkor az iménti gondolatmenetet a $k=-l$
+      helyettesítéssel végigjátszva az eredeti $ax+my=b$ egyenlet egy $x=s$, $y=t$ megoldásából valóban egy újabb
+      megoldást kapunk a tételben szereplő képlettel:
+    content: |
+      \begin{aligned}x&=s+l\cdot \frac{m}{(a,m)} \\ y&=t-l\cdot \frac{a}{(a,m)}\end{aligned}
+  - type: narrative
+    content: |
+      **Végül a 3. állítás az $m\lt 0$ esetben**: Tegyük fel, hogy az $x=s_1$, $y=t_1$ számpár és az $x=s_2$,
+      $y=t_2$ számpár két tetszőleges megoldása az $ax+my=b$ egyenletnek. Ekkor az előbbihez hasonló módon az
+      $x=s_1$, $y=-t_1$ számpár és az $x=s_2$, $y=-t_2$ számpár megoldása az $ax+(-m)y=b$ egyenletnek.
+  - type: formula
+    lead-in: |
+      Mivel $-m\gt 0$, ezért a ***3. állítás*** eddigi bizonyítása alapján létezik olyan $k$ egész szám, amelyre
+      teljesülnek az alábbiak:
+    content: |
+      \begin{aligned}s_2&=s_1+k\cdot \frac{-m}{(a,-m)}=s_1-k\cdot \frac{m}{(a,-m)} \\ -t_2&=-t_1-k\cdot
+      \frac{a}{(a,-m)}\end{aligned}
+  - type: narrative
+    content: |
+      Továbbra is érvényes marad a második egyenlet, ha vesszük mindkét oldal ellentettjét. Továbbá igaz, hogy a
+      [asszocialtsag-tulajdonsagai] 1. pontja alapján $m$ és az ellentettje asszociáltak &ndash; azaz pontosan
+      ugyanazok az osztóik és a többszöröseik &ndash;, emiatt teljesül az $(a,-m)=(a,m)$ egyenlőség.
+  - type: formula
+    lead-in: |
+      Vagyis a fenti egyenletek átírhatók így:
+    content: |
+      \begin{aligned}s_2&=s_1-k\cdot \frac{m}{(a,m)} \\ t_2&=t_1+k\cdot \frac{a}{(a,m)}\end{aligned}
+  - type: formula
+    lead-in: |
+      Az $l=-k$ választással élve tehát valóban találtunk olyan egész számot, amely esetén az eredeti $ax+my=b$
+      egyenlet bármely két $x=s_1$, $y=t_1$ és $x=s_2$, $y=t_2$ megoldásai között fennáll a tételben szereplő
+      alábbi összefüggés:
+    content: |
+      \begin{aligned}s_2&=s_1+l\cdot \frac{m}{(a,m)} \\ t_2&=t_1-l\cdot \frac{a}{(a,m)}\end{aligned}

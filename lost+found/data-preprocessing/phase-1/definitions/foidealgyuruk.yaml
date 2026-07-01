@@ -1,0 +1,8 @@
+type: definition
+name: foidealgyuruk
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ tetszőleges ***integritástartomány***, melyben ***létezik egységelem***. Amennyiben $R$ minden
+      ideálja főideál (azaz generálható egyetlen elemmel), akkor $R$-t ***főideálgyűrűnek*** nevezzük.

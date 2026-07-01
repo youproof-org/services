@@ -1,0 +1,24 @@
+type: definition
+name: fermat-tanu
+remarks:
+  - fermat-tanu-megjegyzes
+references:
+  kis-fermat-tetel:
+    target:
+      type: theorem
+      name: kis-fermat-tetel
+content:
+  - type: narrative
+    content: |
+      Legyen $n\gt 1$ egy tetszőleges pozitív, $a$ pedig tetszőleges egész szám, amely nem többszöröse $n$-nek,
+      azaz $n\mid a$.
+  - type: formula
+    lead-in: |
+      Tegyük fel továbbá, hogy nem teljesül a ***kis Fermat-tételben*** ([kis-fermat-tetel]) szereplő kongruencia,
+      azaz:
+    content: |
+      a^{n-1} \ \cancel{\equiv} \ 1 \pmod n
+  - type: narrative
+    content: |
+      Ekkor az $a$ egész szám által reprezentált $[a]_n$ ***maradékosztályt*** az $n$ egész szám
+      ***Fermat-tanújának*** nevezzük.

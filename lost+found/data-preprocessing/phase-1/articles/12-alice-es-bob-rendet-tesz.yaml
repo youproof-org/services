@@ -1,0 +1,83 @@
+type: chapter
+name: 12-alice-es-bob-rendet-tesz
+title: Alice és Bob rendet tesz
+
+abstract:
+  - type: narrative
+    content: |
+      Az előző részben kitöröltünk mindent a fejünkből, amit az általános iskolában a számokról tanultunk, és
+      elkezdtük felépíteni a modern kriptográfiai eljárások alapját jelentő számelméletet a semmiből. Mindössze 4
+      egyszerű állításból indultunk ki, amelyeket Peano-axiómáknak nevezünk, és amelyek rögzítik a pozitív egész
+      számok és a 0 alapvető tulajdonságait. Ezek halmazát természetes számoknak nevezzük és $\N$-nel jelöljük.
+      Szigorúan az axiómákat használva bevezettünk az $\N$ halmazon egy összeadásnak nevezett műveletet, amelyről
+      megmutattuk, hogy &ndash; az axiómák logikai következményeként &ndash; valóban teljesíti az általános
+      iskolában jól megszokott tulajdonságokat. De vajon mi minden következik még ebből a 4 axiómából? Milyen
+      alaptulajdonságai vannak a szorzás műveletének és mi az oka, hogy ezek valóban teljesülnek? Mik azok a
+      relációk és hogy jön ide a "kő-papír-olló" nevű játék? Mit nevezünk rendezett halmaznak és hogyan vezethetjük
+      be a "kisebb-nagyobb" fogalmát a természetes számok között? Ebben a részben erről lesz szó...
+prerequisite-warning:
+  - type: narrative
+    content: |
+      Figyelem! Ez a rész erőteljesen épít az előző részben bevezetett alábbi definíciókra és tételekre, amelyekkel
+      elkezdtük a számelmélet felépítését:
+  - type: recall
+    target:
+      type: definition
+      name: peano-axiomarendszer
+  - type: recall
+    target:
+      type: definition
+      name: peano-osszeadas
+  - type: recall
+    target:
+      type: theorem
+      name: peano-osszeadas-kommutativitas
+  - type: recall
+    target:
+      type: theorem
+      name: peano-osszeadas-asszociativitas
+  - type: narrative
+    content: |
+      E definíciók és tételek kontextusba helyezése miatt erőteljesen ajánlott tehát elolvasni az előző részt. A
+      teljes cikksorozat elejét itt találod.
+prologue:
+  - type: narrative
+    content: |
+      A matematika igazi természete kezdett el kibontakozni az előző részben. Nevezetesen: kiindulunk néhány
+      egyszerű állításból, amelyeket igaznak fogadunk el &ndash; ez jelen példánkban a Peano-axiómarendszer 4
+      állítása. Nem azért fogadjuk el őket igaznak, mert valamiféle abszolút igazságokat állítanak &ndash; olyan
+      talán nem is létezik, ha belegondolunk &ndash;, hanem azért, mert ezek rögzítik a felépítendő elmélet
+      "játékszabályait", akárcsak a sakkban. A fogalmainkat szigorúan az axiómákból építjük fel, és csak olyan
+      további állításokat fogadunk el igaznak, amelyeket szigorú logikai érveléssel az axiómákra, az azok
+      segítségével felépített fogalmakra, vagy korábban már bizonyított állításokra tudunk visszavezetni.
+  - type: narrative
+    content: |
+      Ennek a tudománynak épp ez adja az erősségét is. Minden más természettudomány alapja ugyanis a kísérletezés.
+      Akárhány kísérletet is végzünk, soha nem lehetünk teljesen biztosak egy tudományos elmélet igazságában, arra
+      csupán megerősítést kapunk. Ha azonban akárcsak egyetlen kísérlet is megcáfolja az elméletünket, azt azonnal
+      dobhatjuk ki a kukába. Ezzel szemben egy matematikai állítás igazsága ***örök érvényű***. Egy bizonyított
+      állítás igaz marad, ameddig világ a világ, arra nyugodtan lehet tovább építkezni, és nincs szükség arra, hogy
+      azt kísérletekkel megerősítsük. Az előző részben például a Peano-axiómák segítségével bevezettük az
+      ***összeadás*** fogalmát, és bizonyítottuk annak kommutativitását és asszociativitását. A továbbiakban tehát
+      nyugodtan építkezhetünk ezekre a tulajdonságokra.
+  - type: narrative
+    content: |
+      Építkezzünk hát tovább, és kényelmi okok miatt vezessünk be egy újabb műveletet az $\N$ halmazon.
+sections:
+  - 01-a-termeszetes-szamok-szorzasa
+  - 02-a-szorzas-kommutativitasa
+  - 03-az-osszeadas-es-a-szorzas-kapcsolata
+  - 04-a-peano-szorzas-asszociativitasa
+  - 05-ko-papir-ollo
+  - 06-rendezesi-relaciok
+  - 07-a-termeszetes-szamok-rendezesi-relacioja
+  - 08-hol-tartunk-most
+
+epilogue:
+  - type: narrative
+    content: |
+      A következő részben kilépünk a természetes számok köréből egy sokkal előnyösebb algebrai tulajdonságokkal
+      bíró számkörbe. Ennek keretében bemutatjuk azt az absztrakciós utat, amelyet az emberiség hajnalán őseinknek
+      is meg kellett tenniük, és ezzel párhuzamosan megismerkedünk néhány absztrakt algebrai fogalommal. Ezek
+      segítségével általánosabb módon tudjuk majd tárgyalni azokat a számelméleti összefüggéseket, amelyek végül a
+      prímszámok elméletén keresztül elvezetnek minket napjaink biztonságos kommunikációjának alapjaihoz.

@@ -1,0 +1,127 @@
+type: section
+name: 07-iv-kovetelmeny-adossag-szorzasa-adossaggal
+title: 'IV. követelmény: Adósság szorzása adóssággal'
+
+references:
+  egesz-szamok-osszeadasa:
+    target:
+      type: definition
+      name: egesz-szamok-osszeadasa
+  egesz-szamok-osszeadasa-joldefinialt:
+    target:
+      type: theorem
+      name: egesz-szamok-osszeadasa-joldefinialt
+  peano-osszeg-egyszerusites:
+    target:
+      type: theorem
+      name: peano-osszeg-egyszerusites
+  peano-szorzas-disztributivitas:
+    target:
+      type: theorem
+      name: peano-szorzas-disztributivitas
+  peano-szorzat-egyszerusites:
+    target:
+      type: theorem
+      name: peano-szorzat-egyszerusites
+  termeszetes-szamparok-ekvivalenciarelacioja:
+    target:
+      type: definition
+      name: termeszetes-szamparok-ekvivalenciarelacioja
+  termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel:
+    target:
+      type: theorem
+      name: termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel
+
+body:
+  - type: narrative
+    content: |
+      Az előző három pontban felvázolt szituációk esetén legalább az egyik tényező lényegében egy természetes szám,
+      pontosabban annak az $f$ leképezés szerinti képe volt. Ezeket az eseteket viszonylag könnyű volt a valósághoz
+      kötni, most azonban kénytelenek leszünk ettől némiképp elvonatkoztatni. Ha ugyanis a $\odot$ műveletet a
+      teljes $\Z$ halmazon szeretnénk értelmezni, akkor muszáj kezelnünk azokat az eseteket is, amikor mindkét
+      tényező egy-egy adósságot reprezentáló negatív egész szám.
+  - type: narrative
+    content: |
+      Vonatkoztassunk most el attól az apróságtól, hogy ennek látszólag nincs értelme, és tegyük fel, hogy a
+      $[(0;n)] \odot [(0;k)]$ szorzás eredménye is egy valamilyen egész szám. Azt még nem tudjuk, hogy pontosan
+      melyik, az azonban biztos, hogy a $\odot$ műveletnek ***jóldefiniáltnak*** kell lennie. Mit is jelent ez
+      pontosan?
+  - type: narrative
+    content: |
+      Az előző részben definiált $\oplus$ művelet ([egesz-szamok-osszeadasa]) esetén mindkét tag egy-egy
+      ekvivalencia-osztály volt. Felmerült tehát a kérdés, hogy vajon mindegy-e, hogy a definícióban szereplő
+      képletet e két ekvivalencia-osztály mely elemeire alkalmazzuk. A [egesz-szamok-osszeadasa-joldefinialt] épp
+      arról szólt, hogy e választástól függetlenül az eredményül kapott számpárok mindig ugyanabból az
+      ekvivalencia-osztályból kerülnek ki. Erre mondtuk azt, hogy a $\oplus$ művelet ***jóldefiniált*** a $\Z$
+      halmazon.
+  - type: narrative
+    content: |
+      Valami hasonlóra volna szükségünk a $\odot$ művelet kapcsán is. A $\sim$-vel jelölt ***"ugyanazt a vagyont
+      jelöli"-reláció*** [termeszetes-szamparok-ekvivalenciarelacioja]ja alapján a $[(0;n)]$ és az $[(a;n+a)]$
+      kifejezések ugyanazt az egész számot jelölik tetszőleges $a$ természetes szám esetén. Elvárjuk tehát, hogy
+      amennyiben ezt egy tetszőleges $[(0;k)]$ negatív egész számmal megszorozzuk, akkor a képletünk által
+      szolgáltatott eredmény mindig ugyabból az ekvivalencia-osztályból kerüljön ki függetlenül attól, hogy a
+      baloldali tényezőt a $[(0;n)]$ vagy az $[(a;n+a)]$ kifejezéssel írtuk-e le. Mint ahogyan törtszámok esetén is
+      teljesen mindegy, hogy $\frac{1}{2}$-et vagy $\frac{2}{4}$-et írunk-e egy kifejezésbe.
+  - type: formula
+    lead-in: |
+      A fentiek fényében mostmár megfogalmazhatjuk a $\odot$ művelettel szemben támasztott utolsó követelményünket
+      is, miszerint tetszőleges $n$, $k$ és $a$ természetes számokra teljesülnie kell a következőnek:
+    content: |
+      [(0;n)] \odot [(0;k)] = [(a;n+a)] \odot [(0;k)]
+  - type: formula
+    lead-in: |
+      Az egyenlet mindkét oldalára felírva az általános képletünket &ndash; és persze a 0 tagokat elhagyva &ndash;
+      a következőt kapjuk:
+    content: |
+      [(D\cdot nk;H\cdot nk)] = [(B\cdot ak + D\cdot (n+a)k;F\cdot ak + H\cdot (n+a)k)]
+  - type: narrative
+    content: |
+      Azt kaptuk tehát, hogy a $(D\cdot nk;H\cdot nk)$ természetes számpárnak ugyanabba a $\sim$ reláció (lásd a
+      [termeszetes-szamparok-ekvivalenciarelacioja]t) szerinti ekvivalencia-osztályba kell esnie, mint a $(B\cdot
+      ak + D\cdot (n+a)k;F\cdot ak + H\cdot (n+a)k)$ számpárnak.
+  - type: formula
+    lead-in: |
+      Ez viszont az előző részben bizonyított
+      [termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel] miatt épp azt jelenti, hogy:
+    content: |
+      D\cdot nk + F\cdot ak + H\cdot (n+a)k = H\cdot nk + B\cdot ak + D\cdot (n+a)k
+  - type: formula
+    lead-in: |
+      Mindkét oldalon a Peano-szorzás disztributivitását ([peano-szorzas-disztributivitas]) kihasználva ez így
+      írható fel:
+    content: |
+      D\cdot nk + F\cdot ak + H\cdot nk + H\cdot ak = H\cdot nk + B\cdot ak + D\cdot nk + D\cdot ak
+  - type: formula
+    lead-in: |
+      A [peano-osszeg-egyszerusites] miatt az egyenlet mindkét oldalát egyszerűsíthetjük $D\cdot nk$-val és $H\cdot
+      nk$-val:
+    content: |
+      F\cdot ak + H\cdot ak = B\cdot ak + D\cdot ak
+  - type: formula
+    lead-in: |
+      Ismételten a Peano-szorzás disztributivitása miatt ez így is írható:
+    content: |
+      (F+H)\cdot ak = (B+D)\cdot ak
+  - type: narrative
+    content: |
+      Itt feltételezhetjük, hogy $ak\ eq 0$, máskülönben ez az egyenlet $F$, $H$, $B$ és $D$ megválasztásától
+      függetlenül teljesülne.
+  - type: formula
+    lead-in: |
+      Ha viszont $ak\ eq 0$, akkor a [peano-szorzat-egyszerusites] miatt következik, hogy:
+    content: |
+      F+H = B+D
+  - type: narrative
+    content: |
+      A III.
+  - type: formula
+    lead-in: |
+      követelmény kapcsán viszont már megállapítottuk, hogy $F=B+1$, emiatt:
+    content: |
+      \underbrace{B+1}_{=F} + H=B+D
+  - type: formula
+    lead-in: |
+      Ezt az egyenletet viszont a [peano-osszeg-egyszerusites] miatt egyszerűsíthetjük $B$-vel:
+    content: |
+      1+H=D

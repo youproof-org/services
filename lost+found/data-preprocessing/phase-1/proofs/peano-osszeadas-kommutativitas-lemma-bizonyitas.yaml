@@ -1,0 +1,73 @@
+type: proof
+name: peano-osszeadas-kommutativitas-lemma-bizonyitas
+remarks: []
+references:
+  peano-osszeadas:
+    target:
+      type: definition
+      name: peano-osszeadas
+content:
+  - type: narrative
+    content: |
+      A teljes indukciót a $b$-re fogjuk alkalmazni. Első lépésként feltesszük, hogy az állítás már igaz valamilyen
+      $b=n$ természetes számra, azaz $a+s(n)=s(a)+n$. Ezt ***indukciós feltételnek*** nevezzük.
+  - type: formula
+    lead-in: |
+      Azt kell bizonyítanunk, hogy ebben az esetben $b=s(n)$-re is igaz lesz, azaz:
+    content: |
+      a+s(\underbrace{s(n)}_{=b}) = s(a) + \underbrace{s(n)}_{=b}
+  - type: narrative
+    content: |
+      Most nézzük meg, hogy a baloldali kifejezésből milyen lépéseken keresztül tudunk eljutni a jobboldali
+      kifejezéshez.
+  - type: formula
+    lead-in: |
+      Először is a [peano-osszeadas] 2. pontja miatt:
+    content: |
+      a+s(s(n)) = s(a+s(n)) = \ldots
+  - type: formula
+    lead-in: |
+      Az indukciós feltétel miatt:
+    content: |
+      \ldots =s(s(a) + n)= \ldots
+  - type: formula
+    lead-in: |
+      Végül szintén a [peano-osszeadas] 2. pontja miatt:
+    content: |
+      \ldots = s(a) + s(n)
+  - type: narrative
+    content: |
+      Vagyis azt kaptuk, hogy valóban $a+s(\underbrace{s(n)}_{=b}) = s(a) + \underbrace{s(n)}_{=b}$.
+  - type: narrative
+    content: |
+      Felállítottuk tehát a dominósort, és beláttuk, hogy bármely dominó felborítása esetén a soron következő
+      dominó is fel fog borulni. De mit sem érnénk ezzel a ténnyel, ha nem borítanánk fel az első dominót.
+  - type: formula
+    lead-in: |
+      Ezért most azt igazoljuk, hogy az állítás igaz $b=0$-ra, azaz:
+    content: |
+      a+s(0) = s(a) + 0
+  - type: formula
+    lead-in: |
+      Az [peano-osszeadas] 2. pontja miatt:
+    content: |
+      a + s(0) = s(a+0) = \ldots
+  - type: formula
+    lead-in: |
+      Ugyanezen definíció 1. pontja miatt:
+    content: |
+      \ldots = s(a) = \ldots
+  - type: formula
+    lead-in: |
+      És ismét ugyanezen definíció 1. pontja miatt:
+    content: |
+      \ldots = s(a) + 0
+  - type: narrative
+    content: |
+      Vagyis azt kaptuk, hogy valóban $a+s(0) = s(a) + 0$, borul tehát az első dominó, és vele együtt a teljes
+      dominósor.
+  - type: narrative
+    content: |
+      Ha ugyanis az állítás igaz $b=0$-ra, akkor igaz lesz $b=1$. De ha igaz $b=1$-re, akkor igaz lesz $b=2$-re is.
+      És így tovább, mivel láttuk, hogy ha igaz $b=n$-re, akkor igaz lesz $b=s(n)$-re is, ezért ez az igazság a
+      rákövetkezésen keresztül tovább öröklődik egészen a végtelenségig.

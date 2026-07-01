@@ -1,0 +1,27 @@
+<!-- wp:paragraph -->
+<p>Induljunk ki a tétel első felében szereplő [latex]R[/latex] ekvivalenciarelációból. Olyan nyilván nem fordulhat elő, hogy egy [latex]a[/latex] elem nincs benne egyik osztályban sem. A reflexivitás miatt ugyanis [latex]a[/latex] legalább önmagával relációban áll, így ő legrosszabb esetben is benne van egy egyelemű (csak [latex]a[/latex]-t tartalmazó) osztályban. Tegyük most fel, hogy [latex]a[/latex] két olyan osztályban is benne van, amelyek tartalmaznak további elemeket és különböznek egymástól. Legyen például a következő a szituáció:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":3248} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_13_elem_ket_osztalyban.jpg" alt="Elem egyszerre két osztályban" class="wp-image-3248"/><figcaption>Elem egyszerre két osztályban</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]a[/latex] és [latex]b[/latex] egy osztályba kerültek, ezért [latex]aRb[/latex] teljesül. Hasonló okok miatt teljesül [latex]aRc[/latex] is. De ha [latex]aRc[/latex] teljesül, akkor a szimmetria miatt [latex]cRa[/latex] is teljesül. De mivel [latex]cRa[/latex] és [latex]aRb[/latex] egyszerre teljesül, ezért a tranzitivitás miatt [latex]cRb[/latex] is teljesül. Ez viszont azt jelenti, hogy [latex]c[/latex]-nek és [latex]b[/latex]-nek mégiscsak ugyanabba az osztályba kellett volna kerülnie, ami ellentmond annak a feltételezésünknek, hogy kialakulhat a fenti ábrán lévő szituáció. Az [latex]R[/latex] ekvivalenciareláció által a tételben szereplő módon meghatározott osztályozás tehát <strong><em>valóban egy partíció</em></strong> a [latex]H[/latex] halmazon.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Megfordítva:</em></strong> Tekintsük most [latex]H[/latex] egy tetszőleges partícióját, amelyben tehát minden elem pontosan egy osztályban van. Képezzük ebből az [latex]S[/latex] relációt a tétel szerint. Az [latex]S[/latex] reláció reflexív, mivel tetszőleges [latex]a[/latex] elem nyilvánvalóan ugyanabban az osztályban van, mint önmaga, legyen szó bármilyen partícióról. Hasonlóan az [latex]S[/latex] reláció szimmetrikus, mivel ha egy tetszőleges [latex]a[/latex] elem ugyanabban az osztályban van, mint egy tetszőleges [latex]b[/latex] elem, akkor nyilván [latex]b[/latex] elem is ugyanabban az osztályban van, mint [latex]a[/latex] elem, legyen szó bármilyen partícióról.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Végezetül tegyük fel, hogy [latex]S[/latex] nem tranzitív, azaz léteznek olyan galád [latex]a[/latex], [latex]b[/latex] és [latex]c[/latex] elemek, amelyekre [latex]aSb[/latex] és [latex]bSc[/latex] teljesül, ugyanakkor [latex]a\cancel{S} c[/latex]. Ez csak akkor fordulhat elő, ha [latex]a[/latex] és [latex]c[/latex] két különböző osztályban van, [latex]b[/latex] viszont mindkét osztálynak eleme:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":3249} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_13_elem_ket_osztalyban_2.jpg" alt="Elem egyszerre két osztályban" class="wp-image-3249"/><figcaption>Elem egyszerre két osztályban</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Ez viszont ellentmond annak, hogy az osztályozás, amiből a tétel szerinti [latex]S[/latex] relációt képeztük egy partíció volt. Az [latex]S[/latex] reláció tehát mégiscsak tranzitív. Mivel beláttuk, hogy teljesül mindhárom követelmény, ezért [latex]S[/latex] <strong><em>valóban egy ekvivalenciareláció</em></strong>.</p>
+<!-- /wp:paragraph -->

@@ -1,0 +1,16 @@
+type: theorem
+name: redukalt-maradekosztaly-feltetele
+proofs:
+  - redukalt-maradekosztaly-feltetele-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $m\gt 0$ tetszőleges ***pozitív*** egész szám. Egy $a$ egész szám által reprezentált $[a]_m$
+      maradékosztály ***akkor és csak akkor redukált*** &ndash; azaz invertálható &ndash;, ha $a$ ***relatív
+      prím*** $m$-hez.
+  - type: narrative
+    content: |
+      Ha $[a]_m=[b]_m$, akkor az $(a,m)$ és $(b,m)$ kitüntetett közös osztók asszociáltak, azaz $(a,m)\sim (b,m)$.
+      Emiatt teljesen mindegy, hogy a vizsgált maradékosztályt melyik elemével reprezentáljuk, ugyanis ***vagy
+      mindegyik eleme relatív prím lesz a modulushoz, vagy egyik sem***.

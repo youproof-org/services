@@ -1,0 +1,151 @@
+type: proof
+name: rsa-algoritmus-helyes-mukodese-carmichael-szamok-eseten-bizonyitas
+remarks: []
+references:
+  egesz-szamok-kozotti-kongruencia:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia
+  egesz-szamok-kozotti-kongruencia-tulajdonsagai:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia-tulajdonsagai
+  kis-fermat-tetel:
+    target:
+      type: theorem
+      name: kis-fermat-tetel
+  korselt-kriterium:
+    target:
+      type: theorem
+      name: korselt-kriterium
+  linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga:
+    target:
+      type: theorem
+      name: linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga
+  linearis-kongruenciak-megoldasai-es-megoldasszama:
+    target:
+      type: theorem
+      name: linearis-kongruenciak-megoldasai-es-megoldasszama
+  negyzetmentesseg-feltetele:
+    target:
+      type: theorem
+      name: negyzetmentesseg-feltetele
+  rsa-algoritmus-helyes-mukodese:
+    target:
+      type: theorem
+      name: rsa-algoritmus-helyes-mukodese
+content:
+  - type: formula
+    lead-in: |
+      A $d$ titkos kitevőt tehát alábbi lineáris kongruencia megoldásaként kapjuk:
+    content: |
+      e\cdot x\equiv 1\pmod{(p-1)\cdot (q-1)}
+  - type: narrative
+    content: |
+      Ennek a kongruenciának a [linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga] alapján
+      természetesen létezik megoldása, amely a [linearis-kongruenciak-megoldasai-es-megoldasszama] 1. pontja
+      szerint egyértelmű.
+  - type: formula
+    lead-in: |
+      A továbbiakban azt szeretnénk igazolni, hogy tetszőleges $x$ egész szám esetén teljesül az alábbi
+      kongruencia:
+    content: |
+      x^{e\cdot d}\equiv x\pmod m
+  - type: formula
+    lead-in: |
+      A [rsa-algoritmus-helyes-mukodese] bizonyításának gondolatmenetét követve az $e\cdot d\equiv
+      1\pmod{(p-1)\cdot (q-1)}$ kongruenciából következik, hogy létezik olyan $k$ egész szám, amelyre teljesül az
+      alábbi:
+    content: |
+      k\cdot (p-1)\cdot (q-1)+1=e\cdot d
+  - type: formula
+    lead-in: |
+      A fenti ***bizonyítandó kongruencia*** tehát így is írható:
+    content: |
+      x^{\overbrace{k\cdot (p-1)\cdot (q-1)+1}^{=ed}}\equiv x\pmod m
+  - type: narrative
+    content: |
+      Legyen most $r$ az $m$ modulus egy tetszőleges pozitív prímosztója. Mivel $p$ és $q$ relatív prímek és
+      $m=pq$, ezért $r$ biztosan osztója $p$ és $q$ közül pontosan az egyiknek. Az általánosság megsértése nélkül
+      feltehetjük, hogy $p$-nek osztója, máskülönben az alábbi gondolatmenet ugyanígy működik $p$ és $q$ szerepének
+      felcserélésével.
+  - type: unordered-list
+    lead-in: |
+      Ekkor az alábbi két eset lehetséges:
+    items:
+      - 'Ha $p$ prím, akkor $r=p$, és így $r-1=p-1$, azaz $r-1|p-1$.'
+      - 'Ha $p$ Carmichael-szám, akkor $r|p$, és így a ***Korselt-kritérium*** miatt $r-1|p-1$.'
+  - type: narrative
+    content: |
+      Mindkét esetben azt kaptuk tehát, hogy teljesül az $r-1|p-1$ oszthatóság, azaz létezik olyan egész szám,
+      amivel $r-1$-et megszorozva $p-1$-et kapunk. Jelöljük ezt az egész számot $\frac{p-1}{r-1}$-gyel.
+  - type: formula
+    lead-in: |
+      A ***kis Fermat-tételből*** ([kis-fermat-tetel]) tudjuk, hogy bármilyen $r$-hez relatív prím $x$ egész szám
+      esetén teljesül az alábbi kogruencia:
+    content: |
+      x^{r-1}\equiv 1\pmod r
+  - type: formula
+    lead-in: |
+      Ekkor tetszőleges $n$ ***pozitív*** egész esetén a [egesz-szamok-kozotti-kongruencia-tulajdonsagai] 8. pontja
+      alapján teljesül az alábbi kongruencia is:
+    content: |
+      x^{n\cdot (r-1)}\equiv 1\pmod r
+  - type: formula
+    lead-in: |
+      Szorozzuk meg mindkét oldalt $x$-szel:
+    content: |
+      x^{n\cdot (r-1) + 1}\equiv x\pmod r
+  - type: narrative
+    content: |
+      Vegyük észre, hogy ez a kongruencia már abban az esetben is teljesül, ha $x$ ***nem relatív prím*** $r$-hez.
+      Ilyenkor ugyanis $x$ szükségképpen többszöröse $r$-nek &ndash; hiszen $r$ ugye prím &ndash;, vagyis a
+      kongruencia mindkét oldalán $0$ áll ebben az esetben.
+  - type: formula
+    lead-in: |
+      Ha tehát ez a kongruencia minden $x$-re és minden pozitív egész $n$-re teljesül, akkor nyilván teljesül az
+      alábbi speciális eseben is:
+    content: |
+      n=k\cdot \frac{p-1}{r-1}\cdot (q-1)
+  - type: narrative
+    content: |
+      Ez egy egész szám, méghozzá a korábban már igazolt $r-1|p-1$ oszthatóság miatt.
+  - type: formula
+    lead-in: |
+      Ezt behelyettesítve a fenti kongruencia kitevőjébe az alábbit kapjuk:
+    content: |
+      x^{\overbrace{k\cdot \frac{p-1}{r-1}\cdot (q-1)}^{=n}\cdot (r-1) + 1}\equiv x\pmod r
+  - type: formula
+    lead-in: |
+      Elvégezve a kitevőben lévő $r-1$-gyel való szorzást az alábbi kongruenciát kapjuk:
+    content: |
+      x^{k\cdot (p-1)\cdot (q-1) + 1}\equiv x\pmod r
+  - type: formula
+    lead-in: |
+      Ez tehát az $m$ modulus minden pozitív $r$ prímosztójára teljesül, ami viszont azt jelenti, hogy a
+      [egesz-szamok-kozotti-kongruencia] 3. pontja alapján teljesül az alábbi oszthatóság:
+    content: |
+      r|x^{k\cdot (p-1)\cdot (q-1)+1}-x
+  - type: narrative
+    content: |
+      Felhívnánk a figyelmet arra, hogy az $m=pq$ modulus ***négyzetmentes***. Ennek egyrészt az az oka, hogy $p$
+      és $q$ nem tartalmaznak közös prímtényezőket, hiszen azt mondtuk, hogy egymáshoz relatív prímek. Másrészt
+      pedig mindkettőre igaz, hogy vagy prím, vagy pedig Carmichael-szám, márpedig egy prím nyilvánvalóan, egy
+      Carmichael-szám pedig a ***Korselt-kritérium*** ([korselt-kriterium]) miatt négyzetmentes, így a relatív
+      prímség miatt ezek szorzata is az, vagyis a [negyzetmentesseg-feltetele] alapján $m$ minden prímtényezője
+      első hatványon szerepel.
+  - type: narrative
+    content: |
+      Mármost ha $m$ minden prímtényezőjére teljesül a fenti oszthatóság, akkor ezek szorzatára is teljesül. Mivel
+      mindegyikük első hatványon szerepel $m$ prímtényezős felbontásában, ezért ez a szorzat $m$-mel egyezik meg.
+  - type: formula
+    lead-in: |
+      Vagyis teljesül az alábbi oszthatóság is:
+    content: |
+      m|x^{k\cdot (p-1)\cdot (q-1)+1}-x
+  - type: formula
+    lead-in: |
+      Ez viszont ismét a [egesz-szamok-kozotti-kongruencia] 3. pontja alapján azt jelenti, hogy a ***bizonyítandó
+      kongruencia*** is teljesül:
+    content: |
+      x^{k\cdot (p-1)\cdot (q-1)+1}\equiv x\pmod m

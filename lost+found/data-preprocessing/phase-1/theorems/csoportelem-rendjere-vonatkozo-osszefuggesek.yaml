@@ -1,0 +1,28 @@
+type: theorem
+name: csoportelem-rendjere-vonatkozo-osszefuggesek
+proofs:
+  - csoportelem-rendjere-vonatkozo-osszefuggesek-bizonyitas
+remarks: []
+references:
+  egesz-szamok-kozotti-kongruencia:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia
+content:
+  - type: narrative
+    content: |
+      Legyen $G$ tetszőleges csoport, $g$ ennek valamely eleme, $e$ pedig az ***egységelem***.
+  - type: ordered-list
+    lead-in: |
+      Ha $g$ rendje ***véges***, akkor tetszőleges $n$ és $k$ egész számok esetén igazak az alábbiak:
+    items:
+      - '$g^k=g^n$ akkor és csak akkor teljesül, ha fennáll az $o(g)|k-n$ oszthatóság, ami a [egesz-szamok-kozotti-kongruencia] 3. pontja alapján a $k\equiv n\pmod{o(g)}$
+        kongruenciát jelenti.'
+      - '$g^k=e$ akkor és csak akkor teljesül, ha fennáll az $o(g)|k$ oszthatóság, ami a [egesz-szamok-kozotti-kongruencia] 3. pontja alapján a $k\equiv 0\pmod{o(g)}$
+        kongruenciát jelenti.'
+      - 'A $g$ elem hatványai $o(g)$ szerint periodikusan ismétlődnek.'
+      - 'A $g$ elem $o(g)$ rendje a legkisebb pozitív kitevő, amelyre $g$-t emelve az egységelemet kapjuk.'
+      - '$o(g)=1$ akkor és csak akkor, ha $g=e$.'
+  - type: narrative
+    content: |
+      Ha $g$ rendje ***végtelen***, akkor $g$ bármely két hatványa különbözik.

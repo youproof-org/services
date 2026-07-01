@@ -1,0 +1,85 @@
+<!-- wp:paragraph -->
+<p>Tegyük fel indirekt, hogy [latex]P[/latex] egy olyan galád részhalmaza [latex]\N[/latex]-nek, amelynek nincs minimuma. Jelöljük ezen kívül [latex]Q[/latex]-val [latex]\N[/latex]-nek azt a részhalmazát, amely <strong><em>minden</em></strong> olyan természetes számot tartalmaz, amely <strong><em>kisebb</em></strong> [latex]P[/latex] <strong><em>bármely</em></strong> eleménél. Azaz egyrészt a [latex]Q[/latex] halmaz <strong><em>minden</em></strong> [latex]q[/latex] elemére teljesül, hogy bármely [latex]P[/latex]-beli [latex]p[/latex] elem esetén [latex]q\lt p[/latex], másrészt <strong><em>semmilyen</em></strong> [latex]Q[/latex] halmazon kívüli elemre nem tejesül ez a tulajdonság. Egyelőre még nem tudjuk, hogy mely természetes számok tartoznak [latex]P[/latex]-be, és melyek [latex]Q[/latex]-ba. Az viszont bizonyos, hogy ha egy [latex]q[/latex] természetes szám [latex]Q[/latex]-ba tartozik, akkor <strong><em>nem tartozhat</em></strong> egyúttal [latex]P[/latex]-be is, máskülönben teljesülne a [latex]q\lt q[/latex] reláció, ami a [yp_element slug="termeszetes-szamok-rendezese" type="link" /] alapján lehetetlen. A következő tehát a szituáció:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":4394,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_17_P_es_Q_halmazok_elhelyezkedese.jpg" alt="P és Q halmazok elhelyezkedése" class="wp-image-4394"/><figcaption>P és Q halmazok elhelyezkedése</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Azt kell megmutatnunk, hogy valójában minden természetes szám [latex]Q[/latex]-ba tartozik, azaz [latex]Q=\N[/latex], hiszen ebből következne, hogy [latex]P[/latex] csak az üres halmaz lehet. Ezt <strong><em>teljes indukcióval</em></strong> fogjuk bizonyítani, amelyre a Peano-axiómarendszer [yp_element slug="peano-axiomarendszer" type="link" /]jának 4. pontja ad lehetőséget.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Kezdjük a [latex]0[/latex]-val. Tegyük fel <strong><em>indirekt</em></strong>, hogy a [latex]0[/latex] nincs benne [latex]Q[/latex]-ban, azaz létezik olyan [latex]P[/latex]-beli [latex]p[/latex] elem, amelyre nem teljesül a [latex]0\lt p[/latex] reláció. Ekkor viszont a rendezési reláció trichotómiája miatt (lásd a [yp_element slug="termeszetes-szamok-rendezesi-relacioja-trichotom" type="link" /]t) szükségképpen teljesülne a [latex]p\leq 0[/latex] reláció. Ez a [yp_element slug="termeszetes-szamok-rendezese" type="link" /] miatt azt jelentené, hogy létezik olyan [latex]k[/latex] természetes szám, amelyre [latex]p+k=0[/latex]. A [yp_element slug="peano-nullosszeg-tagjai" type="link" /] alapján azonban a természetes számok körében egy összeg csak úgy lehet [latex]0[/latex], ha mindkét tagja [latex]0[/latex], és így [latex]p=0[/latex] lenne.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Azt kaptuk tehát, hogy ha a [latex]0[/latex] nem lenne benne [latex]Q[/latex]-ban, akkor szükségképpen benne kellene lennie [latex]P[/latex]-ben. Ez viszont lehetetlen, hiszen bármely [latex]n[/latex] természetes számra teljesül [latex]0\leq n[/latex] reláció, és így [latex]P[/latex]-nek a [latex]0[/latex] minimuma lenne. Tehát hibás volt az indirekt feltételezésünk, így a [latex]0[/latex]-nak szükségképpen [latex]Q[/latex]-ban kell lennie.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tegyük most fel, hogy egy valamilyen [latex]n[/latex] természetes számról már tudjuk, hogy [latex]Q[/latex]-ban van (az előbb láttuk, hogy a [latex]0[/latex] például ilyen). Azt szeretnénk megmutatni, hogy ekkor [latex]s(n)[/latex] (azaz [latex]n[/latex] <strong><em>rákövetkezője</em></strong>) is benne van a [latex]Q[/latex]-ban. Ezt ismét <strong><em>indirekt</em></strong> módon bizonyítjuk. Tegyük ezért fel az állítás ellenkezőjét, azaz hogy [latex]s(n)[/latex] nincs benne a [latex]Q[/latex] halmazban. Ez egyrészt azt jelentené, hogy létezne olyan [latex]p[/latex]-vel jelölt elem a [latex]P[/latex] halmazban, amelyre nem teljesül az [latex]s(n)\lt p[/latex] reláció. Ismét a trichotómia miatt ekkor szükségképpen teljesülne a [latex]p\leq s(n)[/latex] reláció. Másrészt, mivel ugye [latex]n[/latex] az indukciós feltétel miatt benne van a [latex]Q[/latex] halmazban, így teljesül az [latex]n\lt p[/latex] reláció. Azaz összefoglalva:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]n\lt p\leq s(n)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Egyrészt a baloldali [latex]\lt[/latex] reláció a [yp_element slug="termeszetes-szamok-rendezese" type="link" /] miatt azt jelenti, hogy [latex]n+k_1=p[/latex] teljesül valamilyen [latex]k_1\
+eq 0[/latex] természetes számra. Másrészt a Peano-összeadás [yp_element slug="peano-osszeadas" type="link" /]ja miatt a jobboldali kifejezés így írható át: [latex]s(n)=s(n+0)=n+s(0)[/latex]. Ezt kapjuk tehát:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{n+k_1}_{=p} \leq n+s(0)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez ismét a [yp_element slug="termeszetes-szamok-rendezese" type="link" /] miatt azt jelenti, hogy létezik olyan [latex]k_2[/latex] természetes szám, amelyre teljesül az alábbi egyenlet:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{n+k_1}_{=p} + k_2 = n+s(0)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="peano-osszeg-egyszerusites" type="link" /] alapján mindkét oldalt egyszerűsíthetjük [latex]n[/latex]-nel, így ezt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]k_1+k_2=s(0)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azonban tudjuk, hogy [latex]k_1\
+eq 0[/latex], így a Peano-axiómarendszer [yp_element slug="peano-axiomarendszer" type="link" /]jának 3. pontja alapján van olyan [latex]k_0[/latex] természetes szám, aminek [latex]k_1[/latex] a rákövetkezője, azaz [latex]s(k_0)=k_1[/latex]. Így:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{s(k_0)}_{=k_1} + k_2=s(k_0+k_2)=s(0)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A Peano-axiómarendszer [yp_element slug="peano-axiomarendszer" type="link" /]jának 2. pontja miatt ekkor [latex]k_0+k_2=0[/latex] adódik, amelyből a [yp_element slug="peano-nullosszeg-tagjai" type="link" /] alapján [latex]k_0=0[/latex] és [latex]k_2=0[/latex] következik. Így tehát [latex]k_1=s(k_0)=s(0)[/latex]. Azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\overbrace{n+\underbrace{s(0)}_{=k_1}}^{=p}+\underbrace{0}_{=k_2}=n+s(0)=s(n)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>És így:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]p+0=p=s(n)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Egyrészt tehát azt kaptuk, hogy ha [latex]s(n)[/latex] nem lenne [latex]Q[/latex]-ban, akkor szükségképpen [latex]P[/latex]-ben kellene lennie. Másrészt viszont az iménti gondolatmenetet bármely [latex]P[/latex]-beli [latex]x[/latex] elemre megismételve azt kapnánk, hogy [latex]x\leq s(n)[/latex] csak úgy teljesülhet, ha [latex]x=s(n)[/latex]. Így tehát a [latex]P[/latex] halmaznak mégiscsak lenne minimuma, nevezetesen [latex]s(n)[/latex]. Tehát hibás volt az indirekt feltételezésünk, ezért ha [latex]n[/latex] benne van [latex]Q[/latex]-ban, akkor az ő rákövetkezője is szükségképpen [latex]Q[/latex]-ban kell legyen.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezzel kész a teljes indukció, hiszen láttuk, hogy a [latex]0[/latex] benne van [latex]Q[/latex]-ban, így az iménti gondolatmenet alapján az ő rákövetkezője is, majd annak a rákövetkezője, és így tovább a végtelenségig. A Peano-axiómarendszer [yp_element slug="peano-axiomarendszer" type="link" /] 4. pontja alapján így minden természetes számot lefedünk, azaz [latex]Q=\N[/latex]. A bizonyítás elején azonban láttuk, hogy ekkor [latex]P[/latex] csak az üres halmaz lehet, azaz valóban nem létezik olyan nemüres részhalmaza [latex]\N[/latex]-nek, amelynek nincs minimuma – épp ahogyan a tétel állítja.</p>
+<!-- /wp:paragraph -->

@@ -1,0 +1,88 @@
+type: section
+name: 02-a-caesar-kod
+title: A Caesar-kód
+
+body:
+  - type: narrative
+    content: |
+      Vegyünk egy egyszerű példát erre. Tegyük fel, hogy Alice és Bob abban egyeztek meg, hogy az üzeneteikben
+      kizárólag az angol ábécé 26 betűjét használják. Az egyszerűség kedvéért nem használnak szóközöket,
+      írásjeleket és ékezetes betűket. A megegyezés szerint küldés előtt mindegyik betűt lecserélik az ábécében
+      valamennyivel utána lévő betűre. Amennyiben ilyen módon elérnék az ábécé végét, akkor az elejétől folytatódik
+      a számolás. A ***rejtjelezési eljárás*** ebben az esetben a betűk ábécé szerinti "eltolása". Az pedig, hogy
+      konkrétan Alice és Bob mekkora eltolásban egyeznek meg, ennek az eljárásnak egy paramétere, amelyet
+      ***kulcsnak*** (***key***) nevezünk.
+  - type: narrative
+    content: |
+      Tegyük fel, hogy Alice és Bob kulcsként a 15-ös számban egyeznek meg, vagyis hogy a rejtjelezéskor a betűket
+      15-tel fogják eltolni. Alice ezután a **sziabobmiahelyzet** üzenetet szeretné elküldeni Bob-nak. Ezt ***nyílt
+      szöveg***nek (***plain text***) nevezzük, mivel ez az, amit el szeretnének rejteni Eve elől arra az
+      időszakra, amíg a nem biztonságos ***kommunikációs csatornán*** (***channel***) keresztülhalad. Ez jelen
+      példánkban a posta. Alice-nak ezt a nyílt szöveget küldés előtt át kell alakítania a Bob-bal kötött
+      megegyezés szerint. A rejtjelezési eljárás és a megbeszélt kulcs alapján ez jelen esetben a nyílt szöveg
+      minden betűjének lecserélését jelenti az ábécében 15-tel utána következő betűre. Ezt ***kódolásnak***
+      (***encoding***) nevezzük. Így Alice előállítja a **hoxpqdqbxpwtanoti** szimbólumsorozatot, amelyet
+      ***kódszövegnek*** (***cypher text***) nevezünk, és ezt adja fel postán Bob-nak címezve.
+  - type: narrative
+    content: |
+      Bob, miután megkapta a postán keresztül a kódszöveget, nincs más dolga, mint visszafelé alkalmazni a
+      rejtjelezési eljárást az Alice-szal megbeszélt kulcsot használva. Azaz a kódszöveg minden betűjét le kell
+      cserélnie az ábécében 15-tel megelőző betűre. Ezt ***dekódolásnak*** (***decoding***) nevezzük. Így Bob
+      visszakapja a **sziabobmiahelyzet** nyílt szöveget, amelyre hasonló módon válaszolhat Alice-nak. Ekkor ő lesz
+      a küldő, Alice pedig a fogadó fél, azaz a szerepük felcserélődik.
+  - type: narrative
+    content: |
+      A történet kényes pontja az, amikor a borítékot Alice már feladta a postán, de az még nem érkezett meg
+      Bob-hoz. A gonosz Eve-nek ugyanis újabb anyagi haszon reményében nyilván érdekében áll megismerni a nem neki
+      címzett titkos üzenetek tartalmát. Ezzel meg is fog próbálkozni, így őt ebben a történetben ***támadónak***
+      (***attacker***) nevezzük. Amikor azonban Eve titokban felbontja az Alice által küldött borítékot, bajba
+      kerül, mivel csak a **hoxpqdqbxpwtanoti** kódszöveget fogja látni. Eve még abban az esetben is bajban van, ha
+      ismeri a használt rejtjelezési eljárást. Ez könnyen lehet, például azért mert az részletesen le van írva egy
+      bárki számára elérhető szabványban. Azt viszont nem ismeri, hogy mi volt az a kulcs, amiben Alice és Bob
+      előzetesen megegyeztek. Ez jelen esetben a ***15***.
+  - type: narrative
+    content: |
+      Eve-nek tehát az a célja, hogy a kódszövegből a kulcs ismerete nélkül, de az eljárás ismeretében előállítsa a
+      nyílt szöveget. Azt nyilván meg tudja tenni, hogy kipróbálja az 1-es kulcsot. Ekkor a **gnwopcpawovszmnsh**
+      betűsorozatot fogja kapni. Ennek nyilván nincs értelme, így Eve azt már tudja, hogy az Alice és Bob által
+      megbeszélt kulcs nem az 1-es volt. Ezután megpróbálkozhat a 2-es kulccsal, ám ekkor is értelmetlen szöveget
+      fog kapni. Eve így kénytelen kipróbálni újabb és újabb kulcsokat is. Egy idő után végül sikerrel jár ugyan,
+      viszont ez 15-ször annyi erőfeszítésébe került, mintha eleve ismerte volna a kulcsot.
+  - type: narrative
+    content: |
+      A fent ismertetett kriptográfiai eljárást ***Caesar-kódnak*** nevezzük, amely az úgynevezett
+      ***monoalfabetikus behelyettesítő kódolás***oknak egy egyszerű fajtája. A monoalfabetikus kódolások nem
+      számítanak túl erős rejtjelnek, mivel a kódszöveg előállításakor a nyílt szöveg betűit mindig ugyanolyan
+      betűkkel helyettesítjük. Például a **bob** szövegrész megfelelője **qdq** lesz a kódszövegben. Ha Eve
+      elegendően sok azonos kulccsal rejtjelezett kódszöveget tud elfogni Alice és Bob kommunikációjából, akkor
+      könnyedén készíthet statisztikát a kódszövegekben előforduló betűk gyakoriságáról, amelyből értékes
+      információkat nyerhet a kulcs ismerete nélkül is.
+  - type: narrative
+    content: |
+      Ha például azt tapasztalja, hogy a kódszövegekben a **t** betűnek a leggyakoribb az előfordulása, akkor
+      könnyen megsejtheti, hogy a **t** rejtjelezett betűk a nyílt szöveg **e** betűinek felelhetnek meg, hiszen a
+      magyar nyelvben &ndash; amelyen Eve szerint vélhetően Alice és Bob kommunikál &ndash; az **e** betűnek a
+      leggyakoribb az előfordulása. Ha Eve még azt is tudja, hogy Caesar-kóddal áll szemben, akkor gyorsan
+      kipróbálhat néhány kódszöveget visszafejteni a 15-ös kulccsal, mivel a **t** betű az **e** betű után 15-tel
+      van az ábécében. Amennyiben azt tapasztalja, hogy értelmes szövegeket kapott, akkor már meg is találta a
+      kulcsot. Ráadásul sokkal könnyebben, mintha ész nélkül végigpróbálta volna az 1, 2, ..., 15 kulcsokat
+      egyenként. A kulcs ismeretében pedig Eve könnyedén dekódolhat minden további üzenetet. Ekkor azt mondjuk,
+      hogy Eve ***feltörte*** (***crack***) az Alice és Bob által használt rejtjelezési eljárást.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán a Caesar-kód által megvalósított eltolást látjuk 2-es kulcs esetén:
+    src: 01-caesar-kod.jpg
+    alt: A Caesar-kód által megvalósított leképezés
+    caption: Caesar-kód
+
+  - type: narrative
+    content: |
+      Egy fokkal bonyolultabb Eve helyzete, ha nem Caesar-kódról van szó, hanem valamilyen általánosabb
+      monoalfabetikus kódolásról, amely jobban összekeveri az ábécé betűit. Azonban gyakoriságelemzéssel az ilyen
+      kódszövegek megfejtése sem jelent túl nagy problémát.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán egy általános monoalfabetikus kódolás által megvalósított leképezést láthatunk:
+    src: 02-altalanos-monoalfabetikus-kod.jpg
+    alt: Egy általános monoalfabetikus kódolás által megvalósított leképezés
+    caption: Általános monoalfabetikus kódolás

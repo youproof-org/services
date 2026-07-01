@@ -1,0 +1,30 @@
+type: proof
+name: termeszetes-szamok-rendezesi-relacioja-tranzitiv-bizonyitas
+remarks: []
+references:
+  peano-osszeadas-asszociativitas:
+    target:
+      type: theorem
+      name: peano-osszeadas-asszociativitas
+  termeszetes-szamok-rendezese:
+    target:
+      type: definition
+      name: termeszetes-szamok-rendezese
+content:
+  - type: narrative
+    content: |
+      Ha $a\leq b$, akkor a [termeszetes-szamok-rendezese] miatt létezik olyan természetes szám, amelyet $a$-hoz
+      adva $b$-t kapunk. Jelöljük ezt a számot $k_1$-gyel, így tehát azt kapjuk, hogy $a+k_1=b$.
+  - type: narrative
+    content: |
+      Hasonló okok miatt ha $b\leq c$, akkor létezik olyan természetes szám is, amelyet $b$-hez adva $c$-t kapunk.
+      Jelöljük ezt a számot $k_2$-vel, így tehát azt kapjuk, hogy $b+k_2=c$.
+  - type: narrative
+    content: |
+      Az első egyenlet baloldalát a második egyenletbe $b$ helyére behelyettesítve azt kapjuk, hogy
+      $\underbrace{(a+k_1)}_{=b} + k_2=c$. Tekintve, hogy az összeadás asszociatív
+      ([peano-osszeadas-asszociativitas]), ezért ez a kifejezés átzárójelezhető: $a+(k_1+k_2)=c$.
+  - type: narrative
+    content: |
+      Létezik tehát olyan természetes szám is, amelyet $a$-hoz adva $c$-t kapunk &ndash; nevezetesen $k_1+k_2$. A
+      $\leq$ reláció definíciója miatt ez épp azt jelenti, hogy $a\leq c$.

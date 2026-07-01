@@ -1,0 +1,83 @@
+type: section
+name: 01-szamrendszerek
+title: Számrendszerek
+
+body:
+  - type: narrative
+    content: |
+      A mindenkinek ismerős tízes (vagy más néven ***decimális***) számrendszer kialakulásához mindenképpen szükség
+      volt az úgynevezett helyiértékes írásmódra, amelyet először az ókori Mezopotámiában vezettek be. A történelmi
+      áttekintés mellőzésével egy példán keresztül mutatjuk be ennek lényegét. Tegyük fel, hogy meg kell
+      számlálnunk bizonyos dolgokat, és kavicsokkal szeretnénk jelölni a számlálás eredményét. Az egyik megoldás,
+      hogy a számlálás során dobáljuk le a kavicsokat a homokba, így a végeredmény a homokban lévő kavicsok száma
+      lesz. Ennek hátránya, hogy egyrészt sok tárgy megszámlálásához rengeteg kavicsra van szükségünk, másrészt
+      pedig a végeredmény egy rakás kavics lesz, amivel nem vagyunk sokkal előrébb. Nem könnyű például megmondani
+      két közel azonos méretű kavicshalomról, hogy melyik a több.
+  - type: narrative
+    content: |
+      Egy ennél jóval hatékonyabb eljárás a következő. Rajzoljunk egymás mellé köröket a homokba, és határozzuk
+      meg, hogy maximum hány kavicsot engedünk meg egy körön belül. Legyen ez például most 2. Ezután kezdjük el a
+      jobb szélső körbe dobálni a kavicsokat. Ezt mindaddig folytathatjuk, amíg el nem értük a maximális 2 kavicsot
+      a jobb szélső körben. Ekkor a következő kavicsot már az eggyel balra lévő körbe dobjuk, az első kört pedig
+      kiürítjük.
+  - type: figure
+    src: 01-szamolas-kavicsokkal-1.jpg
+    alt: Számolás kavicsokkal
+    caption: Számolás kavicsokkal
+  - type: narrative
+    content: |
+      Ezután ismét dobálhatunk az első körbe. Amikor az újra megtelt, a következő kavicsot megint a második körbe
+      dobjuk és ismét kiürítjük az első kört.
+  - type: figure
+    src: 02-szamolas-kavicsokkal-2.jpg
+    alt: Számolás kavicsokkal
+    caption: Számolás kavicsokkal
+  - type: narrative
+    content: |
+      Ezt folytatva egy idő után elérkezünk egy olyan pontra, amikor megtelik az első és a második kör is. Ekkor a
+      következő kavicsot már a harmadik körbe dobjuk, és kiürítjük mind az első, mind pedig a második kört.
+  - type: figure
+    src: 03-szamolas-kavicsokkal-3.jpg
+    alt: Számolás kavicsokkal
+    caption: Számolás kavicsokkal
+  - type: narrative
+    content: |
+      És így tovább, ezt az eljárást a végtelenségig folytathatjuk. Vegyük észre, hogy így nagy számok esetén
+      lényegesen kevesebb kavicsra van szükségünk ahhoz képest, mint amekkora mennyiséget jelölünk velük. A módszer
+      hatékonysága abban rejlik, hogy a kavicsoknak különböző értékei vannak attól függően, hogy melyik körben
+      helyezkednek el. Az első körben lévő kavicsoknak 1 az értéke, és minden további körben az értékük
+      megháromszorozódik. A második körben egy kavics értéke már 3, a harmadik körben már 3^2^=9, a negyedik körben
+      3^3^=27 és így tovább, a k-adik körben 3^k-1^ egy-egy kavics értéke. Az alábbi ábrán például a 2019
+      kavicsokkal történő reprezentációját láthatjuk, és ehhez mindössze 9 kavicsra van szükségünk.
+  - type: figure
+    lead-in: |
+      Az egyes körök alatt láthatjuk, hogy mekkora az értéke egy-egy kavicsnak az adott körben:
+    src: 04-haromalapszamrendszer-2019.jpg
+    alt: A 2019-es szám kavicsokkal jelölve
+    caption: A 2019-es szám kavicsokkal jelölve
+  - type: narrative
+    content: |
+      Gratulálhatunk magunknak, ugyanis lényegében feltaláltuk a helyiértékes számábrázolást. Konkrétan a fenti
+      példában a 3-as számrendszert. A dolgot továbbfejleszthetjük azzal, ha különböző szimbólumokat találunk ki
+      egy-egy kör lehetséges tartalmainak leírására. Jelen esetben 3 féle szimbólumra van szükségünk, mivel egy kör
+      tartalma 3 féle lehet: üres, egy kavics, két kavics. Legyen ez a 3 féle szimbólum például rendre a **0**, az
+      **1** és a **2**. Ekkor kavicsok helyett a 2019-es szám leírására használhatjuk például a **2202210**
+      szimbólumsorozatot.
+  - type: narrative
+    content: |
+      Ehhez hasonlóan leírhatjuk a számokat tetszőleges ***n-alapú számrendszerben***, ha n>1. Egy n-alapú
+      számrendszer semmiben sem különbözik a fenti kavicsos példától. Ekkor az egyes körökben elhelyezhető kavicsok
+      maximális száma n-1 lesz, egy adott körben lévő kavicsok értéke pedig n megfelelő hatványa lesz a kör
+      pozíciójának (amit ***helyiértéknek*** nevezünk) függvényében. A jobb szélső kör helyiértéke n^0^=1, míg a
+      további körök helyiértékei rendre n^1^, n^2^, n^3^, és így tovább. Egy adott kör helyiértéke mindig a tőle
+      jobbra lévő kör helyiértékének n-szerese.
+  - type: narrative
+    content: |
+      A megszokott 10-es számrendszerben ezek a helyiértékek például: 10^0^ (azaz 1), 10^1^ (azaz 10), 10^2^ (azaz
+      100), stb. A maja, valamint a pre-kolumbiai és közép-amerikai civilizációk 20-as alapú számrendszereket
+      használtak. Ennek eredete feltehetőleg összefügg az emberek kéz- és lábujjainak számával. A 60-as alapú
+      rendszert a sumér és az azt követő mezopotámiai kultúrák használták. Ez a ma használt időmérő rendszerben is
+      visszaköszön: egy órát 60 percre osztunk, illetve 1 percet 60 másodpercre. A 12-es számrendszer maradványai
+      is fellelhetők például abban, hogy az év 12 hónapra oszlik. Csaknem minden nyelvben külön szó van a 12
+      dologból álló csoportra, például a magyar "tucat", az angol "dozen", a német "das Dutzend", az olasz
+      "dozzina", az orosz "djuzsina" stb.

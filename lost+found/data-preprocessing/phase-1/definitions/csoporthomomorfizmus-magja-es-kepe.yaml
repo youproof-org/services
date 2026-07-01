@@ -1,0 +1,21 @@
+type: definition
+name: csoporthomomorfizmus-magja-es-kepe
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyenek $G$ és $H$ tetszőleges csoportok, valamint legyen adva közöttük egy $f:G\to H$
+      ***csoporthomomorfizmus***. Ekkor az $f$ ***csoporthomomorfizmus magjának*** nevezzük azon $G$-beli elemek
+      halmazát, melyeknek $f$ szerinti képe a $H$ csoport egységeleme. Az $f$ magját &ndash; az angol "kernel"
+      szóból eredeztetve &ndash; így jelöljük: $\ker f$.
+  - type: narrative
+    content: |
+      Az $f$ ***csoporthomomorfizmus képének*** nevezzük azoknak a $H$-beli elemeknek a halmazát, amelyek képei
+      ***legalább egy*** $G$-beli elemnek. Az $f$ képét &ndash; az angol "image" szóból eredeztetve &ndash; így
+      jelöljük: $\text{im} f$.
+  - type: figure
+    lead-in: |
+      Az alábbi ábra szemlélteti a fenti fogalmakat:
+    src: homomorfizmus_magja_es_kepe.jpg
+    alt: 
+    caption: Csoporthomomorfizmus magja és képe

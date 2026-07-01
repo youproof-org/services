@@ -1,0 +1,38 @@
+type: theorem
+name: maradekosztalygyuruk-dekompozicioja
+proofs:
+  - maradekosztalygyuruk-dekompozicioja-bizonyitas
+remarks: []
+references:
+  gyuruhomomorfizmus:
+    target:
+      type: definition
+      name: gyuruhomomorfizmus
+  gyuruk-direkt-szorzata:
+    target:
+      type: theorem
+      name: gyuruk-direkt-szorzata
+content:
+  - type: narrative
+    content: |
+      Legyenek $p\gt 0$ és $q\gt 0$ valamilyen ***pozitív*** egész számok, továbbá tegyük fel, hogy $p$ és $q$
+      egymáshoz ***relatív prímek***. Ekkor a [gyuruk-direkt-szorzata] szerint értelmezett $\Z/p\Z \times \Z/q\Z$
+      gyűrű ***izomorf*** a $\Z/pq\Z$ maradékosztálygyűrűvel (lásd a [gyuruhomomorfizmus]t).
+  - type: formula
+    lead-in: |
+      Azaz:
+    content: |
+      \Z/p\Z \times \Z/q\Z\simeq \Z/pq\Z
+  - type: formula
+    lead-in: |
+      Legyenek $a$, $b$ és $c$ tetszőleges egész számok, továbbá tegyük fel, hogy az $x_1$ és $x_2$ egész számok
+      kielégítik az alábbi kongruenciákat:
+    content: |
+      \begin{aligned}p\cdot x_1&\equiv 1\pmod q \\ q\cdot x_2&\equiv 1\pmod p\end{aligned}
+  - type: formula
+    lead-in: |
+      Ekkor az alábbi $f:\Z/p\Z \times \Z/q\Z \to \Z/pq\Z$ és $g:\Z/pq\Z \to \Z/p\Z \times \Z/q\Z$ leképezések épp
+      egymás megfordításai, továbbá mindketten ***gyűrűizomorfizmusok*** a két gyűrű között:
+    content: |
+      \begin{aligned}f(([a]_p;[b]_q))&=[a\cdot q\cdot x_2 + b\cdot p\cdot x_1]_{pq} \\
+      g([c]_{pq})&=([c]_p;[c]_q)\end{aligned}

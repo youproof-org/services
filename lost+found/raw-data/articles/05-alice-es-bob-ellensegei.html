@@ -1,0 +1,329 @@
+<!-- wp:paragraph -->
+<p><strong><em>Az <a href="https://youproof.hu/kriptografia/4-csatornakodolas-hibajavito-kod-kodelmelet-hamming-tavolsag/" target="_blank" rel="noreferrer noopener" aria-label="előző részben (új fülön nyitja meg)">előző részben</a> megismerkedtünk a rosszminőségű kommunikációs csatornák okozta problémákkal. E problémák kezelésére tettünk egy kitérőt a csatornakódolás, és azon belül is a hibajavító kódok elméletének irányába. Megismertük a csatornakódolási tételt, amely ezek elvi korlátaival kapcsolatban tesz egy igen meglepő állítást. Információátviteli modellünk így már képes arra, hogy Alice és Bob adatait megvédje az átviteli csatorna zaja által okozott sérülésektől. De vajon milyen egyéb veszélyek fenyegetik ezeket az adatokat? A kriptográfia tudománya hol kapcsolódik be ebbe a játszmába annak érdekében, hogy az adatok ezektől a veszélyektől is védve legyenek? Mikre kell felkészülnünk a potenciális támadók képességeit illetően? Mit jelent a feltétel nélküli, illetve az algoritmikus biztonság? Létezik-e az előbbi? Ha igen, annak mik a limitációi? Ebben a részben ezekről a kérdésekről lesz szó...</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"dropCap":true} -->
+<p class="has-drop-cap">Az adatokat a fizikai sérüléseken kívül egyéb veszélyek is fenyegetik, amelyeket rosszindulatú támadók okoznak. Az ő motivációjuk főként az anyagi haszonszerzés, amely Alice és Bob számára a legtöbbször anyagi kárként jelentkezik. Fontos leszögezni, hogy a kriptográfusok – és általában a mérnökök – hozzáállása alapvetően pesszimista. Ez azt jelenti, hogy próbálnak az adott alkalmazás esetén elképzelhető legrosszabb esetre felkészülni. Feltételezhető ugyanis, hogyha a tervezett rendszer ilyen szélsőséges körülményeknek ellenáll, akkor ellen fog állni a gyakorlatban bekövetkező eseteknek is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A támadók célja, hogy információkat szerezzenek meg a legális felektől. A példáinkban a legális feleket két fiktív személlyel, a már jól ismert Alice-szal és Bob-bal azonosítjuk. A támadók a megszerzett információkat azután a saját céljaikra szeretnék felhasználni. A továbbiakban csak az algoritmikus típusú támadási módszerekkel foglalkozunk. Ezeken kívül elképzelhetők további támadási módszerek is. Ilyenek például a betörés, megvesztegetés, szabotázs, stb. Az ezek elleni védekezés azonban nem a kriptográfia feladata.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="cipher"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A rejtjelező komponens</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Alice és Bob az adataik támadókkal szembeni védelme érdekében tehát kénytelenek egy úgynevezett <strong><em>rejtjelező</em></strong> komponenst használni. Az alábbi ábrán látható ennek a komponensnek az elhelyezkedése az előző részekből már ismert információátviteli modellben:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":860} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_5_modell_teljes.jpg" alt="Információátviteli modell" class="wp-image-860"/><figcaption>Információátviteli modell</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Látható, hogy az egyetlen praktikus rejtjelezési pont a csatornakódoló és a forráskódoló között helyezkedik el. Ha a forráskódoló elé építenénk be, akkor jó esetben a forrásból érkező információ jellegétől függően különböző rejtjelezési eljárásokat kéne kitalálnunk. Rosszabb esetben a rejtjelezés egyáltalán nem volna lehetséges, mivel sokszor magát a forráskódolót tekintjük az információátviteli rendszer belépési pontjának. A csatornakódoló után szintén nem célszerű rejtjelezőt elhelyezni. Ebben az esetben ugyanis a kódszöveget (a rejtjelezett bitsorozatot) semmi nem védené a csatorna zaja által okozott sérülésektől. Ezzel kapcsolatban lásd az <a rel="noreferrer noopener" aria-label="előző részt (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/4-csatornakodolas-hibajavito-kod-kodelmelet-hamming-tavolsag#noise" target="_blank">előző részt</a>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A támadóval szemben mindig feltételezni kell, hogy teljes részletességgel ismeri az alkalmazott forrás- és csatornakódolási eljárásokat. Például mert ő is birtokában van az ehhez használt eszközöknek vagy szoftver megoldásoknak, amelyeket egyébként bárki megvásárolhat a boltban. Amennyiben nem alkalmazunk rejtjelezést, és a támadó hozzá tud férni a csatornán áthaladó bitekhez, úgy a csatorna- és forráskódolási eljárások ismeretében lényegében a Bob-nak küldött információhoz is hozzá tud férni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A továbbiakban kriptográfiai szempontból fogjuk vizsgálni az információátviteli rendszerünket, ezért a fenti modellünket egyszerűsíteni fogjuk az alábbiak szerint:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li>A forráskódolót a forrás részének tekintjük.</li><li>A forrásdekódolót a nyelő részének tekintjük.</li><li>A csatornakódolót és -dekódolót a csatorna részének tekintjük.</li><li>Végül feltételezzük, hogy a támadó ugyanúgy megkapja a csatornára küldött bitsorozatot, mint Bob (mert például lehallgatja a csatonát).</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>Ha tehát Alice és Bob biztonságosan szeretnének kommunikálni egymással, a rejtjelezőt a következőképpen kell használniuk ebben az egyszerűsített modellben:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":861} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_5_modell_egyszerusitett.jpg" alt="Egyszerűsített információátviteli modell" class="wp-image-861"/><figcaption>Egyszerűsített információátviteli modell</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Alice a csatornára küldés előtt a rejtjelező segítségével végrehajt egy <strong><em>kódoló transzformációt</em></strong> a Bob-nak szánt adaton, azaz a <strong><em>nyílt szövegen (plaintext)</em></strong>. Ez a transzformáció előállítja a titkosított adatot, azaz a <strong><em>kódszöveget (ciphertext)</em></strong>. A kódszöveg ezek után a csatornán keresztül megérkezik Bob-hoz, aki a visszafejtő segítségével a kódoló transzformáció inverzét (megfordítását) hajtja végre rajta. Ezt <strong><em>dekódoló transzformációnak</em></strong> nevezzük, amely tehát visszaállítja Bob számára az eredeti adatot. A <strong><em>támadó</em></strong> a csatorna lehallgatásával szintén hozzájut a kódszöveghez, célja pedig ebből a nyílt szöveg előállítása és tartalmának megismerése.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az első részben közölt <a rel="noreferrer noopener" aria-label="súlyos történelmi példákból (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/1-alapfogalmak-caesar-vigenere-enigma-kulcsmegosztas#enigma" target="_blank">súlyos történelmi példákból</a> láttuk, hogy a támadóval szemben mindig feltételezni kell, hogy részletesen ismeri az Alice és Bob által használt rejtjelezési eljárást. Például mert ő is megvásárolta a boltban az ezt megvalósító szoftver- vagy hardvereszközt. Éppen ezért a kódoló és dekódoló eljárásokat úgy kell megtervezni, hogy egy <strong><em>kulcsnak</em></strong> nevezett adattal paraméterezhető legyen, és a rejtjelezés biztonsága kizárólag az Alice és Bob által paraméterként használt kulcsnak, ne pedig magának az eljárásnak a titokban tartásától függjön. Ez alatt azt értjük, hogy a kulcs ismeretében „könnyű”, míg annak hiányában „nehéz” feladat legyen a nyílt szöveg előállítása a kódszövegből. A cikksorozat következő részeiben lesz szó arról, hogy algoritmikus szempontból mit értünk „könnyű” illetve „nehéz” feladat alatt.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="passive-attacker"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A passzív támadó</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Képességei szerint a támadókat kétféle típusra oszthatjuk. Az első típus az úgynevezett <strong><em>passzív támadó</em></strong>. Ő a csatornára kerülő bitsorozatot ugyanúgy képes megfigyelni, mint Bob, azonban módosítani nem tudja azt. Egy ilyen támadó valamilyen módon lehallgatja a fizikai csatornát. Ezért őt a „lehallgatás” angol megfelelője (eavesdropping) után általában Eve néven szoktuk emlegetni. Eve-ről feltételezzük továbbá, hogy hallgatózó tevékenységét képes Alice és Bob előtt titokban tartani, és hogy nem ismeri az Alice és Bob által használt kulcsot. Azt mondjuk, hogy Eve <strong><em>feltörte</em></strong> a rejtjelezési eljárást, ha „gyorsan” képes meghatározni a lehallgatott kódszöveg alapján a nyílt szöveget függetlenül attól, hogy Alice és Bob éppen melyik kulcsot használta. A „gyorsaság” itt olyan időintervallumot jelent, amelyen belül Eve sikeresen használhatja céljaira a megszerzett információt.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az Eve által végrehajtott
+törési kísérleteket azok növekvő ereje alapján a következő kategóriákba
+sorolhatjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li><strong><em>Rejtett szövegű támadás (ciphertext only attack):</em></strong> Ebben a leggyengébb esetben Eve-nek csupán nagyszámú azonos kulccsal kódolt kódszöveg áll rendelkezésére (mert például lehallgatta a csatornát), és ezekből az információkból próbál meg eljárást kidolgozni további üzenetek megfejtésére, vagy akár a kulcs kiszámítására.</li><li><strong><em>Nyílt szövegű támadás (known plaintext attack):</em></strong> Ilyenkor Eve-nek az azonos kulccsal kódolt elfogott kódszövegeken kívül rendelkezésére állnak azok nyílt szöveg párjai is (mert például valamilyen sunyi módon megszerezte azokat).</li><li><strong><em>Választott szövegű támadás (chosen text attack):</em></strong> Ebben a legerősebb esetben Eve saját maga választhatja ki azokat a kódszövegeket, amelyeknek a nyílt párját látni szeretné a törési eljárás kidolgozásához. A gyakorlatban ez persze ritkán fordul elő, azonban célszerű egy rendszert erre a „legrosszabb esetre” felkészíteni.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>A rejtjelezés célja alapvetően a passzív támadások elleni védekezés. Azt mondjuk, hogy egy rejtjelező rendszer <strong><em>algoritmikusan biztonságos</em></strong>, ha a támadó nem képes olyan gyorsan kinyerni a rejtett információt a kódszövegből, hogy azt céljaira felhasználhassa, feltéve hogy a rendelkezésére álló számítási kapacitás egy adott ésszerű korlát alatt marad. Nyilvánvalóan minden gyakorlatban használt rejtjelező rendszer elméletben feltörhető az úgynevezett <strong><em>kimerítő kulcskereséssel</em></strong>. Kimerítő kulcskeresés esetén Eve az összes lehetséges kulcsot végigpróbálja. Ezt elméletben megteheti, mivel a lehetséges kulcsok száma véges. Ha azonban ez a szám elegendően nagy, akkor ez beláthatatlanul sok ideig eltarthat még a világ összes számítógépének is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="one-time-pad"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A feltörhetetlen rejtjelező</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Ezzel szemben azt mondjuk, hogy egy rejtjelező rendszer <strong><em>feltétel nélkül biztonságos</em></strong>, ha a támadó korlátlan számítási kapacitás mellett <strong>sem</strong> tudja feltörni azt. A jó hír az, hogy ilyen rejtjelező eljárás létezik, a neve: <strong><em>one-time pad</em></strong>. Mielőtt rátérnénk a rossz hírre, ismertetjük az eljárás lényegét. A one-time pad lényegét tekintve megegyezik az első részben már ismertetett <a rel="noreferrer noopener" aria-label="Vigenére-kóddal (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/1-alapfogalmak-caesar-vigenere-enigma-kulcsmegosztas#vigenere" target="_blank">Vigenére-kóddal</a>, ezért először felfrissítjük az ezzel kapcsolatos emlékeinket. Vigenére-kód esetén a nyílt szöveg egyes betűit betűnként váltakozó értékekkel toljuk el az ábécében. A kulcs egy számsorozat, amely meghatározza, hogy melyik betűre mekkora eltolást kell alkalmazni. Például a <em>26</em> elemű <strong>ABCDEFGHIJKLMNOPQRSTUVWXYZ</strong> ábécé használata esetén a <em>(14, 19, 15)</em> kulcsot használva a <strong>SZIABOB</strong> üzenet kódolása a következő:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"align":"center","className":"typewriter"} -->
+<p class="has-text-align-center typewriter">S&nbsp;&nbsp;Z&nbsp;&nbsp;I&nbsp;&nbsp;A&nbsp;&nbsp;B&nbsp;&nbsp;O&nbsp;&nbsp;B<br>14 19 15 14 19 15 14<br>G&nbsp;&nbsp;S&nbsp;&nbsp;X&nbsp;&nbsp;O&nbsp;&nbsp;U&nbsp;&nbsp;D&nbsp;&nbsp;P</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A nyílt szöveg első betűjére tehát <em>14</em>, a másodikra <em>19</em>, a harmadikra pedig <em>15</em> eltolást alkalmaztunk. A további betűkre ezeket az eltolásokat ismételgettük periodikusan. Ennek eredményeként állt elő a <strong>GSXOUDP</strong> kódszöveg. Mielőtt rátérnénk a one-time pad leírására, röviden egy hasznos trükköt fogunk ismertetni a kódolás és dekódolás megkönnyítésére.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Könnyebben megjegyezhetővé tehetjük a kulcsot, ha az őt alkotó számok helyett az ábécé megfelelő sorszámú betűit jegyezzük meg (ahol a <em>0</em> sorszámú betű az <strong>A</strong>, az 1 sorszámú betű a <strong>B</strong>, stb.). Eszerint a hozzárendelés szerint tehát a <em>(14, 19, 15)</em> kulcs helyett elég az <strong>OTP</strong> kulcsszót megjegyeznünk. Ezek után készíthetünk egy táblázatot oly módon, hogy felírjuk az ábécé összes eltolt változatát egymás alá (beleértve a <em>0</em> eltolást, azaz az eredeti ábécét is). Ebből nyilván <em>26</em> féle van, azonban a számunkra most csak az eredeti, illetve a kulcsszó betűivel kezdődő ábécék az érdekesek. Ezek ugye a következők:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"align":"center","className":"typewriter"} -->
+<p class="has-text-align-center typewriter">ABCDEFGHIJKLMNOPQRSTUVWXYZ<br><u>OP</u>QRSTUVWXYZABCDEF<u>G</u>HIJKLMN<br>T<u>U</u>VWXYZABCDEFGHIJKLMNOPQR<u>S</u><br>PQRSTUVW<u>X</u>YZABC<u>D</u>EFGHIJKLMNO</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Kódoláskor a kulcsot alkotó számok helyett a kulcsszó betűit írjuk az üzenet betűi alá. A kódszöveget ezután úgy állítjuk elő, hogy a fenti táblázatból kikeressük azt a sort és oszlopot, amelyek rendre a kulcsszó és a nyílt szöveg aktuális betűivel kezdődnek. A kódszöveg aktuális betűje ekkor épp a kiválasztott sor és oszlop metszéspontjában lévő betű lesz (a fenti táblázatban az aláhúzott betűk). Ezek alapján a <strong>SZIABOB</strong> üzenet kódolása:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"align":"center","className":"typewriter"} -->
+<p class="has-text-align-center typewriter">SZIABOB<br>OTPOTPO<br>GSXOUDP</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Dekódoláskor ennek az eljárásnak a megfordítását hajtjuk végre. Ilyenkor a kódszöveg betűi alá írjuk a kulcsszó betűit. Ezek minden betűhöz kijelölik azt a sort a táblázatban, amely alapján az adott betű kódolva lett. Ebben a sorban megkeressük a kódszöveg aktuális betűjét, és megnézzük, hogy az eredeti ábécében ez melyik betűnek felel meg (azaz melyik oszlopban van). Ez lesz a nyílt szöveg aktuális betűje. Ezek alapján a <strong>GSXOUDP</strong> kódszöveg dekódolása az <strong>OTP</strong> kulcsot használva:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"align":"center","className":"typewriter"} -->
+<p class="has-text-align-center typewriter">GSXOUDP<br>OTPOTPO<br>SZIABOB</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most nézzük meg, hogy ebből az eljárásból hogyan nyerhetünk valóban feltörhetetlen rejtjelezőt. A Vigenére-kód esetén a kulcs általában rövidebb, mint a nyílt szöveg, és ezért periodikusan ismételgetni kell az eltolások sorozatát. Ez lehetőséget adhat egy passzív támadónak arra, hogy a kódszöveg statisztikai elemzésével információkat nyerhessen (feltéve persze, hogy elegendő mennyiségű azonos kulccsal kódolt kódszöveg áll rendelkezésére).</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezzel szemben a <strong><em>one-time pad</em></strong> esetén a kulcsra az alábbi megkötéseket tesszük:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li>Hossza a nyílt szöveg hosszával egyezik meg.</li><li>Tökéletesen véletlenszerű.</li><li>Minden egyes üzenethez új kulcsot használnak.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>A már sokat emlegetett <a rel="noreferrer noopener" aria-label="Claude Shannon (új fülön nyitja meg)" href="https://en.wikipedia.org/wiki/Claude_Shannon" target="_blank">Claude Shannon</a> bizonyította be, hogy <strong><em>a one-time pad valóban feltörhetetlen</em></strong>. Ennek oka az, hogy a véletlenszerűen előállított kulcs olyan szinten függetleníti a kódszöveget a nyílt szövegtől, hogy közöttük semmilyen statisztikai összefüggés nem tárható fel. Azaz Eve gyakorlatilag egy „pénzfeldobás sorozatot” fog látni statisztikai értelemben. A feltörhetetlenséget ténylegesen abszolút értelemben kell érteni. Ez azt jelenti, hogy Eve még akkor sem fogja tudni megfejteni a nyílt szöveget, ha az összes lehetséges kulcsot végigpróbálgatja. Az alábbiakban egy egyszerű példán keresztül megmutatjuk, hogy miért.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel, hogy háború van. Alice és Bob a maximális biztonság érdekében úgy dönt, hogy one-time paddel fogják rejtjelezni katonai üzeneteiket. Megállapodnak abban, hogy az angol ábécé <em>26</em> betűjét fogják használni ékezetek, írásjelek és szavak közti szünetek nélkül. Végül megegyeznek, hogy minden esetben pontosan <em>20</em> karakter hosszú üzenetekkel fognak kommunikálni. Az ennél hosszabb üzeneteket felszeletelik több üzenetre, míg az ennél rövidebb üzeneteket kiegészítik <strong>X</strong> betűkkel úgy, hogy éppen <em>20</em> betű hosszúak legyenek. Például a <strong>SZIABOB</strong> üzenet helyett a <strong>SZIABOBXXXXXXXXXXXXX</strong> üzenetet fogják kódolni. Ennek értelme hamarosan világos lesz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezek után előállítanak egy könyvnyi teljesen véletlenszerű betűsorozatot, amelyet kulcsként fognak használni. Amikor Alice egy 20 betűs üzenetet szeretne küldeni Bobnak, a kulcskönyv soron következő 20 betűjét felírja a nyílt szöveg alá kulcsként. Ezután alkalmazza a Vigenére-kódolást, majd a felhasznált 20 betűt kihúzza a kulcskönyvből. Alice, miután megkapta a 20 betűs kódszöveget, a kulcskönyv nála lévő példányából szintén felírja a soron következő 20 betűt a kódszöveg alá. Dekódolja az üzenetet, végül ő is kihúzza a felhasznált 20 betűt a saját kulcskönyvéből. Amennyiben Alice és Bob soha nem hibázik, és szinkronban haladnak előre a kulcskönyvben a kommunikáció során, akkor az általuk alkalmazott rejtjelezés <strong><em>feltörhetetlen</em></strong> Eve számára. Most megmutatjuk, hogy miért.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Képzeljük magunkat Eve helyébe, aki az Alice és Bob által használt csatorna lehallgatása során elfogja a 20 betűs <strong>AWLJKFHAEIFHWOIJSSBF</strong> kódszöveget. Tegyük fel, hogy Eve tudja, hogy Alice és Bob one-time pad rejtjelezést használt, a szintén 20 betűs kulcsot azonban nem ismeri. Nézzük meg hogy mit tehet. Gyakoriságelemzést nem érdemes alkalmaznia még abban az esetben sem, ha esetleg rengeteg korábbi kódszöveg áll a rendelkezésére. Tudja ugyanis, hogy azokat mind más és más kulccsal titkosították. Amelyek ráadásul tökéletesen véletlenszerűek voltak, csakúgy, mint a jelenleg használt kulcs. Eve tehát nem tehet mást, mint szisztematikusan elkezdni végigpróbálgatni az összes lehetséges <em>20</em> hosszú kulcsot. Ezekből a 26 betűs angol ábécé használata esetén <em>26<sup>20</sup></em>, azaz egészen pontosan <em>19928148895209409152340197376‬</em> darab van. Most nagyvonalúan lépjünk túl azon, hogy ennyi kulcs végigpróbálgatása az idők végezetéig is eltarthat a világ összes számítási kapacitásával is. Tételezzük fel, hogy az Eve rendelkezésére álló számítási kapacitás valóban korlátlan.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Eve abban reménykedik, hogy valamelyik kipróbált kulcs esetén értelmes szöveget fog kapni. Egy idő után például el fog érkezni a <strong>HWZJHFPTQXSHHXEDMOQI</strong> kulcshoz. Ekkor a <strong>TAMADASHOLNAPREGGELX</strong> feltételezett nyílt szöveget kapja. Ez kétségkívül egy értelmes üzenetnek tűnik, de vajon joggal gondolhatja-e Eve, hogy megtalálta az Alice és Bob által használt kulcsot?</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A biztonság kedvéért tovább folytatja az összes létező kulcs szisztematikus kipróbálását. Nagy meglepetésére a <strong>FOTRLFMMROUHERLMVVEI</strong> kulcshoz érve a <strong>VISSZAVONULASXXXXXXX</strong> feltételezett nyílt szöveget fogja kapni. Látszólag ez is egy értelmes üzenet, aminek jelentése ráadásul épp az ellenkezője az előzőnek. Eve egyre idegesebb, és tovább folytatja a kulcskeresést. Ám döbbenten tapasztalja, hogy egyre több és több értelmesnek látszó potenciális üzenetet kap a visszafejtési kísérletekből. Például a <strong>ZSBFTXOWMVHNQOPSEHEI</strong> kulcs kipróbálása esetén a <strong>BEKERITESNYUGATROLXX</strong> üzenetet, a <strong>WFXRCMDILYBQCBYMVVEI</strong> kulcs esetén az <strong>EROSITESTKERUNKXXXXX</strong> üzenetet, és a <strong>PSFBRFVMYIMHEKRZOTTV</strong> kulcs esetén a <strong>LEGITAMOGATASERKEZIK</strong> üzenetet kapja. Sőt, mire végez az összes kulcs ellenőrzésével, az összes olyan potenciális nyílt szöveg jelöltet megkapja, amely legfeljebb <em>20</em> betű hosszú. De megkapja az olyanokat is, amelyek akár egy hosszabb üzenet valamilyen részei lehetnek.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Látható tehát, hogy one-time pad rejtjelezés esetén Eve helyzete reménytelen, hiszen Alice ezek közül bármelyik üzenetet küldhette. Mivel a használt kulcs teljesen véletlenszerű és egyszer használatos volt, ezért Eve semmit sem feltételezhet azzal kapcsolatban, hogy melyik feltételezett nyílt szöveg a legvalószínűbb. Ráadásul mindez független attól, hogy mennyi erőforrást tudott mozgósítani a feltöréshez.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Akkor mi értelme van folytatni?</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Hurrá! – mondhatnánk, hiszen úgy tűnik, hogy megtaláltuk a kriptográfia Szent Grálját, tehát mindenki mehet szépen haza. Sajnos nem ez a helyzet, mivel a one-time pad, habár elméletben tökéletes, a gyakorlatban – néhány speciális esettől eltekintve – nem alkalmazható. A legkisebb probléma, hogy az egyszer használatos kulcsoknak valóban „tökéletesen véletlenszerű számokból” kell állniuk. Hogy ez matematikailag pontosan mit jelent, az messzire vezetne, és e problémakör messze nem olyan egyszerű, mint gondolnánk. Léteznek azonban olyan célhardverek, amelyek valamilyen fizikai jelenséget kihasználva állítanak elő valódi véletlenszámokat. Tegyük fel tehát, hogy ezt a problémát megoldottuk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ami egy ennél sokkal nagyobb gond, az az első rész végén már felvázolt <strong><em><a rel="noreferrer noopener" aria-label=" (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/1-alapfogalmak-caesar-vigenere-enigma-kulcsmegosztas#key-distribution" target="_blank">kulcsmegosztás problémája</a></em></strong>. Ez a probléma one-time pad esetén hatványozottan jelentkezik. Nevezetesen: hogyan juttassuk el a kommunikáció összes résztvevőjének azt a temérdek mennyiségű kulcsot biztonságosan? Gondoljunk bele, hogy mi történne, ha például egy egész hadsereg szeretne ilyen módon kommunikálni. Az egymással harcoló egységek helyett a csatamező futárokkal lenne tele, akik a kulcsokat szállítják. Azon logisztikai problémáról már nem is beszélve, hogy mindenki mindig a megfelelő egyszer használatos kulcsot használja. Ha bárki hibázna, az a rendszer teljes összeomlásához vezetne.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Persze megemlítettük az első rész végén, hogy a kulcsmegosztás problémája megoldható biztonságos csatorna használata nélkül is, hiszen az egész cikksorozatnak ez a központi témája. Ez a megoldás azonban „csupán” algoritmikus biztonságot nyújt. Azaz feltételezi, hogy az Eve rendelkezésére álló számítási kapacitás bizonyos korlát alatt marad, még ha ez a korlát nagyon nagy is. A one-time paddel azonban éppenséggel egy korlátlan erőforrásokkal rendelkező támadó ellen akarunk védekezni. Botorság lenne tehát pont a kulcsokat egy olyan rendszeren keresztül továbbítani, amely nem garantálja a feltétel nélküli biztonságot.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A one-time pad alkalmazása tehát iszonyatosan drága, ezért csak néhány nagyon speciális és különleges esetben használják. Csak hogy egyet említsünk: one-time pad rejtjelezést használnak az <strong><em>USA és Oroszország</em></strong> között a kubai rakétaválság apropóján 1963-ban létrehozott <strong><em>forródrót</em></strong> titkosítására, az egyszeri kulcsokat pedig a lehető legszigorúbb biztonsági intézkedések mellett osztják meg egymás között.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Vegyük észre, hogy a one-time pad főként a kulcsmegosztás problémája miatt használhatatlan a gyakorlatban. Ha azonban ezt is meg tudnánk oldani feltétel nélkül biztonságos módon, akkor valóban megtalálnánk a Szent Grált, és a kriptográfia tudományának fejlődése véget érne. A jó hír az, hogy a kvantumfizika törvényei ezt elvileg lehetővé teszik, és – habár ez a technológia még gyerekcipőben jár – már vannak nagyon bíztató eredmények, sőt bizonyos gyakorlati alkalmazások is. A <strong><em>kvantumkriptográfiáról</em></strong> majd egy későbbi részben lesz szó bővebben. Ez azonban még csak a jövő, a titkaink védelmét a jelenben az algoritmikus biztonságra bízzuk, ezért most visszatérünk ehhez a témakörhöz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="active-attacker"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Az aktív támadó</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Ismerkedjünk hát meg történetünk leggonoszabb szereplőjével. Ő Eve-vel ellentétben nem csak passzívan figyeli a kommunikációt, hanem <strong><em>aktív támadóként</em></strong> be is avatkozik abba.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az ő neve <strong><em>Mallory</em></strong>, amely név a „rosszindulatú támadó” angol megfelelőjére (malicious attacker) rímel. Mallory azért nagyon veszélyes, mert nemcsak megfigyelni képes a csatornán áthaladó üzeneteket, hanem képes azokat részben vagy teljes egészében megváltoztatni Alice és Bob számára észrevétlenül. Ezenkívül Mallory olykor arra is vetemedik, hogy megpróbálja eljátszani egy vagy több legális fél szerepét azért, hogy valamely másik legális résztvevőktől információt csaljon ki. Ezt <strong><em>megszemélyesítésnek (impersonating)</em></strong> nevezzük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az aktív támadásokat algoritmikus eszközökkel nem tudjuk megakadályozni, de úgynevezett <strong><em>kriptoprotokollok</em></strong> alkalmazásával a támadást detektálhatóvá tehetjük Alice és Bob (tehát a legális résztvevők) számára. A protokollok általánosságban véve egy előre meghatározott üzenetcsere folyamatot jelentenek, amelyet kettő vagy több legális fél bonyolít le kooperatívan valamilyen feladat végrehajtására. A kriptoprotokollok építőelemként használják a rejtjelezőt és egyéb kriptográfiai építőelemeket (ezeket összefoglaló néven <strong><em>kriptográfiai primitíveknek</em></strong> nevezzük), s biztosítják a védett kapcsolat felépülését és a kommunikáció alatti aktív támadások észlelhetőségét. Ezen kívül garantálják a kommunikációban résztvevő felek és üzenetfolyamataik hitelességének ellenőrizhetőségét.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egy <strong><em>üzenet hitelessége</em></strong> azt jelenti Alice vagy Bob számára, hogy majdnem biztos lehet benne, hogy az módosítatlanul, eredeti állapotában érkezett meg hozzá. Egy <strong><em>partner hitelessége</em></strong> Alice vagy Bob számára azt jelenti, hogy majdnem biztos lehet benne, hogy egy üzenetet valóban a tartalmából kiderülő partner küldte, nem pedig Mallory vagy egy hozzá hasonló gazember. A „majdnem biztos benne” itt azt jelenti, hogy a tévedés esélye nagyságrendileg megegyezik annak az esélyével, hogy valaki egymás után ötször megnyeri a főnyereményt az 5-ös lottón.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A mérnöki pesszimizmus a
+Mallory elleni védekezés kapcsán is megjelenik azáltal, hogy a várhatónál
+nagyobb hatalmat biztosít neki, azaz feltételezi, hogy Mallory a legálisan
+résztvevő felek teljes kommunikációját kontrollálni tudja. Ez alatt egyrészt
+azt értjük, hogy Mallory minden üzenetet képes lehallgatni, módosítani és
+törölni, másrészt képes olyan hamis üzenetek generálására is, amit a
+rendelkezésére álló információk lehetővé tesznek. Például képes üzeneteket
+megfigyelni, megjegyezni és később visszajátszani is. Lényegében tehát a
+legális résztvevők Mallory-n keresztül kommunikálnak egymással, azaz
+üzeneteiket neki küldik és tőle is kapják. Ezen kívül Mallory képes bármelyik
+résztvevőt bevonni egy protokoll végrehajtásába, sőt még arra is rá tud venni
+egy becsületes résztvevőt, hogy az kezdeményezze egy protokoll végrehajtását
+Mallory-vel vagy egy másik becsületes résztvevővel.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mallory tehát egy igazi csaló, aki ellen sokkal nehezebb védekezni, mint Eve-vel szemben. Átalában azonban feltételezzük Mallory-ről, hogy nem elsősorban a protokollok által használt kriptográfiai primitívek feltörésével próbálkozik, hanem abban keresi a gyengeséget, ahogyan a protokoll ezeket az építőelemeket egymással kombinálja. A kriptoprotokollok alapvetően 3 féle kriptográfiai primitívből építkeznek, ezek a következők: <strong>rejtjelezők</strong>, <strong>digitális aláírások</strong> és az úgynevezett <strong>kriptográfiai hash függvények</strong>. Ebben a cikksorozatban főként e primitívek bemutatása fog megtörténni, de ki fogunk térni néhány olyan példára is, amely azt szemlélteti, hogy hogyan lehet ezeket kombinálva egy aktív támadások elleni kriptoprotokollt (vagy egy ilyen elleni támadást) létrehozni. Első körben a rejtjelezőt, mint primitívet vesszük górcső alá, a digitális aláírásokról és a hash függvényekről pedig későbbi részekben lesz szó bővebben.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Blokkrejtjelezők</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Rejtjelezőkre számos példát láttunk a korábbi részekben, de általánosságban a következő ábrával lehet összefoglalni őket:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":863} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_5_rejtjelezo_modell.jpg" alt="Rejtjelező modell" class="wp-image-863"/><figcaption>Rejtjelező modell</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Itt <em>x</em> jelöli a nyílt szöveget, <em>y</em> a kódszöveget, <em>k</em> pedig az Alice és Bob által használt kulcsot. Az <em>E</em>-vel jelölt doboz a kódolási, a <em>D</em>-vel jelölt doboz pedig a dekódolási transzformációnak felel meg. A támadó a két transzformáció közé ékelődik be, és feltételezzük róla, hogy csak az <em>y</em> kódszöveget látja, a nyílt szöveget és a kulcsot nem ismeri.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egy valódi „boltban kapható” rejtjelező szoftver- vagy hardvereszköz <em>n</em> bit hosszú nyílt szöveg blokkokat kódol <em>n</em> bit hosszú rejtjelezett blokkokba (<em>n</em> értéke tipikusan <em>128</em>, <em>256</em>, vagy <em>512</em> bit). Ezeket <strong><em>blokkrejtjelezőknek</em></strong> nevezzük. A gyakorlati alkalmazásokban azonban általában ennél jóval hosszabb (vagy rövidebb) üzeneteket szeretnénk titkosítani, ezért szükségünk van olyan eljárásokra, amelyek lehetővé teszik tetszőleges hosszúságú üzenetek titkosítását egy <em>n</em> bites blokkrejtjelező ismételt alkalmazásával. Ezeket az eljárásokat <strong><em>blokkrejtjelezési módoknak</em></strong> nevezzük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az első kézenfekvő gondolatunk az lehetne, hogy a nyílt szöveget <em>n</em> bit hosszú blokkokra szeleteljük, ezeket egyenként rejtjelezzük, és az így kapott szintén <em>n</em> bit hosszú rejtjelezett blokkokat egymás után fűzve kapjuk a kódszöveget. A vételi oldalon ehhez hasonlóan a kódszöveget <em>n</em> bit hosszú blokkokra szeleteljük, ezeket egyenként dekódoljuk, és az így kapott <em>n</em> bit hosszú nyílt blokkokat egymás után fűzve visszakapjuk a nyílt szöveget. Ennek a módszernek hátránya, hogy a blokkok rejtjelezése egymástól függetlenül történik, lehetőséget adva Eve-nek a gyakoriságelemzésre. Ez ugyan ilyen blokkméretek esetén eléggé reménytelen vállalkozásnak tűnik, de nem lehetetlen.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezért több blokkból álló üzenetek rejtjelezését célszerű úgy végezni, hogy egy rejtjelezett blokk ne csak az azonos pozícióban lévő nyílt blokktól, hanem az előző rejtjelezett blokktól – és így áttételesen az összes korábbi nyílt blokktól – is függjön. Ezen kívül előfordulhat, hogy az üzenet hossza nem <em>n</em> többszöröse, így az utolsó nyílt blokk hossza kisebb lenne, mint <em>n</em>. Ilyen esetben az utolsó nyílt blokkot ki kell egészíteni oly módon, hogy a vételi oldalon a dekódolás után a kiegészítés egyértelműen felismerhető és eldobható legyen (a one-time pad fentebbi bemutatásánál az üzenet <strong>X</strong> betűkkel való feltöltésekor ugyanez történt).</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A fenti problémákat a különböző blokkrejtjelezési módok különbözőképpen oldják meg, ezeket azonban nem részletezzük. Számunkra most csak az a fontos, hogy a blokkrejtjelező egy olyan eszköz, amelyet ha felparaméterezünk egy <em>k</em> kulccsal, a bemenetére pedig egy <em>n</em> bites nyílt bitsorozatot küldünk, akkor a kimenetén elő fog állítani egy szintén <em>n</em> bites rejtjelezett bitsorozatot. Hasonlóképpen a blokkdekódoló egy olyan eszköz, amelyet ha felparaméterezzük ugyanazzal a <em>k</em> kulccsal, a bemenetére pedig a rejtjelező által előállított <em>n</em> bites rejtjelezett bitsorozatot küldjük, akkor a kimenetén elő fogja állítani az eredeti <em>n</em> bites nyílt bitsorozatot.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A 3. részben a <a rel="noreferrer noopener" aria-label="számábrázolási módok (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/3-szamrendszerek-binaris-hexadecimalis-szamabrazolas-bitmap#unsigned-integer" target="_blank">számábrázolási módok</a> kapcsán láthattuk, hogy bitsorozatokat lehet egész számokként értelmezni. Ez alapján tehát a rejtjelezőt és a dekódolót felfoghatjuk <strong><em>matematikai függvények</em></strong>ként is. Ha a nyílt blokknak megfelelő számot <em>x</em>-szel, a rejtjelezett blokknak megfelelőt <em>y</em>-nal, a <em>k</em> kulccsal paraméterezett rejtjelező és dekódoló függvényeket pedig <em>E<sub>k</sub></em>-val és <em>D<sub>k</sub></em>-val jelöljük, akkor a rejtjelezés és dekódolás tulajdonképpen az alábbi két összefüggést valósítja meg:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}y &amp;= E_k(x) \\ x &amp;= D_k(y)\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Egy szemléletes példával élve ez olyan, mintha Alice a Bob-nak szánt <em>x</em> üzenetet betenné egy lakattal ellátott ládába, majd a lakatot lezárná a <em>k</em> kulccsal és a lezárt ládát elküldené Bob-nak. Ha Bob-nak van egy másolata a <em>k</em> kulcsról, akkor ki tudja nyitni a ládán lévő lakatot, és ki tudja venni a ládából az <em>x</em> üzenetet. Eve-nek ezzel szemben nincs másolata a <em>k</em> kulcsról, ezért ő nem tudja kinyitni a ládát. A <strong><em>kulcsmegosztás problémája</em></strong> ebben az esetben azt jelenti, hogy Alice és Bob hogyan tudja elérni, hogy mindketten rendelkezzenek egy-egy kulcsmásolattal anélkül, hogy egy ilyen másolatnak a birtokába kerüljön Eve is. Alice persze megtehetné, hogy a kulcs másolatát beteszi egy másik ládába, amelyet egy másik kulccsal lezár, és ezt elküldi Bob-nak. Ekkor azonban visszatértünk az előző problémára, mivel ebben az esetben Bob-nak szüksége van egy másolatra erről a második kulcsról.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="three-pass-protocol"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Háromutas kulcsforgalom</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Egy remek megoldás lehetne azonban a következő: tegyük fel, hogy Alice-nak és Bob-nak is van egy-egy lakatja a hozzá tartozó kulcsokkal. Amikor Alice üzenetet szeretne küldeni Bob-nak, akkor azt beteszi egy ládába, ráteszi a saját lakatját, és elküldi a lezárt ládát Bob-nak, de a kulcsot megtartja magának. Bob ezt a lezárt ládát nem tudja ugyan kinyitni, mivel nem rendelkezik az Alice lakatját nyitó kulccsal, azt azonban megteheti, hogy ő is ráteszi a saját lakatját, és így visszaküldi a ládát Alice-nak, de a kulcsot ő is megtartja magának. Alice ezután leveszi a saját lakatját a ládáról, amelyen így már csak Bob lakatja marad, és megint visszaküldi a ládát Bob-nak. Végül Bob is leveszi a saját lakatját, kinyitja a ládát, és elolvassa az üzenetet.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Figyeljük meg, hogy ebben az esetben nem történt semmiféle kulcs küldözgetés Alice és Bob között, és Eve sem tud hozzáférni a láda tartalmához, mivel akárhányszor elfogja a ládát, azon minden alkalommal van legalább egy lakat. A lakatokat nyitó kulcsok pedig mindvégig Alice-nál és Bob-nál maradtak biztonságban. Ezt a folyamatot szemlélteti az alábbi ábra:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":864} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_5_haromutas_kulcsforgalom.jpg" alt="Háromutas kulcsforgalom" class="wp-image-864"/><figcaption>Háromutas kulcsforgalom</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Kérdés azonban, hogy ami működik lakatokkal, az vajon működik-e matematikai függvényekkel. Tegyük fel, hogy Alice kulcsa <em>a</em>, Bob kulcsa pedig <em>b</em>. Ennek megfelelően Alice kódoló és dekódoló függvényei <em>E<sub>a</sub></em> és <em>D<sub>a</sub></em>, míg Bob kódoló és dekódoló függvényei <em>E<sub>b</sub></em> és <em>D<sub>b</sub></em>. Miután mindketten rátették a „lakatot” az <em>x</em> üzenetre, az <em>E<sub>b</sub>(E<sub>a</sub>(x))</em> üzenet érkezik vissza Alice-hoz. Alice leveszi a „lakatot”, azaz erre az üzenetre alkalmazza a <em>D<sub>a</sub></em> dekódoló függvényt, és az eredményül kapott <em>D<sub>a</sub>(E<sub>b</sub>(E<sub>a</sub>(x)))</em> üzenetet visszaküldi Bob-nak. Amennyiben ez megegyezik az <em>E<sub>b</sub>(x)</em> értékkel – azaz amikor már csak Bob „lakatja” van rajta az <em>x</em> üzeneten –, akkor Bob gond nélkül leveheti erről a saját „lakatját” és visszakapja az <em>x</em> üzenetet. A feltétel tehát, hogy tetszőleges <em>x</em> üzenetre és <em>a</em>, <em>b</em> kulcsokra teljesüljön az alábbi összefüggés:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]D_a(E_b(E_a(x))) = E_b(x)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az ilyen rejtjelezőket <strong><em>kommutatív rejtjelezőknek</em></strong> nevezzük. A „kommutatív” kifejezés általánosságban a felcserélhetőséget jelenti, ami ebben az esetben arra utal, hogy a „lakatok” felhelyezési és levételi sorrendje ilyen rejtjelező függvények használata esetén felcserélhető.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A 20. század második felében tehát megindult a kutatás az ilyen tulajdonságú függvények keresésére. Ez ugyan nem oldja meg a kulcsmegosztás problémáját, viszont megkerüli azt, ami hatalmas előrelépés. Az első kommutatív rejtjelezőt <a rel="noreferrer noopener" aria-label="Adi Shamir (új fülön nyitja meg)" href="https://en.wikipedia.org/wiki/Adi_Shamir" target="_blank">Adi Shamir</a> izraeli kriptográfus találta meg 1980-ban. Ennek az alapja egy nagyon fontos számelméleti összefüggés, az 1636-ban – tehát sokkal korábban – felfedezett úgynevezett kis Fermat-tétel. E tételre egy későbbi részben még részletesen vissza fogunk térni, amikor már kellő eszköztárunk lesz a megértéséhez. Ezen kívül Adi Shamir nevét se felejtsük el, hiszen hamarosan nagyon fontos szerephez fog jutni ebben a cikksorozatban.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A fenti „lakatos” megoldást <strong><em>háromutas kulcsforgalom</em></strong>nak nevezzük, ami egy kicsit megtévesztő, hiszen valójában nem a kulcsok utaznak, hanem a „lezárt ládák”. Van azonban két probléma ezzel a megoldással. Az első egy gyakorlati probléma, nevezetesen: Alice-nak és Bob-nak online kell lenniük, hiszen oda-vissza kell üzengetniük egymásnak ahhoz, hogy egy üzenet biztonságosan megérkezzen Bob-hoz. Ezért például titkosított email-ek küldésére a módszer nem igazán alkalmas, mivel egy email elküldése és annak a címzetthez való megérkezése között hosszabb idő is eltelhet. A másik – és egyben nagyobb – probléma az, hogy Mallory ellen nem alkalmazható. Ugyanis sem Alice, sem pedig Bob nem lehet biztos abban, hogy egymással, és nem pedig a közéjük beékelődött Mallory-vel kommunikálnak. Vagyis <strong><em>a partner- és üzenethitelesítés nincs biztosítva</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ebben a részben tehát rátértünk a cikksorozat fő témájára, és megnéztük, hogy a kriptográfia hol foglal helyet az információátviteli modellünkben. Felmértük, hogy milyen jellegű támadások ellen kell megvédenie magát Alice-nak és Bob-nak, ha nem akarnak csalások áldozatává válni. Bemutattunk egy abszolút biztonságos rejtjelezési módszert, ugyanakkor rámutattunk annak gyakorlati korlátjaira is, amelyek miatt kénytelenek vagyunk megelégedni az algoritmikus biztonsággal. Végül elkezdtük matematikai alapokra helyezni a rejtjelezés és dekódolás folyamatát, és bemutattuk a kommutatív rejtjelező fogalmát, amellyel megkerülhető a kulcsmegosztás problémája, de megemlítettük ennek hiányosságait is. A következő néhány részben részletesebben körbejárjuk azt a kérdéskört, hogy pontosan mit értünk algoritmikus biztonság alatt. Ennek keretében megismerkedünk néhány algoritmuselméleti alapfogalommal. Ezek után fogjuk részletesen bemutatni egy olyan rejtjelező rendszer működését, amely kiküszöböli a háromutas kulcsforgalom módszerének hiányosságait, és partner- illetve üzenethitelesítést is biztosít.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A következő részt <a href="https://youproof.hu/kriptografia/6-turing-gep-formalis-nyelv-rekurzivan-felsorolhato-rekurziv-megallasi-problema/">itt</a> találod...</em></strong></p>
+<!-- /wp:paragraph -->

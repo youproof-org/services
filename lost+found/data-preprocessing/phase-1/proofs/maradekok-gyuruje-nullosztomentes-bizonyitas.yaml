@@ -1,0 +1,56 @@
+type: proof
+name: maradekok-gyuruje-nullosztomentes-bizonyitas
+remarks: []
+references:
+  euklideszi-gyurukben-teljesul-a-szamelmelet-alaptetele:
+    target:
+      type: theorem
+      name: euklideszi-gyurukben-teljesul-a-szamelmelet-alaptetele
+  felbonthatatlan-elem:
+    target:
+      type: definition
+      name: felbonthatatlan-elem
+  modularis-osszeadas-es-szorzas:
+    target:
+      type: definition
+      name: modularis-osszeadas-es-szorzas
+  primtulajdonsagu-elem:
+    target:
+      type: definition
+      name: primtulajdonsagu-elem
+  szamelmelet-alaptetelenek-szukseges-feltetele:
+    target:
+      type: theorem
+      name: szamelmelet-alaptetelenek-szukseges-feltetele
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy $m$ prímszám, és a $Z_m$ gyűrű valamely $a$ és $b$ elemeinek moduláris szorzata $0$, azaz
+      $a\odot b=0$. Azt kell megmutatni, hogy ekkor $a$ és $b$ közül legalább az egyik szükségképpen $0$. Az
+      $a\odot b=0$ a [modularis-osszeadas-es-szorzas] alapján azt jelenti, hogy $\bmod_m(ab)=0$, vagyis az $ab$
+      szorzat $m$-mel osztva $0$ maradékot ad. Teljesül tehát az $m|ab$ oszthatóság. De mivel $m$ prím, ezért a
+      [primtulajdonsagu-elem] alapján ekkor az $m|a$ vagy $m|b$ oszthatóságok közül legalább az egyik szintén
+      teljesül. Első esetben $\bmod_m(a)=0$, második esetben pedig $\bmod_m(b)=0$. Azonban $a$ és $b$ is modulo $m$
+      maradékok, ezért a [modularis-osszeadas-es-szorzas] utáni megjegyés 5. pontja alapján az első esetben $a$, a
+      második esetben pedig $b$ szintén $0$. Ha tehát $m$ prímszám, akkor $Z_m$ valóban ***nullosztómentes***.
+  - type: narrative
+    content: |
+      Azt kell még belátni, hogy minden más esetben viszont találhatunk nullosztót. Tegyük ezért most fel, hogy $m$
+      ***nem prímszám*** és egyelőre tegyük fel azt is, hogy ***pozitív***. Mivel az egész számok gyűrűjében
+      teljesül a számelmélet alaptétele (lásd a [euklideszi-gyurukben-teljesul-a-szamelmelet-alaptetele]t), ezért a
+      [szamelmelet-alaptetelenek-szukseges-feltetele] alapján minden felbonthatatlan szám egyben prímszám is. Mivel
+      $m$ nem prímszám, így felbonthatatlan sem lehet (lásd a [felbonthatatlan-elem]t).
+  - type: formula
+    lead-in: |
+      Léteznek tehát olyan $a$ és $b$ ***pozitív*** egész számok, amelyekre teljesülnek az alábbiak:
+    content: |
+      \begin{aligned}&m=ab\\&0\lt a\lt m\\&0\lt b\lt m\end{aligned}
+  - type: narrative
+    content: |
+      A két egyenlőtlenség alapján tehát $a$ és $b$ a $Z_m$ gyűrű olyan nemnulla elemei, amelyek hagyományos
+      szorzata $m$-mel osztva $0$ maradékot ad, azaz $a\odot b=0$. Így tehát ők nullosztók a $Z_m$ gyűrűben. A
+      [modularis-osszeadas-es-szorzas] utáni megjegyzés 3. pontja alapján azonban az ellentettképzés nem
+      befolyásolja a $\bmod_m$ maradékképző függvényt, és így a $Z_m$ gyűrű műveletei ugyanúgy fognak viselkedni,
+      mint a $Z_{-m}$ gyűrű műveletei. Ezért ha $a$ és $b$ nullosztók voltak a $Z_m$ gyűrűben, akkor nullosztók
+      lesznek a $Z_{-m}$ gyűrűben is. Így tehát a nullosztómentesség valóban csak akkor teljesül, ha a modulus
+      prímszám (függetlenül attól, hogy pozitív vagy negatív).

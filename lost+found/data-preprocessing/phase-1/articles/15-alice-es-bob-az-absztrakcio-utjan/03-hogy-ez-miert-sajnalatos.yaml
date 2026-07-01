@@ -1,0 +1,59 @@
+type: section
+name: 03-hogy-ez-miert-sajnalatos
+title: Hogy ez miért sajnálatos?
+
+references:
+  antiszimmetrikus-relacio:
+    target:
+      type: definition
+      name: antiszimmetrikus-relacio
+  gyuru-reszbenrendezesenek-tulajdonsagai:
+    target:
+      type: theorem
+      name: gyuru-reszbenrendezesenek-tulajdonsagai
+  rendezett-halmaz:
+    target:
+      type: definition
+      name: rendezett-halmaz
+  szorzat-egyszerusitese-gyurukben:
+    target:
+      type: theorem
+      name: szorzat-egyszerusitese-gyurukben
+
+body:
+  - type: narrative
+    content: |
+      Azért, mert ez azt jelenti, hogy egy ***gyűrűben egy rendezési reláció egyszerre nem lehet kompatibilis
+      mindkét művelettel*** &ndash; legalábbis semmilyen gyakorlatilag hasznos esetben. Most megmutatjuk, miért.
+  - type: narrative
+    content: |
+      Tekintsünk továbbra is egy $(R,+,\cdot )$ gyűrűt, amelyről az egyszerűség kedvéért most tételezzük fel, hogy
+      kommutatív. Jelölje a rendezési relációnkat továbbra is a $\leq$ szimbólum, és tegyük fel, hogy $a\leq b$
+      teljesül valamilyen $a$ és $b$ gyűrűelemekre.
+  - type: formula
+    lead-in: |
+      Ha mármost $\leq$ kompatibilis lenne mindkét művelettel, akkor ez egyrészt a szorzással való kompatibilitás
+      miatt azt jelentené, hogy tetszőleges $c$ esetén mindkét alábbi egyenlőtlenség teljesülne:
+    content: |
+      \begin{aligned}ac &\leq bc \\ a(-c) &\leq b(-c)\end{aligned}
+  - type: formula
+    lead-in: |
+      Másrészt az összeadással való kompatibilitás miatt a [gyuru-reszbenrendezesenek-tulajdonsagai] továbbra is
+      igaz lenne, ezért az $a(-c)\leq b(-c)$ egyenlőtlenségből következne az $ac\geq bc$ egyenlőtlenség, tehát
+      végsősoron ezt kapnánk:
+    content: |
+      \begin{aligned}ac &\leq bc \\ ac &\geq bc\end{aligned}
+  - type: narrative
+    content: |
+      Mivel azonban a $\leq$ reláció egy rendezési reláció, ezért a [rendezett-halmaz] miatt
+      ***antiszimmetrikus***. Ez viszont a [antiszimmetrikus-relacio] miatt épp azt jelenti, hogy a fenti két
+      egyenlőtlenség csak abban az esetben teljesülhet egyszerre, ha $ac=bc$.
+  - type: narrative
+    content: |
+      Összefoglalva tehát azt kapnánk, hogy tetszőleges $a$, $b$ és $c$ gyűrűelemekre $a\leq b$ teljesülése esetén
+      $ac=bc$ is teljesülne. Ez például egy nullosztómentes gyűrűben a [szorzat-egyszerusitese-gyurukben] miatt azt
+      jelentené, hogy $a\leq b$-ből következne, hogy $a=b$. Így nem lenne túl sok értelme rendezésről beszélni.
+  - type: narrative
+    content: |
+      ***Kénytelenek leszünk tehát a mindkét művelettel való kompatibilitásnál némileg gyengébb követelményeket
+      támasztani a gyűrűkön "jól viselkedő" rendezési relációkkal szemben.***

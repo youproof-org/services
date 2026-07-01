@@ -1,0 +1,127 @@
+type: proof
+name: szamelmelet-alaptetelenek-szukseges-es-elegseges-feltetele-bizonyitas
+remarks: []
+references:
+  egyseg:
+    target:
+      type: definition
+      name: egyseg
+  felbontas-egyertelmusegenek-elegseges-feltetele:
+    target:
+      type: theorem
+      name: felbontas-egyertelmusegenek-elegseges-feltetele
+  felbonthatatlan-elem:
+    target:
+      type: definition
+      name: felbonthatatlan-elem
+  foidealok-es-oszthatosag-kapcsolata-egysegelemes:
+    target:
+      type: theorem
+      name: foidealok-es-oszthatosag-kapcsolata-egysegelemes
+  foidealok-es-oszthatosag-kapcsolata-nem-egysegelemes:
+    target:
+      type: theorem
+      name: foidealok-es-oszthatosag-kapcsolata-nem-egysegelemes
+  halmazrendszer-minimuma-es-maximuma:
+    target:
+      type: definition
+      name: halmazrendszer-minimuma-es-maximuma
+  reszgyuru-feltetele:
+    target:
+      type: theorem
+      name: reszgyuru-feltetele
+  reszhalmaz-reszbenrendezes:
+    target:
+      type: theorem
+      name: reszhalmaz-reszbenrendezes
+  szamelmelet-alaptetele:
+    target:
+      type: definition
+      name: szamelmelet-alaptetele
+  szamelmelet-alaptetele-nem-egysegelemes-integritastartomanyokban:
+    target:
+      type: theorem
+      name: szamelmelet-alaptetele-nem-egysegelemes-integritastartomanyokban
+  szamelmelet-alaptetelenek-szukseges-feltetele:
+    target:
+      type: theorem
+      name: szamelmelet-alaptetelenek-szukseges-feltetele
+content:
+  - type: narrative
+    content: |
+      ***Nézzük először az elégségességet!*** Azaz egyrészt tegyük fel, hogy $R$-ben minden felbonthatatlan elem
+      prímtulajdonságú, másrészt pedig azt, hogy a főideálokból álló $\mathcal{R}$ halmazrendszer bármely nemüres
+      részhalmazának létezik maximuma. Ez utóbbi azt jelenti, hogy akárhogyan is választunk ki akár végtelen sok
+      főideált az $\mathcal{R}$ halmazrendszerből, azok között mindig lesz ***maximális elem*** a
+      [halmazrendszer-minimuma-es-maximuma] szerinti értelemben. Ezt röviden úgy fogjuk mondani, hogy az
+      $\mathcal{R}$ halmazrendszerre ***teljesül maximumfeltétel***. Tegyük fel továbbá ***indirekt***, hogy ennek
+      ellenére léteznek olyan, a nullelemtől és egységektől különböző elemek, amelyek nem bonthatók fel
+      felbonthatatlanok szorzatára. Minden ilyen elemhez készítsük el az általa generált főideált, és legyen
+      $\mathcal{H}$ az összes ilyen főideál halmaza, amely tehát az $\mathcal{R}$ halmazrendszer egy részhalmaza.
+      Mivel $\mathcal{R}$-re teljesül a maximumfeltétel, ezért $\mathcal{H}$-ban van maximális elem. Jelöljük ezt a
+      főideált $(m)$-mel, amely tehát az $m$ elemet és annak többszöröseit tartalmazza.
+  - type: narrative
+    content: |
+      Az indirekt feltevésünk alapján ugye $m$-nek nem létezik prímtényezős felbontása. Emiatt az $m$ elem maga nem
+      lehet felbonthatatlan, máskülönben ő saját magának az egytényezős felbontása lenne a [szamelmelet-alaptetele]
+      értelmében. Mivel $m$ nem felbonthatatlan, ezért a [felbonthatatlan-elem] alapján ő felírható $m=a\cdot b$
+      alakban, méghozzá olymódon, hogy sem $a$, sem pedig $b$ nem egység, és nem is asszociáltja $m$-nek.
+      Teljesülnek tehát az $a|m$ és a $b|m$ oszthatóságok. Emiatt ha $R$ egységelemes, akkor a
+      [foidealok-es-oszthatosag-kapcsolata-egysegelemes], ha pedig $R$ nem egységelemes, akkor a
+      [foidealok-es-oszthatosag-kapcsolata-nem-egysegelemes] alapján teljesülnek az $(m)\sub (a)$  és az $(m)\sub
+      (b)$ szigorú tartalmazási relációk.
+  - type: narrative
+    content: |
+      Mivel az $(m)$ főideálról azt mondtuk, hogy a $\mathcal{H}$ halmazrendszer maximális eleme, így sem az $(a)$,
+      sem pedig a $(b)$ főideálok nem lehetnek benne $\mathcal{H}$-ban.
+  - type: formula
+    lead-in: |
+      Ezért nekik már létezik prímtényezős felbontásuk:
+    content: |
+      \begin{aligned}a&=p_1p_2\ldots p_k \\ b&=q_1q_2\ldots q_n\end{aligned}
+  - type: narrative
+    content: |
+      Ám ekkor $m=ab$ miatt e tényezők szorzata valójában $m$-nek lenne egy prímtényezős felbontása, amiről ugye
+      azt mondtuk, hogy nem létezik. A $\mathcal{H}$ halmazrendszer tehát szükségképpen üres, azaz &ndash; indirekt
+      feltevésünkkel ellentétben &ndash; mégiscsak ***minden elemnek létezik prímtényezős felbontása***. Továbbá,
+      mivel minden felbonthatatlan elem prímtulajdonságú, ezért a [felbontas-egyertelmusegenek-elegseges-feltetele]
+      értelmében egy ilyen prímtényezős felbontás &ndash; a tényezők sorrendjétől és asszociáltságtól eltekintve
+      &ndash; szükségképpen ***egyértelmű***.
+  - type: narrative
+    content: |
+      A tételben szereplő feltételek tehát valóban elégségesek az alaptételhez. Most ***vizsgáljuk meg, hogy vajon
+      tényleg szükségesek-e?*** Tételezzük fel tehát, hogy $R$-ben teljesül az alaptétel. Ebben az esetben egyrészt
+      a [szamelmelet-alaptetele-nem-egysegelemes-integritastartomanyokban] miatt $R$ biztosan ***egységelemes***.
+      Másrészt a [szamelmelet-alaptetelenek-szukseges-feltetele] miatt valóban ***minden felbonthatatlan elem
+      prímtulajdonságú***, így már csak a tételben szereplő 1. feltétel teljesülését kell ellenőrizni. Tegyük fel
+      ***indirekt***, hogy nem teljesül az 1. feltétel, azaz a főideálokból álló $\mathcal{R}$ halmazrendszernek
+      van olyan nemüres részhalmaza, amelyben nincs maximális elem.
+  - type: formula
+    lead-in: |
+      Ez a [halmazrendszer-minimuma-es-maximuma], valamint a $\sub$ reláció tranzitivitása
+      ([reszhalmaz-reszbenrendezes]) miatt azt jelenti, hogy létezik olyan végtelen, főideálokból álló sorozat,
+      amelyben minden főideál szigorúan tartalmazza a sorozatban előtte lévőt:
+    content: |
+      (a_1)\sub (a_2)\sub (a_3)\sub \ldots
+  - type: formula
+    lead-in: |
+      Mivel $R$ ***egységelemes***, ezért a [foidealok-es-oszthatosag-kapcsolata-egysegelemes] miatt az $a_1, a_2,
+      a_3, \ldots$ elemek közül semelyik sem asszociáltja semelyik másiknak, továbbá teljesülnek az alábbi
+      oszthatóságok:
+    content: |
+      \begin{aligned}a_2&|a_1 \\ a_3&|a_2 \\ a_4&|a_3 \\ &\vdots\end{aligned}
+  - type: narrative
+    content: |
+      Ebből egyrészt következik, hogy legkésőbb $a_2$-től kezdve ***a sorozat egyik tagja sem lehet a nullelem***.
+      Máskülönben ugyanis az általa generált főideál csak a nullelemet tartalmazná, és így a [reszgyuru-feltetele]
+      3. pontja miatt nem létezhetne nála szűkebb főideál. Másrészt viszont ***a sorozat egyetlen tagja sem lehet
+      egység***, máskülönben ugyanis az általa generált főideál a teljes $R$ gyűrű lenne &ndash; hiszen a [egyseg]
+      alapján egy egységnek minden gyűrűelem többszöröse &ndash;, és így nem létezhetne nála bővebb főideál.
+  - type: narrative
+    content: |
+      Az $a_2$ tehát egy olyan elem, amely nem a nullelem és nem is egység, továbbá az oszthatóság tranzitivitása
+      miatt végtelen sok olyan osztója van, amelyek közül egyik sem egység, és egyik sem asszociáltja $a_2$-nek.
+      Így tehát $a_2$-nek nem létezik prímtényezős felbontása, ami viszont lehetetlen, hiszen azt mondtuk, hogy
+      $R$-ben teljesül a számelmélet alaptétele. Csak az indirekt feltevésünk lehetett hibás, azaz a főideálokból
+      álló $\mathcal{R}$ halmazrendszernek valóban nem létezhet olyan nemüres részhalmaza, amelyben ne lenne
+      maximális elem.

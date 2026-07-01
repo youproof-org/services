@@ -1,0 +1,52 @@
+type: chapter
+name: 07-alice-es-bob-egymillio-dollaros-kerdese
+title: Alice és Bob egymillió dolláros kérdése
+
+abstract:
+  - type: narrative
+    content: |
+      Az előző részben megismerkedtünk a formális nyelvek és a Turing-gép fogalmával és láttuk, hogy a
+      Turing-gépeket hogyan lehet optimalizálási vagy döntési problémák megoldására használni. A továbbiakban
+      döntési problémákról, illetve azok "nehézségéről" lesz szó. Az előző részben láttuk, hogy minden döntési
+      problémának megfeleltethető egy valamilyen véges ábécé feletti formális nyelv. Amennyiben a probléma egyes
+      példányait (azaz az eldöntendő kérdéseket) ezen ábécé elemeiből alkotott jelsorozatokkal reprezentáljuk, úgy
+      az algoritmikus feladat annak eldöntése, hogy egy adott jelsorozat mondata-e egy adott nyelvnek vagy sem.
+      Azokat neveztük algoritmikusan eldönthető problémáknak, amelyek esetén a nyelvbe tartozás kérdése eldönthető
+      Turing-géppel anélkül, hogy az végtelen ciklusba keveredne. A továbbiakban csak ilyen problémákkal
+      foglalkozunk. De vajon mikor tekinthető egy döntési probléma "nehéznek" vagy "könnyűnek"? Mi számít
+      vízválasztónak ilyen tekintetben? Valóban léteznek igazán "nehéz" problémák, vagy csupán ügyetlenek vagyunk?
+      Mit mond erről a számítástudomány &ndash; és talán az egész matematika &ndash; egyik legfontosabb megoldatlan
+      sejtése? Ebben a részben erről lesz szó...
+prologue:
+  - type: narrative
+    content: |
+      Egy adott feladat esetén nem egyszerűen az a cél, hogy találjunk rá egy algoritmust. Az is fontos, hogy az
+      algoritmus bizonyos szempontból minél jobb legyen. Az algoritmust megvalósító Turing-gép szempontjából a
+      "jóságot" kétféleképpen mérhetjük. Mérhetjük egyrészt, hogy a Turing-gép a végrehajtás során mennyi cellát
+      használ fel a szalagjaiból, azaz hogy legalább mekkora tárolókapacitásra van szüksége ahhoz, hogy a döntést
+      meghozza. Ezt a Turing-gép ***tárkomplexitásának*** nevezzük. Másrészt mérhetjük azt is, hogy a Turing-gépnek
+      a döntésig hány elemi lépést kell megtennie. Ezt a Turing-gép ***időkomplexitásának*** nevezzük.
+  - type: narrative
+    content: |
+      Igazából az érdekel minket, hogy a bemenet méretének függvényében e két mennyiség milyen gyorsan növekszik.
+      Habár adott esetben mindkét érték fontos lehet, mi az egyszerűség kedvéért a továbbiakban elsősorban az
+      időkomplexitást fogjuk vizsgálni. Nézzünk először egy példát, hogy lássuk, pontosan miről is van szó.
+sections:
+  - 01-grafok-szinezese
+  - 02-az-algoritmusok-idokomplexitasanak-merese
+  - 03-a-p-problemaosztaly
+  - 04-az-np-problemaosztaly
+  - 05-a-tanu-tetel
+  - 06-a-tanu-tetel-bizonyitasa-vazlat
+  - 07-az-egymillio-dollaros-megoldatlan-problema
+
+epilogue:
+  - type: narrative
+    content: |
+      A következő részben megismerkedünk egy fontos fogalommal, amelynek a segítségével az algoritmikus problémákat
+      össze tudjuk majd hasonlítani "nehézség" szempontjából. Ennek kapcsán megismerkedünk az $NP$ problémaosztály
+      "krémjével", azokkal a problémákkal, amelyek bizonyos tekintetben a legnehezebb $NP$-beli feladatoknak
+      tűnnek. Ekkor fog világossá válni, hogy miért valószínűsítjük annyira, hogy $P$ nem azonos $NP$-vel, még ha
+      egzakt bizonyításunk nincs is erre. A kérdés többek között azért is rendkívül fontos, mivel a modern
+      információbiztonsági és rejtjelezési eljárások 5. részben említett algoritmikus biztonsága alapvetően ezen
+      áll vagy bukik.

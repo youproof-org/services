@@ -1,0 +1,18 @@
+type: proof
+name: bezout-lemma-euklideszi-gyurukben-bizonyitas-1
+remarks: []
+references:
+  bezout-lemma:
+    target:
+      type: theorem
+      name: bezout-lemma
+  euklideszi-gyuru-foidealgyuru:
+    target:
+      type: theorem
+      name: euklideszi-gyuru-foidealgyuru
+content:
+  - type: narrative
+    content: |
+      A [bezout-lemma] alapján ***az állítás teljesül minden főideálgyűrűben***. Minthogy a
+      [euklideszi-gyuru-foidealgyuru] értelmében ***minden euklidészi gyűrű főideálgyűrű***, ezért az állítás
+      nyilvánvalóan teljesül speciálisan az euklidészi gyűrűkben is.

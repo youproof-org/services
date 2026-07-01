@@ -1,0 +1,494 @@
+type: proof
+name: nem-miller-rabin-tanuk-reszcsoportindexe-bizonyitas
+remarks: []
+references:
+  csoporthomomorfizmusok-strukturatarto-tulajdonsagai:
+    target:
+      type: theorem
+      name: csoporthomomorfizmusok-strukturatarto-tulajdonsagai
+  csoportok-direkt-szorzata:
+    target:
+      type: theorem
+      name: csoportok-direkt-szorzata
+  egesz-szamok-kozotti-kongruencia:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia
+  egesz-szamok-kozotti-kongruencia-tulajdonsagai:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia-tulajdonsagai
+  egesz-szamok-maradekosztalygyurui:
+    target:
+      type: theorem
+      name: egesz-szamok-maradekosztalygyurui
+  euler-fermat-tetel-megforditasa:
+    target:
+      type: theorem
+      name: euler-fermat-tetel-megforditasa
+  gyuru-additiv-es-multiplikativ-csoportja:
+    target:
+      type: definition
+      name: gyuru-additiv-es-multiplikativ-csoportja
+  halmazok-direkt-szorzata:
+    target:
+      type: definition
+      name: halmazok-direkt-szorzata
+  hatvanyozas-azonossagai:
+    target:
+      type: theorem
+      name: hatvanyozas-azonossagai
+  kinai-maradektetel:
+    target:
+      type: theorem
+      name: kinai-maradektetel
+  lagrange-tetele:
+    target:
+      type: theorem
+      name: lagrange-tetele
+  maradekosztalygyuruk-dekompozicioja:
+    target:
+      type: theorem
+      name: maradekosztalygyuruk-dekompozicioja
+  nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten:
+    target:
+      type: theorem
+      name: nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten
+  redukalt-maradekosztaly-feltetele:
+    target:
+      type: theorem
+      name: redukalt-maradekosztaly-feltetele
+  reszcsoport-feltetele-veges-csoportok-eseten:
+    target:
+      type: theorem
+      name: reszcsoport-feltetele-veges-csoportok-eseten
+content:
+  - type: narrative
+    content: |
+      Az ***1. állítás*** bizonyításához ***először*** azt igazoljuk, hogy $D_n$ részcsoport
+      $(\Z/n\Z)^{\times}$-ben.
+  - type: ordered-list
+    lead-in: |
+      A [reszcsoport-feltetele-veges-csoportok-eseten] alapján ez az alábbi 3 feltétel ellenőrzését jelenti:
+    items:
+      - '$D_n$ ***nemüres***'
+      - 'Fennáll a $D_n\sube (\Z/n\Z)^{\times}$ ***tartalmazási reláció***'
+      - '$D_n$ ***zárt*** a $(\Z/n\Z)^{\times}$ csoport műveletére nézve.'
+  - type: formula
+    lead-in: |
+      ***Az első feltétel*** nyilván teljesül, hiszen teljesülnek az alábbi kongruenciák:
+    content: |
+      \begin{aligned}1^{2^{j_{\text{max}}}k} &\equiv 1\pmod{p_1^{c_1}} \\ 1^{2^{j_{\text{max}}}k} &\equiv
+      1\pmod{p_2^{c_2}} \\ &\vdots \\ 1^{2^{j_{\text{max}}}k} &\equiv 1\pmod{p_r^{c_r}}\end{aligned}
+  - type: narrative
+    content: |
+      Így tehát az $[1]_n$ maradékosztály biztosan benne van $D_n$-ben.
+  - type: narrative
+    content: |
+      ***A második feltételhez*** tekintsünk egy tetszőleges $[a]_n\in D_n$ maradékosztályt, és igazoljuk, hogy ő
+      egy ***redukált maradékosztály***, azaz $[a]_n\in (\Z/n\Z)^{\times}$.
+  - type: formula
+    lead-in: |
+      Mivel $[a]_n\in D_n$, ezért a tétel szövege alapján tetszőleges $p_i$ prímtényezőre teljesül az alábbi
+      kongruencia:
+    content: |
+      a^{2^{j_{\text{max}}}k}\equiv \pm 1\pmod{p_i^{c_i}}
+  - type: formula
+    lead-in: |
+      Akár $1$, akár $-1$ szerepel a jobboldalon, a kongruenciát négyzetre emelve az alábbit kapjuk:
+    content: |
+      a^{2^{j_{\text{max}}+1}k}\equiv 1\pmod{p_i^{c_i}}
+  - type: narrative
+    content: |
+      Találtunk tehát egy olyan pozitív kitevőt &ndash; nevezetesen $2^{j_{\text{max}}+1}k$-t &ndash;, amelyre
+      emelve $a$-t az eredmény kongruens lesz $1$-gyel modulo $p_i^{c_i}$. Ebből viszont a
+      [euler-fermat-tetel-megforditasa] alapján következik, hogy $a$ relatív prím $p_i^{c_i}$-hez, azaz
+      prímtényezős felbontása nem tartalmazza a $p_i$ prímtényezőt. Minthogy ez $n$ összes prímtényezőjével
+      végigjátszható, így azt kapjuk, hogy $a$ prímtényezős felbontás nem tartalmazza $n$ egyetlen prímtenyőjét
+      sem, tehát relatív prím magához $n$-hez. Ez viszont a [redukalt-maradekosztaly-feltetele] értelmében azt
+      jelenti, hogy $[a]_n$ ***redukált maradékosztály***, vagyis valóban benne van $(\Z/n\Z)^{\times}$-ben.
+  - type: narrative
+    content: |
+      ***Végül a harmadik feltételhez*** tekintsünk két tetszőleges $[a]_n$ és $[b]_n$ maradékosztályt a $D_n$
+      halmazban.
+  - type: formula
+    lead-in: |
+      A $D_n$ definíciója alapján ekkor teljesülnek az alábbi kongruenciák:
+    content: |
+      \begin{array}{cc} \begin{aligned}a^{2^{j_{\text{max}}}k} &\equiv \pm 1\pmod{p_1^{c_1}} \\
+      a^{2^{j_{\text{max}}}k} &\equiv \pm 1\pmod{p_2^{c_2}} \\ &\vdots \\ a^{2^{j_{\text{max}}}k} &\equiv \pm
+      1\pmod{p_r^{c_r}}\end{aligned} & \begin{aligned}b^{2^{j_{\text{max}}}k} &\equiv \pm 1\pmod{p_1^{c_1}} \\
+      b^{2^{j_{\text{max}}}k} &\equiv \pm 1\pmod{p_2^{c_2}} \\ &\vdots \\ b^{2^{j_{\text{max}}}k} &\equiv \pm
+      1\pmod{p_r^{c_r}}\end{aligned} \end{array}
+  - type: formula
+    lead-in: |
+      Ha az egymás mellett álló kongruenciákat összeszorozzuk, és alkalmazzuk a ***hatványozás azonosságairól***
+      szóló [hatvanyozas-azonossagai] 1. pontját, akkor az alábbi kongruenciákat kapjuk:
+    content: |
+      \begin{aligned}(ab)^{2^{j_{\text{max}}}k} &\equiv \pm 1\pmod{p_1^{c_1}} \\ (ab)^{2^{j_{\text{max}}}k} &\equiv
+      \pm 1\pmod{p_2^{c_2}} \\ &\vdots \\ (ab)^{2^{j_{\text{max}}}k} &\equiv \pm 1\pmod{p_r^{c_r}}\end{aligned}
+  - type: narrative
+    content: |
+      Vagyis az $[ab]_n$ maradékosztály szintén benne van $D_n$-ben. Mivel ez a [egesz-szamok-maradekosztalygyurui]
+      alapján épp az $[a]_n$ és $[b]_n$ maradékosztályok szorzata, ezért $D_n$ valóban zárt a $(\Z/n\Z)^{\times}$
+      csoport műveletére nézve. Minthogy a [reszcsoport-feltetele-veges-csoportok-eseten] mindhárom feltétele
+      teljesül, ezért $D_n$ részcsoport $(\Z/n\Z)^{\times}$-ben, azaz $D_n\leq (\Z/n\Z)^{\times}$.
+  - type: narrative
+    content: |
+      Most az ***1. állítás másik felét***, azaz a $H_n\leq D_n$ részcsoport relációt igazoljuk. A
+      [nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten] 2. pontja alapján azt már tudjuk, hogy $H_n$
+      részcsoport $(\Z/n\Z)^{\times}$-ban, azaz zárt a maradékosztályok közötti szorzásra nézve. Így már csak a
+      $H_n\sube D_n$ tartalmazási relációt kell igazolni. Legyen ezért $[a]_n$ a $H_n$ halmaz egy tetszőleges eleme
+      és mutassuk meg róla, hogy ő egyúttal benne van $D_n$-ben is.
+  - type: formula
+    lead-in: |
+      Mivel $[a]_n\in H_n$, így a tétel szövege alapján $a$-ra teljesül az alábbi kongurencia:
+    content: |
+      a^{2^{j_{\text{max}}}k}\equiv \pm 1\pmod n
+  - type: formula
+    lead-in: |
+      Ám ekkor az $n$ prímtényezős felbontásában szereplő összes $p_i^{c_i}$ tényező esetén a
+      [egesz-szamok-kozotti-kongruencia-tulajdonsagai] 9. pontja alapján teljesül az alábbi kongruencia is:
+    content: |
+      a^{2^{j_{\text{max}}}k}\equiv \pm 1\pmod{p_i^{c_i}}
+  - type: narrative
+    content: |
+      Ez viszont a tétel szövege alapján épp azt jelenti, hogy $[a]_n\in D_n$, azaz valóban teljesül a $H_n\sube
+      D_n$ tartalmazási reláció, és így $H_n$ tényleg részcsoport $D_n$-ben. Ezzel igazoltuk a tétel ***1.
+      állítását***.
+  - type: narrative
+    content: |
+      A ***2. állítás*** igazolásához ki kellene számítani a $H_n$ részcsoport $D_n$-beli indexét.
+  - type: ordered-list
+    lead-in: |
+      Ezt nem közvetlenül fogjuk megtenni, hanem a [csoporthomomorfizmusok-strukturatarto-tulajdonsagai]
+      alkalmazásával, méghozzá a következő lépésekben:
+    items:
+      - 'Konstruálunk egy olyan $I_n$-nel jelölt ***csoportot***, amelyben már könnyű kiszámítani a
+        részcsoportindexeket.'
+      - 'Konstruálunk egy $D_n$-ből $I_n$-be képző ***csoporthomomorfizmust***.'
+      - 'Megmutatjuk, hogy ez egy ***szürjektív*** csoporthomomorfizmus, azaz minden $I_n$-beli elem hozzá van
+        rendelve legalább egy $D_n$-beli elemhez.'
+      - 'Megmutatjuk, hogy a $H_n$ részcsoport ***teljes egészében tartalmazza*** ennek a bizonyos
+        csoporthomomorfizmusnak ***a magját***.'
+      - 'Megkeressük azt az $I_n$-beli részcsoportot, amelynek ***teljes inverz képe*** épp $H_n$.'
+      - 'Ennek a részcsoportnak az $I_n$-beli indexe már könnyen kiszámítható lesz, amely a [csoporthomomorfizmusok-strukturatarto-tulajdonsagai] 2. pontja alapján épp meg fog
+        egyezni a $H_n$ részcsoport $D_n$-beli indexével.'
+  - type: narrative
+    content: |
+      ***Kezdjük az 1. lépéssel!*** A kérdéses $I_n$ csoport álljon az ***összes*** olyan $r$ hosszú sorozatból
+      &ndash; ahol ugye $r$ a tétel szövege alapján az $n$ egész szám különböző prímtényezőinek a számát jelöli
+      &ndash;, amelyeknek mindegyik komponensében $+1$ vagy $-1$ áll.
+  - type: formula
+    lead-in: |
+      Azaz például az alábbi $r$ darab komponensből álló sorozat legyen $I_n$ egyik eleme:
+    content: |
+      \underbrace{(+1;-1;-1;+1;\ldots;-1)}_{r\ \text{darab komponens}}
+  - type: narrative
+    content: |
+      Az $I_n$ tehát tulajdonképpen nem más, mint a $\{+1;-1\}$ halmaz $r$-szer önmagával vett ***direkt
+      szorzata*** (lásd a [halmazok-direkt-szorzata]t). Az $I_n$ csoportművelete legyen a
+      [csoportok-direkt-szorzata]ben definiált ***komponensenkénti szorzás***. Azaz két ilyen $+1$-ekből és
+      $-1$-ekből álló $r$ hosszú sorozat ***szorzata*** legyen az a szintén $r$ hosszú sorozat, amelynek mindegyik
+      komponense a két bemeneti sorozat azonos pozícióban lévő komponenseinek szorzata.
+  - type: narrative
+    content: |
+      Mivel a $\{+1;-1\}$ halmaz épp az egész számok $\Z$ gyűrűjének egységeiből áll, ezért ez a halmaz a szokásos
+      szorzással tulajdonképpen $\Z$ multiplikatív csoportját alkotja (lásd a
+      [gyuru-additiv-es-multiplikativ-csoportja] utáni megjegyzést). Ekkor azonban a [csoportok-direkt-szorzata]
+      alapján $I_n$ is csoport a ***komponensenkénti szorzással***, mint művelettel. Minthogy az $I_n$ csoport $r$
+      hosszú sorozatokból áll, és egy-egy ilyen sorozat minden komponense $+1$ vagy $-1$ lehet, ezért ***$I_n$
+      rendje $2^r$***.
+  - type: narrative
+    content: |
+      ***Most 2. lépésként*** egy $D_n$-ből $I_n$-be képező $f_n:D_n\to I_n$ ***csoporthomomorfizmust***
+      konstruálunk a következőképpen. Legyen $[a]_n$ a $D_n$ csoport egy tetszőleges eleme. Ekkor ugye a tétel
+      szövege alapján az $a^{2^{j_{\text{max}}}k}$ hatvány az $n$ prímtényezős felbontásában szereplő ***minden***
+      $p_i^{c_i}$ tényező esetén $+1$-gyel vagy $-1$-gyel lesz kongruens modulo $p_i^{c_i}$. Az $f_n$ függvény
+      tehát rendelje hozzá $[a]_n$-hez azt az $I_n$-beli sorozatot, melynek $i$-edik komponensében épp az ennek
+      megfelelő $+1$ vagy $-1$ egész szám áll.
+  - type: formula
+    lead-in: |
+      Tegyük fel például, hogy $a$-ra az alábbi kongruenciák teljesülnek:
+    content: |
+      \begin{aligned}a^{2^{j_{\text{max}}}k} &\equiv +1\pmod{p_1^{c_1}} \\ a^{2^{j_{\text{max}}}k} &\equiv
+      -1\pmod{p_2^{c_2}} \\ a^{2^{j_{\text{max}}}k} &\equiv +1\pmod{p_3^{c_3}} \\ &\vdots \\
+      a^{2^{j_{\text{max}}}k} &\equiv -1\pmod{p_r^{c_r}}\end{aligned}
+  - type: formula
+    lead-in: |
+      Ekkor az imént definiált $f_n$ függvény az $[a]_n\in D_n$ maradékosztályhoz az alábbi sorozatot rendeli hozzá
+      az $I_n$ csoportból:
+    content: |
+      [a]_n \xmapsto{f_n} (+1;-1;+1;\ldots;-1)
+  - type: narrative
+    content: |
+      Könnyen láthatóan $f_n$ valóban egy ***csoporthomomorfizmus***. Tekintsünk ugyanis két tetszőleges $[a]_n$ és
+      $[b]_n$ maradékosztályt a $D_n$ halmazban, és legyen $p_i^{c_i}$ egy tetszőleges tényező az $n$ prímtényzős
+      felbontásában. Ekkor a tétel szövege alapján az $a^{2^{j_{\text{max}}}k}$ és $b^{2^{j_{\text{max}}}k}$
+      hatványok $+1$-gyel vagy $-1$-gyel lesznek kongruensek modulo $p_i^{c_i}$.
+  - type: formula
+    lead-in: |
+      Tegyük fel, hogy jelen esetben az alábbi kombináció teljesül, de természetesen a gondolatmenet a másik három
+      kombinációra is végigjátszható:
+    content: |
+      \begin{aligned}a^{2^{j_{\text{max}}}k} &\equiv +1\pmod{p_i^{c_i}} \\ b^{2^{j_{\text{max}}}k} &\equiv
+      -1\pmod{p_i^{c_i}}\end{aligned}
+  - type: formula
+    lead-in: |
+      Ekkor az $f_n([a]_n)$ sorozat $i$-edik pozíciójában $+1$, míg az $f_n([b]_n)$ szorozat $i$-edik pozíciójában
+      $-1$ fog szerepelni:
+    content: |
+      \begin{aligned}[a]_n &\xmapsto{f_n} (\ldots;+1;\ldots) \\ [b]_n &\xmapsto{f_n}
+      (\ldots;-1;\ldots)\end{aligned}
+  - type: formula
+    lead-in: |
+      E két sorozat szorzatában pedig ennek megfelelően $-1$ lesz az $i$-edik pozícióban, hiszen $1\cdot (-1)=-1$:
+    content: |
+      ? \xmapsto{f_n} (\ldots;-1;\ldots)
+  - type: narrative
+    content: |
+      Azt kell igazolni, hogy $f_n$ ***tartja a két csoport műveletét***, azaz hogy a baloldali kérdőjel helyére
+      behelyettesítve az $[a]_n$ és $[b]_n$ maradékosztályok szorzatát teljesül a fenti hozzárendelés.
+  - type: formula
+    lead-in: |
+      Mivel ez a szorzat a [egesz-szamok-maradekosztalygyurui] alapján épp az $[ab]_n$ maradékosztállyal egyezik
+      meg, ezért az a kérdés, hogy teljesül-e az alábbi hozzárendelés:
+    content: |
+      [ab]_n \xmapsto{f_n} (\ldots;-1;\ldots)
+  - type: formula
+    lead-in: |
+      Vagyis az $f_n$ függvény definíciója alapján az a kérdés, hogy teljesül-e az alábbi kongruencia:
+    content: |
+      (ab)^{2^{j_{\text{max}}}k} \equiv -1\pmod{p_i^{c_i}}
+  - type: narrative
+    content: |
+      Ez viszont nyilván teljesül, hiszen ezt a kongruenciát épp az $a$-ra és $b$-re vonatkozó két fentebbi
+      kongruencia összeszorzásával kapjuk meg. Minthogy a fenti gondolatmenet az $n$ prímtényezős felbontásában
+      szereplő összes többi tényezőre is szóról-szóra megismételhető, ezért $f_n$ ***valóban egy
+      csoporthomomorfizmus*** $D_n$-ből $I_n$-be.
+  - type: narrative
+    content: |
+      ***A 3. lépéshez*** meg kell mutatni, hogy az $f_n$ csoporthomomorfizmus ***szürjektív***. Azaz tetszőleges
+      $r$ hosszú, $+1$-ekből és $-1$-ekből álló sorozathoz létezik olyan $[a]_n\in D_n$ maradékosztály, amely épp a
+      kérdéses sorozatnak egy $f_n$ szerinti ősképe. Nevezzük most ***bázissorozatoknak*** azokat a sorozatokat,
+      melyeknek pontosan egy komponense $-1$, a többi viszont $+1$.
+  - type: unordered-list
+    lead-in: |
+      Ezekből a bázissorozatokból szorzásokkal előállítható az $I_n$ csoport tetszőleges $X$ eleme, méghozzá a
+      következő egyszerű eljárással:
+    items:
+      - 'Vegyük az egyik tetszőleges bázissorozatot, és szorozzuk meg önmagával. Ekkor a csupa $+1$-ekből álló
+        sorozatot kapjuk.'
+      - 'Ezt szorozzuk meg azokkal a bázissorozatokkal, amelyeknél épp azokban a pozíciókban van $-1$, ahol a
+        keresett $X$ sorozatban is.'
+  - type: narrative
+    content: |
+      Az így megkapott $X$ sorozatnak viszont $f_n$ művelettartó tulajdonsága miatt épp az a $D_n$-beli
+      maradékosztály lesz az ősképe, amelyet az $X$ előállításához használt bázissorozatok ősképeinek $D_n$-beli
+      szorzataként kapunk.
+  - type: formula
+    lead-in: |
+      Például tegyük fel, hogy $X$ előáll az $X_1$, $X_2$ és $X_3$ bázissorozatok szorzataként az $I_n$ csoportban,
+      azaz az iménti eljárással:
+    content: |
+      X_1\cdot X_1\cdot  X_2\cdot X_3=X
+  - type: formula
+    lead-in: |
+      Tegyük fel, hogy az $X_1$, $X_2$ és $X_3$ bázissorozatok $f_n$ szerinti ősképei $D_n$-ben mondjuk rendre az
+      $A_1$, $A_2$ és $A_3$ maradékosztályok, azaz:
+    content: |
+      \begin{aligned}f_n(A_1)&=X_1 \\ f_n(A_2)&=X_2 \\ f_n(A_3)&=X_3\end{aligned}
+  - type: formula
+    lead-in: |
+      Ekkor az $f_n$ csoporthomomorfizmus művelettartó tulajdonsága miatt:
+    content: |
+      \underbrace{f_n(A_1)}_{=X_1}\cdot \underbrace{f_n(A_1)}_{=X_1}\cdot \underbrace{f_n(A_2)}_{=X_2}\cdot
+      \underbrace{f_n(A_3)}_{=X_3}=\underbrace{f_n(A_1\cdot A_1\cdot A_2\cdot A_3)}_{=X}
+  - type: narrative
+    content: |
+      Elegendő tehát megmutatni, hogy a bázissorozatoknak létezik ősképe, ezek ismeretében ugyanis a fenti
+      eljárással megtalálhatjuk tetszőleges $X$ sorozat ősképét is. Ez a fenti példában nevezetesen az $A_1\cdot
+      A_1\cdot A_2\cdot A_3$ szorzat lesz. Ha tehát megmutatjuk, hogy a bázissorozatokhoz létezik őskép, akkor
+      azzal egyúttal azt is megmutattuk, hogy bármely $I_n$-beli sorozathoz is létezik őskép, azaz $f_n$ valóban
+      szürjektív.
+  - type: narrative
+    content: |
+      Tekintsünk ezért most egy tetszőleges $B_i$ bázissorozatot, amelynek tehát az $i$-edik pozíciójában $-1$, az
+      összes többi pozíciójában pedig $+1$ szerepel. E sorozat ősképének előállításához lényegében a
+      [nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten] 4. állításának bizonyításában szereplő
+      gondolatmenetet fogjuk megismételni. Az $n$ ugye felírható $n=p_i^{c_i}m$ alakban, ahol $p_i^{c_i}$ az $n$
+      prímtényezős felbontásában szereplő $i$-edik tényező, az $m$ pedig az összes többi tényező szorzata. Azaz
+      $p_i^{c_i}$ és $m$ relatív prímek.
+  - type: formula
+    lead-in: |
+      Ekkor ugye érvényes a ***kínai maradéktétel*** ([kinai-maradektetel]), amelynek következményeként a
+      [maradekosztalygyuruk-dekompozicioja] alapján fennáll az alábbi ***gyűrűizomorfizmus***:
+    content: |
+      \Z/n\Z \simeq \Z/p_i^{c_i}\Z \times \Z/m\Z
+  - type: formula
+    lead-in: |
+      A tétel szövegéből ugye azt is tudjuk, hogy a $j_{\text{max}}$ kitevőhöz létezik olyan $s$ egész szám,
+      amelyre teljesül az alábbi kongruencia:
+    content: |
+      s^{2^{j_{\text{max}}}}\equiv -1\pmod n
+  - type: formula
+    lead-in: |
+      Továbbá az említett bizonyításban azt is megmutattuk, hogy ekkor az $s^{2^{j_{\text{max}}}}$ hatvány
+      $-1$-gyel kongruens modulo $p_i^{c_i}$ is, azaz:
+    content: |
+      s^{2^{j_{\text{max}}}}\equiv -1\pmod{p_i^{c_i}}
+  - type: narrative
+    content: |
+      Ezt az $s$ egész számot most felhasználjuk a keresett $B_i$ bázissorozat ősképének előállításához.
+  - type: formula
+    lead-in: |
+      Legyen ez az őskép azon $a$ egész szám által reprezentált $[a]_n$ maradékosztály, amelyhez a
+      [maradekosztalygyuruk-dekompozicioja]ben szereplő $g$ gyűrűizomorfizmus épp az $([s]_{p_i^{c_i}};[1]_m)$
+      maradékosztálypárt rendeli hozzá a $\Z/p_i^{c_i}\Z \times \Z/m\Z$ szorzatgyűrűből, azaz:
+    content: |
+      [a]_n \xmapsto{g} ([s]_{p_i^{c_i}};[1]_m)
+  - type: formula
+    lead-in: |
+      Ha most a bal- és a jobboldalon álló kifejezést is $2^{j_{\text{max}}}k$-adik hatványra emeljük, akkor $g$
+      ***művelettartó tulajdonsága*** miatt érvényes lesz az alábbi hozzárendelés is:
+    content: |
+      [a^{2^{j_{\text{max}}}k}]_n \xmapsto{g} ([s^{2^{j_{\text{max}}}k}]_{p_i^{c_i}};[1^{2^{j_{\text{max}}}k}]_m)
+  - type: narrative
+    content: |
+      Mivel $k$ páratlan, és az $s^{2^{j_{\text{max}}}}$ hatvány $-1$-gyel kongruens modulo $p_i^{c_i}$, ezért ez
+      teljesülni fog az $s^{2^{j_{\text{max}}}k}$ hatványra is.
+  - type: formula
+    lead-in: |
+      Így tehát a fenti hozzárendelés az alábbira egyszerűsödik:
+    content: |
+      [a^{2^{j_{\text{max}}}k}]_n \xmapsto{g} ([-1]_{p_i^{c_i}};[1]_m)
+  - type: narrative
+    content: |
+      A [maradekosztalygyuruk-dekompozicioja] alapján a $g$ gyűrűizomorfizmus a baloldalon lévő
+      $[a^{2^{j_{\text{max}}}k}]_n$ maradékosztályhoz az
+      $([a^{2^{j_{\text{max}}}k}]_{p_i^{c_i}};[a^{2^{j_{\text{max}}}k}]_m)$ maradékosztálypárt rendeli hozzá, amely
+      maradékosztálypár tehát megegyezik a jobboldalon látható $([-1]_{p_i^{c_i}};[1]_m)$ maradékosztálypárral.
+  - type: formula
+    lead-in: |
+      Teljesülnek tehát az alábbi kongruenciák:
+    content: |
+      \begin{aligned}a^{2^{j_{\text{max}}}k} &\equiv -1\pmod{p_i^{c_i}} \\ a^{2^{j_{\text{max}}}k} &\equiv +1\pmod
+      m\end{aligned}
+  - type: narrative
+    content: |
+      Itt a második kongruencia $m$ modulusa az $n$ prímtényezős felbontásából minden $p_i^{c_i}$-n kívüli tényezőt
+      tartalmaz, így tehát az a [egesz-szamok-kozotti-kongruencia-tulajdonsagai] 9. pontjának felhasználásával
+      felbontható olyan kongruenciákra, amelyekben ezek a tényezők a modulusok.
+  - type: formula
+    lead-in: |
+      Azaz a fenti két kongruencia az alábbi $r$ darab kongruenciával ekvivalens:
+    content: |
+      \begin{aligned}a^{2^{j_{\text{max}}}k} &\equiv +1\pmod{p_1^{c_1}} \\ a^{2^{j_{\text{max}}}k} &\equiv
+      +1\pmod{p_2^{c_2}} \\ &\vdots \\ a^{2^{j_{\text{max}}}k} &\equiv +1\pmod{p_{i-1}^{c_{i-1}}} \\
+      a^{2^{j_{\text{max}}}k} &\equiv -1\pmod{p_i^{c_i}} \\ a^{2^{j_{\text{max}}}k} &\equiv
+      +1\pmod{p_{i+1}^{c_{i+1}}} \\ a^{2^{j_{\text{max}}}k} &\equiv +1\pmod{p_{i+2}^{c_{i+2}}} \\ &\vdots \\
+      a^{2^{j_{\text{max}}}k} &\equiv +1\pmod{p_r^{c_r}}\end{aligned}
+  - type: narrative
+    content: |
+      Ekkor az $[a]_n$ maradékosztály egyrészt a tétel szövege alapján benne van $D_n$-ben, másrészt pedig az $f_n$
+      csoporthomomorfizmus épp a $B_i$ bázissorozatot rendeli hozzá, amelynek tehát az $i$-edik pozíciójában $-1$,
+      az összes többi pozíciójában pedig $+1$ szerepel. Minthogy ilymódon tetszőleges bázissorozathoz találhatunk
+      ősképet a $D_n$ csoportban, ezért $f_n$ valóban egy szürjektív csoporthomomorfizmus $D_n$-ből $I_n$-be.
+  - type: narrative
+    content: |
+      ***A fentebb felvázolt stratégiánk 4. lépéseként*** megmutatjuk, hogy a tétel szövegében szereplő $H_n$
+      részcsoport &ndash; amelynek tehát a $D_n$-beli indexét szeretnénk meghatározni &ndash; teljes egészében
+      tartalmazza az $f_n$ csoporthomomorfizmus magját.
+  - type: formula
+    lead-in: |
+      Ezt most jelöljük $K_n$-nel, azaz:
+    content: |
+      K_n=\ker{f_n}
+  - type: figure
+    lead-in: |
+      Azt szeretnénk tehát megmutatni, hogy a következő a helyzet:
+    src: homomorfizmus_es_reszcsoport_viszonyok.jpg
+    alt: A Dn, Hn és Kn részcsoportok viszonya
+    caption: A $D_n$, $H_n$ és $K_n$ részcsoportok viszonya
+  - type: narrative
+    content: |
+      Tekintsünk ezért egy tetszőleges $[a]_n\in K_n$ maradékosztályt, és mutassuk meg, hogy ekkor $[a]_n\in H_n$
+      is teljesül. Mivel $[a]_n$ benne van az $f_n$ csoporthomomorfizmus $K_n$-nel jelölt magjában, ezért az ő
+      $f_n$ szerinti képe épp az $I_n$ csoport egységeleme lesz.
+  - type: formula
+    lead-in: |
+      Ez nem más, mint a csupa $+1$-esekből álló $r$ hosszú sorozat, azaz:
+    content: |
+      [a]_n \xmapsto{f_n} (+1;+1;\ldots;+1)
+  - type: formula
+    lead-in: |
+      Az $f_n$ csoporthomomorfizmus definíciójából adódik, hogy ekkor teljesülnek az alábbi kongruenciák:
+    content: |
+      \begin{aligned}a^{2^{j_{\text{max}}}k} &\equiv +1\pmod{p_1^{c_1}} \\ a^{2^{j_{\text{max}}}k} &\equiv
+      +1\pmod{p_2^{c_2}} \\ &\vdots \\ a^{2^{j_{\text{max}}}k} &\equiv +1\pmod{p_r^{c_r}}\end{aligned}
+  - type: narrative
+    content: |
+      Ez a [egesz-szamok-kozotti-kongruencia] 3. pontja alapján azt jelenti, hogy az $n$ prímtényezős felbontásában
+      szereplő összes $p_i^{c_i}$ tényezőre igaz, hogy ő osztója az $a^{2^{j_{\text{max}}}k}-1$ különbségnek is.
+  - type: formula
+    lead-in: |
+      Ekkor azonban nyilván maga $n$ is osztója ennek a különbségnek, hiszen:
+    content: |
+      \underbrace{p_1^{c_1}\cdot p_2^{c_2}\cdot \ldots \cdot p_r^{c_r}}_{=n}|a^{2^{j_{\text{max}}}k}-1
+  - type: formula
+    lead-in: |
+      Ez viszont ismét a [egesz-szamok-kozotti-kongruencia] 3. pontja alapján épp azt jelenti, hogy teljesül az
+      alábbi kongruencia:
+    content: |
+      a^{2^{j_{\text{max}}}k}\equiv 1\pmod n
+  - type: narrative
+    content: |
+      Tehát a tétel szövege alapján $[a]_n\in H_n$, azaz valóban teljesül a $K_n\sube H_n$ tartalmazási reláció.
+  - type: narrative
+    content: |
+      ***5. lépésként*** meghatározzuk azt az $I_n$-beli részcsoportot, amelynek ***teljes inverz képe*** épp
+      $H_n$. Nézzük ezért először, hogy $H_n$ elemei milyen $I_n$-beli sorozatokra képződnek le $f_n$ által.
+  - type: formula
+    lead-in: |
+      Ha $[a]_n$ a $H_n$ részcsoport valamely eleme, akkor a tétel szövege alapján az alábbi kongruenciák közül
+      teljesül valamelyik:
+    content: |
+      \begin{aligned}a^{2^{j_{\text{max}}}k} &\equiv +1\pmod n \\ a^{2^{j_{\text{max}}}k} &\equiv -1\pmod
+      n\end{aligned}
+  - type: narrative
+    content: |
+      Ez viszont a [egesz-szamok-kozotti-kongruencia-tulajdonsagai] 9. pontja alapján azt jelenti, hogy az
+      $a^{2^{j_{\text{max}}}k}$ hatvány ***vagy*** $+1$-gyel, ***vagy*** pedig $-1$-gyel kongruens modulo
+      $p_i^{c_i}$ is az $n$ egész szám prímtényezős felbontásában szereplő ***minden*** $p_i^{c_i}$ tényező esetén.
+      Az $f_n$ függvény tehát a definíciója alapján $H_n$ elemeihez vagy a csupa $+1$-esekből, vagy pedig a csupa
+      $-1$-esekből álló sorozatot rendeli hozzá.
+  - type: narrative
+    content: |
+      Azt kell még megmutatni, hogy ez ***csak*** a $H_n$-beli elemekre igaz. Legyen ezért $[a]_n\in D_n$ most egy
+      olyan maradékosztály, amely ***nincs benne*** $H_n$-ben. Tegyük fel ***indirekt***, hogy az $f_n$ függvény őt
+      ennek ellenére a $(+1;+1;\ldots;+1)$ vagy a $(-1;-1;\ldots;-1)$ sorozatok valamelyikére képezi le. Ez az
+      $f_n$ függvény definíciója alapján azt jelentené, hogy az $a^{2^{j_{\text{max}}}k}$ hatvány vagy $+1$-gyel,
+      vagy pedig $-1$-gyel kongruens modulo $p_i^{c_i}$ az $n$ prímtényezős felbontásában szereplő ***minden***
+      $p_i^{c_i}$ tényező esetén. Az előző gondolatmenet alapján tehát ez a hatvány $+1$-gyel vagy $-1$-gyel lenne
+      kongruens modulo $n$ is, ami azt jelentené, hogy $[a]_n$ mégiscsak benne lenne $H_n$-ben, ami ellentmondás.
+  - type: narrative
+    content: |
+      ***Összefoglalva*** tehát az ***1. lépésben*** mutattunk egy csoportot, amelyben könnyű részcsoportindexeket
+      számolni. Ez lenne az $I_n$ csoport, amelynek tehát a rendje $2^r$. Ezután a ***2. lépésben*** egy $f_n$
+      csoporthomomorfizmust mutattunk $D_n$ és $I_n$ között. Ezután ***3. lépésként*** igazoltuk, hogy $f_n$
+      ***szürjektív***, majd ***4. lépésként*** azt, hogy a $D_n$ csoport $H_n$ részcsoportja teljes egészében
+      tartalmazza $f_n$ magját. Végül az ***5. lépésben*** igazoltuk, hogy $H_n$ a teljes inverz képe $I_n$ azon
+      kételemű részcsoportjának, amely csak a csupa $+1$-ből és a csupa $-1$-ből álló sorozatból áll. Nevezzük most
+      ezt a részcsoportot $J_n$-nek.
+  - type: narrative
+    content: |
+      Minden adott tehát, hogy a ***6. lépésben*** alkalmazzuk a
+      [csoporthomomorfizmusok-strukturatarto-tulajdonsagai]t. Ez alapján a $J_n$ szerinti baloldali mellékosztályok
+      kölcsönösen egyértelmű megfeleltetésben állnak a $H_n$ szerinti baloldali mellékosztályokkal, következésképp
+      az $|I_n:J_n|$ részcsoportindex épp megegyezik a $|D_n:H_n|$ részcsoportindexszel.
+  - type: formula
+    lead-in: |
+      Mivel $J_n$ rendje $2$, $I_n$ rendje pedig $2^r$, ezért a ***Lagrange-tétellel*** ([lagrange-tetele])
+      összevetve megkapjuk a tétel ***2. állítását***:
+    content: |
+      |I_n:J_n|=|D_n:H_n|=2^{r-1}

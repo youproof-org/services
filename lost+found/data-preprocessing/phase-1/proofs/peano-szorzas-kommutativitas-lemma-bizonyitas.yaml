@@ -1,0 +1,104 @@
+type: proof
+name: peano-szorzas-kommutativitas-lemma-bizonyitas
+remarks: []
+references:
+  peano-osszeadas:
+    target:
+      type: definition
+      name: peano-osszeadas
+  peano-osszeadas-asszociativitas:
+    target:
+      type: theorem
+      name: peano-osszeadas-asszociativitas
+  peano-osszeadas-kommutativitas:
+    target:
+      type: theorem
+      name: peano-osszeadas-kommutativitas
+  peano-szorzas:
+    target:
+      type: definition
+      name: peano-szorzas
+content:
+  - type: narrative
+    content: |
+      Az $a$-ra vonatkozó teljes indukciót alkalmazunk, azaz feltesszük, hogy az állítás már igaz valamilyen $a=n$
+      természetes számra. ***Indukciós feltevésünk*** szerint tehát $s(b)\cdot n=(b\cdot n) + n$.
+  - type: formula
+    lead-in: |
+      Azt kell bizonyítanunk, hogy ekkor az állítás $a=s(n)$-re is teljesül, azaz:
+    content: |
+      s(b)\cdot s(n) = (b\cdot s(n)) + s(n)
+  - type: formula
+    lead-in: |
+      A Peano-szorzás [peano-szorzas]jának 2. pontja miatt:
+    content: |
+      s(b)\cdot s(n) = (s(b)\cdot n) + s(b) = \ldots
+  - type: formula
+    lead-in: |
+      Az indukciós feltétel miatt a zárójel átírható:
+    content: |
+      \ldots = (\underbrace{(b\cdot n) + n}_{=s(b)\cdot n}) + s(b) = \ldots
+  - type: formula
+    lead-in: |
+      Tekintve, hogy az összeadás asszociatív (lásd: [peano-osszeadas-asszociativitas]), ezért ezt a kifejezést
+      átzárójelezhetjük:
+    content: |
+      \ldots = (b\cdot n) + (n + s(b)) = \ldots
+  - type: formula
+    lead-in: |
+      A Peano-összeadás [peano-osszeadas]jának 2. pontja miatt a zárójel átírható:
+    content: |
+      \ldots = (b\cdot n) + \underbrace{s(n+b)}_{=(n + s(b))} = \ldots
+  - type: formula
+    lead-in: |
+      Tekintve, hogy az összeadás kommutatív (lásd: [peano-osszeadas-kommutativitas]), ezért a jobboldali tagban
+      szereplő $s$ függvény paramétere átírható:
+    content: |
+      \ldots = (b\cdot n) + s(\underbrace{b+n}_{=n+b}) = \ldots
+  - type: formula
+    lead-in: |
+      Ismételten a Peano-összeadás [peano-osszeadas]jának 2. pontját alkalmazva:
+    content: |
+      \ldots = (b\cdot n) + \underbrace{(b+s(n))}_{=s(b+n)} = \ldots
+  - type: formula
+    lead-in: |
+      Az összeadás asszociativitása miatt ez a kifejezés ismételten átzárójelezhető:
+    content: |
+      \ldots = ((b\cdot n) + b)+s(n) = \ldots
+  - type: formula
+    lead-in: |
+      Végül a Peano-szorzás [peano-szorzas]jának 2. pontja miatt a zárójelben lévő kifejezés átírható:
+    content: |
+      \ldots = (\underbrace{b\cdot s(n)}_{=(b\cdot n)+b})+s(n)
+  - type: narrative
+    content: |
+      Vagyis azt kaptuk, hogy valóban $s(b)\cdot \underbrace{s(n)}_{=a} = (b\cdot \underbrace{s(n)}_{=a}) +
+      \underbrace{s(n)}_{=a}$.
+  - type: narrative
+    content: |
+      Felállítottuk tehát a dominósort, és beláttuk, hogy bármely dominó felborítása esetén a soron következő
+      dominó is fel fog borulni.
+  - type: formula
+    lead-in: |
+      Ezért most felborítjuk az első dominót, azaz igazoljuk, hogy az állítás igaz $a=0$-ra, azaz:
+    content: |
+      s(b)\cdot \underbrace{0}_{=a} = (b\cdot \underbrace{0}_{=a}) + \underbrace{0}_{=a}
+  - type: formula
+    lead-in: |
+      Ez viszont nyilvánvalóan teljesül, hiszen a Peano-szorzás [peano-szorzas]jának 1. pontja miatt:
+    content: |
+      s(b)\cdot 0 = 0 = \ldots
+  - type: formula
+    lead-in: |
+      Szintén ugyanezen ok miatt:
+    content: |
+      \ldots = b\cdot 0 = \ldots
+  - type: formula
+    lead-in: |
+      Végül a Peano-összeadás [peano-osszeadas]jának 1. pontja miatt:
+    content: |
+      \ldots = (b\cdot 0) + 0
+  - type: narrative
+    content: |
+      Borul tehát az első dominó, és vele együtt a teljes dominósor, azaz minden $b$ és $a$ számra igaz, hogy
+      $s(b)\cdot a = (b\cdot a) + a$.

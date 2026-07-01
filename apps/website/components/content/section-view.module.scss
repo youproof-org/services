@@ -1,0 +1,22 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+.section {
+  margin-top: 2.5rem;
+}
+
+.heading {
+  font-size: 1.3rem;
+  font-weight: $font-x-bold;
+  margin-bottom: 1rem;
+
+  @include tablet {
+    font-size: 1.5rem;
+  }
+}
+
+.section-label {
+  font-weight: $font-x-bold;
+  color: $gray-500;
+  margin-right: 0.5rem;
+}

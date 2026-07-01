@@ -1,0 +1,20 @@
+type: definition
+name: primitiv-gyok
+remarks:
+  - primitiv-gyok-megjegyzes
+references:
+  ciklikus-csoportok:
+    target:
+      type: definition
+      name: ciklikus-csoportok
+content:
+  - type: narrative
+    content: |
+      Legyen $m\gt 0$ valamilyen pozitív egész szám. Amennyiben a $\Z/m\Z$ gyűrű multiplikatív csoportja &ndash;
+      azaz a $(\Z/m\Z)^{\times}$ csoport &ndash; ***ciklikus***, akkor azt mondjuk, hogy ***létezik primitív gyök
+      modulo $m$***.
+  - type: narrative
+    content: |
+      Legyen $[a]_m$ egy modulo $m$ redukált maradékosztály, azaz a $(\Z/m\Z)^{\times}$ multiplikatív csoport egy
+      eleme. Amennyiben $[a]_m$ ***generálja*** a teljes $(\Z/m\Z)^{\times}$ csoportot a [ciklikus-csoportok]
+      szerinti értelemben, akkor az $[a]_m$ maradékosztályt ***modulo $m$ primitív gyöknek*** nevezzük.

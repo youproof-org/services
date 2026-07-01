@@ -1,0 +1,85 @@
+type: section
+name: 02-a-vagyon-mint-mennyiseg
+title: A vagyon, mint mennyiség
+
+references:
+  ketvaltozos-relacio:
+    target:
+      type: definition
+      name: ketvaltozos-relacio
+  peano-osszeadas:
+    target:
+      type: definition
+      name: peano-osszeadas
+
+body:
+  - type: narrative
+    content: |
+      Az előző szakaszban tehát egy mérhető mennyiség fogalma kezdett el körvonalazódni, amely &ndash; mint látni
+      fogjuk &ndash; alapjában véve más, mint azok a mennyiségek, amelyeket eddig az $\N$ halmaz elemeivel tudtunk
+      mérni. A fenti bankos példában ezt a mennyiséget "vagyonnak" neveztük, amit a "betéti" és a "hitelszámla"
+      egyenlegével, azaz lényegében egy természetes számokból álló párral jellemeztünk. A továbbiakban is használni
+      fogjuk ezeket a bankokhoz köthető fogalmakat a könnyebb érthetőség kedvéért, azonban tartsuk szem előtt, hogy
+      absztrakt szinten ezek lényegtelenek.
+  - type: narrative
+    content: |
+      Egy vagyont, mint mennyiséget leíró matematikai objektum tehát a természetes számpárok halmazának egy eleme.
+      Ezt a halmazt az előző rész fényében $\N \times \N$-nel jelöljük. Ennek a halmaznak egy eleme például a
+      $(3;2)$ számpár, egy másik eleme pedig mondjuk a $(4;3)$ számpár. Általánosságban egy $(a;b)$ számpár &ndash;
+      ahol $a$ is és $b$ is természetes számok &ndash; egy olyan ügyfél vagyonát jelöli, akinek a betéti számláján
+      $a$ darab, míg a hitelszámláján $b$ darab aranytallér van nyilvántartva.
+  - type: narrative
+    content: |
+      Vegyük észre, hogy egy ügyfél vagyona nem változik, ha mind a hitel-, mind pedig a betéti számlájának
+      egyenlegét ***ugyanazzal az összeggel*** növeljük. Előfordulhat tehát az, hogy egy $(a;b)$ számpár ugyanazt a
+      vagyont jelöli, mint egy $(c;d)$ számpár, holott $a\ eq c$ és $b\ eq d$. Az előző részben megismertük a
+      ***kétváltozós reláció*** fogalmát ([ketvaltozos-relacio]), amellyel egy halmaz elemei között valamilyen
+      viszony meglétét, vagy meg nem létét fejezhetjük ki. Jelen esetben az $\N\times \N$ halmazban lévő számpárok
+      között szeretnénk azt a viszonyt kifejezni, hogy két ilyen számpár "ugyanazt a vagyont jelöli"-e vagy nem.
+  - type: narrative
+    content: |
+      Most öntsük matematikai formába ezt az ***"ugyanazt a vagyont jelöli"-relációt*** az előző bekezdésben
+      foglaltak alapján.
+  - type: embed
+    target:
+      type: definition
+      name: termeszetes-szamparok-ekvivalenciarelacioja
+  - type: narrative
+    content: |
+      A definíció első pontja tehát azt fejezi ki, hogy ha a reláció baloldalán lévő számpár mindkét komponensét
+      ugyanazzal az $n$ értékkel növeljük meg, akkor az így kapott jobboldali számpár ugyanazt a vagyont jelölje. A
+      második pont ugyanezt mondja ki, csak a másik irányban. Erre azért van szükség, mivel szeretnénk, ha az
+      "ugyanazt a vagyont jelöli"-reláció szimmetrikus lenne. Ha tehát két számpár között fennáll az egyik
+      irányban, akkor fennálljon a másik irányban is. Nyilvánvaló, hogy egy valamiféle egyenlőséget vagy
+      azonosságot kifejező relációtól elvárjuk ezt a tulajdonságot. Ezt azonban rögzíteni kell a definícióban, ha a
+      továbbiakban hivatkozni szeretnénk rá. Ez alapján például $(3;2)\sim (4;3)$ a definíció 1. pontja miatt, míg
+      $(4;3)\sim (3;2)$ a definíció 2. pontja miatt teljesül.
+  - type: narrative
+    content: |
+      A fenti definíció jól leírja azt az intuitív gondolatot, hogy mikor tekintünk két vagyont leíró számpárt
+      azonosnak. Ez azonban a gyakorlatban nem túl praktikus. Ha például az a kérdés, hogy $(2738;12993)\sim (3625;
+      13885)$ teljesül-e, akkor máris gondba kerülünk. Mondhatnánk azt, hogy mivel a $3625-2738$ és a $13885-12993$
+      különbségek nem egyeznek meg, ezért ez a reláció nem teljesül. De ne feledjük, hogy ez csalás lenne, mivel a
+      ***kivonás*** fogalma még ***nem létezik*** számunkra. Ezért szükségünk van egy olyan kritériumra, amelyet a
+      már létező fogalmainkkal könnyen tudunk ellenőrizni, és pontosan azokban az esetekben teljesül, amikor a
+      definíció követelménye is. Egy ilyen kritériumot fogalmaz meg az alábbi tétel.
+  - type: embed
+    target:
+      type: theorem
+      name: termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel
+  - type: narrative
+    content: |
+      Vegyük észre, hogy ez már egy olyan feltétel, amely kizárólag a [peano-osszeadas]ban bevezetett
+      Peano-összeadást használja. Ha ez a tétel igaz, akkor az azt jelenti, hogy akár ezzel a kritériummal is
+      definiálhattuk volna a $\sim$ relációt. Ebből azonban nem látszódna egyértelműen a vagyoni helyzetek mérésére
+      vonatkozó analógia. Most nézzük a tétel bizonyítását. Egy kicsit hosszadalmas lesz, de érdemes végigkövetni.
+  - type: embed
+    target:
+      type: proof
+      name: termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel-bizonyitas
+  - type: narrative
+    content: |
+      Most tehát van egy olyan relációnk, amellyel a vagyoni helyzeteket mérő számpárok &ndash; tehát lényegében az
+      $\N \times \N$ halmaz elemei &ndash; között valamiféle egyenlőséget tudunk kifejezni. Azt fogjuk
+      megvizsgálni, hogy milyen hatása van ennek a relációnak az $\N \times \N$ halmazra. Ehhez egy újabb fontos
+      fogalommal fogunk megismerkedni.

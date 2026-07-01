@@ -1,0 +1,17 @@
+type: theorem
+name: egysegtenyezo-nullosztomentes-esetben
+proofs:
+  - egysegtenyezo-nullosztomentes-esetben-bizonyitas
+remarks: []
+content:
+  - type: formula
+    lead-in: |
+      Legyenek $a\eq 0$, $b$ és $c$ egy ***integritástartomány*** valamely elemei, amelyekre teljesül az alábbi:
+    content: |
+      a=b\cdot c
+  - type: narrative
+    content: |
+      Ekkor ha $b$ és $c$ közül valamelyik egység, akkor a másik $a$-nak asszociáltja.
+  - type: narrative
+    content: |
+      ***Fordítva:*** ha $b$ és $c$ közül valamelyik $a$-nak asszociáltja, akkor a másik egység.

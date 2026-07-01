@@ -1,0 +1,39 @@
+<!-- wp:paragraph -->
+<p>Tekintsük azt az [latex]f[/latex] gyűrűhomomorfizmust, amelynek [latex]I[/latex] a magja. Ez egy valamilyen, számunkra ismeretlen [latex]X[/latex] gyűrűbe képez, amelynek nullelemét jelöljük most [latex]0_X[/latex]-szel, míg az [latex]R[/latex] gyűrű nullelemét jelöljük [latex]0_R[/latex]-rel. Az [latex]f[/latex] függvény tehát [latex]I[/latex] minden eleméhez [latex]0_X[/latex]-et rendeli hozzá, hiszen [latex]\ker f=I[/latex]. Ezt a szituációt mutatja az alábbi ábra.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":4845,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_18_gyuruhomomorfizmus_magja.jpg" alt="Gyűrűhomomorfizmus magja" class="wp-image-4845"/><figcaption>Gyűrűhomomorfizmus magja</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Az <strong><em>1. állítás</em></strong> igazolásához azt kell megmutatni, hogy [latex]I[/latex] részgyűrű [latex]R[/latex]-ben. Ez a [yp_element slug="reszgyuru-feltetele" type="link" /] alapján pontosan akkor teljesül, ha [latex]I[/latex] tartalmazza [latex]0_R[/latex]-t, valamint zárt az [latex]R[/latex] gyűrű mindkét műveletére és az [latex]R[/latex]-beli ellentettképzésre.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]f[/latex] gyűrűhomomorfizmus, ezért nyilván összegtartó is, így a [yp_element slug="osszegtarto-lekepezes-nullelem-es-ellentettkepzestarto" type="link" /] értelmében tartja a nullelemet és az ellentettképzést. Azaz egyrészt [latex]f(0_R)=0_X[/latex], és így [latex]0_R[/latex] valóban benne van [latex]f[/latex] magjában, azaz [latex]I[/latex]-ben. Másrészt ha valamilyen [latex]a[/latex] benne van [latex]I[/latex]-ben, akkor [latex]f(a)=0_X[/latex], és így az ellentettképzés tartása miatt [latex]f(-a)=-f(a)=-0_X=0_X[/latex]. Azaz [latex]a[/latex] ellentettjének is [latex]0_X[/latex] a képe, következésképp ő is benne van [latex]I[/latex]-ben.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az összeadásra való zártság szintén [latex]f[/latex] összegtartó tulajdonságából ered. Ha ugyanis [latex]a[/latex] és [latex]b[/latex] az [latex]I[/latex] két tetszőleges eleme, akkor egyrészt [latex]f(a)=0_X[/latex] és [latex]f(b)=0_X[/latex]. Másrészt viszont az összegtartás miatt az ő összegükre teljesül az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f(a+b)=f(a)+f(b)=\underbrace{0_X}_{=f(a)}+\underbrace{0_X}_{=f(b)}=0_X[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Tehát az [latex]a+b[/latex] összeg is az [latex]X[/latex] gyűrű nullelemére képeződik, következésképp ő is benne van [latex]I[/latex]-ben. A szorzásra való zártság teljesen hasonló módon következik [latex]f[/latex] szorzástartó tulajdonságából. Mivel teljesül a [yp_element slug="reszgyuru-feltetele" type="link" /] minden feltétele, ezért [latex]I[/latex] valóban részgyűrű [latex]R[/latex]-ben.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>2. állítás</em></strong> igazolásához tegyük fel, hogy [latex]r[/latex] az [latex]R[/latex] gyűrű tetszőleges – tehát nem feltétlenül [latex]I[/latex]-beli – eleme. Azt kell megmutatni, hogyha ezzel akár balról, akár jobbról megszorzunk egy [latex]I[/latex]-beli [latex]a[/latex] elemet, akkor az eredmény is [latex]I[/latex]-beli lesz. Mivel [latex]a[/latex] benne van [latex]I[/latex]-ben, ezért [latex]f(a)=0_X[/latex]. Következésképp [latex]f[/latex] szorzástartó tulajdonsága miatt az [latex]r\cdot a[/latex] és [latex]a\cdot r[/latex] szorzatok képére igazak lesznek az alábbiak:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}f(r\cdot a)&amp;=f(r)\cdot \overbrace{f(a)}^{=0_X}=0_X \\ f(a\cdot r)&amp;=\underbrace{f(a)}_{=0_X}\cdot f(r)=0_X\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Elképzelhető tehát, hogy a két szorzatnak nem ugyanaz lesz az eredménye az [latex]R[/latex] gyűrűben (kivéve persze ha kommutatív gyűrűről van szó), de az biztos, hogy mindkét szorzat [latex]f[/latex] szerinti képe az [latex]X[/latex] gyűrű nulleleme lesz. Következésképp valóban benne vannak [latex]I[/latex]-ben.</p>
+<!-- /wp:paragraph -->

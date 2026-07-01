@@ -1,0 +1,43 @@
+type: proof
+name: euler-fuggveny-alternativ-definicio-bizonyitas
+remarks: []
+references:
+  egesz-szamok-kozotti-kongruencia:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia
+  euler-fuggveny:
+    target:
+      type: definition
+      name: euler-fuggveny
+  modularis-osszeadas-es-szorzas:
+    target:
+      type: definition
+      name: modularis-osszeadas-es-szorzas
+  redukalt-maradekosztaly-feltetele:
+    target:
+      type: theorem
+      name: redukalt-maradekosztaly-feltetele
+  teljes-es-redukalt-maradekrendszer-feltetele:
+    target:
+      type: theorem
+      name: teljes-es-redukalt-maradekrendszer-feltetele
+content:
+  - type: narrative
+    content: |
+      A [modularis-osszeadas-es-szorzas] utáni megjegyzés 5. pontja alapján a $\bmod_m$ maradékképző függvény a
+      $0$, $1$, $2$, ..., $m-1$ egész számokhoz mind különböző modulo $m$ maradékot rendel. Így a
+      [egesz-szamok-kozotti-kongruencia] 1. pontja alapján ezek a számok páronként inkongruensek. Továbbá, mivel a
+      számuk épp $m$, ezért a [teljes-es-redukalt-maradekrendszer-feltetele] alapján egy ***teljes
+      maradékrendszert*** alkotnak modulo $m$.
+  - type: narrative
+    content: |
+      Mivel ez egy teljes maradékrendszer, ezért tartalmazza egy-egy reprezentánsát minden modulo $m$
+      maradékosztálynak, így a redukált maradékosztályoknak is. Ez utóbbiak viszont biztosan mind relatív prímek
+      $m$-hez, hiszen az általuk reprezentált redukált maradékosztályok a [redukalt-maradekosztaly-feltetele]
+      alapján csupa $m$-hez relatív prím elemekből állnak.
+  - type: narrative
+    content: |
+      A [euler-fuggveny] szerint az Euler-féle $\varphi$-függvény a modulo $m$ redukált maradékosztályok számát
+      adja meg. A fentiek alapján ez a szám valóban meg fog egyezni azon egészek számával, amelyek $0$, $1$, $2$,
+      ..., $m-1$ teljes maradékrendszer elemei közül ***relatív prímek*** $m$-hez.

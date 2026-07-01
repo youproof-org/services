@@ -1,0 +1,17 @@
+type: theorem
+name: foidealok-es-oszthatosag-kapcsolata-nem-egysegelemes
+proofs:
+  - foidealok-es-oszthatosag-kapcsolata-nem-egysegelemes-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ tetszőleges ***kommutatív és nullosztómentes, de NEM egységelemes gyűrű***, valamint legyenek
+      $a\eq 0$ és $b$ az $R$ tetszőleges elemei.
+  - type: ordered-list
+    lead-in: |
+      Ekkor teljesülnek az alábbiak:
+    items:
+      - 'Az $a|b$ oszthatóság ***akkor és csak akkor*** teljesül, ha teljesül a $(b)\sub (a)$ ***szigorú
+        tartalmazási reláció***.'
+      - 'Az $(a)=(b)$ egyenlőség ***akkor és csak akkor*** teljesül, ha $a=b$.'

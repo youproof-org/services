@@ -1,0 +1,21 @@
+type: definition
+name: linearis-kongruenciak
+remarks:
+  - linearis-kongruenciak-megjegyzes
+content:
+  - type: narrative
+    content: |
+      Legyen $a$ és $b$ tetszőleges, $m\gt 0$ pedig valamilyen ***pozitív*** egész szám.
+  - type: formula
+    lead-in: |
+      Ekkor az alábbi kongruenciaegyenletet ***lineáris kongruenciának*** nevezzük:
+    content: |
+      a\cdot x\equiv b\pmod m
+  - type: narrative
+    content: |
+      Egy lineáris kongruencia egy ***megoldásán*** egy olyan modulo $m$ ***maradékosztályt*** értünk, amelynek
+      ***tetszőleges*** elemét $x$ helyére behelyettesítve a kongruencia teljesül.
+  - type: narrative
+    content: |
+      Egy lineáris kongurencia ***megoldásszáma*** alatt azon modulo $m$ ***maradékosztályok számát*** értjük,
+      amelyek megoldásai az adott lineáris kongruenciának.

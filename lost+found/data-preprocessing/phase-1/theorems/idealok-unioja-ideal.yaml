@@ -1,0 +1,23 @@
+type: theorem
+name: idealok-unioja-ideal
+proofs:
+  - idealok-unioja-ideal-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ egy ***tetszőleges gyűrű***, valamint legyen $\mathcal{S}$ egy olyan, ***részgyűrűkből*** álló
+      halmazrendszer $R$ fölött, amelyben bármely két részgyűrű között legalább az egyik irányban fennáll a $\sube$
+      szimbólummal jelölt tartalmazási reláció. Ekkor az $\mathcal{S}$-ben lévő halmazok ***uniója is részgyűrű***
+      $R$-ben.
+  - type: narrative
+    content: |
+      Ehhez hasonlóan legyen $\mathcal{I}$ egy olyan, ***balideálokból (illetve jobbideálokból)*** álló
+      halmazrendszer $R$ fölött, amelyben bármely két balideál (illetve jobbideál) között legalább az egyik
+      irányban fennáll a $\sube$ szimbólummal jelölt tartalmazási reláció. Ekkor az $\mathcal{I}$-ben lévő halmazok
+      ***uniója is balideál (illetve jobbideál)*** $R$-ben.
+  - type: narrative
+    content: |
+      Végül ha $\mathcal{J}$ egy olyan, ***ideálokból*** álló halmazrendszer $R$ fölött, amelyben bármely két ideál
+      között legalább az egyik irányban fennáll a $\sube$ szimbólummal jelölt tartalmazási reláció, akkor a
+      $\mathcal{J}$-ben lévő halmazok ***uniója is ideál*** $R$-ben.

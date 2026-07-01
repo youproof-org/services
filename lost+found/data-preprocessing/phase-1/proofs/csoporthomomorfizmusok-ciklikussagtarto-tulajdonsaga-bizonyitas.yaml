@@ -1,0 +1,69 @@
+type: proof
+name: csoporthomomorfizmusok-ciklikussagtarto-tulajdonsaga-bizonyitas
+remarks: []
+references:
+  csoporthomomorfizmus-egysegelem-es-inverzkepzestarto:
+    target:
+      type: theorem
+      name: csoporthomomorfizmus-egysegelem-es-inverzkepzestarto
+  egesz-kitevos-hatvany:
+    target:
+      type: definition
+      name: egesz-kitevos-hatvany
+content:
+  - type: narrative
+    content: |
+      Azt kell megmutatni, hogy $f(g)$ valóban $H$ generátoreleme. Legyen ezért $h$ a $H$ csoport tetszőleges
+      eleme.
+  - type: formula
+    lead-in: |
+      Mivel az $f$ csoporthomomorfizmus ***szürjektív***, ezért biztosan létezik olyan $x$ elem $G$-ben, amelynek
+      épp $h$ az $f$ szerinti képe, azaz:
+    content: |
+      f(x)=h
+  - type: formula
+    lead-in: |
+      Mivel $G$ ciklikus, ezért ez a bizonyos $x$ kifejezhető a $g$ generátorelem egész kitevős hatványaként, azaz
+      létezik olyan $n$ egész szám, hogy teljesül az alábbi:
+    content: |
+      f(\underbrace{g^n}_{=x})=h
+  - type: formula
+    lead-in: |
+      Ha $n$ ***pozitív***, akkor ez a kifejezés a [egesz-kitevos-hatvany] alapján így írható fel:
+    content: |
+      f(\underbrace{g\cdot g\cdot \ldots g}_{\text{n darab}})=h
+  - type: formula
+    lead-in: |
+      Ám ekkor $f$ ***művelettartó tulajdonsága*** miatt a baloldal átírható az alábbi módon:
+    content: |
+      \underbrace{f(g)\cdot f(g)\cdot \ldots f(g)}_{\text{n darab}}=(f(g))^n=h
+  - type: narrative
+    content: |
+      Azaz ebben az esetben $h$ kifejezhető $f(g)$ egész kitevős hatványaként.
+  - type: narrative
+    content: |
+      Ha $n$ ***negatív***, akkor vezessük be a $k=-n$ jelölést.
+  - type: formula
+    lead-in: |
+      Ilyenkor tehát $k$ pozitív, és $f(g^{-k})=h$ a [egesz-kitevos-hatvany] alapján így írható fel:
+    content: |
+      f(\underbrace{g^{-1}\cdot g^{-1}\cdot \ldots g^{-1}}_{\text{k darab}})=h
+  - type: formula
+    lead-in: |
+      Az $f$ ***művelet- valamint inverzképzéstartó*** (lásd a
+      [csoporthomomorfizmus-egysegelem-es-inverzkepzestarto] 2. pontját) tulajdonsága miatt a baloldal átírható az
+      alábbi módon:
+    content: |
+      \underbrace{(f(g))^{-1}\cdot (f(g))^{-1}\cdot \ldots (f(g))^{-1}}_{\text{k darab}}=(f(g))^{-k}=h
+  - type: narrative
+    content: |
+      Azaz $h$ ebben az esetben is kifejezhető $f(g)$ egész kitevős hatványaként.
+  - type: narrative
+    content: |
+      Végül ha $n=0$, akkor a [egesz-kitevos-hatvany] alapján $g^n$ épp a $G$ csoport egységeleme. Mivel a
+      [csoporthomomorfizmus-egysegelem-es-inverzkepzestarto] 1. pontja alapján egységelem képe egységelem, ezért
+      ebben az esetben $h$ szükségképpen a $H$ csoport egységeleme, amely nyilván kifejezhető $f(g)$-nek a nulladik
+      hatványaként.
+  - type: narrative
+    content: |
+      A $H$ csoport tehát valóban ciklikus, melynek generátoreleme $f(g)$.

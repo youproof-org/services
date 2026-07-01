@@ -1,0 +1,71 @@
+type: section
+name: 11-az-aks-primteszt
+title: Az AKS-prímteszt
+
+body:
+  - type: unordered-list
+    lead-in: |
+      Általánosságban a prímteszteknek három fontos jellemzője van:
+    items:
+      - '***Determinisztikusság:*** Egy determinisztikus prímteszt minden esetben egyértelműen választ ad arra a kérdésre, hogy a bemeneti szám prím-e vagy sem. Ilyen volt például a 23. részben ismertetett osztáspróbákon alapuló prímteszt. Ezzel szemben egy valószínűségi prímteszt &ndash; például a Fermat- vagy a Miller-Rabin-prímteszt &ndash; a gyakorlati alkalmazások szempontjából elhanyagolható valószínűséggel ugyan, de tévedhet.'
+      - '***Hatékonyság:*** Egy prímtesztnél mindig fontos, hogy mennyire gyorsan, mennyire hatékonyan tudja megválaszolni a kérdést, ahol hatékonyság alatt algoritmikus hatékonyságot értünk. Erről a 7. részben volt szó bővebben. Az osztáspróbákon alapuló módszerről például láttuk, hogy nem nevezhető hatékonynak, ezzel szemben a Fermat- és Miller-Rabin-prímtesztek villámgyorsnak bizonyulnak.'
+      - '***Feltétel nélküliség:*** Végül a harmadik szempont, hogy az adott prímteszt helyes működése és/vagy hatékonysága valamilyen még nem bizonyított matematikai sejtésen alapszik-e vagy sem.'
+  - type: narrative
+    content: |
+      Ez utóbbival kapcsolatban példaként megemlítjük, hogy a Miller-Rabin-prímteszt alapjául szolgáló úgynevezett
+      ***Miller-prímtesztet*** eredetileg Gary Miller publikálta 1976-ban. Ez egy polinomiális időkomplexitású
+      (azaz algoritmikusan hatékony) és determinisztikus eljárás, az első két feltétel tehát teljesül.
+      Mindazonáltal az úgynevezett általánosított Riemann-hipotézis igazságán alapul, amely egy nagyon mély és
+      messzemenő következményekkel járó, és egyben talán az egyik legfontosabb matematikai sejtés, amelyre ma még
+      nem ismerjük a választ. Ennek a sejtésnek többek között az egyik következménye az lenne, hogy bármely
+      összetett számnak mindenképpen létezne Miller-Rabin-tanúja egy nagyon kis számtartományban. Így elegendő
+      lenne ezt a számtartományt szisztematikusan átvizsgálni, mivel ha itt nem találunk tanút, akkor az
+      általánosított Riemann-hipotézisból következne, hogy máshol sem fogunk, azaz a bementi számunk biztosan prím.
+  - type: narrative
+    content: |
+      Ez az egész azonban mit sem ér, ha az általánosított Riemann-hipotézisről végül kiderül, hogy mégsem igaz.
+      Ezt a problémát megkerülendő Michael Oster Rabin 1980-ban publikálta a Miller-prímteszt módosított
+      változatát, amely már nem függ az általánosított Riemann-hipotézis igazságától, cserében viszont ez a
+      változat nemdeterminisztikus. Ez a már jól ismert Miller-Rabin-prímteszt, amelyet az elmúlt részekben
+      részletesen ismertettünk.
+  - type: narrative
+    content: |
+      Az eddigiekből úgy tűnik, hogy a prímtesztek a fenti három feltétel közül legfeljebb kettőt tudnak
+      teljesíteni. Az osztáspróbákon alapuló teszt determinisztikus és feltétel nélküli, ugyanakkor nem hatékony. A
+      Fermat- és Miller-Rabin-prímteszt hatékony és szintén feltétel nélküli, ugyanakkor nemdeterminisztikus. Végül
+      a példaként imént felhozott Miller-prímteszt determinisztikus és hatékony, viszont az általánosított
+      Riemann-hipotézis igazságától függ. Egészen a közelmúltig nyitott volt a kérdés, hogy vajon létezik-e olyan
+      prímteszt, amely mindhárom kritériumnak megfelel. Ezt a 7. részben ismertetett algoritmuselméleti
+      terminológiával élve úgy is kérdezhetnénk, hogy vajon a prímség vagy összetettség eldöntésének problémája a
+      $P$ problémaosztályba tartozik-e.
+  - type: narrative
+    content: |
+      Erre a kérdésre három indiai matematikus, ***Manindra Agrawal***, ***Neeraj Kayal***, és ***Nitin Saxena***
+      adott igenlő választ 2002-ben, amikor publikálták az úgynevezett ***Agrawal-Kayal-Saxena-prímtesztet***
+      (rövidítve ***AKS-prímteszt***). Ez az első olyan prímteszt, amely egyszerre determinisztikus, hatékony és
+      nem függ semmilyen nem bizonyított sejtéstől.
+  - type: narrative
+    content: |
+      Az ***AKS-prímteszt*** egy egyszerű összefüggésen alapszik, amelyet itt csak az érdekesség kedvéért,
+      bizonyítás nélkül közlünk. Legyen $n\geq 2$ tetszőleges, $a$ pedig egy szintén tetszőleges $n$-hez relatív
+      prím egész szám.
+  - type: formula
+    lead-in: |
+      Ebben az esetben az $n$ egész szám ***akkor és csak akkor prím***, ha minden $x$ esetén teljesül az alábbi
+      kongruencia:
+    content: |
+      (x+a)^n\equiv x^n+a\pmod n
+  - type: narrative
+    content: |
+      Ez a kongruencia tulajdonképpen az ebben a részben tanultak alapján felfogható egy egyenletnek a $\Z/n\Z$
+      feletti polinomgyűrűben. Maga az összefüggés egyszerű, ugyanakkor a kiértékelése ebben a formában
+      exponenciális időkomplexitású, hiszen mindkét oldalon szerepel egy-egy $n$ darab tényezőből álló szorzat,
+      márpedig $n$ a számjegyei számának exponenciális függvénye. Az AKS-algoritmus bonyolultsága tehát nem az
+      elméleti háttérből, hanem ennek a kiértékelési problémának a leküzdéséből ered, ám a részletektől itt
+      eltekintünk.
+  - type: narrative
+    content: |
+      Mindazonáltal megjegyezzük, hogy ennek a felfedezésnek főként elméleti jelentősége van, hiszen &ndash; mint
+      már említettük &ndash; bizonyítja, hogy a prímség vagy összetettség eldöntése a $P$ problémaosztályba
+      tartozik. A gyakorlatban azonban továbbra is főként a nemdeterminisztikus algoritmusokat használják, mivel az
+      AKS-teszt hatékonysága &ndash; noha polinomiális &ndash; messze elmarad ezektől.

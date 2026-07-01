@@ -1,0 +1,139 @@
+<!-- wp:paragraph -->
+<p>Mivel ez egy <strong><em>„akkor és csak akkor”</em></strong> típusú állítás, ezért <strong><em>mindkét irányú implikációt bizonyítani kell</em></strong>. Nézzük először az egyik irányt. Ha [latex](a;b)\sim (c;d)[/latex], akkor e reláció [yp_element slug="termeszetes-szamparok-ekvivalenciarelacioja" type="link" /]jának két követelménye közül legalább az egyik teljesül. Nézzük, hogy mi van akkor, ha az első követelmény teljesül. Ebben az esetben létezik olyan [latex]n[/latex] természetes szám, amelyre teljesülnek az alábbiak:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a+n&amp;=c\\b+n&amp;=d\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ekkor megtehetjük, hogy a felső egyenlet mindkét oldalához [latex]b[/latex]-t, az alsó egyenlet mindkét oldalához pedig [latex]a[/latex]-t adunk hozzá. Így ezt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a+n+b&amp;=c+b\\b+n+a&amp;=d+a\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Tekintve, hogy a két egyenlet baloldalain álló kifejezések a Peano-összeadás kommutativitása ([yp_element slug="peano-osszeadas-kommutativitas" type="link" /]) és asszociativitása ([yp_element slug="peano-osszeadas-asszociativitas" type="link" /]) miatt megegyeznek, ezért az egyenletek jobboldalain szereplő kifejezések is megegyeznek, azaz [latex]c+b=d+a[/latex]. Ez viszont szintén az összeadás kommutativitása miatt épp a tételben szereplő kritérium teljesülésének bizonyítéka.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ha a reláció [yp_element slug="termeszetes-szamparok-ekvivalenciarelacioja" type="link" /]jának nem teljesül az első követelménye, akkor a második követelmény teljesül (hiszen legalább az egyiknek teljesülnie kell). Ezzel viszont ugyanez a gondolatmenet végigjátszható. Azt kaptuk tehát, hogy <strong><em>ha</em></strong> [latex](a;b)\sim (c;d)[/latex], <strong><em>akkor</em></strong> [latex]a+d=b+c[/latex] <strong><em>szükségképpen teljesül</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Most nézzük meg, hogy vajon az állítás megfordítása is teljesül-e.</em></strong> Most azt tudjuk, hogy az [latex](a;b)[/latex] és [latex](c;d)[/latex] számpárokra teljesül, hogy [latex]a+d=b+c[/latex], és az a kérdés, hogy ekkor a [yp_element slug="termeszetes-szamparok-ekvivalenciarelacioja" type="link" /]ban teljesül-e legalább az egyik kritérium az [latex](a;b)[/latex] és [latex](c;d)[/latex] számpárokra.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az előző részben bevezetett [latex]\leq[/latex] reláció ([yp_element slug="termeszetes-szamok-rendezese" type="link" /]) trichotómiája ([yp_element slug="termeszetes-szamok-rendezesi-relacioja-trichotom" type="link" /]) miatt tudjuk, hogy [latex]a\leq c[/latex] és [latex]a \geq c[/latex] közül <strong><em>legalább az egyik</em></strong> teljesül. Ugyanezen okok miatt [latex]b\leq d[/latex] és [latex]b\geq d[/latex] közül is teljesül <strong><em>legalább az egyik</em></strong>. Emiatt az alábbi 4 eset közül <strong><em>legalább az egyiknek</em></strong> teljesülnie kell [latex]a[/latex] és [latex]c[/latex] valamint [latex]b[/latex] és [latex]d[/latex] kisebb-nagyobb viszonyaival kapcsolatban:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} -->
+<ol><li>[latex]a\leq c[/latex] <strong><em>és</em></strong> [latex]b\leq d[/latex]</li><li>[latex]a\leq c[/latex] <strong><em>és</em></strong> [latex]b\geq d[/latex]</li><li>[latex]a\geq c[/latex] <strong><em>és</em></strong> [latex]b\leq d[/latex]</li><li>[latex]a\geq c[/latex] <strong><em>és</em></strong> [latex]b\geq d[/latex]</li></ol>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>Vizsgáljuk meg sorban mind a 4 esetet.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Első eset:</em></strong> [latex]a\leq c[/latex] és [latex]b\leq d[/latex]</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez ugye a [latex]\leq[/latex] reláció [yp_element slug="termeszetes-szamok-rendezese" type="link" /]ja miatt azt jelenti, hogy léteznek [latex]n_1[/latex] és [latex]n_2[/latex] természetes számok, amelyekre teljesül, hogy</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a+n_1&amp;=c\\b+n_2&amp;=d\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt kell belátnunk, hogy valójában [latex]n_1=n_2[/latex], hiszen ekkor épp a [latex]\sim[/latex] reláció [yp_element slug="termeszetes-szamparok-ekvivalenciarelacioja" type="link" /]jának 1. pontját kapnánk. Azt ugye tudjuk, hogy az [latex](a;b)[/latex] és [latex](c;d)[/latex] számpárokra teljesül az [latex]a+d=b+c[/latex] összefüggés, amelybe [latex]c[/latex] és [latex]d[/latex] helyére a fenti két egyenlet baloldalát behelyettesítve a következőt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a+\underbrace{b+n_2}_{=d}=b+\underbrace{a+n_1}_{=c}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezt az egyenletet viszont a [yp_element slug="peano-osszeg-egyszerusites" type="link" /] miatt egyszerűsíthetjük [latex](a+b)[/latex]-vel, így valóban [latex]n_1=n_2[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Második eset:</em></strong> [latex]a\leq c[/latex] és [latex]b\geq d[/latex]</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez ugye épp azt jelenti, hogy léteznek olyan [latex]n[/latex] és [latex]k[/latex] természetes számok, amelyekre teljesül, hogy</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a+n&amp;=c\\d+k&amp;=b\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt kell belátnunk, hogy ekkor valójában [latex]n=0[/latex] és [latex]k=0[/latex], hiszen ebből [latex]a=c[/latex] és [latex]b=d[/latex] következne, azaz az [latex](a;b)[/latex] és [latex](c;d)[/latex] számpárok valójában megegyeznének, így nyilván teljesülne közöttük a [latex]\sim[/latex] reláció. Azt ugye tudjuk, hogy az [latex](a;b)[/latex] és [latex](c;d)[/latex] számpárokra teljesül az [latex]a+d=b+c[/latex] összefüggés, amelybe [latex]c[/latex] és [latex]b[/latex] helyére a fenti két egyenlet baloldalát behelyettesítve a következőt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a+d=\underbrace{d+k}_{=b}+\underbrace{a+n}_{=c}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezt az egyenletet most [latex](a+d)[/latex]-vel egyszerűsíthetjük ismételten a [yp_element slug="peano-osszeg-egyszerusites" type="link" /] miatt, azaz azt kapjuk, hogy [latex]0=k+n[/latex]. Ebből viszont a [yp_element slug="peano-nullosszeg-tagjai" type="link" /] miatt az következik, hogy valóban [latex]k=0[/latex] <strong><em>és</em></strong> [latex]n=0[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Harmadik eset:</em></strong> [latex]a\geq c[/latex] és [latex]b\leq d[/latex]</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez ugye épp azt jelenti, hogy léteznek [latex]k[/latex] és [latex]n[/latex] természetes számok, amelyekre teljesül, hogy</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}c+k&amp;=a\\b+n&amp;=d\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Hasonlóan az előző esethez, azt ugye tudjuk, hogy az [latex](a;b)[/latex] és [latex](c;d)[/latex] számpárokra teljesül az [latex]a+d=b+c[/latex] összefüggés, amelybe [latex]a[/latex] és [latex]d[/latex] helyére a fenti két egyenlet baloldalát behelyettesítve a következőt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{c+k}_{=a}+\underbrace{b+n}_{=d}=b+c[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezt az egyenletet [latex](b+c)[/latex]-vel egyszerűsíthetjük, azaz [latex]k+n=0[/latex]. Ebből viszont ismételten a [yp_element slug="peano-nullosszeg-tagjai" type="link" /] miatt az következik, hogy valóban [latex]k=0[/latex] <strong><em>és</em></strong> [latex]n=0[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Végül a negyedik eset:</em></strong> [latex]a\geq c[/latex] <strong><em>és</em></strong> [latex]b\geq d[/latex]</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ekkor az első esethez hasonlóan léteznek [latex]k_1[/latex] és [latex]k_2[/latex] természetes számok, amelyekre teljesül, hogy</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}c+k_1&amp;=a\\d+k_2&amp;=b\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt kell belátnunk, hogy valójában [latex]k_1=k_2[/latex], hiszen ekkor épp a [latex]\sim[/latex] reláció [yp_element slug="termeszetes-szamparok-ekvivalenciarelacioja" type="link" /]jának 2. pontját kapnánk. Azt ugye tudjuk, hogy az [latex](a;b)[/latex] és [latex](c;d)[/latex] számpárokra teljesül az [latex]a+d=b+c[/latex] összefüggés, amelybe [latex]a[/latex] és [latex]b[/latex] helyére a fenti két egyenlet baloldalát behelyettesítve a következőt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{c+k_1}_{=a}+d=\underbrace{d+k_2}_{=b}+c[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezt az egyenletet viszont egyszerűsíthetjük [latex](c+d)[/latex]-vel, így valóban [latex]k_1=k_2[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mind a 4 esetben bizonyítottuk, hogy a [yp_element slug="termeszetes-szamparok-ekvivalenciarelacioja" type="link" /]ban szereplő követelmények közül legalább az egyik teljesül az [latex](a;b)[/latex] és a [latex](c;d)[/latex] számpárokra, amennyiben [latex]a+d=b+c[/latex].</p>
+<!-- /wp:paragraph -->

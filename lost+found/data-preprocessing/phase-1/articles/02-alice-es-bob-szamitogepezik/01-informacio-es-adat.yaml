@@ -1,0 +1,52 @@
+type: section
+name: 01-informacio-es-adat
+title: Információ és adat
+
+body:
+  - type: narrative
+    content: |
+      A 20. század második felére a számítógépek megjelenésével az információ fogalmának jelentése már nem csak az
+      emberi nyelven íródott szövegekre korlátozódott, hanem egy ennél absztraktabb jelentést kapott. Az
+      ***információ*** latin eredetű szó, amely értesülést, hírt, tájékoztatást jelent. Különböző tudományágak
+      különböző módon definiálják, ám általánosságban elmondható, hogy információnak olyan valamit tekintünk, amely
+      számunkra ***ismerethiányt, bizonytalanságot csökkent***. Az informatikai definíció alapján az
+      ***információmennyiség*** mértékegysége a bit: ha egy eldöntendő kérdésre egyforma valószínűséggel várható
+      "igen" vagy "nem" válasz, akkor egy ilyen kérdésre adott konkrét válasz pontosan ***1 bit információt***
+      hordoz.
+  - type: narrative
+    content: |
+      Gondoljunk például a jól ismert barkochba nevű játékra. A játékosoknak eldöntendő kérdésekre adott válaszok
+      alapján kell rájönniük a gondolt szóra. Tegyük fel, hogy az összes lehetséges szavak száma véges, és valaki
+      egy olyan eldöntendő kérdést tesz fel, amelyre adott "igen" vagy "nem" válasz a lehetőségek felét kizárja.
+      Ekkor egy ilyen válasz 1 bit információt hordoz a játékosok számára.
+  - type: narrative
+    content: |
+      Ha például 65536 féle lehetséges szó közül gondolt valaki egyre, akkor ezt mindössze 16 jól megfogalmazott
+      eldöntendő kérdésből ki lehet találni. Itt a "jól megfogalmazás" azt jelenti, hogy minden kérdés épp a felére
+      csökkenti a szóba jöhető megfejtések számát. Vagyis 16 bit az az információmennyiség, amelynek megismerése
+      szükséges ahhoz, hogy megtudjuk, mire gondolt valaki egy 65536 elemű halmazból, hiszen 2^16^=65536.
+      Amennyiben a játékosok nem elég ügyesen kérdeznek, akkor ennél több kérdésre is szükség lehet. Ilyenkor
+      ugyanis egy-egy válasz 1 bitnél kevesebb információt hordoz. Tegyük fel például, hogy egy korábbi kérdésre
+      adott válaszból már tudjuk, hogy a gondolt dolog élőlény. Ebben az esetben nem érdemes megkérdezni, hogy
+      műanyagból van-e, mivel az erre adott "nem" válasz nem hordoz semmilyen új információt, ugyanis a lehetséges
+      megfejtések közül nem zár ki további elemeket.
+  - type: narrative
+    content: |
+      Sokan összekeverik ***az információ és az adat*** fogalmát. Ennek fő oka talán az, hogy e két fogalom
+      szorosan összefügg egymással, ráadásul mindkettő mértékegysége a bit. Az adatoknak önmagukban nincs
+      jelentésük. Például az az adat, hogy 30, önmagában nem jelent semmit. Az adatok azáltal nyernek értelmet, és
+      válnak információvá, hogy valamilyen ***értelmezést*** társítunk hozzájuk. Egy adathalmaz értelmezése mindig
+      valamilyen közös egyezmény alapján történik, ezeket az informatikában például különböző szabványok írják le.
+      Egy-egy ilyen egyezmény lényegében azt definiálja, hogy egy véges szimbólumkészlet segítségével hogyan tudjuk
+      leírni az információt oly módon, hogy az kinyerhető legyen ebből a leírásból bárki számára, aki szintén
+      ismeri az adott egyezményt.
+  - type: narrative
+    content: |
+      Erre a legősibb példa az írott nyelv. Itt az információ az a gondolat, tudás vagy ismeretanyag, amelyet a
+      küldő fél a fogadó féllel (vagy felekkel) közölni szeretne. Tegyük fel, hogy ennek leírására a küldő az ábécé
+      betűit, a számokat és a szokásos írásjeleket szeretné használni, mint véges szimbólumkészletet. A közös
+      egyezmény ebben a példában a nyelvtani szabályoknak az összessége. Ezek definiálják, hogy a szimbólumokat
+      hogyan kell egymás után papírra vetni ahhoz, hogy a fogadó fél fejében ugyanaz a gondolat, tudás vagy
+      ismeretanyag legyen, miután elolvasta és ugyanazon nyelvtani szabályok szerint értelmezte a papíron lévő
+      szimbólumsorozatot. Ha belegondolunk, ez az egyik legfontosabb fejlődési lépcsőfok az emberi faj
+      történetében. Ez tette lehetővé az információ áramlását téren és időn át.

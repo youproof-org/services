@@ -1,0 +1,21 @@
+type: theorem
+name: nem-miller-rabin-tanuk-csoportjara-vonatkozo-lemma-primhatvanyok-eseten
+proofs:
+  - nem-miller-rabin-tanuk-csoportjara-vonatkozo-lemma-primhatvanyok-eseten-bizonyitas
+remarks: []
+content:
+  - type: formula
+    lead-in: |
+      Legyen $p$ egy ***pozitív, páratlan prímszám***, $c$ pedig egy ***pozitív kitevő***, továbbá $r$ egy
+      tetszőleges olyan egész szám, amelyre teljesül az alábbi konguencia:
+    content: |
+      r^{p-1}\equiv 1\pmod{p^c}
+  - type: formula
+    lead-in: |
+      Jelöljük $P_r$-rel az ***összes*** olyan egész szám halmazát, amelyeket $x$ helyére behelyettesítve fennáll
+      mindkét alábbi kongruencia:
+    content: |
+      \begin{aligned}x&\equiv r\pmod{p^c} \\ x^{p-1}&\equiv 1\pmod{p^{c+1}}\end{aligned}
+  - type: narrative
+    content: |
+      Ekkor a $P_r$ halmaz épp egy modulo $p^{c+1}$ maradékosztállyal egyezik meg.

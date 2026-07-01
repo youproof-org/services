@@ -1,0 +1,173 @@
+type: section
+name: 08-pelda-rsa-rejtjelezesre
+title: Példa RSA-rejtjelezésre
+
+references:
+  bezout-lemma-euklideszi-gyurukben:
+    target:
+      type: theorem
+      name: bezout-lemma-euklideszi-gyurukben
+  linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga:
+    target:
+      type: theorem
+      name: linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga
+
+body:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy Alice egy bizalmas üzenetet szeretne elküldeni Bob-nak. Az egyszerűség kedvéért Alice és Bob
+      megegyeznek, hogy a kommunikációhoz az angol ábécé betűit használják írásjelek és szóközök nélkül, az üzenet
+      végét pedig a **#** karakter fogja jelezni. A bizalmas üzenet ezek alapján a következő:
+  - type: typewriter
+    rows:
+      - 'sziabobmiahelyzet#'
+  - type: narrative
+    content: |
+      Ahhoz, hogy Alice ezt az üzenetet egy digitális kommunikációs csatornán átküldhesse, valamilyen módon egy
+      bináris jelsorozattá kell alakítania azt. Ez történhet például az ***ASCII kódrendszer*** alapján, amelyről
+      bővebben a 2. részben volt szó. Mi most az egyszerűség kedvéért egy ennél egyszerűbb kódrendszert fogunk
+      használni, amely csak az angol ábécé kisbetűit és az üzenet végét jelző ***#*** karaktert tartalmazza. Ez
+      összesen 27 szimbólum, amely 5 bites szavakkal ábrázolható. Az alábbi táblázat első oszlopa a kódolandó
+      szimbólumokat, a második és harmadik oszlop pedig a hozzájuk rendelt számokat tartalmazza tizes és kettes
+      számrendszerben. A számrendszerekről bővebben a 3.
+  - type: formula
+    lead-in: |
+      részben volt szó:
+    content: |
+      \begin{array}{c|c|c} \text{symbol} & \text{decimal} & \text{binary} \\ \hline a & 0 & 00000 \\ b & 1 & 00001
+      \\ c & 2 & 00010 \\ d & 3 & 00011 \\ e & 4 & 00100 \\ f & 5 & 00101 \\ g & 6 & 00110 \\ h & 7 & 00111 \\ i &
+      8 & 01000 \\ j & 9 & 01001 \\ k & 10 & 01010 \\ l & 11 & 01011 \\ m & 12 & 01100 \\ n & 13 & 01101 \\ o & 14
+      & 01110 \\ p & 15 & 01111 \\ q & 16 & 10000 \\ r & 17 & 10001 \\ s & 18 & 10010 \\ t & 19 & 10011 \\ u & 20 &
+      10100 \\ v & 21 & 10101 \\ w & 22 & 10110 \\ x & 23 & 10111 \\ y & 24 & 11000 \\ z & 25 & 11001 \\ \# & 26 &
+      11010  \end{array}
+  - type: formula
+    lead-in: |
+      Ezek alapján a **sziabobmiahelyzet#** üzenetből az alábbi 90 bit hosszú bináris jelsorozat lesz:
+    content: |
+      \begin{aligned}&\underbrace{10010}_{\text{s}} \underbrace{11001}_{\text{z}} \underbrace{01000}_{\text{i}}
+      \underbrace{00000}_{\text{a}} \underbrace{00001}_{\text{b}} \underbrace{01110}_{\text{o}}
+      \underbrace{00001}_{\text{b}} \\ &\underbrace{01100}_{\text{m}} \underbrace{01000}_{\text{i}}
+      \underbrace{00000}_{\text{a}} \underbrace{00111}_{\text{h}} \underbrace{00100}_{\text{e}}
+      \underbrace{01011}_{\text{l}} \underbrace{11000}_{\text{y}} \\ &\underbrace{11001}_{\text{z}}
+      \underbrace{00100}_{\text{e}} \underbrace{10011}_{\text{t}} \underbrace{11010}_{\#} \end{aligned}
+  - type: narrative
+    content: |
+      Mivel a kommunikációs csatornát a szemtelen Eve lehallgatja, ezért Alice kénytelen titkosítani ezt a
+      jelsorozatot. Sajnos azonban ezúttal Alice-nak és Bob-nak nincs módja személyes találkozót megbeszélni annak
+      érdekében, hogy valamilyen közös szimmetrikus kulcsban meg tudjanak állapodni, ahogy tették azt az 1.
+      részben. De ez nem is jelent problémát, hiszen ismerik a fentebb leírt aszimmetrikus kulcsú ***RSA
+      eljárást***. Alice ezért megkéri Bob-ot, hogy generáljon magának egy ***aszimmetrikus kulcspárt***, és annak
+      ***publikus részét*** küldje el neki a kommunikációs csatornán keresztül, hogy azzal titkosítani tudja
+      számára a fenti bizalmas üzenetet.
+  - type: narrative
+    content: |
+      Bob ezért választ magának két különböző prímszámot. Tegyük fel, hogy Bob a $p=211$ és $q=139$ prímszámokat
+      választotta. A gyakorlatban persze a választott prímszámoknak többszázjegyűeknek kell lenniük a megfelelő
+      biztonság érdekében, azonban most a példa kedvéért maradjunk ezeknél.
+  - type: formula
+    lead-in: |
+      Bob e két prímszám összeszorzásával meghatározza az $m$ modulust és a $\varphi(m)$ értéket:
+    content: |
+      \begin{aligned}m&=p\cdot q=211\cdot 139=29329 \\  \varphi(m)&=(p-1)\cdot (q-1)=210\cdot
+      138=28980\end{aligned}
+  - type: narrative
+    content: |
+      Bob választ továbbá egy $\varphi(m)$-hez ***relatív prím*** $e$ számot. Ezt a leírtaknak megfelelően úgy
+      tudja megtenni, hogy választ egy véletlen számot $0$ és $\varphi(m)$ között, majd az ***euklidészi
+      algoritmus*** segítségével leellenőrzi, hogy a választott szám valóban relatív prím-e $\varphi(m)$-hez. Ez
+      majdnem biztosan teljesülni fog már elsőre. Ha esetleg mégsem, akkor újabb véletlenszámokkal próbálkozik
+      mindaddig, amíg nem talál egy megfelelőt. Tegyük fel, hogy Bob az $e=187$ számot választotta.
+  - type: formula
+    lead-in: |
+      Ha $e$ valóban relatív prím $\varphi(m)$-hez, akkor ki kell számítani a multiplikatív inverzét a
+      $Z_{\varphi(m)}$ gyűrűben, azaz meg kell oldani az alábbi lineáris kongruenciát:
+    content: |
+      \underbrace{187}_{=e} \cdot d\equiv 1\pmod {\underbrace{28980}_{=\varphi(m)}}
+  - type: formula
+    lead-in: |
+      Ennek a kongruenciának a [linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga] alapján az
+      alábbi lineáris diofantoszi egyenlet felel meg:
+    content: |
+      \underbrace{187}_{=e}\cdot d+\underbrace{28980}_{=\varphi(m)}\cdot y=1
+  - type: narrative
+    content: |
+      Szerencsére a ***kibővített euklidészi algoritmus*** egyszerre számítja ki az $(e,\varphi(m))$ kitüntetett
+      közös osztót, és állítja elő azt $e$ és $\varphi(m)$ lineáris kombinációjaként.
+  - type: formula
+    lead-in: |
+      Bob tehát lefuttatja a kibővitett euklidészi algoritmust:
+    content: |
+      \begin{array}{c|c|c|c|c|c|c}i & r_{i-2} & r_{i-1} & r_i & k_i & u_i & v_i \\ \hline 1 & 28980 & 187 & 182 &
+      154 & 1 & -154 \\ \hline 2 & 187 & 182 & 5 & 1 & -1 & 155 \\ \hline 3 & 182 & 5 & 2 & 36 & 37 & -5734 \\
+      \hline 4 & 5 & 2 & 1 & 2 & -75 & 11623 \\ \hline 5 & 2 & 1 & 0 & - & - & -\end{array}
+  - type: formula
+    lead-in: |
+      Az utolsó nemnulla maradék $1$, így $e=187$ valóban relatív prím $\varphi(m)=28980$-hoz, továbbá Bob megkapta
+      a ***Bézout-lemma*** szerinti lineáris kombinációs együtthatókat is (lásd a
+      [bezout-lemma-euklideszi-gyurukben]t), azaz lényegében a fenti lineáris diofantoszi egyenlet egy megoldását:
+    content: |
+      \underbrace{28980}_{=\varphi(m)}\cdot \underbrace{(-75)}_{=y} + \underbrace{187}_{=e}\cdot
+      \underbrace{11623}_{=d}=1
+  - type: narrative
+    content: |
+      Megvan tehát a keresett $d=11623$.
+  - type: unordered-list
+    lead-in: |
+      ***A kulcsgenerálás ezzel befejeződött.*** Bob kulcspárja a következő:
+    items:
+      - '***Bob publikus kulcsa:*** Az $m=29329$ modulus és az $e=187$ egész szám.'
+      - '***Bob privát (titkos) kulcsa:*** Az $m=29329$ modulus és a $d=11623$ egész szám.'
+  - type: narrative
+    content: |
+      Ezek után Bob elküldi Alice-nak a kulcspár publikus részét &ndash; vagy akár elérhetővé teszi azt bárki
+      számára egy nyilvános kulcstárban &ndash;, a titkos részét azonban szigorúan titokban tartja.
+  - type: narrative
+    content: |
+      Alice-nak tehát az elküldendő bináris jelsorozatot a $Z_m=Z_{29329}$ gyűrű elemeinek sorozatává kell
+      alakítania. Ez egy olyan számsorozatot jelent, amelynek minden tagja nemnegatív és kisebb az $m=29329$
+      modulusnál. Egy rövid számolgatás után azt kapja, hogy a 14 bites számok biztosan megfelelnek ennek a
+      kritériumnak, hiszen $2^{14}=16384$. Ezzel szemben a 15 bites számok között már előfordulhatnának a
+      modulusnál esetleg nagyobb számok is, mivel $2^{15}=32768$. Így tehát Alice az üzenetet 14 bit hosszú
+      részekre darabolja.
+  - type: narrative
+    content: |
+      Az elküldendő bitsorozat 90 bit hosszú, így az utolsó darab 6 bitből fog állni. A fennmaradó 8 bitet Alice
+      nyugodtan kitöltheti véletlenszerűen választott bitekkel, mivel a vételi oldalon Bob az üzenet végét jelző
+      **#** karakterből egyértelműen azonosítani tudja majd ezeket az eldobható biteket.
+  - type: formula
+    lead-in: |
+      Így tehát az Alice által titkosítandó számsorozat a következő:
+    content: |
+      \begin{aligned}10010110010100 &\to x_1=9620 \\ 00000000001011 &\to x_2=11 \\ 10000010110001 &\to x_3=8369 \\
+      00000000001110 &\to x_4=14 \\ 01000101111000 &\to x_5=4472 \\ 11001001001001 &\to x_6=12873 \\
+      111010\overbrace{01101001}^{\text{kitöltés}} &\to x_7=14953\end{aligned}
+  - type: narrative
+    content: |
+      Alice ezután a Bob publikus kulcsát alkotó $m=29329$ modulus és $e=187$ kitevő segítségével kiszámítja a
+      titkosított számsorozatot. Ezeket a moduláris hatványokat Alice a fentebb ismertetett ***ismételt
+      négyzetreemelés módszerének*** segítségével hatékonyan tudja kiszámítani.
+  - type: formula
+    lead-in: |
+      Az Olvasó ezeket a számításokat maga is elvégezheti az itt található kalkulátor segítségével:
+    content: |
+      \begin{aligned}y_1&=\bmod_{29329}({9620}^{187})=7812 \\ y_2&=\bmod_{29329}({11}^{187})=869 \\
+      y_3&=\bmod_{29329}({8369}^{187})=445 \\ y_4&=\bmod_{29329}({14}^{187})=25123 \\
+      y_5&=\bmod_{29329}({4472}^{187})=2090 \\ y_6&=\bmod_{29329}({12873}^{187})=24726 \\
+      y_7&=\bmod_{29329}({14953}^{187})=9793 \\ \end{aligned}
+  - type: narrative
+    content: |
+      Ezután Alice az így kapott $y_1,y_2,\ldots,y_7$ számokat kettes számrendszerben ábrázolja az eredeti
+      számsorozathoz hasonlóan.
+  - type: formula
+    lead-in: |
+      Most azonban már előfordulhat bármilyen szám $0$ és $m=29329$ között, így Alice kénytelen 15 bitet használni:
+    content: |
+      \begin{aligned}001111010000100‬ &\gets y_1=7812 \\ 000‭001101100101‬ &\gets y_2=869 \\ ‭000000110111101‬
+      &\gets y_3=445 \\ ‭‭110001000100011‬‬ &\gets y_4=25123 \\ ‭000100000101010‬ &\gets y_5=2090 \\
+      ‭110000010010110‬ &\gets y_6=24726 \\ ‭010011001000001‬ &\gets y_7=9793\end{aligned}
+  - type: narrative
+    content: |
+      Ezeket a 15 bites darabokat Alice szépen egymás után fűzi, és az így kapott 105 bites ***titkosított
+      bitsorozatot*** elküldi Bob-nak a kommunikációs csatornán keresztül. Ne feledjük, hogy az Alice által
+      használt, Bob-hoz tartozó publikus kulcs csak a titkosításhoz elegendő. A kulcs titkos része nélkül maga
+      Alice sem tudná visszafejteni ezt az üzenetet.

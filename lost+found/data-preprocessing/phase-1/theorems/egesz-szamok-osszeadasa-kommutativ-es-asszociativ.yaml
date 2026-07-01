@@ -1,0 +1,17 @@
+type: theorem
+name: egesz-szamok-osszeadasa-kommutativ-es-asszociativ
+proofs:
+  - egesz-szamok-osszeadasa-kommutativ-es-asszociativ-bizonyitas
+remarks: []
+content:
+  - type: formula
+    lead-in: |
+      A $\Z$ halmaz tetszőleges $[(a;b)]$, $[(c;d)]$ és $[(e;f)]$ elemeire igazak az alábbi összefüggések:
+    content: |
+      [(a;b)] \oplus [(c;d)] = [(c;d)] \oplus [(a;b)]
+  - type: formula
+    content: |
+      ([(a;b)] \oplus [(c;d)]) \oplus [(e;f)] = [(a;b)] \oplus ([(c;d)] \oplus [(e;f)])
+  - type: narrative
+    content: |
+      Más szavakkal a $\oplus$ művelet ***kommutatív*** és ***asszociatív***.

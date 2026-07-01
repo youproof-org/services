@@ -1,0 +1,15 @@
+type: definition
+name: ciklikus-csoportok
+remarks:
+  - ciklikus-csoportok-megjegyzes
+content:
+  - type: narrative
+    content: |
+      Legyen $G$ tetszőleges csoport, $H$ pedig valamilyen részcsoport $G$-ben. Amennyiben $G$-ben létezik olyan
+      $g$ elem, hogy az egyelemű $X=\{g\}$ halmaz generálja $H$-t &ndash; azaz $\lang X\ang = H$ &ndash;, akkor azt
+      mondjuk, hogy $H$ ***ciklikus részcsoport*** $G$-ben, amelynek ***generátoreleme*** (vagy ***primitív
+      eleme***) $g$.
+  - type: narrative
+    content: |
+      Amennyiben maga a teljes $G$ &ndash; mint triviális részcsoport &ndash; generálható egyetlen elemmel, akkor
+      $G$-t ***ciklikus csoportnak*** nevezzük.

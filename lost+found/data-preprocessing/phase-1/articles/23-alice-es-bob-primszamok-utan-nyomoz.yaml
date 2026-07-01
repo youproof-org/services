@@ -1,0 +1,165 @@
+type: chapter
+name: 23-alice-es-bob-primszamok-utan-nyomoz
+title: Alice és Bob prímszámok után nyomoz
+
+references:
+  euler-fermat-tetel:
+    target:
+      type: theorem
+      name: euler-fermat-tetel
+  felbonthatatlan-elem:
+    target:
+      type: definition
+      name: felbonthatatlan-elem
+  kinai-maradektetel:
+    target:
+      type: theorem
+      name: kinai-maradektetel
+  kis-fermat-tetel:
+    target:
+      type: theorem
+      name: kis-fermat-tetel
+  kituntetett-kozos-oszto-letezesenek-kovetkezmenye:
+    target:
+      type: theorem
+      name: kituntetett-kozos-oszto-letezesenek-kovetkezmenye
+  minden-prim-felbonthatatlan:
+    target:
+      type: theorem
+      name: minden-prim-felbonthatatlan
+  primtulajdonsagu-elem:
+    target:
+      type: definition
+      name: primtulajdonsagu-elem
+
+abstract:
+  - type: narrative
+    content: |
+      Az előző részben igazoltuk, hogy az RSA rejtjelezési eljárás valóban minden esetben helyesen működik. Ezt
+      alapvetően két fontos számelméleti összefüggés biztosította számunkra. Az első a kis Fermat-tétel
+      ([kis-fermat-tetel]), amely a 20. részben ismertetett Euler-Fermat tétel ([euler-fermat-tetel]) következménye
+      a prímekre nézve. A másik összefüggés pedig a kínai maradéktétel ([kinai-maradektetel]), amely az úgynevezett
+      kongruenciarendszerek megoldhatóságával, illetve a megoldások számával volt kapcsolatos. Végül egyrészt ennek
+      következményeként egy &ndash; egyébként a számelmélet más területein is &ndash; rendkívül fontos
+      gyűrűizomorfizmussal, másrészt a kis Fermat-tétel egy egyszerű következményével ismerkedtünk meg, amelyek
+      együtt lehetővé teszik a kommunikáló felek számára az RSA-dekódolás felgyorsítását.
+  - type: narrative
+    content: |
+      De vajon hogyan képes Alice és Bob az RSA-kulcsgeneráláshoz szükséges többszázjegyű prímszámokat találni?
+      Hogyan tudják ezt megtenni anélkül, hogy az idők végezetéig osztáspróbákat kellene végezniük? Mik azok a
+      prímtesztek, és pontosan hogyan működnek? Mely számokat nevezzük univerzális álprímeknek, és hogyan tudunk
+      megszabadulni tőlük? Ebben a részben erről lesz szó...
+prerequisite-warning:
+  - type: narrative
+    content: |
+      Figyelem! Ez a rész erőteljesen épít a 16., 20. és 22. részekben felépített alábbi definíciókra, valamint a
+      hozzájuk kapcsolódó tételekre:
+  - type: recall
+    target:
+      type: definition
+      name: egyseg
+  - type: recall
+    target:
+      type: definition
+      name: asszocialt
+  - type: recall
+    target:
+      type: definition
+      name: felbonthatatlan-elem
+  - type: recall
+    target:
+      type: definition
+      name: primtulajdonsagu-elem
+  - type: recall
+    target:
+      type: definition
+      name: redukalt-maradekosztaly
+  - type: recall
+    target:
+      type: definition
+      name: euler-fuggveny
+  - type: recall
+    target:
+      type: theorem
+      name: kis-fermat-tetel
+  - type: recall
+    target:
+      type: theorem
+      name: kinai-maradektetel
+  - type: narrative
+    content: |
+      Ezek kontextusba helyezése miatt erőteljesen ajánlott elolvasni a 16., 20. és 22. részeket, mivel gyakran
+      hivatkozni fogunk rájuk. A teljes cikksorozat elejét itt találod.
+prologue:
+  - type: narrative
+    content: |
+      Alice és Bob tehát ott ülnek az RSA-algoritmus 21. részben ismertetett leírása felett, és mindketten
+      szeretnének maguknak egy-egy kulcspárt generálni. Ezután ezek publikus részeit megosztják majd egymással, és
+      indulhat a biztonságos kommunikáció, azaz mindenki boldog. Igenám, csakhogy a kulcsgenerálási eljárás első
+      lépéseként először is mindkettejüknek kellene találnia két-két többszázjegyű prímszámot. Azt a
+      [minden-prim-felbonthatatlan] és a [kituntetett-kozos-oszto-letezesenek-kovetkezmenye] következményeként
+      tudják, hogy az egész számok $\Z$ gyűrűjében a ***prímszámok*** ([primtulajdonsagu-elem]) és
+      ***felbonthatatlan számok*** ([felbonthatatlan-elem]) köre éppenséggel egybeesik. Emiatt a továbbiakban ezt a
+      két &ndash; egyébként teljesen különböző &ndash; gyűrűelméleti fogalmat egymás szinonímájaként fogjuk
+      használni.
+  - type: narrative
+    content: |
+      A prímszámok keresése szempontjából lényeges kérdés, hogy azok mennyire gyakran fordulnak elő ebben a
+      számtartományban. Az úgynevezett ***prímszámláló függvény*** egy olyan függvény, amely azt adja meg bármilyen
+      $n$ pozitív egészre, hogy mennyi az $n$-nél nemnagyobb pozitív prímek száma. Ezt a függvényt $\pi$-vel
+      jelöljük.
+  - type: formula
+    lead-in: |
+      Az alábbiakban a prímszámláló függvény értékét láthatjuk néhány pozitív egész számra:
+    content: |
+      \begin{aligned}\pi(1)&=0 \\ \pi(2)&=1 \\ \pi(3)&=2 \\ \pi(3)&=2 \\ \pi(10)&=4 \\ \pi(100)&=25 \\
+      \pi(1000000)&=78498 \\ &\vdots \end{aligned}
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán pedig a függvény grafikonja látható az első 60 pozitív egész számra:
+    src: 01-primszamlalo-fuggveny.jpg
+    alt: Prímszámláló függvény
+    caption: Prímszámláló függvény
+  - type: narrative
+    content: |
+      Sajnos a prímszámláló függvényre nincs képletünk, amelybe tetszőleges pozitív egész számot behelyettesítve
+      varázslatos módon megkaphatnánk az értékét. Azonban az úgynevezett ***analitikus számelmélet*** egy nevezetes
+      tétele szerint ez az érték viszonylag jól becsülhető egy másik, könnyen kiszámítható függvénnyel. Ez ***"nagy
+      prímszámtétel"*** néven ismeretes, amelynek részleteire ebben a cikksorozatban nem térünk ki. Ez alapján
+      kiszámítható, hogy a 300-600 számjegyből álló számok tartományában &ndash; amelyben Alice és Bob-nak prímeket
+      kéne keresnie az RSA-kulcsokhoz &ndash; hogyan alakul a prímek eloszlása. Eszerint ha Alice és Bob teljesen
+      véletlenszerűen kisorsol számokat ebből a tartományból, akkor nagyjából minden párszázadik próbálkozásnál
+      belebotlanak egy-egy prímszámba.
+  - type: narrative
+    content: |
+      Így már csak az a kérdés, hogy Alice és Bob hogyan tudja gyorsan eldönteni egy konkrét egész számról, hogy
+      prím-e vagy sem. Az erre szolgáló algoritmusokat ***prímteszteknek*** nevezzük. A most következő prímtesztelő
+      eljárás ismerős lehet az általános iskolából is.
+sections:
+  - 01-primteszteles-osztasprobakkal
+  - 02-a-fermat-primteszt
+  - 03-valoszinuleg-prim
+  - 04-univerzalis-alprimek
+  - 05-a-miller-rabin-primteszt
+  - 06-a-fermat-faktorizacio
+  - 07-a-kicsi-kodolo-kulcsok-problemaja
+  - 08-kozos-modulus-valasztasanak-hibaja
+
+epilogue:
+  - type: narrative
+    content: |
+      Ebben a részben tehát főként azzal a problémával foglalkoztunk, hogy hogyan tud Alice és Bob az
+      RSA-kulcsgeneráláshoz szükséges óriási prímszámokat találni. Ennek keretében megmutattuk, hogy a hagyományos,
+      osztáspróbákon alapuló módszer a gyakorlatban a lassúsága miatt nem alkalmazható. Ezért bemutattunk két
+      valószínűségi prímtesztet, amelyek a kis Fermat-tételen alapulnak. Az első a Fermat-prímteszt volt, amelynek
+      fő hátránya, hogy léteznek olyan összetett számok, amelyeket nem tud kiszűrni. Ezeket univerzális álprímeknek
+      vagy Carmichael-számoknak nevezzük, amelyekről a közelmúltban kimutatták, hogy sajnos végtelen sok van
+      belőlük. Ezt a problémát kiküszöbölendő bemutattuk a Miller-Rabin-prímtesztet, amely &ndash; úgy tűnik
+      &ndash; kiszűri az univerzális álprímeket is. Végül felhívtuk a figyelmet pár olyan dologra, amelyekre
+      Alice-nak és Bob-nak oda kell figyelniük a kulcsgenerálás során.
+  - type: narrative
+    content: |
+      A következő részben megismerkedünk az absztrakt algebra talán legfontosabb ágának, az úgynevezett
+      csoportelméletnek az alapjaival. Ezután az így felépített eszközök segítségével igazolni fogjuk, hogy a
+      Miller-Rabin-prímtesztre nézve valóban nem léteznek univerzális álprímek. Végül adunk egy felső korlátot is
+      annak valószínűségére, hogy egy összetett számot tévesen prímmé nyilvánít ez a teszt.

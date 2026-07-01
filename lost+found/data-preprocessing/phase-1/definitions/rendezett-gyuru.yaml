@@ -1,0 +1,26 @@
+type: definition
+name: rendezett-gyuru
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $(R,+,\cdot )$ egy tetszőleges gyűrű, valamint a gyűrű $R$ alaphalmazán legyen értelmezve egy
+      ***részbenrendezési reláció***, amelyet jelöljünk most a $\leq$ szimbólummal.
+  - type: ordered-list
+    lead-in: |
+      Tegyük fel, hogy ***tetszőleges*** $a$, $b$ és $c$ gyűrűelemek esetén teljesülnek az alábbi követelmények
+      &ndash; az úgynevezett ***rendezési axiómák***:
+    items:
+      - 'Ha $a\leq b$, akkor $a+c\leq b+c$.'
+      - 'Ha $a\leq b$ és $c\geq 0$, akkor $ac\leq bc$ és $ca\leq cb$.'
+  - type: narrative
+    content: |
+      Ekkor azt mondjuk, hogy $(R,+,\cdot )$ egy ***részbenrendezett gyűrű*** a $\leq$ relációra nézve. Amennyiben
+      a $\leq$ reláció egy ***teljes rendezés*** &ndash; azaz bármely két gyűrűelem "összehasonlítható" egymással
+      &ndash;, akkor azt mondjuk, hogy $(R,+,\cdot )$ egy ***teljesen rendezett gyűrű*** a $\leq$ relációra nézve.
+  - type: narrative
+    content: |
+      Egy $(R,+,\cdot )$ gyűrűre akkor mondjuk, hogy ***részbenrendezhető***, ha ***létezik*** olyan
+      részbenrendezési reláció a gyűrű $R$ alaphalmazán, amely teljesíti a fenti két axiómát. Az $(R,+,\cdot )$
+      gyűrűre akkor mondjuk, hogy ***teljesen rendezhető***, ha ***létezik*** a fenti axiómákat kielégítő teljes
+      rendezés az $R$ alaphalmazon.

@@ -1,0 +1,57 @@
+type: proof
+name: az-egesz-szamok-halmaza-integritastartomany-bizonyitas
+remarks: []
+references:
+  egesz-szamok-gyuruje:
+    target:
+      type: theorem
+      name: egesz-szamok-gyuruje
+  egesz-szamok-halmaza:
+    target:
+      type: definition
+      name: egesz-szamok-halmaza
+  egesz-szamok-szorzasa:
+    target:
+      type: definition
+      name: egesz-szamok-szorzasa
+  ekvivalencia-osztalyok-reprezentansa:
+    target:
+      type: theorem
+      name: ekvivalencia-osztalyok-reprezentansa
+  peano-nullszorzat-tenyezoi:
+    target:
+      type: theorem
+      name: peano-nullszorzat-tenyezoi
+  pozitiv-es-negativ-egesz-szamok:
+    target:
+      type: definition
+      name: pozitiv-es-negativ-egesz-szamok
+content:
+  - type: narrative
+    content: |
+      A korábban már bizonyított [egesz-szamok-gyuruje] szerint az egész számok szorzása ***kommutatív***, valamint
+      ***létezik egységelem***, ezért csak a ***nullosztómentességet*** kell bizonyítani.
+  - type: narrative
+    content: |
+      Egy pillanatra térjünk vissza a [egesz-szamok-halmaza]ban bevezetett jelölésekre, amikoris az egész számokat
+      még természetes számpárok ekvivalencia-osztályaiként jelöltük $[(a;b)]$ alakban. A
+      [pozitiv-es-negativ-egesz-szamok]ban három részre osztottuk az egész számokat. A ***pozitív egész számokat***
+      $[(n;0)]$, a ***negatív egész számokat*** $[(0;n)]$, végül a ***nulla*** egész számot $[(0;0)]$ alakban írtuk
+      fel. Ezt a [ekvivalencia-osztalyok-reprezentansa] alapján tehettük meg, amely szerint minden egész szám
+      felírható e három közül valamelyik alakban.
+  - type: formula
+    lead-in: |
+      Az egész számok szorzásának [egesz-szamok-szorzasa]ja alapján ekkor bármely két ***nemnulla egész szám***
+      szorzata az alábbi két alak valamelyikére hozható, ahol $n$ és $k$ valamilyen ***nemnulla természetes
+      számok***:
+    content: |
+      \begin{aligned}&[(nk;0)]\\&[(0;nk)]\end{aligned}
+  - type: narrative
+    content: |
+      A [peano-nullszorzat-tenyezoi] alapján nemnulla természetes számok szorzata nem lehet $0$, azaz ebben az
+      esetben $nk \eq 0$. Ebből viszont a [ekvivalencia-osztalyok-reprezentansa] alapján az következik, hogy sem
+      $[(nk;0)]$, sem pedig $[(0;nk)]$ nem lehet a ***nulla*** egész szám.
+  - type: narrative
+    content: |
+      Azt kaptuk tehát, hogy nemnulla egész számok szorzata nem lehet a nulla egész szám, azaz a $(\Z , +, \cdot )$
+      gyűrű valóban nullosztómentes.

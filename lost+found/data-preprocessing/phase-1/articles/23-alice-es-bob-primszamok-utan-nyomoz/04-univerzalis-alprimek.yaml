@@ -1,0 +1,54 @@
+type: section
+name: 04-univerzalis-alprimek
+title: Univerzális álprímek
+
+references:
+  euler-fuggveny-primhatvanyokra:
+    target:
+      type: theorem
+      name: euler-fuggveny-primhatvanyokra
+
+body:
+  - type: narrative
+    content: |
+      Térjünk vissza egy kicsit az előző szakasz elején szereplő táblázathoz. Itt a második oszlop a modulo $n$
+      redukált maradékosztályok számát mutatja &ndash; ezt $\varphi(n)$-nel jelöltük &ndash;, a harmadik pedig azt,
+      hogy ezek közül hány olyan van, amely ***NEM Fermat-tanú*** &ndash; ezt pedig $l(n)$-nel jelöltük.
+  - type: narrative
+    content: |
+      Értelemszerűen a prímszámok esetén ez a két érték megegyezik, hiszen egy prímszámhoz nyilván nem létezik az
+      összetettségét igazoló Fermat-tanú. Kérdés, hogy vajon létezik-e olyan ***összetett*** szám, amelyhez szintén
+      nincs Fermat-tanú a redukált maradékosztályok között. A táblázatban felhívtuk a figyelmet az $561$ egész
+      számra, amely épp ezzel a szemtelen tulajdonsággal rendelkezik. Ezeknek a számoknak külön nevük is van.
+  - type: embed
+    target:
+      type: definition
+      name: carmichael-szamok
+  - type: narrative
+    content: |
+      Ha tehát véletlenül épp egy Carmichael-számba botlunk, akkor a Fermat-prímteszt azt nagyon nagy
+      valószínűséggel tévesen prímnek fogja minősíteni, hiszen akárhány redukált maradékosztályt is húzunk ki a
+      kalapból, azokra mind teljesülni fog a Fermat-kongruencia. Az ilyen számok összetettségét egyedül akkor
+      fogjuk tudni detektálni, ha sikerül épp egy ***nem redukált maradékosztályt*** kisorsolni a kalapból.
+      Ilyenkor ugyanis a 3. lépésben végrehajtott euklidészi algoritmus $1$-től különböző eredménye lebuktatja a
+      számunkat. Erre azonban gyakorlatilag semmi esély nincs, hiszen egy nagy szám esetén a maradékosztályoknak
+      általában csak elenyésző hányada nem redukált maradékosztály.
+  - type: narrative
+    content: |
+      A figyelmes Olvasó észreveheti az említett táblázatból, hogy egy $n$ univerzális álprímet mindössze az
+      különbözteti meg egy valódi prímtől, hogy összetettsége miatt a $[0]_n$ maradékosztályon kívül vannak még
+      egyéb nem redukált maradékosztályok is. Ez onnan látszik, hogy a táblázat második oszlopában nem
+      $\varphi(n)=n-1$ fog szerepelni, ahogyan a prímek esetében a [euler-fuggveny-primhatvanyokra] alapján
+      elvárható, hanem egy ennél kisebb szám. Ez valóban lebuktatja álprímünket. A gond csak az, hogy &ndash; mint
+      ahogyan a 21. részben már említettük &ndash; az Euler-féle $\varphi$-függvény kiszámítására csak $n$
+      prímtényezőinek ismeretében van esélyünk, máskülönben az idők végezetéig is eltarthat. Így erre nem tudunk
+      támaszkodni.
+  - type: narrative
+    content: |
+      Érdekes kérdés, hogy vajon hány Carmichael-szám létezik? Ha esetleg ezek száma véges, akkor ezeket
+      nyilvántarthatnánk a számítógép memóriájában, az algoritmus pedig leellenőrizhetné, hogy $n$ véletlenül nem
+      szerepel-e ebben a listában. Régóta ismeretes, hogy tetszőleges $a\gt 1$ egész szám esetén végtelen sok $a$
+      alapú álprím létezik, az azonban sokáig nyitott kérdés volt, hogy vajon az univerzális álprímek száma is
+      végtelen-e. Sajnálatos módon 1992-ben ezt is sikerült igazolni. Emiatt nem mehetünk el szó nélkül a probléma
+      mellett, és az $a^{n-1}\equiv 1\pmod n$ kongruencia ellenőrzésén kívül egyéb dolgokat is meg kell vizsgálnunk
+      annak érdekében, hogy a Carmichael-számokat is ki tudjuk szűrni.

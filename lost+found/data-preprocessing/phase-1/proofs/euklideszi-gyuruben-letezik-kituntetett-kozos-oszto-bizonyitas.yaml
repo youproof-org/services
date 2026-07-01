@@ -1,0 +1,66 @@
+type: proof
+name: euklideszi-gyuruben-letezik-kituntetett-kozos-oszto-bizonyitas
+remarks: []
+references:
+  egesz-szamok-szigoru-rendezese-tranzitiv:
+    target:
+      type: theorem
+      name: egesz-szamok-szigoru-rendezese-tranzitiv
+  euklideszi-algoritmus-alapgondolata:
+    target:
+      type: theorem
+      name: euklideszi-algoritmus-alapgondolata
+  euklideszi-gyuru:
+    target:
+      type: definition
+      name: euklideszi-gyuru
+  kituntetett-kozos-oszto-tulajdonsagai:
+    target:
+      type: theorem
+      name: kituntetett-kozos-oszto-tulajdonsagai
+  termeszetes-szamok-minimumtetele:
+    target:
+      type: theorem
+      name: termeszetes-szamok-minimumtetele
+content:
+  - type: narrative
+    content: |
+      A bizonyításhoz az ***euklidészi algoritmus általánosított változatát*** fogjuk felhasználni. Legyen $a$ és
+      $b$ az $R$ integritástartomány két tetszőleges eleme, és jelöljük $0_R$-rel a nullelemet, $0$-val pedig a
+      "nulla" természetes számot. Ha $a$ vagy $b$ közül bármelyik $0_R$, akkor létezik kitüntetett közös osztójuk.
+      Ha mindkettő $0_R$, akkor a [kituntetett-kozos-oszto-tulajdonsagai] 1. pontja miatt. Ha pedig csak az
+      egyikük, akkor viszont &ndash; mivel minden euklidészi gyűrű a [euklideszi-gyuru] alapján ***egységelemes***
+      &ndash; ugyanezen tétel 4. pontja miatt.
+  - type: narrative
+    content: |
+      Feltételezhetjük tehát, hogy $a\eq 0_R$ és $b\eq 0_R$. Mivel $R$ euklidészi gyűrű, ezért értelmezhető rajta
+      valamilyen $f$ euklidészi norma. Ekkor $a$ és $b$ között elvégezhető a maradékos osztás az $f$ norma szerint.
+  - type: formula
+    lead-in: |
+      Azaz létezik $k_1$ hányados és $r_1$ maradék $R$-ben úgy, hogy egyrészt fennálljon az $f(r_1)<f(b)$ szigorú
+      egyenlőtlenség, másrészt teljesüljön az alábbi egyenlet:
+    content: |
+      a=k_1b+r_1
+  - type: narrative
+    content: |
+      Ha $f(r_1)=0$, akkor az euklidészi norma [euklideszi-gyuru]ja miatt $r_1=0_R$, és így a
+      [euklideszi-algoritmus-alapgondolata], valamint a [kituntetett-kozos-oszto-tulajdonsagai] 4. pontja alapján
+      $b$ lesz a kitüntetett közös osztó, hiszen $(a,b)=(b,r_1)=(b,0_R)=b$. Ha $f(r_1)\eq 0$, akkor $r_1\eq 0_R$,
+      és így $b$ és $r_1$ között ismét el tudjuk végezni az $f$ norma szerinti maradékos osztást.
+  - type: narrative
+    content: |
+      Ezt az eljárást mindaddig folytatjuk, amíg meg nem kapjuk a nullelemet maradékként valamelyik lépésben. Ekkor
+      &ndash; szintén a [euklideszi-algoritmus-alapgondolata], valamint a [kituntetett-kozos-oszto-tulajdonsagai]
+      4. pontja miatt &ndash; az utolsó olyan maradék lesz a kitüntetett közös osztó, amely nem a nullelem.
+  - type: formula
+    lead-in: |
+      Az eljárás garantáltan véget fog érni véges számú lépés után, máskülönben a maradékos osztások során előállna
+      az alábbi, természetes számokból álló végtelen sorozat:
+    content: |
+      f(b)\gt f(r_1)\gt f(r_2)\gt f(r_3)\gt \ldots
+  - type: narrative
+    content: |
+      Ez a [egesz-szamok-szigoru-rendezese-tranzitiv] miatt $\N$-nek egy olyan részhalmaza lenne, amelynek nincs
+      minimuma. Ez viszont a [termeszetes-szamok-minimumtetele] miatt lehetetlen, így az euklidészi algoritmus
+      garantáltan leáll véges számú lépés után, és előállítja az $a$ és $b$ kitüntetett közös osztóját, amely az
+      utolsó nemnulla maradék lesz.

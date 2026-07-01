@@ -1,0 +1,52 @@
+type: section
+name: 07-az-euler-fermat-tetel
+title: Az Euler-Fermat tétel
+
+body:
+  - type: narrative
+    content: |
+      Végül ebben a szakaszban megismerjük az ***RSA kriptográfiai eljárás*** alapját képező ***Euler-Fermat
+      tételt***. Ezt a tételt 1736-ban publikálta Leonhard Euler egy másik hasonlóan fontos tétel, a ***kis
+      Fermat-tétel*** általánosításaként. Ez utóbbi Pierre de Fermat francia műkedvelő matematikustól származik 100
+      évvel korábbról, 1636-ból, és majd a prímtesztelő eljárások kapcsán lesz róla szó bővebben egy későbbi
+      részben.
+  - type: embed
+    target:
+      type: theorem
+      name: euler-fermat-tetel
+  - type: embed
+    target:
+      type: proof
+      name: euler-fermat-tetel-bizonyitas
+  - type: narrative
+    content: |
+      Alkalmazzuk például az $m=8$ modulusra és hozzá relatív prím $a=5$-re a tételt.
+  - type: formula
+    lead-in: |
+      Ekkor a kongruencia baloldala így néz ki:
+    content: |
+      a^{\varphi(m)}=5^{\varphi(8)}=5^4=625
+  - type: narrative
+    content: |
+      Ez $8$-cal osztva valóban $1$-et ad maradékul.
+  - type: narrative
+    content: |
+      Az, hogy a tételben szereplő $a$ ***relatív prím*** a modulushoz más szavakkal azt jelenti, hogy ő egy
+      ***redukált maradékosztály*** reprezentánseleme. A tétel tehát tulajdonképpen azt mondja, hogy a $\Z/m\Z$
+      maradékosztálygyűrűben a redukált maradékosztályok bármelyikét a $\varphi(m)$-edik hatványra emelve mindig az
+      $[1]_m$ maradékosztályt, vagyis a $\Z/m\Z$ gyűrű egységelemét kapjuk eredményül. Ez a tény alapvető
+      fontosságú az ***RSA kriptográfiai eljárás*** szempontjából, mint ahogyan azt látni fogjuk.
+  - type: narrative
+    content: |
+      Végül megjegyezzük, hogy az ***Euler-Fermat tétel megfordítása is igaz***. Vagyis az imént említett feltétel
+      &ndash; miszerint $a$ relatív prím a modulushoz &ndash; az Euler-Fermat tételben szereplő kongruencia
+      teljesülésének nemcsak elégséges, hanem ***szükséges feltétele*** is. Sőt, az alábbi tételben egy ennél
+      erősebb állítást is igazolunk.
+  - type: embed
+    target:
+      type: theorem
+      name: euler-fermat-tetel-megforditasa
+  - type: embed
+    target:
+      type: proof
+      name: euler-fermat-tetel-megforditasa-bizonyitas

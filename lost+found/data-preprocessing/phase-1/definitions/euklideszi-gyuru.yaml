@@ -1,0 +1,23 @@
+type: definition
+name: euklideszi-gyuru
+remarks:
+  - euklideszi-gyuru-megjegyzes
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ tetszőleges ***integritástartomány***, melyben ***létezik egységelem***.
+  - type: ordered-list
+    lead-in: |
+      Tegyük fel, hogy $R$ elemein értelmezve van egy olyan $f:R\to \N$ függvény, amely eleget tesz az alábbi
+      követelményeknek:
+    items:
+      - 'Tetszőleges $a$ elem esetén $f(a)=0$ ***akkor és csak akkor*** teljesül, ha $a=0_R$, ahol $0_R$ az $R$
+        gyűrű nullelemét, míg $0$ a "nullának" nevezett természetes számot jelöli.'
+      - 'Tetszőleges $a$ és $b\eq 0_R$ elemek esetén létezik olyan $k$ ***hányados*** és $r$ ***maradék*** az $R$
+        gyűrűben, hogy $a=k\cdot b + r$ és $f(r)<f(b)$. Ezt a "műveletet" az $a$ és $b$ elemek közötti
+        ***maradékos osztásnak*** vagy ***euklidészi osztásnak*** nevezzük.'
+  - type: narrative
+    content: |
+      Ekkor az $f$ függvényt az $R$ integritástartományon értelmezett ***euklidészi normának*** nevezzük.
+      Amennyiben az $R$ integritástartományon létezik (definiálható) euklidészi norma, úgy $R$-et ***euklidészi
+      gyűrűnek*** nevezzük.

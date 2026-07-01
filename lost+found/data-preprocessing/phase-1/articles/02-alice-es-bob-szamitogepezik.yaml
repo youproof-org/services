@@ -1,0 +1,57 @@
+type: chapter
+name: 02-alice-es-bob-szamitogepezik
+title: Alice és Bob számítógépezik
+
+abstract:
+  - type: narrative
+    content: |
+      Az előző részben Alice és Bob történetén keresztül bemutattuk, hogy milyen problémákkal kell szembesülnie
+      azoknak, akik bizalmas információkat szeretnének közölni egymással egy nembiztonságos csatornán keresztül.
+      Egy rövid áttekintés keretében bemutattunk néhány történelmi példát rejtjelezési eljárásokra és
+      megismerkedtünk a kriptográfia alapfogalmaival.
+  - type: narrative
+    content: |
+      A rejtjelezés a 20. század második felére egy modern informatikai tudományággá nőtte ki magát. Ez biztosítja
+      az Internet és a számítógéphálózatok biztonságos működését. Mivel az Alice és Bob közötti kommunikáció
+      napjainkban nem pusztán írott szövegekre korlátozódik, ezért most egy kis kitérő keretében megismerkedünk az
+      információelmélet néhány alapfogalmával. Mi a különbség az információ és az adat között? Mit jelent az
+      információs entrópia és a forráskódolás? Mi határozza meg, hogy egy adat milyen mértékben tömöríthető? Mit
+      nevezünk analóg és digitális információnak? Ebben a részben erről lesz szó...
+prologue:
+  - type: narrative
+    content: |
+      A kriptográfia tudományának elsődleges célja tehát az ***információ*** elrejtése a kíváncsiskodó szemek elől.
+      Ami az ellenoldalt illeti (például Eve), az ő céljuk az elrejtett titkok felfedése. Ehhez természetesen ők is
+      tudományos módszereket használnak. Ezt a tudományágat &ndash; amely tehát a titkok felfedésével foglalkozik
+      &ndash; ***kriptoanalízis***nek nevezzük. A kriptográfia és a kriptoanalízis örökös háborút vív egymással. Ám
+      ezt nem két szembenálló fél háborújaként kell elképzelni, hiszen aki az egyikkel foglalkozik, nyilván
+      foglalkoznia kell a másikkal is. Ismernie kell ugyanis az ellenfél eszköztárát a hatékony védelem (vagy épp
+      támadás) kidolgozásához. Ahogy az ebből a cikksorozatból ki fog derülni, ebben a háborúban jelenleg a
+      kriptográfia áll nyerésre. Ám ez nem jelenti azt, hogy mindig ez lesz a helyzet.
+sections:
+  - 01-informacio-es-adat
+  - 02-binaris-kodolas
+  - 03-az-informacio-mennyisegenek-merese
+  - 04-az-adatok-tomorithetosegenek-elvi-korlatai
+  - 05-analog-es-digitalis-informacioforrasok
+
+epilogue:
+  - type: narrative
+    content: |
+      Ebben a részben tehát az információátviteli rendszerek absztrakt modelljének egy részével ismerkedtünk meg.
+      Egy ilyen rendszer bemenetét ebben a modellben valamilyen információforrás adja. Például egy emberi nyelven
+      íródott szöveg, egy digitalizált hanghullám vagy akár egy kép. Ebből az információból azután egy adott
+      szabvány szerinti forráskódolásnak köszönhetően bináris adat lesz.
+  - type: figure
+    lead-in: |
+      Ezt láthatjuk az alábbi ábrán vázlatosan:
+    src: 05-informacioatviteli-modell-reszlet.jpg
+    alt: Információátviteli modell (részlet)
+    caption: Információátviteli modell (részlet)
+  - type: narrative
+    content: |
+      Sejthető, hogy innentől kezdve az Alice és Bob (illetve az általuk használt számítógépek) közötti
+      kommunikáció gyakorlatilag számok küldözgetéséből fog állni. Ez az a pont, amikortól kezdve a kriptográfiára
+      már nem nyelvészeti, hanem egyértelműen informatikai/matematikai tudományként kell tekintenünk. A következő
+      részben a számrendszerekre fogunk kitérni és megvizsgáljuk, hogy az informatikai eszközök milyen formában
+      tárolják az adatokat.

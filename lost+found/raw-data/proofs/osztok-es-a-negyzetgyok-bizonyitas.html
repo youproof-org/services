@@ -1,0 +1,45 @@
+<!-- wp:paragraph -->
+<p><strong><em>Előszöris</em></strong> az világos, hogy [latex]r[/latex] <strong><em>nemnegatív</em></strong>, hiszen az ő és az ellentettjének a négyzete megegyezik, így ha negatív lenne, akkor nem ő lenne a legnagyobb olyan egész szám, amelyre [latex]r^2\leq |n|[/latex] teljesül.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Másodszor</em></strong> [latex]r[/latex] biztosan <strong><em>nem lehet nulla</em></strong> sem. A [yp_element slug="abszolutertek-euklideszi-norma" type="link" /] alapján ugyanis az abszolútérték-függvény egy euklidészi norma az egész számok [latex]\Z[/latex] gyűrűjén, és így a [yp_element slug="euklideszi-gyuru" type="link" /] 1. pontja alapján [latex]n\
+eq 0[/latex]-ból [latex]|n|\
+eq 0[/latex], azaz végülis [latex]1\leq |n|[/latex] következik. Ha mármost [latex]r[/latex] nulla lenne, akkor igaz ugyan, hogy a négyzete nem haladná meg [latex]|n|[/latex]-t, ám ekkor lenne nála nagyobb ugyanilyen tulajdonságú szám is (például az [latex]1[/latex]).</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Összefoglalva</em></strong> [latex]r[/latex]-re teljesülni fog az [latex]1\leq r[/latex] egyenlőtlenség, ebből pedig a [yp_element slug="rendezett-gyuru" type="link" /]ban ismertetett 2. rendezési axióma alapján [latex]r\leq r^2[/latex] következik. Ezt összevetve a tétel szövegében szereplő [latex]r^2\leq |n|[/latex] feltétellel teljesül az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]1\leq r\leq |n|[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ennyi előkészület után igazoljuk a tétel állítását.</em></strong> Tegyük fel, hogy [latex]n[/latex] prím. Ekkor a [yp_element slug="primszamok-szukseges-es-elegseges-feltetele" type="link" /] alapján egyáltalán nincsen osztója [latex]1[/latex] és [latex]|n|[/latex] között. Következésképp az ennél szűkebb, [latex]1[/latex] és [latex]r[/latex] közötti szakaszon „méginkább” nincs osztója.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Visszafelé:</em></strong> Először azt az esetet igazoljuk, amikoris [latex]n[/latex] <strong><em>pozitív</em></strong>. Tegyük fel, hogy [latex]n[/latex] összetett, azaz létezik valamilyen [latex]n=k\cdot l[/latex] nemtriviális felbontása. Az általánosság megsértése nélkül feltehetjük, hogy [latex]k[/latex] és [latex]l[/latex] mindketten pozitívak, máskülönben ellentettjüket véve ez az állapot elérhető. Azt kell igazolni, hogy [latex]k[/latex] és [latex]l[/latex] közül legalább az egyik nemnagyobb [latex]r[/latex]-nél. Tegyük fel indirekt, hogy nem ez a helyzet, vagyis az alábbi két eset valamelyike áll fenn:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}r&amp;\lt k\leq l \\ r&amp;\lt l\leq k\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Első esetben a jobboldali egyenlőtlenség mindkét oldalát [latex]k[/latex]-val megszorozva az alábbit kapjuk: [latex]k^2\leq k\cdot l=n[/latex]. Ez viszont [latex]r\lt k[/latex] miatt lehetetlen, hiszen a tétel szövege alapján [latex]r[/latex] a legnagyobb olyan szám, amelynek négyzete [latex]|n|=n[/latex]-t nem lépi túl.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ehhez hasonlóan a második esetben a jobboldali egyenlőtlenség mindkét oldalát [latex]l[/latex]-lel megszorozva ezt kapjuk: [latex]l^2\leq l\cdot k=n[/latex]. Ez [latex]r\lt l[/latex] miatt az előbb ismertetett okból szintén lehetetlen.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Indirekt feltételezésünk hibás volt, vagyis [latex]k[/latex] és [latex]l[/latex] közül az egyik biztosan nem lehet nagyobb [latex]r[/latex]-nél, ahogyan a tétel állítja.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Végezetül nézzük most azt az esetet, amikor [latex]n[/latex] negatív, azaz [latex]n\lt 0[/latex].</em></strong> Ekkor egyrészt a [yp_element slug="pozitivitastartomany" type="link" /] utáni megjegyzés alapján [latex]-n[/latex] pozitív. Másrészt pedig a [yp_element slug="asszocialtsag-tulajdonsagai" type="link" /] 1. pontja alapján ő [latex]n[/latex]-nek asszociáltja, azaz pontosan ugyanazok az osztói, mint [latex]n[/latex]-nek. Így [latex]n[/latex] akkor és csak akkor prím, ha [latex]-n[/latex] is, amelyre viszont pozitivitása miatt szóról szóra alkalmazható a fenti gondolatmenet.</p>
+<!-- /wp:paragraph -->

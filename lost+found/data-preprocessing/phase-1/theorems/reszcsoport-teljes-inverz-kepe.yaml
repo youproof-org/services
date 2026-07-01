@@ -1,0 +1,20 @@
+type: theorem
+name: reszcsoport-teljes-inverz-kepe
+proofs:
+  - reszcsoport-teljes-inverz-kepe-bizonyitas
+remarks: []
+references:
+  kep-teljes-inverz-kep:
+    target:
+      type: definition
+      name: kep-teljes-inverz-kep
+content:
+  - type: narrative
+    content: |
+      Legyenek $G$ és $H$ tetszőleges csoportok, $f:G\to H$ pedig egy csoporthomomorfizmus e két csoport között.
+      Ekkor tetszőleges $L\leq H$ esetén $f^{-1}(L)\leq G$ és $\ker f\sube f^{-1}(L)$ &ndash; amennyiben persze
+      létezik az $f^{-1}(L)$ teljes inverz kép (lásd a [kep-teljes-inverz-kep] utáni megjegyzést).
+  - type: narrative
+    content: |
+      ***Szavakkal:*** $H$ minden részcsoportjának $f$ szerinti teljes inverz képe &ndash; amennyiben egyáltalán
+      létezik &ndash; egy olyan részcsoport $G$-ben, amely tartalmazza $f$ magját.

@@ -1,0 +1,10 @@
+type: theorem
+name: minden-prim-felbonthatatlan
+proofs:
+  - minden-prim-felbonthatatlan-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ egy ***integritástartomány***, amelyben ***létezik egységelem*** is. Ekkor minden prímtulajdonságú
+      elem felbonthatatlan $R$-ben.

@@ -1,0 +1,19 @@
+type: remark
+name: reszcsoport-megjegyzes
+references:
+  reszhalmaz-reszbenrendezes:
+    target:
+      type: theorem
+      name: reszhalmaz-reszbenrendezes
+content:
+  - type: narrative
+    content: |
+      A [reszhalmaz-reszbenrendezes]ben igazoltuk, hogy a $\sube$ szimbólummal jelölt tartalmazási reláció egy
+      részbenrendezés bármilyen halmazrendszer elemei között, azaz ***reflexív***, ***antiszimmetrikus*** és
+      ***tranzitív***. Továbbá azt is igazoltuk, hogy a $\sub$ szigorú tartalmazási reláció ezek közül csak a
+      ***tranzitivitást*** teljesíti.
+  - type: narrative
+    content: |
+      Minthogy egy $G$ csoport bármely $H$ részcsoportja tulajdonképpen $G$-nek részhalmaza, továbbá örökli a $G$
+      műveletét, ezért ezek a tulajdonságok természetesen a $\leq$ szimbólummal jelölt ***"részcsoportjának
+      lenni"-relációra*** is érvényesek.

@@ -1,0 +1,180 @@
+type: proof
+name: nem-miller-rabin-tanuk-csoportjanak-rendje-primhatvanyok-eseten-bizonyitas
+remarks:
+  - nem-miller-rabin-tanuk-csoportjanak-rendje-primhatvanyok-eseten-bizonyitas-megjegyzes
+references:
+  egesz-szamok-kozotti-kongruencia-tulajdonsagai:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia-tulajdonsagai
+  euler-fuggveny-primhatvanyokra:
+    target:
+      type: theorem
+      name: euler-fuggveny-primhatvanyokra
+  nem-miller-rabin-tanuk-csoportja-primhatvanyok-eseten:
+    target:
+      type: theorem
+      name: nem-miller-rabin-tanuk-csoportja-primhatvanyok-eseten
+  nem-miller-rabin-tanuk-csoportjara-vonatkozo-lemma-primhatvanyok-eseten:
+    target:
+      type: theorem
+      name: nem-miller-rabin-tanuk-csoportjara-vonatkozo-lemma-primhatvanyok-eseten
+content:
+  - type: narrative
+    content: |
+      A tételt a $c$ kitevőre vonatkozó ***teljes indukcióval*** fogjuk igazolni.
+  - type: narrative
+    content: |
+      ***Nézzük először a $c=1$ esetet!*** A [nem-miller-rabin-tanuk-csoportja-primhatvanyok-eseten] 3. pontja
+      alapján ekkor $G_p$ épp megegyezik a $(\Z/p\Z)^{\times}$ multiplikatív csoporttal. Ennek rendje a modulo $p$
+      redukált maradékosztályok számával, azaz $\varphi(p)$-vel egyezik meg, ami a [euler-fuggveny-primhatvanyokra]
+      alapján valóban $p-1$.
+  - type: narrative
+    content: |
+      ***Az indukció megindításához*** tegyük fel, hogy valamilyen $c$ kitevő &ndash; mint például a most
+      megmutatott $c=1$ &ndash; esetén a tétel igaz, azaz $G_{p^c}$ elemszáma $p-1$. Azt kell igazolnunk, hogy
+      ekkor $G_{p^{c+1}}$ elemszáma is $p-1$. Rögzítsük $G_{p^c}$ egy reprezentánsrendszerét, azaz válasszunk ki
+      ***mindegyik*** $G_{p^c}$-beli nem Miller-Rabin-tanúból ***pontosan egy*** reprezentánselemet.
+  - type: formula
+    lead-in: |
+      Ekkor a $G_{p^c}$ halmaz &ndash; amelynek tehát indukciós feltételezésünknek megfelelően $p-1$ eleme van
+      &ndash; a következőképpen írható fel a most rögzített $a_1$, $a_2$, ..., $a_{p-1}$ reprezentánselemek
+      segítségével:
+    content: |
+      G_{p^c}=\{[a_1]_{p^c}; [a_2]_{p^c}; [a_3]_{p^c};\ldots ;[a_{p-1}]_{p^c}\}
+  - type: narrative
+    content: |
+      E reprezentánsrendszer felhasználásával most definiálunk egy $f:G_{p^c}\to G_{p^{c+1}}$ függvényt, amely
+      tehát a $G_{p^c}$ halmaz minden eleméhez hozzárendel egy-egy elemet a $G_{p^{c+1}}$ halmazból. Tekintsük a
+      fenti reprezentánsrendszer szerinti bármelyik tetszőleges elemet, legyen ez például az $[a_i]_{p^c}\in
+      G_{p^c}$ nem Miller-Rabin-tanú.
+  - type: formula
+    lead-in: |
+      Ekkor a [nem-miller-rabin-tanuk-csoportja-primhatvanyok-eseten] 1. pontja alapján az $a_i$ reprezentánselemre
+      teljesül az alábbi kongruencia:
+    content: |
+      a_i^{p-1}\equiv 1\pmod{p^c}
+  - type: formula
+    lead-in: |
+      Ebben az esetben a [nem-miller-rabin-tanuk-csoportjara-vonatkozo-lemma-primhatvanyok-eseten] alapján
+      ***pontosan egy*** olyan modulo $p^{c+1}$ maradékosztály létezik, amelynek elemeire (és csak azokra) fennáll
+      az alábbi mindkét kongruencia:
+    content: |
+      \begin{aligned}x&\equiv a_i\pmod{p^c} \\ x^{p-1}&\equiv 1\pmod{p^{c+1}}\end{aligned}
+  - type: narrative
+    content: |
+      Jelöljük ezt a modulo $p^{c+1}$ maradékosztályt $B_i$-vel. Mivel tehát $B_i$ elemeire teljesül a fenti
+      kongruenciarendszer, és így az abban lévő második kongruencia is, ezért a
+      [nem-miller-rabin-tanuk-csoportja-primhatvanyok-eseten] 1. pontja alapján a $B_i$ maradékosztály nem
+      Miller-Rabin-tanúja $p^{c+1}$-nek, azaz $B_i\in G_{p^{c+1}}$.
+  - type: formula
+    lead-in: |
+      Ez tehát azt jelenti, hogy ha a keresett $f$ függvényt az alábbi képlettel definiáljuk, akkor az valóban
+      minden $G_{p^c}$-beli nem Miller-Rabin-tanúhoz egyértelműen hozzárendel egy-egy $G_{p^{c+1}}$-beli nem
+      Miller-Rabin-tanút:
+    content: |
+      f([a_i]_{p^c})=B_i
+  - type: narrative
+    content: |
+      ***Előszöris*** azt mutatjuk meg, hogy az így definiált $f$ függvény ***injektív***, azaz különböző
+      $G_{p^c}$-beli elemekhez különböző $G_{p^{c+1}}$-beli elemeket rendel hozzá.
+  - type: formula
+    lead-in: |
+      ***Indirekt*** tegyük fel, hogy nem ez a helyzet, azaz létezik olyan ***egymástól különböző*** $a_i$ és $a_j$
+      a fent rögzített reprezentánsrendszerben, amelyekre teljesül az alábbi:
+    content: |
+      f([a_i]_{p^c})=f([a_j]_{p^c})
+  - type: figure
+    lead-in: |
+      Az $f$ függvény tehát indirekt feltételezésünk szerint az $[a_i]_{p^c}$ és az $[a_j]_{p^c}$
+      maradékosztályokhoz ***ugyanazt*** az alábbi ábrán $B$-vel jelölt modulo $p^{c+1}$ maradékosztályt rendeli
+      hozzá:
+    src: nem_injektiv_fuggveny.jpg
+    alt: Nem injektív függvény
+    caption: Nem injektív függvény
+  - type: narrative
+    content: |
+      Tekintsük $B$-nek egy tetszőleges $b$ reprezentánselemét.
+  - type: formula
+    lead-in: |
+      Ekkor $b$-re teljesülni fog a fenti kongruenciarendszer, és így az abban lévő első kongruencia $a_i$ és $a_j$
+      esetén is, azaz:
+    content: |
+      \begin{aligned}b&\equiv a_i\pmod{p^c} \\ b&\equiv a_j\pmod{p^c}\end{aligned}
+  - type: formula
+    lead-in: |
+      Ám ekkor a [egesz-szamok-kozotti-kongruencia-tulajdonsagai] 2. és 3. pontjai miatt teljesül az alábbi
+      kongruencia is:
+    content: |
+      a_i\equiv a_j\pmod{p^c}
+  - type: narrative
+    content: |
+      Ám ez ***ellentmondás***, hiszen indirekt feltételezésünkben azt mondtuk, hogy $a_i$ és $a_j$ ***egymástól
+      különbözőek***, és így &ndash; mivel ők a $G_{p^c}$ halmaz egy reprezentánsrendszerének elemei &ndash; nem
+      lehetnének azonos modulo $p^c$ maradékosztályban. Az $f$ függvény tehát valóban ***injektív***, azaz
+      különböző $G_{p^c}$-beli elemekhez szükségképpen különböző $G_{p^{c+1}}$-beli elemeket rendel hozzá.
+  - type: narrative
+    content: |
+      ***Végül*** azt igazoljuk, hogy $f$ az injektivitáson kívül ***szürjektív*** is, azaz nem létezik olyan
+      $G_{p^{c+1}}$-beli elem, amely ne lenne hozzárendelve valamelyik $G_{p^c}$-beli elemhez.
+  - type: figure
+    lead-in: |
+      ***Indirekt*** tegyük fel, hogy nem ez a helyzet, vagyis létezik az alábbi ábrán látható $B\in G_{p^{c+1}}$
+      maradékosztály, amely nincs hozzárendelve semelyik $G_{p^c}$-beli maradékosztályhoz $f$ által:
+    src: nem_szurjektiv_fuggveny.jpg
+    alt: Nem szürjektív függvény
+    caption: Nem szürjektív függvény
+  - type: narrative
+    content: |
+      Tekintsük $B$ egy tetszőleges $b$ reprezentánselemét, azaz legyen $B=[b]_{p^{c+1}}$.
+  - type: formula
+    lead-in: |
+      Mivel $[b]_{p^{c+1}}\in G_{p^{c+1}}$, ezért a [nem-miller-rabin-tanuk-csoportja-primhatvanyok-eseten] 1.
+      pontja alapján $b$-re teljesül az alábbi kongruencia:
+    content: |
+      b^{p-1}\equiv 1\pmod{p^{c+1}}
+  - type: formula
+    lead-in: |
+      Ám mivel a $p^c|p^{c+1}$ oszthatóság nyilvánvalóan teljesül, ezért a
+      [egesz-szamok-kozotti-kongruencia-tulajdonsagai] 9. pontja alapján teljesül az alábbi kongruencia is:
+    content: |
+      b^{p-1}\equiv 1\pmod{p^c}
+  - type: narrative
+    content: |
+      Ám ekkor a [nem-miller-rabin-tanuk-csoportja-primhatvanyok-eseten] 1. pontja szerint a $b$ által reprezentált
+      modulo $p^c$ maradékosztály nem Miller-Rabin-tanúja $p^c$-nek, azaz $[b]_{p^c}\in G_{p^c}$. Mivel azonban a
+      korábban rögzített $a_1$, $a_2$, $a_3$, ..., $a_{p-1}$ egész számok a $G_{p^c}$ halmaz egy
+      reprezentánsrendszerét alkotják, ezért $b$ szükségképpen azonos modulo $p^c$ maradékosztályban van pontosan
+      az egyikükkel.
+  - type: formula
+    lead-in: |
+      Azaz létezik olyan $a_i$ ebben a reprezentánsrendszerben, amely esetén $b$-re teljesül az alábbi kongruencia
+      is:
+    content: |
+      b\equiv a_i\pmod{p^c}
+  - type: formula
+    lead-in: |
+      ***Összegezve*** tehát $b$ az egyike azon egész számoknak, amelyek kielégítik az alábbi kongruenciarendszert:
+    content: |
+      \begin{aligned}x&\equiv a_i\pmod{p^c} \\ x^{p-1}&\equiv 1\pmod{p^{c+1}}\end{aligned}
+  - type: formula
+    lead-in: |
+      Azt is láttuk, hogy $b$-re teljesül az alábbi kongruencia is:
+    content: |
+      b^{p-1}\equiv 1\pmod{p^c}
+  - type: narrative
+    content: |
+      Ekkor azonban a [nem-miller-rabin-tanuk-csoportjara-vonatkozo-lemma-primhatvanyok-eseten] alapján a fenti
+      kongruenciarendszert kielégítő egész számok épp egy modulo $p^{c+1}$ maradékosztályt alkotnak, amelyben ezek
+      szerint $b$ is benne van, így ez épp a $B=[b]_{p^{c+1}}$ maradékosztály. Az $f$ függvény viszont épp ezt a
+      maradékosztályt rendeli hozzá $[a_i]_{p^c}$-hez, ami ***ellentmond*** indirekt feltételezésünknek, miszerint
+      $B$ egy olyan $G_{p^{c+1}}$-beli maradékosztály, amely nincs hozzárendelve semelyik $G_{p^c}$-beli
+      maradékosztályhoz sem $f$ által. Az $f$ függvény tehát valóban ***szürjektív***.
+  - type: narrative
+    content: |
+      Mivel $f$-ről megmutattuk, hogy egyszerre injektív és szürjektív, ezért ő tulajdonképpen egy ***kölcsönösen
+      egyértelmű megfeleltetést*** létesít $G_{p^c}$ és $G_{p^{c+1}}$ elemei között, így e két halmaznak pontosan
+      ugyanannyi eleme van tetszőleges pozitív $c$ kitevő esetén. A bizonyítás elején a $c=1$ kitevő esetén láttuk,
+      hogy a $G_p$ halmaznak $p-1$ eleme van. A most bizonyított indukció miatt ekkor $p-1$ eleme lesz
+      $G_{p^2}$-nek is, majd emiatt $G_{p^3}$-nak is, stb. Tehát tetszőleges pozitív $c$ kitevő esetén
+      $G_{p^c}$-nek is valóban $p-1$ eleme lesz, ahogyan a tétel állítja.

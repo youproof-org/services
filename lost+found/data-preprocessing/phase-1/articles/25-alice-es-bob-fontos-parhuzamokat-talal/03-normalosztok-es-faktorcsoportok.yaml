@@ -1,0 +1,112 @@
+type: section
+name: 03-normalosztok-es-faktorcsoportok
+title: Normálosztók és faktorcsoportok
+
+references:
+  csoporthomomorfizmus-magjanak-szukseges-feltetele:
+    target:
+      type: theorem
+      name: csoporthomomorfizmus-magjanak-szukseges-feltetele
+  ideal-szerinti-muveletek-joldefinialtsaga:
+    target:
+      type: theorem
+      name: ideal-szerinti-muveletek-joldefinialtsaga
+  ketvaltozos-muvelet:
+    target:
+      type: definition
+      name: ketvaltozos-muvelet
+  maradekosztalygyuruk:
+    target:
+      type: theorem
+      name: maradekosztalygyuruk
+
+body:
+  - type: narrative
+    content: |
+      A gyűrűk esetén ***ideáloknak*** neveztük el azokat a speciális részgyűrűket, amelyek gyűrűhomomorfizmusok
+      magjai lehetnek. Úgy tűnik, hogy az előző szakaszban egy csoport részcsoportjaira is sikerült azonosítanunk
+      egy olyan  speciális tulajdonságot, ami &ndash; legalábbis &ndash; ***szükséges*** ahhoz, hogy ők
+      csoporthomomorfizmusok magjai lehessenek. Most az ilyen speciális részcsoportokat nevezzük el, majd
+      megmutatjuk, hogy ezeken kívül más részcsoport nem is lehet csoporthomomorfizmus magja (azaz az említett
+      speciális tulajdonság egyben ***elégséges*** is).
+  - type: embed
+    target:
+      type: definition
+      name: normaloszto
+  - type: embed
+    target:
+      type: remark
+      name: normaloszto-megjegyzes
+  - type: narrative
+    content: |
+      E speciális tulajdonság ***elégségességének*** bizonyításához a 18. részben látott módon fogunk eljárni. Azaz
+      mutatunk egy olyan konstrukciót, amely tetszőleges $G$ csoportból annak valamely $N$ normálosztójának
+      segítségével létrehoz egy új csoportot, továbbá egy $G$-ből ebbe az új csoportba mutató olyan
+      csoporthomomorfizmust, amelynek magja épp $N$. Ehhez előszöris értelmezni fogunk egy műveletet az $N$
+      normálosztó, mint speciális részcsoport szerinti baloldali (vagy a velük azonos jobboldali) mellékosztályok
+      között.
+  - type: narrative
+    content: |
+      Az ***ideál szerinti maradékosztályok*** között a [maradekosztalygyuruk]ben definiált műveletek mintájára ezt
+      a műveletet is a ***reprezentánselemek*** segítségével kell majd elvégezni. ***Kicsit bővebben:*** két
+      mellékosztályt úgy fogunk "összeszorozni" egymással, hogy kiválasztunk belőlük egy-egy tetszőleges elemet,
+      amelyeket összeszorzunk az eredeti $G$ csoport műveletével, majd azt a mellékosztályt választjuk
+      "végeredménynek", amelybe az így kapott elem esik. Egy ilyen mellékosztályok közötti műveletnek nyilvánvalóan
+      akkor van csak értelme, ha az eredményül kapott mellékosztály nem függ attól, hogy a két bemeneti
+      mellékosztályból mely elemeket választottuk ki a művelet elvégzéséhez.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán például az $A$ és $B$ mellékosztályok "összeszorzása" látható, amit két különböző elempár
+      segítségével elvégezve ugyanaz az eredmény adódik:
+    src: 01-mellekosztalyok-szorzasa.jpg
+    alt: Mellékosztályok szorzása
+    caption: Mellékosztályok szorzása
+  - type: narrative
+    content: |
+      Megköveteljük tehát, hogy függetlenül attól, hogy az $a_1\cdot b_1$​ vagy az $a_2\cdot b_2$​ szorzatot
+      számítjuk-e ki, az eredménynek mindkét esetben ugyanabba a mellékosztályba kell esnie. Ilyenkor mondjuk azt,
+      hogy a művelet ***jóldefiniált***.
+  - type: narrative
+    content: |
+      Egy gyűrűben a maradékosztályok közötti műveletek jóldefiniáltsága a
+      [ideal-szerinti-muveletek-joldefinialtsaga] alapján azon múlott, hogy az a részgyűrű, amelynek a segítségével
+      ezeket a maradékosztályokat képeztük speciálisan egy ***ideál*** volt. Most megmutatjuk, hogy ehhez hasonlóan
+      egy csoport esetén egy $N$ részcsoport szerinti mellékosztályok közötti művelet akkor lesz jóldefiniált, ha
+      $N$ speciálisan egy ***normálosztó***.
+  - type: embed
+    target:
+      type: theorem
+      name: normaloszto-szerinti-muvelet-joldefinialtsaga
+  - type: embed
+    target:
+      type: proof
+      name: normaloszto-szerinti-muvelet-joldefinialtsaga-bizonyitas
+  - type: narrative
+    content: |
+      Ez tehát azt jelenti, hogy a normálosztók szerinti mellékosztályok közötti művelet valóban jóldefiniált, azaz
+      ***művelet*** a szó algebrai értelmében is (lásd a [ketvaltozos-muvelet]t). Most e művelet segítségével a
+      [maradekosztalygyuruk]ben definiált ***faktorgyűrűk*** (vagy az eddig használt nevükön:
+      ***maradékosztálygyűrűk***) mintájára az alábbi tételben definiáljuk a ***faktorcsoport*** fogalmát. Végül e
+      tétel közvetlen következményeként megmutatjuk, hogy tetszőleges $G$ csoport esetén a $G$-ből kiinduló
+      csoporthomomorfizmusok magjai pontosan a $G$-beli normálosztók lesznek.
+  - type: embed
+    target:
+      type: theorem
+      name: faktorcsoport
+  - type: embed
+    target:
+      type: proof
+      name: faktorcsoport-bizonyitas
+  - type: narrative
+    content: |
+      Az imént bizonyított és a [csoporthomomorfizmus-magjanak-szukseges-feltetele] következményeként mostmár
+      egyértelműen azonosítani tudjuk egy csoport azon részhalmazait, amelyek valamilyen csoporthomomorfizmusok
+      magjai lehetnek. Erről szól az alábbi következmény.
+  - type: embed
+    target:
+      type: theorem
+      name: normalosztok-es-csoporthomomorfizmusok
+  - type: embed
+    target:
+      type: proof
+      name: normalosztok-es-csoporthomomorfizmusok-bizonyitas

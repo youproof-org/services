@@ -1,0 +1,15 @@
+type: theorem
+name: termeszetes-szamparok-ekvivalenciarelacioja-tetel
+proofs:
+  - termeszetes-szamparok-ekvivalenciarelacioja-tetel-bizonyitas
+remarks: []
+references:
+  termeszetes-szamparok-ekvivalenciarelacioja:
+    target:
+      type: definition
+      name: termeszetes-szamparok-ekvivalenciarelacioja
+content:
+  - type: narrative
+    content: |
+      A [termeszetes-szamparok-ekvivalenciarelacioja] szerinti $\sim$ reláció egy ***ekvivalenciareláció*** az $\N
+      \times \N$ halmazon.

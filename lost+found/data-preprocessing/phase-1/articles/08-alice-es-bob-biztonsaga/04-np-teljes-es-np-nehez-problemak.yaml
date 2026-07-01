@@ -1,0 +1,111 @@
+type: section
+name: 04-np-teljes-es-np-nehez-problemak
+title: NP-teljes és NP-nehéz problémák
+
+body:
+  - type: narrative
+    content: |
+      Az alábbiakban néhány olyan, az informatikában is gyakran felmerülő optimalizálási feladatot ismertetünk,
+      amelyek NP-teljes döntési problémákra vezethetők vissza.
+  - type: narrative
+    content: |
+      **Maximális méretű klikk keresése gráfokban**
+  - type: narrative
+    content: |
+      Gráfokról az előző részben már volt szó. Egy gráfban ***klikknek*** nevezünk egy olyan csúcshalmazt, amelyen
+      belül bármely két csúcs között van él. A feladat egy adott gráfban megtalálni a legnagyobb klikket. Például
+      az alábbi gráfban a legnagyobb klikk 4 csúcsból áll.
+  - type: figure
+    lead-in: |
+      Ezeket tele körökkel jelöltük:
+    src: 06-maximalis-klikk.jpg
+    alt: Gráf 4 méretű maximális klikkel
+    caption: Gráf 4 méretű maximális klikkel
+  - type: narrative
+    content: |
+      Az ehhez a feladathoz tartozó döntési probléma így hangzik: adott egy $G$ gráf és egy $k$ egész szám. Az
+      eldöntendő kérdés: létezik-e $G$-ben $k$-nál nagyobb méretű klikk?
+  - type: narrative
+    content: |
+      **Leghosszabb útvonal keresése gráfokban**
+  - type: narrative
+    content: |
+      Adott egy gráf és annak két csúcspontja, amelyek között ***a lehető leghosszabb (legtöbb élből álló)
+      útvonalat kell megtalálni***. Fontos kikötés, hogy az útvonal során ***a gráf minden csúcsát legfeljebb
+      1-szer érinthetjük***. Azaz egy már bejárt csúcshoz nem térhetünk vissza mégegyszer. Ez a kikötés érthető is,
+      hiszen különben egy így kialakuló kör mentén haladva tetszőlegesen hosszú útvonal is létezne.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán látható példa gráfon vastagított vonallal jelöltük az $a$ és $b$ csúcsok közötti leghosszabb
+      útvonalat:
+    src: 07-leghosszabb-ut.jpg
+    alt: Leghosszabb útvonal keresése
+    caption: Leghosszabb útvonal keresése
+  - type: narrative
+    content: |
+      Az ehhez a feladathoz tartozó döntési probléma így hangzik: adott egy $G$ gráf és egy $k$ egész szám. Az
+      eldöntendő kérdés: létezik-e $G$-ben $k$-nál hosszabb útvonal?
+  - type: narrative
+    content: |
+      Ez a döntési probléma NP-teljes, érdekes ugyanakkor, hogy a ***legrövidebb*** útvonal megtalálására viszont
+      léteznek polinomiális időkomplexitású algoritmusok. A legismertebb példák a használatukra a különböző
+      navigációs alkalmazások útvonalkeresői. Az egyik legismertebb ilyen eljárás a ***Dijkstra-algoritmus***.
+  - type: narrative
+    content: |
+      **Gráfok színezése**
+  - type: narrative
+    content: |
+      Gráfok színezéséről az előző részben már volt szó. A feladat egy adott gráf csúcsait a lehető legkevesebb
+      szín felhasználásával kiszínezni oly módon, hogy bármely két szomszédos csúcs különböző színű legyen.
+  - type: narrative
+    content: |
+      Az ehhez a feladathoz tartozó döntési probléma így hangzik: adott egy $G$ gráf és egy $k$ egész szám. Az
+      eldöntendő kérdés: kiszínezhető-e $G$ legfeljebb $k$ darab szín felhasználásával?
+  - type: narrative
+    content: |
+      Az előző részben már említettük, hogy $k=3$ esetén ennek eldöntésére jelenleg nem ismert polinomiális
+      időkomplexitású algoritmus. Ráadásul nem is várható, hogy bárki felfedez ilyen algoritmust, ugyanis $k>2$
+      esetén ez a döntési probléma is NP-teljes.
+  - type: narrative
+    content: |
+      **Független csúcshalmaz keresése gráfokban**
+  - type: narrative
+    content: |
+      A független csúcsok problémájáról szintén az előző részben volt szó. A feladat egy adott gráf csúcsai közül
+      kiválasztani a lehető legtöbbet úgy, hogy ezek között ne legyen két egymással szomszédos csúcs.
+  - type: narrative
+    content: |
+      Az ehhez a feladathoz tartozó döntési probléma így hangzik: adott egy $G$ gráf és egy $k$ egész szám. Az
+      eldöntendő kérdés: létezik-e $G$-ben legalább $k$ darab csúcsot tartalmazó független csúcshalmaz?
+  - type: narrative
+    content: |
+      Az előző részben már említettük, hogy $k>1$ esetén ennek eldöntésére sem ismert polinomiális időkomplexitású
+      algoritmus. Valószínű, hogy nem is létezik, ugyanis ez a döntési probléma is NP-teljes.
+  - type: narrative
+    content: |
+      **Az utazóügynök-probléma (egyszerűsített változat)**
+  - type: narrative
+    content: |
+      A feladat egy adott gráfban olyan útvonal keresése, amely minden csúcson pontosan egyszer halad keresztül, és
+      végül a kiindulópontba jut vissza. Az ilyen útvonalakat ***Hamilton-köröknek*** nevezzük.
+  - type: narrative
+    content: |
+      Az ehhez a feladathoz tartozó döntési probléma így hangzik: adott egy gráf, és el kell dönteni, hogy
+      létezik-e benne Hamilton-kör. Ez a döntési probléma is NP-teljes.
+  - type: narrative
+    content: |
+      Az utazóügynök-probléma a logisztikai problémákon túl nagy gyakorlati jelentőséggel bír például a nyomtatott
+      áramkörök gyártása során alkalmazott fúrórobotok ideális mozgásának megtervezésében. De ezen kívül is
+      rengeteg optimalizálási feladat vezethető vissza rá.
+  - type: narrative
+    content: |
+      **A hátizsák-probléma**
+  - type: narrative
+    content: |
+      Adott valahány darab tárgy, mindegyiknek meg van adva a súlya és az értéke, valamint adott egy valamilyen
+      teherbírású hátizsák. A feladat a tárgyakból minél nagyobb összeértékű részhalmazt belepakolni a hátizsákba
+      úgy, hogy ne lépjük át a súlyhatárt. Ezzel rokon probléma, amikor különböző méretű dobozokat kell bepakolni
+      egy adott méretű szekrénybe úgy, hogy minél jobban kihasználjuk a rendelkezésre álló helyet. Ki ne
+      bosszankodott volna például, amikor nyaralás előtt minél több mindent szeretett volna bepakolni a
+      csomagtartóba? Most már tudjuk, hogy a bosszankodás oka az volt, hogy ez is egy NP-teljes döntési problémához
+      vezet.

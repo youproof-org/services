@@ -1,0 +1,196 @@
+type: section
+name: 07-mit-allit-a-birch-es-swinnerton-dyer-sejtes
+title: Mit állít a Birch és Swinnerton-Dyer sejtés?
+
+references:
+  ciklikus-csoportok:
+    target:
+      type: definition
+      name: ciklikus-csoportok
+  csoportelem-rendje:
+    target:
+      type: definition
+      name: csoportelem-rendje
+  euler-fuggveny-primhatvanyokra:
+    target:
+      type: theorem
+      name: euler-fuggveny-primhatvanyokra
+  generalt-reszcsoport-es-normaloszto:
+    target:
+      type: theorem
+      name: generalt-reszcsoport-es-normaloszto
+  modularis-osszeadas-es-szorzas:
+    target:
+      type: definition
+      name: modularis-osszeadas-es-szorzas
+
+body:
+  - type: narrative
+    content: |
+      Mint már említettük, továbbra is nyitott kérdés annak eldöntése, hogy egy adott $E$ racionális elliptikus
+      görbe vajon véges vagy végtelen sok racionális pontot tartalmaz-e. Ez a kérdés az előző szakasz fényében úgy
+      is megfogalmazható, hogy a görbe által meghatározott $E(\mathbb{Q})$-val jelölt Abel-csoportnak véges vagy
+      végtelen sok eleme van-e. Ez összefüggésben van az elliptikus görbe egy fontos tulajdonságával, amelyet $E$
+      ***rangjának*** nevezünk. De mit is jelent ez pontosan?
+  - type: narrative
+    content: |
+      Mint minden csoport esetében, így az $E(\mathbb{Q})$ csoport kapcsán is beszélhetünk a ***generálás***
+      fogalmáról. Ezt a fogalmat [generalt-reszcsoport-es-normaloszto]ben vezettük be, amikoris azt mondtuk, egy
+      bármilyen $G$ csoport tetszőleges $X$ részhalmaza egyértelműen meghatároz egy olyan legszűkebb részcsoportot
+      $G$-ben, amely tartalmazza $X$ összes elemét. Ezt a részcsoportot ***az $X$ által generált részcsoportnak***
+      neveztük, és $\lang X\ ang$-szel jelöltük. Amennyiben $\lang X\ ang = G$, akkor azt mondjuk, hogy az $X$
+      részhalmaz ***generálja*** a teljes $G$ csoportot. Speciálisan ***végesen generált csoportoknak*** nevezzük
+      az olyan csoportokat, amelyek generálhatók egy véges elemszámú részhalmazzal. Ennek egy még speciálisabb
+      esetét a [ciklikus-csoportok]ban ***ciklikus csoportoknak*** neveztük, amikoris ez a véges elemszám konkrétan
+      $1$.
+  - type: narrative
+    content: |
+      Sokáig nyitott volt a kérdés, hogy vajon létezik-e olyan $E$ racionális elliptikus görbe, amely esetén az
+      $E(\mathbb{Q})$ csoport nem generálható végesen. Ezt a kérdést Louis Mordell brit matematikus 1922-ben
+      tisztázta a racionális számtest feletti elliptikus görbékre, amelyet Andé Weil francia matematikus 1928-ban
+      megjelent doktori dolgozatában általánosított tetszőleges $\mathbb{Q}$-nál bővebb számtestekre is. Ez egy
+      kiemelkedő eredmény volt a számelméletben, amely manapság Mordell-Weil tétel néven ismeretes. A tétel
+      nemleges választ a fenti kérdésre, azaz kimondja, hogy ***minden racionális elliptikus görbe végesen
+      generált***. Ez azt jelenti, hogy mindig található véges sok olyan racionális pont a görbén, amelyekből a
+      $\oplus$ csoportművelet segítségével előállítható az összes többi &ndash; még ha azok végtelen sokan is
+      vannak.
+  - type: narrative
+    content: |
+      A ***Mordell-Weil tétel*** értelmében tehát a görbének mindig létezik véges generátorrendszere. Ekkor azonban
+      nyilván létezik ezek között olyan is, amely minimális méretű. Ezeket ***független generátorrendszereknek***
+      nevezzük, utalva arra, hogy a csoportművelet segítségével egyik elemük sem kapható meg a többiből, vagyis
+      független azoktól. Ha ugyanis nem így volna, akkor ezeket a nem független elemeket elhagyva a maradék
+      rendszer továbbra is generálná a teljes csoportot, és így az eredeti generátorrendszer nem lett volna
+      minimális méretű. Az $E(\mathbb{Q})$ csoport végessége nyilván attól függ, hogy egy ilyen független
+      generátorrendszerben ***van-e végtelen rendű elem***. A [csoportelem-rendje] alapján a görbe egy racionális
+      pontja akkor végtelen rendű, ha önmagával akárhányszor összeadva mindig újabb és újabb pontokat kapunk a
+      görbén.
+  - type: narrative
+    content: |
+      Egy elliptikus görbe valamely ***független generátorrendszerében lévő végtelen rendű elemek száma*** egy
+      olyan mennyiség, amely nem függ attól, hogy melyik generátorrendszert választottuk. Ezt a mennyiséget ***az
+      elliptikus görbe rangjának*** nevezzük, amely tehát a Mordell-Weil tételből következően ***mindig véges***.
+      Egy racionális elliptikus görbe tehát pontosan akkor tartalmaz véges sok racionális pontot, ha a rangja 0
+      &ndash; hiszen ekkor a generátorrendszerben csak véges rendű elemek vannak &ndash;, és minden más esetben
+      végtelen sok racionális pont van a görbén. Fontos lenne tehát, hogy ki tudjuk számolni a görbe rangját,
+      azonban sajnos erre jelenleg nem ismert általános eljárás. Épp itt jön a képbe a ***Birch és Swinnerton-Dyer
+      sejtés***.
+  - type: narrative
+    content: |
+      Az 1960-as években Bryan Birch és Peter Swinnerton-Dyer egy rendkívül érdekes felfedezésre jutottak, amikor
+      elliptikus görbéket kezdtek el vizsgálni számítógéppel a $\mathbb{Q}$ racionális számtest helyett különböző
+      véges testek felett.
+  - type: formula
+    lead-in: |
+      Vegyük példának az alábbi racionális elliptikus görbét, amelynek a rangja ismert, történetesen 1, azaz
+      végtelen sok racionális pontot tartalmaz:
+    content: |
+      y^2=x^3-5x
+  - type: narrative
+    content: |
+      Ugyanezt a görbét tekintsük most a [modularis-osszeadas-es-szorzas]ban ismertetett $Z_p$ testek fölött
+      különböző $p$ prímszámokra. Könnyű belátni, hogy ezekben az esetekben $Z_p$ valóban nem csak gyűrű, hanem
+      test is. Ekkor ugyanis a szorzásra nézve invertálható elemek száma a [euler-fuggveny-primhatvanyokra] alapján
+      $\varphi(p)=p-1$, vagyis a nullán kívül minden elem invertálható, és így tényleg testet kapunk.
+  - type: narrative
+    content: |
+      Vegyük példaként a fenti görbét a $Z_{17}$ test felett. Ilyenkor tehát a görbe pontjai olyan $(x;y)$
+      számpárok lesznek, amelyeknek mindkét komponense a $Z_{17}$ testből való, és amelyeket behelyettesítve a
+      görbe egyenletébe az egyenlet fennáll. Természetesen ilyenkor a hagyományos összeadások, szorzások és
+      hatványozások helyett modulo 17 összeadásokat, szorzásokat és hatványozásokat kell érteni. Ezenkívül továbbra
+      is a görbe pontjának tekintjük a "végtelen távol" lévő $\mathcal{O}$ pontot, mint a görbe által meghatározott
+      csoport egységelemét.
+  - type: narrative
+    content: |
+      A pontokat &ndash; az $\mathcal{O}$ pont kivételével &ndash; természetesen grafikonon is ábrázolhatjuk.
+  - type: figure
+    lead-in: |
+      Például a fenti $y^2=x^3-5x$ elliptikus görbe grafikonja a $Z_{17}$ test felett így néz ki:
+    src: 12-elliptikus-gorbe-z-17-felett.png
+    alt: 'Elliptikus görbe $Z_{17}$ felett'
+    caption: 'Elliptikus görbe $Z_{17}$ felett'
+  - type: narrative
+    content: |
+      Az $\mathcal{O}$ ponttal együtt tehát összesen 26 pontja van ennek a görbének. De ugyanígy megvizsgálhatjuk a
+      pontok számát más és más $Z_p$ test felett különböző $p$ prímekre. Az itt lévő oldalon minden ilyen görbének
+      megtekinthetjük a grafikonját és a műveleti tábláját, valamint az adott görbe minden pontjának megnézhetjük
+      az inverzét, a rendjét és az általa generált ciklikus részcsoportot is. Minket elsősorban a $Z_p$ feletti
+      görbe pontjainak száma érdekel, amit jelöljünk $N_p$-vel.
+  - type: formula
+    lead-in: |
+      Az alábbi táblázat ezeket, valamint az $\frac{N_p}{p}$ arányokat tartalmazza az első néhány $p$ prímre:
+    content: |
+      \begin{array}{c|c|c}p & N_p & \frac{N_p}{p} \\ \hline 2 & 3 & 1.5 \\ \hline 3 & 4 & 1.33 \\ \hline 5 & 6 &
+      1.2 \\ \hline 7 & 8 & 1.14 \\ \hline 11 & 12 & 1.09 \\ \hline 13 & 18 & 1.38 \\ \hline 17 & 26 & 1.52 \\
+      \hline 19 & 20 & 1.05 \\ \hline & \vdots &\end{array}
+  - type: narrative
+    content: |
+      Most a táblázat minden sorához képezzük a harmadik oszlopban lévő arányszámok szorzatait az adott sorig
+      bezárólag.
+  - type: formula
+    lead-in: |
+      Például a fenti első néhány prímre az alábbi szorzatok képződnek:
+    content: |
+      \begin{aligned}p=2 &\to \frac{N_2}{2}=1.5 \\ p=3 &\to \frac{N_2}{2}\cdot \frac{N_3}{3}=2 \\ p=5 &\to
+      \frac{N_2}{2}\cdot \frac{N_3}{3} \cdot \frac{N_5}{5}=2.4 \\ p=7 &\to \frac{N_2}{2}\cdot \frac{N_3}{3} \cdot
+      \frac{N_5}{5} \cdot \frac{N_7}{7}=2.74 \\ p=11 &\to \frac{N_2}{2}\cdot \frac{N_3}{3} \cdot \frac{N_5}{5}
+      \cdot \frac{N_7}{7}\cdot \frac{N_{11}}{11}=2.99 \\ p=13 &\to \frac{N_2}{2}\cdot \frac{N_3}{3} \cdot
+      \frac{N_5}{5} \cdot \frac{N_7}{7}\cdot \frac{N_{11}}{11}\cdot \frac{N_{13}}{13}=4.14 \\ &\vdots \end{aligned}
+  - type: narrative
+    content: |
+      Ez eddig látszólag pusztán játék a számokkal.
+  - type: figure
+    lead-in: |
+      A dolog akkor válik ***megdöbbentően érdekessé***, amikor az így kapott értékeket elkezdjük felrajzolni egy
+      megfelelően skálázott grafikonra:
+    src: 13-birch-es-swinnerton-dyer-sejtes.png
+    alt: Birch és Swinnerton-Dyer sejtés
+    caption: Birch és Swinnerton-Dyer sejtés
+  - type: narrative
+    content: |
+      Ez a grafikon a fent leírt módon kiszámított szorzatokat tartalmazza az első 100000 prímszámra. A vízszintes
+      tengely egy duplán, míg a függőleges tengely egy egyszeresen logaritmikus skálával van ellátva. Látható, hogy
+      a kiszámított szorzatok eléggé hektikusan alakulnak, ahogy újabb és újabb $p$ értékre számoljuk ki őket. A
+      tapasztalat azonban azt mutatja, hogy ezen a furcsa logaritmikus skálán a felrajzolt pontok előbb-utóbb egy
+      jól meghatározott egyenes körül kezdenek el egyre szorosabban csoportosulni. Ha megvizsgálnánk ennek a
+      képzeletbeli egyenesnek a meredekségét, akkor 1-et kapnánk eredményül. ***Furcsamód ez épp megegyezik az
+      eredeti racionális elliptikus görbe rangjával, ami szintén 1!***
+  - type: narrative
+    content: |
+      Ami még furcsább, hogy azóta rengeteg más, ismert rangú elliptikus görbére megvizsgálták ezt a jelenséget, és
+      eddig minden egyes esetben azt tapasztalták, hogy a kapott egyenes meredeksége megegyezett a görbe rangjával.
+      Az egymillió dollárt érő ***Birch és Swinnerton-Dyer sejtés*** némileg komplikáltabb megfogalmazásban
+      lényegében azt állítja, hogy ez minden racionális elliptikus görbére igaz, vagyis tulajdonképpen egy
+      ***eljárást ad a rang kiszámítására***. Mintha valami nagyon mélyen gyökerező titokzatos kapcsolat lenne az
+      eredeti racionális görbe és annak a $Z_p$ testek feletti változatai között. Az utóbbi évtizedek során
+      rengeteg numerikus bizonyíték gyűlt össze, amely arra utal, hogy a sejtés igaz lehet. Ennek ellenére
+      nagyrészt a mai napig fogalmunk sincsen, hogy mi állhat a háttérben, az állítás ugyanis csak a 0 és 1 rangú
+      elliptikus görbékre van bizonyítva. Az 1-nél magasabb rangú görbékről semmit sem tudunk, noha a numerikus
+      vizsgálatok eddig egyetlen ellenpéldát sem mutattak ki ezek közül.
+  - type: narrative
+    content: |
+      Továbbá az sem ismert, hogy vajon van-e valamilyen felső korlát a rangra vonatkozóan, vagy az tetszőlegesen
+      nagy is lehet. A vizsgálatok azt mutatják, hogy "majdnem minden" görbe rangja 0 vagy 1, méghozzá nagyjából
+      50-50% valószínűséggel, és ennél magasabb rangú görbék csak "elvétve" fordulnak elő. Ettől függetlenül persze
+      ezekből is végtelen sok van, habár kimondottan nehéz magas rangú görbét találni.
+  - type: formula
+    lead-in: |
+      Az eddigi rekordot Noam Elkies amerikai matematikus tartja, aki 2006-ban az alábbi görbét fedezte fel:
+    content: |
+      y^2 + xy + y = x^3-x^2-20067762415575526585033208209338542750930230312178956502x +
+      34481611795030556467032985690390720374855944359319180361266008296291939448732243429
+  - type: narrative
+    content: |
+      Ennek a görbének a pontos rangja nem ismert, mindössze annyit tudunk róla, hogy az ***legalább 28***. A
+      legfrissebb eredmény 2020-ból származik szintén Noam Elkies-től és Zev Klagsbrun-tól.
+  - type: formula
+    lead-in: |
+      Ennek a görbének a rangja ***pontosan 20***:
+    content: |
+      y^2 + xy + y = x^3-x^2-244537673336319601463803487168961769270757573821859853707x +
+      961710182053183034546222979258806817743270682028964434238957830989898438151121499931
+  - type: narrative
+    content: |
+      Látható, hogy ezek a rekordnak számító értékek sem túl magasak, bár a fenti első Elkies-féle görbe rangja
+      lehet akármilyen magas is, hiszen arról csak annyit tudunk, hogy legalább 28. Ennek ellenére a legtöbben úgy
+      gondolják, hogy nincs felső korlát a rangra vonatkozóan, ám a kérdés továbbra is nyitott.

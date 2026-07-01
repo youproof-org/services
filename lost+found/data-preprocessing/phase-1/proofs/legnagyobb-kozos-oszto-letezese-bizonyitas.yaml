@@ -1,0 +1,50 @@
+type: proof
+name: legnagyobb-kozos-oszto-letezese-bizonyitas
+remarks: []
+references:
+  asszocialtsag-tulajdonsagai:
+    target:
+      type: theorem
+      name: asszocialtsag-tulajdonsagai
+  egyseg:
+    target:
+      type: definition
+      name: egyseg
+  gyuru-reszbenrendezesenek-tulajdonsagai:
+    target:
+      type: theorem
+      name: gyuru-reszbenrendezesenek-tulajdonsagai
+  oszthatosag-es-rendezesi-relacio-kapcsolata:
+    target:
+      type: theorem
+      name: oszthatosag-es-rendezesi-relacio-kapcsolata
+  oszthatosag-tulajdonsagai:
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+content:
+  - type: narrative
+    content: |
+      Először azt mutatjuk meg, hogy egy tetszőleges $n\eq 0$ egész számnak mindig ***véges sok*** osztója van.
+      Elegendő azt az esetet vizsgálni, amikor $n$ pozitív. Ha ugyanis $n$ negatív, akkor egyrészt a
+      [gyuru-reszbenrendezesenek-tulajdonsagai] 1. pontja miatt az ellentettje pozitív lenne, amelynek a
+      [asszocialtsag-tulajdonsagai] 1. pontjának értelmében pontosan ugyanazok lennének az osztói, mint $n$-nek.
+  - type: narrative
+    content: |
+      Az általánosság megsértése nélkül feltehetjük tehát, hogy $0\lt n$. A
+      [oszthatosag-es-rendezesi-relacio-kapcsolata] miatt ekkor $n$ egyetlen osztója sem lehet nagyobb $n$-nél.
+      Ebből következik, hogy $n$-nek legfeljebb $n$ darab pozitív osztója lehet. A [oszthatosag-tulajdonsagai] 8.
+      pontja miatt ekkor azonban ezek ellentettjei is osztók, amelyek a [gyuru-reszbenrendezesenek-tulajdonsagai]
+      1. pontja miatt mind negatívak lennének.
+  - type: narrative
+    content: |
+      Tekintve, hogy a pozitív és negatív egész számok a $0$-val együtt lefedik a teljes $\Z$ halmazt, valamint a
+      [oszthatosag-tulajdonsagai] 4. pontja miatt $0 \mid n$, ezért $n$-nek biztosan nincs ezeken kívül több
+      osztója, így ***osztóinak száma*** biztosan nem több $2n$-nél &ndash; azaz ***véges***.
+  - type: narrative
+    content: |
+      Ebből azonnal következik, hogy a tételben szereplő $a$ és $b$ egész számok közös osztóinak száma is véges.
+      Igaz továbbá, hogy az $1$ minden egész számnak osztója, hiszen ő a $\Z$ gyűrű egységeleme, és így a [egyseg]
+      utáni megjegyzés alapján egyúttal ***egység*** is. A közös osztók halmaza tehát &ndash; azonkívül, hogy véges
+      &ndash; ***nem üres***, így biztosan van az elemei között legnagyobb. A legnagyobb közös osztó tehát valóban
+      létezik.

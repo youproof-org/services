@@ -1,0 +1,11 @@
+type: theorem
+name: reszcsoport-feltetele-veges-csoportok-eseten
+proofs:
+  - reszcsoport-feltetele-veges-csoportok-eseten-bizonyitas
+remarks:
+  - reszcsoport-feltetele-veges-csoportok-eseten-megjegyzes
+content:
+  - type: narrative
+    content: |
+      Legyen $G$ tetszőleges ***véges csoport***, $H$ pedig ennek egy tetszőleges ***nemüres*** részhalmaza. A $H$
+      halmaz ***akkor és csak akkor*** részcsoport $G$-ben, ha zárt a $G$ csoport műveletére nézve.

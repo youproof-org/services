@@ -1,0 +1,17 @@
+type: theorem
+name: teljes-es-redukalt-maradekrendszer-kepzese
+proofs:
+  - teljes-es-redukalt-maradekrendszer-kepzese-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $b$ tetszőleges, $m\gt 0$ valamilyen ***pozitív***, $a$ pedig egy $m$-hez relatív prím egész szám.
+  - type: narrative
+    content: |
+      Amennyiben az $r_1$, $r_2$, ..., $r_{m}$ egész számok egy ***modulo $m$ teljes maradékrendszert*** alkotnak,
+      akkor az alábbi számok is: $ar_1+b$, $ar_2+b$, ..., $ar_{m}+b$.
+  - type: narrative
+    content: |
+      Amennyiben az $s_1$, $s_2$, ..., $s_{\varphi(m)}$ egész számok egy ***modulo $m$ redukált maradékrendszert***
+      alkotnak, akkor az alábbi számok is: $as_1$, $as_2$, ..., $as_{\varphi(m)}$.

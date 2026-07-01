@@ -1,0 +1,63 @@
+type: section
+name: 05-a-vegtelen-leszallas-modszere
+title: A végtelen leszállás módszere
+
+references:
+  termeszetes-szamok-rendezesi-relacioja-tranzitiv:
+    target:
+      type: theorem
+      name: termeszetes-szamok-rendezesi-relacioja-tranzitiv
+
+body:
+  - type: narrative
+    content: |
+      Hamarosan azt fogjuk megvizsgálni, hogy az imént tanult eljárást hogyan tudjuk olyan integritástartományokra
+      is kiterjeszteni, amelyek nem feltétlenül számokat tartalmaznak. Ehhez először megismerkedünk a ***végtelen
+      leszállás*** néven ismeretes indirekt bizonyítási módszerrel. Ezzel fogjuk tudni igazolni, hogy az euklidészi
+      algoritmus véges számú lépés után valóban befejeződik.
+  - type: narrative
+    content: |
+      A módszer a természetes számok $\N$ halmazának most következő, fontos tulajdonságán alapszik.
+  - type: embed
+    target:
+      type: theorem
+      name: termeszetes-szamok-minimumtetele
+  - type: narrative
+    content: |
+      Eszerint tehát sehogyan sem lehet kiválogatni véges vagy akár végtelen sok természetes számot úgy, hogy ezek
+      között ne lenne legkisebb. Vegyük észre, hogy ez az egész számok $\Z$ halmazára például nem érvényes, mivel
+      bármilyen egész számnál létezik nála kisebb egész szám, hiszen itt a számegyenes mindkét irányban végtelen.
+      De bizonyos számkörökben még csak erre sincs feltétlenül szükség. Habár a törtszámokat még nem építettük fel
+      az axiómák segítségével, de intuitív módon belátható, hogy bármely két törtszám között végtelen sok további
+      törtszám létezik. Következésképp a számegyenes semmilyen véges hosszú szakaszára nem igaz a fenti tétel. Az
+      tehát, hogy a természetes számokra mégis igaz, egyáltalán nem magától értetődő, akármennyire is annak
+      látszik. Nézzük is meg, hogy miért.
+  - type: embed
+    target:
+      type: proof
+      name: termeszetes-szamok-minimumtetele-bizonyitas
+  - type: narrative
+    content: |
+      A fenti tételen kívül szükségünk lesz még egy állításra, amely a $\leq$-nél szigorúbb $\lt$ reláció
+      tranzitivitását garantálja. Az előbbi tranzitivitását (tehát azt, hogy $a\leq b$ és $b\leq c$ esetén $a\leq
+      c$) már megmutattuk a [termeszetes-szamok-rendezesi-relacioja-tranzitiv]ben. Nem meglepő módon ez a
+      tulajdonság a szigorú rendezésre is teljesül, ráadásul nem csak a természetes számok között, hanem a teljes
+      $\Z$ halmazon is. Így most ezt mutatjuk meg.
+  - type: embed
+    target:
+      type: theorem
+      name: egesz-szamok-szigoru-rendezese-tranzitiv
+  - type: embed
+    target:
+      type: proof
+      name: egesz-szamok-szigoru-rendezese-tranzitiv-bizonyitas
+  - type: narrative
+    content: |
+      Ezek után már alkalmazhatjuk majd a ***végtelen leszállás*** módszerét. Ezt Pierre de Fermat fejlesztette ki
+      a 17. században, és számos fontos eredményhez jutott ennek segítségével. A végtelen leszállás módszere egy
+      indirekt érvelés, melynek során megmutatjuk, hogy ha a szóban forgó állítás hamis, akkor elő lehet állítani
+      egy olyan természetes számokból álló sorozatot, amelynek az imént bizonyított tranzitivitás miatt nincs
+      minimuma. Ez ugye ellentmondana a fenti minimumtételnek, és így a Peano-axiómáknak. A bizonyítandó állítás
+      tehát nem lehet hamis, következésképp igaznak kell lennie. A hátralévő részben ezt a módszert fogjuk
+      felhasználni annak megmutatásához, hogy a számelmélet alaptétele teljesül gyűrűk egy speciális osztályában,
+      az úgynevezett ***euklidészi gyűrűkben***.

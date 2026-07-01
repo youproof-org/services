@@ -1,0 +1,122 @@
+type: proof
+name: miller-rabin-tanuk-szama-javitas-bizonyitas
+remarks: []
+references:
+  carmichael-szamok-tulajdonsagai:
+    target:
+      type: theorem
+      name: carmichael-szamok-tulajdonsagai
+  euler-fuggveny:
+    target:
+      type: definition
+      name: euler-fuggveny
+  euler-fuggveny-primhatvanyokra:
+    target:
+      type: theorem
+      name: euler-fuggveny-primhatvanyokra
+  lagrange-tetele:
+    target:
+      type: theorem
+      name: lagrange-tetele
+  nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten:
+    target:
+      type: theorem
+      name: nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten
+  nem-miller-rabin-tanuk-csoportjanak-rendje-primhatvanyok-eseten:
+    target:
+      type: theorem
+      name: nem-miller-rabin-tanuk-csoportjanak-rendje-primhatvanyok-eseten
+  nem-miller-rabin-tanuk-es-nem-fermat-tanuk-viszonya-nem-primhatvanyok-eseten:
+    target:
+      type: theorem
+      name: nem-miller-rabin-tanuk-es-nem-fermat-tanuk-viszonya-nem-primhatvanyok-eseten
+  nem-miller-rabin-tanuk-reszcsoportindexe:
+    target:
+      type: theorem
+      name: nem-miller-rabin-tanuk-reszcsoportindexe
+  rendezett-gyuru:
+    target:
+      type: definition
+      name: rendezett-gyuru
+content:
+  - type: narrative
+    content: |
+      ***1. eset: $n$ valamilyen prímhatvány***
+  - type: narrative
+    content: |
+      Ekkor tehát $n=p^c$, ahol $p$ valamilyen páratlan prímszám, továbbá $c\geq 2$, máskülönben $n=p$ nem lenne
+      összetett. A modulo $p^c$ redukált maradékosztályok a $(\Z/p^c\Z)^{\times}$ multiplikatív csoport elemei,
+      melynek rendjét a [euler-fuggveny] alapján az Euler-féle $\varphi$-függvény adja meg.
+  - type: formula
+    lead-in: |
+      Ennek értéke a [euler-fuggveny-primhatvanyokra] szerint az alábbi:
+    content: |
+      |(\Z/p^c\Z)^{\times}|=\varphi(p^c)=p^c-p^{c-1}=p^{c-1}\cdot (p-1)
+  - type: formula
+    lead-in: |
+      Másrészt a ***nem Miller-Rabin-tanúk*** $G_{p^c}$-vel jelölt csoportjának rendje a
+      [nem-miller-rabin-tanuk-csoportjanak-rendje-primhatvanyok-eseten] értelmében:
+    content: |
+      |G_{p^c}|=p-1
+  - type: formula
+    lead-in: |
+      Azt kell megmutatni, hogy $(\Z/p^c\Z)^{\times}$ ***legalább négyszer annyi elemet tartalmaz***, mint
+      $G_{p^c}$, azaz:
+    content: |
+      \underbrace{p^{c-1}\cdot (p-1)}_{=|(\Z/p^c\Z)^{\times}|}\geq 4\cdot \underbrace{(p-1)}_{=|G_{p^c}|}
+  - type: narrative
+    content: |
+      Az $n=p^c$-ről ugye tudjuk, hogy ő egy $9$-nél nagyobb prímhatvány, azaz $p$ legalább $5$ és $c$ legalább
+      $2$.
+  - type: formula
+    lead-in: |
+      Az alábbi tehát biztosan teljesül:
+    content: |
+      p^{c-1}\geq 4
+  - type: formula
+    lead-in: |
+      Mindkét oldalt megszorozva $p-1$-gyel &ndash; ami a fentiek alapján biztosan pozitív &ndash; a
+      [rendezett-gyuru] szerinti 2. rendezési axióma alapján megkapjuk a tétel állítását a prímhatványok esetére:
+    content: |
+      p^{c-1}\cdot (p-1)\geq 4\cdot (p-1)
+  - type: narrative
+    content: |
+      ***2. eset: $n$ nem prímhatvány, és nem Carmichael-szám***
+  - type: narrative
+    content: |
+      Ekkor a ***nem Miller-Rabin-tanúk*** ugyan nem alkotnak részcsoportot $(\Z/n\Z)^{\times}$-ben, azonban a
+      [nem-miller-rabin-tanuk-es-nem-fermat-tanuk-viszonya-nem-primhatvanyok-eseten] 1. pontja alapján a nem
+      Fermat-tanúk $F_n$-nel jelölt csoportja valódi részcsoport $(\Z/n\Z)^{\times}$-ben, továbbá az ugyanezen
+      tételben $H_n$-nel jelölt csoport ***valódi részcsoport*** $F_n$-ben, amely viszont a
+      [nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten] 1. pontja alapján minden nem Miller-Rabin-tanút
+      tartalmaz.
+  - type: figure
+    lead-in: |
+      Azaz a következő a helyzet:
+    src: reszcsoport_viszonyok.jpg
+    alt: A Hn és Fn részcsoportok viszonya
+    caption: A $H_n$ és $F_n$ részcsoportok viszonya
+  - type: narrative
+    content: |
+      A ***Lagrange-tétel*** ([lagrange-tetele]) miatt azonban a redukált maradékosztályoknak legfeljebb a fele
+      tartozhat $F_n$-be, amelyeknek legfeljebb a fele &ndash; köztük az összes nem Miller-Rabin-tanú &ndash;
+      tartozhat $H_n$-be. Következésképp a redukált maradékosztályoknak ebben az esetben is legalább a háromnegyede
+      Miller-Rabin-tanú.
+  - type: narrative
+    content: |
+      ***3. eset: $n$ nem prímhatvány, és Carmichael-szám***
+  - type: narrative
+    content: |
+      Ekkor a [nem-miller-rabin-tanuk-es-nem-fermat-tanuk-viszonya-nem-primhatvanyok-eseten] 1. pontja helyett a
+      [nem-miller-rabin-tanuk-reszcsoportindexe]t kell alkalmaznunk. Eszerint a nem Miller-Rabin-tanúkat tartalmazó
+      $H_n$ részcsoport indexe a tételben szereplő $D_n$ részcsoportban $2^{r-1}$, ahol $r$ az $n$ egész szám
+      egymástól különböző prímtényezőinek számát jelöli. Továbbá, mivel $D_n$ részcsoport $(\Z/n\Z)^{\times}$-ben,
+      ezért a $H_n$ részcsoport indexe $(\Z/n\Z)^{\times}$-ben ***legalább*** $2^{r-1}$. Ez a ***Lagrange-tétel***
+      ([lagrange-tetele]) alapján azt jelenti, hogy $(\Z/n\Z)^{\times}$ rendje legalább $2^{r-1}$-szerese $H_n$
+      rendjének, amely ugye a [nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten] 1. pontja alapján minden
+      nem Miller-Rabin-tanút tartalmaz.
+  - type: narrative
+    content: |
+      Mivel azonban $n$ Carmichael-szám, ezért a ***Korselt-kritérium*** [carmichael-szamok-tulajdonsagai]e alapján
+      $r\geq 3$, és így ez a bizonyos $2^{r-1}$ szorzó tényező legalább $4$. Most is azt kaptuk tehát, hogy a
+      redukált maradékosztályoknak legalább a háromnegyede Miller-Rabin-tanú.

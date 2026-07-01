@@ -1,0 +1,161 @@
+type: section
+name: 05-teljes-rendezes-az-egesz-szamok-gyurujeben
+title: Teljes rendezés az egész számok gyűrűjében
+
+references:
+  az-egesz-szamok-halmaza-integritastartomany:
+    target:
+      type: theorem
+      name: az-egesz-szamok-halmaza-integritastartomany
+  peano-axiomarendszer:
+    target:
+      type: definition
+      name: peano-axiomarendszer
+  pozitiv-es-negativ-egesz-szamok:
+    target:
+      type: definition
+      name: pozitiv-es-negativ-egesz-szamok
+  pozitivitastartomany-szukseges-es-elegseges-feltetele:
+    target:
+      type: theorem
+      name: pozitivitastartomany-szukseges-es-elegseges-feltetele
+  rendezesek-es-pozitivitastartomanyok-kapcsolata:
+    target:
+      type: theorem
+      name: rendezesek-es-pozitivitastartomanyok-kapcsolata
+  rendezett-gyuru:
+    target:
+      type: definition
+      name: rendezett-gyuru
+  teljes-rendezesek-pozitivitastartomanyainak-metszete:
+    target:
+      type: theorem
+      name: teljes-rendezesek-pozitivitastartomanyainak-metszete
+  termeszetes-szamok-beagyazasa-osszegtarto:
+    target:
+      type: theorem
+      name: termeszetes-szamok-beagyazasa-osszegtarto
+  termeszetes-szamok-beagyazasa-szorzattarto:
+    target:
+      type: theorem
+      name: termeszetes-szamok-beagyazasa-szorzattarto
+  termeszetes-szamok-rendezese:
+    target:
+      type: definition
+      name: termeszetes-szamok-rendezese
+
+body:
+  - type: narrative
+    content: |
+      A most következő szakaszban végre rátérhetünk arra a kérdésre, hogy a [pozitiv-es-negativ-egesz-szamok]ban
+      milyen jogon mondtuk azt bizonyos egész számokról, hogy ***pozitívak***, másokról pedig, hogy
+      ***negatívak***. Ez pofátlanságnak tűnik a fentiek fényében, hiszen nem mondtuk meg, hogy melyik rendezési
+      reláció szerint értjük őket pozitívnak illetve negatívnak. Most ezt a hiányosságunkat fogjuk pótolni.
+  - type: narrative
+    content: |
+      Azt rögtön kijelenthetjük, hogy minket most csak a ***teljes rendezések*** érdekelnek. Szeretnénk ugyanis, ha
+      bármely két egész számról eldönthető lenne, hogy melyik nagyobb a másiknál. ***Kérdés, hogy létezik-e
+      egyáltalán*** olyan teljes rendezés az egész számok gyűrűjében, amely teljesíti a [rendezett-gyuru] szerinti
+      rendezési axiómákat.
+  - type: narrative
+    content: |
+      A következő tétel ***nullosztómentes gyűrűkre*** fogalmaz meg egy számunkra fontos észrevételt ezzel
+      kapcsolatban.
+  - type: embed
+    target:
+      type: theorem
+      name: teljes-rendezesek-pozitivitastartomanyainak-metszete
+  - type: embed
+    target:
+      type: proof
+      name: teljes-rendezesek-pozitivitastartomanyainak-metszete-bizonyitas
+  - type: narrative
+    content: |
+      Most térjünk vissza az ***egész számok*** $(\Z ,+,\cdot )$ gyűrűjéhez. Mivel a
+      [az-egesz-szamok-halmaza-integritastartomany] értelmében ő egy integritástartomány &ndash; azaz kommutatív és
+      ***nullosztómentes*** &ndash;, így érvényes rá az imént bizonyított
+      [teljes-rendezesek-pozitivitastartomanyainak-metszete] tétel. Azt ugyan még nem tudjuk, hogy létezik-e rajta
+      akárcsak egyetlen, a rendezési axiómákat kielégítő ***teljes rendezés*** is. Ám ha létezik ilyen, akkor annak
+      pozitivitástartománya ***biztosan tartalmazni fogja az összes nemnulla elem önmagával vett szorzatát, és az
+      ilyen szorzatok összegeit is***. Ha több ilyen teljes rendezés is létezik, akkor minden ezekhez tartozó
+      pozitivitástartomány tartalmazni fogja ugyanezeket az elemeket.
+  - type: narrative
+    content: |
+      Tegyük fel például, hogy a $(\Z ,+,\cdot )$ gyűrűn 3 teljes rendezés is létezik.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán az ehhez a 3 hipotetikus rendezéshez tartozó pozitivitástartományok láthatók ($P_1$, $P_2$ és
+      $P_3$):
+    src: 05-pozitivitastartomanyok-elhelyezkedese-z-n.jpg
+    alt: Pozitivitástartományok elhelyezkedése Z-n
+    caption: 'Pozitivitástartományok elhelyezkedése $\Z$-n'
+  - type: narrative
+    content: |
+      A [teljes-rendezesek-pozitivitastartomanyainak-metszete] alapján tehát a 3 pozitivitástartomány $Q$-val
+      jelölt közös része tartalmazza az összes nemnulla elem önmagával vett szorzatát, és az ilyen szorzatok összes
+      lehetséges összegeit is. ***Kérdés, hogy vajon tartalmaznak-e a $Q$-beli elemeken kívül más elemeket is, vagy
+      valójában az összes pozitivitástartomány egy és ugyanaz?***
+  - type: narrative
+    content: |
+      Úgy gondolom, a fentiek fényében már nem lesz meglepő az erre választ adó alábbi tétel.
+  - type: embed
+    target:
+      type: theorem
+      name: egesz-szamok-teljes-rendezese-egyertelmu
+  - type: embed
+    target:
+      type: proof
+      name: egesz-szamok-teljes-rendezese-egyertelmu-bizonyitas
+  - type: narrative
+    content: |
+      Most tehát már tudjuk, hogy az egész számok gyűrűjében ***pontosan egy*** olyan teljes rendezés létezik,
+      amely teljesíti a [rendezett-gyuru] szerinti rendezési axiómákat. Ráadásul ennek a rendezésnek a
+      pozitivitástartománya (vagy negativitástartománya) épp azokat az egész számokat tartalmazza, amelyeket a
+      [pozitiv-es-negativ-egesz-szamok]ban ***pozitív*** (vagy ***negatív***) számoknak neveztünk. Jogos volt tehát
+      az elnevezés annak ellenére, hogy akkor nem definiáltuk magát a rendezést, amely alapján ezt értettük.
+  - type: narrative
+    content: |
+      Ezen a ponton fontos megjegyezni, hogy ez az egyértelműség az egész számok gyűrűjében pusztán egy szerencsés
+      egybeesés eredménye. Léteznek például olyan gyűrűk is, amelyekben egyáltalán nem található a rendezési
+      axiómákat is kielégítő teljes rendezés (például az úgynevezett komplex számok teste). Léteznek továbbá
+      olyanok is, amelyekben végtelen sok ilyen teljes rendezés definiálható (például az úgynevezett valós
+      polinomgyűrű).
+  - type: narrative
+    content: |
+      Most azonban maradjunk továbbra is a $(\Z ,+,\cdot )$ gyűrűben. Nincs más hátra, mint megadni ezt az egyetlen
+      teljes rendezést ezen a gyűrűn. A pozitivitástartományunk ugye már megvan, és ez a
+      [rendezesek-es-pozitivitastartomanyok-kapcsolata] alapján egyértelműen meghatározza a hozzátartozó rendezési
+      relációt. Jelöljük a pozitivitástartományt $P$-vel, amely tehát a [pozitiv-es-negativ-egesz-szamok] szerinti
+      pozitív egész számokat tartalmazza. A [pozitivitastartomany-szukseges-es-elegseges-feltetele] bizonyításából
+      már tudjuk, hogy $P$-ből hogyan kaphatjuk meg a rendezést.
+  - type: narrative
+    content: |
+      ***Jelöljük ezt a rendezést a $\leq$ szimbólummal. Eszerint tehát $a\leq b$-t úgy kell definiálnunk, hogy
+      akkor és csak akkor teljesüljön, ha $a=b$ vagy pedig a $b+(-a)$ benne van $P$-ben.***
+  - type: narrative
+    content: |
+      Az első feltétel mindkét oldalához $(-a)$-t adva így azt kapjuk, hogy az $a\leq b$ reláció pontosan akkor
+      teljesüljön, ha a $b+(-a)$ egész szám $0$ vagy pozitív. Mivel az előző rész vége óta épp a $0$ vagy pozitív
+      egész számokat nevezzük természetes számoknak, így tehát $a\leq b$ pontosan akkor teljesül, ha létezik olyan
+      $k$ természetes szám, hogy $b+(-a)=k$. Mindkét oldalhoz $a$-t adva megkapjuk az egész számok rendezésének
+      definícióját, amely &ndash; vegyük észre &ndash; épp a természetes számok rendezésének
+      ([termeszetes-szamok-rendezese]) ***kiterjesztése*** az egész számok $\Z$ halmazára.
+  - type: embed
+    target:
+      type: definition
+      name: egesz-szamok-rendezese
+  - type: narrative
+    content: |
+      Egyszerűen adódik tehát, hogy a Peano-axiómarendszer ([peano-axiomarendszer]) által definiált &ndash;
+      korábban természetes számoknak nevezett &ndash; halmaz 13. részben tárgyalt beágyazása az egész számok
+      gyűrűjébe az összeadáson ([termeszetes-szamok-beagyazasa-osszegtarto]) és a szorzáson
+      ([termeszetes-szamok-beagyazasa-szorzattarto]) kívül ***tartja a fenti rendezést is***. Ezt fogalmazza meg az
+      alábbi tétel.
+  - type: embed
+    target:
+      type: theorem
+      name: termeszetes-szamok-beagyazasa-rendezestarto
+  - type: embed
+    target:
+      type: proof
+      name: termeszetes-szamok-beagyazasa-rendezestarto-bizonyitas

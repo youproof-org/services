@@ -1,0 +1,803 @@
+<!-- wp:paragraph -->
+<p><strong><em>Az <a href="https://youproof.hu/kriptografia/25-homomorfizmus-normaloszto-faktorcsoport-generalt-reszcsoport-ciklikus-csoport/" target="_blank" rel="noreferrer noopener">előző részben</a> kibővítettük csoportelméleti eszköztárunkat, és megismerkedtünk a csoporthomomorfizmusok, a normálosztók és a faktorcsoportok fogalmával. Ezek tárgyalása során fontos párhuzamokra világítottunk rá, hiszen a <a href="https://youproof.hu/kriptografia/18-modularis-aritmetika-homomorfizmus-kongruencia-reszgyuru-ideal-maradekosztalygyuru/" target="_blank" rel="noreferrer noopener">18. részben</a> gyakorlatilag pontosan ugyanezt az utat jártuk végig a gyűrűhomomorfizmusok, az ideálok és a faktorgyűrűk (vagy maradékosztálygyűrűk) ismertetésekor. Kitértünk továbbá az úgynevezett ciklikus csoportokra, és teljes mértékben feltártuk ezek szerkezetét. Ebben a részben a megismert csoportelméleti eszközök egy fontos alkalmazását mutatjuk be. Lényegesen javítani fogunk ugyanis a Miller-Rabin-tanúk számára vonatkozó eddigi alsó becslésünkön, amelyet a <a href="https://youproof.hu/kriptografia/24-csoport-reszcsoport-mellekosztaly-lagrange-tetel-csoport-rendje-elem-rendje-miller-rabin-primteszt/" target="_blank" rel="noreferrer noopener">24. részben</a> adtunk meg.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>De vajon mit nevezünk primitív gyöknek, és mi köze ennek a Diffie-Hellman kulcscsere protokollhoz? Milyen esetekben ciklikus egy maradékosztálygyűrű multiplikatív csoportja? Mit állít az úgynevezett Korselt-kritérium a Carmichael-számokról? Hogyan lehet igazolni, hogy a redukált maradékosztályoknak legalább a háromnegyede Miller-Rabin-tanú? Mi a következménye, ha az RSA kulcsok generálásához véletlenül prímek helyett Carmichael-számokat használunk? Ebben a részben erről lesz szó...</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"className":"prerequisite-warning"} -->
+<p class="prerequisite-warning">Figyelem! Ez a rész erőteljesen épít a <a href="https://youproof.hu/kriptografia/24-csoport-reszcsoport-mellekosztaly-lagrange-tetel-csoport-rendje-elem-rendje-miller-rabin-primteszt/" target="_blank" rel="noreferrer noopener">24.</a> és <a href="https://youproof.hu/kriptografia/25-homomorfizmus-normaloszto-faktorcsoport-generalt-reszcsoport-ciklikus-csoport/" target="_blank" rel="noreferrer noopener">25. részben</a> felépített alábbi definíciókra, valamint a hozzájuk kapcsolódó tételekre:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="csoport" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="reszcsoport" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="mellekosztalyok" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="csoporthomomorfizmus" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="csoporthomomorfizmus-magja-es-kepe" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="normaloszto" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="faktorcsoport" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="kep-teljes-inverz-kep" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="csoporthomomorfizmusok-strukturatarto-tulajdonsagai" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="ciklikus-csoportok" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph {"className":"prerequisite-warning"} -->
+<p class="prerequisite-warning">Ezek kontextusba helyezése miatt erőteljesen ajánlott elolvasni a <a href="https://youproof.hu/kriptografia/24-csoport-reszcsoport-mellekosztaly-lagrange-tetel-csoport-rendje-elem-rendje-miller-rabin-primteszt/" target="_blank" rel="noreferrer noopener">24.</a> és&nbsp;<a href="https://youproof.hu/kriptografia/25-homomorfizmus-normaloszto-faktorcsoport-generalt-reszcsoport-ciklikus-csoport/" target="_blank" rel="noreferrer noopener">25. részt</a>, mivel gyakran hivatkozni fogunk rájuk. A teljes cikksorozat elejét&nbsp;<a href="https://youproof.hu/kriptografia/1-alapfogalmak-caesar-vigenere-enigma-kulcsmegosztas/" target="_blank" rel="noreferrer noopener">itt</a>&nbsp;találod.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"dropCap":true} -->
+<p class="has-drop-cap">Az <a href="https://youproof.hu/kriptografia/25-homomorfizmus-normaloszto-faktorcsoport-generalt-reszcsoport-ciklikus-csoport/" target="_blank" rel="noreferrer noopener">előző rész</a> végén igazoltuk, hogy az egész számok [latex]\Z[/latex] gyűrűjének, valamint tetszőleges [latex]m\geq 0[/latex] esetén a [latex]\Z/m\Z[/latex] maradékosztálygyűrűnek az <strong><em>additív csoportja</em></strong> ciklikus, továbbá, hogy ezeken kívül – izomorfiától eltekintve – nem is létezik más ciklikus csoport. Előbbit az [latex]1[/latex] egész szám, utóbbit pedig az [latex][1]_m[/latex] maradékosztály generálja. Nyilván, hiszen ezeknek vagy ellentettjeiknek az önmagukkal való valahányszori összeadása előállítja az adott gyűrű minden elemét.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Felmerült azonban a kérdés, hogy vajon mi a helyzet ugyanezen gyűrűk <strong><em>multiplikatív csoportjával</em></strong>. A [latex]\Z[/latex] gyűrű esetén ebben a tekintetben egyszerű a dolgunk. A [yp_element slug="gyuru-additiv-es-multiplikativ-csoportja" type="link" /] utáni megjegyzés alapján ugyanis egy kommutatív, egységelemes gyűrű multiplikatív csoportja pontosan az egységekből áll. Ezek a [latex]\Z[/latex] gyűrűben a [latex]+1[/latex] és [latex]-1[/latex] egész számok lesznek. Az Olvasó a [yp_element slug="csoport" type="link" /] és a [yp_element slug="ciklikus-csoportok" type="link" /] alapján könnyedén leellenőrizheti, hogy ez a kételemű halmaz egy ciklikus csoportot alkot az egészek közötti szorzással, mint művelettel. A generátorelem ebben az esetben a [latex]-1[/latex] egész szám, hiszen ennek hatványai kiadják a teljes csoportot. Ezzel szemben a [latex]+1[/latex] egész szám <strong><em>nem generátorelem</em></strong>, mivel az csak az egyelemű triviális részcsoportot generálja – azt, amelyikben csak a [latex]+1[/latex] szerepel.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mármost ha a [latex]\Z^{\times}[/latex] kételemű multiplikatív csoport <strong><em>ciklikus</em></strong>, akkor a [yp_element slug="ciklikus-csoportok-strukturatetele" type="link" /] alapján izomorf a [latex]\Z^+[/latex] vagy a [latex](\Z/m\Z)^+[/latex] additív csoportok valamelyikével. A [latex]\Z^+[/latex] csoport rendje végtelen, így ezt kizárhatjuk. A [yp_element slug="egesz-szamok-maradekosztalyai" type="link" /] alapján [latex]m=0[/latex] esetén végtelen sok, míg [latex]m\gt 0[/latex] esetén pontosan [latex]m[/latex] darab modulo [latex]m[/latex] maradékosztály létezik. Ez alapján tehát kizárásos alapon csak az [latex]m=2[/latex] eset lehetséges, azaz fennáll az alábbi izomorfia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\Z^{\times} \simeq (\Z/2\Z)^+[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [latex]\Z^{\times}[/latex] multiplikatív csoport műveleti tábláját az alábbi táblázatban láthatjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{c|cc} \cdot &amp; 1 &amp; -1 \\ \hline 1 &amp; 1 &amp; -1 \\ -1 &amp; -1 &amp; 1 \end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [latex](\Z/2\Z)^+[/latex] additív csoport műveleti táblája pedig a következő:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{c|cc} + &amp; [0]_2 &amp; [1]_2 \\ \hline [0]_2 &amp; [0]_2 &amp; [1]_2 \\ [1]_2 &amp; [1]_2 &amp; [0]_2 \end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Látható, hogy mindössze az elemek és a művelet elnevezésében van különbség a két csoport között, de ettől eltekintve teljesen ugyanúgy viselkednek, azaz <strong><em>izomorfak</em></strong> egymással.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Primitív gyök</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A [latex]\Z[/latex] gyűrű multiplikatív csoportja tehát ciklikus, ezért most térjünk rá arra a kérdésre, hogy vajon milyen [latex]m\gt 0[/latex] esetén lesz a [latex]\Z/m\Z[/latex] gyűrű multiplikatív csoportja is ciklikus? Ez rögtön elvezet minket az alábbi fontos fogalomhoz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="primitiv-gyok" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="primitiv-gyok-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az <a href="https://youproof.hu/kriptografia/25-homomorfizmus-normaloszto-faktorcsoport-generalt-reszcsoport-ciklikus-csoport#cyclic-group-examples" target="_blank" rel="noreferrer noopener">előző rész végén</a> megállapítottuk, hogy a [latex](\Z/10\Z)^{\times}[/latex] csoport ciklikus, mivel a [latex][3]_{10}[/latex] és a [latex][7]_{10}[/latex] maradékosztályok külön-külön generálják a teljes csoportot. A mostani szóhasználattal élve tehát a [latex][3]_{10}[/latex] és a [latex][7]_{10}[/latex] maradékosztályok mindketten <strong><em>primitív gyökök modulo [latex]10[/latex]</em></strong>, továbbá az iménti megjegyzés alapján [latex]\varphi(10)=4[/latex] miatt fennáll az alábbi izomorfia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](\Z/10\Z)^{\times} \simeq (\Z/4\Z)^+[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A primitív gyökök valamelyikét felhasználva az előző rész végén megadott <a href="https://youproof.hu/kriptografia/25-homomorfizmus-normaloszto-faktorcsoport-generalt-reszcsoport-ciklikus-csoport#cyclic-group-power-table-example" target="_blank" rel="noreferrer noopener">hatványtáblázat</a> segítségével könnyen meg is adhatunk egy [latex]f:(\Z/10\Z)^{\times} \to (\Z/4\Z)^+[/latex] izomorfizmust is a két csoport között. Ehhez csupán a táblázatban meg kell nézni, hogy egy adott [latex][a]_{10}[/latex] redukált maradékosztály a kiválasztott primitív gyöknek hanyadik hatványa. Ezután az [latex]f[/latex] izomorfizmus az [latex][a]_{10}[/latex]-hez azt a modulo [latex]4[/latex] maradékosztályt fogja hozzárendelni, amelybe az így kapott hatványkitevő esik. Például a [latex][3]_{10}[/latex] primitív gyök felhasználásával az [latex]f[/latex] izomorfizmus az alábbi lesz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}[3]_{10} &amp;\xmapsto{f} [1]_4 \\ [1]_{10} &amp;\xmapsto{f} [0]_4 \\ [7]_{10} &amp;\xmapsto{f} [3]_4 \\ [9]_{10} &amp;\xmapsto{f} [2]_4\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az Olvasó is könnyen leellenőrizheti, hogy valóban minden esetben teljesül az [latex]f[/latex] függvény művelettartó tulajdonsága a két csoport között. Például:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}&amp;f([9]_{10}\odot [7]_{10})=f([63]_{10})=f([3]_{10})=[1]_4 \\ &amp;f([9]_{10}) \oplus f([7]_{10}) = [2]_4 \oplus [3]_4=[5]_4=[1]_4\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Természetesen ha a [latex][3]_{10}[/latex] helyett a [latex][7]_{10}[/latex] primitív gyököt használtuk volna, akkor pedig az alábbi [latex]g:(\Z/10\Z)^{\times} \to (\Z/4\Z)^+[/latex] izomorfizmust kapjuk a <a href="https://youproof.hu/kriptografia/25-homomorfizmus-normaloszto-faktorcsoport-generalt-reszcsoport-ciklikus-csoport#cyclic-group-power-table-example" target="_blank" rel="noreferrer noopener">hatványtáblázat</a> alapján:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}[7]_{10} &amp;\xmapsto{g} [1]_4 \\ [1]_{10} &amp;\xmapsto{g} [0]_4 \\ [3]_{10} &amp;\xmapsto{g} [3]_4 \\ [9]_{10} &amp;\xmapsto{g} [2]_4\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez – habár különbözik az előzőtől – szintén egy izomorfizmus, mivel ebben az esetben is teljesül a művelettartó tulajdonság. Például:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}&amp;g([9]_{10}\odot [7]_{10})=g([63]_{10})=g([3]_{10})=[3]_4 \\ &amp;g([9]_{10}) \oplus g([7]_{10}) = [2]_4 \oplus [1]_4=[3]_4\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezzel szemben a [latex](\Z/8\Z)^{\times}[/latex] multiplikatív csoport nem ciklikus, mivel ebben a csoportban minden elem rendje [latex]2[/latex] – az egységelemet kivéve, amelynek rendje [latex]1[/latex] –, ugyanakkor magának a csoportnak a rendje [latex]\varphi(8)=4[/latex]. A mostani szóhasználattal élve tehát <strong><em>nem létezik primitív gyök modulo [latex]8[/latex]</em></strong>, és így a [yp_element slug="ciklikus-csoportok-strukturatetele" type="link" /] alapján nem létezik olyan [latex]m\gt 0[/latex] pozitív egész szám sem, amely esetén a [latex](\Z/8\Z)^{\times}[/latex] multiplikatív csoport izomorf lenne a [latex](\Z/m\Z)^+[/latex] additív csoporttal.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Érdekes kérdés tehát</em></strong>, hogy pontosan mely [latex]m\gt 0[/latex] pozitív egész számok esetén létezik primitív gyök modulo [latex]m[/latex], és melyek esetén nem létezik. Az alábbiakban felsoroltuk az első néhány ilyen [latex]m[/latex]-et (egy hosszabb sorozat található <a href="https://oeis.org/A033948" target="_blank" rel="noreferrer noopener">itt</a>):</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 13, 14, 17, \ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Látható, hogy ebben a sorozatban egyaránt előfordulnak prímek és összetett számok is. Egyáltalán nem nyilvánvaló tehát, hogy pontosan mi a szabály. Nekünk ebben a részben csak egy speciális esetre lesz szükségünk, így az általános szabályt – amely a <strong><em>számelmélet egy nevezetes tétele</em></strong> – az alábbiakban bizonyítás nélkül mondjuk ki.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="primitiv-gyokokrol-szolo-tetel" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]m=1,2,4[/latex] esetek nyilvánvalóak, ezt az Olvasó akár próbálgatással is leellenőrizheti. A tétel többi részéhez egyrészt azt kéne bizonyítani, hogy minden páratlan prímhatvány, továbbá ezek kétszerese esetén létezik primitív gyök. Másrészt azt is meg kéne mutatni, hogy ez nem csak elégséges, hanem szükséges feltétel is, azaz hogy a tételben felsoroltakon kívül semmilyen más esetben nem létezik primitív gyök. Számunkra elegendő lesz annyit igazolni, hogy bármilyen pozitív [latex]p[/latex] prím esetén létezik modulo [latex]p[/latex] primitív gyök. Ez tehát az [latex]m=2[/latex] és [latex]m=p^k[/latex] eseteket fedi le a [latex]k=1[/latex] kitevőre – és annak is csak az elégségességét. A tétel többi részének bizonyítására ebben a cikksorozatban nem térünk ki, cserébe viszont nem is fogjuk felhasználni őket. Először azonban további fontos fogalmakkal kell megismerkednünk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4 id="polynomials">Polinomok</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A <a href="https://youproof.hu/kriptografia/24-csoport-reszcsoport-mellekosztaly-lagrange-tetel-csoport-rendje-elem-rendje-miller-rabin-primteszt#group-theory-introduction" target="_blank" rel="noreferrer noopener">24. részben</a> ismerkedtünk meg bizonyos típusú egyenletekkel, amelyekhez a matematikusok akkoriban lázasan keresték az úgynevezett megoldóképleteket, és amely problémakör tüzetesebb vizsgálata végül elvezetett a csoportelmélet megszületéséhez. Ezek az úgynevezett első-, másod-, harmad- vagy általánosságban [latex]n[/latex]-edfokú egyenletek a következőképpen néztek ki:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a_0+a_1x&amp;=0 \\ a_0+a_1x+a_2x^2&amp;=0 \\ a_0+a_1x+a_2x^2+a_3x^3&amp;=0 \\ &amp;\vdots \\ a_0+a_1x+a_2x^2+a_3x^3+\ldots +a_nx^n&amp;=0 \\ &amp;\vdots\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Egy ilyen egyenletben az [latex]a_0[/latex], [latex]a_1[/latex], [latex]a_2[/latex], ..., [latex]a_n[/latex] számok – amelyeket <strong><em>együtthatóknak</em></strong> nevezünk – konkrétan meg vannak adva, és a feladat megtalálni az összes olyan számot, amelyeket az [latex]x[/latex] <strong><em>ismeretlen</em></strong> helyére beírva az adott egyenlőség fennáll. Ezeket a számokat az egyenlet <strong><em>megoldásainak</em></strong> vagy tudományosabban <strong><em>gyökeinek</em></strong> nevezzük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Vegyük észre, hogy még ha nem is ismerjük egy-egy ilyen egyenlet konkrét megoldásait, magukkal az egyenletek baloldalain álló kifejezésekkel formálisan is „számolhatunk”. Például beszélhetünk két ilyen kifejezés „összegéről” vagy „szorzatáról”, amennyiben ezen „összeadás” vagy „szorzás” során betartjuk a „szokásos számolási szabályokat”. Ekkor az eredmény szintén egy hasonló alakban felírható kifejezés lesz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}(1+2x) \oplus (2+x) &amp;= 3+3x \\ (1+2x) \odot (2+x) &amp;= 2+x+4x+2x^2 = 2+5x+2x^2\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az „összeadás” viszonylag egyszerű, mivel ilyenkor csak az „azonos pozíciókban” álló együtthatókat kell összeadni egymással. Tegyük fel például, hogy egy [latex]n[/latex]-edfokú és egy [latex]m[/latex]-edfokú kifejezést szeretnénk egymással összeadni, és legyen [latex]n\leq m[/latex]. Írjuk fel egymás alá a két összeadandó kifejezést az egyes tagokat az [latex]x[/latex] ismeretlen hatványai szerint sorbarendezve. Az [latex]a_0[/latex] tagot – amelyben tehát [latex]x[/latex] egyáltalán nem szerepel – a [yp_element slug="egesz-kitevos-hatvany" type="link" /]val összhangban [latex]x[/latex]-nek a <strong><em>nulladik hatványaként</em></strong> fogjuk fel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{alignedat}{100} &amp;a_0+a_1\cdot &amp;x + &amp;\ldots + a_n\cdot &amp;x^n +\overbrace{0}^{=a_{n+1}}\cdot &amp;x^{n+1} + &amp;\ldots + \overbrace{0}^{=a_m}\cdot &amp;x^m \\ &amp;b_0+b_1\cdot &amp;x + &amp;\ldots + b_n\cdot &amp;x^n +b_{n+1}\cdot &amp;x^{n+1} + &amp;\ldots + b_m\cdot &amp;x^m\end{alignedat}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Itt [latex]n\leq m[/latex] miatt az első kifejezésben az [latex]n[/latex]-nél nagyobb indexű együtthatók nullák lesznek. Ezeket a tagokat és az esetleges többi nulla együtthatójú tagot nem kötelező kiírni, praktikussági okokból azonban ezt mi mégis megtettük, amit a fenti felírásban szemléltettük is. Ekkor, ha ezt a két kifejezést „összeadjuk” a „szokásos számolási szabályok” betartásával, akkor eredményül az alábbi kifejezést kapjuk, amelyben minden együttható a két eredeti kifejezés „azonos pozíciókban” lévő együtthatóinak összege:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](a_0+b_0)+(a_1+b_1)\cdot x + (a_2+b_2)\cdot x^2 + \ldots + (a_m+b_m)\cdot x^m[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Értelemszerűen [latex]n\geq m[/latex] esetén ugyanígy kell eljárni, csak ekkor a második kifejezésben az [latex]m[/latex]-nél nagyobb indexű tagok lesznek nullák.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A „szorzás” esetén már egy kicsit bonyolultabb dolgunk van. Ha ugyanis követni szeretnénk a „szokásos számolási szabályokat”, akkor a disztributivitási szabály (lásd a gyűrűk és testek [yp_element slug="gyuru-test" type="link" /]jának 5. pontját) szerint az első kifejezés minden tagját a második kifejezés minden tagjával össze kell szorozni, és az így kapott eredmény tagjait [latex]x[/latex] hatványai szerint kell összevonni és sorbarendezni. Ezt a fentebbi konkrét számpéldában már láttuk, ezért most nézzük meg általánosságban is. Ismét legyen [latex]n\leq m[/latex], és írjuk fel egymás alá a két „összeszorzandó” kifejezést az egyes tagokat az [latex]x[/latex] ismeretlen hatványai szerint sorbarendezve:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{alignedat}{100} &amp;a_0+a_1\cdot &amp;x + &amp;\ldots + a_n\cdot &amp;x^n +\overbrace{0}^{=a_{n+1}}\cdot &amp;x^{n+1} + &amp;\ldots + \overbrace{0}^{=a_m}\cdot &amp;x^m \\ &amp;b_0+b_1\cdot &amp;x + &amp;\ldots + b_n\cdot &amp;x^n +b_{n+1}\cdot &amp;x^{n+1} + &amp;\ldots + b_m\cdot &amp;x^m\end{alignedat}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Nézzük meg általánosságban, hogy tetszőleges [latex]k[/latex] kitevő esetén mi lesz az [latex]x^k[/latex] tényezőt tartalmazó tag együtthatója az eredményben. Ehhez a taghoz nyilván pontosan azok az [latex]a_ix^i[/latex] és [latex]b_jx^j[/latex] tagok fognak „hozzájárulni” az eredeti két kifejezésből, amelyek esetén [latex]i+j=k[/latex], hiszen két ilyen tag szorzata a [yp_element slug="egesz-kitevos-hatvanyozas-azonossagai" type="link" /] 3. pontja alapján az alábbi lesz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a_ib_j\cdot x^ix^j=a_ib_j\cdot x^{\overbrace{i+j}^{=k}}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az eredményben tehát az [latex]x^k[/latex] tag együtthatóját úgy kapjuk meg, hogy az összes olyan [latex]a_i[/latex] és [latex]b_j[/latex] együtthatót összeszorozzuk az eredeti kifejezésekből, amelyek esetén [latex]i+j=k[/latex], és az így kapott szorzatokat összeadjuk. Jelöljük ezt az együtthatót [latex]c_k[/latex]-val. Ekkor a [latex]c_k[/latex] együttható képlete az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]c_k=a_0b_k+a_1b_{k-1}+a_2b_{k-2}+\ldots +a_kb_0[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez látszólag egy [latex]k+1[/latex] tagú összeg, azonban [latex]k[/latex]-tól függően bizonyos tagok nullák lesznek.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most, hogy vázlatosan ismertettük, hogyan is kell elvégezni formálisan az ilyen kifejezések „összeadását” és „szorzását”, jogosan merülhet fel az Olvasóban a kérdés, hogy vajon pontosan hogyan fog alakulni az eredményül kapott kifejezés foka. Erre hamarosan rátérünk, most azonban adunk egy precíz matematikai definíciót is az eddigiekre.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ennek a definíciónak első olvasásra semmi köze nem lesz az eddig tárgyaltakhoz. Itt a fentiekhez hasonló kifejezések lényegét próbáljuk ugyanis megragadni, és ezáltal kizárni bármiféle kétértelműséget a közöttük lévő műveletek értelmezésének, a fok fogalmának vagy bármi egyébnek a tekintetében. Márpedig egy ilyen kifejezésről kizárólag az együtthatói, illetve azok sorrendje hordoz érdemi információt. Az alábbi definícióban is ezt állítjuk a középpontba, a definíció utáni megjegyzésben pedig további intuitív magyarázatot fogunk adni erre az absztrakcióra.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="polinomok" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="polinomok-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az iménti megjegyzésben szereplő beágyazófüggvény jóvoltából tehát egy tetszőleges [latex]R[/latex] kommutatív gyűrű esetén az [latex]R[x][/latex] halmazban lévő konstans polinomok szintén gyűrűt alkotnak a polinomok között definiált összeadás és szorzás műveletekkel. Hamarosan igazoljuk, hogy ez bizony szerencsére nem csak a konstans polinomokra, hanem a teljes [latex]R[x][/latex] halmazra is igaz. Előbb azonban korábbi ígéretünknek megfelelően egy hasznos összefüggést bizonyítunk az összeg- és szorzatpolinomok fokaival kapcsolatban.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="osszeg-es-szorzatpolinom-foka" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="osszeg-es-szorzatpolinom-foka-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez alapján már igazolni tudjuk az [latex]R[x][/latex]-re vonatkozó alábbi fontos tételt.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="polinomgyuru" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="polinomgyuru-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A következő szakaszban megvizsgáljuk, hogy mi a kapcsolat a [yp_element slug="polinomok" type="link" /]ban szereplő végtelen sorozatokat használó reprezentáció, és a kevésbé szigorú [latex]x[/latex]-et tartalmazó kifejezésekkel történő ábrázolásmód között.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4 id="polinomial-functions">Polinomfüggvények</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Legyen adott továbbra is egy tetszőleges [latex]R[/latex] kommutatív gyűrű. Az előző szakaszban tárgyalt [latex]R[/latex] feletti polinomok felfoghatók olyan „gépek” <strong><em>leírásaként</em></strong> is, amelyek nagyon hasonlítanak a <a href="https://youproof.hu/kriptografia/11-peano-axiomarendszer-termeszetes-szam-muvelet-osszeadas-kommutativitas-asszociativitas-teljes-indukcio#operations-on-natural-numbers" target="_blank" rel="noreferrer noopener">11. részben</a> definiált kétváltozós műveletekhez. A különbség pusztán annyi, hogy ebben az esetben egy ilyen „gép” tetején kettő helyett csak egy lyuk van. Ha például [latex]f[/latex] egy [latex]R[/latex] feletti polinom, azaz [latex]f\in R[x][/latex], akkor jelöljük [latex]F[/latex]-fel az általa <strong><em>leírt</em></strong> „gépet”, amelyet tehát így tudunk elképzelni:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":7344,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_26_polinomfuggveny.jpg" alt="Az f polinom által leírt gép" class="wp-image-7344"/><figcaption>Az [latex]f[/latex] polinom által leírt gép</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Ha most ennek az [latex]F[/latex]-fel jelölt „gépnek” a tetején bedobunk egy valamilyen [latex]R[/latex]-beli elemet, akkor ez a „gép” „végre fogja hajtani” az [latex]f[/latex] polinom, mint az ő <strong><em>leírása</em></strong> által specifikált műveletsorozatot. Ennek az eredménye szintén az [latex]R[/latex] gyűrű valamely eleme lesz, amely szépen kipottyan a „gép” alján.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Nézzünk is egy konkrét példát. Tekintsük például az alábbi [latex]f[/latex] polinomot az egész számok [latex]\Z[/latex] gyűrűje feletti [latex]\Z[x][/latex] polinomgyűrűben:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f=(1,2,3,0,0,0,\ldots)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Itt szándékosan a [yp_element slug="polinomok" type="link" /]ban szereplő végtelen sorozattal történő reprezentációt használtuk, mivel hangsúlyozni szeretnénk, hogy az [latex]f[/latex] polinom csupán egy <strong><em>leírása</em></strong> az [latex]F[/latex]-fel jelölt „gépnek”, nem pedig maga a „gép”. Az alábbi ábra mutatja, hogy mi történik, ha ennek a „gépnek” a felső nyílásába „bedobjuk” a [latex]4\in \Z[/latex] egész számot:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":7346,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_26_polinomfuggveny_pelda.jpg" alt="Az f polinom által leírt gép (példa)" class="wp-image-7346"/><figcaption>Az [latex]f[/latex] polinom által leírt gép (példa)</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>A „gép” alján tehát az [latex]57\in \Z[/latex] egész szám, mint eredmény fog kipottyanni. A „gép” működését könnyen megérthetjük, ha az [latex]f[/latex] polinomot, mint e „gép” <strong><em>leírását</em></strong> a [yp_element slug="polinomok" type="link" /]ban szereplő végtelen sorozat helyett kevésbé precízen a neki megfelelő alábbi kifejezésként képzeljük el, ahogyan azt az ábrán is feltüntettük:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f=1+2x+3x^2[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Valóban, a „gép” alján kipottyanó [latex]57[/latex] egész szám úgy áll elő, hogy a tetején bedobott [latex]4[/latex] egész számot <strong><em>behelyettesítjük</em></strong> ebbe a kifejezésbe az [latex]x[/latex] ismeretlen helyére, és az így kapott műveletsorozatot végrehajtjuk a [latex]\Z[/latex] gyűrűben. Ez az „algoritmus” nyilván bármilyen egész számra végrehajtható. Így az [latex]f[/latex] polinom által <strong><em>leírt</em></strong> [latex]F[/latex] „gép” tulajdonképpen nem más, mint egy [latex]F:\Z\to \Z[/latex] <strong><em>függvény</em></strong>, amely tehát a [latex]\Z[/latex] gyűrű minden eleméhez egyértelműen hozzárendel szintén egy [latex]\Z[/latex]-beli gyűrűelemet. Méghozzá azt, amelyet az [latex]f[/latex] polinom által <strong><em>leírt</em></strong> műveletsorozat végrehajtásával számítunk ki a bemeneti gyűrűelemből. Ez elvezet minket az alábbi fontos definícióhoz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="polinomfuggveny" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Itt tehát az [latex]x[/latex] már nem csupán egy szimbolikus változó, hanem egy konkrét [latex]R[/latex]-beli gyűrűelemet jelöl. Fontos kihangsúlyozni, hogy egy polinom illetve a hozzátartozó polinomfüggvény <strong><em>két teljesen különböző fogalom</em></strong>, noha első látásra ez nem látszik. Például tekintsük az alábbi két [latex]\Z[/latex] feletti polinomot és a hozzájuk tartozó polinomfüggvényeket:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}f=(0,0,3,0,0,\ldots) &amp;\to F(x)=3x^2 \\ g=(0,2,1,0,0,\ldots) &amp;\to G(x)=2x+x^2\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel most az egész számok [latex]\Z[/latex] gyűrűjéről van szó, ezért az [latex]F[/latex] és [latex]G[/latex] polinomfüggvények grafikonjait a középiskolában megszokott módon ábrázolhatjuk is két egymásra merőleges tengely segítségével, amelyek a nullánál metszik egymást. Az alábbi ábrán az [latex]F[/latex] polinomfüggvény grafikonjának pontjait [latex]\bullet[/latex]-okkal, a [latex]G[/latex] polinomfüggvény grafikonjának pontjait pedig [latex]\circ[/latex]-ökkel ábrázoltuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":7348,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_26_polinomfuggvenyek_grafikonja.jpg" alt="Polinomfüggvények grafikonja" class="wp-image-7348"/><figcaption>Polinomfüggvények grafikonja</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Látható, hogy jelen esetben az [latex]f[/latex] és [latex]g[/latex] polinomok egyértelműen azonosíthatók a hozzájuk tartozó [latex]F[/latex] és [latex]G[/latex] polinomfüggvényekkel, hiszen ezek grafikonjai is különböznek egymástól. Ezért egyesek hajlamosak arra gondolni, hogy gyakorlati szempontból nincs is különbség a két fogalom között.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egy gondolatkísérlet erejéig azonban térjünk most át az egész számok [latex]\Z[/latex] gyűrűjéről a [yp_element slug="modularis-osszeadas-es-szorzas" type="link" /]ban definiált [latex]\Z_4[/latex] gyűrűre, és tegyük fel, hogy a fenti [latex]f[/latex] és [latex]g[/latex] polinomok most a [latex]\Z_4[x][/latex] polinomgyűrű elemei. Ezt nyugodtan megtehetjük, hiszen az őket reprezentáló végtelen sorozatok elemei [latex]4[/latex]-nél kisebb egész számok, vagyis mindannyian tekinthetők a [latex]\Z_4[/latex] gyűrű elemeinek is. Ekkor az [latex]f[/latex]-hez és [latex]g[/latex]-hez tartozó [latex]F[/latex] és [latex]G[/latex] polinomfüggvényeket a [yp_element slug="polinomfuggveny" type="link" /] alapján ugyanúgy a fenti két képlettel adhatjuk meg:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}f=(0,0,3,0,0,\ldots) &amp;\to F(x)=3x^2 \\ g=(0,2,1,0,0,\ldots) &amp;\to G(x)=2x+x^2\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A különbség pusztán annyi, hogy itt az [latex]F[/latex] és [latex]G[/latex] polinomfüggvények képletében szereplő összeadások és szorzások alatt most a [latex]\Z_4[/latex] gyűrű műveleteit, vagyis a [yp_element slug="modularis-osszeadas-es-szorzas" type="link" /]ban definiált <strong><em>moduláris összeadást és szorzást</em></strong> kell érteni. Mivel a [latex]\Z_4[/latex] gyűrűnek mindössze [latex]4[/latex] eleme van, ezért most az [latex]F[/latex] és [latex]G[/latex] polinomfüggvények „grafikonjait” az alábbi táblázatban adhatjuk meg:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{c||c|c}x &amp; F(x)=3x^2 &amp; G(x)=2x+x^2 \\ \hline 0 &amp; 3\cdot 0^2=0 &amp; 2\cdot 0+0^2=0 \\ 1 &amp; 3\cdot 1^2=3 &amp; 2\cdot 1+1^2=3 \\ 2 &amp; 3\cdot 2^2=0 &amp; 2\cdot 2+2^2=0 \\ 3 &amp; 3\cdot 3^2=3 &amp; 2\cdot 3+3^2=3\end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A példából jól látszik, hogy noha az [latex]f[/latex] és [latex]g[/latex] polinomok most is különböznek egymástól, a hozzájuk tartozó polinomfüggvények mégis ugyanazt a hozzárendelést valósítják meg, hiszen bármely [latex]x\in \Z_4[/latex] gyűrűelemhez mindketten ugyanazt a szintén [latex]\Z_4[/latex]-beli gyűrűelemet rendelik hozzá. Ez a fenti táblázatból is látszik, hiszen a „grafikonjaikhoz” tartozó oszlopok azonosak, ami viszont azt jelenti, hogy a két polinomfüggvény megegyezik, függetlenül attól, hogy kétféle képlettel is le tudtuk írni őket a [latex]\Z_4[/latex] gyűrű műveleteit használva. Általánosságban tehát minden polinomhoz egyértelműen tartozik egy polinomfüggvény, azonban ugyanaz a polinomfüggvény tartozhat egynél több polinomhoz is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A polinomok és polinomfüggvények tehát két nagyon különböző állatfaj. Van azonban közöttük egy fontos összefüggés, amelyre hamarosan rávilágítunk. Először azonban definiáljuk, hogy mit értünk két függvény (speciálisan két polinomfüggvény) pontonkénti összege illetve szorzata, vagy teljes általánosságban két függvény pontonkénti „összeműveletezése” alatt.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="fuggvenyek-kozotti-muveletek" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ennek a fogalomnak a felhasználásával megfogalmazhatjuk a már említett, polinomok és polinomfüggvényeik közötti fontos összefüggést.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="polinomok-osszegenek-es-szorzatanak-polinomfuggvenye" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A bizonyításban a polinomokkal való számolás intuitív bevezetése során látott gondolatmenetet fogjuk követni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="polinomok-osszegenek-es-szorzatanak-polinomfuggvenye-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Polinomok gyökei</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Egy adott gyűrű feletti polinom szempontjából fontos szerepük van azoknak a gyűrűelemeknek, amelyekhez a polinomhoz tartozó polinomfüggvény a gyűrű <strong><em>nullelemét</em></strong> rendeli hozzá. Erről szól az alábbi definíció.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="polinomok-gyokei" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A előző szakaszban szereplő [latex]f=(0,0,3,0,0,\ldots)[/latex] polinomnak például az egész számok [latex]\Z[/latex] gyűrűjében egyetlen gyöke van: a [latex]0[/latex] egész szám, hiszen [latex]F(0)=3\cdot 0^2=0[/latex], de bármilyen más számot behelyettesítve az eredmény nem nulla. Ezzel szemben a [latex]\Z_4[/latex] gyűrűben van egy további gyöke is, méghozzá a [latex]2[/latex], hiszen ebben a gyűrűben [latex]F(2)=3\cdot 2^2=0[/latex]. A [latex]g=(0,2,1,0,0,\ldots)[/latex] polinomnak [latex]\Z[/latex]-ben már két gyöke is van, méghozzá a [latex]0[/latex] és a [latex]-2[/latex] egész számok, míg a [latex]\Z_4[/latex] gyűrűben a [latex]0[/latex] és a [latex]2[/latex] egész számok teljesítik a feltételt.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Bármely [latex]R[/latex] gyűrű felett a <strong><em>nullapolinomnak</em></strong> nyilván minden [latex]R[/latex]-beli elem gyöke, hiszen a [yp_element slug="polinomfuggveny" type="link" /] alapján a hozzátartozó polinomfüggvény minden együtthatója [latex]0_R[/latex], és így ő az [latex]R[/latex] gyűrű minden eleméhez a nullelemet rendeli hozzá. Számunkra érdekesebb kérdés, hogy egy [latex]R[/latex] feletti <strong><em>nemnulla polinomnak</em></strong> maximum hány gyöke lehet [latex]R[/latex]-ben. A szakasz hátralévő részében meg fogjuk mutatni, hogy ez összefüggésben van a polinom fokával.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Előbb azonban szükségünk van egy fontos tételre. Felhívjuk a figyelmet, hogy a tétel megfogalmazásához felhasználhatjuk az <strong><em>oszthatóság</em></strong> [yp_element slug="oszthatosag" type="link" /]ját, hiszen ez a fogalom minden gyűrűben, így természetesen a polinomgyűrűkben is értelmes. A továbbiakban csak azt az esetet fogjuk vizsgálni, amikoris a vizsgált gyűrű <strong><em>egységelemes</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="polinom-gyokenek-feltetele" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="polinom-gyokenek-feltetele-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mostmár rátérhetünk arra, hogy egy nemnulla polinom gyökeinek száma milyen összefüggésben van a polinom fokával. Felhívjuk a figyelmet, hogy ez a tétel <strong><em>csak nullosztómentes gyűrűk esetén érvényes</em></strong>! Amennyiben ez nem teljesül, akkor meglehetősen furcsa dolgok történhetnek, amint azt a tétel igazolása után egy egyszerű példában látni fogjuk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="polinom-gyokeinek-szama" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="polinom-gyokeinek-szama-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most nézzünk egy egyszerű példát arra az esetre, ha a <strong><em>nullosztómentesség nem teljesülne</em></strong>. Például vegyük a [latex]\Z_8[/latex] gyűrűt a [yp_element slug="modularis-osszeadas-es-szorzas" type="link" /]ban bevezetett <strong><em>moduláris</em></strong> összeadással és szorzással, és tekintsük azt a [latex]\Z_8[/latex] fölötti másodfokú polinomot, amelyhez az alábbi polinomfüggvény tartozik:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]F(x)=x^2+7[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel a [latex]\Z_8[/latex] gyűrűnek mindössze [latex]8[/latex] eleme van, ezért próbálgatással könnyen megtalálhatjuk az összes gyököt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}F(0)&amp;=0^2+7=0+7=7 \\ F(1)&amp;=1^2+7=1+7=0 \\ F(2)&amp;=2^2+7=4+7=3 \\ F(3)&amp;=3^2+7=1+7=0 \\ F(4)&amp;=4^2+7=0+7=7 \\ F(5)&amp;=5^2+7=1+7=0 \\ F(6)&amp;=6^2+7=4+7=3 \\ F(7)&amp;=7^2+7=1+7=0\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A gyökök tehát az [latex]1[/latex], [latex]3[/latex], [latex]5[/latex] és [latex]7[/latex] egész számok, azaz [latex]4[/latex] darab van belőlük, pedig a polinom csak másodfokú volt. A problémát a nullosztómentesség hiánya okozza. Emiatt ugyanis nem mindegy, hogy milyen sorrendben emeljük ki a gyöktényezőket. Az iménti bizonyítás gondolatmenetét követve például emeljük ki elsőként az [latex]1[/latex]-hez tartozó gyöktényezőt, amelyhez ugye az [latex]F_1(x)=x-1[/latex] polinomfüggvény tartozik. Ekkor a polinomfüggvények szintjén az alábbi felbontást kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]F(x)=x^2+7=\underbrace{(x-1)}_{=F_1(x)}\cdot \underbrace{(x-7)}_{=Q_1(x)}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ebbe behelyettesítve a [latex]3[/latex]-at az eredmény valóban nulla, miközben a [latex]Q_1(3)[/latex] tényező <strong><em>nemnulla</em></strong>:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]F(3)=\underbrace{(3-1)}_{=F_1(3)=2}\cdot \underbrace{(3-7)}_{=Q_1(3)=4}=2\cdot 4=0[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Így viszont a [latex]3[/latex]-hoz tartozó gyöktényezőt már nem tudjuk kiemelni a [latex]q_1[/latex] polinomból, hiszen annak ő már nem gyöke. Az persze továbbra is igaz marad, hogy egy [latex]n[/latex]-edfokú polinomból legfeljebb [latex]n[/latex] darab gyöktényezőt lehet kiemelni, azonban a nullosztómentesség hiánya miatt ezeken kívül létezhetnek még további gyöktényezők is, amelyek tehát rejtve maradnak.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Primitív gyök létezése</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Most a polinomokról eddig tanultakat arra fogjuk felhasználni, hogy igazoljuk az első szakaszban már említett nevezetes állítást, miszerint modulo [latex]p[/latex] mindig <strong><em>létezik primitív gyök</em></strong>, amennyiben [latex]p[/latex] egy tetszőleges pozitív prímszám. Ehhez először két segédtételt fogunk bizonyítani.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Az első segédtétel</em></strong> egy csoportelméleti állítás lesz. A [yp_element slug="csoportelem-rendje" type="link" /]ban bevezettük a <strong><em>csoportelem rendjének</em></strong> a fogalmát, amellyel kapcsolatban a [yp_element slug="csoportelem-rendjere-vonatkozo-osszefuggesek" type="link" /]ben mondtunk ki néhány hasznos összefüggést. Most ezek felhasználásával megmutatjuk, hogy hogyan lehet kiszámolni egy csoportelem tetszőleges <strong><em>hatványának</em></strong> rendjét, ha egyébként magának a csoportelemnek a rendje már ismert.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="csoportelem-hatvanyanak-rendje" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="csoportelem-hatvanyanak-rendje-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A második segédtétel</em></strong> egy nevezetes állítás az <strong><em>Euler-féle [latex]\varphi[/latex]-függvénnyel</em></strong> kapcsolatban.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="euler-fuggveny-osszege" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A most következő bizonyítás gondolatmenete az lesz, hogy mutatunk két halmazt, amelyek közül az egyik egy [latex]n[/latex] elemű halmaz lesz, a másiknak pedig annyi eleme lesz, mint a tételben szereplő összeg eredménye. Ezután e két halmaz elemei között egy kölcsönösen egyértelmű megfeleltetést fogunk mutatni, ami tulajdonképpen azt jelenti, hogy ugyanannyi elemük van. E megfeleltetés első ránézésre kissé mesterkéltnek fog tűnni, a mögötte lévő intuícióról azonban a bizonyítás utáni megjegyzésben szót ejtünk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="euler-fuggveny-osszege-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="euler-fuggveny-osszege-bizonyitas-megjegyzes" show_link_to_related="false" custom_title="Megjegyzés a bizonyításhoz" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezek után már minden eszköz rendelkezésünkre áll ahhoz, hogy a primitív gyökök létezésére adjuk egy elégséges feltételt, amely kulcsfontosságú lesz ennek a résznek a második felében.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="primitiv-gyok-modulo-p" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Vigyázzunk azonban, ez ugyanis csupán elégséges, de <strong><em>nem szükséges</em></strong> feltétel primitív gyök létezésére. Az első szakaszban például láttuk, hogy a [latex](\Z/10\Z)^{\times}[/latex] multiplikatív csoport is ciklikus, noha a [latex]10[/latex] minden, csak nem prím.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="primitiv-gyok-modulo-p-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:heading {"level":4} -->
+<h4 id="primitive-root-and-diffie-hellman">Primitív gyökök és a Diffie-Hellman kulcscsere protokoll</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Megjegyezzük, hogy a primitív gyököknek a <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/9-diffie-hellman-protokoll-egyiranyu-fuggveny-modularis-aritmetika-asszimmetrikus-kulcs#diffie-hellman-protocol" target="_blank">9. részben</a> már ismertetett <strong><em>Diffie-Hellman kulcscsere protokoll</em></strong> kapcsán van nagy jelentőségük. Az eljárás részleteit nem ismételjük meg, de a lényeg ugye egy moduláris hatványozáson alapuló [latex]f[/latex] egyirányú függvény, amelyet Alice és Bob használ egy közös titok (vagy ha úgy tetszik kulcs) meghatározásához. Ezt a hatványozást a [yp_element slug="modularis-osszeadas-es-szorzas" type="link" /] szerinti [latex]\Z_m[/latex] gyűrűben, vagy az azzal izomorf [latex]\Z/m\Z[/latex] maradékosztálygyűrűben kell végrehajtani az alábbi képlet alapján, ahol [latex]G[/latex] egy tetszőlegesen választott maradékosztály, amelyet <strong><em>generátorelemnek</em></strong> nevezünk (az elnevezés oka rövidesen világos lesz):</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f(n)=G^n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az eljárás biztonsága azon alapszik, hogy a támadónak a nyilvános [latex]G[/latex] generátorelem, a használt gyűrűt azonosító szintén nyilvános [latex]m[/latex] modulus és a kommunikációs csatornán elfogott [latex]G^n[/latex] hatvány ismeretében kéne meghatároznia a titokban tartott [latex]n[/latex] kitevőt. Ez az úgynevezett <strong><em>diszkrét logaritmus</em></strong> problémájának megoldását jelenti számára, amely algoritmikusan egy belátható időn belül kivitelezhetetlen feladat, feltéve persze, hogy a [latex]G[/latex] maradékosztálynak elegendően sok hatványa létezik a [latex]\Z/m\Z[/latex] gyűrűben.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Könnyen látszik, hogy e feltétel teljesítése érdekében generátorelemnek egy <strong><em>redukált maradékosztályt</em></strong> célszerű választani. Ha ugyanis [latex]G=[g]_m[/latex] nem egy redukált maradékosztály, akkor a [yp_element slug="redukalt-maradekosztaly-feltetele" type="link" /] alapján a [latex]g[/latex] reprezentánselemnek és az [latex]m[/latex] modulusnak van egységtől különböző közös osztója. Ez viszont igaz lesz bármelyik [latex]G^n[/latex] hatvány reprezentánselemeire is, hiszen [latex]G^k=[g^k]_m[/latex], következésképp ekkor [latex]G[/latex] hatványai szintén a nem redukált maradékosztályok közül kerülnek ki. Márpedig ezekből elenyészően kevés van a [latex]\Z/m\Z[/latex] gyűrűben, és így a támadó akár próbálgatással is könnyedén célt érhet.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>redukált maradékosztályok</em></strong> viszont épp a [latex](\Z/m\Z)^{\times}[/latex] multiplikatív csoport elemei, amely csoport ugye zárt a szorzásra (és így a hatványozásra) nézve. Ezért Alice és Bob tulajdonképpen ebből a multiplikatív csoportból szeretne választani magának egy olyan elemet, amelynek lehetőleg minél több különböző hatványa van, azaz amelyiknek minél nagyobb a rendje (lásd a [yp_element slug="csoportelem-rendje" type="link" /]t). Csoportelméleti terminológiával élve akkor vannak tehát a legnagyobb biztonságban, ha a [latex](\Z/m\Z)^{\times}[/latex] multiplikatív csoport <strong><em>ciklikus</em></strong>, [latex]G[/latex] pedig ennek egy <strong><em>generátoreleme</em></strong>, azaz egy <strong><em>modulo [latex]m[/latex] primitív gyök</em></strong>, ekkor ugyanis [latex]G[/latex] hatványai kiadják a teljes [latex](\Z/m\Z)^{\times}[/latex] csoportot.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az előző szakaszban bizonyított tétel alapján ha Alice és Bob egy [latex]p[/latex] prímszámot használnak modulusként – amelyet az elmúlt részek fényében könnyedén találhatnak maguknak –, akkor a [latex](\Z/p\Z)^{\times}[/latex] csoport biztosan ciklikus lesz. Ami a rossz hír, hogy a tétel bizonyítása nem konstruktív, azaz nem szolgáltat konkrét eljárást primitív gyökök megkereséséhez, azoknak csupán a <strong><em>létezését</em></strong> bizonyítja. Ami még rosszabb hír, hogy erre a feladatra egyáltalán nem ismert (és minden jel arra mutat, hogy nem is várható) hatékony eljárás, így a modulo [latex]p[/latex] primitív gyökök keresgélése nem egy járható út.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A gyakorlatban ehelyett egy olyan maradékosztály is megfelel a célnak, amely nem generálja ugyan a teljes [latex](\Z/p\Z)^{\times}[/latex] csoportot, hanem annak csak egy olyan részcsoportját, amely viszont már „kellően nagyméretű” a kívánt biztonsági szint eléréséhez. Ennek érdekében először ezt a „kellően nagy” méretet szokták meghatározni, majd ebből állítják elő a [latex]p[/latex] modulust olymódon, hogy az egy úgynevezett <a href="https://en.wikipedia.org/wiki/Safe_and_Sophie_Germain_primes" target="_blank" rel="noreferrer noopener">„biztonságos prím”</a> legyen. A részletek mellőzésével megemlítjük, hogy egy ilyen [latex]p[/latex] biztonságos prímnek számos, kriptográfiai szempontból fontos tulajdonsága van. Többek között az, hogy „majdnem mindegyik” modulo [latex]p[/latex] redukált maradékosztály „kellően nagyméretű” részcsoportot generál. Mivel ez hatékonyan ellenőrizhető, ezért Alice és Bob viszonylag gyorsan képes megfelelő biztonságú generátorelemet választani.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Carmichael-számok tulajdonságai</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A primitív gyökökkel kapcsolatos eredmények felhasználásával ebben a szakaszban igazoljuk a [yp_element slug="carmichael-szamok" type="link" /]ban megismert <strong><em>Carmichael-számok</em></strong> (vagy <strong><em>univerzális álprímek</em></strong>) néhány fontos tulajdonságát. Ezeknek szintén kulcsszerepük lesz a Miller-Rabin-tanúkra vonatkozó becslésünk javításában. Ehhez ismerkedjünk meg egy egyszerű fogalommal.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="negyzetmentes-szam" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Például az [latex]n=12[/latex] nem négyzetmentes, mivel osztható a [latex]2[/latex] második hatványával. Ezzel szemben a [latex]15[/latex] négyzetmentes, hiszen semmilyen egész szám második hatványával nem osztható. Most mutatunk egy egyszerű segédtételt, amely alapján elegendő csupán a pozitív prímosztókra ellenőrizni a feltételt.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="negyzetmentesseg-feltetele" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="negyzetmentesseg-feltetele-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most egy olyan feltételt igazolunk, amely alapján egy adott összetett számról egyértelműen el lehet dönteni, hogy Carmichael-szám-e vagy nem. Ehhez mindössze a szám prímtényezős felbontására van szükség. Ezt a tételt <a href="https://en.wikipedia.org/wiki/Alwin_Korselt" target="_blank" rel="noreferrer noopener">Alwin Reinhold Korselt</a> német matematikus fedezte fel 1899-ben, ő maga azonban nem talált egyetlen, a feltételnek eleget tevő egész számot sem. Ez dokumentáltan először <a href="https://en.wikipedia.org/wiki/Robert_Daniel_Carmichael" target="_blank" rel="noreferrer noopener">Robert Daniel Carmichaelnek</a> sikerült 1910-ben – innen ered a Carmichael-szám elnevezés. A teljességhez azonban hozzátartozik, hogy <strong><em>Václav Šimerka</em></strong> cseh matematikus már 25 évvel korábban felsorolta az első 7 univerzális álprímet egy kevésbé közismert cseh matematikai szaklapban, amely azonban akkoriban nem kapott túl nagy figyelmet.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="korselt-kriterium" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Például az [latex]561[/latex] ez alapján Carmichael-szám, hiszen [latex]561=3\cdot 11\cdot 17[/latex] és teljesülnek az alábbi oszthatóságok:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}2&amp;|560 \\ 10&amp;|560 \\ 16&amp;|560\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="korselt-kriterium-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most a Korselt-kritérium egy egyszerű következményét ismertetjük, amely a Carmichael-számok paritására és prímtényezőinek számára vonatkozik.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="carmichael-szamok-tulajdonsagai" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="carmichael-szamok-tulajdonsagai-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A nem Miller-Rabin-tanúk csoportjának rendje</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A <a href="https://youproof.hu/kriptografia/24-csoport-reszcsoport-mellekosztaly-lagrange-tetel-csoport-rendje-elem-rendje-miller-rabin-primteszt/" target="_blank" rel="noreferrer noopener">24. részben</a> csoportelméleti eszközökkel igazoltuk, hogy a Miller-Rabin-prímtesztre nézve nem léteznek a Carmichael-számokhoz hasonló univerzális álprímek, amelyek becsaphatják a tesztet. Ennek keretében megmutattuk, hogy bármilyen [latex]n\gt 1[/latex] páratlan összetett szám esetén a modulo [latex]n[/latex] redukált maradékosztályoknak <strong><em>legalább a fele</em></strong> Miller-Rabin-tanú (lásd a [yp_element slug="miller-rabin-tanuk-szama" type="link" /]t). Most finomabb eszközökkel megjavítjuk ezt a becslésünket, és megmutatjuk, hogy ez a redukált maradékosztályoknak <strong><em>legalább a háromnegyedére</em></strong> igaz, azaz még sokkal jobb a helyzet, mint gondoltuk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A stratégiánk azt volt, hogy a Miller-Rabin-tanúk helyett a nem Miller-Rabin-tanúkat vizsgáltuk, és megmutattuk, hogy ezek mind a [latex](\Z/n\Z)^{\times}[/latex] multiplikatív csoport egy valódi részcsoportjának elemei. Így viszont a <strong><em>Lagrange-tétel</em></strong> ([yp_element slug="lagrange-tetele" type="link" /]) miatt legfeljebb feleannyian vannak, mint a redukált maradékosztályok, a többi redukált maradékosztály tehát Miller-Rabin-tanú. Külön kezeltük azt az esetet, amikor [latex]n[/latex] valamilyen <strong><em>prímhatvány</em></strong>, és amikor nem.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A prímhatvány esetről</em></strong> a [yp_element slug="nem-miller-rabin-tanuk-csoportja-primhatvanyok-eseten" type="link" /] 3. pontja szólt. Itt igazoltuk, hogy ebben az esetben a nem Miller-Rabin-tanúk egy olyan valódi részcsoportot alkotnak, amelynek rajtuk kívül nincs is más eleme. Most megadjuk ennek a bizonyos részcsoportnak a rendjét, amelyhez először egy segédtételre lesz szükségünk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="nem-miller-rabin-tanuk-csoportjara-vonatkozo-lemma-primhatvanyok-eseten" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="nem-miller-rabin-tanuk-csoportjara-vonatkozo-lemma-primhatvanyok-eseten-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az iménti segédtételnek a felhasználásával mostmár igazolhatjuk a nem Miller-Rabin-tanúk csoportjának rendjéről szóló tételünket.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="nem-miller-rabin-tanuk-csoportjanak-rendje-primhatvanyok-eseten" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Látható, hogy a kérdéses csoport mérete nem függ a [latex]c[/latex] kitevő nagyságától, ezért <strong><em>prímhatvány</em></strong> esetben ez lesz majd a kulcs a Miller-Rabin-tanúk számára vonatkozó becslésünk javításához.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="nem-miller-rabin-tanuk-csoportjanak-rendje-primhatvanyok-eseten-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="nem-miller-rabin-tanuk-csoportjanak-rendje-primhatvanyok-eseten-bizonyitas-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Most nézzük azt az esetet, amikor [latex]n[/latex] nem prímhatvány.</em></strong> Erről az esetről a [yp_element slug="nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten" type="link" /] szólt. Ebben az esetben a nem Miller-Rabin-tanúk ugyan nem alkotnak részcsoportot [latex](\Z/n\Z)^{\times}[/latex]-ben, azonban sikerült mutatnunk egy olyan valódi részcsoportot, amely minden nem Miller-Rabin-tanút magában foglalt, és így ugyancsak alkalmazni tudtuk a <strong><em>Lagrange-tételt</em></strong> a Miller-Rabin-tanúk számának becsléséhez. Most ezt a tételt továbbfejleszve tovább szűkítjük ennek a bizonyos valódi részcsoportnak a méretét.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="nem-miller-rabin-tanuk-es-nem-fermat-tanuk-viszonya-nem-primhatvanyok-eseten" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez a tétel nyilván a <strong><em>nem Carmichael-számok</em></strong> esetén fogja lehetővé tenni a becslésünk javítását, hiszen tovább szűkíti a nem Miller-Rabin-tanúkat tartalmazó [latex]H_n[/latex] részcsoport maximális méretét. Ezzel szemben a Carmichael-számok esetén nem kapunk újabb szűkítési lehetőséget, hiszen a 2. pont szerint ebben az esetben [latex]F_n=(\Z/n\Z)^{\times}[/latex]. Ezért erre az esetre a következő szakaszban fogunk kitérni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="nem-miller-rabin-tanuk-es-nem-fermat-tanuk-viszonya-nem-primhatvanyok-eseten-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Mit kezdjünk a Carmichael-számokkal?</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Az előző szakaszban igazolt tétel tehát a Carmichael-számok esetén közvetlenül nem ad lehetőséget a <strong><em>Lagrange-tétel</em></strong> alkalmazására, és ezáltal a nem Miller-Rabin-tanúkat tartalmazó valódi részcsoport további zsugorítására. Ezért most kénytelenek leszünk az <a href="https://youproof.hu/kriptografia/25-homomorfizmus-normaloszto-faktorcsoport-generalt-reszcsoport-ciklikus-csoport#group-homomorphism-properties" target="_blank" rel="noreferrer noopener">előző részben</a> megismert <strong><em>csoporthomomorfizmusok struktúratartó tulajdonságaira</em></strong>, valamint a Lagrange-tételben definiált <strong><em>részcsoportindex</em></strong> (lásd a [yp_element slug="lagrange-tetele" type="link" /]t) fogalmára támaszkodni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi tételben azt mutatjuk meg, hogy ez a bizonyos valódi részcsoport annál kisebb (vagy más szavakkal annál nagyobb a részcsoportindexe), minél több prímtényezője van a vizsgált [latex]n[/latex] összetett számnak. Ez azért lesz hasznos a Carmichael-számok esetén, mivel a <strong><em>Korselt-kritérium</em></strong> [yp_element slug="carmichael-szamok-tulajdonsagai" type="link" /]e alapján egy ilyen számnak legalább 3 prímtényezője van.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="nem-miller-rabin-tanuk-reszcsoportindexe" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="nem-miller-rabin-tanuk-reszcsoportindexe-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Az eddigi eredmények összefoglalása</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Így mostmár minden rendelkezésünkre áll a Miller-Rabin-tanúk számára vonatkozó, a [yp_element slug="miller-rabin-tanuk-szama" type="link" /]ben igazolt eredeti becslésünk javításához. Foglaljuk is össze ezeket az eredményeket. Megjegyezzük, hogy az alábbi becsléshez némileg szűkíteni kell a kört a [latex]9[/latex]-nél nagyobb páratlan összetett számokra, ám ez nyilvánvalóan nem jelent gyakorlati megszorítást, tekintve, hogy Miller-Rabin-prímtesztet ennél jóval nagyobb számtartományban használják.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="miller-rabin-tanuk-szama-javitas" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="miller-rabin-tanuk-szama-javitas-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Az AKS-prímteszt</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Általánosságban a prímteszteknek három fontos jellemzője van:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li><strong><em>Determinisztikusság:</em></strong> Egy determinisztikus prímteszt minden esetben egyértelműen választ ad arra a kérdésre, hogy a bemeneti szám prím-e vagy sem. Ilyen volt például a <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/23-primteszteles-fermat-primteszt-miller-rabin-primteszt-carmichael-szam-univerzalis-alprim-fermat-faktorizacio#naive-primality-test" target="_blank">23. részben</a> ismertetett osztáspróbákon alapuló prímteszt. Ezzel szemben egy valószínűségi prímteszt – például a <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/23-primteszteles-fermat-primteszt-miller-rabin-primteszt-carmichael-szam-univerzalis-alprim-fermat-faktorizacio#fermat-primality-test" target="_blank">Fermat-</a> vagy a <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/23-primteszteles-fermat-primteszt-miller-rabin-primteszt-carmichael-szam-univerzalis-alprim-fermat-faktorizacio#miller-rabin-primality-test" target="_blank">Miller-Rabin-prímteszt</a> – a gyakorlati alkalmazások szempontjából elhanyagolható valószínűséggel ugyan, de tévedhet.</li><li><strong><em>Hatékonyság:</em></strong> Egy prímtesztnél mindig fontos, hogy mennyire gyorsan, mennyire hatékonyan tudja megválaszolni a kérdést, ahol hatékonyság alatt algoritmikus hatékonyságot értünk. Erről a <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/7-algoritmus-bonyolultsag-problemaosztalyok-polinomialis-exponencialis-p-np-sejtes-tanu-tetel/" target="_blank">7. részben</a> volt szó bővebben. Az osztáspróbákon alapuló módszerről például láttuk, hogy nem nevezhető hatékonynak, ezzel szemben a Fermat- és Miller-Rabin-prímtesztek villámgyorsnak bizonyulnak.</li><li><strong><em>Feltétel nélküliség:</em></strong> Végül a harmadik szempont, hogy az adott prímteszt helyes működése és/vagy hatékonysága valamilyen még nem bizonyított matematikai sejtésen alapszik-e vagy sem.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>Ez utóbbival kapcsolatban példaként megemlítjük, hogy a Miller-Rabin-prímteszt alapjául szolgáló úgynevezett <strong><em>Miller-prímtesztet</em></strong> eredetileg <a rel="noreferrer noopener" href="https://en.wikipedia.org/wiki/Gary_Miller_(computer_scientist)" target="_blank">Gary Miller</a> publikálta 1976-ban. Ez egy polinomiális időkomplexitású (azaz algoritmikusan hatékony) és determinisztikus eljárás, az első két feltétel tehát teljesül. Mindazonáltal az úgynevezett <a rel="noreferrer noopener" href="https://en.wikipedia.org/wiki/Generalized_Riemann_hypothesis" target="_blank">általánosított Riemann-hipotézis</a> igazságán alapul, amely egy nagyon mély és messzemenő következményekkel járó, és egyben talán az egyik legfontosabb matematikai sejtés, amelyre ma még nem ismerjük a választ. Ennek a sejtésnek többek között az egyik következménye az lenne, hogy bármely összetett számnak mindenképpen létezne Miller-Rabin-tanúja egy nagyon kis számtartományban. Így elegendő lenne ezt a számtartományt szisztematikusan átvizsgálni, mivel ha itt nem találunk tanút, akkor az általánosított Riemann-hipotézisból következne, hogy máshol sem fogunk, azaz a bementi számunk biztosan prím.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez az egész azonban mit sem ér, ha az általánosított Riemann-hipotézisről végül kiderül, hogy mégsem igaz. Ezt a problémát megkerülendő <a rel="noreferrer noopener" href="https://en.wikipedia.org/wiki/Michael_O._Rabin" target="_blank">Michael Oster Rabin</a> 1980-ban publikálta a Miller-prímteszt módosított változatát, amely már nem függ az általánosított Riemann-hipotézis igazságától, cserében viszont ez a változat nemdeterminisztikus. Ez a már jól ismert Miller-Rabin-prímteszt, amelyet az elmúlt részekben részletesen ismertettünk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az eddigiekből úgy tűnik, hogy a prímtesztek a fenti három feltétel közül legfeljebb kettőt tudnak teljesíteni. Az osztáspróbákon alapuló teszt determinisztikus és feltétel nélküli, ugyanakkor nem hatékony. A Fermat- és Miller-Rabin-prímteszt hatékony és szintén feltétel nélküli, ugyanakkor nemdeterminisztikus. Végül a példaként imént felhozott Miller-prímteszt determinisztikus és hatékony, viszont az általánosított Riemann-hipotézis igazságától függ. Egészen a közelmúltig nyitott volt a kérdés, hogy vajon létezik-e olyan prímteszt, amely mindhárom kritériumnak megfelel. Ezt a <a href="https://youproof.hu/kriptografia/7-algoritmus-bonyolultsag-problemaosztalyok-polinomialis-exponencialis-p-np-sejtes-tanu-tetel/" target="_blank" rel="noreferrer noopener">7. részben</a> ismertetett algoritmuselméleti terminológiával élve úgy is kérdezhetnénk, hogy vajon a prímség vagy összetettség eldöntésének problémája a [latex]P[/latex] problémaosztályba tartozik-e.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Erre a kérdésre három indiai matematikus, <strong><em>Manindra Agrawal</em></strong>, <strong><em>Neeraj Kayal</em></strong>, és <strong><em>Nitin Saxena</em></strong> adott igenlő választ 2002-ben, amikor publikálták az úgynevezett <strong><em>Agrawal-Kayal-Saxena-prímtesztet</em></strong> (rövidítve <strong><em><a rel="noreferrer noopener" href="https://en.wikipedia.org/wiki/AKS_primality_test" target="_blank">AKS-prímteszt</a></em></strong>). Ez az első olyan prímteszt, amely egyszerre determinisztikus, hatékony és nem függ semmilyen nem bizonyított sejtéstől.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az <strong><em>AKS-prímteszt</em></strong> egy egyszerű összefüggésen alapszik, amelyet itt csak az érdekesség kedvéért, bizonyítás nélkül közlünk. Legyen [latex]n\geq 2[/latex] tetszőleges, [latex]a[/latex] pedig egy szintén tetszőleges [latex]n[/latex]-hez relatív prím egész szám. Ebben az esetben az [latex]n[/latex] egész szám <strong><em>akkor és csak akkor prím</em></strong>, ha minden [latex]x[/latex] esetén teljesül az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](x+a)^n\equiv x^n+a\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez a kongruencia tulajdonképpen az ebben a részben tanultak alapján felfogható egy egyenletnek a [latex]\Z/n\Z[/latex] feletti polinomgyűrűben. Maga az összefüggés egyszerű, ugyanakkor a kiértékelése ebben a formában exponenciális időkomplexitású, hiszen mindkét oldalon szerepel egy-egy [latex]n[/latex] darab tényezőből álló szorzat, márpedig [latex]n[/latex] a számjegyei számának exponenciális függvénye. Az AKS-algoritmus bonyolultsága tehát nem az elméleti háttérből, hanem ennek a kiértékelési problémának a leküzdéséből ered, ám a részletektől itt eltekintünk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mindazonáltal megjegyezzük, hogy ennek a felfedezésnek főként elméleti jelentősége van, hiszen – mint már említettük – bizonyítja, hogy a prímség vagy összetettség eldöntése a [latex]P[/latex] problémaosztályba tartozik. A gyakorlatban azonban továbbra is főként a nemdeterminisztikus algoritmusokat használják, mivel az AKS-teszt hatékonysága – noha polinomiális – messze elmarad ezektől.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Carmichael-számok és az RSA</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Végezetül ejtünk még néhány szót arról, hogy miért volt olyan fontos kiküszöbölni az univerzális álprímek okozta kellemetlenséget a prímtesztek esetén. Azt a kérdést fogjuk megvizsgálni, hogy mi a helyzet az RSA-algoritmussal, ha a kulcsgeneráláshoz használt [latex]p[/latex] és [latex]q[/latex] pozitív egész számok közül legalább az egyik egy Carmichael-szám. A <strong><em><a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/23-primteszteles-fermat-primteszt-miller-rabin-primteszt-carmichael-szam-univerzalis-alprim-fermat-faktorizacio#fermat-primality-test" target="_blank">Fermat-prímteszt</a></em></strong> esetén – noha kicsi a valószínűsége, de – ez bizony előfordulhat, hiszen ez a teszt nem szűri ki a Carmichael-számokat. Emlékeztetnénk az Olvasót az RSA helyes működéséről szóló alábbi tételre, és javasoljuk, hogy tekintse át az ehhez kapcsolódó bizonyítást:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="rsa-algoritmus-helyes-mukodese" show_title="true" type="recall-expanded" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most egy ehhez nagyon hasonló tételt igazolunk, amelyben azonban a [latex]p[/latex] és [latex]q[/latex] egészekről nem feltételezzük, hogy mindketten prímek. Például azért, mert szerencsétlen módon a Fermat-prímtesztet használtuk a megkeresésükre, és pont beletrafáltunk egy Carmichael-számba.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="rsa-algoritmus-helyes-mukodese-carmichael-szamok-eseten" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="rsa-algoritmus-helyes-mukodese-carmichael-szamok-eseten-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A tétel szerint tehát az RSA algoritmus sajnos ugyanúgy működőképes marad, ha prímek helyett Carmichael-számokat használuk a kulcsgeneráláshoz. Ennek súlyos következményei vannak a biztonságra nézve, hiszen a <strong><em>Korselt-kritérium</em></strong> [yp_element slug="carmichael-szamok-tulajdonsagai" type="link" /]e alapján egy Carmichael-számnak <strong><em>legalább</em></strong> [latex]3[/latex] prímtényezője van. Ez viszont azt jelenti, hogy a kódoláshoz és dekódoláshoz használt [latex]m[/latex] modulust jóval könnyebb prímtényezőire bontani, mintha [latex]p[/latex] és [latex]q[/latex] valóban prímszámok lettek volna, ezek a prímtényezők ugyanis jóval kisebbek lesznek, mint [latex]p[/latex] és [latex]q[/latex]. Ráadásul egyéb, itt nem részletezett összefüggések miatt egy Carmichael-szám prímtényezőire bontására létezik hatékony algoritmus, így viszont egy támadó is kiszámíthatja a [latex]d[/latex] titkos kitevőt.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ebben a részben megismerkedtünk a polinomok és polinomgyűrűk fogalmával. Az itt megismert összefüggéseket felhasználva igazoltuk, hogy prím modulus esetén mindig létezik primitív gyök. Ezután a Carmichael-számokat jellemeztük az úgynevezett Korselt-kritérium segítségével, majd ezt felhasználva lényegesen javítottunk a Miller-Rabin-prímteszt hibabecslésén. Végül megvizsgáltuk azt a kérdést, hogy miért jelent súlyos biztonsági kockázatot, ha az RSA kulcsok generálásakor véletlenül Carmichael-számokat használunk.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ezzel számelméleti vizsgálataink végére értünk. A sorozat utolsó részében arról fogunk mesélni, hogy a talán nem is olyan távoli jövőben az úgynevezett kvantumszámítógépek milyen kihívások elé fogják állítani főhőseinket, és mik azok a módszerek, amelyek segítségével megbírkózhatnak e kihívásokkal.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Az utolsó részt <a href="https://youproof.hu/kriptografia/27-elliptikus-gorbek-diffie-hellman-birch-es-swinnerton-dyer-sejtes-kvantumszamitogep/">itt</a> találod...</em></strong></p>
+<!-- /wp:paragraph -->

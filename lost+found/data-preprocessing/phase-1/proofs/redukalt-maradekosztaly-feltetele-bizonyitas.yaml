@@ -1,0 +1,95 @@
+type: proof
+name: redukalt-maradekosztaly-feltetele-bizonyitas
+remarks: []
+references:
+  asszocialtsag-egysegelemes-gyuruben:
+    target:
+      type: theorem
+      name: asszocialtsag-egysegelemes-gyuruben
+  egesz-szamok-maradekosztalyai:
+    target:
+      type: theorem
+      name: egesz-szamok-maradekosztalyai
+  egysegek-es-egysegelem-viszonya:
+    target:
+      type: theorem
+      name: egysegek-es-egysegelem-viszonya
+  kituntetett-kozos-oszto:
+    target:
+      type: definition
+      name: kituntetett-kozos-oszto
+  linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga:
+    target:
+      type: theorem
+      name: linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga
+  linearis-kongruenciak-megoldasai-es-megoldasszama:
+    target:
+      type: theorem
+      name: linearis-kongruenciak-megoldasai-es-megoldasszama
+  oszthatosag-tulajdonsagai:
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+  redukalt-maradekosztaly:
+    target:
+      type: definition
+      name: redukalt-maradekosztaly
+  relativ-primek:
+    target:
+      type: definition
+      name: relativ-primek
+content:
+  - type: formula
+    lead-in: |
+      Az $[a]_m$ maradékosztály a [redukalt-maradekosztaly] alapján pontosan akkor redukált, ha invertálható, azaz
+      ***egyértelműen*** létezik olyan $X=[x]_m$ maradékosztály, amelyre teljesül az alábbi:
+    content: |
+      [a]_m\odot X=[a]_m\odot [x]_m=[a\cdot x]_m=[1]_m
+  - type: formula
+    lead-in: |
+      Ez pontosan az alábbi lineáris kongruencia ***egyértelmű*** megoldhatóságát jelenti:
+    content: |
+      ax\equiv 1\pmod m
+  - type: narrative
+    content: |
+      Ez viszont a [linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga] szerint pontosan akkor
+      oldható meg, ha teljesül az $(a,m)|1$ oszthatóság. Ez a [egysegek-es-egysegelem-viszonya] alapján azt
+      jelenti, hogy az $(a,m)$ kitüntetett közös osztó ***egység***, vagy más szavakkal $a$ ***relatív prím*** az
+      $m$ modulushoz (lásd a [relativ-primek] utáni megjegyzést).
+  - type: narrative
+    content: |
+      Válasszuk a pozitív egységet kitüntetett közös osztónak, azaz legyen $(a,m)=1$. Ebben az esetben a megoldások
+      száma a [linearis-kongruenciak-megoldasai-es-megoldasszama] értelmében $(a,m)=1$. Vagyis a megoldás valóban
+      ***egyértelmű***.
+  - type: narrative
+    content: |
+      ***Most igazoljuk a tétel másik állítását***, miszerint egy maradékosztály minden elemének asszociáltság
+      erejéig ugyanaz az $m$ modulussal vett kitüntetett közös osztója. Az $[a]_m=[b]_m$ egyenlőség azt jelenti,
+      hogy $a$ ugyanabban a maradékosztályban van, mint $b$.
+  - type: formula
+    lead-in: |
+      Így tehát a [egesz-szamok-maradekosztalyai] alapján a $b$ egész szám felírható az alábbi alakban valamilyen
+      alkalmas $k_1$ egész szám segítségével:
+    content: |
+      b=k_1m+a
+  - type: narrative
+    content: |
+      Mivel az $(a,m)$ kitüntetett közös osztó osztója $a$-nak és $m$-nek, ezért a [oszthatosag-tulajdonsagai] 7.
+      és 6. pontjai miatt osztója $k_1m+a=b$-nek is. Így tehát $(a,m)$ közös osztója $b$-nek és $m$-nek, vagyis a
+      [kituntetett-kozos-oszto] alapján osztója ezek kitüntetett közös osztójának, azaz teljesül az $(a,m)|(b,m)$
+      oszthatóság.
+  - type: formula
+    lead-in: |
+      Ugyanígy a [egesz-szamok-maradekosztalyai] alapján az $a$ egész szám is felírható az alábbi alakban
+      valamilyen alkalmas $k_2$ egész szám segítségével:
+    content: |
+      a=k_2m+b
+  - type: narrative
+    content: |
+      Ebből az előző gondolatmenetet megismételve azt fogjuk kapni, hogy teljesül a $(b,m)|(a,m)$ oszthatóság.
+      Minthogy mindkét irányban fennáll az oszthatóság, ezért a [asszocialtsag-egysegelemes-gyuruben] miatt $(a,m)$
+      és $(b,m)$ valóban ***asszociáltak***.
+  - type: narrative
+    content: |
+      Speciálisan ha $a$ ***relatív prím*** $m$-hez, akkor $(a,m)$ egység, és így az asszociáltság miatt $(b,m)$ is
+      egység, azaz $b$ is ***relatív prím*** $m$-hez.

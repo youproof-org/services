@@ -1,0 +1,10 @@
+type: theorem
+name: fermat-tanuk-szama
+proofs:
+  - fermat-tanuk-szama-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $n\gt 1$ egy tetszőleges pozitív egész szám. Amennyiben $n$-nek ***létezik*** Fermat-tanúja a redukált
+      maradékosztályok között, akkor a modulo $n$ redukált maradékosztályoknak ***legalább a fele*** Fermat-tanú.

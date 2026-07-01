@@ -1,0 +1,57 @@
+type: proof
+name: euklideszi-algoritmus-alapgondolata-bizonyitas
+remarks: []
+references:
+  oszthatosag-tulajdonsagai:
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+content:
+  - type: formula
+    lead-in: |
+      Mivel $(a,b)$ közös osztó, ezért teljesülnek az alábbi oszthatóságok:
+    content: |
+      \begin{aligned}(a,b)&|a \\ (a,b)&|b \end{aligned}
+  - type: formula
+    lead-in: |
+      A második oszthatóság jobboldala a [oszthatosag-tulajdonsagai] 7. pontja miatt tetszőleges $k$ elemmel
+      megszorozható:
+    content: |
+      (a,b)|kb
+  - type: formula
+    lead-in: |
+      Az $(a,b)$ tehát osztója $a$-nak és $kb$-nek, így ugyanezen tétel 6. pontja miatt osztója a különbségüknek
+      is:
+    content: |
+      (a,b)|a-kb
+  - type: narrative
+    content: |
+      Azt kaptuk, hogy az $(a,b)$ elem $a$-n és $b$-n kívül közös osztója $b$-nek és $a-kb$-nek is. Már csak azt
+      kell megmutatni, hogy ennek az elempárnak szintén kitüntetett közös osztója, azaz bármely más közös osztónak
+      többszöröse.
+  - type: formula
+    lead-in: |
+      Tegyük fel például, hogy $d$ egy ilyen közös osztó, azaz:
+    content: |
+      \begin{aligned}d&|b \\ d&|a-kb \end{aligned}
+  - type: formula
+    lead-in: |
+      Az első oszthatóság jobboldalát a [oszthatosag-tulajdonsagai] 7. pontja miatt $k$-val megszorozhatjuk:
+    content: |
+      d|kb
+  - type: formula
+    lead-in: |
+      A $d$ elem tehát osztója $a-kb$-nek és $kb$-nek, így ugyanezen tétel 6. pontja miatt osztója az összegüknek
+      is:
+    content: |
+      d|a-\cancel{kb}+\cancel{kb}
+  - type: narrative
+    content: |
+      Azt kaptuk tehát, hogy $d$ közös osztója $a$-nak és $b$-nek, emiatt osztója az ő kitüntetett közös
+      osztójuknak, azaz $(a,b)$-nek is. Igenám, de fentebb már láttuk, hogy $(a,b)$ nem csak az $a$ és $b$ elemek
+      közös osztója, hanem a $b$ és $a-kb$ elemeknek is.
+  - type: formula
+    lead-in: |
+      Így ő végülis ezeknek az elemeknek is kitüntetett közös osztója, azaz valóban:
+    content: |
+      (a,b)=(b,a-kb)

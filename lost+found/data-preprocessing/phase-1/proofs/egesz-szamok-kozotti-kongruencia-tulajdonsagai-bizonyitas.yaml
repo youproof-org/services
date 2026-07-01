@@ -1,0 +1,59 @@
+type: proof
+name: egesz-szamok-kozotti-kongruencia-tulajdonsagai-bizonyitas
+remarks: []
+references:
+  egesz-szamok-kozotti-kongruencia:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia
+  foidealok-es-oszthatosag-kapcsolata-egysegelemes:
+    target:
+      type: theorem
+      name: foidealok-es-oszthatosag-kapcsolata-egysegelemes
+  ideal-szerinti-kongruencia:
+    target:
+      type: definition
+      name: ideal-szerinti-kongruencia
+  ideal-szerinti-kongruencia-ekvivalenciarelacio:
+    target:
+      type: theorem
+      name: ideal-szerinti-kongruencia-ekvivalenciarelacio
+  ideal-szerinti-muveletek-joldefinialtsaga:
+    target:
+      type: theorem
+      name: ideal-szerinti-muveletek-joldefinialtsaga
+  maradekosztalygyuruk:
+    target:
+      type: theorem
+      name: maradekosztalygyuruk
+content:
+  - type: narrative
+    content: |
+      A [egesz-szamok-kozotti-kongruencia] alapján az egész számok közötti modulo $m$ kongruencia teljesen
+      ekvivalens az $(m)$ főideál szerinti kongruenciával, ezért minden olyan tétel vonatkozik rá, amelyet az
+      ideálok szerinti kongruenciákkal kapcsolatban már bizonyítottunk.
+  - type: narrative
+    content: |
+      Így például az ***1., 2. és 3. állítás*** arról szól, hogy az egész számok közötti kongruencia egy reflexív,
+      szimmetrikus és tranzitív reláció, azaz ekvivalenciareláció. Ezt az ideál szerinti kongruenciákra a
+      [ideal-szerinti-kongruencia-ekvivalenciarelacio]ben már igazoltuk.
+  - type: narrative
+    content: |
+      A ***4. és 5. állítás*** a [ideal-szerinti-muveletek-joldefinialtsaga]ből következik, aminek a segítségével
+      az ideál szerinti maradékosztályok közötti műveletek jóldefiniáltságát igazoltuk (e műveletek definícióját
+      lásd a maradékosztálygyűrűkről szóló [maradekosztalygyuruk]ben). Minthogy a különbségképzés tulajdonképpen
+      ellentettel való összeadás, ezért a kivonásra vonatkozó állítás is teljesül.
+  - type: narrative
+    content: |
+      A ***6. és 7. állítások*** szintén teljesülnek, hiszen ezek a 4. és 5. állítások azon speciális esetei,
+      amikoris $c=d$. A ***8. állítás*** az 5. állítás azon speciális esetének $n$-szeri alkalmazásából adódik,
+      amikoris $a=c$ és $b=d$.
+  - type: narrative
+    content: |
+      ***Végül a 9. állítás:*** Az $I=(m)$ főideál szerinti kongruencia a [ideal-szerinti-kongruencia] alapján azt
+      jelenti, hogy az $a-b$ különbség eleme az $I=(m)$ főideálnak. Mármost ha $k$ osztója $m$-nek &ndash; azaz
+      teljesül a $k|m$ oszthatóság &ndash;, akkor a [foidealok-es-oszthatosag-kapcsolata-egysegelemes] 1. pontja
+      alapján teljesül az $(m)\sube (k)$ tartalmazási reláció, és így az $a-b$ különbség a $(k)$ főideálnak is
+      eleme. Ez ismételten a [ideal-szerinti-kongruencia] alapján azt jelenti, hogy $a$ és $b$ a $(k)$ főideál
+      szerint is kongruens egymással. Mivel $k$-ról azt mondtuk, hogy nemnegatív, ezért a
+      [egesz-szamok-kozotti-kongruencia]ben szereplő jelölést alkalmazva $a\equiv b\pmod k$.

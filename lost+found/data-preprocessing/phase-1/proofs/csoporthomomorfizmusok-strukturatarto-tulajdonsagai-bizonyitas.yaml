@@ -1,0 +1,196 @@
+type: proof
+name: csoporthomomorfizmusok-strukturatarto-tulajdonsagai-bizonyitas
+remarks: []
+references:
+  csoporthomomorfizmus-magjanak-szukseges-feltetele:
+    target:
+      type: theorem
+      name: csoporthomomorfizmus-magjanak-szukseges-feltetele
+  halmazrendszer-legkisebb-es-legnagyobb-eleme-egyertelmu:
+    target:
+      type: theorem
+      name: halmazrendszer-legkisebb-es-legnagyobb-eleme-egyertelmu
+  halmazrendszerek:
+    target:
+      type: definition
+      name: halmazrendszerek
+  kep-teljes-inverz-kep:
+    target:
+      type: definition
+      name: kep-teljes-inverz-kep
+  mellekosztalyok:
+    target:
+      type: theorem
+      name: mellekosztalyok
+  normaloszto:
+    target:
+      type: definition
+      name: normaloszto
+  reszcsoport-kepe:
+    target:
+      type: theorem
+      name: reszcsoport-kepe
+  reszcsoport-teljes-inverz-kepe:
+    target:
+      type: theorem
+      name: reszcsoport-teljes-inverz-kepe
+  reszhalmaz:
+    target:
+      type: definition
+      name: reszhalmaz
+content:
+  - type: narrative
+    content: |
+      ***Az 1. állítás:*** Itt tulajdonképpen két ***halmazrendszer*** (lásd a [halmazrendszerek]t) elemei között
+      kell kölcsönösen egyértelmű megfeleltetést létesíteni. Az első halmazrendszer tehát a $G$ csoport azon
+      részcsoportjaiból áll, amelyek tartalmazzák $N$-t, mint az $f$ csoporthomomorfizmus magját. Ezt jelöljük
+      $\mathcal{G}$-vel. A második halmazrendszer pedig $H$ összes részcsoportjaiból áll. Ezt jelöljük
+      $\mathcal{H}$-val.
+  - type: narrative
+    content: |
+      A [reszcsoport-kepe]ben már láttuk, hogy tetszőleges $G$-beli $K$ részcsoport $f$ szerinti képe részcsoport
+      $H$-ban, azaz $f(K)\leq H$. A [kep-teljes-inverz-kep] alapján $f(K)$ a ***legszűkebb*** olyan részcsoport
+      $H$-ban, amely $K$ minden elemének képét tartalmazza, és így a
+      [halmazrendszer-legkisebb-es-legnagyobb-eleme-egyertelmu] értelmében $f(K)$ egyértelműen meghatározott.
+      Mindez természetesen speciálisan igaz az $N$-et tartalmazó $G$-beli részcsoportokra is. Az a leképezés tehát,
+      amely tetszőleges $K\in \mathcal{G}$ részcsoportból képzi az $f(K)\in \mathcal{H}$ részcsoportot, tekinthető
+      egy $\mathcal{G}$-ből $\mathcal{H}$-ba mutató függvénynek is.
+  - type: narrative
+    content: |
+      ***Visszafelé:*** Mivel $f$ most ***szürjektív*** csoporthomomorfizmus, ezért minden $H$-beli elem legalább
+      egy $G$-beli elem képe, és így $H$ tetszőleges $L$ részcsoportjának ***létezik*** teljes inverz képe $G$-ben
+      (vesd össze a [kep-teljes-inverz-kep] utáni megjegyzéssel). A [reszcsoport-teljes-inverz-kepe] alapján ez a
+      bizonyos $f^{-1}(L)$-lel jelölt teljes inverz kép részcsoport $G$-ben. Ezenkívül $f^{-1}(L)$ a
+      ***legbővebb*** olyan részcsoport, amelynek minden elemének képe $L$-ben van, és így egyrészt a
+      [halmazrendszer-legkisebb-es-legnagyobb-eleme-egyertelmu] értelmében egyértelműen meghatározott. Másrészt
+      pedig mivel $L$ tartalmazza $H$ egységelemét &ndash; hiszen részcsoport $H$-ban &ndash;, ezért $f^{-1}(L)$
+      szükségképpen tartalmaz minden olyan $G$-beli elemet, amelyek erre az egységelemre képződnek. Ezek viszont
+      épp az $N$ homomorfizmus-magot alkotják, azaz $f^{-1}(L)$ tartalmazza $N$-et, és így benne van a
+      $\mathcal{G}$ halmazrendszerben. Így tehát az előző gondolatmenethez hasonlóan a teljes inverz kép képzése
+      tekinthető egy $\mathcal{H}$-ból $\mathcal{G}$-be mutató függvénynek.
+  - type: narrative
+    content: |
+      Most már tehát van egy $g:\mathcal{G}\to \mathcal{H}$, valamint egy $h:\mathcal{H}\to \mathcal{G}$
+      függvényünk a két halmazrendszer között. A ***kölcsönösen egyértelműséghez*** azt kell megmutatni, hogy e két
+      függvény épp egymás megfordítása. Ez azt jelenti, hogy bármilyen sorrendben is alkalmazzuk őket egymás után,
+      pontosan a kiinduló részcsoportot kell kapnunk eredményül.
+  - type: formula
+    lead-in: |
+      Azaz tetszőleges $K\in \mathcal{G}$ és $L\in \mathcal{H}$ esetén igazolnunk kell az alábbi hozzárendelések
+      érvényességét:
+    content: |
+      \begin{aligned}K&\xmapsto{g} f(K)\xmapsto{h} f^{-1}(f(K))=K \\ L&\xmapsto{h} f^{-1}(L) \xmapsto{g}
+      f(f^{-1}(L))=L\end{aligned}
+  - type: narrative
+    content: |
+      A ***második megfeleltetés*** nyilvánvalóan teljesül, hiszen a [kep-teljes-inverz-kep] utáni megjegyzés
+      alapján tetszőleges $L\in \mathcal{H}$ részcsoport teljes inverz képének képe maga $L$.
+  - type: narrative
+    content: |
+      Ezzel szemben az ***első megfeleltetés*** igazolásánál egy picit nehezebb dolgunk van, ugyanis a
+      [kep-teljes-inverz-kep] utáni megjegyzés szerint alapból nem mindig teljesül, hogy tetszőleges $K\leq G$
+      részcsoport képének teljes inverz képe maga $K$. Most viszont tudjuk, hogy $K\in \mathcal{G}$, azaz ő nem
+      akármilyen részcsoport, hanem olyan, amely tartalmazza az $f$ csoporthomomorfizmus $N$-nel jelölt magját.
+      Vezessük be az $L=f(K)$ jelölést. Ezek után azt kell tehát megmutatni, hogy ebben a speciális esetben mégis
+      fennáll a $K=f^{-1}(L)$ halmazegyenlőség, ami a [reszhalmaz] utáni megjegyzés 5. pontja alapján azt jelenti,
+      hogy e két halmaz kölcsönösen tartalmazza egymást.
+  - type: narrative
+    content: |
+      ***A $K\sube f^{-1}(L)$ tartalmazás*** a [kep-teljes-inverz-kep] utáni megjegyzésből következik, hiszen
+      $f(K)=L$, amiből e megjegyzés alapján $K\sube f^{-1}(L)$ következik.
+  - type: narrative
+    content: |
+      Most nézzük az $f^{-1}(L)\sube K$ tartalmazást. Legyen $a$ az $f^{-1}(L)$ tetszőleges eleme. Ekkor egyrészt a
+      [kep-teljes-inverz-kep] alapján az $a$ elem $f$ szerinti képe benne van $L$-ben, azaz $f(a)\in L$. Másrészt
+      $L=f(K)$ miatt a [kep-teljes-inverz-kep] alapján minden $L$-beli elem legalább egy $K$-beli elemnek a képe.
+      Ez speciálisan igaz az $f(a)\in L$ elemre is, azaz léteznie kell $K$-ban egy olyan $k$ elemnek, amelyre
+      $f(k)=f(a)$ teljesül.
+  - type: narrative
+    content: |
+      Ez viszont a [csoporthomomorfizmus-magjanak-szukseges-feltetele] 2. pontja alapján azt jelenti, hogy $a$
+      ugyanabban az $N$ szerinti baloldali mellékosztályban van, mint $k$, azaz $a\in kN$. Ezek szerint létezik
+      olyan $n\in N$, hogy $a=k\cdot n$. Most viszont tudjuk, hogy $N\sube K$, így ez a bizonyos $n$ benne van
+      egyúttal a $K$ részcsoportban is, következésképp az $a=k\cdot n$ szorzat is benne van $K$-ban, hiszen ő zárt
+      a szorzásra nézve. Vagyis valóban teljesül az $f^{-1}(L)\sube K$ tartalmazás, és így az $f^{-1}(L)=K$
+      halmazegyenlőség is.
+  - type: narrative
+    content: |
+      ***A 2. állítás:*** Az 1. állításhoz hasonlóan itt is két ***halmazrendszer*** elemei között kell kölcsönösen
+      egyértelmű megfeleltetést létesíteni. Az első halmazrendszer tehát a $K\leq G$ részcsoport szerinti baloldali
+      mellékosztályokból áll. Ezt jelöljük $\mathcal{K}$-val. A második halmazrendszer pedig az $L\leq H$
+      részcsoport szerinti baloldali mellékosztályokból áll. Ezt jelöljük $\mathcal{L}$-lel. Mutatnunk kell egy
+      $\mathcal{K}$ és $\mathcal{L}$ közötti ***kölcsönösen egyértelmű*** megfeleltetést. Ehhez azt a
+      [mellekosztalyok]ben szereplő ekvivalenciarelációt fogjuk használni, amely a baloldali mellékosztályokat
+      kijelöli a $G$ és a $H$ csoportokban.
+  - type: narrative
+    content: |
+      Legyen ezért $a$ és $b$ két tetszőleges elem $G$-ben. Ez a két elem a [mellekosztalyok] szerint akkor és csak
+      akkor van ugyanabban a $K$ részcsoport szerinti mellékosztályban, ha az $a^{-1}b$ szorzat benne van magában a
+      $K$ részcsoportban. Minthogy a $K$ részcsoport az $L$ részcsoport ***teljes inverz képe***, ezért az
+      $a^{-1}b$ szorzat akkor és csak akkor van benne $K$-ban, ha $f(a^{-1}b)$ benne van $L$-ben. Az $f$
+      csoporthomomorfizmus művelet- és inverzképzéstartó tulajdonságai miatt az $f(a^{-1}b)\in L$ állítás
+      ekvivalens az $(f(a))^{-1}f(b)\in L$ állítással. Ez viszont szintén a [mellekosztalyok] alapján akkor és csak
+      akkor teljesül, ha $f(a)$ ugyanabban az $L$ részcsoport szerinti baloldali mellékosztályban van, mint $f(b)$.
+  - type: narrative
+    content: |
+      ***Egyrészt*** tehát azt kaptuk, hogy egy adott $K$ szerinti baloldali mellékosztály összes elemének
+      ugyanabban az $L$ szerinti baloldali mellékosztályban lesz az $f$ szerinti képe. Az $f$ csoporthomomorfizmus
+      tehát ilymódon minden $\mathcal{K}$-beli baloldali mellékosztályhoz egyértelműen kijelöl egy
+      $\mathcal{L}$-beli baloldali mellékosztályt. Ez tekinthető egy $k:\mathcal{K} \to \mathcal{L}$
+      ***függvénynek*** is. Ha például $g\in G$ egy tetszőleges elem, akkor ez a függvény a $gK$ baloldali
+      mellékosztályhoz az $f(gK)$ halmazt rendeli hozzá, amely tehát épp az $f(g)L$ baloldali mellékosztály lesz,
+      azaz $k(gK)=f(g)L$.
+  - type: narrative
+    content: |
+      ***Továbbá*** a $k$ függvényről elmondható, hogy ***injektív***, hiszen azt is megkaptuk, hogy különböző $K$
+      szerinti baloldali mellékosztályba eső elemek $f$ szerinti képei különböző $L$ szerinti baloldali
+      mellékosztályokban lesznek. Ha tehát valamilyen $a$ és $b$ elemek esetén $k(aK)=k(bK)$, akkor ebből $aK=bK$
+      következik. Ez egyben azt is jelenti, hogy a $K$ szerinti mellékosztályok a hozzájuk tartozó $L$ szerinti
+      mellékosztályoknak valóban a ***teljes inverz képei***.
+  - type: narrative
+    content: |
+      ***Végül*** a $k$ függvény ***szürjektív*** is. Ugyanis a tétel szövege alapján az $f$ csoporthomomorfizmus
+      is az, és így bármely $h\in H$ elemhez van olyan $g\in G$, amelyre $f(g)=h$ teljesül. Így viszont a
+      $hL=f(g)L$ baloldali mellékosztályt épp a $gK$ baloldali mellékosztályhoz rendeli hozzá a $k$ függvény.
+      Vagyis valóban minden $L$ szerinti mellékosztály párja valamelyik $K$ szerinti mellékosztálynak, és így $k$
+      egy ***kölcsönösen egyértelmű*** megfeleltetés.
+  - type: narrative
+    content: |
+      ***A 3. állítás:*** Ugyanígy igazolható, csak ekkor a [mellekosztalyok]ben szereplő másik
+      ekvivalenciarelációt kell használni, amely a jobboldali mellékosztályokat jelöli ki.
+  - type: narrative
+    content: |
+      ***A 4. állítás:*** Tegyük fel, hogy $K$ normálosztó $G$-ben. Ez a [normaloszto] alapján azt jelenti, hogy a
+      $K$ szerinti bal- és jobboldali mellékosztályok megegyeznek, azaz tetszőleges $g\in G$ esetén $gK=Kg$. Ám
+      ekkor a ***2.*** és ***3. állítás*** bizonyításában szereplő $k$ megfeleltetés őhozzájuk az $f(g)L=Lf(g)$
+      mellékosztályokat rendeli, amelyek szintén megegyeznek. A $k$ függvény szürjektivitása miatt ilymódon minden
+      $L$ szerinti baloldali mellékosztályról megkaptuk, hogy megegyezik a megfelelő jobboldali mellékosztállyal,
+      azaz $L$ is normálosztó $H$-ban.
+  - type: narrative
+    content: |
+      Most tegyük fel, hogy $K$ nem normálosztó $G$-ben. Azaz létezik olyan $g\in G$, hogy $gK\eq Kg$. Ekkor
+      viszont $f(g)L\eq Lf(g)$ is igaz, máskülönben az ő teljes inverz képük, azaz $gK$ és $Kg$ mégiscsak
+      megegyezne. Így tehát $L$ sem normálosztó $H$-ban.
+  - type: narrative
+    content: |
+      Végül tegyük fel, hogy $K$ és $L$ normálosztók, és tekintsük a $G/K$ és a $H/L$ faktorcsoportokat. Ezek
+      elemei rendere a $K$ és az $L$ szerinti bal- illetve a velük megegyező jobboldali mellékosztályok. A ***2.***
+      és ***3. állítás*** bizonyításában szereplő, közöttük lévő $k$ megfeleltetésről már láttuk, hogy kölcsönösen
+      egyértelmű, ezért már csak azt kell megmutatni, hogy művelettartó is. Legyen tehát $aK$ és $bK$ két
+      tetszőleges baloldali mellékosztály a $G/K$ faktorcsoportban. Azt kell megmutatni, hogy az ő $k$ szerinti
+      megfelelőik szorzata a $H/L$ faktorcsoportban ugyanaz, mint a $G/K$ faktorcsoportban vett szorzatuk $k$
+      szerinti megfelelője.
+  - type: narrative
+    content: |
+      Az egyértelműség érdekében az alábbiakban a különböző csoportok műveleteit különböző szimbólumokkal jelöltük.
+  - type: formula
+    lead-in: |
+      Így $\odot$ jelöli a $G/K$ faktorcsoport, $\boxdot$ a $H/L$ faktorcsoport, $\cdot$ a $G$ csoport, végül
+      $\bullet$ a $H$ csoport szorzását:
+    content: |
+      \begin{aligned}k(aK) \boxdot k(bK)&=f(a)L \boxdot f(b)L=(f(a)\bullet f(b))L \\ k(aK \odot bK)&=k((a\cdot
+      b)K)=f(a\cdot b)L=(f(a)\bullet f(b))L\end{aligned}
+  - type: narrative
+    content: |
+      Mindkét esetben azonos végeredményt kaptunk, tehát a $k$ leképezés művelettartó, és így valóban egy
+      ***izomorfizmus*** a $G/K$ és $H/L$ faktorcsoportok között.

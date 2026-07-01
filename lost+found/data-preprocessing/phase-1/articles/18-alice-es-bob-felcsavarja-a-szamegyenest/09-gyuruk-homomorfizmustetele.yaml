@@ -1,0 +1,96 @@
+type: section
+name: 09-gyuruk-homomorfizmustetele
+title: Gyűrűk homomorfizmustétele
+
+references:
+  gyuruhomomorfizmus:
+    target:
+      type: definition
+      name: gyuruhomomorfizmus
+  gyuruhomomorfizmus-szerinti-kongruenciak-ekvivalenciajanak-feltetele:
+    target:
+      type: theorem
+      name: gyuruhomomorfizmus-szerinti-kongruenciak-ekvivalenciajanak-feltetele
+  idealok-es-gyuruhomomorfizmusok:
+    target:
+      type: theorem
+      name: idealok-es-gyuruhomomorfizmusok
+  maradekosztalygyuruk:
+    target:
+      type: theorem
+      name: maradekosztalygyuruk
+
+body:
+  - type: narrative
+    content: |
+      A fenti meglehetősen absztrakt fogalmakra most egy kézenfekvő példát mutatunk. Fentebb már előkerült a $3\Z$
+      halmaz, amely a $3$-mal osztható egész számokat tartalmazza. Erről már megállapítottuk, hogy ő egy ideál
+      $\Z$-ben. Mi történik, ha $\Z$-t ezzel az ideállal faktorizáljuk, azaz képezzük a $\Z/3\Z$
+      maradékosztálygyűrűt? Ennek 3 eleme lesz, méghozzá a $3\Z$ ideál szerinti maradékosztályok.
+  - type: narrative
+    content: |
+      A komplexusműveletekkel jelölve a 3 maradékosztály a következő: a $0+3\Z$, az $1+3\Z$ valamint a $2+3\Z$.
+      Ezek azokból az egész számokból fognak állni, amelyek $3$-mal osztva rendre $0$, $1$ illetve $2$ maradékot
+      adnak. Az ezek közötti műveleteket a [maradekosztalygyuruk] alapján könnyen elvégezhetjük. Például az $1+3\Z$
+      és a $2+3\Z$ maradékosztályok összege a $0+3\Z$, szorzata pedig a $2+3\Z$ maradékosztály lesz.
+  - type: formula
+    lead-in: |
+      Vezessük be a 3 maradékosztályra az alábbi jelöléseket:
+    content: |
+      \begin{aligned}[0]_3&=0+3\Z \\ [1]_3&=1+3\Z \\ [2]_3&=2+3\Z\end{aligned}
+  - type: formula
+    lead-in: |
+      Ekkor a $\Z/3\Z$ faktorgyűrű műveleti táblái így néznek ki:
+    content: |
+      \begin{array}{cc} \begin{array}{c|ccc} \oplus & [0]_3 & [1]_3 & [2]_3 \\ \hline [0]_3 & [0]_3 & [1]_3 & [2]_3
+      \\ [1]_3 & [1]_3 & [2]_3 & [0]_3 \\ [2]_3 & [2]_3 & [0]_3 & [1]_3 \end{array} &   \begin{array}{c|ccc} \odot
+      & [0]_3 & [1]_3 & [2]_3 \\ \hline [0]_3 & [0]_3 & [0]_3 & [0]_3 \\ [1]_3 & [0]_3 & [1]_3 & [2]_3 \\ [2]_3 &
+      [0]_3 & [2]_3 & [1]_3 \end{array} \end{array}
+  - type: narrative
+    content: |
+      Ha összehasonlítjuk ezeket a műveleti táblákat a fejezet elején bemutatott $Z_3$ gyűrű műveleti tábláival,
+      akkor azt tapasztaljuk, hogy szinte megegyeznek egymással. Algebrai szóhasználattal élve úgy tűnik, mintha a
+      $Z_3$ és $\Z/3\Z$ gyűrűk ***izomorfak*** lennének.
+  - type: formula
+    lead-in: |
+      Íme a $Z_3$ gyűrű műveleti táblái:
+    content: |
+      \begin{array}{cc}\begin{array}{c|ccc}\oplus &0&1&2\\ \hline 0&0&1&2 \\1&1&2&0\\2&2&0&1\end{array} &
+      \begin{array}{c|ccc}\odot &0&1&2\\ \hline 0&0&0&0 \\1&0&1&2\\2&0&2&1\end{array}\end{array}
+  - type: narrative
+    content: |
+      ***Ez nem véletlenül van így!*** Emlékezzünk csak vissza, hogy a $Z_3$ gyűrű tulajdonképpen nem más, mint
+      egy $\Z$-ből kiinduló ***gyűrűhomomorfizmus***, nevezetesen a $\bmod_3$ maradékképző függvény ***képe***.
+      Ráadásul ennek a gyűrűhomomorfizmusnak a ***magja*** épp a $3$-mal osztható egész számok halmaza, azaz $3\Z$.
+      Ez éppenséggel az az ***ideál***, amelynek a segítségével a $\Z/3\Z$ faktorgyűrűt képeztük.
+  - type: narrative
+    content: |
+      Az alábbi tétel szerint általánosságban is igaz, hogyha egy $R$ gyűrűt egy belőle kiinduló $f$
+      gyűrűhomomorfizmus ***magjával*** faktorizálunk, akkor az így kapott faktorgyűrű ***izomorf*** lesz $f$
+      ***képével***.
+  - type: embed
+    target:
+      type: theorem
+      name: gyuruk-homomorfizmustetele
+  - type: embed
+    target:
+      type: proof
+      name: gyuruk-homomorfizmustetele-bizonyitas
+  - type: narrative
+    content: |
+      Ennek alkalmazásához most visszautalnánk a
+      [gyuruhomomorfizmus-szerinti-kongruenciak-ekvivalenciajanak-feltetele] kapcsán felvetett példára. Ez a tétel
+      szólt arról, hogy egy $f$ gyűrűhomomorfizmus szerinti kongruenciát kizárólag $f$ magja, nem pedig maga $f$
+      határoz meg. Ennek demonstrálásához képeztünk két különböző, de azonos magú gyűrűhomomorfizmust az egész
+      számok $\Z$ gyűrűjéből két másik gyűrűre. Ezek közül az egyik a már jól ismert kételemű $Z_2$ gyűrű volt. A
+      másik gyűrűt akkor $P$-vel jelöltük, és alaphalmaza az $e$ és $o$ betűket tartalmazta. Ennek a meglehetősen
+      mesterkélt gyűrűnek a műveleteit a műveleti tábláival adtuk meg. Azt tapasztaltuk, hogy a két gyűrű csak az
+      elemek elnevezésében és a használt műveleti jelekben tért el egymástól, de ezeken kívül teljesen ugyanaz volt
+      a szerkezetük. Azaz ***izomorfak*** voltak egymással.
+  - type: narrative
+    content: |
+      Nos, ez az imént bizonyított ***homomorfizmustétel következménye***. A $Z_2$ és $P$ gyűrűkbe mutató két
+      gyűrűhomomorfizmusnak ugyanis megegyezett a magja, amely ugye &ndash; mint ahogy azt a
+      [idealok-es-gyuruhomomorfizmusok] alapján már tudjuk &ndash; egy ***ideál*** a $\Z$ gyűrűben. Következésképp
+      a homomorfizmustétel miatt mindkét gyűrű izomorf a $\Z$ gyűrű ezen ideál szerinti faktorgyűrűjével, és így a
+      [gyuruhomomorfizmus] utáni megjegyzés alapján egymással is.

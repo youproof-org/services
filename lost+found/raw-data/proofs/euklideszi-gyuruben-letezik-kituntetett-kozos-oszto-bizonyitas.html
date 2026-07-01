@@ -1,0 +1,35 @@
+<!-- wp:paragraph -->
+<p>A bizonyításhoz az <strong><em>euklidészi algoritmus általánosított változatát</em></strong> fogjuk felhasználni. Legyen [latex]a[/latex] és [latex]b[/latex] az [latex]R[/latex] integritástartomány két tetszőleges eleme, és jelöljük [latex]0_R[/latex]-rel a nullelemet, [latex]0[/latex]-val pedig a „nulla” természetes számot. Ha [latex]a[/latex] vagy [latex]b[/latex] közül bármelyik [latex]0_R[/latex], akkor létezik kitüntetett közös osztójuk. Ha mindkettő [latex]0_R[/latex], akkor a [yp_element slug="kituntetett-kozos-oszto-tulajdonsagai" type="link" /] 1. pontja miatt. Ha pedig csak az egyikük, akkor viszont – mivel minden euklidészi gyűrű a [yp_element slug="euklideszi-gyuru" type="link" /] alapján <strong><em>egységelemes</em></strong> – ugyanezen tétel 4. pontja miatt.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Feltételezhetjük tehát, hogy [latex]a\
+eq 0_R[/latex] és [latex]b\
+eq 0_R[/latex]. Mivel [latex]R[/latex] euklidészi gyűrű, ezért értelmezhető rajta valamilyen [latex]f[/latex] euklidészi norma. Ekkor [latex]a[/latex] és [latex]b[/latex] között elvégezhető a maradékos osztás az [latex]f[/latex] norma szerint. Azaz létezik [latex]k_1[/latex] hányados és [latex]r_1[/latex] maradék [latex]R[/latex]-ben úgy, hogy egyrészt fennálljon az [latex]f(r_1)&lt;f(b)[/latex] szigorú egyenlőtlenség, másrészt teljesüljön az alábbi egyenlet:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a=k_1b+r_1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha [latex]f(r_1)=0[/latex], akkor az euklidészi norma [yp_element slug="euklideszi-gyuru" type="link" /]ja miatt [latex]r_1=0_R[/latex], és így a [yp_element slug="euklideszi-algoritmus-alapgondolata" type="link" /], valamint a [yp_element slug="kituntetett-kozos-oszto-tulajdonsagai" type="link" /] 4. pontja alapján [latex]b[/latex] lesz a kitüntetett közös osztó, hiszen [latex](a,b)=(b,r_1)=(b,0_R)=b[/latex]. Ha [latex]f(r_1)\
+eq 0[/latex], akkor [latex]r_1\
+eq 0_R[/latex], és így [latex]b[/latex] és [latex]r_1[/latex] között ismét el tudjuk végezni az [latex]f[/latex] norma szerinti maradékos osztást.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezt az eljárást mindaddig folytatjuk, amíg meg nem kapjuk a nullelemet maradékként valamelyik lépésben. Ekkor – szintén a [yp_element slug="euklideszi-algoritmus-alapgondolata" type="link" /], valamint a [yp_element slug="kituntetett-kozos-oszto-tulajdonsagai" type="link" /] 4. pontja miatt – az utolsó olyan maradék lesz a kitüntetett közös osztó, amely nem a nullelem.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az eljárás garantáltan véget fog érni véges számú lépés után, máskülönben a maradékos osztások során előállna az alábbi, természetes számokból álló végtelen sorozat:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f(b)\gt f(r_1)\gt f(r_2)\gt f(r_3)\gt \ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez a [yp_element slug="egesz-szamok-szigoru-rendezese-tranzitiv" type="link" /] miatt [latex]\N[/latex]-nek egy olyan részhalmaza lenne, amelynek nincs minimuma. Ez viszont a [yp_element slug="termeszetes-szamok-minimumtetele" type="link" /] miatt lehetetlen, így az euklidészi algoritmus garantáltan leáll véges számú lépés után, és előállítja az [latex]a[/latex] és [latex]b[/latex] kitüntetett közös osztóját, amely az utolsó nemnulla maradék lesz.</p>
+<!-- /wp:paragraph -->

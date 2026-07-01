@@ -1,0 +1,10 @@
+type: theorem
+name: ciklikus-csoportok-strukturatetele
+proofs:
+  - ciklikus-csoportok-strukturatetele-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Egy $G$ csoport ***akkor és csak akkor ciklikus***, ha izomorf a $\Z^+$ vagy valamilyen $m\geq 0$ nemnegatív
+      egész szám esetén a $(\Z/m\Z)^+$ csoporttal.

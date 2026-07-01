@@ -1,0 +1,15 @@
+type: theorem
+name: asszocialtsag-es-egysegek-kapcsolata
+proofs:
+  - asszocialtsag-es-egysegek-kapcsolata-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Egy ***kommutatív, egységelemes és nullosztómentes gyűrűben*** két elem ***akkor és csak akkor***
+      asszociáltjai egymásnak, ha az egyik a másiknak egységszerese.
+  - type: narrative
+    content: |
+      Amennyiben a gyűrű ***csak kommutatív és egységelemes***, de nem feltétlenül nullosztómentes, úgy csak annyit
+      tudunk mondani, hogy ha két elem közül az egyik a másiknak egységszerese, akkor ők asszociáltak. Ebben az
+      esetben az asszociáltságból még nem következik, hogy az egyik a másiknak egységszerese.
