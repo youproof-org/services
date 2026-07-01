@@ -448,11 +448,11 @@ is a generic Cloudflare-infra pipeline, structured to grow. A `changes` job
 - **`zone`** — applies `terraform/zone/`. Runs only when `zone/**` changed and
   only from `stable/production` (it owns account-level shared infra); plan-only
   on PRs. Bound to the `production` GitHub Environment.
-- **`worker`** — a matrix over `[staging, production]`; each entry runs only for
-  its branch (`stable/staging` → staging, `stable/production` → production; PRs
-  run staging as a plan-only review gate). Steps: install → validate-manifest →
-  typecheck → build → `terraform init` (per-env state key) → fmt check → plan →
-  apply. Bound to the matching GitHub Environment.
+- **`worker`** — deploys the Worker; the target environment is derived from the
+  branch (`stable/production` push → production; otherwise staging — i.e. a
+  `stable/staging` push, or a PR as a plan-only review gate). Steps: install →
+  validate-manifest → typecheck → build → `terraform init` (per-env state key) →
+  fmt check → plan → apply. Bound to the matching GitHub Environment.
 - **`guard`** — runs on every PR and **fails if a PR touches `terraform/zone/**`
   together with anything else** (see the zone-promotion note below).
 

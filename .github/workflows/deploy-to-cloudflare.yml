@@ -125,32 +125,25 @@ jobs:
         working-directory: ${{ env.TF_WORKDIR }}
         run: terraform apply -input=false -auto-approve tfplan
 
-  # Per-environment Worker deploy. One matrix definition, but each entry only
-  # runs for its matching branch (or, on PRs, staging only as the review gate).
+  # Worker deploy. The target environment is derived from the branch: production
+  # only on a push to stable/production, staging otherwise (a staging push, or a
+  # PR as a plan-only review gate). No matrix — each trigger maps to exactly one
+  # environment, and `matrix` isn't an available context in a job-level `if`.
   worker:
     needs: changes
-    strategy:
-      fail-fast: false
-      matrix:
-        env: [staging, production]
-    if: >-
-      needs.changes.outputs.worker == 'true' && (
-        (github.event_name == 'pull_request' && matrix.env == 'staging') ||
-        (github.ref == 'refs/heads/stable/staging' && matrix.env == 'staging') ||
-        (github.ref == 'refs/heads/stable/production' && matrix.env == 'production')
-      )
+    if: needs.changes.outputs.worker == 'true'
     runs-on: ubuntu-latest
     # Binds to the GitHub Environment so only that environment's secrets/vars are
     # visible — production values are never available to the staging run.
-    environment: ${{ matrix.env }}
+    environment: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/stable/production') && 'production' || 'staging' }}
     env:
-      ENVIRONMENT: ${{ matrix.env }}
+      ENVIRONMENT: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/stable/production') && 'production' || 'staging' }}
       TF_WORKDIR: infra/cloudflare/terraform/worker
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       # Terraform variables from environment-scoped GitHub vars/secrets (no
       # -var-file in CI, so nothing per-environment is committed and values never
       # cross over). The committed environments/*.tfvars.example are local-only.
-      TF_VAR_environment: ${{ matrix.env }}
+      TF_VAR_environment: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/stable/production') && 'production' || 'staging' }}
       TF_VAR_cloudflare_account_id: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
       # The zone ID is read from the zone root's remote state (data.tf), not
       # passed in — the worker job only needs the state bucket name to find it.
