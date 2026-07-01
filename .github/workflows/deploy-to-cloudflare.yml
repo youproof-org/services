@@ -47,17 +47,18 @@ jobs:
         id: filter
         with:
           filters: |
+            # These gate the PR plan jobs only (pushes deploy by branch). The
+            # workflow file is intentionally NOT listed, so a workflow-only change
+            # doesn't cross-trigger a zone/worker plan (which would fail if that
+            # root isn't present on the base branch).
             zone:
               - 'infra/cloudflare/terraform/zone/**'
-              - '.github/workflows/deploy-to-cloudflare.yml'
             worker:
               - 'infra/cloudflare/terraform/worker/**'
               - 'infra/cloudflare/worker/**'
-              - '.github/workflows/deploy-to-cloudflare.yml'
-            # Guard inputs (see the `guard` job): zone_src = zone sources only
-            # (excludes the workflow file, so a workflow-only PR isn't flagged);
-            # not_zone = any changed file outside the zone root. dorny sets
-            # picomatch dot:true, so `**` also matches dotfiles / dot-dirs.
+            # Guard inputs (see the `guard` job): zone_src = zone sources; not_zone
+            # = any changed file outside the zone root. dorny sets picomatch
+            # dot:true, so `**` also matches dotfiles / dot-dirs.
             zone_src:
               - 'infra/cloudflare/terraform/zone/**'
             not_zone:
@@ -184,7 +185,10 @@ jobs:
           cache: pnpm
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        # Install only the worker package's subtree — a full-workspace install runs
+        # apps/website's postinstall (check-latex), which fails on runners without
+        # TeX. The worker is self-contained here.
+        run: pnpm install --frozen-lockfile --filter @youproof.org/migration-worker...
 
       - name: Validate manifest
         run: pnpm --filter @youproof.org/migration-worker run validate-manifest
