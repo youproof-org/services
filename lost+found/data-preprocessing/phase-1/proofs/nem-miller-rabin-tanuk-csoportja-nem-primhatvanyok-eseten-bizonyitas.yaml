@@ -1,0 +1,435 @@
+type: proof
+name: nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten-bizonyitas
+remarks: []
+references:
+  egesz-szam-p-adikus-rendje:
+    target:
+      type: definition
+      name: egesz-szam-p-adikus-rendje
+  egesz-szamok-kozotti-kongruencia-tulajdonsagai:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia-tulajdonsagai
+  egesz-szamok-maradekosztalygyurui:
+    target:
+      type: theorem
+      name: egesz-szamok-maradekosztalygyurui
+  euler-fermat-tetel-megforditasa:
+    target:
+      type: theorem
+      name: euler-fermat-tetel-megforditasa
+  gyuruk-direkt-szorzata:
+    target:
+      type: theorem
+      name: gyuruk-direkt-szorzata
+  hatvanyozas-azonossagai:
+    target:
+      type: theorem
+      name: hatvanyozas-azonossagai
+  kinai-maradektetel:
+    target:
+      type: theorem
+      name: kinai-maradektetel
+  maradekosztalygyuruk-dekompozicioja:
+    target:
+      type: theorem
+      name: maradekosztalygyuruk-dekompozicioja
+  miller-rabin-tanu:
+    target:
+      type: definition
+      name: miller-rabin-tanu
+  oszthatosag-es-rendezesi-relacio-kapcsolata:
+    target:
+      type: theorem
+      name: oszthatosag-es-rendezesi-relacio-kapcsolata
+  redukalt-maradekosztaly-feltetele:
+    target:
+      type: theorem
+      name: redukalt-maradekosztaly-feltetele
+  reszcsoport-feltetele-veges-csoportok-eseten:
+    target:
+      type: theorem
+      name: reszcsoport-feltetele-veges-csoportok-eseten
+content:
+  - type: formula
+    lead-in: |
+      Előszöris nyilván létezik ***legalább egy*** a tételben említett feltételnek megfelelő $j$ kitevő, hiszen
+      például $j=0$ és $x=-1$ választással teljesül az alábbi kongruencia:
+    content: |
+      (\underbrace{-1}_{=x})^{2^{\overbrace{0}^{=j}}}\equiv -1\pmod n
+  - type: narrative
+    content: |
+      Tehát az ilyen kitevők között ***létezik legnagyobb*** is, amelyet ugye $j_{\text{max}}$-szal jelöltünk.
+  - type: narrative
+    content: |
+      ***Nézzük először az 1. állítást***, és mutassuk meg, hogy a $H_n$-ben lévő összes $[a]_n$ maradékosztály
+      ***redukált***.
+  - type: formula
+    lead-in: |
+      A $H_n$ halmaz definíciója miatt:
+    content: |
+      a^{2^{j_{\text{max}}}k} \equiv \pm 1\pmod n
+  - type: formula
+    lead-in: |
+      Akár $1$, akár $-1$ szerepel a jobboldalon, a kongruenciát négyzetre emelve a következőt kapjuk:
+    content: |
+      a^{2^{j_{\text{max}}+1}k} \equiv 1\pmod n
+  - type: narrative
+    content: |
+      Találtunk tehát egy olyan pozitív kitevőt &ndash; nevezetesen $2^{j_{\text{max}}+1}k$-t &ndash; amelyre
+      emelve $a$-t az eredmény kongruens lesz $1$-gyel modulo $n$. Ebből viszont a
+      [euler-fermat-tetel-megforditasa] alapján következik, hogy $a$ relatív prím $n$-hez, azaz a
+      [redukalt-maradekosztaly-feltetele] értelmében $[a]_n$ ***redukált maradékosztály***. Ezzel igazoltuk a tétel
+      ***1. állítását***.
+  - type: narrative
+    content: |
+      A ***2. állítás*** igazolásához a [reszcsoport-feltetele-veges-csoportok-eseten] értelmében azt kell
+      megmutatni, hogy $H_n$ ***nemüres*** és ***zárt*** a maradékosztályok közötti szorzásra, azaz a
+      $(\Z/n\Z)^{\times}$ csoport műveletére nézve. Mivel $1^{2^{j_{\text{max}}}k}\equiv 1\pmod n$, ezért a tétel
+      szövege alapján $H_n$ ***nemüres***, hiszen tartalmazza legalább az $[1]_n$ maradékosztályt. Legyen most
+      $[a]_n$ és $[b]_n$ a $H_n$ halmaz két tetszőleges eleme.
+  - type: formula
+    lead-in: |
+      A $H_n$ halmaz definíciója miatt ekkor teljesülnek az alábbi kongruenciák:
+    content: |
+      \begin{aligned}a^{2^{j_{\text{max}}}k} &\equiv \pm 1\pmod n \\ b^{2^{j_{\text{max}}}k} &\equiv \pm 1\pmod
+      n\end{aligned}
+  - type: narrative
+    content: |
+      A [egesz-szamok-kozotti-kongruencia-tulajdonsagai] 5. pontja szerint ez a két kongruencia összeszorozható.
+  - type: formula
+    lead-in: |
+      Ekkor a [hatvanyozas-azonossagai] 1. pontjának alkalmazása után ezt kapjuk:
+    content: |
+      (ab)^{2^{j_{\text{max}}}k} \equiv \pm 1\pmod n
+  - type: narrative
+    content: |
+      Azt kaptuk tehát, hogy az $[ab]_n$ maradékosztály is a $H_n$ halmaz eleme. Minthogy az $[ab]_n$
+      maradékosztály a [egesz-szamok-maradekosztalygyurui]ben bevezetett műveletek definíciója alapján épp az
+      $[a]_n$ és $[b]_n$ maradékosztályok szorzata, ezért $H_n$ zárt a $(\Z/n\Z)^{\times}$ multiplikatív csoport
+      műveletére nézve, azaz a [reszcsoport-feltetele-veges-csoportok-eseten] értelmében annak valóban
+      ***részcsoportja***. Ezzel igazoltuk a tétel ***2. állítását***.
+  - type: narrative
+    content: |
+      A ***3. állítás*** igazolásához tekintsünk egy tetszőleges $[a]_n$ maradékosztályt, amely ***nem
+      Miller-Rabin-tanú***.
+  - type: formula
+    lead-in: |
+      Ekkor a Miller-Rabin-tanúk [miller-rabin-tanu]ja alapján vagy teljesül az $a^k\equiv 1\pmod n$ kongruencia,
+      vagy pedig létezik olyan $j$ kitevő a $\{0; 1;2; \ldots ; e-1\}$ számok között, amelyre teljesül az alábbi
+      kongruencia:
+    content: |
+      a^{2^j\cdot k}\equiv -1\pmod n
+  - type: formula
+    lead-in: |
+      Amennyiben az $a^k\equiv 1\pmod n$ kongruencia teljesül, akkor mindkét oldalt $j_{\text{max}}$-szor négyzetre
+      emelve, továbbá alkalmazva a [hatvanyozas-azonossagai] 2. pontját, az alábbit kapjuk:
+    content: |
+      a^{2^{j_{\text{max}}}k}\equiv 1\pmod n
+  - type: narrative
+    content: |
+      Következésképp az $[a]_n$ maradékosztály benne van a $H_n$ halmazban.
+  - type: narrative
+    content: |
+      Most nézzük meg, mi a helyzet akkor, ha nem teljesül az $a^k\equiv 1\pmod n$ kongruencia.
+  - type: formula
+    lead-in: |
+      Ekkor ugye &ndash; mint már említettük &ndash; létezik olyan $j$ kitevő a $\{0; 1;2; \ldots ; e-1\}$ számok
+      között, amelyre teljesül az alábbi kongruencia:
+    content: |
+      a^{2^j\cdot k}\equiv -1\pmod n
+  - type: formula
+    lead-in: |
+      Alkalmazva a hatványozás azonosságairól szóló [hatvanyozas-azonossagai] 2. pontját ez így írható fel:
+    content: |
+      (a^k)^{2^j}\equiv -1\pmod n
+  - type: narrative
+    content: |
+      Az $a^k$ tehát egy olyan egész szám, amelyet a $2$-nek a $j$-edik hatványára, mint kitevőre emelve egy olyan
+      egész számot kapunk, amely $-1$-gyel kongruens modulo $n$. A tétel szövegében bevezetett $j_{\text{max}}$
+      definíciója alapján ekkor $j\leq j_{\text{max}}$.
+  - type: formula
+    lead-in: |
+      Amennyiben egyenlőség áll fenn, azaz $j=j_{\text{max}}$, akkor teljesül az alábbi kongruencia:
+    content: |
+      a^{2^{\overbrace{j}^{=j_{\text{max}}}}\cdot k}\equiv -1\pmod n
+  - type: narrative
+    content: |
+      Ez a $H_n$ halmaz definíciója alapján azt jelenti, hogy $[a]_n\in H_n$.
+  - type: narrative
+    content: |
+      Amennyiben nem áll fenn egyenlőség, akkor $j\lt j_{\text{max}}$.
+  - type: formula
+    lead-in: |
+      Az alábbi kongruenciáról ugye már tudjuk, hogy teljesül:
+    content: |
+      (a^k)^{2^j}\equiv -1\pmod n
+  - type: formula
+    lead-in: |
+      Mindkét oldalt sorozatosan négyzetre emelve az alábbi kongruenciákat kapjuk:
+    content: |
+      \begin{aligned}(a^k)^{2^{j+1}}&\equiv 1\pmod n \\ (a^k)^{2^{j+2}}&\equiv 1\pmod n \\ (a^k)^{2^{j+3}}&\equiv
+      1\pmod n \\ &\vdots \end{aligned}
+  - type: formula
+    lead-in: |
+      Mivel $j\lt j_{\text{max}}$, ezért a sorozatos négyzetre emelések hatására előbb-utóbb a alábbi kongruenciát
+      fogjuk kapni:
+    content: |
+      (a^k)^{2^{j_{\text{max}}}}\equiv 1\pmod n
+  - type: formula
+    lead-in: |
+      Alkalmazva a hatványozás azonosságairól szóló [hatvanyozas-azonossagai] 2. pontját ez így írható fel:
+    content: |
+      a^{2^{j_{\text{max}}}k}\equiv 1\pmod n
+  - type: narrative
+    content: |
+      Ez a $H_n$ halmaz definíciója alapján ugyancsak azt jelenti, hogy $[a]_n\in H_n$. Igazoltuk tehát a tétel
+      ***3. állítását***, miszerint minden nem Miller-Rabin-tanú a $H_n$ részcsoportban van.
+  - type: narrative
+    content: |
+      Végül a ***4. állításhoz*** azt kell igazolni, hogy $H_n$ valódi részcsoport $(\Z/n\Z)^{\times}$-ben, azaz
+      találni kell egy olyan redukált maradékosztályt, amely nincs benne $H_n$-ben. Az $n$-ről a tétel szövegében
+      kikötöttük, hogy ő egy olyan $1$-nél nagyobb páratlan összetett szám, amelynek ***legalább két*** egymástól
+      különböző ***prímtényezője van***. Legyen $n$ egyik prímtényezője $p$.
+  - type: formula
+    lead-in: |
+      Ekkor létezik olyan $c\geq 1$ kitevő és $m\gt 1$ páratlan egész szám, hogy egyrészt $m$ tovább már nem
+      osztható $p$-vel, másrészt pedig $n$ felírható az alábbi alakban:
+    content: |
+      n=p^cm
+  - type: narrative
+    content: |
+      A [egesz-szam-p-adikus-rendje] alapján úgy is mondhatjuk, hogy az $n$ egész szám ***$p$-adikus rendje***
+      $c\geq 1$.
+  - type: narrative
+    content: |
+      Ekkor $p^c$-nek és $m$-nek nincs közös prímtényezője, mert ha lenne, akkor az csak $p$ valamilyen nulladiknál
+      nagyobb hatványa lehetne, és így az $n$ egész szám $p$-adikus rendje biztosan nagyobb lenne $c$-nél. Így
+      tehát $p^c$ és $m$ ***relatív prímek***.
+  - type: formula
+    lead-in: |
+      Ebben az esetben érvényes a ***kínai maradéktétel*** ([kinai-maradektetel]), amelynek következményeként a
+      [maradekosztalygyuruk-dekompozicioja] alapján fennáll az alábbi ***gyűrűizomorfizmus***:
+    content: |
+      \Z/n\Z \simeq \Z/p^c\Z \times \Z/m\Z
+  - type: formula
+    lead-in: |
+      A tétel szövegéből tudjuk, hogy a $j_{\text{max}}$ kitevőhöz létezik olyan egész szám, amelyet $x$ helyére
+      behelyettesítve teljesül az alábbi kongruencia:
+    content: |
+      x^{2^{j_{\text{max}}}}\equiv -1\pmod n
+  - type: narrative
+    content: |
+      Jelöljük az egyik ilyen egész számot $s$-sel, és tekintsük az $[s]_n$ maradékosztályt a $\Z/n\Z$ gyűrűben.
+  - type: formula
+    lead-in: |
+      Neki a [maradekosztalygyuruk-dekompozicioja]ben szereplő $g$ gyűrűizomorfizmus az alábbi maradékosztálypárt
+      felelteti meg a $\Z/p^c\Z \times \Z/m\Z$ gyűrűben:
+    content: |
+      [s]_n \xmapsto{g} ([s]_{p^c};[s]_m)
+  - type: narrative
+    content: |
+      Ha a baloldali $[s]_n$ maradékosztályt a $2^{j_{\text{max}}}k$-adik hatványra emeljük a $\Z/n\Z$ gyűrűben,
+      akkor a $g$ gyűrűizomorfizmus a művelettartó tulajdonság miatt ehhez épp a jobboldali maradékosztálypárnak a
+      $\Z/p^c\Z \times \Z/m\Z$ gyűrűben vett $2^{j_{\text{max}}}k$-adik hatványát fogja hozzárendelni.
+  - type: formula
+    lead-in: |
+      Azaz:
+    content: |
+      [s]_n^{2^{j_{\text{max}}}k} \xmapsto{g} ([s]_{p^c};[s]_m)^{2^{j_{\text{max}}}k}
+  - type: formula
+    lead-in: |
+      A jobboldalon szereplő szorzatgyűrűbeli szorzást &ndash; és így a hatványozást &ndash; a
+      [gyuruk-direkt-szorzata] alapján komponensenként kell elvégezni, azaz:
+    content: |
+      [s]_n^{2^{j_{\text{max}}}k} \xmapsto{g} ([s]_{p^c}^{2^{j_{\text{max}}}k};[s]_m^{2^{j_{\text{max}}}k})
+  - type: formula
+    lead-in: |
+      A maradékosztályok közötti szorzást &ndash; és így a hatványozást &ndash; viszont a
+      [egesz-szamok-maradekosztalygyurui] szerint a reprezentánselemeken kell elvégezni, azaz:
+    content: |
+      [s^{2^{j_{\text{max}}}k}]_n \xmapsto{g} ([s^{2^{j_{\text{max}}}k}]_{p^c};[s^{2^{j_{\text{max}}}k}]_m)
+  - type: narrative
+    content: |
+      A baloldalon szereplő modulo $n$ maradékosztály reprezentánseleme tehát $s^{2^{j_{\text{max}}}k}$, amely a
+      hatványozás azonosságairól szóló [hatvanyozas-azonossagai] 2. pontja alapján $(s^{2^{j_{\text{max}}}})^k$-val
+      egyezik meg.
+  - type: formula
+    lead-in: |
+      Az $s$ definíciójából tudjuk azonban, hogy:
+    content: |
+      s^{2^{j_{\text{max}}}}\equiv -1\pmod n
+  - type: formula
+    lead-in: |
+      Mindkét oldalt $k$-adik hatványra emelve a kongruencia jobboldalán továbbra is $-1$ marad, hiszen $k$ a tétel
+      szövege alapján páratlan:
+    content: |
+      s^{2^{j_{\text{max}}}k}\equiv \underbrace{-1}_{=(-1)^k}\pmod n
+  - type: narrative
+    content: |
+      Vagyis a fenti $g$ szerinti hozzárendelés baloldalán tulajdonképpen a $[-1]_n$ maradékosztály szerepel.
+  - type: formula
+    lead-in: |
+      Ám ekkor a $g$ gyűrűizomorfizmus [maradekosztalygyuruk-dekompozicioja]ben szereplő definíciója alapján a
+      jobboldalon pedig a $([-1]_{p^c};[-1]_m)$ maradékosztálypár kell szerepeljen:
+    content: |
+      \underbrace{[s^{2^{j_{\text{max}}}k}]_n}_{=[-1]_n} \xmapsto{g}
+      (\underbrace{[s^{2^{j_{\text{max}}}k}]_{p^c}}_{=[-1]_{p^c}};\underbrace{[s^{2^{j_{\text{max}}}k}]_m}_{=[-1]_m})
+  - type: formula
+    lead-in: |
+      Vagyis azt kaptuk, hogy az $s^{2^{j_{\text{max}}}k}$ hatvány $-1$-gyel kongruens modulo $p^c$ is, azaz:
+    content: |
+      s^{2^{j_{\text{max}}}k}\equiv -1\pmod{p^c}
+  - type: narrative
+    content: |
+      Ezt a kongruenciát hamarosan felhasználjuk, amikoris a $g$ gyűrűizomorfizmus segítségével megmutatjuk, hogy
+      létezik olyan $X\in \Z/n\Z$ redukált maradékosztály, amely nincs benne $H_n$-ben. A $H_n$ definíciója alapján
+      ez a keresett $X$ maradékosztály pontosan akkor nincs benne $H_n$-ben, ha az ő $\Z/n\Z$ gyűrűben vett
+      $2^{j_{\text{max}}}k$-adik hatványa különbözik mind az $[1]_n$, mind pedig a $[-1]_n$ maradékosztálytól.
+  - type: formula
+    lead-in: |
+      Legyen ez a keresett $X$ az a maradékosztály, amely esetén a $g$ gyűrűizomorfizmus épp az alábbi
+      hozzárendelést valósítja meg:
+    content: |
+      X \xmapsto{g} ([s]_{p^c};[1]_m)
+  - type: narrative
+    content: |
+      Ilyen $X$ ugye létezik, hiszen $g$ ***kölcsönösen egyértelmű*** leképezés, azaz minden $\Z/p^c\Z \times
+      \Z/m\Z$-beli maradékosztálypárt hozzárendeli valamelyik $\Z/n\Z$-beli maradékosztályhoz &ndash; jelen esetben
+      az $([s]_{p^c};[1]_m)$ párt $X$-hez.
+  - type: formula
+    lead-in: |
+      A $g$ ***művelettartó tulajdonsága*** alapján ekkor teljesül az alábbi hozzárendelés is:
+    content: |
+      X^{2^{j_{\text{max}}}k} \xmapsto{g} ([s]_{p^c};[1]_m)^{2^{j_{\text{max}}}k}
+  - type: formula
+    lead-in: |
+      A jobboldalon szereplő szorzatgyűrűbeli szorzást &ndash; és így a hatványozást &ndash; a
+      [gyuruk-direkt-szorzata] alapján komponensenként kell elvégezni, azaz:
+    content: |
+      X^{2^{j_{\text{max}}}k} \xmapsto{g} ([s]_{p^c}^{2^{j_{\text{max}}}k};[1]_m^{2^{j_{\text{max}}}k})
+  - type: formula
+    lead-in: |
+      A maradékosztályok közötti szorzást &ndash; és így a hatványozást &ndash; viszont a
+      [egesz-szamok-maradekosztalygyurui] szerint a reprezentánselemeken kell elvégezni, azaz:
+    content: |
+      X^{2^{j_{\text{max}}}k} \xmapsto{g}
+      ([s^{2^{j_{\text{max}}}k}]_{p^c};[\underbrace{1^{2^{j_{\text{max}}}k}}_{=1}]_m)
+  - type: formula
+    lead-in: |
+      Azt azonban már tudjuk, hogy teljesül az alábbi kongruencia:
+    content: |
+      s^{2^{j_{\text{max}}}k}\equiv -1\pmod{p^c}
+  - type: formula
+    lead-in: |
+      Így tehát a fenti $g$ szerinti hozzárendelés valójában az alábbi:
+    content: |
+      X^{2^{j_{\text{max}}}k} \xmapsto{g} ([-1]_{p^c};[1]_m)
+  - type: narrative
+    content: |
+      Így viszont a baloldalon szereplő $X^{2^{j_{\text{max}}}k}$ hatvány biztosan nem lehet az $[1]_n$
+      maradékosztály.
+  - type: formula
+    lead-in: |
+      Ebben az esetben ugyanis a $g$ gyűrűizomorfizmus a [maradekosztalygyuruk-dekompozicioja] alapján az alábbi
+      hozzárendelést valósítaná meg:
+    content: |
+      \underbrace{[1]_n}_{=X^{2^{j_{\text{max}}}k}} \xmapsto{g}
+      \underbrace{([1]_{p^c};[1]_m)}_{=([-1]_{p^c};[1]_m)}
+  - type: formula
+    lead-in: |
+      Ez csak akkor volna lehetséges, ha $[1]_{p^c}=[-1]_{p^c}$ teljesülne, azaz fennállna az alábbi kongruencia:
+    content: |
+      1\equiv -1\pmod{p^c}
+  - type: formula
+    lead-in: |
+      Ez viszont azt jelentené, hogy teljesül az alábbi oszthatóság:
+    content: |
+      p^c|\underbrace{1-(-1)}_{=2}
+  - type: narrative
+    content: |
+      Ez viszont lehetetlen, hiszen $p$ az $n$ prímtényezője, amely páratlan, ezért $p$ is, és így $p^c$ is
+      páratlan, azaz legalább $3$. Márpedig a [oszthatosag-es-rendezesi-relacio-kapcsolata] alapján egy pozitív
+      egész szám bármely osztója legfeljebb akkora lehet, mint maga a szám.
+  - type: formula
+    lead-in: |
+      Hasonló gondolatmenet alapján az $X^{2^{j_{\text{max}}}k}$ hatvány biztosan nem lehet a $[-1]_n$
+      maradékosztály sem, hiszen ekkor a $g$ gyűrűizomorfizmus a [maradekosztalygyuruk-dekompozicioja] alapján az
+      alábbi hozzárendelést valósítaná meg:
+    content: |
+      \underbrace{[-1]_n}_{=X^{2^{j_{\text{max}}}k}} \xmapsto{g}
+      \underbrace{([-1]_{p^c};[-1]_m)}_{=([-1]_{p^c};[1]_m)}
+  - type: formula
+    lead-in: |
+      Ez csak akkor volna lehetséges, ha $[-1]_m=[1]_m$ teljesülne, azaz fennállna az alábbi kongruencia:
+    content: |
+      1\equiv -1\pmod m
+  - type: formula
+    lead-in: |
+      Ez viszont azt jelentené, hogy teljesül az alábbi oszthatóság:
+    content: |
+      m|\underbrace{1-(-1)}_{=2}
+  - type: narrative
+    content: |
+      Ez viszont ugyancsak lehetetlen, hiszen $m$-ről azt mondtuk, hogy $1$-nél nagyobb páratlan egész, azaz
+      legalább $3$.
+  - type: narrative
+    content: |
+      Azt kaptuk tehát, hogy az $X$ maradékosztály $2^{j_{\text{max}}}k$-adik hatványa különbözik az $[1]_n$ és
+      $[-1]_n$ maradékosztályoktól, és így valóban nem lehet $H_n$-ben.
+  - type: narrative
+    content: |
+      Annyit kell még igazolni, hogy $X$ ***redukált maradékosztály***, és ***ennek ellenére*** nincs $H_n$-ben
+      &ndash; azt ugyanis már az ***1. állításban*** igazoltuk, hogy nem redukált maradékosztályok amúgysem
+      lehetnek benne $H_n$-ben.
+  - type: formula
+    lead-in: |
+      Az $X$ konstrukciója alapján a $g$ gyűrűizomorfizmus ugye az alábbi hozzárendelést valósítja meg:
+    content: |
+      X \xmapsto{g} ([s]_{p^c};[1]_m)
+  - type: narrative
+    content: |
+      Most tegyük fel, hogy az $a$ egész szám az $X$ maradékosztály egy reprezentánseleme, azaz legyen $X=[a]_n$.
+  - type: formula
+    lead-in: |
+      A [maradekosztalygyuruk-dekompozicioja] alapján azonban teljesül az alábbi hozzárendelés is:
+    content: |
+      \underbrace{[a]_n}_{=X} \xmapsto{g} ([a]_{p^c};[a]_m)
+  - type: formula
+    lead-in: |
+      Mivel a $g$ által megvalósított hozzárendelés ***kölcsönösen egyértelmű***, ezért a fenti két hozzárendelés
+      egyszerre csak akkor teljesülhet, ha a jobboldalakon szereplő két maradékosztálypár egy és ugyanaz, azaz
+      fennállnak a maradékosztályok közötti alábbi egyenlőségek:
+    content: |
+      \begin{aligned}[a]_{p^c}&=[s]_{p^c} \\ [a]_m&=[1]_m\end{aligned}
+  - type: narrative
+    content: |
+      A második egyenlőségből a [redukalt-maradekosztaly-feltetele] alapján következik, hogy $a$ relatív prím
+      $m$-hez. Az $[a]_m=[1]_m$ maradékosztály ugyanis nyilván invertálható a $\Z/m\Z$ gyűrűben, hiszen ő ennek a
+      gyűrűnek az egységeleme, amelynek inverze önmaga.
+  - type: narrative
+    content: |
+      Az első egyenlőségből szintén a [redukalt-maradekosztaly-feltetele] alapján következik, hogy $a$ pontosan
+      akkor relatív prím $p^c$-hez, ha $s$ is az, hiszen ők ugyanannak a modulo $p^c$ maradékosztálynak a
+      reprezentánselemei.
+  - type: formula
+    lead-in: |
+      Az $s$-ről azonban korábban már megmutattuk, hogy teljesül rá az alábbi kongruencia:
+    content: |
+      s^{2^{j_{\text{max}}}k}\equiv -1\pmod{p^c}
+  - type: formula
+    lead-in: |
+      A [egesz-szamok-kozotti-kongruencia-tulajdonsagai] 8. pontja alapján mindkét oldalt négyzetre emelhetjük:
+    content: |
+      s^{2^{j_{\text{max}}+1}k}\equiv 1\pmod{p^c}
+  - type: narrative
+    content: |
+      Találtunk tehát egy olyan pozitív kitevőt &ndash; nevezetesen $2^{j_{\text{max}}+1}k$-t &ndash; amelyre
+      emelve $s$-t az eredmény kongruens lesz $1$-gyel modulo $p^c$. Ebből viszont a
+      [euler-fermat-tetel-megforditasa] alapján következik, hogy $s$ relatív prím $p^c$-hez, és így $a$ is.
+  - type: narrative
+    content: |
+      Egyrészt azt kaptuk tehát, hogy $a$ relatív prím $m$-hez, vagyis nincs vele közös prímtényezője. Másrészt $a$
+      relatív prím $p^c$-hez is, tehát vele sincs közös prímtényezője. Ekkor viszont a $p^cm=n$ szorzattal sincs
+      közös prímtényezője, tehát $n$-hez is relatív prím. Vagyis a [redukalt-maradekosztaly-feltetele] szerint az
+      $X=[a]_n$ valóban egy ***redukált maradékosztály*** a $\Z/n\Z$ gyűrűben.

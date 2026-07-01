@@ -1,0 +1,80 @@
+type: chapter
+name: 10-alice-es-bob-szerzodest-kot
+title: Alice és Bob szerződést köt
+
+abstract:
+  - type: narrative
+    content: |
+      Az előző részben elkezdtük felvázolni a modern kriptográfiai eljárások mögött meghúzódó alapvető számelméleti
+      gondolatokat. Olyan alapfogalmakat ismertünk meg, mint egyirányú függvények, moduláris összeadás, szorzás és
+      hatványozás, valamint a diszkrét logaritmus problémája. Ezután részletesen megvizsgáltuk a Diffie-Hellman
+      kulcscsere protokoll működését. Láttuk ugyanakkor, hogy megfelelő partnerhitelesítés hiányában egy aktív
+      támadó könnyedén kijátszhatja ezt a rendszert. Ezért elkezdtük bemutatni az úgynevezett aszimmetrikus kulcsú
+      titkosítás alapötletét. Végül megemlítettük az erre az ötletre épülő RSA-algoritmust. Ez &ndash; mint látni
+      fogjuk &ndash; a digitális aláírások és tanúsítványok segítségével választ ad a partnerhitelesítés kérdésére
+      is. De vajon mik azok a digitális aláírások és tanúsítványok? Hogyan tud meggyőződni Alice és Bob arról, hogy
+      valóban egymással kommunikálnak, nem pedig egy rosszindulatú támadóval? Mik azok a bizalmi modellek és hogyan
+      épülnek fel? Ebben a részben erről lesz szó...
+prologue:
+  - type: narrative
+    content: |
+      Az aszimmetrikus kulcsú rejtjelezés kapcsán láthattuk, hogy ebben az esetben Alice nem ugyanazt a kulcsot
+      használja a Bob-nak szánt üzenet rejtjelezésére, mint amivel Bob az üzenetet dekódolja. Ebben a felállásban
+      minden résztvevő rendelkezik egy ***kulcspárral***, amelynek egyik felét ***nyilvános (publikus)***, másik
+      felét pedig ***titkos (privát) kulcsnak*** nevezzük. Egy adott résztvevő &ndash; például Bob &ndash; a saját
+      nyilvános kulcsát nyugodtan elérhetővé teheti bárki számára. Az ugyanis csak a neki küldött üzenetek
+      rejtjelezéséhez használható. A dekódolás kizárólag a kulcspár másik részével, a titkos kulccsal lehetséges,
+      amelyet viszont Bob sosem ad ki a kezéből, azt titokban tartja.
+  - type: narrative
+    content: |
+      Ez önmagában még nem biztosít partnerhitelesítést, mivel egy aktív támadó &ndash; például Mallory &ndash;
+      könnyedén kijátszhatja a rendszert, méghozzá a következőképpen. Tegyük fel, hogy Alice szeretne Bob-nak
+      rejtjelezett üzenetet küldeni. Ezért megszólítja Bob-ot és elkéri tőle a nyilvános kulcsát. A csaló Mallory
+      azonban eltéríti ezt az üzenetet és beékelődik Alice és Bob közé, pontosan ugyanúgy, mint ahogy a
+      Diffie-Hellman kulcscsere protokoll támadásakor tette. Válaszol Bob-nak kiadva magát, és visszaküldi a saját
+      $K_M$ nyilvános kulcsát Alice-nak. Ezzel párhuzamosan megszólítja Bob-ot, és elkéri az ő $K_B$ nyilvános
+      kulcsát, neki viszont azt hazudja, hogy ő Alice. Ezen a ponton Alice azt hiszi, hogy Bob nyilvános kulcsát
+      kapta meg, Bob pedig azt hiszi, hogy Alice kérte el az ő nyilvános kulcsát.
+  - type: figure
+    lead-in: |
+      A támadásnak ez a része látható az alábbi ábrán:
+    src: 01-kulcs-korrumpalas.jpg
+    alt: Kulcs korrumpálása
+    caption: Kulcs korrumpálása
+  - type: narrative
+    content: |
+      Ezután Alice egy bizalmas $x$ üzenetet küld Bob-nak, amelyet rejtjelez a $K_M$ kulccsal. Alice erről a
+      kulcsról azt hiszi, hogy Bob nyilvános kulcsa, de valójában a csaló Mallory-é. Így amikor Mallory elfogja a
+      rejtjelezett $y$ üzenetet, azt könnyedén dekódolni tudja a saját $k_M$ titkos kulcsával, megismerve ezáltal a
+      bizalmas információt. Annak érdekében, hogy Alice és Bob ne fogjon gyanút, Mallory gyorsan újból rejtjelezi
+      az üzenetet, de ezúttal Bob $K_B$ nyilvános kulcsával, és továbbküldi azt Bob-nak. Végül Bob megkapja a $z$
+      rejtjelezett üzenetet, és dekódolja azt a saját $k_B$ titkos kulcsával, mit sem sejtve erről az egész
+      disznóságról.
+  - type: figure
+    lead-in: |
+      Ez a folyamat látható az alábbi ábrán:
+    src: 02-kulcs-korrumpalas-folyt.jpg
+    alt: Kulcs korrumpálása (folytatás)
+    caption: Kulcs korrumpálása (folytatás)
+  - type: narrative
+    content: |
+      Ennek a problémának a kiküszöbölését teszik lehetővé az úgynevezett digitális tanúsítványok, amelynek
+      alapvető építőelemei a ***digitális aláírások***.
+sections:
+  - 01-digitalis-alairasok
+  - 02-kriptografiai-hash-fuggvenyek
+  - 03-kriptografiai-hash-fuggvenyek-alkalmazasa
+  - 04-a-szuletesnap-paradoxon
+  - 05-a-szuletesnapi-tamadas
+  - 06-digitalis-tanusitvanyok
+  - 07-a-bizalom-tovabbitasa-chain-of-trust
+
+epilogue:
+  - type: narrative
+    content: |
+      Ebben a részben tehát megismerkedtünk a kriptográfiai hash függvények és a digitális aláírások működésének
+      alapjaival. Láttuk, hogy egy nem megfelelő körültekintéssel megválasztott hash függvény esetén milyen
+      agyafúrt módon lehet meghamisítani ezeket az aláírásokat. Végül a bizalmi modellek bemutatásán keresztül
+      képet kaptunk arról, hogy hogyan történik egy ilyen rendszer résztvevőinek hitelesítése. A következő részben
+      azokat a számelméleti összefüggéseket kezdjük el áttekinteni, amelyek mindezt valóban lehetővé teszik, és
+      amelyeken például az RSA-eljárás is alapul.

@@ -1,0 +1,33 @@
+type: proof
+name: gyuruhomomorfizmus-szerinti-kongruencia-ekvivalenciarelacio-bizonyitas
+remarks: []
+references:
+  ekvivalenciarelacio:
+    target:
+      type: definition
+      name: ekvivalenciarelacio
+  reflexiv-relacio:
+    target:
+      type: definition
+      name: reflexiv-relacio
+  szimmetrikus-relacio:
+    target:
+      type: definition
+      name: szimmetrikus-relacio
+  tranzitiv-relacio:
+    target:
+      type: definition
+      name: tranzitiv-relacio
+content:
+  - type: narrative
+    content: |
+      A [ekvivalenciarelacio] alapján azt kell tehát bizonyítani, hogy az $f$ szerinti kongruenciareláció reflexív
+      ([reflexiv-relacio]), tranzitív ([tranzitiv-relacio]) és szimmetrikus ([szimmetrikus-relacio]). Az
+      alábbiakban legyenek $a$, $b$ és $c$ az $R$ gyűrű tetszőleges elemei.
+  - type: narrative
+    content: |
+      Mivel nyilván $f(a)=f(a)$ teljesül, ezért fennáll az $a\equiv a\pod f$ reláció, így az ***reflexív***. Az is
+      nyilván igaz, hogy ha $f(a)=f(b)$ és $f(b)=f(c)$ teljesül, akkor $f(a)=f(c)$ is teljesül. Így tehát az
+      $a\equiv b\pod f$ és $b\equiv c\pod f$ relációkból következik az $a\equiv c\pod f$ reláció, azaz teljesül a
+      ***tranzitivitás*** is. Végül ha $f(a)=f(b)$ igaz, akkor nyilván $f(b)=f(a)$ is igaz, vagyis $a\equiv b\pod
+      f$-ből következik $b\equiv a\pod f$, ami épp a ***szimmetriát*** jelenti.

@@ -1,0 +1,55 @@
+<!-- wp:paragraph -->
+<p>Ezúttal is [latex]c[/latex]-re vonatkozó teljes indukcióval bizonyítunk. <strong><em>Indukciós feltételként</em></strong> feltételezzük, hogy valamilyen [latex]c=n[/latex]-re a tétel már teljesül, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](a\cdot b)\cdot n = a\cdot (b\cdot n)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Feladatunk megmutatni, hogy ekkor [latex]c=s(n)[/latex]-re is teljesül, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](a\cdot b)\cdot s(n) = a\cdot (b\cdot s(n))[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="peano-szorzas" type="link" /] 2. pontja miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](a\cdot b)\cdot s(n) = ((a\cdot b) \cdot n) + (a\cdot b)=\ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az indukciós feltétel miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots =(a\cdot (b \cdot n)) + (a\cdot b)=\ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A disztributivitási szabály miatt ([yp_element slug="peano-szorzas-disztributivitas" type="link" /]):</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots =a\cdot ((b \cdot n) + b)=\ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Végül ismételten a [yp_element slug="peano-szorzas" type="link" /] 2. pontja miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots =a\cdot (b \cdot s(n))[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A dominósor tehát felállítva, most elborítjuk az első dominót, azaz belátjuk, hogy [latex]c=0[/latex]-ra a tétel igaz. Ez viszont nyilvánvalóan teljesül a [yp_element slug="peano-szorzas" type="link" /] 1. pontjának háromszori alkalmazásával:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](a\cdot b) \cdot \underbrace{0}_{=c} = 0 = a\cdot 0 = a \cdot (b \cdot \underbrace{0}_{=c})[/latex]
+<!-- /wp:shortcode -->

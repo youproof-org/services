@@ -1,0 +1,53 @@
+type: section
+name: 06-elojeles-egeszek
+title: Előjeles egészek
+
+body:
+  - type: narrative
+    content: |
+      Természetesen ***előjeles egész számokat (signed integer)*** is tárolhatunk. Itt is választhatunk a 8, 16, 32
+      vagy 64 bites ábrázolásmódok közül. Az ilyen számok ábrázolása a következőképpen történik: amennyiben az
+      ábrázolni kívánt szám pozitív, azt ugyanúgy ábrázoljuk, mint az előjel nélküli esetben. Ha viszont a szám
+      negatív, akkor leírjuk őt binárisan úgy, mintha pozitív lenne, majd minden így kapott bitet az ellentettjére
+      cserélünk (ahol **0** volt, oda **1** kerül, és viszont, ezt ***invertálásnak*** nevezzük), végül az
+      eredményhez hozzáadunk 1-et. Az így kapott bitsorozatot tároljuk le ugyanúgy byte-onként, mint az előjel
+      nélküli esetben.
+  - type: narrative
+    content: |
+      Tekintsük például a -18365-ös számot, vagyis az előző példa negatív változatát. Ennek pozitív változata 32
+      biten ábrázolva a **00000000000000000100011110111101** bitsorozat. Ezt a bitsorozatot invertáljuk, és adjunk
+      az eredményhez 1-et. A kapott bitsorozat: **11111111111111111011100001000011**. Ezt little endian sorrendben
+      letárolva a kapott byte-ok: **0x43**, **0xB8**, **0xFF**, **0xFF**. Ugyanezt a számot 64 biten ábrázolva
+      további 4 darab **0xFF** byte is szerepelne a fenti 4 byte után.
+  - type: formula
+    lead-in: |
+      Az alábbi ábrán a -18365-ös számot leíró byte-ok láthatók 32-bites little endian ábrázolásban az n-edik
+      memóriacímtől kezdve:
+    content: |
+      \begin{array}{c}\vdots\\{\begin{array}{|c|c|} \hline (n+0). & \text{0x43} \\ \hline (n+1). & \text{0xB8} \\
+      \hline (n+2). & \text{0xFF} \\ \hline (n+3). & \text{0xFF} \\ \hline \end{array}}\\\vdots\end{array}
+  - type: formula
+    lead-in: |
+      Ugyanez a szám 32-bites big endian ábrázolásban:
+    content: |
+      \begin{array}{c}\vdots\\{\begin{array}{|c|c|} \hline (n+0). & \text{0xFF} \\ \hline (n+1). & \text{0xFF} \\
+      \hline (n+2). & \text{0xB8} \\ \hline (n+3). & \text{0x43} \\ \hline \end{array}}\\\vdots\end{array}
+  - type: narrative
+    content: |
+      Ezt ***kettes komplemens*** számábrázolásnak nevezzük. Ilyenkor tehát a legnagyobb helyiértékű bitet
+      előjelként használjuk: ha ez a bit 0, akkor az ábrázolt számot pozitívnak, ha pedig 1, akkor negatívnak
+      értelmezzük. Az invertálásnak és az eredmény 1-gyel való megnövelésének praktikussági okai vannak. Egyrészt,
+      ha egy számnak képezzük a kettes komplemensét, majd az eredménynek ismét képezzük a kettes komplemensét,
+      akkor az eredeti számot kapjuk vissza (épp úgy, mintha kétszer vennénk egy szám ellentettjét). Ezen kívül a
+      digitális összeadó áramköröket kivonásra is használhatjuk változtatás nélkül. Ha ugyanis egy bináris számhoz
+      hozzáadjuk egy másik szám kettes komplemensét, akkor épp olyan eredményt kapunk, mintha kivonást végeztünk
+      volna. Ráadásul, ha egy kisebb számból vonunk ki egy nagyobbat ilyen módon, akkor épp az így keletkező
+      negatív eredményt kapjuk szintén kettes komplemens ábrázolásban. Ezek általános bizonyításától most
+      eltekintünk, de érdemes kipróbálni papíron, hogy tényleg működik.
+  - type: narrative
+    content: |
+      Itt csak megemlítjük, hogy természetesen nem csak egész, hanem tört számokat is tudunk ábrázolni (és rajtuk
+      műveleteket végezni) a számot leíró bitek megfelelő értelmezésével. Ennek leggyakoribb formája az úgynevezett
+      ***lebegőpontos számábrázolás***. Ennek nagyjából az a lényege, hogy a számot leíró bitek egyik csoportja a
+      "hasznos" számjegyeket írja le, a bitek egy másik csoportja pedig azt, hogy ebben a számjegysorozatban hol
+      helyezkedik el a tizedesvessző. Ennek részleteire azonban itt nem térünk ki.

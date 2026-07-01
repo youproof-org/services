@@ -1,0 +1,9 @@
+type: definition
+name: tranzitiv-relacio
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen adott egy $H$ halmaz és egy ezen a halmazon értelmezett $R$ reláció, valamint tegyük fel, hogy $a$,
+      $b$ és $c$ a $H$ halmaz tetszőleges elemei. Ha minden ilyen esetben $aRb$ és $bRc$ együttes teljesülése
+      esetén $aRc$ is teljesül, akkor azt mondjuk, hogy az $R$ reláció ***tranzitív***.

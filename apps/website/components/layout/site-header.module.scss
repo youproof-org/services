@@ -1,0 +1,75 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+.header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  background: $white;
+  box-shadow: 0 0 18px rgba(0, 0, 0, .1);
+  z-index: 100;
+}
+
+.inner {
+  margin: 0 auto;
+  padding: 1rem 1rem;
+  box-shadow: 0 0 18px rgba(0, 0, 0, .1);
+
+  @include desktop {
+    padding-bottom: 1.4rem;
+  }
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.brand-name {
+  font-size: 1rem;
+  letter-spacing: 0.2em;
+}
+
+.top-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+
+.breadcrumb-row {
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  padding: 0.4rem 1rem;
+  font-size: 0.875rem;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  @include tablet {
+    justify-content: center;
+  }
+}
+
+.menu {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.menu-btn {
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: $black;
+}

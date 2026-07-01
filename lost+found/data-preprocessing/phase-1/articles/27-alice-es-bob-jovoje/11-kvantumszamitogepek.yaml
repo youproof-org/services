@@ -1,0 +1,97 @@
+type: section
+name: 11-kvantumszamitogepek
+title: Kvantumszámítógépek
+
+body:
+  - type: narrative
+    content: |
+      A 3. részben volt szó bővebben a hagyományos számítógépek működési elvéről. Itt került elő a kettes (bináris)
+      számrendszer, amelyben ezek az eszközök dolgoznak. Ez azért előnyös, mert az ilyen számok csak **1**-esekből
+      és **0**-ákból állnak, vagyis a számjegyeik könnyen reprezentálhatók valamilyen fizikai jel segítségével.
+      Például folyik-e áram egy vezetékben vagy nem, van-e töltés egy kondenzátorban vagy nincs. A megfelelő
+      elektronikus alkatrészek segítségével ezeket a fizikai jeleket azután manipulálni lehet. Képesek vagyunk
+      tehát ***műveleteket*** végezni ezeken a számokon.
+  - type: narrative
+    content: |
+      A bináris számjegyek reprezentációjához ugyanígy használhatunk elemi részecskéket is. Sok elemi részecske
+      természeténél fogva rendelkezik egy tőle elválaszthatatlan tulajdonsággal, az úgynevezett ***perdülettel***.
+      Kelet vagy nyugat felé foroghatnak, mint az ujjhegyen megpörgetett labda. Állapodjunk meg abban, hogy egy
+      kelet felé pörgő részecske **1**-et, míg egy nyugat felé pörgő részecske **0**-át jelent. Például egy öt
+      darab, rendre kelet, kelet, nyugat, nyugat, nyugat irányba pörgő részecskéből álló rendszer a bináris
+      **11000** számot jelképezi, amely tízes számrendszerben **24**-et jelent. A következő példában ilyen pörgő
+      részecskékkel fogjuk ábrázolni a számokat.
+  - type: narrative
+    content: |
+      Tegyük fel, hogy meg kell keresnünk a legkisebb olyan egész számot, amelynek a négyzete és a harmadik
+      hatványa együtt felhasználja 0-tól 9-ig az összes tízes számrendszerbeli számjegyet, méghozzá pontosan
+      egyszer. Például a $23$ nem elégíti ki ezt a feltételt, mivel $23^2=529$ és $23^3=12167$. Itt ugye az 1-es és
+      a 2-es számjegy kétszer szerepel, míg a 0, 3, 4 és 8 számjegyek egyszer sem.
+  - type: narrative
+    content: |
+      Hagyományos számítógéppel a feladat úgy oldható meg &ndash; noha biztosan nem ez a legokosabb módszer
+      &ndash;, hogy elkezdjük szép sorban betáplálni a számjegyeknek megfelelő pörgő részecskékből álló sorozatokat
+      egymás után, és megvárjuk, míg a számítógép leellenőrzi őket egyenként, hogy teljesítik-e a feltételt. Az
+      $1$-es nem teljesíti a követelményt, ezért betápláljuk a $2$-est, és kivárjuk az újabb ellenőrzést. Aztán jön
+      a $3$-as, és így tovább, amíg a gép meg nem találja a megoldást, amely a $69$-es lesz, hiszen $69^2=4761$ és
+      $69^3=328509$. Ez a módszer elég sok időt emészt fel, hiszen a hagyományos számítógép egyszerre csak egy
+      részecskesorozatot képes leellenőrizni, vagyis az egyes részfeladatokat sorba kell állítani. Így ha egy szám
+      ellenőrzése 1 időegységig tart, akkor a teljes futási idő 69 időegységig fog tartani.
+  - type: narrative
+    content: |
+      Ezzel szemben egy kvantumszámítógép dacol a józan ésszel, és képes ezt a feladatot egyetlen időegység alatt
+      is elvégezni. A bináris számjegyeket reprezentáló részecskék perdülete ugyanis egy ugyanolyan
+      kvantumtulajdonság, mint a kétrés-kísérletben szereplő fotonok pozíciója, azaz a megfelelő eszközökkel
+      ***szuperpozícióba*** hozható. Ha például valamilyen módon sikerülne egy hét darab pörgő részecskéből álló
+      rendszert szuperpozícióba hozni, akkor ezek a kelet és nyugat felé pörgés minden lehetséges kombinációját
+      ***egyszerre*** reprezentálnák. Így egy kvantumszámítógép e szuperpozíciós állapotba került rendszer
+      megfelelő manipulálásával képes lenne az összes lehetséges kombinációt ***egyszerre*** vizsgálni.
+  - type: narrative
+    content: |
+      Hét bináris számjegyen összesen $2^7=128$ féle számot lehet ábrázolni. Egy hagyományos számítógép ezek közül
+      egyszerre csak az egyik kombináció által reprezentált számon képes műveletet végezni a számjegyek
+      manipulációjával. Ilyenkor a számjegyeket ***biteknek*** nevezzük, ami a ***binary digit*** rövidítése. Ezzel
+      szemben a kvantumszámítógép szuperpozícióban lévő számjegyeken, azaz úgynevezett ***kvantumbiteken*** vagy
+      ***qubiteken*** (ejtsd: kjubit) végez műveleteket, tehát minden lehetséges kombináción ***egyidejűleg***.
+      Tekintsünk most egy mindössze 250 bináris számjegyből álló rendszert &ndash; ami hagyományos bitekből,
+      valljuk be, nem túl sok. Ennyi számjegyen nagyjából $10^{75}$ darab különböző szám ábrázolható, amely több,
+      mint a világegyetem atomjainak száma. Ha egy ilyen rendszert sikerülne valahogyan szuperpozícióba hozni, és
+      persze ott is tartani, akkor a kvantumszámítógép ***egyidejűleg*** $10^{75}$ darab műveletet tudna végezni,
+      és egyetlen időegység alatt be is fejezné őket. Ez eléggé félelmetesen hangzik, nemde?
+  - type: narrative
+    content: |
+      Ha mindez nem lenne elég, az 1990-es években történt két olyan fejlemény, amely miatt Alice és Bob joggal
+      kezdhetett el aggódni. Noha a kvantumszámítógép víziója már az 1980-as években napvilágot látott, a kutatók
+      kezdetben nemigazán tudták, hogyan lehetne egy ilyen gépet programozni, hiszen teljesen más elveken működik,
+      mint a hagyományos számítógépek. 1994-ben az AT&T Bell Laboratories egyik munkatársának, Peter Shor-nak
+      sikerült egy olyan lépéssorozatot definiálnia, amelyet egy kvantumszámítógép képes lenne végrehajtani, és
+      amely óriási számok prímtényezős felbontását számítja ki, méghozzá pillanatok alatt. Ez a Shor algoritmusnak
+      nevezett kvantumszámítási eljárás tehát épp azt a feladatot oldja meg, amely az ***RSA-kód feltöréséhez***
+      szükséges, de ezenkívül alkalmas lenne az ***elliptikus görbéken alapuló kriptográfiai eljárások
+      feltörésére*** is &ndash; habár ehhez több kvantumbitre lenne szükség, mint az RSA töréséhez.
+  - type: narrative
+    content: |
+      1996-ban ugyancsak az AT&T Bell-nél Lov Grover-nek sikerült kidolgoznia egy másik kvantumeljárást, amely
+      aggodalomra adhat okot. Ez a Grover algoritmusnak nevezett eljárás hihetetlenül nagy sebességgel képes
+      kutakodni óriási listákban. Fogalmazhatnánk úgy is, hogy tűt keres a szénakazalban, és viszonylag gyorsan meg
+      is találja. Vegyük észre, hogy egy szimmetrikus kulcsú titkosítás feltöréséhez pontosan ez kell: végignézni
+      minden lehetséges kulcsot, míg elő nem kerül a megfelelő.
+  - type: narrative
+    content: |
+      Noha ezek a fejlemények meglehetősen félelmetesen hangzanak, ám szerencsére egyelőre nem létezik még
+      kvantumszámítógép, amelyen a fenti eljárásokat futtatni lehetne &ndash; gondolhatnánk. Ez azonban csak
+      részben igaz! A nagy techcégek ugyanis már régóta kísérleteznek ilyen eszközök építésével, sőt, 2019-ben
+      ***az IBM bemutatta a világ első kereskedelmi kvantumszámítógépét***, az IBM Q System One-t, amely jó pénzért
+      bárki számára elérhető egy felhőszolgáltatáson keresztül. Ez ugyanakkor egy mindössze 20 kvantumbites gép,
+      amely csak néhány száz mikroszekundumig képes fenntartani a kvantumszámításokhoz szükséges szuperpozíciót.
+      Így jelenleg még nem képes meghaladni a normál számítógépek teljesítményét, ehhez ugyanis a számítások
+      szerint legalább 50 kvantumbitre lenne szükség. A fő problémát az okozza, hogy a szuperpozíció egy rendkívül
+      instabil állapot. A legkisebb környezeti behatás &ndash; legyen az akárcsak egy kósza részecske jelenléte
+      &ndash; a szuperpozíció összeomlását okozhatja, akárcsak a detektorok elhelyezése a kétrés-kísérlet esetén.
+  - type: narrative
+    content: |
+      Mindezek ellenére az IBM bejelentése hatalmas mérföldkőnek számít, hiszen ezáltal a szélesebb tudományos
+      közösség számára is elérhető a kvantumszámítógép &ndash; igaz, ez egyelőre még elsősorban csak kutatási
+      célokat szolgál. Jelenleg még nem tudjuk, hogy a hagyományos számítógépekkel szembeni úgynevezett
+      ***kvantumfölény*** elérése vajon pusztán illúzió, vagy már csak idő kérdése. Ha azonban ez valóban
+      megtörténik, akkor egyrészt ma még elképzelhetetlen perspektívákat nyit a mesterséges intelligencia számára.
+      Másrészt viszont komoly fenyegetést is jelent az egész emberiségre a fentebb már ismertetett okokból.

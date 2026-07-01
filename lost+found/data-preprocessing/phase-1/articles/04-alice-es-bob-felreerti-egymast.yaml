@@ -1,0 +1,71 @@
+type: chapter
+name: 04-alice-es-bob-felreerti-egymast
+title: Alice és Bob félreérti egymást
+
+abstract:
+  - type: narrative
+    content: |
+      Az előző részben leírtak fényében az Alice és Bob közötti kommunikáció konkrét tartalmától a továbbiakban
+      teljesen elvonatkoztatunk. Azt egy 1-esekből és 0-ákból álló bináris sorozatnak fogjuk tekinteni. Most
+      folytatjuk információelméleti kitérőnket, és megismerkedünk az átviteli csatornával, amelynek feladata ezt a
+      sorozatot eljuttatni Alice-tól Bob-hoz. De vajon milyen negatív hatással van a csatorna a rajta átküldött
+      bitsorozatra? Hogyan védekezhetünk e negatív hatás ellen? Ennek mik az elvi korlátai? Miért lehet elolvasni
+      egy CD-t akkor is, ha megkarcolódott? Mi az a hibajavító kódolás és hogyan működik? Ebben a részben erről
+      lesz szó...
+prologue:
+  - type: narrative
+    content: |
+      Az eddig megismert információátviteli modellünk eddig két komponenst tartalmazott. Az információforrásról és
+      a forráskódolóról a 2. részben volt szó bővebben. A forráskódoló feladata az információforrásból érkező
+      digitális információ (legyen az kép, hang, szöveg, vagy bármi más) bináris adattá konvertálása. Ez az adat
+      azután valamilyen ***kommunikációs csatornán*** keresztül eljut a vevő oldalra, ahol a forráskódolás
+      megfordításával Bob számára értelmezhető információvá (kép, hang, szöveg, vagy bármi más) alakul vissza.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán a kommunikációs csatornával kibővített modell látható:
+    src: 01-informacioatviteli-modell-reszlet.jpg
+    alt: Információátviteli modell (részlet)
+    caption: Információátviteli modell (részlet)
+  - type: narrative
+    content: |
+      Megjegyezzük, hogy matematikai szempontból irreleváns a csatorna jellege, az információ átvitelének időbeli
+      lefolyása, mint ahogyan az is, hogy az információ Bob-hoz való megérkezését mennyi idővel előzi meg ennek az
+      információnak az Alice általi előállítása és elküldése. Gondoljunk csak például valamilyen CD-re írt
+      adatokra. De bármilyen jellegű médiumot is reprezentál a modellünkben a "csatorna" feliratú doboz, nem árt
+      felkészülnünk egy jelentős problémára, amely a csatorna fizikai jellege miatt sajnos elkerülhetetlen.
+      Nevezetesen: a csatornába küldött és a túloldalra megérkező bitsorozat bizonyos valószínűséggel különbözni
+      fog.
+  - type: narrative
+    content: |
+      Ennek az oka egész egyszerűen az, hogy a biteknek bármilyen valós csatornában mindig van valamilyen fizikai
+      reprezentációja. Ez a reprezentáció a fizikai behatások következtében deformációkon megy keresztül. Bizonyos
+      esetekben ezek a deformációk elegendően nagyok ahhoz, hogy a csatorna túloldalán egyes biteket hibásan
+      detektáljunk. Az ilyen eseteket ***bithibák***nak nevezzük. Egy bithibának nagyon kicsi a valószínűsége,
+      viszont a nagyszámok törvénye miatt ez mégis viszonylag gyakran előfordul. Ráadásul &ndash; ha csak az előző
+      részben bemutatott példára gondolunk &ndash; a legtöbb esetben sokszorosan összefüggő adatokról van szó.
+      Ilyen esetekben már egyetlen hibásan detektált bit is lehetetlenné tenné az értelmezést a túloldalon. Ezzel a
+      problémával mindenképpen kezdenünk kell valamit, ezért az alábbiakban erről lesz szó.
+sections:
+  - 01-a-csatorna-negativ-hatasa
+  - 02-csatornamodellek
+  - 03-csatornakapacitas
+  - 04-hogyan-vedekezzunk-a-csatorna-zaja-ellen
+  - 05-a-hibajavito-kodok-mukodese
+  - 06-a-csatornakodolasi-tetel
+
+epilogue:
+  - type: narrative
+    content: |
+      Az adatainkat tehát a rosszminőségű kommunikációs csatornák okozta adatvesztéstől meg kell védenünk. Ezért
+      ebben a részben tettünk egy rövid kitérőt az információelmélet egy másik nagy területe, a csatornakódolás és
+      a hibajavító kódok elmélete irányába. Érintőlegesen bemutattuk ezek működésének alapelveit, illetve a
+      legfontosabb kódelméleti alapfogalmakat. Ezután megemlékeztünk a rendkívül meglepő csatornakódolási tételről,
+      amely optimális csatornakódok létezését igazolja. Végül megemlítettük az ilyen kódok keresésére indított
+      kutatások jelenlegi állását.
+  - type: narrative
+    content: |
+      A modellünk azonban még nem teljes. Az adatainkat ugyanis nem csak a sérülésektől, hanem a rossz szándékú
+      támadóktól is meg kell védenünk. A következő rész fontos szereplőjévé lép majd elő a korábban már említett
+      Eve, aki a csatorna lehallgatásával bizalmas információkra szeretné rátenni az enyves kezét. Ezen kívül
+      történetünk egy új szereplőjével is meg fogunk ismerkedni, aki még az Eve-énél is gonoszabb tettektől sem
+      riad vissza némi anyagi haszon reményében...

@@ -1,0 +1,63 @@
+type: section
+name: 01-mi-a-problema-az-rsa-val
+title: Mi a probléma az RSA-val?
+
+body:
+  - type: narrative
+    content: |
+      A korábbi részekben az ***RSA rejtjelezési eljárásról*** tanultak fényében talán egy kicsit félelmetes
+      belegondolni abba, hogy a világ biztonsága &ndash; eléggé lesarkítva &ndash; mindössze olyan dolgokon múlik,
+      minthogy például egy kellően nagy összetett szám prímtényezőit jelenlegi ismereteink alapján beláthatatlanul
+      sok ideig tart megtalálni. Ráadásul nincs bizonyítva, hogy valóban ***nem is létezhet*** hatékony
+      prímfaktorizációs eljárás, mint ahogy az sem, hogy az RSA feltöréséhez egyáltalán ***szükség van-e*** a
+      prímtényezők kiszámítására. Mindazonáltal az RSA eddig kiállta az idők próbáját, ugyanakkor nincs kizárva,
+      hogy valamikor a jövőben egy új számelméleti felfedezés végzetes csapást mér majd rá.
+  - type: narrative
+    content: |
+      ***Azonban sajnos nem ez az egyetlen gond vele!*** A 21. részben ismertettük az RSA algoritmus részleteit, és
+      láttuk, hogy a titkos kulcs kiszámításához elegendő a publikus kulcsban szereplő $m$ modulus prímtényezőit
+      megtalálni. Ezenkívül azt is megemlítettük, hogy erre a problémára jelenleg nem ismerünk polinomiális
+      időkomplexitású algoritmust, és éppen ez adja az RSA biztonságát. Az persze igaz, hogy az úgynevezett
+      Moore-törvény alapján a számítógépeink teljesítménye a hetvenes évek óta exponenciális növekedést mutat (a
+      teljesítményük nagyjából kétévente megduplázódik). Ezért ami 10 évvel ezelőtt még elegendően nagy
+      RSA-modulusnak számított, az ma már korántsem az. De semmi gond &ndash; mondhatnánk &ndash;, hiszen mindössze
+      annyit kell tennünk, hogy megnöveljük az RSA-modulust, és újból biztosítva vannak az adataink jónéhány évig a
+      prímfaktorizáció feladatának algoritmikus bonyolultsága miatt.
+  - type: narrative
+    content: |
+      Ez kétségkívül így van, azonban a számelmélet fejlődésével sajnos napvilágot láttak olyan prímfaktorizációs
+      algoritmusok, amelyek ugyan továbbra sem polinomiális időkomplexitásúak, viszont az exponenciális
+      időkomplexitásnál lényegesen jobbak. Ezeket ***szubexponenciális időkomplexitású algoritmusoknak*** nevezzük.
+      A jelenleg ismert legjobb prímfaktorizációs algoritmus az úgynevezett általános számtest-szita. Ez messze
+      hatékonyabb, mint a 23. részben ismertetett osztáspróbákon alapuló iskolás módszer, amely &ndash; mint láttuk
+      &ndash; exponenciális időkomplexitású. Ez azt jelenti, hogy egy-egy teljesítményduplázódás kiküszöböléséhez
+      egyre nagyobb és nagyobb mértékben kell megnövelnünk az RSA-kulcsok bitjeinek számát. Ez viszont a dekódolás
+      sebességére nincs túl jó hatással, mint ahogyan azt a 22. rész végén már megemlítettük.
+  - type: narrative
+    content: |
+      Tegyük fel például, hogy folytatódik a Moore-törvény által leírt tendencia, és két év múlva a számítógépek
+      teljesítménye ismét megduplázódik a jelenlegihez képest. Így a bűnözők kezében is kétszer akkora számítási
+      kapacitás lesz, mint ma. A szubexponenciális prímfaktorizációs algoritmus miatt ahhoz, hogy a jelenlegivel
+      megegyező biztonsági szintet el tudjuk érni az RSA-val, nagyobb mértékben kell megnövelnünk a kulcsok
+      hosszát, mint amennyivel a két évvel ezelőtti állapothoz képest kellett megnövelnünk, és ez a mérték az évek
+      előrehaladtával egyre nagyobb és nagyobb lesz. A teljesítménynövekedés nyilván pozitív hatással van a
+      dekódoláshoz szükséges időre is, azonban az egyre gyorsuló kulcshossznövekedés miatt az RSA a jövőben egyre
+      kevésbé lesz hatékony. Ha ehhez még hozzávesszük, hogy az információs társadalom hihetetlen mértékű fejlődése
+      következtében a világban lévő érzékeny adatok mennyisége szintén exponenciálisan növekszik, akkor a nem is
+      olyan távoli jövőben könnyen egy fenntarthatatlan szituációban találhatjuk magunkat. Annak érzékeltetésére,
+      hogy mennyire valós problémáról van szó megemlítjük, hogy az RSA-dekódolás számításigénye már most problémát
+      okoz az olyan eszközök esetén, amelyek kisebb memóriával és számítási kapacitással rendelkeznek.
+  - type: narrative
+    content: |
+      A cikksorozat eddigi részeiben ismertetett kriptográfiai eljárások mind-mind egy-egy úgynevezett ***egyirányú
+      függvényen*** alapultak. Ezek olyan függvények, amelyeket viszonylag könnyű kiszámítani az egyik irányban,
+      azonban gyakorlatilag lehetetlen a másik irányban. Az RSA esetén például a kulcsgenerálás során lényegében
+      két óriási prímszámot szorzunk össze egymással, és az így kapott $m$ modulus, illetve egy ehhez szabadon
+      választott relatív prím $e$ kitevő adja a publikus kulcsot. Ahhoz, hogy a $d$ titkos kitevőt meghatározza egy
+      támadó, a műveletet visszafelé kéne végrehajtania, vagyis meg kéne határoznia az $m$ modulus prímtényezőit.
+      Mint említettük, erre létezik szubexponenciális algoritmus, amely ugyan még mindig nem elég hatékony, de arra
+      elegendő, hogy hosszútávon fenntarthatatlanná tegye az RSA-t.
+  - type: narrative
+    content: |
+      Ezért manapság egyre inkább kezd elterjedni egy ennél hatékonyabb egyirányú függvény, amelyet a következő
+      szakaszokban vázlatosan ismertetünk.

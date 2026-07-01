@@ -1,0 +1,55 @@
+type: chapter
+name: 05-alice-es-bob-ellensegei
+title: Alice és Bob ellenségei
+
+abstract:
+  - type: narrative
+    content: |
+      Az előző részben megismerkedtünk a rosszminőségű kommunikációs csatornák okozta problémákkal. E problémák
+      kezelésére tettünk egy kitérőt a csatornakódolás, és azon belül is a hibajavító kódok elméletének irányába.
+      Megismertük a csatornakódolási tételt, amely ezek elvi korlátaival kapcsolatban tesz egy igen meglepő
+      állítást. Információátviteli modellünk így már képes arra, hogy Alice és Bob adatait megvédje az átviteli
+      csatorna zaja által okozott sérülésektől. De vajon milyen egyéb veszélyek fenyegetik ezeket az adatokat? A
+      kriptográfia tudománya hol kapcsolódik be ebbe a játszmába annak érdekében, hogy az adatok ezektől a
+      veszélyektől is védve legyenek? Mikre kell felkészülnünk a potenciális támadók képességeit illetően? Mit
+      jelent a feltétel nélküli, illetve az algoritmikus biztonság? Létezik-e az előbbi? Ha igen, annak mik a
+      limitációi? Ebben a részben ezekről a kérdésekről lesz szó...
+prologue:
+  - type: narrative
+    content: |
+      Az adatokat a fizikai sérüléseken kívül egyéb veszélyek is fenyegetik, amelyeket rosszindulatú támadók
+      okoznak. Az ő motivációjuk főként az anyagi haszonszerzés, amely Alice és Bob számára a legtöbbször anyagi
+      kárként jelentkezik. Fontos leszögezni, hogy a kriptográfusok &ndash; és általában a mérnökök &ndash;
+      hozzáállása alapvetően pesszimista. Ez azt jelenti, hogy próbálnak az adott alkalmazás esetén elképzelhető
+      legrosszabb esetre felkészülni. Feltételezhető ugyanis, hogyha a tervezett rendszer ilyen szélsőséges
+      körülményeknek ellenáll, akkor ellen fog állni a gyakorlatban bekövetkező eseteknek is.
+  - type: narrative
+    content: |
+      A támadók célja, hogy információkat szerezzenek meg a legális felektől. A példáinkban a legális feleket két
+      fiktív személlyel, a már jól ismert Alice-szal és Bob-bal azonosítjuk. A támadók a megszerzett információkat
+      azután a saját céljaikra szeretnék felhasználni. A továbbiakban csak az algoritmikus típusú támadási
+      módszerekkel foglalkozunk. Ezeken kívül elképzelhetők további támadási módszerek is. Ilyenek például a
+      betörés, megvesztegetés, szabotázs, stb. Az ezek elleni védekezés azonban nem a kriptográfia feladata.
+sections:
+  - 01-a-rejtjelezo-komponens
+  - 02-a-passziv-tamado
+  - 03-a-feltorhetetlen-rejtjelezo
+  - 04-akkor-mi-ertelme-van-folytatni
+  - 05-az-aktiv-tamado
+  - 06-blokkrejtjelezok
+  - 07-haromutas-kulcsforgalom
+
+epilogue:
+  - type: narrative
+    content: |
+      Ebben a részben tehát rátértünk a cikksorozat fő témájára, és megnéztük, hogy a kriptográfia hol foglal
+      helyet az információátviteli modellünkben. Felmértük, hogy milyen jellegű támadások ellen kell megvédenie
+      magát Alice-nak és Bob-nak, ha nem akarnak csalások áldozatává válni. Bemutattunk egy abszolút biztonságos
+      rejtjelezési módszert, ugyanakkor rámutattunk annak gyakorlati korlátjaira is, amelyek miatt kénytelenek
+      vagyunk megelégedni az algoritmikus biztonsággal. Végül elkezdtük matematikai alapokra helyezni a rejtjelezés
+      és dekódolás folyamatát, és bemutattuk a kommutatív rejtjelező fogalmát, amellyel megkerülhető a
+      kulcsmegosztás problémája, de megemlítettük ennek hiányosságait is. A következő néhány részben részletesebben
+      körbejárjuk azt a kérdéskört, hogy pontosan mit értünk algoritmikus biztonság alatt. Ennek keretében
+      megismerkedünk néhány algoritmuselméleti alapfogalommal. Ezek után fogjuk részletesen bemutatni egy olyan
+      rejtjelező rendszer működését, amely kiküszöböli a háromutas kulcsforgalom módszerének hiányosságait, és
+      partner- illetve üzenethitelesítést is biztosít.

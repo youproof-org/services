@@ -1,0 +1,135 @@
+type: proof
+name: termeszetes-szamok-minimumtetele-bizonyitas
+remarks: []
+references:
+  peano-axiomarendszer:
+    target:
+      type: definition
+      name: peano-axiomarendszer
+  peano-nullosszeg-tagjai:
+    target:
+      type: theorem
+      name: peano-nullosszeg-tagjai
+  peano-osszeadas:
+    target:
+      type: definition
+      name: peano-osszeadas
+  peano-osszeg-egyszerusites:
+    target:
+      type: theorem
+      name: peano-osszeg-egyszerusites
+  termeszetes-szamok-rendezese:
+    target:
+      type: definition
+      name: termeszetes-szamok-rendezese
+  termeszetes-szamok-rendezesi-relacioja-trichotom:
+    target:
+      type: theorem
+      name: termeszetes-szamok-rendezesi-relacioja-trichotom
+content:
+  - type: narrative
+    content: |
+      Tegyük fel indirekt, hogy $P$ egy olyan galád részhalmaza $\N$-nek, amelynek nincs minimuma. Jelöljük ezen
+      kívül $Q$-val $\N$-nek azt a részhalmazát, amely ***minden*** olyan természetes számot tartalmaz, amely
+      ***kisebb*** $P$ ***bármely*** eleménél. Azaz egyrészt a $Q$ halmaz ***minden*** $q$ elemére teljesül, hogy
+      bármely $P$-beli $p$ elem esetén $q\lt p$, másrészt ***semmilyen*** $Q$ halmazon kívüli elemre nem tejesül ez
+      a tulajdonság. Egyelőre még nem tudjuk, hogy mely természetes számok tartoznak $P$-be, és melyek $Q$-ba. Az
+      viszont bizonyos, hogy ha egy $q$ természetes szám $Q$-ba tartozik, akkor ***nem tartozhat*** egyúttal $P$-be
+      is, máskülönben teljesülne a $q\lt q$ reláció, ami a [termeszetes-szamok-rendezese] alapján lehetetlen.
+  - type: figure
+    lead-in: |
+      A következő tehát a szituáció:
+    src: P_es_Q_halmazok_elhelyezkedese.jpg
+    alt: P és Q halmazok elhelyezkedése
+    caption: P és Q halmazok elhelyezkedése
+  - type: narrative
+    content: |
+      Azt kell megmutatnunk, hogy valójában minden természetes szám $Q$-ba tartozik, azaz $Q=\N$, hiszen ebből
+      következne, hogy $P$ csak az üres halmaz lehet. Ezt ***teljes indukcióval*** fogjuk bizonyítani, amelyre a
+      Peano-axiómarendszer [peano-axiomarendszer]jának 4. pontja ad lehetőséget.
+  - type: narrative
+    content: |
+      Kezdjük a $0$-val. Tegyük fel ***indirekt***, hogy a $0$ nincs benne $Q$-ban, azaz létezik olyan $P$-beli $p$
+      elem, amelyre nem teljesül a $0\lt p$ reláció. Ekkor viszont a rendezési reláció trichotómiája miatt (lásd a
+      [termeszetes-szamok-rendezesi-relacioja-trichotom]t) szükségképpen teljesülne a $p\leq 0$ reláció. Ez a
+      [termeszetes-szamok-rendezese] miatt azt jelentené, hogy létezik olyan $k$ természetes szám, amelyre $p+k=0$.
+      A [peano-nullosszeg-tagjai] alapján azonban a természetes számok körében egy összeg csak úgy lehet $0$, ha
+      mindkét tagja $0$, és így $p=0$ lenne.
+  - type: narrative
+    content: |
+      Azt kaptuk tehát, hogy ha a $0$ nem lenne benne $Q$-ban, akkor szükségképpen benne kellene lennie $P$-ben. Ez
+      viszont lehetetlen, hiszen bármely $n$ természetes számra teljesül $0\leq n$ reláció, és így $P$-nek a $0$
+      minimuma lenne. Tehát hibás volt az indirekt feltételezésünk, így a $0$-nak szükségképpen $Q$-ban kell
+      lennie.
+  - type: narrative
+    content: |
+      Tegyük most fel, hogy egy valamilyen $n$ természetes számról már tudjuk, hogy $Q$-ban van (az előbb láttuk,
+      hogy a $0$ például ilyen). Azt szeretnénk megmutatni, hogy ekkor $s(n)$ (azaz $n$ ***rákövetkezője***) is
+      benne van a $Q$-ban. Ezt ismét ***indirekt*** módon bizonyítjuk. Tegyük ezért fel az állítás ellenkezőjét,
+      azaz hogy $s(n)$ nincs benne a $Q$ halmazban. Ez egyrészt azt jelentené, hogy létezne olyan $p$-vel jelölt
+      elem a $P$ halmazban, amelyre nem teljesül az $s(n)\lt p$ reláció. Ismét a trichotómia miatt ekkor
+      szükségképpen teljesülne a $p\leq s(n)$ reláció. Másrészt, mivel ugye $n$ az indukciós feltétel miatt benne
+      van a $Q$ halmazban, így teljesül az $n\lt p$ reláció.
+  - type: formula
+    lead-in: |
+      Azaz összefoglalva:
+    content: |
+      n\lt p\leq s(n)
+  - type: narrative
+    content: |
+      Egyrészt a baloldali $\lt$ reláció a [termeszetes-szamok-rendezese] miatt azt jelenti, hogy $n+k_1=p$
+      teljesül valamilyen $k_1\eq 0$ természetes számra. Másrészt a Peano-összeadás [peano-osszeadas]ja miatt a
+      jobboldali kifejezés így írható át: $s(n)=s(n+0)=n+s(0)$.
+  - type: formula
+    lead-in: |
+      Ezt kapjuk tehát:
+    content: |
+      \underbrace{n+k_1}_{=p} \leq n+s(0)
+  - type: formula
+    lead-in: |
+      Ez ismét a [termeszetes-szamok-rendezese] miatt azt jelenti, hogy létezik olyan $k_2$ természetes szám,
+      amelyre teljesül az alábbi egyenlet:
+    content: |
+      \underbrace{n+k_1}_{=p} + k_2 = n+s(0)
+  - type: formula
+    lead-in: |
+      A [peano-osszeg-egyszerusites] alapján mindkét oldalt egyszerűsíthetjük $n$-nel, így ezt kapjuk:
+    content: |
+      k_1+k_2=s(0)
+  - type: narrative
+    content: |
+      Azonban tudjuk, hogy $k_1\eq 0$, így a Peano-axiómarendszer [peano-axiomarendszer]jának 3. pontja alapján van
+      olyan $k_0$ természetes szám, aminek $k_1$ a rákövetkezője, azaz $s(k_0)=k_1$.
+  - type: formula
+    lead-in: |
+      Így:
+    content: |
+      \underbrace{s(k_0)}_{=k_1} + k_2=s(k_0+k_2)=s(0)
+  - type: narrative
+    content: |
+      A Peano-axiómarendszer [peano-axiomarendszer]jának 2. pontja miatt ekkor $k_0+k_2=0$ adódik, amelyből a
+      [peano-nullosszeg-tagjai] alapján $k_0=0$ és $k_2=0$ következik. Így tehát $k_1=s(k_0)=s(0)$.
+  - type: formula
+    lead-in: |
+      Azaz:
+    content: |
+      \overbrace{n+\underbrace{s(0)}_{=k_1}}^{=p}+\underbrace{0}_{=k_2}=n+s(0)=s(n)
+  - type: formula
+    lead-in: |
+      És így:
+    content: |
+      p+0=p=s(n)
+  - type: narrative
+    content: |
+      Egyrészt tehát azt kaptuk, hogy ha $s(n)$ nem lenne $Q$-ban, akkor szükségképpen $P$-ben kellene lennie.
+      Másrészt viszont az iménti gondolatmenetet bármely $P$-beli $x$ elemre megismételve azt kapnánk, hogy $x\leq
+      s(n)$ csak úgy teljesülhet, ha $x=s(n)$. Így tehát a $P$ halmaznak mégiscsak lenne minimuma, nevezetesen
+      $s(n)$. Tehát hibás volt az indirekt feltételezésünk, ezért ha $n$ benne van $Q$-ban, akkor az ő
+      rákövetkezője is szükségképpen $Q$-ban kell legyen.
+  - type: narrative
+    content: |
+      Ezzel kész a teljes indukció, hiszen láttuk, hogy a $0$ benne van $Q$-ban, így az iménti gondolatmenet
+      alapján az ő rákövetkezője is, majd annak a rákövetkezője, és így tovább a végtelenségig. A
+      Peano-axiómarendszer [peano-axiomarendszer] 4. pontja alapján így minden természetes számot lefedünk, azaz
+      $Q=\N$. A bizonyítás elején azonban láttuk, hogy ekkor $P$ csak az üres halmaz lehet, azaz valóban nem
+      létezik olyan nemüres részhalmaza $\N$-nek, amelynek nincs minimuma &ndash; épp ahogyan a tétel állítja.

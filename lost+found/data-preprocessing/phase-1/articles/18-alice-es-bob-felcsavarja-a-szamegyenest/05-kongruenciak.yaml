@@ -1,0 +1,78 @@
+type: section
+name: 05-kongruenciak
+title: Kongruenciák
+
+references:
+  gyuruhomomorfizmus:
+    target:
+      type: definition
+      name: gyuruhomomorfizmus
+  gyuruhomomorfizmus-szerinti-kongruencia:
+    target:
+      type: definition
+      name: gyuruhomomorfizmus-szerinti-kongruencia
+  gyuruhomomorfizmus-szerinti-kongruencia-ekvivalenciarelacio:
+    target:
+      type: theorem
+      name: gyuruhomomorfizmus-szerinti-kongruencia-ekvivalenciarelacio
+
+body:
+  - type: narrative
+    content: |
+      Most azonban ismerkedjünk meg további fontos fogalmakkal a [gyuruhomomorfizmus]ban ismertetett
+      ***gyűrűhomomorfizmusok*** kapcsán. Tegyük fel, hogy adva van egy $R$ és egy $S$ gyűrű, valamint egy közöttük
+      lévő $f:R\to S$ művelettartó leképezés, azaz gyűrűhomomorfizmus. Ez tehát $R$ minden eleméhez hozzárendel
+      valamilyen $S$-beli elemet.
+  - type: narrative
+    content: |
+      Elképzelhető azonban, hogy egy adott $S$-beli elem több $R$-beli elemhez is hozzá van rendelve. Így tehát $R$
+      elemei között definiálhatunk egy relációt, amely azt fejezi ki két $R$-beli elem között, hogy nekik ugyanaz
+      az $f$ gyűrűhomomorfizmus szerinti képük az $S$ gyűrűben. Erről szól az alábbi definíció.
+  - type: embed
+    target:
+      type: definition
+      name: gyuruhomomorfizmus-szerinti-kongruencia
+  - type: narrative
+    content: |
+      A 13. részben már megismerkedtünk az úgynevezett ***ekvivalenciarelációkkal***. Ezek olyan relációk voltak,
+      amelyek egy halmaz elemeit osztályokba sorolják, méghozzá olymódon, hogy minden elem ***pontosan egy***
+      osztályba kerül bele. Vagyis az egyes osztályok között nincs átfedés, és minden elem bekerül valamelyik
+      osztályba. A kongruencia fenti definíciójából azonnak adódik, hogy ez a reláció szintén egy
+      ekvivalenciareláció.
+  - type: embed
+    target:
+      type: theorem
+      name: gyuruhomomorfizmus-szerinti-kongruencia-ekvivalenciarelacio
+  - type: embed
+    target:
+      type: proof
+      name: gyuruhomomorfizmus-szerinti-kongruencia-ekvivalenciarelacio-bizonyitas
+  - type: narrative
+    content: |
+      Ez alapján tehát az $f$ gyűrűhomomorfizmus az $R$ gyűrűt maradékosztályokra bontja, és egy adott
+      maradékosztályban minden elemnek ugyanaz lesz az $f$ szerinti képe az $S$ gyűrűben.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán például a $\Z$ és $Z_3$ gyűrűk között lévő, fentebb már ismertetett $\bmod_3$ maradékképző
+      függvény &ndash; mint gyűrűhomomorfizmus &ndash; szerinti maradékosztályokat szemléltetjük:
+    src: 02-a-mod-3-szerinti-maradekosztalyok.jpg
+    alt: A mod_3 szerinti maradékosztályok
+    caption: 'A $\bmod_3$ szerinti maradékosztályok'
+  - type: narrative
+    content: |
+      Az ábra baloldalán az egész számok $\Z$ gyűrűjét reprezentáló, mindkét irányban végtelen számegyenes
+      "felcsavarva" látható. Méghozzá olymódon, hogy az azonos maradékosztályba kerülő egész számok egy vonalba
+      essenek. Ezek épp azok a számok lesznek, amelyek $3$-mal osztva azonos maradékot adnak. Az ábra jobboldalán a
+      $\bmod_3$ gyűrűhomomorfizmus képhalmaza, tehát jelen esetben a $Z_3$ halmaz látható. Ennek elemeit egy
+      óralapon helyeztük el ahhoz hasonlóan, ahogyan a 9. részben szemléltettük az ***óraaritmetikát*** a
+      Diffie-Hellman kulcscsere protokoll kapcsán. A két halmaz közötti $\bmod_3$ leképezést nyilakkal
+      szemléltettük, amely tehát minden egész számhoz az ő modulo $3$ maradékát rendeli hozzá.
+  - type: narrative
+    content: |
+      Felmerülhet az Olvasóban a kérdés, hogy a fenti [gyuruhomomorfizmus-szerinti-kongruencia]ban, valamint a
+      [gyuruhomomorfizmus-szerinti-kongruencia-ekvivalenciarelacio]ben miért kötöttük ki a két gyűrű közötti $f$
+      függvényről, hogy az ***gyűrűhomomorfizmus*** legyen. Hiszen a kongruenciát, mint relációt az eddigiek
+      alapján definiálhattuk volna tetszőleges függvény szerint is. Az ugyanúgy egy ekvivalenciareláció lenne,
+      ugyanis a [gyuruhomomorfizmus-szerinti-kongruencia-ekvivalenciarelacio] bizonyításában egyáltalán nem
+      használtuk ki az $f$ leképezés művelettartó tulajdonságait. Rövidesen világos lesz, hogy miért olyan fontos
+      ez a tulajdonság.

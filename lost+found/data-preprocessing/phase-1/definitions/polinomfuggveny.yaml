@@ -1,0 +1,24 @@
+type: definition
+name: polinomfuggveny
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ egy tetszőleges ***kommutatív gyűrű***, $f\in R[x]$ pedig egy tetszőleges ***$R$ feletti
+      polinom***.
+  - type: formula
+    lead-in: |
+      Tegyük fel, hogy $f$ vagy a nullapolinom, vagy pedig a foka legfeljebb $n$, azaz reprezentálható az alábbi
+      végtelen sorozattal, ahol $0_R$ jelöli az $R$ gyűrű nullelemét:
+    content: |
+      f=(a_0,a_1,a_2,\ldots ,a_{n-1},a_n, 0_R, 0_R, 0_R, \ldots)
+  - type: formula
+    lead-in: |
+      Ekkor az $f$ polinomhoz tartozó ***polinomfüggvénynek*** nevezzük azt az $F:R\to R$ függvényt, amely
+      tetszőleges $x\in R$ gyűrűelemhez az alábbi $F(x)$-szel jelölt gyűrűelemet rendeli hozzá:
+    content: |
+      F(x)=a_0+a_1\cdot x+a_2\cdot x^2+\ldots + a_{n-1}\cdot x^{n-1} + a_n\cdot x^n
+  - type: narrative
+    content: |
+      Az ebben a képletben szereplő összeadások és szorzások alatt az $R$ gyűrű összeadását és szorzását kell
+      érteni.

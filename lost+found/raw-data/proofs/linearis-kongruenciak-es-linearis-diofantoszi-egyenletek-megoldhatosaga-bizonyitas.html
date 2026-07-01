@@ -1,0 +1,67 @@
+<!-- wp:paragraph -->
+<p><strong><em>Elsőként megmutatjuk</em></strong>, hogy az [latex]ax\equiv b\pmod m[/latex] lineáris kongruencia pontosan akkor oldható meg, amikor megoldható az [latex]ax+my=b[/latex] lineáris diofantoszi egyenlet.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]ax\equiv b\pmod m[/latex] megoldhatósága azt jelenti, hogy létezik olyan [latex][s]_m[/latex] maradékosztály, amely megoldása ennek a kongruenciának. Az [latex][s]_m[/latex] maradékosztályt tehát az [latex]s[/latex] egész számmal reprezentáltuk, azaz teljesül az [latex]as\equiv b\pmod m[/latex] kongruencia. Ez viszont a [yp_element slug="egesz-szamok-kozotti-kongruencia" type="link" /] 3. pontja alapján pontosan akkor teljesül, ha fennáll az [latex]m|b-as[/latex] oszthatóság. Az oszthatóság [yp_element slug="oszthatosag" type="link" /] definíciója miatt ez pontosan azt jelenti, hogy létezik olyan [latex]t[/latex] egész szám, amelyre teljesül az [latex]mt=b-as[/latex] egyenlet. Mindkét oldalhoz [latex]as[/latex]-t hozzáadva azt kapjuk tehát, hogy az [latex]ax\equiv b\pmod m[/latex] kongruencia megoldhatósága pontosan azt jelenti, hogy léteznek olyan [latex]s[/latex] és [latex]t[/latex] egész számok, amelyek kielégítik az alábbi lineáris diofantoszi egyenletet:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]ax+my=b[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az utóbbi megoldhatóságának <strong><em>szükséges és elégséges feltétele</em></strong> ezért egyúttal az előbbi megoldhatóságának is szükséges és elégséges feltétele lesz – épp ahogyan a tétel állítja. A fentiekből továbbá kiderült, hogy egy [latex]s[/latex] egész szám által reprezentált [latex][s]_m[/latex] maradékosztály valóban akkor és csak akkor megoldása az [latex]ax\equiv b\pmod m[/latex] lineáris kongruenciának, ha létezik olyan [latex]t[/latex] egész szám, amelyre fennáll az [latex]as+mt=b[/latex] egyenlőség.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Most azt igazoljuk</em></strong>, hogy az [latex]ax+my=b[/latex] egyenlet megoldhatóságának szükséges és elégséges feltétele az [latex](a,m)|b[/latex] oszthatóság. Tegyük ezért fel, hogy az [latex]x_0[/latex], [latex]y_0[/latex] egész számpár egy megoldása ennek az egyenletnek, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]ax_0+my_0=b[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel az [latex](a,m)[/latex] az [latex]a[/latex] és [latex]m[/latex] egész számok közös osztója, ezért nyilván fennállnak az [latex](a,m)|a[/latex] és [latex](a,m)|m[/latex] oszthatóságok. Emiatt a [yp_element slug="oszthatosag-tulajdonsagai" type="link" /] 7. pontja alapján fennállnak az [latex](a,m)|ax_0[/latex] valamint az [latex](a,m)|my_0[/latex] oszthatóságok is. Ám ekkor ugyanezen tétel 6. pontja miatt fennáll az alábbi oszthatóság is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](a,m)|\underbrace{ax_0 +my_0}_{=b}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Visszafelé:</em></strong> Ha fennáll az [latex](a,m)|b[/latex] oszthatóság, az azt jelenti, hogy létezik olyan [latex]t[/latex] egész szám, amelyre teljesül az alábbi egyenlet:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](a,m)\cdot t=b[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel az egész számok [latex]\Z[/latex] gyűrűje főideálgyűrű ([yp_element slug="euklideszi-gyuru-foidealgyuru" type="link" /]), ezért alkalmazható a Bézout-lemma ([yp_element slug="bezout-lemma" type="link" /]). Ez alapján az [latex](a,m)[/latex] kitüntetett közös osztóhoz léteznek olyan [latex]u[/latex] és [latex]v[/latex] egész számok, hogy teljesül az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](a,m)=au+mv[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezt behelyettesíthetjük az előző egyenletbe:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](\underbrace{au+mv}_{(a,m)})\cdot t=b[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A zárójelet felbontva végül ezt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a\cdot (ut) + m\cdot (vt)=b[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azaz lényegében megkaptuk az [latex]ax+my=b[/latex] lineáris diofantoszi egyenlet egy megoldását, nevezetesen az [latex]x=ut[/latex], [latex]y=vt[/latex] egész számpárt.</p>
+<!-- /wp:paragraph -->

@@ -1,0 +1,99 @@
+type: proof
+name: linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga-bizonyitas
+remarks: []
+references:
+  bezout-lemma:
+    target:
+      type: theorem
+      name: bezout-lemma
+  egesz-szamok-kozotti-kongruencia:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia
+  euklideszi-gyuru-foidealgyuru:
+    target:
+      type: theorem
+      name: euklideszi-gyuru-foidealgyuru
+  oszthatosag:
+    target:
+      type: definition
+      name: oszthatosag
+  oszthatosag-tulajdonsagai:
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+content:
+  - type: narrative
+    content: |
+      ***Elsőként megmutatjuk***, hogy az $ax\equiv b\pmod m$ lineáris kongruencia pontosan akkor oldható meg,
+      amikor megoldható az $ax+my=b$ lineáris diofantoszi egyenlet.
+  - type: narrative
+    content: |
+      Az $ax\equiv b\pmod m$ megoldhatósága azt jelenti, hogy létezik olyan $[s]_m$ maradékosztály, amely megoldása
+      ennek a kongruenciának. Az $[s]_m$ maradékosztályt tehát az $s$ egész számmal reprezentáltuk, azaz teljesül
+      az $as\equiv b\pmod m$ kongruencia. Ez viszont a [egesz-szamok-kozotti-kongruencia] 3. pontja alapján
+      pontosan akkor teljesül, ha fennáll az $m|b-as$ oszthatóság. Az oszthatóság [oszthatosag] definíciója miatt
+      ez pontosan azt jelenti, hogy létezik olyan $t$ egész szám, amelyre teljesül az $mt=b-as$ egyenlet.
+  - type: formula
+    lead-in: |
+      Mindkét oldalhoz $as$-t hozzáadva azt kapjuk tehát, hogy az $ax\equiv b\pmod m$ kongruencia megoldhatósága
+      pontosan azt jelenti, hogy léteznek olyan $s$ és $t$ egész számok, amelyek kielégítik az alábbi lineáris
+      diofantoszi egyenletet:
+    content: |
+      ax+my=b
+  - type: narrative
+    content: |
+      Az utóbbi megoldhatóságának ***szükséges és elégséges feltétele*** ezért egyúttal az előbbi megoldhatóságának
+      is szükséges és elégséges feltétele lesz &ndash; épp ahogyan a tétel állítja. A fentiekből továbbá kiderült,
+      hogy egy $s$ egész szám által reprezentált $[s]_m$ maradékosztály valóban akkor és csak akkor megoldása az
+      $ax\equiv b\pmod m$ lineáris kongruenciának, ha létezik olyan $t$ egész szám, amelyre fennáll az $as+mt=b$
+      egyenlőség.
+  - type: narrative
+    content: |
+      ***Most azt igazoljuk***, hogy az $ax+my=b$ egyenlet megoldhatóságának szükséges és elégséges feltétele az
+      $(a,m)|b$ oszthatóság.
+  - type: formula
+    lead-in: |
+      Tegyük ezért fel, hogy az $x_0$, $y_0$ egész számpár egy megoldása ennek az egyenletnek, azaz:
+    content: |
+      ax_0+my_0=b
+  - type: narrative
+    content: |
+      Mivel az $(a,m)$ az $a$ és $m$ egész számok közös osztója, ezért nyilván fennállnak az $(a,m)|a$ és $(a,m)|m$
+      oszthatóságok. Emiatt a [oszthatosag-tulajdonsagai] 7. pontja alapján fennállnak az $(a,m)|ax_0$ valamint az
+      $(a,m)|my_0$ oszthatóságok is.
+  - type: formula
+    lead-in: |
+      Ám ekkor ugyanezen tétel 6. pontja miatt fennáll az alábbi oszthatóság is:
+    content: |
+      (a,m)|\underbrace{ax_0 +my_0}_{=b}
+  - type: formula
+    lead-in: |
+      ***Visszafelé:*** Ha fennáll az $(a,m)|b$ oszthatóság, az azt jelenti, hogy létezik olyan $t$ egész szám,
+      amelyre teljesül az alábbi egyenlet:
+    content: |
+      (a,m)\cdot t=b
+  - type: narrative
+    content: |
+      Mivel az egész számok $\Z$ gyűrűje főideálgyűrű ([euklideszi-gyuru-foidealgyuru]), ezért alkalmazható a
+      Bézout-lemma ([bezout-lemma]).
+  - type: formula
+    lead-in: |
+      Ez alapján az $(a,m)$ kitüntetett közös osztóhoz léteznek olyan $u$ és $v$ egész számok, hogy teljesül az
+      alábbi:
+    content: |
+      (a,m)=au+mv
+  - type: formula
+    lead-in: |
+      Ezt behelyettesíthetjük az előző egyenletbe:
+    content: |
+      (\underbrace{au+mv}_{(a,m)})\cdot t=b
+  - type: formula
+    lead-in: |
+      A zárójelet felbontva végül ezt kapjuk:
+    content: |
+      a\cdot (ut) + m\cdot (vt)=b
+  - type: narrative
+    content: |
+      Azaz lényegében megkaptuk az $ax+my=b$ lineáris diofantoszi egyenlet egy megoldását, nevezetesen az $x=ut$,
+      $y=vt$ egész számpárt.

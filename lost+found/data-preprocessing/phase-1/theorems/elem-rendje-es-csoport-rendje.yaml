@@ -1,0 +1,9 @@
+type: theorem
+name: elem-rendje-es-csoport-rendje
+proofs:
+  - elem-rendje-es-csoport-rendje-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Ha $G$ ***véges csoport***, akkor $G$ bármely elemének rendje osztója $G$ rendjének.

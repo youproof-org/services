@@ -1,0 +1,26 @@
+type: remark
+name: asszocialtsag-tulajdonsagai-megjegyzes
+references:
+  asszocialt:
+    target:
+      type: definition
+      name: asszocialt
+  egyseg:
+    target:
+      type: definition
+      name: egyseg
+content:
+  - type: narrative
+    content: |
+      A tétel alapján tehát biztos, hogy az összes egység egy ekvivalencia-osztályba kerül, amelyben az egységeken
+      kívül nincs más elem. Ezenkívül minden elem azonos ekvivalencia-osztályba kerül az ellentettjével. Arról
+      azonban a tétel semmit nem mond, hogy egy ilyen osztálynak kizárólag ők lennének-e az elemeik. Például az
+      egység [egyseg]ja utáni megjegyzésben már említett úgynevezett Gauss-egészek körében minden nemnulla elemnek
+      önmagán és az ellentettjén kívül van még 2 további asszociáltja. Ennek részleteitől azonban &ndash; az
+      úgynevezett komplex számok ismeretének hiányában &ndash; eltekintünk.
+  - type: narrative
+    content: |
+      Megjegyezzük ugyanakkor, hogy az asszociáció bármely testben mindössze két ekvivalencia-osztályt fog
+      kijelölni. Az egyikben a tétel második állítása miatt egyetlen elem lesz, méghozzá a nullelem. A másik
+      ekvivalencia-osztály pedig a [asszocialt] utáni megjegyzés alapján tartalmazni fogja az összes többi elemet
+      &ndash; amelyek egyébként a [egyseg] utáni megjegyzés alapján épp az egységek.

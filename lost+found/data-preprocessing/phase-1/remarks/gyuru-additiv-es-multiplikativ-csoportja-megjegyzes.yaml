@@ -1,0 +1,74 @@
+type: remark
+name: gyuru-additiv-es-multiplikativ-csoportja-megjegyzes
+references:
+  csoport:
+    target:
+      type: definition
+      name: csoport
+  egyseg:
+    target:
+      type: definition
+      name: egyseg
+  egysegek-es-egysegelem-viszonya:
+    target:
+      type: theorem
+      name: egysegek-es-egysegelem-viszonya
+  inverz-elem-egyertelmu:
+    target:
+      type: theorem
+      name: inverz-elem-egyertelmu
+  ketvaltozos-muvelet:
+    target:
+      type: definition
+      name: ketvaltozos-muvelet
+  oszthatosag:
+    target:
+      type: definition
+      name: oszthatosag
+  szorzat-inverze:
+    target:
+      type: theorem
+      name: szorzat-inverze
+content:
+  - type: narrative
+    content: |
+      A [csoport] alapján könnyen leellenőrizhető, hogy az $R^{\times}$ halmaz valóban csoportot alkot az $R$ gyűrű
+      $\cdot$ műveletével.
+  - type: narrative
+    content: |
+      ***Előszöris*** $R^{\times}$ zárt a $\cdot$ műveletre nézve. Legyen ugyanis $a$ és $b$ az $R$ gyűrű két
+      invertálható eleme &ndash; azaz $a\in R^{\times}$ és $b\in R^{\times}$.
+  - type: formula
+    lead-in: |
+      Ekkor az $ab$ szorzat is invertálható &ndash; azaz $ab\in R^{\times}$ &ndash;, méghozzá a [szorzat-inverze]
+      alapján:
+    content: |
+      (ab)^{-1}=b^{-1}a^{-1}
+  - type: narrative
+    content: |
+      Más szavakkal tehát az $R$ halmazon értelmezett $\cdot$ művelet algebrai értelemben művelet az $R$-nél
+      szűkebb $R^{\times}$ halmazon is (lásd a [ketvaltozos-muvelet]t). Így ha a $\cdot$ művelet $R$-en asszociatív
+      volt, akkor nyilván $R^{\times}$-en is az.
+  - type: narrative
+    content: |
+      ***Másodszor*** $R^{\times}$-ben létezik neutrális elem, méghozzá az $R$ gyűrű egységeleme. Neki ugyanis
+      nyilván létezik $R$-beli inverze a $\cdot$ műveletre nézve: önmaga.
+  - type: narrative
+    content: |
+      ***Harmadszor*** minden $R^{\times}$-beli elemnek az inverze szintén $R^{\times}$-ben van &ndash; azaz
+      $R^{\times}$ zárt az $R$-beli inverzképzésre is. Tegyük fel ugyanis, hogy egy $a\in R^{\times}$ elem $R$-beli
+      inverze $a^{-1}$, azaz $aa^{-1}=1$ és $a^{-1}a=1$. Mivel $1$ benne van $R^{\times}$-ben, ezért $a$-nak az
+      $R^{\times}$-beli inverze szintén csak $a^{-1}$ lehet, hiszen a [inverz-elem-egyertelmu] alapján az
+      inverzképzés egyértelmű.
+  - type: narrative
+    content: |
+      Az $R^{\times}$ halmaz tehát ***valóban csoportot alkot*** az $R$ gyűrű $\cdot$ műveletével.
+  - type: narrative
+    content: |
+      ***Végül*** felhívjuk a figyelmet, hogy amennyiben $R$ ***kommutatív és egységelemes***, akkor érvényes a
+      [egysegek-es-egysegelem-viszonya]. Ez alapján $R$ valamely eleme ***akkor és csak akkor invertálható, ha
+      egység***. Az egységek ugyanis ilyenkor épp az egységelem osztói, ami ugye a [oszthatosag] alapján azt
+      jelenti, hogy létezik hozzájuk olyan elem, amellyel őket összeszorozva az egységelemet kapjuk eredényül. Egy
+      kommutatív, egységelemes $R$ gyűrű multiplikatív csoportja tehát $R$ egységeiből áll. Speciálisan ha $R$
+      test, akkor a [egyseg] utáni megjegyzés alapján $R^{\times}$ a nullelemen kívül minden $R$-beli elemet
+      tartalmaz.

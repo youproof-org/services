@@ -1,0 +1,78 @@
+type: proof
+name: teljes-es-redukalt-maradekrendszer-kepzese-bizonyitas
+remarks: []
+references:
+  egesz-szamok-kozotti-kongruencia-egyszerusitese:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia-egyszerusitese
+  egesz-szamok-kozotti-kongruencia-tulajdonsagai:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia-tulajdonsagai
+  euklideszi-gyurukben-teljesul-a-szamelmelet-alaptetele:
+    target:
+      type: theorem
+      name: euklideszi-gyurukben-teljesul-a-szamelmelet-alaptetele
+  teljes-es-redukalt-maradekrendszer-feltetele:
+    target:
+      type: theorem
+      name: teljes-es-redukalt-maradekrendszer-feltetele
+content:
+  - type: narrative
+    content: |
+      ***Nézzük először a teljes maradékrendszerre vonatkozó állítást!*** Mivel az új maradékrendszer elemszáma is
+      $m$, ezért a [teljes-es-redukalt-maradekrendszer-feltetele] alapján elegendő a páronkénti inkongruenciát
+      ellenőrizni.
+  - type: formula
+    lead-in: |
+      Legyen tehát $ar_i+b$ és $ar_j+b$ az új maradékrendszer két tetszőleges eleme, és tegyük fel, hogy ezek
+      között fennáll a kongruencia, azaz:
+    content: |
+      ar_i+b\equiv ar_j+b\pmod m
+  - type: narrative
+    content: |
+      A [egesz-szamok-kozotti-kongruencia-tulajdonsagai] 6. pontja alapján mindkét oldalból kivonhatunk $b$-t.
+  - type: formula
+    lead-in: |
+      Így az alábbit kapjuk:
+    content: |
+      ar_i\equiv ar_j\pmod m
+  - type: formula
+    lead-in: |
+      Mivel $a$-ról azt mondtuk, hogy relatív prím $m$-hez, így a [egesz-szamok-kozotti-kongruencia-egyszerusitese]
+      utáni megjegyzés alapján $a$-val egyszerűsíthetjük mindkét oldalt:
+    content: |
+      r_i\equiv r_j\pmod m
+  - type: narrative
+    content: |
+      Ez viszont csak akkor lehetséges, ha $r_i=r_j$, hiszen az eredeti teljes maradékrendszer elemei páronként
+      inkongruensek modulo $m$. Így tehát az $ar_i+b=ar_j+b$ egyenlőség is szükségképpen fennáll. Megfordítva a
+      gondolatmenetet: ha az új maradékrendszernek vesszük két egymástól különböző tetszőleges elemét, akkor ők
+      szükségképpen inkongruensek modulo $m$.
+  - type: narrative
+    content: |
+      ***Most nézzük a redukált maradékrendszerre vonatkozó állítást!*** Mivel az új maradékrendszer elemszáma is
+      $\varphi(m)$, ezért a [teljes-es-redukalt-maradekrendszer-feltetele] alapján elegendő a páronkénti
+      inkongruenciát, valamint az $m$-hez relatív prímséget ellenőrizni.
+  - type: formula
+    lead-in: |
+      Legyen tehát $as_i$ és $as_j$ az új maradékrendszer két tetszőleges eleme, és tegyük fel, hogy ezek között
+      fennáll a kongruencia, azaz:
+    content: |
+      as_i\equiv as_j\pmod m
+  - type: narrative
+    content: |
+      Innentől a gondolatmenet teljesen megegyezik az előzővel.
+  - type: narrative
+    content: |
+      Azt kell még megmutatni, hogy az új maradékrendszer minden eleme relatív prím $m$-hez. Legyen tehát $as_i$ az
+      új maradékrendszer tetszőleges eleme. Azt ugye a tétel szövegéből tudjuk, hogy $a$ relatív prím $m$-hez.
+      Továbbá $s_i$ is relatív prím $m$-hez, mivel ő az eredeti redukált maradékrendszer egyik eleme.
+  - type: narrative
+    content: |
+      Ez azt jelenti, hogy sem $a$-nak, sem pedig $s_i$-nek nincs $m$-mel közös osztója az egységeken kívül. Mivel
+      a [euklideszi-gyurukben-teljesul-a-szamelmelet-alaptetele] szerint az egész számok $\Z$ gyűrűjében
+      ***teljesül a számelmélet alaptétele***, ezért ez azt is jelenti, hogy $a$ és $s_i$ prímtényezői mind
+      különböznek $m$ prímtényezőitől, és így a szorzatuknak sincs $m$-mel közös prímtényezője, tehát osztója sem
+      az egységeken kívül. Azaz $as_i$ valóban ***relatív prím*** $m$-hez.

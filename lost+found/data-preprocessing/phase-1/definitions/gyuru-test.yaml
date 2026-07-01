@@ -1,0 +1,45 @@
+type: definition
+name: gyuru-test
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy adva van egy valamilyen $R$ halmaz, amelyen értelmezve van két darab kétváltozós művelet. Az
+      egyiket nevezzük ***összeadásnak*** és jelöljük $+$-szal. A másikat nevezzük ***szorzásnak*** és jelöljük
+      $\cdot$-tal.
+  - type: ordered-list
+    lead-in: |
+      Az így kapott $(R,+,\cdot )$ algebrai struktúrát ***gyűrűnek*** nevezzük, amennyiben teljesülnek rá az alábbi
+      tulajdonságok &ndash; az úgynevezett ***gyűrűaxiómák***:
+    items:
+      - 'A $+$ művelet ***kommutatív és asszociatív***.'
+      - 'A $+$ műveletre nézve ***létezik neutrális elem***. Ezt a ***gyűrű nullelemének*** nevezzük és $0$-val
+        jelöljük.'
+      - 'A $+$ művelet ***invertálható***. Egy tetszőleges $a$ elem $+$-ra vonatkozó inverzét $-a$-val jelöljük és
+        $a$ ***additív inverzének*** vagy ***ellentettjének*** nevezzük.'
+      - 'A $\cdot$ művelet ***asszociatív***.'
+      - 'Tetszőleges $R$-beli $a$, $b$ és $c$ elemekre teljesülnek az alábbi ***disztributivitási ***szabályok:'
+  - type: formula
+    content: |
+      \begin{aligned}a\cdot (b+c) &= a\cdot b + a\cdot c \\ (a+b)\cdot c &= a\cdot c + b\cdot c\end{aligned}
+  - type: narrative
+    content: |
+      Amennyiben a $\cdot$ művelet is kommutatív, úgy $(R,+,\cdot )$-et ***kommutatív gyűrűnek*** nevezzük.
+  - type: narrative
+    content: |
+      Amennyiben a $\cdot$ műveletre nézve is létezik neutrális elem, úgy ezt az elemet a ***gyűrű
+      egységelemének*** nevezzük és $1$-gyel jelöljük, $(R,+,\cdot )$-et pedig ***egységelemes gyűrűnek***
+      nevezzük.
+  - type: narrative
+    content: |
+      Azt a gyűrűt, amely kizárólag a $0$ elemet (azaz a gyűrű nullelemét) tartalmazza, ***nullgyűrűnek***
+      nevezzük. Ezt definíció szerint ***nem tekintjük egységelemes gyűrűnek*** annak ellenére, hogy a $0$ ebben az
+      elfajult esetben nyilvánvalóan neutrális elem az összeadáson kívül a szorzásra nézve is.
+  - type: narrative
+    content: |
+      ***Ferdetestnek*** nevezzük azokat az ***egységelemes*** gyűrűket, amelyekben a $\cdot$ műveletre nézve a
+      ***gyűrű nullelemén kívül minden elemnek létezik inverze***. Ha emellett a $\cdot$ művelet még kommutatív is,
+      akkor $(R,+,\cdot )$-et ***kommutatív ferdetestnek*** vagy egyszerűen csak ***testnek*** nevezzük (***a
+      nullgyűrű tehát nem test***, mivel nem is egységelemes a definíció szerint). Egy tetszőleges $a$ elem
+      $\cdot$-ra vonatkozó inverzét ebben az esetben $\frac{1}{a}$-val vagy $a^{-1}$-gyel jelöljük és $a$
+      ***multiplikatív inverzének*** nevezzük.

@@ -1,0 +1,55 @@
+type: proof
+name: termeszetes-szamok-rendezesi-relacioja-trichotom-bizonyitas
+remarks: []
+references:
+  peano-axiomarendszer:
+    target:
+      type: definition
+      name: peano-axiomarendszer
+  termeszetes-szamok-rendezesi-relacioja-lemma:
+    target:
+      type: theorem
+      name: termeszetes-szamok-rendezesi-relacioja-lemma
+content:
+  - type: narrative
+    content: |
+      ***Indirekt bizonyítást*** fogunk alkalmazni, azaz nem közvetlenül a tételt bizonyítjuk, hanem megmutatjuk,
+      miért lehetetlen, hogy nem igaz. Tegyük fel ezért, hogy az $\N$ halmazban léteznek olyan galád $a$ és $b$
+      számok, amelyek között egyik irányban sem áll fenn a $\leq$ reláció, azaz $a\leq b$ és $b\leq a$.
+  - type: narrative
+    content: |
+      Ebből az következik, hogy egyikük sem lehet 0, hiszen ha például $a=0$ lenne, akkor $\underbrace{0}_{=a}\leq
+      b$ teljesülne (ugyanis $0+b=b$). Ha meg $b=0$ lenne, akkor pedig $\underbrace{0}_{=b}\leq a$ teljesülne
+      (ugyanis $0+a=a$).
+  - type: narrative
+    content: |
+      Mármost ha egyikük sem 0, akkor a 3. Peano-axióma ([peano-axiomarendszer]) miatt mindkettőhöz létezik egy-egy
+      olyan szám, amelyeknek épp ők a rákövetkezői. Jelöljük ezt a két számot $a_1$-gyel és $b_1$-gyel, amelyekre
+      tehát teljesül, hogy $s(a_1)=a$ és $s(b_1)=b$.
+  - type: narrative
+    content: |
+      Mármost ha $a$ és $b$ között nem teljesül a $\leq$ reláció egyik irányban sem, akkor a
+      [termeszetes-szamok-rendezesi-relacioja-lemma] miatt utóbbiak között sem fog &ndash; azaz $a_1\leq b_1$ és
+      $b_1\leq a_1$.
+  - type: narrative
+    content: |
+      De ekkor ugyanezen gondolatmenet alapján léteznie kell egy $a_2$ és egy $b_2$ számnak is, amelyek
+      rákövetkezői épp az $a_1$ és $b_1$ számok, és amelyek közül szintén egyik sem 0. És így tovább, ezt a
+      gondolatmenetet a végtelenségig folytathatjuk, mindig találunk újabb és újabb nem 0 számokat, amelyek
+      rákövetkezői épp az előző lépésben megtalált számok.
+  - type: figure
+    lead-in: |
+      Kapunk tehát két végtelen számsorozatot &ndash; amely sorozatokban nem szerepel a 0 &ndash;, az alábbi
+      rákövetkezőségi viszonyokkal:
+    src: vegtelen_leszallo_sorozatok.jpg
+    alt: Végtelen leszálló sorozatok
+    caption: Végtelen leszálló sorozatok
+  - type: narrative
+    content: |
+      Ez viszont ***lehetetlen***, hiszen a 4. Peano-axióma ([peano-axiomarendszer]) kimondja, hogy a 0-ból
+      kiindulva a rákövetkezési függvény mentén az összes természetes számhoz el kell jutnunk előbb-utóbb. Márpedig
+      egy ilyen gyűjtögetésben az ábrán lévő két sorozat tagjai biztosan nem lennének benne.
+  - type: narrative
+    content: |
+      Ebből viszont az következik, hogy az $a\leq b$ és a $b\leq a$ relációk közül legalább az egyiknek teljesülnie
+      kell tetszőleges $a$ és $b$ esetén, máskülönben ellentmondásba kerülnénk a 4. Peano-axiómával.

@@ -1,0 +1,59 @@
+<!-- wp:paragraph -->
+<p>Tegyük fel tehát, hogy [latex]L[/latex]-nek létezik teljes inverz képe [latex]G[/latex]-ben – hiszen a tétel úgyis csak ezekről az esetekről nyilatkozik –, és vezessük be a [latex]K=f^{-1}(L)[/latex] jelölést. A [latex]K[/latex] halmaz a [yp_element slug="kep-teljes-inverz-kep" type="link" /] alapján nyilván részhalmaza [latex]G[/latex]-nek. Ezért csak a [yp_element slug="reszcsoport-feltetele" type="link" /] feltételeinek teljesülését kell ellenőrizni [latex]K[/latex]-ra, továbbá igazolni a [latex]\ker f\sube K[/latex] tartalmazást.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>1. feltétel: [latex]K[/latex] zárt a [latex]G[/latex] csoport műveletére nézve</strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Legyenek [latex]a[/latex] és [latex]b[/latex] a [latex]K[/latex] halmaz két tetszőleges eleme. Mivel [latex]K=f^{-1}(L)[/latex], ezért a [yp_element slug="kep-teljes-inverz-kep" type="link" /] utáni megjegyzés alapján [latex]f(K)=L[/latex], és így ugyanezen definíció alapján [latex]f(a)[/latex] és [latex]f(b)[/latex] is benne van [latex]L[/latex]-ben. Ekkor azonban a [yp_element slug="reszcsoport-feltetele" type="link" /] 1. pontja miatt az ő [latex]f(a)\cdot f(b)[/latex] szorzatuk is [latex]L[/latex]-ben van, hiszen a tétel szövege alapján [latex]L[/latex] részcsoport [latex]H[/latex]-ban, azaz zárt a [latex]H[/latex]-beli műveletre nézve. Ez a szorzat azonban [latex]f[/latex] művelettartó tulajdonsága alapján átírható az alábbi módon:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f(a)\cdot f(b)=f(ab)\in L[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Vagyis az [latex]ab[/latex] szorzat [latex]f[/latex] szerinti képe [latex]L[/latex]-ben van. Mivel azonban [latex]K=f^{-1}(L)[/latex], ezért ez a [yp_element slug="kep-teljes-inverz-kep" type="link" /] szerint azt is jelenti, hogy az [latex]ab[/latex] szorzat csak [latex]K[/latex]-ban lehet. A [latex]K[/latex] halmaz tehát valóban zárt a [latex]G[/latex]-beli műveletre nézve.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>2. feltétel: [latex]K[/latex] tartalmazza a [latex]G[/latex] csoport egységelemét</strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]L[/latex] részcsoport [latex]H[/latex]-ban, ezért a [yp_element slug="reszcsoport-feltetele" type="link" /] 2. pontja miatt tartalmazza annak egységelemét, amelyet most jelöljünk [latex]e_H[/latex]-val. A [yp_element slug="csoporthomomorfizmus-egysegelem-es-inverzkepzestarto" type="link" /] 1. pontja alapján azonban tudjuk, hogy a [latex]G[/latex] csoport egységelemének – amelyet most jelöljünk [latex]e_G[/latex]-vel – [latex]f[/latex] szerinti képe [latex]e_H[/latex], azaz [latex]f(e_G)=e_H[/latex]. Mivel azonban [latex]K[/latex] az [latex]L[/latex] halmaz [latex]f[/latex] szerinti teljes inverz képe, ezért a [yp_element slug="kep-teljes-inverz-kep" type="link" /] miatt [latex]e_G[/latex] csak [latex]K[/latex]-ban lehet. Így tehát [latex]K[/latex] valóban tartalmazza a [latex]G[/latex] csoport egységelemét.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>3. feltétel: [latex]K[/latex] zárt a [latex]G[/latex]-beli inverzképzésre</strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Legyen [latex]a[/latex] tetszőleges [latex]K[/latex]-beli elem. Ekkor az 1. feltétel bizonyításánál már látott [latex]f(K)=L[/latex] miatt [latex]f(a)[/latex] benne van [latex]L[/latex]-ben. Mivel azonban [latex]L[/latex] részcsoport [latex]H[/latex]-ban, így a [yp_element slug="reszcsoport-feltetele" type="link" /] 3. pontja miatt az [latex](f(a))^{-1}[/latex] inverz is benne van [latex]L[/latex]-ben. A [yp_element slug="csoporthomomorfizmus-egysegelem-es-inverzkepzestarto" type="link" /] 2. pontja alapján azonban tudjuk, hogy [latex]f[/latex] tartja a [latex]G[/latex]-beli inverzképzést, így teljesül az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](f(a))^{-1}=f(a^{-1})\in L[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Vagyis az [latex]a^{-1}[/latex] inverz [latex]f[/latex] szerinti képe [latex]L[/latex]-ben van. Mivel azonban [latex]K=f^{-1}(L)[/latex], ezért ez a [yp_element slug="kep-teljes-inverz-kep" type="link" /] szerint azt is jelenti, hogy maga az [latex]a^{-1}[/latex] inverz csak [latex]K[/latex]-ban lehet. A [latex]K[/latex] halmaz tehát valóban zárt a [latex]G[/latex]-beli inverzképzésre nézve.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Végül a [latex]\ker f\sube K[/latex] tartalmazást igazoljuk.</strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Legyen [latex]a[/latex] tetszőleges elem [latex]f[/latex] magjában, azaz [latex]a\in \ker f[/latex]. Azt kell megmutatni, hogy ekkor [latex]a\in K[/latex] is teljesül. Mivel [latex]a[/latex] benne van [latex]f[/latex] magjában, így az ő [latex]f[/latex] szerinti képe a [latex]H[/latex] csoport egységeleme, amelyet jelöljünk továbbra is [latex]e_H[/latex]-val. Azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f(a)=e_H[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]e_H[/latex]-ról azonban tudjuk, hogy benne van [latex]L[/latex]-ben, hiszen [latex]L[/latex] ugye részcsoport [latex]H[/latex]-ban. Mivel azonban [latex]e_H[/latex] az [latex]a[/latex] elem [latex]f[/latex] szerinti képe, ezért [latex]f^{-1}(L)=K[/latex] miatt a [yp_element slug="kep-teljes-inverz-kep" type="link" /] alapján maga [latex]a[/latex] szükségképpen benne van [latex]K[/latex]-ban.</p>
+<!-- /wp:paragraph -->

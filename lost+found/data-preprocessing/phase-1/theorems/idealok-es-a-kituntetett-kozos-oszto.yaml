@@ -1,0 +1,12 @@
+type: theorem
+name: idealok-es-a-kituntetett-kozos-oszto
+proofs:
+  - idealok-es-a-kituntetett-kozos-oszto-bizonyitas
+remarks:
+  - idealok-es-a-kituntetett-kozos-oszto-megjegyzes
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ tetszőleges ***integritástartomány***, amelyben ***létezik egységelem***. Legyenek továbbá $a$,
+      $b$ és $d$ az $R$ tetszőleges elemei, és tegyük fel, hogy $(a,b)=(d)$ teljesül. Ekkor $d$ ***kitüntetett
+      közös osztója*** $a$-nak és $b$-nek.

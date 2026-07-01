@@ -1,0 +1,21 @@
+type: theorem
+name: egesz-szamok-kozotti-kongruencia-egyszerusitese
+proofs:
+  - egesz-szamok-kozotti-kongruencia-egyszerusitese-bizonyitas
+remarks:
+  - egesz-szamok-kozotti-kongruencia-egyszerusitese-megjegyzes
+content:
+  - type: narrative
+    content: |
+      Legyen $a$, $b$, és $c$ tetszőleges, $m\gt 0$ ***pozitív*** egész szám, $d$ pedig a $c$ és $m$ egész számok
+      ***kitüntetett közös osztója***, azaz $d=(c,m)$.
+  - type: formula
+    lead-in: |
+      Ebben az esetben az $ac\equiv bc\pmod m$ kongruencia akkor és csak akkor teljesül, amikor teljesül az alábbi
+      kongruencia is:
+    content: |
+      a\equiv b\pmod{\frac{m}{d}}
+  - type: narrative
+    content: |
+      Itt $\frac{m}{d}$ alatt azt az egész számot értjük, amelyet a $d=(c,m)$ kitüntetett közös osztóval
+      megszorozva az $m$ modulust kapjuk eredményül.

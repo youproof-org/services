@@ -1,0 +1,33 @@
+type: proof
+name: egyseg-letezesenek-szukseges-es-elegseges-feltetele-bizonyitas
+remarks: []
+references:
+  egyseg:
+    target:
+      type: definition
+      name: egyseg
+  gyuru-test:
+    target:
+      type: definition
+      name: gyuru-test
+  oszthatosag-tulajdonsagai:
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+content:
+  - type: narrative
+    content: |
+      Azt, hogy az esetleges egységelem egy gyűrűben mindig egység, már láttuk az egység [egyseg]ja utáni
+      megjegyzésben. Így csak azt kell megmutatni, hogy ha létezik egység, akkor szükségképpen léteznie kell
+      egységelemnek is ***nullosztómentes*** gyűrű esetén.
+  - type: narrative
+    content: |
+      Tegyük fel tehát, hogy $e$ egy egység. Az általánosság megsértése nélkül feltehetjük, hogy $e\eq 0$. Hiszen
+      ha $e=0$ lenne, akkor a [oszthatosag-tulajdonsagai] 4. pontja miatt ő csak saját magának lenne osztója. Mivel
+      azonban azt mondtuk róla, hogy osztója a gyűrű minden elemének (hiszen egység), ezért ebben az esetben a
+      gyűrűnek szükségképpen ő lenne az egyetlen eleme. Azaz a [gyuru-test] szerinti ***nullgyűrűről*** volna szó,
+      amelyben a nullelem egyben egységelem is, így erre nyilván teljesülne az állítás.
+  - type: narrative
+    content: |
+      Most nézzük az $e\eq 0$ esetet. Ő tehát osztója a gyűrű összes elemének, így saját magának is, azaz $e|e$.
+      Ebből viszont a [oszthatosag-tulajdonsagai] 2. pontja miatt az következik, hogy a gyűrű ***egységelemes***.

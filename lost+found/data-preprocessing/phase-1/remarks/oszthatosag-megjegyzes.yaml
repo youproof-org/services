@@ -1,0 +1,13 @@
+type: remark
+name: oszthatosag-megjegyzes
+content:
+  - type: narrative
+    content: |
+      Egy testben bármely $a\eq 0$ és $b$ elem között fennáll az $a|b$ oszthatóság. Itt ugyanis minden nemnulla
+      elemnek van multiplikatív inverze.
+  - type: formula
+    lead-in: |
+      Így a $k=b\cdot a^{-1}$ képlet minden esetben előállítja azt a $k$ tényezőt, amellyel megszorozva az $a$
+      elemet $b$-t kapunk eredményül, hiszen:
+    content: |
+      a\cdot \underbrace{(b\cdot a^{-1})}_{=k} = \underbrace{(a\cdot a^{-1})}_{=1}\cdot b = b

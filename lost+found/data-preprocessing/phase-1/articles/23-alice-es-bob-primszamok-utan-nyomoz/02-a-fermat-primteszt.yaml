@@ -1,0 +1,147 @@
+type: section
+name: 02-a-fermat-primteszt
+title: A Fermat-prímteszt
+
+references:
+  egesz-szamok-kozotti-kongruencia-tulajdonsagai:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia-tulajdonsagai
+  euler-fuggveny:
+    target:
+      type: definition
+      name: euler-fuggveny
+
+body:
+  - type: narrative
+    content: |
+      Ennek a prímtesztelő eljárásnak az alapja az előző részben megismert ***kis Fermat-tétel***.
+  - type: formula
+    lead-in: |
+      Ez a tétel azt állítja, hogy ***HA*** egy $n\gt 0$ pozitív egész szám prímszám, ***AKKOR*** minden $n$-hez
+      ***relatív prím*** $a$ egész szám esetén teljesülni fog az alábbi kongruencia:
+    content: |
+      a^{n-1} \equiv 1 \pmod n
+  - type: narrative
+    content: |
+      Más megfogalmazásban azt is mondhatjuk, hogy amennyiben akárcsak egyetlen olyan $n$-hez relatív prím $a$
+      egész szám is létezik, amelyre ***nem teljesül*** a fenti kongruencia, akkor $n$ biztosan ***nem prím***
+      (azaz összetett, vagy egység). Egy ilyen $a$ egész szám tehát ***"leleplezi"*** vagy ***"tanúsítja"*** $n$
+      összetettségét. Könnyen adódik, hogyha egy $a$ egész szám tanú a fenti értelemben, akkor minden olyan $b$
+      egész szám is tanú, amely $a$-val azonos modulo $n$ maradékosztályban van. Ekkor ugyanis teljesül az $a\equiv
+      b\pmod n$ kongruencia, és így a [egesz-szamok-kozotti-kongruencia-tulajdonsagai] 8.
+  - type: formula
+    lead-in: |
+      pontja miatt teljesül az alábbi kongruencia is:
+    content: |
+      a^{n-1} \equiv b^{n-1} \pmod n
+  - type: narrative
+    content: |
+      Mármost ha a baloldal nem kongruens $1$-gyel &ndash; azaz $a$ tanú &ndash;, akkor a jobboldal sem lehet
+      kongruens $1$-gyel &ndash; azaz $b$ is tanú. Az alábbi definícióban tehát a fenti értelemben vett "tanú"
+      fogalmát praktikus módon komplett maradékosztályokra vonatkoztatjuk.
+  - type: embed
+    target:
+      type: definition
+      name: fermat-tanu
+  - type: embed
+    target:
+      type: remark
+      name: fermat-tanu-megjegyzes
+  - type: narrative
+    content: |
+      A ***kis Fermat-tétel*** eszerint úgy is megfogalmazható, hogy amennyiben egy $n$ egész számnak ***létezik
+      Fermat-tanúja***, akkor ***"biztosan összetett"***. Így ha $n$-ről szeretnénk eldönteni, hogy prím-e, akkor
+      nincs más dolgunk, mint keresni egy Fermat-tanút a ***nemnulla*** modulo $n$ maradékosztályok között. Igenám,
+      csakhogy e maradékosztályok száma borzasztóan nagy &ndash; egészen pontosan $n-1$ &ndash;, így reménytelennek
+      tűnik bármiféle ezek között való keresgélés. Az az érdekes, hogy ennek ellenére viszonylag gyorsan tudunk
+      Fermat-tanút találni, amennyiben egyáltalán létezik ilyen. Most ennek okát fogjuk megvizsgálni.
+  - type: narrative
+    content: |
+      Az alábbi táblázatban néhány adatot láthatunk az összes 500 és 600 közötti páratlan számról. A táblázat első
+      oszlopa magát a vizsgált $n$ számot tartalmazza. A második oszlopban azt láthatjuk, hogy összesen hány modulo
+      $n$ ***redukált maradékosztály*** létezik. Ez tehát a [euler-fuggveny] alapján épp az ***Euler-féle
+      $\varphi$-függvény*** értéke. A harmadik oszlop tartalmazza azt, hogy e $\varphi(n)$ darab redukált
+      maradékosztály között mennyi olyan van, amely ***nem Fermat-tanú***. Ezt az értéket $l(n)$-nel jelöltük.
+  - type: formula
+    lead-in: |
+      Végül a negyedik oszlop azt tartalmazza, hogy $n$ ténylegesen prím-e vagy sem:
+    content: |
+      \begin{array}{c||c}\begin{array}{c|c|c|c} n & \varphi(n) & l(n) & \text{prím} \\ \hline 501 & 332 & 4 &
+      \text{nem} \\ 503 & 502 & 502 & \text{igen} \\ 505 & 400 & 16 & \text{nem} \\ 507 & 312 & 4 & \text{nem} \\
+      509 & 508 & 508 & \text{igen} \\ 511 & 432 & 36 & \text{nem} \\ 513 & 324 & 4 & \text{nem} \\ 515 & 408 & 4 &
+      \text{nem} \\ 517 & 460 & 4 & \text{nem} \\ 519 & 344 & 4 & \text{nem} \\ 521 & 520 & 520 & \text{igen} \\
+      523 & 522 & 522 & \text{igen} \\ 525 & 240 & 16 & \text{nem} \\ 527 & 480 & 4 & \text{nem} \\ 529 & 506 & 22
+      & \text{nem} \\ 531 & 348 & 4 & \text{nem} \\ 533 & 480 & 16 & \text{nem} \\ 535 & 424 & 4 & \text{nem} \\
+      537 & 356 & 4 & \text{nem} \\ 539 & 420 & 4 & \text{nem} \\ 541 & 540 & 540 & \text{igen} \\ 543 & 360 & 4 &
+      \text{nem} \\ 545 & 432 & 16 & \text{nem} \\ 547 & 546 & 546 & \text{igen} \\ 549 & 360 & 8 & \text{nem}
+      \end{array} & \begin{array}{c|c|c|c} n & \varphi(n) & l(n) & \text{prím} \\ \hline  551 & 504 & 4 &
+      \text{nem} \\ 553 & 468 & 36 & \text{nem} \\ 555 & 288 & 8 & \text{nem} \\ 557 & 556 & 556 & \text{igen} \\
+      559 & 504 & 36 & \text{nem} \\ 561 & 320 & 320 & \boxed{\text{nem}} \\ 563 & 562 & 562 & \text{igen} \\ 565 &
+      448 & 16 & \text{nem} \\ 567 & 324 & 4 & \text{nem} \\ 569 & 568 & 568 & \text{igen} \\ 571 & 570 & 570 &
+      \text{igen} \\ 573 & 380 & 4 & \text{nem} \\ 575 & 440 & 4 & \text{nem} \\ 577 & 576 & 576 & \text{igen} \\
+      579 & 384 & 4 & \text{nem} \\ 581 & 492 & 4 & \text{nem} \\ 583 & 520 & 4 & \text{nem} \\ 585 & 288 & 32 &
+      \text{nem} \\ 587 & 586 & 586 & \text{igen} \\ 589 & 540 & 36 & \text{nem} \\ 591 & 392 & 4 & \text{nem} \\
+      593 & 592 & 592 & \text{igen} \\ 595 & 384 & 24 & \text{nem} \\ 597 & 396 & 4 & \text{nem} \\ 599 & 598 & 598
+      & \text{igen} \end{array} \end{array}
+  - type: narrative
+    content: |
+      A táblázatból legalábbis úgy tűnik, hogy amennyiben egy $n$ egész szám összetett, akkor ezt rendkívül sok,
+      sőt "majdnem mindegyik" modulo $n$ redukált maradékosztály tanúsítja. Ez abból látszik, hogy az összetett
+      számok esetén a táblázat harmadik oszlopában lévő szám nagyon kicsi. Az egyetlen kakukktojás ebben a
+      számtartományban az $561$, akire hamarosan visszatérünk még. Ez azt is jelenti, hogy véletlenszerűen
+      választott redukált maradékosztályok vizsgálatával jó eséllyel nagyon hamar "leleplezhetjük" $n$-t,
+      amennyiben összetett, hiszen kicsi az esélye, hogy épp a néhány nem Fermat-tanú valamelyikét választjuk.
+      Ráadásul egy-egy ilyen vizsgálatot a 21. részben tanult ***ismételt négyzetreemelések módszerével***
+      rettentően hamar el is tudunk végezni. Hamarosan általánosságban is igazolni fogunk egy alsó becslést a
+      Fermat-tanúk számára vonatkozóan. Ez ugyan jóval szerényebb lesz annál, mint ami a táblázatból látszik, ám
+      egy hatékonyan működő prímteszthez még ez is bőven elég lesz.
+  - type: narrative
+    content: |
+      Ehhez azonban először két segédtételre lesz szükségünk. Az első arra vonatkozik, hogy egy Fermat-tanúból
+      hogyan tudunk előállítani egy másik Fermat-tanút.
+  - type: embed
+    target:
+      type: theorem
+      name: fermat-tanu-es-nem-fermat-tanu-szorzata
+  - type: embed
+    target:
+      type: proof
+      name: fermat-tanu-es-nem-fermat-tanu-szorzata-bizonyitas
+  - type: narrative
+    content: |
+      A második segédtétel arra vonatkozóan mond ki egy fontos állítást, hogy mi történik akkor, ha egymástól
+      különböző maradékosztályokat egyesével végigszorozzuk ugyanazzal a redukált maradékosztállyal.
+  - type: embed
+    target:
+      type: theorem
+      name: kulonbozo-maradekosztalyok-szorzasa-redukalt-maradekosztallyal
+  - type: embed
+    target:
+      type: proof
+      name: kulonbozo-maradekosztalyok-szorzasa-redukalt-maradekosztallyal-bizonyitas
+  - type: narrative
+    content: |
+      E két segédtétel segítségével mostmár könnyedén igazolhatjuk a Fermat-tanúk számára vonatkozó alsó
+      becslésünket.
+  - type: embed
+    target:
+      type: theorem
+      name: fermat-tanuk-szama
+  - type: embed
+    target:
+      type: proof
+      name: fermat-tanuk-szama-bizonyitas
+  - type: narrative
+    content: |
+      ***Na és akkor mi van?!*** &ndash; kérdezhetné az Olvasó. Nos, az a helyzet, hogy ezt az első látásra nem túl
+      érdekes tényt Alice és Bob egy meglehetősen pofátlan kis trükkel prímteszteléshez tudja felhasználni.
+  - type: ordered-list
+    lead-in: |
+      Ezt az eljárást ***Fermat-prímtesztnek*** nevezzük, és a következőképpen néz ki:
+    items:
+      - 'Az algoritmus bemenete egy $n\gt 1$ pozitív egész szám, amelyről el kellene dönteni, hogy prím-e vagy összetett.'
+      - 'Válasszunk véletlenszerűen egy tetszőleges $1$ és $n$ közötti $a$ egész számot, azaz $1\lt a\lt n$.'
+      - 'A [euklideszi-gyuruben-letezik-kituntetett-kozos-oszto] bizonyításában ismertetett ***euklidészi algoritmus*** segítségével számítsuk ki az $(a,n)$ kitüntetett közös osztót. Ha $(a,n)\
+eq 1$, akkor az algoritmus leáll a következő válasszal: ***az $n$ egész szám biztosan összetett, és az egyik osztója $(a,n)$.*** Ha $(a,n)=1$, akkor folytassuk a 4. lépéstől.'
+      - 'A 21. részben ismertetett ***ismételt négyzetreemelések módszerével*** ellenőrizzük le, hogy teljesül-e az $a^{n-1}\equiv 1\pmod n$ kongruencia. Amennyiben ***nem*** teljesül a kongruencia, akkor az algoritmus leáll a következő válasszal: ***az $n$ egész szám biztosan összetett, de nem találtuk meg egyetlen osztóját sem***. Amennyiben teljesül a kongruencia, akkor az algoritmus a következő válasszal áll le: ***az $n$ egész szám "valószínűleg" prím***.'

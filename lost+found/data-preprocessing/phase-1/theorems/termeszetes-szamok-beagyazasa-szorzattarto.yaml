@@ -1,0 +1,21 @@
+type: theorem
+name: termeszetes-szamok-beagyazasa-szorzattarto
+proofs:
+  - termeszetes-szamok-beagyazasa-szorzattarto-bizonyitas
+remarks: []
+references:
+  peano-axiomarendszer:
+    target:
+      type: definition
+      name: peano-axiomarendszer
+content:
+  - type: formula
+    lead-in: |
+      Tegyük fel, hogy $\N_1$ a Peano-axiómarendszer ([peano-axiomarendszer]) szerint definiált természetes számok
+      halmaza, valamint adva van egy $f:\N_1 \to \Z$ függvény az alábbiak szerint:
+    content: |
+      f(n)=[(n;0)]
+  - type: narrative
+    content: |
+      Ekkor tetszőleges $a$ és $b$ természetes számokra teljesül, hogy $f(a\cdot b)=f(a)\odot f(b)$. Más szavakkal
+      $f$ egy ***injektív homomorfizmus*** az $(\N_1, \cdot)$ és a $(\Z ,\odot )$ algebrai struktúrák között.

@@ -1,0 +1,113 @@
+type: proof
+name: egesz-szamok-kozotti-kongruencia-egyszerusitese-bizonyitas
+remarks: []
+references:
+  asszocialtsag-es-egysegek-kapcsolata:
+    target:
+      type: theorem
+      name: asszocialtsag-es-egysegek-kapcsolata
+  az-egesz-szamok-halmaza-integritastartomany:
+    target:
+      type: theorem
+      name: az-egesz-szamok-halmaza-integritastartomany
+  egesz-szamok-kozotti-kongruencia:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia
+  euklideszi-lemma:
+    target:
+      type: theorem
+      name: euklideszi-lemma
+  kituntetett-kozos-oszto-kiemelesi-tulajdonsaga:
+    target:
+      type: theorem
+      name: kituntetett-kozos-oszto-kiemelesi-tulajdonsaga
+  oszthatosag-egyszerusitese:
+    target:
+      type: theorem
+      name: oszthatosag-egyszerusitese
+  oszthatosag-tulajdonsagai:
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+  relativ-primek:
+    target:
+      type: definition
+      name: relativ-primek
+content:
+  - type: formula
+    lead-in: |
+      Az $ac\equiv bc\pmod m$ kongruencia a [egesz-szamok-kozotti-kongruencia] 3. pontja alapján akkor és csak
+      akkor teljesül, ha fennáll az $m|ac-bc$, azaz a disztributivitási szabály miatt az alábbi oszthatóság:
+    content: |
+      m|(a-b)c
+  - type: narrative
+    content: |
+      Ugye $\frac{m}{d}$-vel jelöltük azt az egész számot, amelyet a $d$ kitüntetett közös osztóval megszorozva az
+      $m$ modulust kapjuk. Ehhez hasonlóan jelöljük $\frac{c}{d}$-vel azt az egész számot, amelyet ugyancsak
+      $d$-vel megszorozva a $c$ egész számot kapjuk.
+  - type: formula
+    lead-in: |
+      Azaz:
+    content: |
+      \begin{aligned}m&=\frac{m}{d}\cdot d \\ c&=\frac{c}{d}\cdot d\end{aligned}
+  - type: narrative
+    content: |
+      Nyilván az $\frac{m}{d}$ és a $\frac{c}{d}$ egész számok léteznek, hiszen $d$ osztója $m$-nek is és $c$-nek
+      is, mivel ő épp kettejük kitüntetett közös osztója.
+  - type: formula
+    lead-in: |
+      Ezek után a fenti oszthatóság így néz ki:
+    content: |
+      \underbrace{\frac{m}{d}\cdot d}_{=m}|(a-b)\underbrace{\frac{c}{d}\cdot d}_{=c}
+  - type: narrative
+    content: |
+      A [oszthatosag-egyszerusitese] alapján egy integritástartományban &ndash; mint amilyen a
+      [az-egesz-szamok-halmaza-integritastartomany] alapján az egész számok $\Z$ gyűrűje is &ndash; egy oszthatóság
+      mindkét oldalát szabad egyszerűsíteni bármilyen ***nemnulla*** elemmel. A $d\eq 0$ feltétel teljesül, hiszen
+      ő nem más, mint $c$ és $m$ kitüntetett közös osztója, amely az $m\eq 0$ feltétel és a
+      [oszthatosag-tulajdonsagai] 4. pontja miatt biztosan nem lehet $0$.
+  - type: formula
+    lead-in: |
+      A fenti oszthatóság tehát az egyszerűsítési szabály miatt pontosan akkor teljesül, amikor teljesül az alábbi
+      oszthatóság:
+    content: |
+      \frac{m}{d}|(a-b)\frac{c}{d}
+  - type: narrative
+    content: |
+      Nézzük most meg, hogy mit tudunk elmondani a $(\frac{c}{d},\frac{m}{d})$ kitüntetett közös osztóról.
+  - type: formula
+    lead-in: |
+      Azt ugye tudjuk, hogy $(c,m)=d$, így tehát igaz az alábbi:
+    content: |
+      (\underbrace{\frac{c}{d}\cdot d}_{=c},\underbrace{\frac{m}{d}\cdot d}_{=m})=d
+  - type: formula
+    lead-in: |
+      A ***kitüntetett közös osztó kiemelési tulajdonsága*** miatt (lásd a
+      [kituntetett-kozos-oszto-kiemelesi-tulajdonsaga]t) teljesül az alábbi asszociáció:
+    content: |
+      \underbrace{(\frac{c}{d}\cdot d,\frac{m}{d}\cdot d)}_{=d}\sim d\cdot (\frac{c}{d},\frac{m}{d})
+  - type: narrative
+    content: |
+      Minthogy a [asszocialtsag-es-egysegek-kapcsolata] alapján egy egységelemes integritástartományban valamely
+      elem asszociáltjai pontosan az egységszeresei, emiatt a $(\frac{c}{d},\frac{m}{d})$ kitüntetett közös osztó
+      szükségképpen ***egység*** kell legyen. Ez a [relativ-primek] utáni megjegyzés alapján pontosan azt jelenti,
+      hogy a $\frac{c}{d}$ és az $\frac{m}{d}$ egész számok egymáshoz ***relatív prímek***.
+  - type: formula
+    lead-in: |
+      Mindeközben azonban &ndash; ahogyan fentebb már láttuk &ndash; teljesül az alábbi oszthatóság:
+    content: |
+      \frac{m}{d}|(a-b)\frac{c}{d}
+  - type: formula
+    lead-in: |
+      Mármost ez az oszthatóság egyrészt a [oszthatosag-tulajdonsagai] 7. pontja miatt ***akkor***, másrészt pedig
+      &ndash; mivel $\frac{m}{d}$ relatív prím $\frac{c}{d}$-hez &ndash; az ***euklidészi lemma*** miatt
+      ([euklideszi-lemma]) ***csak akkor*** teljesül, amikor teljesül az alábbi oszthatóság is:
+    content: |
+      \frac{m}{d}|(a-b)
+  - type: formula
+    lead-in: |
+      Ez viszont a [egesz-szamok-kozotti-kongruencia] 3. pontja alapján pontosan azt jelenti, hogy &ndash; a tétel
+      állításának megfelelően &ndash; teljesül az alábbi kongruencia:
+    content: |
+      a\equiv b\pmod{\frac{m}{d}}

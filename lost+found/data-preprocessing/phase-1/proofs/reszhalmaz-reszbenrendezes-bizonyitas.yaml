@@ -1,0 +1,41 @@
+type: proof
+name: reszhalmaz-reszbenrendezes-bizonyitas
+remarks: []
+references:
+  antiszimmetrikus-relacio:
+    target:
+      type: definition
+      name: antiszimmetrikus-relacio
+  reszhalmaz:
+    target:
+      type: definition
+      name: reszhalmaz
+content:
+  - type: narrative
+    content: |
+      A [reszhalmaz] utáni megjegyzés 3. és 5. pontjai alapján a $\sube$ reláció ***reflexív*** és
+      ***antiszimmetrikus***. Így már csak azt kell megmutatni, hogy teljesül a ***tranzitivitás*** is, azaz a
+      halmazrendszer tetszőleges $A$, $B$ és $C$ elemei esetén ***ha*** $A\sube B$ és $B\sube C$, ***akkor***
+      $A\sube C$. Ez viszont könnyedén adódik a részhalmaz [reszhalmaz]jából.
+  - type: narrative
+    content: |
+      Legyen ugyanis $x$ egy tetszőleges elem a $H$ alaphalmazban. Mivel $A\sube B$, ezért ha $x\in A$ teljesül,
+      akkor $x\in B$ is teljesül. Ugyanakkor $B\sube C$ is igaz, ezért egyúttal $x\in C$ is teljesül. Mivel azt
+      kaptuk, hogy $x\in A$-ból következik $x\in C$, ezért valóban $A\sube C$.
+  - type: narrative
+    content: |
+      Most térjünk át a $\sub$ relációra vonatkozó állításokra. Ez nyilvánvalóan ***nem reflexív***, ugyanis $A\sub
+      A$ a [reszhalmaz] alapján azt jelentené, hogy $A\sube A$ és $A\eq A$. Ez utóbbi nyilván lehetetlen, mivel
+      minden halmaz azonos önmagával. De ***antiszimmetrikus sem lehet***, hiszen akkor a
+      [antiszimmetrikus-relacio] miatt $A\sub B$ és $B\sub A$ esetén $A=B$ következne. Ez ugye lehetetlen, mert
+      például $A\sub B$ azt jelenti, hogy $A\sube B$ és $A\eq B$.
+  - type: narrative
+    content: |
+      Végül megmutatjuk, hogy $\sub$ ***tranzitív***. Tegyük fel, hogy $A\sub B$ és $B\sub C$. Ezek a feltételek a
+      [reszhalmaz] alapján azt jelentik, hogy egyrészt $A\sube B$ és $B\sube C$, másrészt pedig $A\eq B$ és $B\eq
+      C$. Az első két feltételből a $\sube$ reláció tranzitivitása miatt $A\sube C$ következik, tehát a $\sub$
+      reláció tranzitivitásához elegendő azt megmutatni, hogy $A\eq C$. A $B\sube C$ tartalmazás miatt egyrészt
+      tudjuk, hogy $B$ minden eleme $C$-nek is eleme. Másrészt $B\eq C$ miatt azt is tudjuk, hogy $C$-nek van olyan
+      $x$ eleme, ami viszont nem eleme $B$-nek, azaz $x\in B$ ***nem teljesül***. Azt kell igazolni, hogy $x\in A$
+      ***sem teljesül***. Ez viszont nyilvánvaló, máskülönben $A\sube B$ miatt $x\in B$ mégiscsak teljesülne, ami
+      ellentmondás. A $\sub$-val jelölt ***szigorú tartalmazási reláció*** tehát valóban ***tranzitív***.

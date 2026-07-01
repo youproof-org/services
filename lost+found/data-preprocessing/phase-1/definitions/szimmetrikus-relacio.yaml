@@ -1,0 +1,9 @@
+type: definition
+name: szimmetrikus-relacio
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen adott egy $H$ halmaz és egy ezen a halmazon értelmezett $R$ reláció, valamint tegyük fel, hogy $a$ és
+      $b$ a $H$ halmaz tetszőleges elemei. Ha minden ilyen esetben $aRb$ teljesülése esetén $bRa$ is teljesül,
+      akkor azt mondjuk, hogy az $R$ reláció ***szimmetrikus***.

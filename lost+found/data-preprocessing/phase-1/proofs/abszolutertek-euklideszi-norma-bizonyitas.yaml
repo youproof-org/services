@@ -1,0 +1,118 @@
+type: proof
+name: abszolutertek-euklideszi-norma-bizonyitas
+remarks: []
+references:
+  egesz-szamok-abszoluterteke:
+    target:
+      type: definition
+      name: egesz-szamok-abszoluterteke
+  egesz-szamok-rendezese:
+    target:
+      type: definition
+      name: egesz-szamok-rendezese
+  euklideszi-gyuru:
+    target:
+      type: definition
+      name: euklideszi-gyuru
+  gyuru-reszbenrendezesenek-tulajdonsagai:
+    target:
+      type: theorem
+      name: gyuru-reszbenrendezesenek-tulajdonsagai
+  rendezett-gyuru:
+    target:
+      type: definition
+      name: rendezett-gyuru
+  termeszetes-szamok-minimumtetele:
+    target:
+      type: theorem
+      name: termeszetes-szamok-minimumtetele
+content:
+  - type: narrative
+    content: |
+      Az abszolútérték-függvény képhalmaza a [egesz-szamok-abszoluterteke] alapján valóban a természetes számok
+      $\N$ halmaza, hiszen az abszolútérték biztosan nemnegatív. A $\Z$ gyűrű nullelemének képe szintén a definíció
+      alapján a $0$ természetes szám.
+  - type: formula
+    lead-in: |
+      Visszafelé: ha $|a|=0$, akkor az alábbi két eset lehetséges:
+    content: |
+      \begin{aligned}a&=0\\-a&=0\end{aligned}
+  - type: narrative
+    content: |
+      Az $\Z$ gyűrűben tehát pontosan a nullelemnek lesz $0$ az abszolútértéke, azaz teljesül az euklidészi
+      normákra vonatkozó 1. követelmény (lásd a [euklideszi-gyuru]t). Így már csak azt kell megmutatni, hogy
+      tetszőleges $a$ és $b\eq 0$ egész számok között elvégezhető a maradékos osztás az abszolútérték-függvény,
+      mint norma szerint.
+  - type: formula
+    lead-in: |
+      Azaz léteznek $k$ és $r$ egész számok úgy, hogy teljesülnek az alábbiak:
+    content: |
+      \begin{aligned}a=&kb+r \\ |r|&\lt |b|\end{aligned}
+  - type: narrative
+    content: |
+      Ehhez ki fogjuk használni, hogy a [egesz-szamok-rendezese] szerinti $\leq$ reláció teljesíti a
+      [rendezett-gyuru]ban megfogalmazott rendezési axiómákat. A bizonyítás konstruktív lesz, azaz $k$ és $r$
+      létezését azáltal igazoljuk, hogy egy eljárást mutatunk a kiszámításukra. Ez az eljárás a gyakorlatban nem
+      lenne túl hatékony, ám nekünk a bizonyításhoz épp elegendő lesz.
+  - type: narrative
+    content: |
+      Először szorítkozzunk arra az esetre, amikor egyik bemeneti számunk sem negatív, azaz $a\geq 0$ és $b\gt 0$.
+      Tegyük fel továbbá, hogy $k_1=0$ és $r_1=a$.
+  - type: formula
+    lead-in: |
+      Ekkor nyilván teljesül az alábbi:
+    content: |
+      a=\underbrace{k_1}_{=0}b+\underbrace{r_1}_{=a}
+  - type: narrative
+    content: |
+      Ha $r_1\lt b$, akkor az eljárást befejezhetjük, és $r_1$ lesz a keresett maradék. Ha nem &ndash; azaz
+      $r_1\geq b$ &ndash;, akkor folytatnunk kell az eljárást. A jobboldalhoz hozzáadva és levonva $b$-t az
+      eredmény nyilván nem változik.
+  - type: formula
+    lead-in: |
+      Így a fenti egyenlet a disztributivitási szabályokat kihasználva az alábbi alakba írható, megkapva ezáltal a
+      $k_2$ és $r_2$ számokat:
+    content: |
+      a=k_1b+r_1-b+b=\underbrace{(k_1+1)}_{=k_2}b+\underbrace{r_1-b}_{=r_2}
+  - type: narrative
+    content: |
+      Mivel ugye $r_1\geq b$, és a [rendezett-gyuru] 1. pontja alapján a rendezési reláció kompatibilis az
+      összeadással, ezért az egyenlőtlenség mindkét oldalához $-b$-t adva $\underbrace{r_1-b}_{=r_2}\geq 0$. Igaz
+      továbbá, hogy $r_2+b=r_1$, és mivel $b$-ről kikötöttük, hogy nem $0$, ezért ez azt jelenti, hogy $r_2\lt
+      r_1$. Találtunk tehát egy $r_1$-nél kisebb nemnegatív jelöltet a keresett maradékra.
+  - type: narrative
+    content: |
+      Ha $r_2\lt b$, akkor az eljárást befejezhetjük, és $r_2$ lesz a keresett maradék. Ha nem, akkor az előbbi
+      gondolatmenetet megismételve tudunk találni újabb és újabb nemnegatív jelölteket, melyek mindegyike kisebb,
+      mint az előző lépésben kapott jelölt.
+  - type: formula
+    lead-in: |
+      Az eljárásnak garantáltan véget kell érnie egyszer, máskülönben az alábbi végtelen hosszú nemnegatív
+      egészekből álló sorozatot kapnánk:
+    content: |
+      r_1\gt r_2\gt r_3\gt \ldots
+  - type: narrative
+    content: |
+      Ez a természetes számoknak egy olyan részhalmaza lenne, amelynek nem létezne minimuma, ami a
+      [termeszetes-szamok-minimumtetele] alapján lehetetlen. Így megmutattuk, hogy $a\geq 0$ és $b\gt 0$ esetén az
+      $a$ elem felírható $a=kb+r$ alakban úgy, hogy teljesüljön a $0\leq r\lt b$ egyenlőtlenség. Ez az
+      egyenlőtlenség viszont ebben a speciális esetben épp azt jelenti, hogy $|r|\lt |b|$.
+  - type: narrative
+    content: |
+      Most általánosítsuk ezt az eredményt először a $b\lt 0$ esetre. Ekkor a
+      [gyuru-reszbenrendezesenek-tulajdonsagai] 1. pontja miatt $(-b)\gt 0$. Így a fenti gondolatmenet alapján az
+      $a$ egész szám felírható $a=k(-b)+r=(-k)b+r$ alakban úgy, hogy teljesüljön a $0\leq r\lt (-b)$
+      egyenlőtlenség. Minthogy $0\lt r$ és $b\lt 0$, ezért ez az egyenlőtlenség az abszolútértékekre vonatkozóan
+      épp azt jelenti, hogy $|r|\lt \underbrace{|b|}_{=|-b|}$. Így lefedtük az összes olyan esetet, amikor $a\geq
+      0$ és $b\eq 0$.
+  - type: narrative
+    content: |
+      Végül nézzük meg, mi van akkor, ha $a\leq 0$. Ekkor szintén a [gyuru-reszbenrendezesenek-tulajdonsagai] miatt
+      $(-a)\geq 0$, és így a fentiek alapján ő felírható $(-a)=kb+r$ alakban úgy, hogy $|r|\lt |b|$. De ekkor
+      mindkét oldal ellentettjét véve azt kapjuk, hogy $a=(-k)b+(-r)$, miközben teljesül, hogy
+      $\underbrace{|-r|}_{=|r|}\lt |b|$.
+  - type: narrative
+    content: |
+      Ezzel már minden esetet lefedtünk, azaz tetszőleges $a$ és $b\eq 0$ elemek között elvégezhető az
+      abszolútérték-függvény szerinti maradékos osztás. Ez a függvény tehát valóban egy ***euklidészi norma*** a
+      $\Z$ gyűrűn.

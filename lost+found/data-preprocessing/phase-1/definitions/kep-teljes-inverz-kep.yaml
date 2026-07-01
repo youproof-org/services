@@ -1,0 +1,37 @@
+type: definition
+name: kep-teljes-inverz-kep
+remarks:
+  - kep-teljes-inverz-kep-megjegyzes
+references:
+  halmazrendszer-minimuma-es-maximuma:
+    target:
+      type: definition
+      name: halmazrendszer-minimuma-es-maximuma
+content:
+  - type: narrative
+    content: |
+      Legyenek $A$ és $B$ tetszőleges halmazok, továbbá tegyük fel, hogy értelmezve van egy $f:A\to B$ függvény,
+      amely tehát az $A$ halmaz minden eleméhez hozzárendel egy elemet a $B$ halmazból.
+  - type: narrative
+    content: |
+      Legyen adott egy $C\sube A$ halmaz. Ekkor $B$-nek azt a &ndash; [halmazrendszer-minimuma-es-maximuma]
+      szerinti értelemben vett &ndash; ***legszűkebb*** részhalmazát, amely minden $C$-beli elem $f$ szerinti képét
+      tartalmazza, a $C$ halmaz $f$ szerinti ***képének*** (vagy ***értékkészletének***) nevezzük és $f(C)$-vel
+      jelöljük.
+  - type: figure
+    lead-in: |
+      Ezt az elrendezést mutatja az alábbi ábra:
+    src: kep.jpg
+    alt: 
+    caption: Halmaz képe
+  - type: narrative
+    content: |
+      Legyen adott egy $D\sube B$ halmaz. Ekkor $A$-nak azt a &ndash; [halmazrendszer-minimuma-es-maximuma]
+      szerinti értelemben vett &ndash; ***legbővebb*** részhalmazát, amelynek $f$ szerinti képe $D$, a $D$ halmaz
+      $f$ szerinti ***teljes inverz képének*** nevezzük és $f^{-1}(D)$-vel jelöljük.
+  - type: figure
+    lead-in: |
+      Ezt az elrendezést mutatja az alábbi ábra:
+    src: teljes_inverz_kep.jpg
+    alt: 
+    caption: Halmaz teljes inverz képe

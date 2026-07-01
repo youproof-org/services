@@ -1,0 +1,49 @@
+type: proof
+name: euler-fuggveny-primhatvanyokra-bizonyitas
+remarks: []
+references:
+  euler-fuggveny-alternativ-definicio:
+    target:
+      type: theorem
+      name: euler-fuggveny-alternativ-definicio
+  kituntetett-kozos-oszto-tulajdonsagai:
+    target:
+      type: theorem
+      name: kituntetett-kozos-oszto-tulajdonsagai
+  primhatvanyhoz-relativ-primek:
+    target:
+      type: theorem
+      name: primhatvanyhoz-relativ-primek
+content:
+  - type: narrative
+    content: |
+      ***Nézzük először az 1. állítást!*** A $\varphi(p^k)$ a [euler-fuggveny-alternativ-definicio] alapján a $0$,
+      $1$, $2$, ..., $p^k-1$ közül a $p^k$-hoz relatív prím egészek számát adja meg. Nincs más dolgunk tehát, mint
+      ezeket megszámlálni. A [primhatvanyhoz-relativ-primek] alapján egy tetszőleges $a$ egész szám ***akkor és
+      csak akkor*** relatív prím $p^k$-hoz, ha nem osztható $p$-vel, azaz ***NEM teljesül*** a $p|a$ oszthatóság.
+  - type: narrative
+    content: |
+      Ahhoz tehát, hogy megkapjuk $\varphi(p^k)$ értékét, meg kell számolnunk, hogy összesen hány $p$-vel osztható
+      egész szám van az első $p^k$ darab pozitív egész szám között. A fentiek alapján ugyanis épp az ***ezeken
+      kívüli számok lesznek relatív prímek*** $p^k$-hoz.
+  - type: formula
+    lead-in: |
+      A $p$-vel osztható számok az alábbiak lesznek:
+    content: |
+      \begin{aligned}1&\cdot p \\ 2&\cdot p \\ 3&\cdot p \\ &\vdots \\ p^{k-1}&\cdot p\end{aligned}
+  - type: narrative
+    content: |
+      Ezek száma összesen $p^{k-1}$.
+  - type: formula
+    lead-in: |
+      Ezt levonva $p^k$-ból valóban $\varphi(p^k)$ értékét kapjuk, ahogyan a tétel állítja:
+    content: |
+      \varphi(p^k)=p^k-p^{k-1}
+  - type: narrative
+    content: |
+      ***Végül nézzük a 2. állítást!*** Ebben az esetben tehát a $0$, $1$, $2$, ... $p-1$ közül a $p$-hez relatív
+      prím egészek számát kéne meghatározni. Vegyük észre, hogy ezek közül egyedül a $0$ nem relatív prím $p$-hez.
+      Egyrészt ugyanis a [kituntetett-kozos-oszto-tulajdonsagai] 4. pontja alapján $(p,0)=p\eq 1$, azaz a $0$
+      valóban nem relatív prím $p$-hez. Másrészt viszont minden egyéb $a$ esetén szükségképpen $(a,p)=1$,
+      máskülönben $p$-nek lenne az $1$-en és önmagán kívül más pozitív osztója, és így nem lehetne prím. A $0$,
+      $1$, $2$, ..., $p-1$ számok között tehát valóban $p-1$ darab olyan szám van, amely $p$-hez relatív prím.

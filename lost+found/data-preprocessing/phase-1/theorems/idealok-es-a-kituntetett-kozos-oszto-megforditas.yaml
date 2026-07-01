@@ -1,0 +1,18 @@
+type: theorem
+name: idealok-es-a-kituntetett-kozos-oszto-megforditas
+proofs:
+  - idealok-es-a-kituntetett-kozos-oszto-megforditas-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ tetszőleges ***integritástartomány***, amelyben ***létezik egységelem***. Legyenek továbbá $a$,
+      $b$ és $d$ az $R$ tetszőleges elemei.
+  - type: ordered-list
+    lead-in: |
+      Ekkor teljesülnek az alábbiak:
+    items:
+      - 'Ha $d$ ***kitüntetett közös osztója*** $a$-nak és $b$-nek, ***akkor*** $(a,b)\sube (d)$.'
+      - 'Az $(a,b)=(d)$ halmazegyenlőség ***akkor és csak akkor*** teljesül, ha $d$ ***kitüntetett közös
+        osztója*** $a$-nak és $b$-nek ***ÉS*** felírható $u\cdot a+v\cdot b$ alakban az $R$ gyűrű alkalmasan
+        választott $u$ és $v$ elemeinek segítségével.'

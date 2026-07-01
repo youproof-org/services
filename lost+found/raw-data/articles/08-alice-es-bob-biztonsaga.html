@@ -1,0 +1,387 @@
+<!-- wp:paragraph -->
+<p><strong><em>Az <a rel="noreferrer noopener" aria-label="előző részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/7-algoritmus-bonyolultsag-problemaosztalyok-polinomialis-exponencialis-p-np-sejtes-tanu-tetel/" target="_blank">előző részben</a> tovább osztályoztuk az algoritmikusan eldönthető problémákat aszerint, hogy a döntés milyen hatékonysággal hozható meg. Azt mondtuk, hogy hatékonyság szempontjából az a vízválasztó, hogy egy problémára létezik-e polinomiális időkomplexitású algoritmus vagy nem. Mutattunk néhány problémát, amelyekre jelenleg nem ismeretes ebben az értelemben hatékony algoritmus. Megismerkedtünk a [latex]P[/latex] és [latex]NP[/latex] problémaosztályokkal. Előbbibe azokat a problémákat soroltuk, amelyek eldönthetőek polinomiális időkomplexitású determinisztikus Turing-géppel. Utóbbiba pedig azokat, amelyekkel ugyanez megtehető nemdeterminisztikus Turing-géppel.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A tanú-tételt ismertetve megmutattuk, hogy ez utóbbi ekvivalens azoknak a problémáknak az osztályával, amelyek esetén az „igen” válasznak létezik polinomiális időben ellenőrizhető bizonyítéka. Végül megemlítettük a számítástudomány legjelentősebb megválaszolatlan kérdését, miszerint vajon e két problémaosztály megegyezik-e, vagy az általunk nehéznek gondolt problémák valóban nehezek. Ennek megválaszolása ugyanis kulcsfontosságú a kriptográfia szempontjából. De még ha nem is tudjuk ezt a kérdést jelenleg megválaszolni, miért lehetünk majdnem biztosak abban, hogy [latex]P \
+eq NP[/latex]? Hogyan tudjuk az algoritmikus problémák nehézségét összehasonlítani egymással? Melyek azok a problémák, amelyek minden más [latex]NP[/latex]-beli problémánál nehezebbek ilyen értelemben? Ebben a részben erről lesz szó...</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"className":"prerequisite-warning"} -->
+<p class="prerequisite-warning">Figyelem! Erősen ajánlott elolvasni a <a rel="noreferrer noopener" aria-label="6. (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/6-turing-gep-formalis-nyelv-rekurzivan-felsorolhato-rekurziv-megallasi-problema/" target="_blank">6.</a> és a <a href="https://youproof.hu/kriptografia/7-algoritmus-bonyolultsag-problemaosztalyok-polinomialis-exponencialis-p-np-sejtes-tanu-tetel/" target="_blank" rel="noreferrer noopener" aria-label="7. részt (új fülön nyitja meg)">7. részt</a> az alábbiak megértéséhez. A teljes cikksorozat elejét <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/1-alapfogalmak-caesar-vigenere-enigma-kulcsmegosztas/" target="_blank">itt</a> találod.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"dropCap":true} -->
+<p class="has-drop-cap">Most visszanyúlunk az <a href="https://youproof.hu/kriptografia/7-algoritmus-bonyolultsag-problemaosztalyok-polinomialis-exponencialis-p-np-sejtes-tanu-tetel/" target="_blank" rel="noreferrer noopener" aria-label="előző részben (új fülön nyitja meg)">előző részben</a> ismertetett két nehéznek gondolt döntési problémához. A <em>3</em>-színezhetőség problémája így hangzott: adott egy gráf, amelyről el kell dönteni, hogy a csúcsai kiszínezhetők-e legfeljebb 3 színnel úgy, hogy a szomszédos csúcsok különböző színűek legyenek. Azokat a gráfokat, amelyekre ez teljesül, <strong><em>3-színezhető gráfoknak</em></strong> neveztük. A <em>k</em>-függetlenség problémája pedig így hangzott: adott egy gráf és egy [latex]k[/latex] egész szám, és azt kell eldönteni, hogy ki lehet-e választani a gráfból [latex]k[/latex] darab csúcsot úgy, hogy ezek között a csúcsok között ne legyen él. Ezt úgy is mondhatjuk, hogy található-e a gráfban [latex]k[/latex] darab független csúcs. Azokat a gráfokat, amelyekre ez teljesül, <strong><em>k-független gráfoknak</em></strong> neveztük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mivel mindkét fenti probléma igencsak fontos az informatikában, ezért eléggé fájó, hogy egyikre sem ismeretes polinomiális időkomplexitású – azaz hatékony – algoritmus. E két döntési probléma között azonban <strong><em>algoritmikus komplexitási kapcsolat</em></strong> mutatható ki. Nevezetesen: bizonyítható, hogy az egyik <strong><em>„legalább olyan nehéz”</em></strong>, mint a másik. Ez azt jelenti, hogyha a <strong><em>„nehezebbre”</em></strong> található polinomiális algoritmus, akkor a <strong><em>„könnyebbre”</em></strong> is. Megfordítva, ha a <strong><em>„könnyebbre”</em></strong> nem található polinomiális algoritmus, akkor a <strong><em>„nehezebbre”</em></strong> sem. De mit jelent pontosan, hogy egy döntési probléma „legalább olyan nehéz”, mint egy másik?</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Problémák nehézségének összehasonlítása</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Ennek megértéséhez döntési problémák helyett ismét az őket reprezentáló nyelvekre koncentrálunk, és bevezetjük az úgynevezett <strong><em>Karp-redukció</em></strong> fogalmát. Képzeljük el, hogy van két <a rel="noreferrer noopener" aria-label="rekurzív nyelvünk (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/6-turing-gep-formalis-nyelv-rekurzivan-felsorolhato-rekurziv-megallasi-problema#turing-machine-language" target="_blank"><strong><em>rekurzív nyelvünk</em></strong></a>, nevezzük őket [latex]L[/latex]-nek és [latex]K[/latex]-nak. Ezen kívül tegyük fel, hogy [latex]f[/latex] egy olyan <a rel="noreferrer noopener" aria-label=" (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/6-turing-gep-formalis-nyelv-rekurzivan-felsorolhato-rekurziv-megallasi-problema#turing-machine-function" target="_blank"><strong><em>rekurzív függvény</em></strong></a>, amely az összes [latex]L[/latex]-beli jelsorozathoz [latex]K[/latex]-beli jelsorozatot, míg az összes [latex]L[/latex]-en kívüli jelsorozathoz [latex]K[/latex]-n kívüli jelsorozatot rendel. Az előző részben a <a rel="noreferrer noopener" aria-label="tanú-tétel bizonyításánál (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/7-algoritmus-bonyolultsag-problemaosztalyok-polinomialis-exponencialis-p-np-sejtes-tanu-tetel#witness-theorem-proof" target="_blank">tanú-tétel bizonyításánál</a> alkalmazott <strong><em>„akkor és csak akkor”</em></strong> típusú mondatszerkezettel ez így fogalmazható meg: egy tetszőleges [latex]x[/latex] jelsorozat <strong>akkor és csak akkor</strong> mondata az [latex]L[/latex] nyelvnek, <strong>ha</strong> az [latex]f(x)[/latex] jelsorozat mondata a [latex]K[/latex] nyelvnek. Az alábbi ábrán egy ilyen tulajdonságú függvény által megvalósított hozzárendelés látható két konkrét jelsorozatra:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":1817} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_8_karp_redukcio_fuggveny.jpg" alt="Nyelvbetartozást megtartó függvény" class="wp-image-1817"/><figcaption>Nyelvbetartozást megtartó függvény</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi ábrán viszont egy olyan függvény látható, amely megsérti ezt a szabályt, mivel egy olyan [latex]y[/latex] jelsorozatot is a [latex]K[/latex] nyelvbe képez, amely nem mondata az [latex]L[/latex] nyelvnek:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":1819} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_8_karp_redukcio_fuggveny_hibas.jpg" alt="Nyelvbetartozást megsértő függvény" class="wp-image-1819"/><figcaption>Nyelvbetartozást megsértő függvény</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Mint ahogyan azt az előző részben már láttuk, az <strong><em>„akkor és csak akkor”</em></strong> a matematikában egy igen szigorú mondatszerkezet, és sokkal többet jelent annál, mint egy sima <strong><em>„ha … akkor”</em></strong> típusú mondat. A fenti <strong><em>„akkor és csak akkor”</em></strong> típusú állítás egyrészt azt jelenti, hogy <strong>ha</strong> egy [latex]x[/latex] jelsorozat eleme az [latex]L[/latex] nyelvnek, <strong>akkor</strong> az [latex]f(x)[/latex] jelsorozat eleme a [latex]K[/latex] nyelvnek. Ezen túlmenően azonban azt is jelenti, hogy <strong>ha</strong> egy [latex]x[/latex] jelsorozat <strong>nem</strong> eleme az [latex]L[/latex] nyelvnek, <strong>akkor</strong> az [latex]f(x)[/latex] jelsorozat <strong>sem</strong> eleme a [latex]K[/latex] nyelvnek (ez utóbbi tulajdonságot sérti meg a második ábrán látható függvény). Azaz vagy egyszerre mindkettő állítás teljesül, vagy egyik sem, de olyan nincs, hogy az egyik igen, a másik pedig nem. De miért is olyan jó dolog ilyen függvényt találni?</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Képzeljük el azt a szituációt, hogy egy olyan algoritmust szeretnénk készíteni, amely eldönti az [latex]L[/latex] nyelvbe tartozást, de sehogyan sem jövünk rá a megoldásra. Van viszont algoritmusunk a [latex]K[/latex] nyelvbe tartozás eldöntésére. Ha sikerülne találnunk egy olyan rekurzív [latex]f[/latex] függvényt, amely teljesíti a fenti tulajdonságot, akkor tulajdonképpen meglenne az algoritmusunk [latex]L[/latex] eldöntésére is. Ha ugyanis egy [latex]x[/latex] jelsorozatra el kell dönteni, hogy [latex]L[/latex]-be tartozik-e, nincs más dolgunk, mint kiszámítani az [latex]f(x)[/latex] jelsorozatot, majd erre a jelsorozatra lefuttatni a már létező, [latex]K[/latex]-ba tartozást eldöntő algoritmust. Ennek <strong>„igen”</strong> vagy <strong>„nem”</strong> válasza egyben megválaszolja az [latex]x[/latex] jelsorozat [latex]L[/latex]-be tartozásának kérdését is az [latex]f[/latex] függvény fenti tulajdonsága miatt. Ráadásul minden [latex]x[/latex] jelsorozatra véges időn belül megkapjuk a választ, hiszen az [latex]f[/latex] függvény rekurzív, tehát létezik olyan őt kiszámító Turing-gép, amely soha nem keveredik végtelen ciklusba.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ha a fentieken kívül az [latex]f[/latex] függvényre még az is teljesül, hogy polinomiális időkomplexitású Turing-géppel kiszámítható, akkor azt mondjuk, hogy az [latex]f[/latex] függvény az [latex]L[/latex] nyelv <strong><em>Karp-redukciója</em></strong> a [latex]K[/latex] nyelvre. Ennek a fogalomnak a segítségével lényegében összehasonlíthatóvá válnak a döntési problémák a nehézségük szempontjából. Egy ilyen Karp-redukció létezése ugyanis azt jelenti, hogy az [latex]L[/latex] nyelv felismerése <strong><em>nem lényegesen nehezebb</em></strong>, mint a [latex]K[/latex] nyelv felismerése, leszámítva egy polinomiális időkomplexitású kis extra munkát, amit az [latex]f[/latex] függvény kiszámítása jelent. Az [latex]L[/latex] nyelv Karp-redukcióját a [latex]K[/latex] nyelvre így jelöljük: [latex]L \prec K[/latex]. Most példaként megadunk egy Karp-redukciót a <em>3</em>-színezhetőség és a <em>k</em>-függetlenség eldöntésének problémája között.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Karp-redukció (példa)</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Ehhez egy olyan <strong><em>polinomiális időkomplexitású algoritmust</em></strong> kell találnunk, amely egy tetszőleges [latex]G[/latex] gráfból (azaz a <em>3</em>-színezhetőség problémájának egy példányából) előállít egy [latex]H[/latex] gráfot és egy [latex]k[/latex] egész számot (azaz a <em>k</em>-függetlenség problémájának egy példányát), méghozzá úgy, hogy a [latex]H[/latex] gráf <strong>akkor és csak akkor</strong> legyen <em>k</em>-független, <strong>ha</strong> a [latex]G[/latex] gráf <em>3</em>-színezhető. Az <strong><em>„akkor és csak akkor”</em></strong> mondatszerkezetet ismét a fentebb már említett szigorú értelemben kell venni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A [latex]H[/latex] gráf és a [latex]k[/latex] egész szám előállítása [latex]G[/latex]-ből (tehát maga a Karp-redukció) a következő: másoljuk le a [latex]G[/latex] gráfot <em>3</em> példányban, és kössük össze azokat a csúcsokat éllel, amelyek ugyanannak az eredeti [latex]G[/latex]-beli csúcsnak a másolatai. Az így kapott „nagy” gráf legyen a [latex]H[/latex], valamint [latex]k[/latex] értéke legyen az eredeti [latex]G[/latex] gráf csúcsainak száma. Az alábbi ábrán egy konkrét <em>5</em> csúcsú problémapéldány konverziója látható:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":1821} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_8_karp_redukcio_pelda.jpg" alt="Karp-redukció (példa)" class="wp-image-1821"/><figcaption>Karp-redukció (példa)</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>A fenti [latex]G[/latex] gráf a 3-színezhetőség problémának egy konkrét példánya, a csúcsokhoz rendelt <em>0</em>, <em>1</em> és <em>2</em> számok a [latex]G[/latex] gráf egy konkrét színezését jelölik. Ebből a fenti Karp-redukció szerint képeztük a lenti [latex]H[/latex] gráfot és a [latex]k[/latex] egész számot, mint a <em>k</em>-függetlenség problémájának egy példányát. A [latex]H[/latex] gráf vízszintes szintjei a [latex]G[/latex] gráf kiterített másolatai, míg a függőleges irányítású élek azokat a csúcsokat kötik össze, amelyek ugyanannak a [latex]G[/latex]-beli csúcsnak a másolatai.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most kezdjünk el végigmenni a [latex]G[/latex] gráf csúcsain szép sorban, és mindegyikhez jelöljük meg az ő [latex]G[/latex]-beli színének megfelelő szinten lévő másolatát a [latex]H[/latex] gráfban. A <em>0</em>, <em>1</em> és <em>2</em> színeknek rendre a felső, a középső és az alsó szintek feleljenek meg. A fenti ábrán a megjelölt csúcsokat vastagított körökkel jelöltük. Ha tehát például egy [latex]G[/latex]-beli csúcs színe <em>2</em>, akkor jelöljük meg az ő [latex]H[/latex]-beli másolatát az alsó szinten. Vegyük észre, hogy ebből épp [latex]k=5[/latex] darab van (hiszen a [latex]G[/latex] gráfnak [latex]k=5[/latex] darab csúcsa volt).</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Igaz továbbá, hogy a megjelölt csúcsok között nincs él a [latex]H[/latex] gráfban, azaz <strong><em>függetlenek</em></strong>. Az adott szinten belüli él azért nincs közöttük, mivel ha lenne, akkor a [latex]G[/latex]-beli megfelelőjük között is lenne, és így nem kaphatták volna ugyanazt a színt. Függőleges irányú él pedig azért nincs, mert mindegyik oszlopból csak egy csúcsot jelöltünk meg [latex]H[/latex]-ban. Ez a gondolatmenet tetszőleges <em>3</em>-színezhető [latex]G[/latex] gráf tetszőleges színezésére működik. Azt tehát már tudjuk, hogy <strong>ha</strong> a [latex]G[/latex] gráf <strong><em>3-színezhető</em></strong>, <strong>akkor</strong> a [latex]H[/latex] gráf <strong><em>k-független</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Vegyük észre továbbá, hogy a [latex]H[/latex] gráf nem is lehet másként <em>k</em>-független, azaz a <em>k</em>-függetlenség valóban <strong>csak akkor</strong> teljesül, <strong>ha</strong> a [latex]G[/latex] gráf <em>3</em>-színezhető. Tegyük fel ugyanis, hogy a [latex]G[/latex] gráf <strong>nem</strong> <em>3</em>-színezhető (azaz minimum <em>4</em> szín kell a kiszínezéséhez). <strong>Ekkor</strong> a [latex]H[/latex] gráfban sem lehet [latex]k[/latex] darab független csúcs, hiszen ha lenne, akkor végigmehetnénk rajtuk, és mindegyikük [latex]G[/latex]-beli eredetijét kiszínezhetnénk annak a [latex]H[/latex]-beli szintnek megfelelő színnel, amelyben helyet foglalnak. Így viszont [latex]G[/latex]-nek egy jó <em>3</em>-színezését kapnánk, tehát [latex]G[/latex] mégiscsak <em>3</em>-színezhető lenne, és ez ellentmondana a feltételezésünknek.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Természetesen egy Turing-gép vagy valódi számítógép számára ennél jóval pontosabb leírást kéne adnunk a fenti „átalakító” algoritmusra. A lényegen azonban ez nem változtatna. Most vizsgáljuk meg ennek az „átalakító” algoritmusnak a lépésszámát. Könnyen látható, hogy az a bemeneti [latex]G[/latex] gráf méretének polinomiális függvénye. Hiszen ha [latex]G[/latex] csúcsainak száma [latex]n[/latex], éleinek száma pedig [latex]e[/latex], akkor a belőle létrehozott [latex]H[/latex] gráf [latex]3n[/latex] darab csúcsot és [latex]3n+3e[/latex] darab élet fog tartalmazni. Másrészt [latex]k[/latex] értéke is könnyen számítható, hiszen csak meg kell számolni [latex]G[/latex] csúcsait. A fenti „átalakító” algoritmus tehát valóban egy a Karp-redukció a <em>3</em>-színezhetőségről a <em>k</em>-függetlenség problémájára.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Az NP problémaosztály krémje</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A Karp-redukció fogalmának segítségével tehát egy adott [latex]L[/latex] nyelv felismerésének feladatát <strong><em>vissza lehet vezetni</em></strong> egy másik [latex]K[/latex] nyelv felismerésének feladatára. Egy [latex]L \prec K[/latex] Karp-redukció létezése azt jelenti számunkra, hogy az [latex]L[/latex] nyelv felismerése <strong><em>nem lényegesen nehezebb</em></strong> a [latex]K[/latex] nyelv felismerésénél, leszámítva egy polinomiális időkomplexitású extra munkát. Ebből következik, hogy <strong>ha</strong> [latex]K[/latex] felismerésére van polinomiális idejű algoritmusunk, <strong>akkor</strong> [latex]L[/latex]-re is van. Fordítva: <strong>ha</strong> [latex]L[/latex]-re nincs polinomiális algoritmus, <strong>akkor</strong> [latex]K[/latex]-ra sincs. Az [latex]NP[/latex] nyelvosztály érdekes tulajdonsága, hogy léteznek benne ilyen értelemben <strong><em>„legnehezebb”</em></strong> nyelvek (döntési feladatok). Ezt világítjuk meg a következő definícióval.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel, hogy [latex]K[/latex] egy [latex]NP[/latex]-beli nyelv. Amennyiben tetszőleges, szintén [latex]NP[/latex]-beli [latex]L[/latex] nyelv esetén létezik [latex]L \prec K[/latex] Karp-redukció, akkor azt mondjuk, hogy a [latex]K[/latex] nyelv <strong><em>NP-teljes</em></strong>. <strong><em>Az NP-teljes nyelvek felismerése tehát „legalább olyan nehéz”, mint bármilyen más NP-beli nyelv felismerése.</em></strong> Amennyiben a kérdéses [latex]K[/latex] nyelvtől nem követeljük meg, hogy maga is [latex]NP[/latex]-ben legyen, úgy a [latex]K[/latex] nyelvet <strong><em>NP-nehéznek</em></strong> nevezzük. <strong><em>Az NP-teljes nyelvek tehát olyan speciális NP-nehéz nyelvek, amelyek maguk is [latex]NP[/latex]-ben vannak.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A fenti definíció egyszerű következménye, hogy <strong><em>amennyiben akár egyetlen NP-teljes nyelv eldöntésére is találnánk polinomiális algoritmust, abból következne, hogy [latex]P=NP[/latex]</em></strong>. Ha ugyanis akár egyetlen egy NP-teljes [latex]K[/latex] nyelv is a [latex]P[/latex] osztályban lenne (azaz felismerhető lenne polinomiális időkomplexitású algoritmussal), úgy minden [latex]NP[/latex]-beli [latex]L[/latex] nyelv szintén a [latex]P[/latex] osztályban lenne, hiszen az [latex]L \prec K[/latex] Karp-redukció létezése miatt ebben az esetben az [latex]L[/latex] nyelvet is fel tudnánk ismerni polinomiális algoritmussal. De megfordítva is igaz: <strong><em>amennyiben akár egyetlen NP-teljes nyelvről is kiderülne, hogy nem létezik őt felismerő polinomiális algoritmus, abból következne</em></strong> – azon kívül, hogy nyilván [latex]P \
+eq NP[/latex] lenne –<strong><em>, hogy egyetlen NP-teljes nyelv felismerésére sem létezik polinomiális algoritmus.</em></strong> Ha ugyanis egy NP-teljes [latex]L[/latex] nyelvről bebizonyosodna, hogy a [latex]P[/latex] osztályon kívül van, akkor nem létezhet olyan NP-teljes [latex]K[/latex] nyelv, ami [latex]P[/latex]-ben van, hiszen különben az [latex]L \prec K[/latex] Karp-redukció létezése miatt az [latex]L[/latex] nyelvet is fel tudnánk ismerni polinomiális algoritmussal.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Vagyis <strong><em>minden NP-teljes nyelv vagy egyszerre polinomiális vagy egyszerre exponenciális időkomplexitású</em></strong>. Rendkívül sok algoritmikus probléma vezethető vissza NP-teljes nyelvek felismerésének feladatára. Éppen ezért eléggé bosszantó, hogy eddig – számtalan próbálkozás ellenére – egyetlen ilyen nyelvről sem tudtuk bizonyítani egyik eshetőséget sem. Az alábbi ábrán az eddig megismert bonyolultsági osztályok egymáshoz való viszonya látható a [latex]P \
+eq NP[/latex] sejtésre adható két lehetséges válasz esetére:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":1823} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_8_p_nem_egyenlo_np.jpg" alt="Bonyolultságtérkép P nem egyenlő NP esetén" class="wp-image-1823"/><figcaption>Bonyolultságtérkép [latex]P \
+eq NP[/latex] esetén</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:image {"align":"center","id":1825} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_8_p_egyenlo_np.jpg" alt="Bonyolultságtérkép P egyenlő NP esetén" class="wp-image-1825"/><figcaption>Bonyolultságtérkép [latex]P=NP[/latex] esetén</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>E két eshetőség közül a legtöbb matematikus az első elrendezést valószínűsíti. A gyakorlatban is előforduló algoritmikus feladatok között ugyanis <strong><em>nagyon gyakoriak az NP-teljes problémák</em></strong>. A szakirodalomban dokumentált NP-teljes feladatok száma <strong><em>jóval ezer felett</em></strong> van. Azonban ezek intenzív vizsgálata ellenére sem tapasztalható a polinomiális algoritmusok irányába történő legcsekélyebb előrehaladás. Így meglehetősen furcsa lenne, ha kiderülne, hogy ezek <em><strong>mindegyikére</strong></em> létezik hatékony algoritmus. Most mutatunk néhány, a gyakorlatban fontos algoritmikus optimalizálási feladatot, amelyek mind NP-teljes döntési problémákhoz vezetnek.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>NP-teljes és NP-nehéz problémák</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Az alábbiakban néhány olyan, az informatikában is gyakran felmerülő optimalizálási feladatot ismertetünk, amelyek NP-teljes döntési problémákra vezethetők vissza.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Maximális méretű klikk keresése gráfokban</strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><a rel="noreferrer noopener" aria-label="Gráfokról (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/7-algoritmus-bonyolultsag-problemaosztalyok-polinomialis-exponencialis-p-np-sejtes-tanu-tetel#graph-coloring" target="_blank">Gráfokról</a> az előző részben már volt szó. Egy gráfban <strong><em>klikk</em></strong>nek nevezünk egy olyan csúcshalmazt, amelyen belül bármely két csúcs között van él. A feladat egy adott gráfban megtalálni a legnagyobb klikket. Például az alábbi gráfban a legnagyobb klikk <em>4</em> csúcsból áll. Ezeket tele körökkel jelöltük:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":1828} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_8_maximalis_klikk.jpg" alt="Gráf 4 méretű maximális klikkel" class="wp-image-1828"/><figcaption>Gráf 4 méretű maximális klikkel</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Az ehhez a feladathoz tartozó döntési probléma így hangzik: adott egy [latex]G[/latex] gráf és egy [latex]k[/latex] egész szám. Az eldöntendő kérdés: létezik-e [latex]G[/latex]-ben [latex]k[/latex]-nál nagyobb méretű klikk?</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Leghosszabb útvonal keresése gráfokban</strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Adott egy gráf és annak két csúcspontja, amelyek között <strong><em>a lehető leghosszabb (legtöbb élből álló) útvonalat kell megtalálni</em></strong>. Fontos kikötés, hogy az útvonal során <strong><em>a gráf minden csúcsát legfeljebb 1-szer érinthetjük</em></strong>. Azaz egy már bejárt csúcshoz nem térhetünk vissza mégegyszer. Ez a kikötés érthető is, hiszen különben egy így kialakuló kör mentén haladva tetszőlegesen hosszú útvonal is létezne. Az alábbi ábrán látható példa gráfon vastagított vonallal jelöltük az [latex]a[/latex] és [latex]b[/latex] csúcsok közötti leghosszabb útvonalat:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":1830} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_8_leghosszabb_ut.jpg" alt="Leghosszabb útvonal keresése" class="wp-image-1830"/><figcaption>Leghosszabb útvonal keresése</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Az ehhez a feladathoz tartozó döntési probléma így hangzik: adott egy [latex]G[/latex] gráf és egy [latex]k[/latex] egész szám. Az eldöntendő kérdés: létezik-e [latex]G[/latex]-ben [latex]k[/latex]-nál hosszabb útvonal?</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez a döntési probléma NP-teljes, érdekes ugyanakkor, hogy a <strong><em>legrövidebb</em></strong> útvonal megtalálására viszont léteznek polinomiális időkomplexitású algoritmusok. A legismertebb példák a használatukra a különböző navigációs alkalmazások útvonalkeresői. Az egyik legismertebb ilyen eljárás a <strong><em><a rel="noreferrer noopener" aria-label=" (új fülön nyitja meg)" href="https://hu.wikipedia.org/wiki/Dijkstra-algoritmus" target="_blank">Dijkstra-algoritmus</a></em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Gráfok színezése</strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><a rel="noreferrer noopener" aria-label="Gráfok színezéséről (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/7-algoritmus-bonyolultsag-problemaosztalyok-polinomialis-exponencialis-p-np-sejtes-tanu-tetel#graph-coloring" target="_blank">Gráfok színezéséről</a> az előző részben már volt szó. A feladat egy adott gráf csúcsait a lehető legkevesebb szín felhasználásával kiszínezni oly módon, hogy bármely két szomszédos csúcs különböző színű legyen.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az ehhez a feladathoz tartozó döntési probléma így hangzik: adott egy [latex]G[/latex] gráf és egy [latex]k[/latex] egész szám. Az eldöntendő kérdés: kiszínezhető-e [latex]G[/latex] legfeljebb [latex]k[/latex] darab szín felhasználásával?</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az előző részben már említettük, hogy [latex]k=3[/latex] esetén ennek eldöntésére jelenleg nem ismert polinomiális időkomplexitású algoritmus. Ráadásul nem is várható, hogy bárki felfedez ilyen algoritmust, ugyanis [latex]k&gt;2[/latex] esetén ez a döntési probléma is NP-teljes.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Független csúcshalmaz keresése gráfokban</strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A <a rel="noreferrer noopener" aria-label="független csúcsok problémájáról (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/7-algoritmus-bonyolultsag-problemaosztalyok-polinomialis-exponencialis-p-np-sejtes-tanu-tetel#independent-set-problem" target="_blank">független csúcsok problémájáról</a> szintén az előző részben volt szó. A feladat egy adott gráf csúcsai közül kiválasztani a lehető legtöbbet úgy, hogy ezek között ne legyen két egymással szomszédos csúcs.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az ehhez a feladathoz tartozó döntési probléma így hangzik: adott egy [latex]G[/latex] gráf és egy [latex]k[/latex] egész szám. Az eldöntendő kérdés: létezik-e [latex]G[/latex]-ben legalább [latex]k[/latex] darab csúcsot tartalmazó független csúcshalmaz?</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az előző részben már említettük, hogy [latex]k&gt;1[/latex] esetén ennek eldöntésére sem ismert polinomiális időkomplexitású algoritmus. Valószínű, hogy nem is létezik, ugyanis ez a döntési probléma is NP-teljes.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Az utazóügynök-probléma (egyszerűsített változat)</strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A feladat egy adott gráfban olyan útvonal keresése, amely minden csúcson pontosan egyszer halad keresztül, és végül a kiindulópontba jut vissza. Az ilyen útvonalakat <strong><em>Hamilton-köröknek</em></strong> nevezzük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az ehhez a feladathoz tartozó döntési probléma így hangzik: adott egy gráf, és el kell dönteni, hogy létezik-e benne Hamilton-kör. Ez a döntési probléma is NP-teljes.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az utazóügynök-probléma a logisztikai problémákon túl nagy gyakorlati jelentőséggel bír például a&nbsp;nyomtatott áramkörök&nbsp;gyártása során alkalmazott fúrórobotok ideális mozgásának megtervezésében. De ezen kívül is rengeteg optimalizálási feladat vezethető vissza rá.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>A hátizsák-probléma</strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Adott valahány darab tárgy, mindegyiknek meg van adva a súlya és az értéke, valamint adott egy valamilyen teherbírású hátizsák. A feladat a tárgyakból minél nagyobb összeértékű részhalmazt belepakolni a hátizsákba úgy, hogy ne lépjük át a súlyhatárt. Ezzel rokon probléma, amikor különböző méretű dobozokat kell bepakolni egy adott méretű szekrénybe úgy, hogy minél jobban kihasználjuk a rendelkezésre álló helyet. Ki ne bosszankodott volna például, amikor nyaralás előtt minél több mindent szeretett volna bepakolni a csomagtartóba? Most már tudjuk, hogy a bosszankodás oka az volt, hogy ez is egy NP-teljes döntési problémához vezet.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Az NP-nehéz problémák kezelése</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Jogosan merül fel a kérdés, hogy mitévők legyünk akkor, ha munkánk során olyan problémába ütközünk, amely bizonyítottan NP-nehéz. Ez ugyanis viszonylag gyakran előfordul, mégsem kell ezen problémák megoldásáról teljesen lemondanunk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az egyik lehetőség, hogy megvizsgáljuk, <strong><em>milyen méretű bemenetek várhatók a gyakorlati alkalmazás során</em></strong>, és olyan exponenciális időkomplexitású algoritmust keresünk, amely e bemenetméretek esetén is elfogadható idő alatt lefut.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Előfordulhat az is, hogy egy, a gyakorlatban felmerülő NP-nehéz problémáról kiderül, hogy valójában csak egy <strong><em>speciális esetét</em></strong> kell kezelnünk, amire már elképzelhető, hogy létezik polinomiális algoritmus.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Bevett módszer az is, hogy a problémára optimális, de lassú eljárás helyett az optimumnál rosszabb eredményt produkáló, de gyors algoritmust próbálunk keresni. Amennyiben bizonyítani tudjuk, hogy a gyors algoritmus eredményének az optimálistól való eltérése adott korlát alatt marad, úgy <strong><em>közelítő algoritmusról</em></strong> beszélünk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Végül előfordulhat, hogy sikerül gyors algoritmust találnunk, amely közelíti ugyan az optimumot, de nem tudjuk bizonyítani azt, hogy a közelítés hibája adott korlát alatt marad, azonban a tapasztalat azt mutatja, hogy megfelelő eredményt ad a legtöbb esetben. Ezeket <strong><em>heurisztikus algoritmusoknak</em></strong> nevezzük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A Cook-Levin tétel</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A most következő egyszerű tétel hasznos eszköz, ha egy nyelv NP-teljességét szeretnénk bizonyítani. <strong><em>Ha egy [latex]L[/latex] nyelv NP-teljes, egy [latex]K[/latex] nyelv pedig [latex]NP[/latex]-ben van, valamint létezik egy [latex]L \prec K[/latex] Karp-redukció, akkor a [latex]K[/latex] nyelv is NP-teljes.</em></strong> Az NP-teljesség tehát a Karp-redukción keresztül <strong><em>„öröklődik”</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez azt jelenti, hogy egy [latex]K[/latex] nyelv NP-teljességének bizonyításához nem szükséges, hogy redukáljuk az <strong><em>összes</em></strong> [latex]NP[/latex]-beli nyelvet [latex]K[/latex]-ra, elegendő ezt megtenni <strong><em>egyetlen</em></strong> NP-teljes nyelvvel. Vegyünk ugyanis egy tetszőleges [latex]NP[/latex]-beli [latex]X[/latex] nyelvet. Mivel a fenti tételbeli [latex]L[/latex] nyelv NP-teljes, ezért az [latex]X[/latex] nyelv felismerését polinomiális idejű extra munkával redukálni tudjuk az [latex]L[/latex] nyelv felismerésére. Ha az [latex]L[/latex] nyelv felismerését szintén polinomiális időben tovább tudjuk redukálni a [latex]K[/latex] nyelv felismerésére, akkor e két redukció egymás utáni alkalmazásával tulajdonképpen az [latex]X[/latex] nyelvet is redukálni tudjuk [latex]K[/latex]-ra polinomiálisan, azaz [latex]K[/latex] valóban NP-teljes.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A fenti tétel alkalmazásához azonban szükségünk van legalább egy NP-teljes nyelvre</em></strong>, amiről tovább örökíthetnénk ezt a tulajdonságot más nyelvekre. Kiemelt jelentőségű volt emiatt <a rel="noreferrer noopener" aria-label="Stephen Cook (új fülön nyitja meg)" href="https://en.wikipedia.org/wiki/Stephen_Cook" target="_blank">Stephen Cook</a> és <a rel="noreferrer noopener" aria-label="Leonid Levin (új fülön nyitja meg)" href="https://en.wikipedia.org/wiki/Leonid_Levin" target="_blank">Leonid Levin</a> 1971-es eredménye, amely <strong><em>az első NP-teljes nyelvet mutatta meg</em></strong>. Ez az eredmény <strong><em>Cook-Levin tétel</em></strong> néven ismeretes. Ez a nyelv az úgynevezett <em><strong>kielégíthető logikai hálózatok</strong></em> nyelve. Egy <strong><em>logikai hálózat</em></strong> úgynevezett logikai kapukból és a közöttük lévő összeköttetésekből épül fel. A kapuknak vannak bemenetei, amelyek kétféle logikai értéket vehetnek fel – <strong>1</strong> vagy <strong>0</strong> (<strong>igaz</strong> vagy <strong>hamis</strong>). Ezenkívül van egy kimenete, amelyen a kapu szintén egy logikai értéket állít elő a típusának és a bemenetein lévő logikai értékeknek a függvényében. Egy hálózat építéséhez <em>3</em> féle logikai kaput használhatunk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li><strong>ÉS-kapu:</strong>
+két bemenete van, a kimenetén pedig akkor és csak akkor állít elő <strong>1</strong>-et, ha <strong>mindkét</strong> bemenetének értéke <strong>1</strong>.</li><li><strong>VAGY-kapu:</strong>
+szintén két bemenete van, a kimenetén pedig akkor és csak akkor állít elő <strong>1</strong>-et, ha <strong>legalább az egyik</strong> bemenetének értéke <strong>1</strong>.</li><li><strong>NEM-kapu:</strong>
+egy bemenete van, a kimenetén pedig akkor és csak akkor állít elő <strong>1</strong>-et, ha a bemenetének értéke <strong>0</strong>.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>E három féle kapu működését az igazságtáblázatukkal adhatjuk meg, amely minden lehetséges bemeneti kombinációra megadja, hogy mi lesz a kimeneten. Az alábbi ábrákon a három féle kapu igazságtáblázata és jelölése látható:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":1832} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_8_es_kapu_igazsagtablazat.jpg" alt="ÉS-kapu jelölése és igazságtáblázata" class="wp-image-1832"/><figcaption>ÉS-kapu jelölése és igazságtáblázata</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:image {"align":"center","id":1833} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_8_vagy_kapu_igazsagtablazat.jpg" alt="VAGY-kapu jelölése és igazságtáblázata" class="wp-image-1833"/><figcaption>VAGY-kapu jelölése és igazságtáblázata</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:image {"align":"center","id":1835} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_8_nem_kapu_igazsagtablazat.jpg" alt="NEM-kapu jelölése és igazságtáblázata" class="wp-image-1835"/><figcaption>NEM-kapu jelölése és igazságtáblázata</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Egy logikai hálózat e kapuk segítségével a hálózat [latex]n[/latex] darab bemenetéből egy kimenetet állít elő. Egy kapu bármely bemenetére akármelyik másik kapu kimenetét, vagy közvetlenül a logikai hálózat valamely bemenetét köthetjük. Hasonlóan egy kapu kimenetét akármelyik másik kapu (vagy kapuk) bemenetére, vagy közvetlenül a logikai hálózat kimenetére köthetjük. Mindössze két megkötés van. Egyrészt minden kapu-bemenetre illetve a hálózat kimenetére is pontosan egy jel lehet kötve. Másrészt a hálózat tetszőleges bemenetétől a hálózat kimenetéhez vezető útvonalak mentén minden kapu legfeljebb egyszer fordulhat elő. Azaz nem lehetnek „hurkok” a hálózatban. Akkor beszélünk <strong><em>kielégíthető logikai hálózatról</em></strong>, ha létezik a bemeneteinek olyan kombinációja, amelyre a hálózat a kimenetén a logikai <strong>1</strong> értéket állítja elő. Az alábbi ábrán egy <em>3</em> bemenetű logikai hálózatot láthatunk egy ilyen „kielégítő” bemeneti kombinációval:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":1837} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_8_kielegitheto_logikai_halozat.jpg" alt="Kielégíthető logikai hálózat (példa)" class="wp-image-1837"/><figcaption>Kielégíthető logikai hálózat (példa)</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Javasoljuk az olvasónak, hogy kövesse végig, hogy ez a bemeneti kombináció valóban a [latex]D=1[/latex] kimenetet eredményezi. <strong><em>Ezek után a döntési feladatunk egy tetszőleges logikai hálózatról eldönteni, hogy kielégíthető-e a fenti értelemben.</em></strong> Formális nyelvekre átfogalmazva: nevezzük [latex]SAT[/latex]-nak az olyan jelsorozatokat tartalmazó nyelvet, amely jelsorozatok egyrészt valamilyen logikai hálózat leírásai, másrészt az általuk leírt logikai hálózat a fenti értelemben kielégíthető. A feladatunk pedig egy olyan Turing-gép létrehozása, amely tetszőleges [latex]x[/latex] jelsorozatra eldönti, hogy a [latex]SAT[/latex] nyelvbe tartozik-e. <strong><em>A Cook-Levin tétel állítása a következő: a [latex]SAT[/latex] nyelv NP-teljes.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Annak bizonyítása viszonylag egyszerű, hogy a [latex]SAT[/latex] nyelv [latex]NP[/latex]-ben van, hiszen egy helyes kiértékelés – mint tanú – ellenőrzése hatékonyan megoldható, ahogy azt az olvasó a fenti példából érzékelhette. Az NP-teljességhez azonban azt is bizonyítani kell, hogy <strong><em>tetszőleges</em></strong> [latex]NP[/latex]-beli [latex]L[/latex] nyelvről létezik Karp-redukció a [latex]SAT[/latex] nyelvre. A Cook-Levin tétel bizonyítása lényegében egy olyan polinomiális időkomplexitású algoritmus leírása, amely egy tetszőleges [latex]NP[/latex]-beli [latex]L[/latex] nyelvhez és tetszőleges [latex]x[/latex] jelsorozathoz konstruál egy [latex]y[/latex] jelsorozatot (azaz az általa leírt logikai hálózatot) úgy, hogy az [latex]x[/latex] jelsorozat akkor és csak akkor tartozik [latex]L[/latex]-be, ha az [latex]y[/latex] jelsorozat [latex]SAT[/latex]-ba tartozik (azaz az általa leírt logikai hálózat kielégíthető).</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A bizonyítás leírása hosszadalmas és erősen technikai jellegű, ezért ettől most eltekintünk. Arra azonban érdemes felhívni a figyelmet, hogy ezek szerint tetszőleges [latex]NP[/latex]-beli döntési probléma egy adott példányát le lehet írni egyetlen logikai kifejezéssel, vagy egy azt reprezentáló logikai hálózattal. Ez jól mutatja a logika kifejező erejét.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezen túlmenően a [latex]SAT[/latex] nyelv NP-teljességének önmagában is komoly jelentősége van. A valódi számítógépek integrált áramkörei ugyanis szintén a fentihez hasonló – persze annál lényegesen bonyolultabb – logikai hálózatokat valósítanak meg. Ezek optimalizálása épp az NP-teljesség miatt általában nem egyszerű. Optimalizálás alatt ebben az esetben ugyanannak a logikai hálózatnak a minél kevesebb logikai kapu használatával történő megvalósítását értjük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A Cook-Levin tétel fontossága azonban elsősorban abban nyilvánul meg, hogy szinte az összes többi NP-teljességi bizonyítás – például a fentebb már említett említett <em>3</em>-színezhetőség vagy <em>k</em>-függetlenség NP-teljessége is – közvetetten vagy közvetlenül a [latex]SAT[/latex] nyelv NP-teljességén alapszik.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Egy meglepő fordulat</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>2015 novemberében <a rel="noreferrer noopener" aria-label="Babai László (új fülön nyitja meg)" href="https://hu.wikipedia.org/wiki/Babai_L%C3%A1szl%C3%B3" target="_blank">Babai László</a>, a Chicagoi Egyetem professzora bejelentette, hogy egy úgynevezett kvázipolinomiális időkomplexitású algoritmust talált a matematikusokat évtizedek óta foglalkoztató <strong><em>gráf-izomorfizmus problémára</em></strong>. A „kvázipolinomiális” fogalmát itt most nem részletezzük, azonban megpróbáljuk érzékeltetni a felfedezés jelentőségét.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egy [latex]G[/latex] és [latex]H[/latex] gráfra akkor mondjuk, hogy <strong><em>izomorfak</em></strong> egymással, ha a csúcshalmazaik között <strong><em>létezik olyan kölcsönösen egyértelmű megfeleltetés, amely megőrzi az éleket illetve azok hiányát is</em></strong>. Ha tehát [latex]G[/latex]-ben veszünk két szomszédos csúcsot, akkor a nekik megfeleltetett csúcsok szintén szomszédosak lesznek [latex]H[/latex]-ban. Ugyanígy ha a két csúcs nem volt szomszédos [latex]G[/latex]-ben, akkor a nekik megfeleltetett csúcsok szintén nem szomszédosak [latex]H[/latex]-ban. A <strong><em>kölcsönösen egyértelműség</em></strong> pedig azt jelenti, hogy [latex]G[/latex] minden csúcsához pontosan egy csúcs van hozzárendelve [latex]H[/latex]-ban, és [latex]H[/latex] minden csúcsa pontosan egy [latex]G[/latex]-beli csúcshoz van hozzárendelve. Ilyenkor azt mondjuk, hogy a két gráf <strong><em>lényegében ugyanaz</em></strong>, maximum máshogyan lettek felrajzolva, vagy máshogyan neveztük el a csúcsaikat. Ilyenkor ezt a két csúcshalmaz közötti strúktúratartó megfeleltetést (vagy ha úgy tetszik, függvényt) <strong><em>izomorfizmusnak</em></strong> nevezzük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi ábrán látható két gráf például izomorf egymással, még ha ez nem is látszik elsőre. Az izomorfizmus alapján egymáshoz rendelt csúcsokat azonos számokkal láttuk el:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":1839} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_8_izomorf_grafok.jpg" alt="Izomorf gráfok (példa)" class="wp-image-1839"/><figcaption>Izomorf gráfok (példa)</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi ábrán látható két gráf viszont nem izomorf egymással:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":1841} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_8_nem_izomorf_grafok.jpg" alt="Nem izomorf gráfok (példa)" class="wp-image-1841"/><figcaption>Nem izomorf gráfok (példa)</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>gráf-izomorfizmus probléma</em></strong> ezek után így fogalmazható meg: adott két gráf, és el kell dönteni, hogy izomorfak-e vagy sem. Mindezidáig nagyon úgy tűnt, hogy ez egy rendkívül nehéz algoritmikus feladat nagy gráfok esetén. Ilyen esetekben korábban mindig az történt, hogy egy nehéznek tűnő problémáról vagy bebizonyosodott, hogy mégis hatékonyan kezelhető (azaz [latex]P[/latex]-beli), vagy pedig az, hogy NP-teljes.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Sokáig nyitott volt például az a kérdés, hogy egy egész számról eldönthető-e hatékonyan, hogy prímszám-e vagy összetett. 2002-ben azonban 3 indiai matematikus, Manindra Agrawal, Neeraj Kayal és Nitin Saxena felfedeztek egy polinomiális algoritmust ennek eldöntésére. Ennek neve a felfedezők neveinek kezdőbetűi után <strong><em>AKS-algoritmus</em></strong>. Eddig is voltak természetesen prímtesztelő algoritmusok, hiszen – mint azt később látni fogjuk – fontos jelentőségük van a rejtjelezésben. De ezek mind csak bizonyos valószínűséggel adják meg a választ, azonban ritkán előfordulhat, hogy tévednek. A gyakorlatban továbbra is ezeket a potenciálisan tévedő eljárásokat használjuk prímtesztelésre, mivel jóval gyorsabbak, mint az AKS-algoritmus, és a tévedés valószínűsége az alkalmazás szempontjából elhanyagolható. Az AKS-algoritmusnak inkább elméleti jelentősége van, mivel megmutatta, hogy egy addig nehéznek tartott probléma nemhogy nem NP-teljes, de egyenesen [latex]P[/latex]-beli. Jóval gyakoribbak azonban azok az esetek, amikor egy nehéznek gondolt problémáról kiderül, hogy valóban NP-teljes.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Babai <a rel="noreferrer noopener" aria-label="publikációját (új fülön nyitja meg)" href="http://people.cs.uchicago.edu/~laci/17groups/version2.1.pdf" target="_blank">publikációját</a> éppen ezért a matematikus társadalom, mint az évtized legnagyobb számítástudományi áttörését ünnepelte. Ebből az eredményből ugyanis nagyon úgy tűnik – még ha egyértelműen nem is következik belőle –, hogy <strong><em>a gráf-izomorfizmus problémája se nem NP-teljes, se nem [latex]P[/latex]-beli</em></strong>, azaz valahol a kettő között helyezkedhet el. Ha ez valóban így van, akkor ez lenne az első ilyen tulajdonságú probléma, amit felfedeztek, ráadásul a [latex]P \
+eq NP[/latex] sejtésre is megadná végre a választ. Erre azonban egyelőre még várni kell.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="prime-factorization-complexity"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>De hogy jön ide a kriptográfia?</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Ahhoz, hogy Alice és Bob biztonságosan tudjanak egymással kommunikálni egy olyan csatornán keresztül, amelyet a gonosz Eve képes lehallgatni, szükségük van valamilyen <a rel="noreferrer noopener" aria-label="rejtjelezési eljárásra (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/5-one-time-pad-passziv-aktiv-tamado-haromutas-kulcsforgalom#cipher" target="_blank">rejtjelezési eljárásra</a>. Ezen kívül szükségük van egy <strong><em>kulcsnak</em></strong> nevezett közös titokra is, amellyel az alkalmazott rejtjelezési eljárást paraméterezni fogják. A rejtjelezési eljárással szembeni legfontosabb követelmény, hogy a kulcs ismeretében „könnyű”, annak hiányában viszont „nehéz” algoritmikus feladat legyen a rejtjelezett üzenetek dekódolása. Az utóbbi 3 részben felvázolt bonyolultságelméleti fogalmak ismeretében az Olvasónak mostmár remélhetőleg világos, hogy pontosan mit értünk „könnyű” illetve „nehéz” algoritmikus feladat alatt.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezen túlmenően Alice-nak és Bob-nak azt a problémát is meg kell oldania, hogy hogyan tudnak megállapodni ebben a <strong><em>kulcsnak</em></strong> nevezett közös titokban anélkül, hogy személyesen találkozniuk kellene egymással. Ezt a <strong><em>kulcsmegosztás problémájának</em></strong> nevezzük. Ehhez a megállapodáshoz nyilván csak a nembiztonságos csatornát használhatják. De mégis hogyan lehetséges az, hogy a kulcsban való megállapodás érdekében küldött üzeneteket Eve ugyanúgy el tudja olvasni, mint Alice és Bob, mégsem tudja megfejteni magát a kulcsot (pontosabban fogalmazva az egy algoritmikusan roppant „nehéz” feladat a számára)?</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Erre a látszólagos paradoxonra a <strong><em>számelmélet</em></strong> fogja megadni a választ a következő részekben. A számelmélet évezredekig a matematikának látszólag egy haszontalan területe volt. A 20. század második felére azonban az információs társadalom alapjává vált. Már most megemlítjük azonban, hogy ebben kulcsfontosságú szerepet játszik az úgynevezett <strong><em>prímfaktorizáció</em></strong> feladatának látszólagos algoritmikus nehézsége. Ezen áll vagy bukik ugyanis az egész. A prímszámokról és a prímfaktorizációról bőven lesz még szó a következő részekben. Azt azonban mindenképpen fontosnak tartom megemlíteni ezen a ponton, hogy <strong><em>a prímfaktorizáció feladatáról még nem bizonyított, hogy NP-teljes lenne</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Babai eredménye után jogosan vetődik fel a kérdés: lehetséges, hogy a prímfaktorizáció problémája is a [latex]P[/latex] és az NP-teljes problémaosztály között helyezkedik el valahol? Netán egyenesen [latex]P[/latex]-beli? A választ nem tudjuk, de nagyon reméljük, hogy nem így van. Egy ilyen felfedezés ugyanis alapjaiban változtatná meg a jelenleg használt rejtjelezési eljárások biztonságába vetett hitünket. Ezen a ponton érdemes feltenni a kérdést, hogy <strong><em>vajon valóban senki nem tudja a választ</em></strong>? Vajon ha igenlő lenne a válasz és valaki rájönne egy hatékony prímfaktorizációs algoritmusra, biztosan publikálná-e a tudományos közösség számára? Vagy megpróbálna inkább titokban hasznot húzni belőle? Döntse el az Olvasó...</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ebben a részben tehát megismertük a Karp-redukció fogalmát, amelynek segítségével összehasonlíthatóvá válnak az algoritmikus problémák a nehézségük szempontjából. Definiáltuk az NP-teljes problémák osztályát, amelyekről ugyan nem tudjuk biztosan, hogy valóban olyan nehezek, mint amilyennek látszanak, de megmutattuk, hogy miért lenne rendkívül meglepő, ha mégsem ez lenne a helyzet. Most már van egy átfogó képünk arról, hogy mit tekintünk algoritmikusan „nehéz” vagy „könnyű” feladatnak. A következő részekben felvázoljuk egy olyan rejtjelező rendszer alapjait, amellyel Alice és Bob meg tudja oldani a kulcsmegosztás problémáját anélkül, hogy személyesen találkozniuk kéne. Ez az eljárás továbbá az 5. részben bemutatott Mallory, mint </em></strong><a rel="noreferrer noopener" aria-label="aktív támadó (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/5-one-time-pad-passziv-aktiv-tamado-haromutas-kulcsforgalom#active-attacker" target="_blank"><strong><em>aktív támadó</em></strong></a><strong><em> elleni védelemben is komoly szerepet játszik, mint azt látni fogjuk.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A következő részt <a href="https://youproof.hu/kriptografia/9-diffie-hellman-protokoll-egyiranyu-fuggveny-modularis-aritmetika-asszimmetrikus-kulcs/">itt</a> találod...</em></strong></p>
+<!-- /wp:paragraph -->

@@ -1,0 +1,30 @@
+type: remark
+name: gyuruhomomorfizmus-magja-es-kepe-megjegyzes
+references:
+  gyuruhomomorfizmus:
+    target:
+      type: definition
+      name: gyuruhomomorfizmus
+  gyuruhomomorfizmus-szerinti-kongruencia:
+    target:
+      type: definition
+      name: gyuruhomomorfizmus-szerinti-kongruencia
+  osszegtarto-lekepezes-nullelem-es-ellentettkepzestarto:
+    target:
+      type: theorem
+      name: osszegtarto-lekepezes-nullelem-es-ellentettkepzestarto
+content:
+  - type: narrative
+    content: |
+      A [gyuruhomomorfizmus-szerinti-kongruencia]ban szereplő kongruenciára a most definiált fogalom segítségével
+      egy alternatív definíciót is adhatunk. Nevezetesen: az $R$ gyűrű valamely $a$ és $b$ elemei között akkor és
+      csak akkor teljesül az $f$ gyűrűhomomorfizmus szerinti kongruencia (azaz akkor és csak akkor teljesül az
+      $a\equiv b\pod f$ reláció), ha az $a-b$ különbség benne van $f$ magjában. Ugyanis $a\equiv b\pod f$ pontosan
+      azt jelenti, hogy $f(a)=f(b)$.
+  - type: formula
+    lead-in: |
+      Mindkét oldalhoz $f(b)$ ellentettjét adva, valamint kihasználva $f$ összegtartó (lásd a
+      [gyuruhomomorfizmus]t) és ellentettképzéstartó (lásd a
+      [osszegtarto-lekepezes-nullelem-es-ellentettkepzestarto] 2. pontját) tulajdonságát, ezt kapjuk:
+    content: |
+      f(a)\oplus(\ominus f(b))=f(a-b)=0_S

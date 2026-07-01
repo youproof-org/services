@@ -1,0 +1,46 @@
+type: proof
+name: ekvivalencia-osztalyok-reprezentansa-bizonyitas
+remarks: []
+references:
+  peano-osszeadas:
+    target:
+      type: definition
+      name: peano-osszeadas
+  peano-osszeg-egyszerusites:
+    target:
+      type: theorem
+      name: peano-osszeg-egyszerusites
+  termeszetes-szamok-rendezese:
+    target:
+      type: definition
+      name: termeszetes-szamok-rendezese
+  termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel:
+    target:
+      type: theorem
+      name: termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel
+content:
+  - type: narrative
+    content: |
+      Az $a\geq b$ feltétel a [termeszetes-szamok-rendezese] alapján azt jelenti, hogy létezik olyan $n$
+      természetes szám, amelyre teljesül, hogy $a=b+n$. A Peano-összeadás [peano-osszeadas]jának 1. pontja miatt ez
+      egyenértékű ezzel: $a+0=b+n$. Ez viszont a
+      [termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel] miatt épp azt jelenti, hogy
+      $(a;b)\sim (n;0)$.
+  - type: narrative
+    content: |
+      Ezzel bizonyítottuk a tételben szereplő $n$ ***létezését***. Tegyük most fel, hogy ez nem egyértelmű, azaz
+      létezik egy másik $n'$ természetes szám is, amelyre $(a;b)\sim (n';0)$, de $n\eq n'$. A
+      [termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel] miatt ez azt jelenti, hogy
+      $a+0=b+n'$. Összevetve ezt az $a=b+n$ egyenlettel azt kapnánk, hogy $b+n=b+n'$. Ezt az egyenletet viszont a
+      [peano-osszeg-egyszerusites] alapján $b$-vel egyszerűsíthetjük, így $n=n'$ adódik, ami ellentmondás. A
+      tételben szereplő $n$ tehát mégis ***egyértelmű***.
+  - type: narrative
+    content: |
+      Az $m$-re vonatkozó állítás pontosan ugyanezen a módon igazolható, csak ekkor az $a$ és $b$ számok szerepét
+      fel kell cserélni.
+  - type: narrative
+    content: |
+      Végül ha $a=b$, akkor $(a;\underbrace{a}_{=b})\sim (0;0)$ valóban teljesül, hiszen nyilván
+      $a+0=\underbrace{a}_{=b}+0$. Másrészt, ha $(a;b)\sim (0;0)$, akkor a
+      [termeszetes-szamparok-ekvivalenciarelacioja-szukseges-es-elegseges-feltetel] miatt $a+0=b+0$, azaz a
+      Peano-összeadás [peano-osszeadas]jának 1. pontja miatt $a=b$.

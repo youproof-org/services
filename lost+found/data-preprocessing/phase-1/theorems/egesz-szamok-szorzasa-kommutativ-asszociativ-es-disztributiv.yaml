@@ -1,0 +1,21 @@
+type: theorem
+name: egesz-szamok-szorzasa-kommutativ-asszociativ-es-disztributiv
+proofs:
+  - egesz-szamok-szorzasa-kommutativ-asszociativ-es-disztributiv-bizonyitas
+remarks: []
+content:
+  - type: formula
+    lead-in: |
+      A $\Z$ halmaz tetszőleges $[(a;b)]$, $[(c;d)]$ és $[(e;f)]$ elemeire igazak az alábbi összefüggések:
+    content: |
+      [(a;b)] \odot [(c;d)] = [(c;d)] \odot [(a;b)]
+  - type: formula
+    content: |
+      ([(a;b)] \odot [(c;d)]) \odot [(e;f)] = [(a;b)] \odot ([(c;d)] \odot [(e;f)])
+  - type: formula
+    content: |
+      [(a;b)] \odot ([(c;d)] \oplus [(e;f)]) = [(a;b)] \odot [(c;d)] \oplus [(a;b)] \odot [(e;f)]
+  - type: narrative
+    content: |
+      Más szavakkal a $\odot$ művelet ***kommutatív*** és ***asszociatív***, valamint ***disztributív*** a $\oplus$
+      műveletre nézve.

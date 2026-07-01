@@ -1,0 +1,16 @@
+type: theorem
+name: vegesen-generalt-idealok-maximumfeltetele
+proofs:
+  - vegesen-generalt-idealok-maximumfeltetele-bizonyitas
+remarks: []
+references:
+  halmazrendszer-minimuma-es-maximuma:
+    target:
+      type: definition
+      name: halmazrendszer-minimuma-es-maximuma
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ ***tetszőleges gyűrű***. Ha $R$ ***minden ideálja végesen generált***, akkor az ezekből álló
+      $\mathcal{R}$ halmazrendszer bármely ***nemüres*** részhalmazában ***létezik maximális elem*** a
+      [halmazrendszer-minimuma-es-maximuma] szerinti értelemben.

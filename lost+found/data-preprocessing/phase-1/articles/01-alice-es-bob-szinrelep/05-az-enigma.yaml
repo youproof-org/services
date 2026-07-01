@@ -1,0 +1,34 @@
+type: section
+name: 05-az-enigma
+title: Az Enigma
+
+body:
+  - type: narrative
+    content: |
+      Ezt az alapelvet hagyták részben figyelmen kívül a híres német rejtjelező rendszer, az ***Enigma*** tervezői.
+      Az Enigma első változatát Arthur Scherbius német mérnök fejlesztette ki az első világháború végén, és az
+      1920-as években kereskedelmi céllal kezdték el alkalmazni. Annyira sikeresnek bizonyult, hogy a második
+      világháborúban a teljes német hadsereg kommunikációjának titkosítását is az Enigma későbbi katonai
+      változataival végezték. Az Enigma előtt még "kézzel" történt a kódolás és a dekódolás, ezért a gép bevezetése
+      erre a célra innovatív kezdeményezés volt. Az Enigmát használói abszolút biztonságosnak tartották, mivel az
+      ezzel kódolt szövegek hagyományos &ndash; kézi &ndash; módszerekkel megfejthetetlenek voltak.
+  - type: narrative
+    content: |
+      Tervezői azonban nem számoltak azzal, hogy a gép által generált titkos szöveget egy másik géppel &ndash; és
+      persze a különböző tervezési hiányosságokat kihasználva &ndash; meg lehet fejteni. Az Enigmát először a
+      lengyel Marian Rejewski vezette matematikusokból álló csoport törte fel 1932-ben. Azonban a németek a háború
+      kitörése előtt lényegesen megbonyolították a szerkezetet. A lengyel kódtörők &ndash; a fenyegető veszélyt
+      látva &ndash; összes tudásukat átadták a szövetségeseknek még hazájuk lerohanása előtt. Ez aztán nagyban
+      hozzájárult az Egyesült Királyság kódfejtőinek későbbi sikereihez, akik Alan Turing vezetésével 1940-től a
+      háború végéig a legtöbb elfogott német katonai üzenetet meg tudták fejteni.
+  - type: narrative
+    content: |
+      Ezeket a hírszerzési információkat szigorú titoktartás övezte. Külön csapat gondoskodott "legendák"
+      gyártásáról és álhírek kiszivárogtatásáról, nehogy az ellenség túl korán gyanút fogjon. Többek között ennek
+      köszönhető, hogy a normandiai partraszállás abszolút váratlanul érte a németeket, akik az álhíreknek
+      köszönhetően teljesen máshol várták a nyugati front megnyitását, és ez vezetett el végül a szövetségesek
+      győzelméhez 1945 tavaszán.
+  - type: figure
+    src: 03-enigma.jpg
+    alt: Enigma rejtjelező készülék
+    caption: Enigma rejtjelező készülék

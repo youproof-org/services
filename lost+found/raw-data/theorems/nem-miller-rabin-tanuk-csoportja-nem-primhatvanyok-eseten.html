@@ -1,0 +1,31 @@
+<!-- wp:paragraph -->
+<p>Legyen [latex]n[/latex] egy tetszőleges <strong><em>[latex]1[/latex]-nél nagyobb páratlan szám</em></strong>, amelynek legalább két egymástól különböző prímtényezője is van, azaz <strong><em>nem prímhatvány</em></strong>. Képezzük azt az [latex]e\geq 1[/latex] kitevőt és [latex]k\geq 1[/latex] páratlan számot, amelyekre teljesül az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]n-1=2^e\cdot k[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ekkor <strong><em>létezik legalább egy olyan [latex]j[/latex] kitevő</em></strong> a [latex]\{0; 1;2; \ldots ; e-1\}[/latex] számok között, amelyekhez külön-külön találhatók olyan [latex]x[/latex] egész számok, hogy teljesül az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x^{2^j}\equiv -1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Jelöljük az ilyen kitevők közül a <strong><em>legnagyobbat</em></strong> [latex]j_{\text{max}}[/latex]-szal, és legyen [latex]H_n[/latex] azon [latex][a]_n[/latex] maradékosztályok halmaza, amelyek esetén az [latex]a^{2^{j_{\text{max}}}k}[/latex] hatvány [latex]1[/latex]-gyel <strong><em>vagy</em></strong> [latex]-1[/latex]-gyel kongruens modulo [latex]n[/latex], azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{2^{j_{\text{max}}}k} \equiv \pm 1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ekkor [latex]H_n[/latex]-re igazak az alábbiak:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} -->
+<ol><li>A [latex]H_n[/latex] halmaz minden eleme <strong><em>redukált maradékosztály</em></strong>. Másként fogalmazva [latex]H_n[/latex] részhalmaza a [latex](\Z/n\Z)^{\times}[/latex] multiplikatív csoportnak, azaz [latex]H_n\sube (\Z/n\Z)^{\times}[/latex].</li><li>A [latex]H_n[/latex] halmaz ezen felül a [latex](\Z/n\Z)^{\times}[/latex] multiplikatív csoport egy <strong><em>részcsoportja</em></strong>, azaz [latex]H_n\leq (\Z/n\Z)^{\times}[/latex].</li><li>A [latex]H_n[/latex] részcsoport tartalmazza az összes <strong><em>NEM Miller-Rabin-tanút</em></strong>.</li><li>A [latex]H_n[/latex] egy <strong><em>valódi részcsoport</em></strong>, azaz létezik olyan modulo [latex]n[/latex] redukált maradékosztály, amely nincs benne [latex]H_n[/latex]-ben.</li></ol>
+<!-- /wp:list -->

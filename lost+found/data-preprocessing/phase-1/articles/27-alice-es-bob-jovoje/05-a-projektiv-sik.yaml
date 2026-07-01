@@ -1,0 +1,127 @@
+type: section
+name: 05-a-projektiv-sik
+title: A projektív sík
+
+body:
+  - type: narrative
+    content: |
+      A hagyományos kétdimenziós síkkal az a probléma, hogy algebrailag nehezen kezelhető. Gondoljunk csak például
+      arra az egyszerű esetre, amikor két elsőfokú görbe, azaz két egyenes metszéspontját szeretnénk meghatározni.
+      Ez a látszattal ellentétben nem egy geometriai, hanem egy algebrai feladat, hiszen az egyenesek nyilván az
+      egyenleteikkel vannak megadva. Nekünk pedig tulajdonképpen olyan $(x;y)$ pontpárokat kell keresünk, amelyek
+      mindkét egyenesen rajta vannak, következésképp ***mindkét egyenletet*** kielégítik.
+  - type: unordered-list
+    lead-in: |
+      Ha egy olyan egyenletrendszer-megoldó algoritmust szeretnénk írni, amely a szokásos kétdimenziós síkon
+      számol, akkor kapásból az alábbi három esetre kell felkészülnünk:
+    items:
+      - 'Ha a két egyenes épp egybeesik, akkor végtelen sok metszéspont van.'
+      - 'Ha a két egyenes nem esik egybe, viszont egymással párhuzamosak, akkor nincs metszéspont.'
+      - 'Egyéb esetekben pontosan egy metszéspont van.'
+  - type: narrative
+    content: |
+      Márpedig egy algoritmus esetén nagyon nem szeretjük az esetszétválasztásokat, hiszen minél több van belőlük,
+      annál valószínűbb, hogy valamire nem gondoltunk, és az algoritmusunk éles helyzetben elhasal. Ráadásul a
+      helyzet tovább bonyolódhat, ha az egyeneseken kívül egyéb görbék is bejöhetnek a képbe. Kényelmesebb lenne
+      tehát, ha ezeket a fentiekhez hasonló "elfajuló" eseteket a normál esetekkel azonos módon, algebrailag
+      egységesen tudnánk kezelni.
+  - type: narrative
+    content: |
+      Maradva az egyenesek metszéspontszámításáról szóló példánál, mondhatjuk például azt, hogy két egymástól
+      különböző egyenesnek mindig pontosan egy metszéspontja van, csak épp párhuzamos egyenesek esetén ez a
+      bizonyos metszéspont a "végtelenben" helyezkedik el. Az ilyen "végtelen távoli" pontokat ***ideális
+      pontoknak*** nevezzük, és ezekkel kiegészítve a hagyományos kétdimenziós síkot egy olyan szerkezetű sík
+      absztrakt modelljét kapjuk, amelyben a fentiekhez hasonló geometriai kérdések algebrailag sokkal
+      kényelmesebben kezelhetők. Ezt az ideális pontokkal kiegészített síkot ***projektív síknak*** nevezzük.
+  - type: narrative
+    content: |
+      Az alábbi ábrán látható $e$ és $f$ egyenesek például párhuzamosak egymással, így a hagyományos síkra
+      felrajzolva őket azt kéne mondanunk, hogy ezek nem metszik egymást. Ezzel szemben a projektív sík esetén azt
+      mondjuk, hogy ők egy $P$-vel jelölt ideális (végtelen távoli) pontban igenis metszik egymást.
+  - type: figure
+    lead-in: |
+      Ehhez hasonlóan az ábrán lévő $g$ és $h$ egyenesek is egy ideális $Q$ pontban metszik egymást:
+    src: 04-parhuzamos-egyenesek-metszespontja-a-projektiv.jpg
+    alt: Párhuzamos egyenesek metszéspontja a projektív síkon
+    caption: Párhuzamos egyenesek metszéspontja a projektív síkon
+  - type: narrative
+    content: |
+      Természetesen továbbra is fenntartjuk azt a "játékszabályt" (vagy ha úgy tetszik axiómát), hogy két egymástól
+      különböző egyenes nem metszheti egymást kétszer. Következésképp a $P$ és $Q$ pontoknak &ndash; noha
+      mindkettőt a végtelenben elhelyezkedő ideális pontnak tekintjük &ndash; egymástól különbözőnek kell lenniük.
+      Ha ugyanis nem így lenne &ndash; azaz $P=Q$ lenne &ndash;, akkor például a $g$ egyenes kétszer is metszené az
+      $e$ egyenest. Egyrészt a fenti ábrán jelölt hagyományos $A$ pontban, másrészt pedig a $P=Q$ ideális pontban.
+  - type: narrative
+    content: |
+      Így tehát azt mondhatjuk, hogy a projektív sík ideális pontjai és a hagyományos síkon elképzelhető irányok
+      között kölcsönösen egyértelmű megfeleltetés létesíthető. Sőt, a projektív sík geometriájának itt nem
+      részletezett axiómarendszeréből következik, hogy az összes ideális pont tulajdonképpen egy "egyenesre"
+      illeszkedik, amely azonban végtelen távol helyezkedik el. Ezt az ábrán szaggatott vonallal ábrázolt $i$
+      "egyenest" ***ideális egyenesnek*** nevezzük. Az ilyen ideális objektumok bevezetésének nyilván akkor van
+      értelme, ha nemcsak a képzeletünkben léteznek intuitív módon, hanem algebrailag is képesek vagyunk velük
+      számolni.
+  - type: narrative
+    content: |
+      Ezért most a projektív síknak egy olyan reprezentációját mutatjuk be, amelynek segítségével ezeket az ideális
+      objektumokat is véges mennyiségekkel tudjuk leírni. Ennek alapötlete a következő: ha beágyazzuk a
+      kétdimenziós síkot a háromdimenziós térbe úgy, hogy az ne illeszkedjen az origóra, akkor az origón átmenő
+      térbeli egyenesek kölcsönösen egyértelműen megfeleltethetők lesznek egyrészt a beágyazott sík pontjaival
+      (ezek lesznek a projektív sík hagyományos pontjai), valamint az ideális pontokkal. Ez azért jó, mert az
+      origón átmenő térbeli egyeneseket tulajdonképpen egy-egy irányvektorral tudjuk leírni, amely már véges
+      mennyiségeket tartalmaz.
+  - type: figure
+    lead-in: |
+      Ezt az ötletet mutatja az alábbi ábra:
+    src: 05-a-projektiv-sik.jpg
+    alt: A projektív sík
+    caption: A projektív sík
+  - type: narrative
+    content: |
+      A négyzetráccsal ellátott $E$ síkot tipikusan úgy szokták elhelyezni, hogy párhuzamos legyen a beágyazótér
+      $x$ és $y$ tengelyei által kifeszített síkkal, és a $z=1$ magasságban helyezkedjen el. Ennek a választásnak
+      mindössze praktikussági okai vannak, mint azt hamarosan látni fogjuk.
+  - type: unordered-list
+    lead-in: |
+      Ekkor a beágyazótér origóján átmenő egyenesek két diszjunkt halmazra oszthatók:
+    items:
+      - 'Azok az egyenesek, amelyek nem párhuzamosak az $E$ síkkal, egyértelműen meghatároznak egy metszéspontot az $E$ síkon. Ez egy ***hagyományos pont*** lesz az $E$ által reprezentált projektív síkon.'
+      - 'Azok az egyenesek, amelyek párhuzamosak az $E$ síkkal, noha nem metszik azt, de egyértelműen meghatároznak egy irányt ezen a síkon. Ez egy ***ideális pont*** lesz az $E$ által reprezentált projektív síkon.'
+  - type: narrative
+    content: |
+      Például az ábrán látható $P$ pont a projektív sík egy ***hagyományos pontja***, amely a hagyományos pontokat
+      tartalmazó $E$ síkon a $(2;3)$ hagyományos koordinátákkal írható le. Ezt a pontot a beágyazótérben a
+      $\vec{p}=(2;3;1)$ irányvektorra illeszkedő térbeli egyenes jelöli ki ezen a síkon, így tehát a $P$ pontot a
+      $(2;3;1)$ ***projektív koordinátákkal*** is leírhatjuk. Természetesen ugyanezt a $P$ pontot kapjuk, ha a
+      $\vec{p}$ irányvektor mindhárom térbeli koordinátáját megszorozzuk egy tetszőleges $c\ eq 0$ számmal. Vagyis
+      a $(2c;3c;c)$ projektív koordináták ugyanúgy a $P$ pontot azonosítják minden $c\ eq 0$ esetén.
+  - type: narrative
+    content: |
+      Az ábrán látható $\vec{q}=(1;4;0)$ irányvektor azonban párhuzamos a projektív sík hagyományos pontjait
+      tartalmazó $E$ síkkal, tehát nem metszi azt. Ez felfogható egyfajta határesetnek is, amikoris az $(1;4;z)$
+      irányvektor harmadik koordinátájával egyre jobban és jobban közeledünk a $z=0$-hoz valamelyik irányból.
+      Pozitív irányból közeledve a $\bullet$-tal, míg negatív irányból közeledve a $\times$-tel jelölt
+      pontsorozatot kapjuk az $E$ síkon, a $z=0$ koordinátát elérve pedig e pontsorozatok vonalában "kiszaladunk a
+      végtelenbe". Így az $(1;4;0)$ projektív koordináták a projektív síknak azt az ***ideális pontját*** írják le,
+      amely a kapott pontsorozat által kijelölt iránynak felel meg. Természetesen ugyanezt az irányt, azaz ideális
+      pontot kapjuk, ha a $\vec{q}$ irányvektor mindhárom térbeli koordinátáját megszorozzuk egy tetszőleges $c\ eq
+      0$ számmal.
+  - type: narrative
+    content: |
+      A fenti koncepciót továbbgondolva tehát tulajdonképpen arról van szó, hogy a projektív sík különböző
+      objektumait a beágyazótér eggyel magasabb dimenziós objektumainak az $E$ síkra vetített "árnyékaként"
+      képzeljük el, de az algebrai feladatokban ezekkel a magasabb dimenziós objektumokkal számolunk. Így tehát a
+      projektív sík pontjait (beleértve az ideális pontokat) a beágyazótérben egy-egy origón átmenő egyenesnek
+      feleltetjük meg a fentiek szerint. Ehhez hasonlóan a projektív sík egyeneseihez (beleértve az ideális
+      egyenest is) a beágyazótérben az origón átmenő síkokat rendeljük hozzá. Egy, az $E$ síkon fekvő hagyományos
+      egyenesnek az a sík fog megfelelni a beágyazótérben, amely az adott egyenesben metszi az $E$ síkot, míg az
+      ideális egyenest az $x$ és $y$ tengelyre illeszkedő síkkal azonosítjuk, amely tehát nem metszi az $E$ síkot.
+  - type: narrative
+    content: |
+      A fenti konstrukció természetesen ***magasabb dimenziókra*** is kiterjeszthető, ám ezt itt nem részletezzük.
+      A kétdimenziós projektív sík helyett beszélhetünk például a háromdimenziós ***projektív térről*** is. Az
+      persze igaz, hogy ekkor a fenti modell szerinti beágyazótér már négydimenziós, amelyet nemigazán tudunk
+      elképzelni. Azonban algebrailag ugyanazok a szabályok fognak vonatkozni rá, mint a projektív síkra, csak épp
+      a projektív térben három helyett már négy koordinátával kell dolgoznunk. Hogy ez mennyire nem elrugaszkodott
+      a valóságtól, azt mi sem mutatja jobban, minthogy például a számítógépes grafikában használt hardverek is
+      ilyen négydimenziós projektív koordinátákkal dolgoznak, és az ezekkel való műveletvégzésekre vannak
+      optimalizálva.

@@ -1,0 +1,52 @@
+type: section
+name: 10-neutralis-elem
+title: Neutrális elem
+
+body:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy adva van egy tetszőleges $R$ halmaz, valamint egy kétváltozós művelet ezen a halmazon,
+      amelyet jelöljünk most $*$-gal. Előfordulhat, hogy létezik az $R$ halmazban egy olyan kitüntetett $n$ elem,
+      amellyel bármilyen halmazbeli $x$ elemet össze-$*$-ozva $x$-et kapjuk vissza eredményül.
+  - type: figure
+    lead-in: |
+      Ez látható az alábbi ábrán:
+    src: 03-muveletvegzes-a-neutralis-elemmel.jpg
+    alt: Műveletvégzés a neutrális elemmel
+    caption: Műveletvégzés a neutrális elemmel
+  - type: unordered-list
+    lead-in: |
+      Néhány példa:
+    items:
+      - 'Az $\N$ halmazon értelmezett $+$-szal jelölt Peano-összeadás esetén a 0 természetes szám.'
+      - 'Az $\N$ halmazon értelmezett $\cdot$-tal jelölt Peano-szorzás esetén az 1 természetes szám.'
+      - 'A $\Z$ halmazon értelmezett $\oplus$-szal jelölt művelet esetén a $[(0;0)]$ &ndash; vagy az iskolában megszokott jelöléssel a $0$ &ndash; egész szám.'
+      - 'A $\Z$ halmazon értelmezett $\odot$-tal jelölt művelet esetén az $[(1;0)]$ &ndash; vagy az iskolában megszokott jelöléssel az $1$ vagy $+1$ &ndash; egész szám.'
+  - type: narrative
+    content: |
+      Egy adott művelet alaphalmazában egy ilyen tulajdonságú elemnek külön neve van:
+  - type: embed
+    target:
+      type: definition
+      name: neutralis-elem
+  - type: narrative
+    content: |
+      Természetesen kommutatív művelet esetén nincs értelme külön jobb- vagy baloldali neutrális elemről beszélni,
+      hiszen ott minden jobboldali neutrális elem egyben baloldali is, és fordítva. Rögtön felmerülhet a kérdés,
+      hogyha egy halmazban egy adott műveletre nézve létezik neutrális elem, akkor vajon az egyértelmű-e. Ezt
+      válaszolja meg az alábbi tétel:
+  - type: embed
+    target:
+      type: theorem
+      name: neutralis-elem-egyertelmu
+  - type: embed
+    target:
+      type: proof
+      name: neutralis-elem-egyertelmu-bizonyitas
+  - type: narrative
+    content: |
+      Megjegyezzük, hogy az egyértelműség csak a kétoldali neutrális elemre igaz,  a csak jobboldali vagy csak
+      baloldali neutrális elemre nem feltétlenül.
+  - type: narrative
+    content: |
+      Most, hogy van már neutrális elemünk, ismerkedjünk meg egy másik fontos fogalommal.

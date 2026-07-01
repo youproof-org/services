@@ -1,0 +1,10 @@
+type: theorem
+name: legnagyobb-kozos-oszto-letezese
+proofs:
+  - legnagyobb-kozos-oszto-letezese-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Ha $a$ és $b$ tetszőleges egész számok, és közülük legalább az egyik nem $0$, akkor ***létezik*** az $(a,b)$
+      legnagyobb közös osztó.

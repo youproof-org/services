@@ -1,0 +1,129 @@
+type: proof
+name: polinom-gyokenek-feltetele-bizonyitas
+remarks: []
+references:
+  polinomok-osszegenek-es-szorzatanak-polinomfuggvenye:
+    target:
+      type: theorem
+      name: polinomok-osszegenek-es-szorzatanak-polinomfuggvenye
+content:
+  - type: formula
+    lead-in: |
+      Tegyük fel, hogy az $F$ polinomfüggvény olyan, hogy tetszőleges $x\in R$ gyűrűelemhez az alábbi kifejezés
+      eredményét rendeli hozzá:
+    content: |
+      F(x)=a_nx^n+a_{n-1}x^{n-1}+\ldots+a_1x+a_0
+  - type: formula
+    lead-in: |
+      Ennek értékét $x=r$ esetén tehát az alábbi kifejezés kiértékelésével számíthatjuk ki:
+    content: |
+      F(r)=a_nr^n+a_{n-1}r^{n-1}+\ldots+a_1r+a_0
+  - type: formula
+    lead-in: |
+      Emeljük ki $r$-et minden olyan tagból, amelyikből lehet:
+    content: |
+      F(r)=(a_nr^{n-1}+a_{n-1}r^{n-2}+\ldots+a_2r+a_1)r+a_0
+  - type: formula
+    lead-in: |
+      Ismételgessük ezt a képződő zárójelekre mindaddig, ameddig lehetséges:
+    content: |
+      \begin{aligned}F(r)&=((a_nr^{n-2}+a_{n-1}r^{n-3}+\ldots+a_3r+a_2)r+a_1)r+a_0=\\&=(((a_nr^{n-3}+a_{n-1}r^{n-4}+\ldots+a_4r+a_3)r+a_2)r+a_1)r+a_0=\\&\vdots\\&=((\ldots
+      (a_nr+a_{n-1})r+a_{n-2})r+a_{n-3})r+\ldots +a_1)r+a_0\end{aligned}
+  - type: formula
+    lead-in: |
+      Az így kapott $n-1$ darab egymásba ágyazott zárójelből álló kifejezést kezdjük el kiértékelni "bentről
+      kifelé" haladva zárójelenként, és a kapott részeredményekre sorban vezessük be a $q_{n-1}$, $q_{n-2}$, ...,
+      $q_0$ jelöléseket az alábbi szisztéma szerint:
+    content: |
+      \begin{aligned}q_{n-1}&=a_n \\ q_{n-2}&=q_{n-1}r+a_{n-1} \\ q_{n-3}&=q_{n-2}r+a_{n-2} \\ &\vdots \\
+      q_i&=q_{i+1}r+a_{i+1} \\ &\vdots \\ q_1&=q_2r+a_2 \\ q_0&=q_1r+a_1\end{aligned}
+  - type: formula
+    lead-in: |
+      Végül az utolsó lépést is elvégezve megkapjuk az $F(r)$ értékét:
+    content: |
+      F(r)=q_0r+a_0
+  - type: narrative
+    content: |
+      Vegyük észre, hogy az eljárással épp a keresett $Q$ polinomfüggvény együtthatóit számítottuk ki.
+  - type: formula
+    lead-in: |
+      Ezt könnyen ellenőrizhetjük, ha felbontjuk az alábbi zárójelet:
+    content: |
+      (x-r)\cdot (\underbrace{q_{n-1}x^{n-1}+q_{n-2}x^{n-2}+\ldots+q_1x+q_0}_{=Q(x)})=\ldots
+  - type: narrative
+    content: |
+      Itt a baloldali zárójelben lévő mindkét tagot a jobboldali zárójelben lévő minden taggal meg kell szorozni.
+  - type: formula
+    lead-in: |
+      E beszorzás után az alábbi tagokat kapjuk, amelyek egy hiányzó $a_0$ tagot és egy felesleges $-q_0r$ tagot
+      leszámítva épp az $F(x)$ polinomfüggvény tagjaival egyeznek meg:
+    content: |
+      \begin{aligned}\ldots
+      &=\underbrace{q_{n-1}}_{=a_n}x^n+\\&+\underbrace{(q_{n-2}-q_{n-1}r)}_{=a_{n-1}}x^{n-1}+\\&+\underbrace{(q_{n-3}-q_{n-2}r)}_{=a_{n-2}}x^{n-2}+\\
+      &\vdots \\&+\underbrace{(q_0-q_1r)}_{=a_1}x-q_0r\end{aligned}
+  - type: formula
+    lead-in: |
+      Összefoglalva:
+    content: |
+      (x-r)\cdot Q(x)=F(x)-a_0-q_0r
+  - type: formula
+    lead-in: |
+      Ha most mindkét oldalhoz hozzáadunk $a_0+q_0r$-t, akkor megkapjuk ***a tétel első állítását***:
+    content: |
+      (x-r)\cdot Q(x)+\underbrace{a_0+q_0r}_{=F(r)}=F(x)
+  - type: narrative
+    content: |
+      ***A második állításhoz*** tegyük fel először, hogy teljesül az $f_r|f$ oszthatóság az $R[x]$
+      polinomgyűrűben.
+  - type: formula
+    lead-in: |
+      A polinomok közötti szorzást $\odot$-tal jelölve ezt azt jelenti, hogy létezik olyan $q\in R[x]$ polinom,
+      hogy teljesül az alábbi:
+    content: |
+      f=f_r\odot q
+  - type: narrative
+    content: |
+      A [polinomok-osszegenek-es-szorzatanak-polinomfuggvenye] alapján az $f_r\odot q$ szorzatpolinomhoz tartozó
+      polinomfüggvény az $F_r$ és $Q$ polinomfüggvények pontonkénti szorzata lesz.
+  - type: formula
+    lead-in: |
+      A polinomfüggvények szintjén tehát felírható az alábbi egyenlet:
+    content: |
+      F(x)=\underbrace{(x-r)}_{=F_r(x)}\cdot Q(x)
+  - type: formula
+    lead-in: |
+      Ám ekkor az $F(x)$ polinomfüggvény az $R$ gyűrű nullelemét rendeli $r$-hez, hiszen ebben az esetben az
+      $F_r(r)$ tényező épp nulla lesz:
+    content: |
+      F(r)=\underbrace{(r-r)}_{=F_r(r)}\cdot Q(r)=0_R\cdot Q(r)=0_R
+  - type: narrative
+    content: |
+      Vagyis ha fennáll az $f_r|f$ oszthatóság az $R[x]$ polinomgyűrűben, akkor $r$ valóban ***gyöke*** $f$-nek az
+      $R$ gyűrűben.
+  - type: narrative
+    content: |
+      ***Megfordítva:*** Tegyük most fel, hogy $r$ ***gyöke*** az $f$ polinomnak az $R$ gyűrűben.
+  - type: formula
+    lead-in: |
+      A ***tétel első állítása*** alapján létezik olyan $q\in R[x]$ polinom, hogy a polinomfüggvények szintjén
+      teljesül az alábbi egyenlet:
+    content: |
+      F(x)=\underbrace{(x-r)}_{=F_r(x)}\cdot Q(x)+F(r)
+  - type: narrative
+    content: |
+      Itt viszont a jobboldalon szereplő $F(r)$ tag az $R$ gyűrű nulleleme lesz, hiszen azt mondtuk, hogy $r$ gyöke
+      az $f$ polinomnak.
+  - type: formula
+    lead-in: |
+      Azaz a fenti egyenlet az alábbira egyszerűsödik:
+    content: |
+      F(x)=F_r(x)\cdot Q(x)
+  - type: formula
+    lead-in: |
+      Ez viszont a [polinomok-osszegenek-es-szorzatanak-polinomfuggvenye] alapján a polinomok szintjén az alábbit
+      jelenti:
+    content: |
+      f=f_r\odot q
+  - type: narrative
+    content: |
+      Vagyis valóban teljesül az $f_r|f$ ***oszthatóság*** az $R[x]$ polinomgyűrűben.

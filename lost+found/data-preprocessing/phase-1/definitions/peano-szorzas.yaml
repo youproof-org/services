@@ -1,0 +1,16 @@
+type: definition
+name: peano-szorzas
+remarks: []
+content:
+  - type: ordered-list
+    lead-in: |
+      Az $\N$ halmazon értelmezett, $\cdot$-tal jelölt kétváltozós műveletet ***szorzásnak*** nevezzük, amennyiben
+      teljesülnek rá a következő tulajdonságok:
+    items:
+      - 'Tetszőleges $a$ számra teljesül, hogy $a\cdot 0=0$.'
+      - 'Amennyiben valamely $a$ és $b$ számokra az $a\cdot b$ eredménye már ismert, úgy teljesül, hogy $a\cdot
+        s(b)=(a\cdot b) + a$.'
+  - type: narrative
+    content: |
+      A fentiekben $0$ jelöli az $\N$ halmaznak a Peano-axiómák szerinti, "nullának" nevezett elemét, valamint $s$
+      jelöli a szintén a Peano-axiómák szerinti "rákövetkezés" függvényt.

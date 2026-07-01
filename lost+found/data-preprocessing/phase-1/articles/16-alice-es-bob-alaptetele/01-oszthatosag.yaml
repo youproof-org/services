@@ -1,0 +1,131 @@
+type: section
+name: 01-oszthatosag
+title: Oszthatóság
+
+references:
+  antiszimmetrikus-relacio:
+    target:
+      type: definition
+      name: antiszimmetrikus-relacio
+  gyuru-test:
+    target:
+      type: definition
+      name: gyuru-test
+  oszthatosag:
+    target:
+      type: definition
+      name: oszthatosag
+  szimmetrikus-relacio:
+    target:
+      type: definition
+      name: szimmetrikus-relacio
+
+body:
+  - type: narrative
+    content: |
+      Most vizsgáljuk meg ugyanezt a kérdést a gyűrű másik műveletére vonatkozóan is. A bevezető szakaszt szóról
+      szóra megismételve, ám a $+$ műveletet a $\cdot$ műveletre lecserélve ezúttal tehát a következő a feladat.
+      Keressük azt az ismeretlen $k$ ***gyűrűelemet***, amellyel az $a$ ***gyűrűelemet*** megszorozva a $b$
+      ***gyűrűelemet*** kapjuk eredményül.
+  - type: figure
+    lead-in: |
+      Az alábbi ábra mutatja ezt a szituációt:
+    src: 02-szorzas-megforditasa.jpg
+    alt: Szorzás megfordítása
+    caption: Szorzás megfordítása
+  - type: narrative
+    content: |
+      Az előző szakaszban ugyan nem hangsúlyoztuk ki, de nagyon fontos, hogy ***csak a gyűrű elemei között
+      kutakodhatunk***, amikor keressük az ismeretlen $k$ elemet. Mondhatnánk, hogy egyszerű a feladatunk, hiszen
+      ugyanazt kell csinálni, mint az összeadás megfordítása esetén, két apró különbségtől eltekintve. Egyrészt
+      ezúttal összeadás helyett ***szorozni*** kell $b$-t, másrészt pedig ezt a szorzást $a$ additív inverze
+      helyett ezúttal a ***multiplikatív inverzével*** kell végrehajtani.
+  - type: formula
+    lead-in: |
+      A [gyuru-test] multiplikatív inverzre vonatkozó jelölését használva ez így fejezhető ki képlettel:
+    content: |
+      k=b\cdot a^{-1}
+  - type: narrative
+    content: |
+      Sajnos azonban az összeadással ellentétben a szorzáshoz ***nincs olyan gyűrűaxiómánk, amely biztosítja
+      tetszőleges elem multiplikatív inverzének létezését***. Ez csak speciális gyűrűkben teljesül, amelyeket a
+      [gyuru-test] alapján ***testeknek*** neveztünk.
+  - type: narrative
+    content: |
+      A számunkra fontos ***egész számok $\Z$ gyűrűje azonban nem test***, mivel kizárólag az egységelemnek és
+      ellentettjének van multiplikatív inverze &ndash; mindkettőnek önmaga. Így ott ez a képlet egyetlen
+      gyakorlatilag is hasznos esetben sem használható $k$ "kiszámításához". Ennek ellenére sok esetben adott $a$
+      és $b$ gyűrűelemekhez mégis ***létezik*** olyan $k$ gyűrűelem, amelyre teljesül, hogy $ak=b$.
+  - type: narrative
+    content: |
+      Ez elvezet minket a ***legfontosabb számelméleti fogalomhoz***.
+  - type: embed
+    target:
+      type: definition
+      name: oszthatosag
+  - type: embed
+    target:
+      type: remark
+      name: oszthatosag-megjegyzes
+  - type: narrative
+    content: |
+      Most nézzünk néhány példát ennek a fogalomnak a megértéséhez. Az ***egész számok*** $\Z$ gyűrűjében például
+      $2|6$, mivel létezik olyan ***egész szám***, amellyel $2$-t megszorozva $6$-ot kapunk (nevezetesen a $3$,
+      hiszen $2\cdot 3=6$). Ugyanakkor például $6\ mid2$, mivel nem létezik olyan $k$ ***egész szám***, amelyre
+      $6k=2$ teljesülne.
+  - type: narrative
+    content: |
+      Annak demonstrálására, hogy nagyon nem mindegy, melyik gyűrűben beszélünk oszthatóságról, nézzük például a
+      ***páros (azaz 2-vel osztható) egész számok*** halmazát a szokásos összeadással és szorzással. Ezt a halmazt
+      konvencionálisan $2\Z$-vel szoktuk jelölni, és azonnal látszik, hogy ez egy ***kommutatív gyűrű***, hiszen
+      teljesíti a [gyuru-test] szerinti gyűrűaxiómákat.
+  - type: narrative
+    content: |
+      Az összeadásról és a szorzásról korábban már láttuk, hogy mindkettő kommutatív és asszociatív, valamint hogy
+      a szorzás disztributív az összeadásra nézve. A nullelem (azaz a $0$ egész szám) szintén páros, valamint egy
+      páros szám ellentettje is páros, így teljesül a 2. és a 3. gyűrűaxióma is. Már csak annyit kell ellenőrizni,
+      hogy az összeadás és a szorzás valóban művelet-e a $2\Z$ halmazon is, azaz nem vezet-e ki belőle. Ez viszont
+      nyilván teljesül, hiszen két páros szám összege és szorzata is páros. Ez a gyűrű viszont ***nem
+      egységelemes***, hiszen a szorzás neutrális eleme az $1$ egész szám, ami nem páros. Ugyanakkor
+      ***nullosztómentes***, hiszen ha semmilyen két nemnulla egész szám szorzata nem lehet $0$, akkor ez
+      speciálisan a páros számokra is nyilván igaz.
+  - type: narrative
+    content: |
+      Most vizsgáljuk meg a $2|6$ oszthatóságot a $2\Z$ gyűrűben is. A $\Z$ gyűrűvel ellentétben itt már nem
+      teljesül ez az oszthatóság, hiszen nem létezik olyan ***páros szám***, amellyel a $2$-t megszorozva $6$-ot
+      kapnánk. Azaz $2|_{\Z}6$, ugyanakkor $2{\ mid}_{2\Z}6$.
+  - type: narrative
+    content: |
+      A 13. részben az úgynevezett ***ekvivalenciarelációk*** kapcsán ismertük meg a ***szimmetrikus relációk***
+      fogalmát (lásd a [szimmetrikus-relacio]t). Ezek olyan relációk, amelyek ha fennállnak az egyik irányban,
+      akkor fennállnak a másik irányban is. ***Az oszthatósági reláció tehát*** a $\Z$ gyűrűben ***NEM
+      szimmetrikus***, hiszen a fentebbi példa alapján $2|6$, de $6\ mid 2$.
+  - type: narrative
+    content: |
+      A 12. részben az úgynevezett ***rendezési relációk*** kapcsán pedig az ***antiszimmetrikus relációk***
+      fogalmát (lásd a [antiszimmetrikus-relacio]) ismertük meg. Ezek olyan relációk, amelyek ha mindkét irányban
+      fennállnak két elem között, akkor a két elem azonos. Korábban már említettük, hogy az antiszimmetria és a
+      szimmetria egymással ***nem ellentétes*** fogalmak. ***A $\Z$ gyűrűben értelmezett oszthatósági reláció***
+      például &ndash; amellett, hogy nem szimmetrikus &ndash; ***az antiszimmetria tulajdonságát SEM teljesíti***.
+  - type: narrative
+    content: |
+      Egyrészt ugyanis teljesül az $1|(-1)$ oszthatóság, hiszen létezik olyan egész szám, amellyel $1$-et
+      megszorozva $-1$-et kapunk (nevezetesen a $-1$). Másrészt teljesül a $(-1)|1$ oszthatóság is, hiszen létezik
+      olyan egész szám is, amellyel $-1$-et megszorozva $1$-et kapunk (nevezetesen ismét a $-1$). A reláció tehát
+      fennáll mindkét irányban az $1$ és a $-1$ között, ugyanakkor $1\ eq -1$. Ez a reláció tehát valóban nem
+      antiszimmetrikus.
+  - type: narrative
+    content: |
+      Most vizsgáljuk meg az oszthatósági reláció néhány tulajdonságát, amelyek egyszerűen adódnak a
+      [oszthatosag]ból.
+  - type: embed
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+  - type: embed
+    target:
+      type: proof
+      name: oszthatosag-tulajdonsagai-bizonyitas
+  - type: narrative
+    content: |
+      Most ismerkedjünk meg egy, a továbbiakban fontos fogalommal.

@@ -1,0 +1,35 @@
+<!-- wp:paragraph -->
+<p><strong><em>Indirekt bizonyítást</em></strong> fogunk alkalmazni, azaz nem közvetlenül a tételt bizonyítjuk, hanem megmutatjuk, miért lehetetlen, hogy nem igaz. Tegyük fel ezért, hogy az [latex]\N[/latex] halmazban léteznek olyan galád [latex]a[/latex] és [latex]b[/latex] számok, amelyek között egyik irányban sem áll fenn a [latex]\leq[/latex] reláció, azaz [latex]a\
+leq b[/latex] és [latex]b\
+leq a[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ebből az következik, hogy egyikük sem lehet 0, hiszen ha például [latex]a=0[/latex] lenne, akkor [latex]\underbrace{0}_{=a}\leq b[/latex] teljesülne (ugyanis [latex]0+b=b[/latex]). Ha meg [latex]b=0[/latex] lenne, akkor pedig [latex]\underbrace{0}_{=b}\leq a[/latex] teljesülne (ugyanis [latex]0+a=a[/latex]).</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mármost ha egyikük sem 0, akkor a 3. Peano-axióma ([yp_element slug="peano-axiomarendszer" type="link" /]) miatt mindkettőhöz létezik egy-egy olyan szám, amelyeknek épp ők a rákövetkezői. Jelöljük ezt a két számot [latex]a_1[/latex]-gyel és [latex]b_1[/latex]-gyel, amelyekre tehát teljesül, hogy [latex]s(a_1)=a[/latex] és [latex]s(b_1)=b[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mármost ha [latex]a[/latex] és [latex]b[/latex] között nem teljesül a [latex]\leq[/latex] reláció egyik irányban sem, akkor a [yp_element slug="termeszetes-szamok-rendezesi-relacioja-lemma" type="link" /] miatt utóbbiak között sem fog – azaz [latex]a_1\
+leq b_1[/latex] és [latex]b_1\
+leq a_1[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>De ekkor ugyanezen gondolatmenet alapján léteznie kell egy [latex]a_2[/latex] és egy [latex]b_2[/latex] számnak is, amelyek rákövetkezői épp az [latex]a_1[/latex] és [latex]b_1[/latex] számok, és amelyek közül szintén egyik sem 0. És így tovább, ezt a gondolatmenetet a végtelenségig folytathatjuk, mindig találunk újabb és újabb nem 0 számokat, amelyek rákövetkezői épp az előző lépésben megtalált számok. Kapunk tehát két végtelen számsorozatot – amely sorozatokban nem szerepel a 0 –, az alábbi rákövetkezőségi viszonyokkal:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":2850} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_12_vegtelen_leszallo_sorozatok.jpg" alt="Végtelen leszálló sorozatok" class="wp-image-2850"/><figcaption>Végtelen leszálló sorozatok</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Ez viszont <strong><em>lehetetlen</em></strong>, hiszen a 4. Peano-axióma ([yp_element slug="peano-axiomarendszer" type="link" /]) kimondja, hogy a 0-ból kiindulva a rákövetkezési függvény mentén az összes természetes számhoz el kell jutnunk előbb-utóbb. Márpedig egy ilyen gyűjtögetésben az ábrán lévő két sorozat tagjai biztosan nem lennének benne.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ebből viszont az következik, hogy az [latex]a\leq b[/latex] és a [latex]b\leq a[/latex] relációk közül legalább az egyiknek teljesülnie kell tetszőleges [latex]a[/latex] és [latex]b[/latex] esetén, máskülönben ellentmondásba kerülnénk a 4. Peano-axiómával.</p>
+<!-- /wp:paragraph -->

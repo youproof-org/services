@@ -1,0 +1,471 @@
+<!-- wp:paragraph -->
+<p><strong><em>Az <a rel="noreferrer noopener" aria-label="előző részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/14-egesz-szam-szorzas-absztrakt-algebra-neutralis-elem-inverz-kivonas-gyuru-ferdetest-test/" target="_blank">előző részben</a> intuitív módon kiterjesztettük a szorzás műveletét is az egész számok [latex]\Z[/latex] halmazára. Ezzel többnyire teljessé vált a Peano-axiómarendszer ([yp_element slug="peano-axiomarendszer" type="link" /]) által definiált természetes számok [latex]\N[/latex] halmazának beágyazása ebbe a bővebb, már a negatív számokat is tartalmazó számkörbe. Ezután megmutattuk, hogy mind az összeadás, mind pedig a szorzás művelete ugyanúgy viselkedik az eredeti [latex]\N[/latex] halmazon, mint annak a beágyazófüggvény szerinti képén. Ez a képhalmaz a [latex]\Z[/latex]-nek azon részhalmaza, amely a pozitív egész számokat és a [latex]0[/latex] egész számot tartalmazza. Ebben tehát ugyanúgy érvényes a Peano-axiómarendszer, így mostantól ezt fogjuk a természetes számok halmazának tekinteni. Ezután megvizsgáltuk, hogy mit értünk azalatt, hogy teljesülnek a „szokásos számolási szabályok”. Ennek keretében megismerkedtünk a „neutrális elem”, az „inverz elem”, a „gyűrű” és a „test” fogalmával</em></strong>.<strong><em> Végül megmutattuk, hogy az egész számok halmaza az összeadás és szorzás műveletével egy kommutatív, egységelemes gyűrűt alkot.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>De vajon mit jelent a „nullosztómentesség” és az „integritástartomány” fogalma? Hogyan terjesszük ki a „kisebb-nagyobb” fogalmát az egész számok körére is, és miért fontos ez a kriptográfiai eljárások szempontjából? Milyen absztrakt algebrai megfontolások állnak ennek hátterében, és mit jelent ez általános gyűrűk esetén? Ebben a részben erről lesz szó...</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"className":"prerequisite-warning"} -->
+<p class="prerequisite-warning">Figyelem! Ez a rész erőteljesen épít az <a href="https://youproof.hu/kriptografia/14-egesz-szam-szorzas-absztrakt-algebra-neutralis-elem-inverz-kivonas-gyuru-ferdetest-test/" target="_blank" rel="noreferrer noopener" aria-label="előző részben (új fülön nyitja meg)">előző részben</a> bevezetett alábbi definíciókra és a hozzájuk kapcsolódó tételekre:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-szorzasa" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="neutralis-elem" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="inverz-elem" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-kivonasa" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="gyuru-test" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-gyuruje" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph {"className":"prerequisite-warning"} -->
+<p class="prerequisite-warning">E definíciók kontextusba helyezése, valamint a hozzájuk kapcsolódó tételek és egyéb fogalmak megismerése miatt erőteljesen ajánlott elolvasni az <a rel="noreferrer noopener" aria-label="előző részt (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/14-egesz-szam-szorzas-absztrakt-algebra-neutralis-elem-inverz-kivonas-gyuru-ferdetest-test/" target="_blank">előző</a> és az <a rel="noreferrer noopener" aria-label="azelőtti (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/13-adossag-ekvivalenciarelacio-ekvivalencia-osztaly-egesz-szam-homomorfizmus-beagyazas-negativ-szam/" target="_blank">azelőtti</a> részt, mivel gyakran hivatkozni fogunk rájuk. A teljes cikksorozat elejét&nbsp;<a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/1-alapfogalmak-caesar-vigenere-enigma-kulcsmegosztas/" target="_blank">itt</a>&nbsp;találod.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"dropCap":true} -->
+<p class="has-drop-cap">A bevezetőben azt írtuk, hogy a természetes számok beágyazása [latex]\Z[/latex]-be „többnyire” teljessé vált. Ami még hátra van, és ami a továbbiakban szintén fontos lesz számunkra, az a [yp_element slug="termeszetes-szamok-rendezese" type="link" /] szerinti [latex]\leq[/latex] <strong><em>rendezési reláció kiterjesztése</em></strong> erre a számhalmazra. Szeretnénk azonban ezt a problémakört minél általánosabban – lehetőleg az előző részben megismert gyűrűk szintjén – tárgyalni. Ehhez először a gyűrűk néhány alapvető tulajdonságával fogunk megismerkedni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="ring-basic-properties"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Gyűrűk alapvető tulajdonságai</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>gyűrűaxiómákat</em></strong> a [yp_element slug="gyuru-test" type="link" /]ból már ismerjük. Ezek mindössze annyit követelnek meg, hogy legyen egy halmazunk két művelettel, amelyeket most önkényesen „összeadásnak” és „szorzásnak” nevezünk. Az <strong><em>„összeadás” legyen kommutatív és asszociatív</em></strong>, létezzen rá nézve neutrális elem (amelyet <strong><em>nullelemnek</em></strong> nevezünk és [latex]0[/latex]-val jelölünk), valamint minden [latex]a[/latex] elemnek létezzen inverze erre a műveletre nézve (amelyet [latex]a[/latex] <strong><em>ellentettjének</em></strong> nevezünk és [latex]-a[/latex]-val jelölünk). Ezen kívül a <strong><em>„szorzásnak” asszociatívnak</em></strong> kell lennie, valamint teljesülnie kell a két <strong><em>disztributivitási szabálynak</em></strong>. Mivel az ellentett létezése követelmény, ezért minden gyűrűben korlátlanul <strong><em>el lehet végezni a „kivonást”</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egy általános gyűrű mindössze „ennyit tud”. Azaz esetében még a „szorzás” sem feltétlenül kommutatív. Ezért kellett rögzíteni két disztributivitási szabályt is. Továbbá egységelem sem feltétlenül létezik rá nézve. Attól függően, hogy ezen extra tulajdonságok közül melyik teljesül pluszban, beszélhetünk rendre <strong><em>kommutatív gyűrűről</em></strong>, <strong><em>egységelemes gyűrűről</em></strong> vagy <strong><em>kommutatív és egységelemes gyűrűről</em></strong>. Végül az olyan kommutatív és egységelemes gyűrűket <strong><em>testnek</em></strong> neveztük, amelyekben <strong><em>„osztani” is lehet minden nem [latex]0[/latex] elemmel</em></strong> (azaz amelyben minden nem [latex]0[/latex] elemnek létezik inverze a szorzásra nézve is).</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Azt ugye már tudjuk, hogy az <strong><em>egész számok egy kommutatív, egységelemes gyűrűt alkotnak</em></strong> a szokásos műveletekkel ([yp_element slug="egesz-szamok-gyuruje" type="link" /]). Ez a gyűrű azonban <strong><em>nem test</em></strong>, hiszen csak az egységelemnek és ellentettjének (azaz az [latex]1[/latex] és a [latex]-1[/latex] egész számoknak) létezik multiplikatív inverze: méghozzá önmaga. Azt javasoljuk az Olvasónak, hogy ezt saját maga is gondolja végig a [yp_element slug="egesz-szamok-szorzasa" type="link" /] és a [yp_element slug="pozitiv-es-negativ-egesz-szamok" type="link" /] alapján.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most néhány, az általános iskolából már jól ismert összefüggést fogunk bizonyítani, ám ezúttal általános gyűrűkre. Ne feledjük azonban, hogy ezen az absztrakciós szinten a gyűrűaxiómákon kívül nem feltételezhetünk semmi egyebet ezekkel az algebrai struktúrákkal kapcsolatban. Még azt sem, hogy egyáltalán számokról van-e szó. Az alábbi – sokak számára jól ismert – összefüggések tehát csak és kizárólag a gyűrűaxiómák logikai következményei.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="gyuruk-alapveto-tulajdonsagai" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="gyuruk-alapveto-tulajdonsagai-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi egyszerű tétel a nullelem és az egységelem egymáshoz való viszonyáról szól:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egysegelem-es-nullelem-kulonbozo" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egysegelem-es-nullelem-kulonbozo-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az előző rész elején azt vizsgáltuk, hogy vajon a természetes számok [latex]\N[/latex] halmazán érvényesek-e a <strong><em>szokásos egyenletrendezési szabályok</em></strong>. Ennek kapcsán merült fel az a kérdés, hogy vajon egy egyenlet mindkét oldalát el lehet-e „osztani” egy adott nem nulla természetes számmal annak ellenére, hogy az osztás művelete nem értelmezhető ezen a számhalmazon. Ezt a [yp_element slug="peano-nullszorzat-tenyezoi" type="link" /] következményeként a [yp_element slug="peano-szorzat-egyszerusites" type="link" /] tette lehetővé számunkra.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most <strong><em>általános gyűrűkre</em></strong> is megvizsgáljuk ezt a kérdést. Az nyilvánvaló, hogy egy tetszőleges gyűrűn értelmezett egyenlet mindkét oldalából <strong><em>„ki lehet vonni”</em></strong> ugyanazt az elemet. A gyűrűkben ugyanis korlátlanul elvégezhető a <strong><em>„kivonás”</em></strong>. Az <strong><em>„osztás”</em></strong> azonban csak testekben értelmezhető korlátlanul, általános gyűrűkben nem. Ennek ellenére vannak olyan gyűrűk, amelyek nem testek ugyan, ám a természetes számokhoz hasonlóan egy rajtuk értelmezett egyenlet mindkét oldalát bizonyos esetekben <strong><em>„el lehet osztani”</em></strong> ugyanazzal a nem [latex]0[/latex] elemmel. Ezeknek a gyűrűknek speciális nevük van:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="nullosztomentes-gyuru" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez a definíció elsőre furcsának tűnhet. Az általános iskolából ugyanis megszokhattuk, hogy egy szorzat csak úgy lehet 0, ha legalább az egyik tényezője 0. Gyűrűk esetén – mint hamarosan látni fogjuk – ez általánosságban nem igaz. Ezért mindig körültekintően kell eljárnunk, amikor egyenleteket oldunk meg valamilyen gyűrűben. A nullosztómentes gyűrűkben azonban az alábbi tétel alapján nyugodtan alkalmazhatjuk a szokásos egyenletrendezési szabályokat.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="szorzat-egyszerusitese-gyurukben" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="szorzat-egyszerusitese-gyurukben-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Végezetül érdemes megismerkedni még egy fogalommal, amely gyakran fordul elő a szakirodalomban.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="integritastartomany" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Egy integritástartományban tehát minden „ugyanúgy működik”, ahogy az általános iskolában megszokhattuk. Ez a fogalom az egész számok szokásos műveletekkel alkotott algebrai struktúrájának általánosítása, mint ahogyan az alábbi tétel is mutatja.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="az-egesz-szamok-halmaza-integritastartomany" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="az-egesz-szamok-halmaza-integritastartomany-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A szokásos <strong><em>egyenletrendezési játékszabályokat</em></strong> tehát az általános gyűrűk szintjén tisztáztuk. Most nézzük meg, hogy mi a helyzet az úgynevezett <strong><em>egyenlőtlenségek</em></strong> esetén ugyanezen az absztrakciós szinten.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Relációk és műveletek kapcsolata gyűrűkben</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A <a rel="noreferrer noopener" aria-label="12. részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/12-szorzas-disztributivitas-teljes-indukcio-indirekt-bizonyitas-relacio-teljes-rendezes-rendezett-halmaz#relations" target="_blank">12. részben</a> tisztáztuk az úgynevezett <strong><em>rendezési relációk</em></strong> és a <strong><em>rendezett halmazok</em></strong> fogalmát. Ezeknek a fogalmaknak a segítségével absztrakt szinten tudunk beszélni <strong><em>„kisebb-nagyobb”-jellegű viszonyokról</em></strong> tetszőleges halmaz elemei között. Most ezt a kérdéskört szeretnénk kiterjeszteni általános gyűrűkre – és természetesen speciálisan az egész számok gyűrűjére – is. Azt javaslom az Olvasónak, hogy a folytatás előtt ismételje át az alábbi kapcsolódó fogalmakat:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="ketvaltozos-relacio" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="reflexiv-relacio" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="antiszimmetrikus-relacio" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="tranzitiv-relacio" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="trichotom-relacio" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="rendezett-halmaz" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="rendezett-halmaz" type="link" /] alapján rendezett halmaz alatt tehát dióhéjban egy olyan, kétváltozós relációval ([yp_element slug="ketvaltozos-relacio" type="link" /]) ellátott halmazt értünk, amelynek elemei között e reláció segítségével valamilyen egyértelmű sorrend állítható fel. Mivel egy gyűrű is tulajdonképpen egy halmaz, így ez a fogalom nyilván ezekre is értelmezhető. Csakhogy a gyűrűk rendelkeznek két művelettel is. Ezért az ő esetükben egy rendezési relációtól azt is elvárjuk, hogy bizonyos értelemben „jól viselkedjenek” ezekkel a műveletekkel.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Hogy ez alatt pontosan mit értünk, azt egy példán keresztül világítjuk meg. Vizsgáljuk meg például, hogy a természetes számok [latex]\N[/latex] halmazán értelmezett [yp_element slug="termeszetes-szamok-rendezese" type="link" /] szerinti rendezési reláció milyen kapcsolatban van az összeadás és a szorzás műveletével. Erről szól az alábbi tétel.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="termeszetes-szamok-rendezesenek-tulajdonsagai" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="termeszetes-szamok-rendezesenek-tulajdonsagai-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Egy ehhez hasonló tulajdonság általánosságban is hasznos lehet egy műveletekkel ellátott algebrai struktúra alaphalmazán értelmezett reláció esetén. Erről szól az alábbi definíció.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="relacio-kompatibilitasa-muvelettel" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezzel a szóhasználattal élve tehát a fenti tétel úgy is megfogalmazható, hogy a természetes számok rendezési relációja kompatibilis a Peano-összeadás és a Peano-szorzás műveletével.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most nézzük, mit tudunk elmondani egy gyűrű alaphalmazán értelmezett rendezési reláció és a gyűrű két műveletének viszonyáról. Tegyük hát fel, hogy [latex](R,+,\cdot )[/latex] egy gyűrű. Kérdés, hogy vajon <strong><em>létezhet-e olyan részbenrendezés</em></strong> a gyűrű alaphalmazán, <strong><em>amely mindkét művelettel kompatibilis</em></strong>? Ennek megválaszolásához az alábbi segédtételre lesz szükségünk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="gyuru-reszbenrendezesenek-tulajdonsagai" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="gyuru-reszbenrendezesenek-tulajdonsagai-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez alapján úgy néz ki, hogy nem mindegy, hogy egy egyenlőtlenség mindkét oldalát egy adott elemmel, vagy annak ellentettjével szorozzuk-e meg. Ezt a sajnálatos tényt fogalmazza meg az alábbi tétel.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="szorzas-rendezesfordito-gyuruben" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="szorzas-rendezesfordito-gyuruben-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Hogy ez miért sajnálatos?</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Azért, mert ez azt jelenti, hogy egy <strong><em>gyűrűben egy rendezési reláció egyszerre nem lehet kompatibilis mindkét művelettel</em></strong> – legalábbis semmilyen gyakorlatilag hasznos esetben. Most megmutatjuk, miért.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tekintsünk továbbra is egy [latex](R,+,\cdot )[/latex] gyűrűt, amelyről az egyszerűség kedvéért most tételezzük fel, hogy kommutatív. Jelölje a rendezési relációnkat továbbra is a [latex]\leq[/latex] szimbólum, és tegyük fel, hogy [latex]a\leq b[/latex] teljesül valamilyen [latex]a[/latex] és [latex]b[/latex] gyűrűelemekre. Ha mármost [latex]\leq[/latex] kompatibilis lenne mindkét művelettel, akkor ez egyrészt a szorzással való kompatibilitás miatt azt jelentené, hogy tetszőleges [latex]c[/latex] esetén mindkét alábbi egyenlőtlenség teljesülne:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}ac &amp;\leq bc \\ a(-c) &amp;\leq b(-c)\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Másrészt az összeadással való kompatibilitás miatt a [yp_element slug="gyuru-reszbenrendezesenek-tulajdonsagai" type="link" /] továbbra is igaz lenne, ezért az [latex]a(-c)\leq b(-c)[/latex] egyenlőtlenségből következne az [latex]ac\geq bc[/latex] egyenlőtlenség, tehát végsősoron ezt kapnánk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}ac &amp;\leq bc \\ ac &amp;\geq bc\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel azonban a [latex]\leq[/latex] reláció egy rendezési reláció, ezért a [yp_element slug="rendezett-halmaz" type="link" /] miatt <strong><em>antiszimmetrikus</em></strong>. Ez viszont a [yp_element slug="antiszimmetrikus-relacio" type="link" /] miatt épp azt jelenti, hogy a fenti két egyenlőtlenség csak abban az esetben teljesülhet egyszerre, ha [latex]ac=bc[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Összefoglalva tehát azt kapnánk, hogy tetszőleges [latex]a[/latex], [latex]b[/latex] és [latex]c[/latex] gyűrűelemekre [latex]a\leq b[/latex] teljesülése esetén [latex]ac=bc[/latex] is teljesülne. Ez például egy nullosztómentes gyűrűben a [yp_element slug="szorzat-egyszerusitese-gyurukben" type="link" /] miatt azt jelentené, hogy [latex]a\leq b[/latex]-ből következne, hogy [latex]a=b[/latex]. Így nem lenne túl sok értelme rendezésről beszélni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Kénytelenek leszünk tehát a mindkét művelettel való kompatibilitásnál némileg gyengébb követelményeket támasztani a gyűrűkön „jól viselkedő” rendezési relációkkal szemben.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Gyűrűk rendezési axiómái</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Az előző szakasz tanulságai alapján most a gyűrűaxiómák után megfogalmazunk két újabb axiómát. Ezeket egy gyűrűn értelmezett rendezési relációnak kell majd teljesítenie ahhoz, hogy őt „jól viselkedőnek” tekintsük. Ezeket <strong><em>rendezési axiómáknak</em></strong> nevezzük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az már fix, hogy az első rendezési axióma az összeadással való teljes kompatibilitás lesz. A szorzásra sajnos a [yp_element slug="szorzas-rendezesfordito-gyuruben" type="link" /] miatt ilyet nem tudunk előírni. Eszerint ugyanis ha a [latex]c\geq 0[/latex] elemekkel való szorzásra követeljük meg azt, hogy a rendezés iránya megmaradjon, akkor a [latex]c\leq 0[/latex] elemekkel való szorzás rendezésfordító lesz. Ha viszont a [latex]c\leq 0[/latex] elemekkel való szorzásra szeretnénk megtartani a rendezés irányát, akkor viszont a [latex]c\geq 0[/latex] esetekben lesz rendezésfordító a szorzás. Választanunk kell tehát, hogy melyiket tekintsük axiómának e kettő közül.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Alapvetően ugye az a célunk, hogy a természetes számok rendezését terjesszük ki az egész számok [latex](\Z ,+,\cdot )[/latex] gyűrűjére. Márpedig ebben a gyűrűben épp a pozitív egész számok és a [latex]0[/latex] felelnek meg a természetes számoknak. Célszerű tehát, ha az ezzel analóg [latex]c\geq 0[/latex] esetekben követeljük meg a rendezés tartását az általános gyűrűk rendezési axiómáinak rögzítésekor is. Mivel nem akarunk kizárólag a kommutatív gyűrűkre szorítkozni, ezért mindkét irányú szorzásra elő kell írnunk ezt a feltételt. Így tehát a rendezési axiómákat a következőképpen célszerű megadni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="rendezett-gyuru" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Az egész számok gyűrűjét</em></strong> a [yp_element slug="pozitiv-es-negativ-egesz-szamok" type="link" /] alapján <strong><em>három részre osztottuk</em></strong>. Megkülönböztettünk <strong><em>negatív</em></strong> és <strong><em>pozitív</em></strong> egész számokat, és a <strong><em>nulla</em></strong> egész számot, amelyet nem tekintettünk sem pozitívnak, sem pedig negatívnak. Habár ezeket a fogalmakat bármiféle rendezési relációtól függetlenül vezettük be a <a rel="noreferrer noopener" aria-label="kapcsolódó cikkben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/13-adossag-ekvivalenciarelacio-ekvivalencia-osztaly-egesz-szam-homomorfizmus-beagyazas-negativ-szam/" target="_blank">kapcsolódó cikkben</a>, ám hamarosan látni fogjuk, hogy szoros összefüggésben van a most következő fogalmakkal.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="pozitivitastartomany" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="pozitivitastartomany-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Vegyünk példaképp egy 11 elemű gyűrűt, és rajzoljuk fel az alaphalmazát a benne található elemekkel. Középen a gyűrű nulleleme, körülötte pedig a többi elem helyezkedjen el. Ezen kívül minden elem és az ő ellentettje legyen egymással szemben. Ez az elrendezés látható az alábbi ábrán:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":3784,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_15_gyuru_pelda.jpg" alt="11 elemű gyűrű (példa)" class="wp-image-3784"/><figcaption>11 elemű gyűrű (példa)</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel, hogy létezik ezen a gyűrűn 3 olyan rendezési reláció is, amelyek teljesítik a [yp_element slug="rendezett-gyuru" type="link" /] szerinti rendezési axiómákat. Az alábbi ábrán egy példa látható arra, hogy az ezekhez tartozó pozitivitástartományok ([latex]P_1[/latex], [latex]P_2[/latex] és [latex]P_3[/latex]) és negativitástartományok ([latex]-P_1[/latex], [latex]-P_2[/latex] és [latex]-P_3[/latex]) hogyan helyezkedhetnek el a gyűrű alaphalmazán belül:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":3786,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_15_reszbenrendezesek_pozitivitastartomanyai.jpg" alt="Részbenrendezések pozitivitás- és negativitástartományai" class="wp-image-3786"/><figcaption>Részbenrendezések pozitivitás- és negativitástartományai</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Megjegyzendő, hogy létezhet olyan elem a gyűrűben akár a nullelemen kívül is, amely se nem pozitív, se nem negatív egy adott rendezésre nézve. Ne felejtsük el ugyanis, hogy a részbenrendezés [yp_element slug="rendezett-halmaz" type="link" /]ja nem követeli meg a trichotómiát, vagyis azt, hogy bármely két elem összehasonlítható legyen. A fenti ábrán látható például, hogy az [latex]e[/latex] elem és a [latex]0[/latex] nem összehasonlítható a [latex]P_1[/latex] és a [latex]P_3[/latex] pozitivitástartományokhoz tartozó rendezési relációk szerint. A „nem összehasonlítható” itt azt jelenti, hogy közöttük egyik irányban sem teljesül a reláció. Ezzel szemben egy teljes rendezés megköveteli a trichotómiát. Következésképp ebben az esetben bármely gyűrűelem és a nullelem között legalább az egyik irányban teljesülni fog egy ilyen rendezési reláció.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tegyük most fel, hogy a fenti gyűrűn létezik 2 olyan rendezési reláció is, amelyek szintén teljesítik a [yp_element slug="rendezett-gyuru" type="link" /] szerinti rendezési axiómákat, de ezen felül még teljes rendezések is. Az alábbi ábrán egy példa látható arra, hogy az ezekhez tartozó pozitivitástartományok ([latex]P_4[/latex] és [latex]P_5[/latex]) és negativitástartományok ([latex]-P_4[/latex] és [latex]-P_5[/latex]) hogyan helyezkedhetnek el a gyűrű alaphalmazán belül:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":3788,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_15_teljes_rendezesek_pozitivitastartomanyai.jpg" alt="Teljes rendezések pozitivitás- és negativitástartományai" class="wp-image-3788"/><figcaption>Teljes rendezések pozitivitás- és negativitástartományai</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Az eddigiek alapján semmi nem zárja ki, hogy egy gyűrűn több olyan rendezés is létezzen, amelyek eleget tesznek a rendezési axiómáknak. Ha például [latex]\leq[/latex] és [latex]\lesssim[/latex] két ilyen, egymástól különböző rendezési reláció egy gyűrű alaphalmazán, akkor – mint azt a következő tételben látni fogjuk – a hozzájuk tartozó [latex]P_{\leq}[/latex] és a [latex]P_{\lesssim}[/latex] pozitivitástartományok is különbözni fognak. Következésképp <strong><em>mások lesznek a negatív és pozitív elemek</em></strong> a [latex]\leq[/latex] rendezésre nézve, mint a [latex]\lesssim[/latex] rendezésre nézve.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Nézzük tehát az erről szóló tételt.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="rendezesek-es-pozitivitastartomanyok-kapcsolata" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Más szavakkal <strong><em>a pozitivitástartomány egyértelműen meghatározza a hozzá tartozó rendezést</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="rendezesek-es-pozitivitastartomanyok-kapcsolata-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Látható tehát, hogy egy gyűrűben <strong><em>önmagában nincs értelme pozitív vagy negatív elemekről beszélni</em></strong>. Azt ugyanis, hogy mely elemek pozitívak és melyek negatívak, az adott rendezési reláció, illetve az előző tétel alapján az adott pozitivitástartomány határozza meg.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Jogos a kérdés, hogy akkor a [yp_element slug="pozitiv-es-negativ-egesz-szamok" type="link" /] alapján milyen jogon mondtuk azt bizonyos egész számokra, hogy pozitívak, másokra pedig azt, hogy negatívak anélkül, hogy megneveztünk volna egy konkrét rendezési relációt. Ezt a kérdést hamarosan megválaszoljuk, ehhez azonban szükségünk lesz két fontos tételre. Egyrészt szeretnénk egy könnyen ellenőrizhető kritériumot találni, amely alapján egy gyűrű alaphalmazának egy adott részhalmazáról eldönthetjük, hogy pozitivitástartománya-e egy rendezési relációnak vagy nem. Másrészt, miután ezt eldöntöttük egy részhalmazról, szeretnénk azt is könnyen eldönteni, hogy ez a rendezési reláció vajon egy teljes rendezés-e, vagy csak részbenrendezés.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi tétel az első kérdésre ad egy könnyen ellenőrizhető kritériumot <strong><em>nullosztómentes gyűrűk esetén</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="pozitivitastartomany-szukseges-es-elegseges-feltetele" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="pozitivitastartomany-szukseges-es-elegseges-feltetele-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most tehát már van egy <strong><em>szükséges és egyben elégséges feltételünk</em></strong> arra, hogy egy gyűrű alaphalmazának bármilyen részhalmazáról eldöntsük, vajon ő egy rendezési reláció pozitivitástartománya-e vagy sem. Ráadásul a bizonyításból az is könnyen látszik, hogy igenlő válasz esetén hogyan kaphatjuk meg magát a keresett rendezési relációt (ami a [yp_element slug="rendezesek-es-pozitivitastartomanyok-kapcsolata" type="link" /] miatt ugye <strong><em>egyértelmű</em></strong>).</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A most következő tétel annak eldöntésére ad egy könnyen ellenőrizhető kritériumot, hogy ez a bizonyos rendezés vajon egy teljes rendezés-e vagy sem.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="teljes-rendezes-szukseges-es-elegseges-feltetele" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="teljes-rendezes-szukseges-es-elegseges-feltetele-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Teljes rendezés az egész számok gyűrűjében</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A most következő szakaszban végre rátérhetünk arra a kérdésre, hogy a [yp_element slug="pozitiv-es-negativ-egesz-szamok" type="link" /]ban milyen jogon mondtuk azt bizonyos egész számokról, hogy <strong><em>pozitívak</em></strong>, másokról pedig, hogy <strong><em>negatívak</em></strong>. Ez pofátlanságnak tűnik a fentiek fényében, hiszen nem mondtuk meg, hogy melyik rendezési reláció szerint értjük őket pozitívnak illetve negatívnak. Most ezt a hiányosságunkat fogjuk pótolni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Azt rögtön kijelenthetjük, hogy minket most csak a <strong><em>teljes rendezések</em></strong> érdekelnek. Szeretnénk ugyanis, ha bármely két egész számról eldönthető lenne, hogy melyik nagyobb a másiknál. <strong><em>Kérdés, hogy létezik-e egyáltalán</em></strong> olyan teljes rendezés az egész számok gyűrűjében, amely teljesíti a [yp_element slug="rendezett-gyuru" type="link" /] szerinti rendezési axiómákat.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A következő tétel <strong><em>nullosztómentes gyűrűkre</em></strong> fogalmaz meg egy számunkra fontos észrevételt ezzel kapcsolatban.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="teljes-rendezesek-pozitivitastartomanyainak-metszete" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="teljes-rendezesek-pozitivitastartomanyainak-metszete-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most térjünk vissza az <strong><em>egész számok</em></strong> [latex](\Z ,+,\cdot )[/latex] gyűrűjéhez. Mivel a [yp_element slug="az-egesz-szamok-halmaza-integritastartomany" type="link" /] értelmében ő egy integritástartomány – azaz kommutatív és <strong><em>nullosztómentes</em></strong> –, így érvényes rá az imént bizonyított [yp_element slug="teljes-rendezesek-pozitivitastartomanyainak-metszete" type="link" /] tétel. Azt ugyan még nem tudjuk, hogy létezik-e rajta akárcsak egyetlen, a rendezési axiómákat kielégítő <strong><em>teljes rendezés</em></strong> is. Ám ha létezik ilyen, akkor annak pozitivitástartománya <strong><em>biztosan tartalmazni fogja az összes nemnulla elem önmagával vett szorzatát, és az ilyen szorzatok összegeit is</em></strong>. Ha több ilyen teljes rendezés is létezik, akkor minden ezekhez tartozó pozitivitástartomány tartalmazni fogja ugyanezeket az elemeket.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel például, hogy a [latex](\Z ,+,\cdot )[/latex] gyűrűn 3 teljes rendezés is létezik. Az alábbi ábrán az ehhez a 3 hipotetikus rendezéshez tartozó pozitivitástartományok láthatók ([latex]P_1[/latex], [latex]P_2[/latex] és [latex]P_3[/latex]):</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":3790,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_15_pozitivitastartomanyok_metszete.jpg" alt="Pozitivitástartományok elhelyezkedése Z-n" class="wp-image-3790"/><figcaption>Pozitivitástartományok elhelyezkedése [latex]\Z[/latex]-n</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="teljes-rendezesek-pozitivitastartomanyainak-metszete" type="link" /] alapján tehát a 3 pozitivitástartomány [latex]Q[/latex]-val jelölt közös része tartalmazza az összes nemnulla elem önmagával vett szorzatát, és az ilyen szorzatok összes lehetséges összegeit is. <strong><em>Kérdés, hogy vajon tartalmaznak-e a [latex]Q[/latex]-beli elemeken kívül más elemeket is, vagy valójában az összes pozitivitástartomány egy és ugyanaz?</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Úgy gondolom, a fentiek fényében már nem lesz meglepő az erre választ adó alábbi tétel.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-teljes-rendezese-egyertelmu" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-teljes-rendezese-egyertelmu-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most tehát már tudjuk, hogy az egész számok gyűrűjében <strong><em>pontosan egy</em></strong> olyan teljes rendezés létezik, amely teljesíti a [yp_element slug="rendezett-gyuru" type="link" /] szerinti rendezési axiómákat. Ráadásul ennek a rendezésnek a pozitivitástartománya (vagy negativitástartománya) épp azokat az egész számokat tartalmazza, amelyeket a [yp_element slug="pozitiv-es-negativ-egesz-szamok" type="link" /]ban <strong><em>pozitív</em></strong> (vagy <strong><em>negatív</em></strong>) számoknak neveztünk. Jogos volt tehát az elnevezés annak ellenére, hogy akkor nem definiáltuk magát a rendezést, amely alapján ezt értettük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezen a ponton fontos megjegyezni, hogy ez az egyértelműség az egész számok gyűrűjében pusztán egy szerencsés egybeesés eredménye. Léteznek például olyan gyűrűk is, amelyekben egyáltalán nem található a rendezési axiómákat is kielégítő teljes rendezés (például az úgynevezett <a rel="noreferrer noopener" aria-label="komplex számok teste (új fülön nyitja meg)" href="https://hu.wikipedia.org/wiki/Komplex_sz%C3%A1mok" target="_blank">komplex számok teste</a>). Léteznek továbbá olyanok is, amelyekben végtelen sok ilyen teljes rendezés definiálható (például az úgynevezett <a rel="noreferrer noopener" aria-label="valós polinomgyűrű (új fülön nyitja meg)" href="https://hu.wikipedia.org/wiki/Polinom" target="_blank">valós polinomgyűrű</a>).</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most azonban maradjunk továbbra is a [latex](\Z ,+,\cdot )[/latex] gyűrűben. Nincs más hátra, mint megadni ezt az egyetlen teljes rendezést ezen a gyűrűn. A pozitivitástartományunk ugye már megvan, és ez a [yp_element slug="rendezesek-es-pozitivitastartomanyok-kapcsolata" type="link" /] alapján egyértelműen meghatározza a hozzátartozó rendezési relációt. Jelöljük a pozitivitástartományt [latex]P[/latex]-vel, amely tehát a [yp_element slug="pozitiv-es-negativ-egesz-szamok" type="link" /] szerinti pozitív egész számokat tartalmazza. A [yp_element slug="pozitivitastartomany-szukseges-es-elegseges-feltetele" type="link" /] bizonyításából már tudjuk, hogy [latex]P[/latex]-ből hogyan kaphatjuk meg a rendezést.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Jelöljük ezt a rendezést a [latex]\leq[/latex] szimbólummal. Eszerint tehát [latex]a\leq b[/latex]-t úgy kell definiálnunk, hogy akkor és csak akkor teljesüljön, ha [latex]a=b[/latex] vagy pedig a [latex]b+(-a)[/latex] benne van [latex]P[/latex]-ben.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az első feltétel mindkét oldalához [latex](-a)[/latex]-t adva így azt kapjuk, hogy az [latex]a\leq b[/latex] reláció pontosan akkor teljesüljön, ha a [latex]b+(-a)[/latex] egész szám [latex]0[/latex] vagy pozitív. Mivel az előző rész vége óta épp a [latex]0[/latex] vagy pozitív egész számokat nevezzük természetes számoknak, így tehát [latex]a\leq b[/latex] pontosan akkor teljesül, ha létezik olyan [latex]k[/latex] természetes szám, hogy [latex]b+(-a)=k[/latex]. Mindkét oldalhoz [latex]a[/latex]-t adva megkapjuk az egész számok rendezésének definícióját, amely – vegyük észre – épp a természetes számok rendezésének ([yp_element slug="termeszetes-szamok-rendezese" type="link" /]) <strong><em>kiterjesztése</em></strong> az egész számok [latex]\Z[/latex] halmazára.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-rendezese" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Egyszerűen adódik tehát, hogy a Peano-axiómarendszer ([yp_element slug="peano-axiomarendszer" type="link" /]) által definiált – korábban természetes számoknak nevezett – halmaz 13. részben tárgyalt <a rel="noreferrer noopener" aria-label="beágyazása (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/13-adossag-ekvivalenciarelacio-ekvivalencia-osztaly-egesz-szam-homomorfizmus-beagyazas-negativ-szam#injective-homomorphism" target="_blank">beágyazása</a> az egész számok gyűrűjébe az összeadáson ([yp_element slug="termeszetes-szamok-beagyazasa-osszegtarto" type="link" /]) és a szorzáson ([yp_element slug="termeszetes-szamok-beagyazasa-szorzattarto" type="link" /]) kívül <strong><em>tartja a fenti rendezést is</em></strong>. Ezt fogalmazza meg az alábbi tétel.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="termeszetes-szamok-beagyazasa-rendezestarto" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="termeszetes-szamok-beagyazasa-rendezestarto-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ebben a részben tehát definiáltuk a „kisebb-nagyobb” fogalmát az egész számok gyűrűjében is. Ezután megmutattuk, hogy az valóban a korábban csupán a természetes számok körében értelmezett hasonló reláció kiterjesztése. Megvizsgáltuk ezt a kérdéskört egy magasabb absztrakciós szinten általános gyűrűkre is. E vizsgálódásaink során sikerült megmutatni, hogy e reláció kiterjesztésének ez az egyetlen módja</em></strong>.<strong><em> Feltéve persze, ha bizonyos, az általános iskolából is jól ismert számolási szabályokat az egész számok halmazán is érvényben szeretnénk tartani.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A továbbiakban ennek a relációnak a felhasználásával meg fogunk ismerkedni az úgynevezett oszthatóság és a maradékos osztás fogalmával</em></strong>.<strong><em> Ezek végre elvezetnek majd minket a prímszámokkal kapcsolatos összefüggésekhez. Ezeket a kérdéseket továbbra is az általános gyűrűk szintjén fogjuk vizsgálni, már amennyire lehetséges. Ezáltal ugyanis átfogóbb képet kaphatunk a modern kriptográfiai eljárások mögött meghúzódó számelméleti gondolatokról.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A következő részt <a href="https://youproof.hu/kriptografia/16-oszhatosag-egyseg-asszocialt-felbonthatatlan-prim-szamelmelet-alaptetele/">itt</a> találod...</em></strong></p>
+<!-- /wp:paragraph -->

@@ -1,0 +1,11 @@
+type: theorem
+name: peano-osszeadas-asszociativitas
+proofs:
+  - peano-osszeadas-asszociativitas-bizonyitas
+remarks: []
+content:
+  - type: formula
+    lead-in: |
+      Az $\N$ halmaz tetszőleges $a$, $b$ és $c$ elemeire igaz az alábbi összefüggés:
+    content: |
+      (a+b)+c = a+(b+c)

@@ -1,0 +1,471 @@
+<!-- wp:paragraph -->
+<p><strong><em>Az <a href="https://youproof.hu/kriptografia/24-csoport-reszcsoport-mellekosztaly-lagrange-tetel-csoport-rendje-elem-rendje-miller-rabin-primteszt/" target="_blank" rel="noreferrer noopener">előző részben</a> megismerkedtünk az úgynevezett csoportelmélet néhány alapfogalmával és összefüggésével, amely az absztrakt algebra egy igen hatékony eszköze. Bevezettük a csoport, a részcsoport fogalmát, valamint definiáltuk, hogy mit értünk egy csoport illetve egy csoportelem rendje alatt. Ezután a mellékosztály fogalmának bevezetésével igazoltuk Lagrange tételét, amely egy fontos oszthatósági kapcsolatot mond ki egy csoport és a részcsoportok illetve csoportelemek rendjei között. Végül ezt felhasználva megmutattuk, hogy bármilyen páratlan összetett szám esetén a redukált maradékosztályoknak legalább a fele Miller-Rabin-tanú, így gyakorlatilag szinte nincs esélye annak, hogy a Miller-Rabin-prímteszt tévedjen. Meg fogjuk azonban mutatni, hogy még ennél is jobb a helyzet, és a redukált maradékosztályoknak nemhogy a fele, de legalább a háromnegyede Miller-Rabin-tanú. Ehhez azonban ebben a részben megismerkedünk néhány újabb, fontos csoportelméleti összefüggéssel.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Mik azok a csoporthomomorfizmusok, normálosztók és faktorcsoportok? Milyen párhuzam mutatható ki ezek és a korábban már ismertetett gyűrűhomorfizmusok, ideálok és maradékosztálygyűrűk között? Milyen szép struktúratartó tulajdonságai vannak egy csoporthomomorfizmusnak? Mik azok a ciklikus csoportok, és összesen hány ilyen létezik? Ebben a részben erről lesz szó...</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"className":"prerequisite-warning"} -->
+<p class="prerequisite-warning">Figyelem! Ez a rész erőteljesen épít a <a href="https://youproof.hu/kriptografia/18-modularis-aritmetika-homomorfizmus-kongruencia-reszgyuru-ideal-maradekosztalygyuru/" target="_blank" rel="noreferrer noopener">18.</a> és a <a href="https://youproof.hu/kriptografia/24-csoport-reszcsoport-mellekosztaly-lagrange-tetel-csoport-rendje-elem-rendje-miller-rabin-primteszt/" target="_blank" rel="noreferrer noopener">24. részben</a> felépített alábbi definíciókra, valamint a hozzájuk kapcsolódó tételekre:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="gyuruhomomorfizmus" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="gyuruhomomorfizmus-magja-es-kepe" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="ideal" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="maradekosztalygyuruk" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="csoport" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="reszcsoport" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="mellekosztalyok" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph {"className":"prerequisite-warning"} -->
+<p class="prerequisite-warning">Ezek kontextusba helyezése miatt erőteljesen ajánlott elolvasni a <a href="https://youproof.hu/kriptografia/18-modularis-aritmetika-homomorfizmus-kongruencia-reszgyuru-ideal-maradekosztalygyuru/" target="_blank" rel="noreferrer noopener">18.</a> és a <a href="https://youproof.hu/kriptografia/24-csoport-reszcsoport-mellekosztaly-lagrange-tetel-csoport-rendje-elem-rendje-miller-rabin-primteszt/" target="_blank" rel="noreferrer noopener">24. részt</a>, mivel gyakran hivatkozni fogunk rájuk. A teljes cikksorozat elejét <a href="https://youproof.hu/kriptografia/1-alapfogalmak-caesar-vigenere-enigma-kulcsmegosztas/" target="_blank" rel="noreferrer noopener">itt</a> találod.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"dropCap":true} -->
+<p class="has-drop-cap">A <a href="https://youproof.hu/kriptografia/18-modularis-aritmetika-homomorfizmus-kongruencia-reszgyuru-ideal-maradekosztalygyuru/" target="_blank" rel="noreferrer noopener">18. részben</a> ismertettük az úgynevezett <strong><em>moduláris aritmetika</em></strong>, azaz a maradékokkal való számolás absztrakt algebrai hátterét. Mint ahogyan azt az Olvasó is látni fogja, az ennek kapcsán felépített fogalmak és tételek szinte egytől egyig párhuzamba állíthatók lesznek az ebben a részben leírtakkal. Ezekre a szép párhuzamokra a tárgyalás során folyamatosan rá fogunk mutatni annak érdekében, hogy lehessen mihez kötni az itt bevezetett, sok esetben meglehetősen absztrakt csoportelméleti fogalmakat. Ettől függetlenül azt javasoljuk az Olvasónak, hogy gyakran lapozzon vissza az említett <a href="https://youproof.hu/kriptografia/18-modularis-aritmetika-homomorfizmus-kongruencia-reszgyuru-ideal-maradekosztalygyuru/" target="_blank" rel="noreferrer noopener">18. részhez</a>, mivel ezek a párhuzamok adott esetben egészen más megvilágításba helyezhetik az eddig tanultakat.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A <a href="https://youproof.hu/kriptografia/18-modularis-aritmetika-homomorfizmus-kongruencia-reszgyuru-ideal-maradekosztalygyuru/" target="_blank" rel="noreferrer noopener">18. részben</a> elsőként egy nagyon fontos, az egész számok [latex]\Z[/latex] gyűrűjén értelmezett függvénnyel, az úgynevezett <strong><em>modulo [latex]m[/latex] maradékképző függvénnyel</em></strong> ismerkedtünk meg ([yp_element slug="modularis-osszeadas-es-szorzas" type="link" /]). Ez a [latex]\bmod_m[/latex]-mel jelölt függvény minden egész számhoz az [latex]m[/latex] egész számmal való <strong><em>nemnegatív osztási maradékát</em></strong> rendeli hozzá. Ennek a függvénynek az értékkészletét [latex]\Z_m[/latex]-mel jelöltük, amelyen egy összeadásnak és egy szorzásnak nevezett műveletet is értelmeztünk a [yp_element slug="modularis-osszeadas-es-szorzas" type="link" /]ban leírtaknak megfelelően.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezután igazoltuk, hogy a [latex]\Z_m[/latex] halmaz ezzel a két művelettel egy kommutatív gyűrűt alkot. Ám ami talán még fontosabb volt számunkra, hogy a [latex]\bmod_m[/latex] maradékképző függvény egy szoros kapcsolatot létesített a [latex]\Z[/latex] és a [latex]\Z_m[/latex] gyűrűk között.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Csoporthomomorfizmusok</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A már említett [latex]\bmod_m[/latex] függvényről a [yp_element slug="maradekkepzes-gyuruhomomorfizmus" type="link" /]ben megmutattuk, hogy ő egy úgynevezett <strong><em>gyűrűhomomorfizmus</em></strong> [latex]\Z[/latex] és [latex]\Z_m[/latex] között. Ez a [yp_element slug="gyuruhomomorfizmus" type="link" /] alapján azt jelentette, hogy a [latex]\bmod_m[/latex] függvény tartja a [latex]\Z[/latex] gyűrű összeadását és szorzását. Azaz teljesen mindegy, hogy két számot először a [latex]\Z[/latex] gyűrűben adunk vagy szorzunk össze, az eredmény [latex]\bmod_m[/latex] szerinti képe a [latex]\Z_m[/latex] gyűrűben ugyanaz lesz, mintha először képeztük volna a két szám maradékát, és ezeket adtuk vagy szoroztuk volna össze a [latex]\Z_m[/latex] gyűrűn értelmezett műveletekkel.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most bevezetünk egy nagyon hasonló fogalmat, amely tehát két gyűrű helyett két csoport között létesít ehhez hasonló szoros kapcsolatot.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="csoporthomomorfizmus" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="csoporthomomorfizmus-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A gyűrűhomomorfizmus fogalmának bevezetése után egy fontos segédtételt bizonyítottunk, amely demonstrálta az ilyen leképezések <strong><em>struktúratartó tulajdonságait</em></strong>. Ez a [yp_element slug="osszegtarto-lekepezes-nullelem-es-ellentettkepzestarto" type="link" /] volt, amelyben azt mutattuk meg, hogy a gyűrűhomomorfizmusok tartják a kiindulási gyűrű nullelemét, továbbá az ott értelmezett ellentettképzést is. Azaz nullelem képe a célgyűrű nulleleme, illetve ellentett képe a kép ellentettje lesz a célgyűrűben.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most a csoporthomomorfizmusok kapcsán igazolunk egy nagyon hasonló segédtételt. Az egyetlen különbség mindössze annyi, hogy csoportok esetén nullelem helyett általában egységelemről, míg ellentett helyett inverzről szoktunk beszélni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="csoporthomomorfizmus-egysegelem-es-inverzkepzestarto" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="csoporthomomorfizmus-egysegelem--es-inverzkepzestarto-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Csoporthomomorfizmus magja és képe</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A <a href="https://youproof.hu/kriptografia/18-modularis-aritmetika-homomorfizmus-kongruencia-reszgyuru-ideal-maradekosztalygyuru#ring-homomorphism-kernel-and-image" target="_blank" rel="noreferrer noopener">18. részben</a> a gyűrűhomomorfizmusok jellemzéséhez megismerkedtünk a <strong><em>gyűrűhomomorfizmus magjának és képének</em></strong> fogalmával ([yp_element slug="gyuruhomomorfizmus-magja-es-kepe" type="link" /]). Egy [latex]f:R\to S[/latex] gyűrűhomomorfizmus <strong><em>magjának</em></strong> neveztük azon [latex]R[/latex]-beli elemek halmazát, amelyekhez az [latex]f[/latex] függvény épp az [latex]S[/latex] gyűrű nullelemét rendeli hozzá, míg [latex]f[/latex] <strong><em>képének</em></strong> azoknak az [latex]S[/latex]-beli elemeknek a halmazát neveztük, amelyeket [latex]f[/latex] legalább egy [latex]R[/latex]-beli elemhez hozzárendel. Ennek mintájára az alábbiakban definiáljuk a csoporthomomorfizmusok magjának és képének fogalmát. A különbség pusztán annyi, hogy most a célgyűrű nullelemének szerepét a célcsoport egységeleme veszi át.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="csoporthomomorfizmus-magja-es-kepe" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezek után bevezettük a <strong><em>részgyűrű</em></strong> fogalmát ([yp_element slug="reszgyuru" type="link" /]) és megmutattuk, hogy egy [latex]f[/latex] gyűrűhomomorfizmus képe minden esetben részgyűrű abban az [latex]S[/latex] gyűrűben, ahová [latex]f[/latex] képez (lásd a [yp_element slug="gyuruhomomorfizmus-kepenek-feltetele" type="link" /]t). Ezen túlmenően ebben a tételben azt is megemlítettük, hogy ennél többet nem is tudunk elmondani az [latex]S[/latex]-be képező gyűrűhomomorfizmusok képeiről. Ez másként fogalmazva azt jelenti, hogy [latex]S[/latex] bármely részgyűrűje képe valamilyen [latex]S[/latex]-be mutató gyűrűhomomorfizmusnak.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>részcsoport</em></strong> fogalmát a [yp_element slug="reszcsoport" type="link" /]ban már bevezettük, és most az említett [yp_element slug="gyuruhomomorfizmus-kepenek-feltetele" type="link" /] mintájára egy nagyon hasonló állítást fogunk igazolni a <strong><em>csoporthomomorfizmusok képeivel</em></strong> kapcsolatban.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="csoporthomomorfizmus-kepenek-feltetele" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="csoporthomomorfizmus-kepenek-feltetele-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Egy [latex]H[/latex] csoportban tehát az odamutató csoporthomomorfizmusok <strong><em>képeiről</em></strong> mindössze annyit tudunk mondani, hogy azok pontosan [latex]H[/latex] részcsoportjai lesznek. Ezzel szemben egy [latex]G[/latex] csoport azon részhalmazairól, amelyek valamilyen [latex]G[/latex]-ből kiinduló csoporthomomorfizmusok <strong><em>magjai</em></strong> lehetnek, ennél többet is fogunk tudni mondani.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez párhuzamba állítható azzal, ahogyan a <strong><em>gyűrűhomomorfizmusok magjait</em></strong> jellemeztük. Először a [yp_element slug="gyuruhomomorfizmus-magjanak-szukseges-feltetele" type="link" /]ben adtunk erre egy szükséges feltételt. E tétel szerint ha egy [latex]R[/latex] gyűrű valamely [latex]I[/latex] részhalmaza egy [latex]R[/latex]-ből kiinduló gyűrűhomomorfizmus magja, akkor [latex]I[/latex] egy olyan <strong><em>speciális részgyűrű</em></strong> [latex]R[/latex]-ben, amely nem csak az [latex]I[/latex]-beli elemekkel, hanem tetszőleges [latex]R[/latex]-beli elemmel való szorzásra is zárt. Az ilyen speciális részgyűrűket a [yp_element slug="ideal" type="link" /]ban <strong><em>ideáloknak</em></strong> neveztük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most ehhez hasonlóan arra mutatunk szükséges feltételt, hogy egy [latex]G[/latex] csoport valamely részhalmaza mikor lehet valamilyen [latex]G[/latex]-ből induló <strong><em>csoporthomomorfizmus magja</em></strong>. Nem meglepő módon ezek a részhalmazok is bizonyos értelemben <strong><em>speciális részcsoportok</em></strong> lesznek [latex]G[/latex]-ben. Nézzük is meg, hogy mi az a speciális extra tulajdonság, amit még – azon felül, hogy részcsoportok – teljesítenek.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="csoporthomomorfizmus-magjanak-szukseges-feltetele" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="csoporthomomorfizmus-magjanak-szukseges-feltetele-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="csoporthomomorfizmus-magjanak-szukseges-feltetele-bizonyitas-megjegyzes" show_link_to_related="false" custom_title="Megjegyzés a bizonyításhoz" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="mellekosztalyok" type="link" /] utáni megjegyzésben már megemlítettük, hogy általában egy részcsoport szerinti bal- illetve jobboldali mellékosztályok különböző halmazok lesznek. Az iménti tétel alapján azonban ha egy részcsoport egy valamilyen csoporthomomorfizmus magja, akkor ezek a mellékosztályok szükségképpen megegyeznek. Csoportok esetén ez tehát az a keresett extra feltétel, amely szükséges ahhoz, hogy egy részcsoport egy csoporthomomorfizmus magja lehessen. Most megmutatjuk, hogy ez egyben elégséges is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Normálosztók és faktorcsoportok</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A gyűrűk esetén <strong><em>ideáloknak</em></strong> neveztük el azokat a speciális részgyűrűket, amelyek gyűrűhomomorfizmusok magjai lehetnek. Úgy tűnik, hogy az előző szakaszban egy csoport részcsoportjaira is sikerült azonosítanunk egy olyan  speciális tulajdonságot, ami – legalábbis – <strong><em>szükséges</em></strong> ahhoz, hogy ők csoporthomomorfizmusok magjai lehessenek. Most az ilyen speciális részcsoportokat nevezzük el, majd megmutatjuk, hogy ezeken kívül más részcsoport nem is lehet csoporthomomorfizmus magja (azaz az említett speciális tulajdonság egyben <strong><em>elégséges</em></strong> is).</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="normaloszto" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="normaloszto-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>E speciális tulajdonság <strong><em>elégségességének</em></strong> bizonyításához a <a href="https://youproof.hu/kriptografia/18-modularis-aritmetika-homomorfizmus-kongruencia-reszgyuru-ideal-maradekosztalygyuru#ideal-szerinti-kongruencia" target="_blank" rel="noreferrer noopener">18. részben</a> látott módon fogunk eljárni. Azaz mutatunk egy olyan konstrukciót, amely tetszőleges [latex]G[/latex] csoportból annak valamely [latex]N[/latex] normálosztójának segítségével létrehoz egy új csoportot, továbbá egy [latex]G[/latex]-ből ebbe az új csoportba mutató olyan csoporthomomorfizmust, amelynek magja épp [latex]N[/latex]. Ehhez előszöris értelmezni fogunk egy műveletet az [latex]N[/latex] normálosztó, mint speciális részcsoport szerinti baloldali (vagy a velük azonos jobboldali) mellékosztályok között.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az <strong><em>ideál szerinti maradékosztályok</em></strong> között a [yp_element slug="maradekosztalygyuruk" type="link" /]ben definiált műveletek mintájára ezt a műveletet is a <strong><em>reprezentánselemek</em></strong> segítségével kell majd elvégezni. <strong><em>Kicsit bővebben:</em></strong> két mellékosztályt úgy fogunk „összeszorozni” egymással, hogy kiválasztunk belőlük egy-egy tetszőleges elemet, amelyeket összeszorzunk az eredeti [latex]G[/latex] csoport műveletével, majd azt a mellékosztályt választjuk „végeredménynek”, amelybe az így kapott elem esik. Egy ilyen mellékosztályok közötti műveletnek nyilvánvalóan akkor van csak értelme, ha az eredményül kapott mellékosztály nem függ attól, hogy a két bemeneti mellékosztályból mely elemeket választottuk ki a művelet elvégzéséhez.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi ábrán például az&nbsp;[latex]A[/latex] és [latex]B[/latex] mellékosztályok „összeszorzása” látható, amit két különböző elempár segítségével elvégezve ugyanaz az eredmény adódik:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":6944,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_25_mellekosztalyok_kozotti_muvelet.jpg" alt="" class="wp-image-6944"/><figcaption>Mellékosztályok szorzása</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Megköveteljük tehát, hogy függetlenül attól, hogy az&nbsp;[latex]a_1\cdot b_1[/latex]​&nbsp;vagy az&nbsp;[latex]a_2\cdot b_2[/latex]​ szorzatot számítjuk-e ki, az eredménynek mindkét esetben ugyanabba a mellékosztályba kell esnie. Ilyenkor mondjuk azt, hogy a művelet <strong><em>jóldefiniált</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egy gyűrűben a maradékosztályok közötti műveletek jóldefiniáltsága a [yp_element slug="ideal-szerinti-muveletek-joldefinialtsaga" type="link" /] alapján azon múlott, hogy az a részgyűrű, amelynek a segítségével ezeket a maradékosztályokat képeztük speciálisan egy <strong><em>ideál</em></strong> volt. Most megmutatjuk, hogy ehhez hasonlóan egy csoport esetén egy [latex]N[/latex] részcsoport szerinti mellékosztályok közötti művelet akkor lesz jóldefiniált, ha [latex]N[/latex] speciálisan egy <strong><em>normálosztó</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="normaloszto-szerinti-muvelet-joldefinialtsaga" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="normaloszto-szerinti-muvelet-joldefinialtsaga-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez tehát azt jelenti, hogy a normálosztók szerinti mellékosztályok közötti művelet valóban jóldefiniált, azaz <strong><em>művelet</em></strong> a szó algebrai értelmében is (lásd a [yp_element slug="ketvaltozos-muvelet" type="link" /]t). Most e művelet segítségével a [yp_element slug="maradekosztalygyuruk" type="link" /]ben definiált <strong><em>faktorgyűrűk</em></strong> (vagy az eddig használt nevükön: <strong><em>maradékosztálygyűrűk</em></strong>) mintájára az alábbi tételben definiáljuk a <strong><em>faktorcsoport</em></strong> fogalmát. Végül e tétel közvetlen következményeként megmutatjuk, hogy tetszőleges [latex]G[/latex] csoport esetén a [latex]G[/latex]-ből kiinduló csoporthomomorfizmusok magjai pontosan a [latex]G[/latex]-beli normálosztók lesznek.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="faktorcsoport" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="faktorcsoport-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az imént bizonyított és a [yp_element slug="csoporthomomorfizmus-magjanak-szukseges-feltetele" type="link" /] következményeként mostmár egyértelműen azonosítani tudjuk egy csoport azon részhalmazait, amelyek valamilyen csoporthomomorfizmusok magjai lehetnek. Erről szól az alábbi következmény.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="normalosztok-es-csoporthomomorfizmusok" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="normalosztok-es-csoporthomomorfizmusok-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Csoportok homomorfizmustétele</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A <a href="https://youproof.hu/kriptografia/18-modularis-aritmetika-homomorfizmus-kongruencia-reszgyuru-ideal-maradekosztalygyuru#ring-homomorphism-theorem" target="_blank" rel="noreferrer noopener">18. részben</a> ezek után igazoltuk az úgynevezett <strong><em>homomorfizmustételt</em></strong> gyűrűk esetén (lásd a [yp_element slug="gyuruk-homomorfizmustetele" type="link" /]t). Ez abban volt a segítségünkre, hogy felfedjük egy [latex]R[/latex] gyűrűből egy [latex]S[/latex] gyűrűbe mutató [latex]f[/latex] gyűrűhomomorfizmus képének pontos szerkezetét. A furcsa az, hogy ezt még akkor is meg tudjuk tenni, ha csupán [latex]f[/latex] magját ismerjük, de sem magáról [latex]f[/latex]-ről, sem pedig az [latex]S[/latex] gyűrűről nincs semmi egyéb információnk. Másként fogalmazva [latex]f[/latex] magja minden információt tartalmaz ezekről.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezen az alapon tehettük meg az elmúlt részekben, hogy gyakorlatilag felváltva használtuk a [yp_element slug="modularis-osszeadas-es-szorzas" type="link" /]ban ismertetett [latex]\Z_m[/latex] gyűrűt, valamint a [yp_element slug="egesz-szamok-maradekosztalygyurui" type="link" /]ben bevezetett [latex]\Z/m\Z[/latex] faktorgyűrűt. E két gyűrűnek látszólag semmi köze egymáshoz. A [latex]\Z_m[/latex] gyűrű ugyanis az egész számok [latex]\Z[/latex] gyűrűjén értelmezett, szintén a [yp_element slug="modularis-osszeadas-es-szorzas" type="link" /]ban bevezetett [latex]\bmod_m[/latex] maradékképző függvény, mint gyűrűhomomorfizmus képe, melynek elemei ugye a [latex]0[/latex], [latex]1[/latex], [latex]2[/latex], ..., [latex]|m-1|[/latex] egész számok. Ezzel szemben a [latex]\Z/m\Z[/latex] gyűrű az [latex](m)=m\Z[/latex] ideállal képzett faktorgyűrű, amelynek az elemei maradékosztályok, azaz halmazok.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>homomorfizmustétel</em></strong> azonban nagyon szorosan összeköti e két gyűrűt, sőt nem kevesebbet állít, mint hogy a két gyűrű <strong><em>izomorf</em></strong> egymással – azaz az elemek és a műveletek jelölésétől eltekintve megegyezik. A [latex]\bmod_m[/latex] maradékképző függvény, mint gyűrűhomomorfizmus magja ugyanis épp az [latex](m)=m\Z[/latex] ideál. Így az ezzel az ideállal képzett [latex]\Z/m\Z[/latex] faktorgyűrű izomorf [latex]\bmod_m[/latex] képével, ami jelen esetben nem más, mint a [latex]\Z_m[/latex] gyűrű.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most ennek mintájára kimondjuk és bizonyítjuk a <strong><em>csoportok homomorfizmustételét</em></strong>, amely egy ugyanilyen összefüggést mond ki csoportok esetére.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="csoportok-homomorfizmustetele" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="csoportok-homomorfizmustetele-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:heading {"level":4} -->
+<h4 id="group-homomorphism-properties">Csoporthomomorfizmusok struktúratartó tulajdonságai</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Ebben a szakaszban azt fogjuk megmutatni, hogy egy [latex]f:G\to H[/latex] csoporthomomorfizmuson keresztül a [latex]H[/latex] csoport milyen fontos strukturális tulajdonságokat örököl meg a [latex]G[/latex] csoporttól. Főként ezekre a kulcsfontosságú észrevételekre fogjuk építeni a Miller-Rabin-tanúk számára vonatkozó alsó becslésünk lényeges javítását. Ezek megfogalmazásához előbb azonban ismerkedjünk meg néhány függvényekkel kapcsolatos további fogalommal.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="kep-teljes-inverz-kep" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="kep-teljes-inverz-kep-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most azt vizsgáljuk meg, hogy egy [latex]f:G\to H[/latex] csoporthomomorfizmus esetén mik lesznek a [latex]G[/latex] csoport részcsoportjainak képei.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="reszcsoport-kepe" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="reszcsoport-kepe-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt tehát már tudjuk, hogy egy [latex]f:G\to H[/latex] csoporthomomorfizmus esetén minden [latex]G[/latex]-beli részcsoportnak valamilyen [latex]H[/latex]-beli részcsoport lesz az [latex]f[/latex] szerinti képe. Most nézzük meg, hogy mi a helyzet a másik irányban, azaz mik lesznek a [latex]H[/latex]-beli részcsoportok teljes inverz képei [latex]G[/latex]-ben. Ezekről egy fokkal többet tudunk mondani.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="reszcsoport-teljes-inverz-kepe" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="reszcsoport-teljes-inverz-kepe-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az imént bizonyított tétel alapján tehát az körvonalazódik, hogy a [latex]G[/latex] csoport bizonyos strukturális tulajdonságai egy [latex]f:G\to H[/latex] csoporthomomorfizmus által átöröklődnek [latex]H[/latex]-ra. A mostani tételben ezeket összegezzük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="csoporthomomorfizmusok-strukturatarto-tulajdonsagai" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="csoporthomomorfizmusok-strukturatarto-tulajdonsagai-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az imént bizonyított tételnek a következő részben lesz kulcsfontosságú szerepe, amikoris a Miller-Rabin-tanúk számának alsó becslését fogjuk lényegesen megjavítani az előző részben szereplő [yp_element slug="miller-rabin-tanuk-szama" type="link" /]hez képest.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Csoportok direkt szorzata</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A <a href="https://youproof.hu/kriptografia/22-kinai-maradektetel-konguenciarendszerek-kis-fermat-tetel-rsa-bizonyitas-gyuruk-direkt-szorzata-rsa-dekodolas#residue-class-ring-decomposition" target="_blank" rel="noreferrer noopener">22. részben</a> a kínai maradéktétel kapcsán került elő egy <strong><em>szorzatgyűrűnek</em></strong> nevezett konstrukció, amelynek a segítségével kettő vagy több gyűrűből egy további gyűrűt lehet képezni. A [yp_element slug="gyuruk-direkt-szorzata" type="link" /]ben definiáltuk is, hogy pontosan mit értünk szorzatgyűrű alatt, és igazoltuk, hogy ez a konstrukció valóban teljesíti a [yp_element slug="gyuru-test" type="link" /]ben felsorolt gyűrűaxiómákat. Most egy ehhez nagyon hasonló konstrukciót mutatunk be a csoportok esetére is, amelynek szintén a következő részben fogjuk hasznát venni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="csoportok-direkt-szorzata" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="csoportok-direkt-szorzata-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:html -->
+<div id="generated-subgroups"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Részcsoportok generálása</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A <a href="https://youproof.hu/kriptografia/19-foidealgyuruk-generalt-ideal-foideal-szamelmelet-alaptetele-halmaz-halmazrendszer-metszet-unio#generated-ideals" target="_blank" rel="noreferrer noopener">19. részben</a> a részgyűrűkkel és ideálokkal kapcsolatban vezettük be a <strong><em>generálás</em></strong> fogalmát. Ott azt mondtuk, hogy egy gyűrű tetszőleges nemüres [latex]X[/latex] részhalmazához mindig egyértelműen létezik egy legszűkebb olyan részgyűrű (vagy ideál), amely [latex]X[/latex]-et tartalmazza. Ezt az [latex]X[/latex] által generált részgyűrűnek (vagy ideálnak) neveztük és [latex]\lang X\ang[/latex]-szel jelöltük.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ugyanilyen értelemben bármely csoport részcsoportjaira (vagy normálosztóira) is bevezethető a generálás fogalma. A gyűrűknél ennek feltétele az volt, hogy részgyűrűk (vagy ideálok) metszete is részgyűrű (vagy ideál) legyen, amelyet a [yp_element slug="idealok-metszete-ideal" type="link" /]ben igazoltunk is. Most a részcsoportokra (vagy normálosztókra) mondunk ki egy ugyanilyen tulajdonságot, előbb azonban igazolnunk kell egy segédtételt, amely lényegében a normálosztókra ad egy alternatív definíciót.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="normaloszto-feltetele" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="normaloszto-feltetele-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezután már könnyedén kimondhatjuk a [yp_element slug="idealok-metszete-ideal" type="link" /]hez hasonló állításunkat egy csoport részcsoportjainak (vagy normálosztóinak) metszetéről.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="reszcsoportok-metszete-reszcsoport" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="reszcsoportok-metszete-reszcsoport-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mostmár a generált részgyűrűhöz illetve generált ideálhoz hasonlóan (lásd a [yp_element slug="generalt-reszgyuru-es-ideal" type="link" /]t) bevezethetjük a <strong><em>generált részcsoport</em></strong> illetve <strong><em>generált normálosztó</em></strong> fogalmát.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="generalt-reszcsoport-es-normaloszto" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="generalt-reszcsoport-es-normaloszto-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ahhoz hasonlóan, ahogyan a részgyűrűk és ideálok generálása kapcsán a <a href="https://youproof.hu/kriptografia/19-foidealgyuruk-generalt-ideal-foideal-szamelmelet-alaptetele-halmaz-halmazrendszer-metszet-unio#generated-ideals" target="_blank" rel="noreferrer noopener">19. részben</a> már kifejtettük, egy adott [latex]G[/latex] csoport bármely [latex]X[/latex] részhalmaza <strong><em>egyértelműen</em></strong> meghatároz egy részcsoportot (vagy speciális esetben egy normálosztót). Ez lesz az [latex]X[/latex]-et tartalmazó <strong><em>legszűkebb</em></strong> részcsoport (vagy normálosztó). Ugyanakkor elképzelhető, hogy az [latex]\lang X\ang[/latex] részcsoportot (vagy normálosztót) lehet generálni egy [latex]X[/latex]-nél szűkebb részhalmazzal is. Amikor tehát azt mondjuk, hogy egy részcsoport „generálható [latex]X[/latex]-szel”, ez még nem jelenti azt, hogy az adott részcsoport kizárólag [latex]X[/latex]-szel generálható.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Ciklikus csoportok</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Végül ebben a szakaszban megismerkedünk a csoportok legegyszerűbb osztályával, az úgynevezett <strong><em>ciklikus csoportokkal</em></strong>, és – legalábbis izomorfia erejéig – meg is adjuk az összes, ebbe az osztályba tartozó csoportot. Az ideálok generálása kapcsán a [yp_element slug="vegesen-generalt-idealok-es-foidealok" type="link" /]ban külön jelentőséget tulajdonítottunk az olyan ideáloknak, amelyek a szóbanforgó gyűrű kevés számú – sőt a főideálok esetén mindössze egyetlen – elemével generálhatók. Ez csoportok esetén elvezet minket egy, a továbbiakban számunkra fontos fogalomhoz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="ciklikus-csoportok" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="ciklikus-csoportok-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Kézenfekvő példaként megmutatjuk, hogy az egész számok [latex]\Z[/latex] gyűrűjének additív csoportja, továbbá bármilyen nemnegatív [latex]m\geq 0[/latex] esetén a [latex]\Z/m\Z[/latex] maradékosztálygyűrű additív csoportja, azaz a [yp_element slug="gyuru-additiv-es-multiplikativ-csoportja" type="link" /] alapján [latex]\Z^+[/latex]-szal illetve [latex](\Z/n\Z)^+[/latex]-szal jelölt csoportok ciklikusak.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-es-maradekosztalygyuruk-additiv-csoportja-ciklikus" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-es-maradekosztalygyuruk-additiv-csoportja-ciklikus-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Hamarosan egy fontos csoportelméleti struktúratételt fogunk bizonyítani a ciklikus csoportokra vonatkozóan, amely azt mondja ki, hogy a fenti tételben szereplő [latex]\Z^+[/latex] és [latex](\Z/m\Z)^+[/latex] csoportokon kívül – izomorfiától eltekintve – nem is létezik más ciklikus csoport. Ehhez azonban szükségünk lesz az alábbi segédtételre.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="csoporthomomorfizmusok-ciklikussagtarto-tulajdonsaga" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="csoporthomomorfizmusok-ciklikussagtarto-tulajdonsaga-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="csoporthomomorfizmusok-ciklikussagtarto-tulajdonsaga-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Végül ismertetjük a már említett, ciklikus csoportokra vonatkozó struktúratételünket, amely tehát kizárja a [latex]\Z^+[/latex] és a [latex](\Z/m\Z)^+[/latex] additív csoportokon kívüli további ciklikus csoportok létezését.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="ciklikus-csoportok-strukturatetele" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="ciklikus-csoportok-strukturatetele-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p id="cyclic-group-examples">Láthattuk tehát, hogy a [latex]\Z/m\Z[/latex] maradékosztálygyűrűk <strong><em>additív csoportjai</em></strong> minden nemnegatív [latex]m[/latex] esetén ciklikusak. Jogosan merülhet fel a kérdés, hogy vajon mi a helyzet ugyanezen gyűrűk <strong><em>multiplikatív csoportjaival</em></strong> ebben a tekintetben. Nézzük meg például a [latex]\Z/8\Z[/latex] maradékosztálygyűrű esetét. Ennek multiplikatív csoportja a modulo [latex]8[/latex] redukált maradékosztályokból áll, amelyek az alábbiak:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](\Z/8\Z)^{\times}=\{[1]_8; [3]_8; [5]_8; [7]_8\}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezek hatványait az alábbi táblázatban foglaltuk össze, ahol az egyes sorokban e maradékosztályok hatványai szerepelnek az első néhány pozitív kitevőre, amely kitevőknek az egyes oszlopok felelnek meg:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{c|cccccc} &amp;1&amp;2&amp;3&amp;4&amp;5&amp;6 \\ \hline [1]_{8} &amp; [1]_{8} &amp; [1]_{8} &amp; [1]_{8} &amp; [1]_{8} &amp; [1]_{8} &amp; [1]_{8} \\ [3]_{8} &amp; [3]_{8} &amp; [1]_{8} &amp; [3]_{8} &amp; [1]_{8} &amp; [3]_{8} &amp; [1]_{8} \\ [5]_{8} &amp; [5]_{8} &amp; [1]_{8} &amp; [5]_{8} &amp; [1]_{8} &amp; [5]_{8} &amp; [1]_{8} \\ [7]_{8} &amp; [7]_{8} &amp; [1]_{8} &amp; [7]_{8} &amp; [1]_{8} &amp; [7]_{8} &amp; [1]_{8} \end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Látható, hogy egyetlen csoportelem sem tölti be a generátorelem szerepét, hiszen egyiknek az egész kitevős hatványai sem állítják elő az összes többi redukált maradékosztályt. A [latex](\Z/8\Z)^{\times}[/latex] <strong><em>multiplikatív csoport</em></strong> tehát <strong><em>NEM ciklikus</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p id="cyclic-group-power-table-example">Tekintsük most a [latex](\Z/10\Z)^{\times}[/latex] multiplikatív csoport elemeinek hatványait, amelyet az alábbi táblázatban foglaltunk össze:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{c|cccccc} &amp;1&amp;2&amp;3&amp;4&amp;5&amp;6 \\ \hline [1]_{10} &amp; [1]_{10} &amp; [1]_{10} &amp; [1]_{10} &amp; [1]_{10} &amp; [1]_{10} &amp; [1]_{10} \\ [3]_{10} &amp; [3]_{10} &amp; [9]_{10} &amp; [7]_{10} &amp; [1]_{10} &amp; [3]_{10} &amp; [9]_{10} \\ [7]_{10} &amp; [7]_{10} &amp; [9]_{10} &amp; [3]_{10} &amp; [1]_{10} &amp; [7]_{10} &amp; [9]_{10} \\ [9]_{10} &amp; [9]_{10} &amp; [1]_{10} &amp; [9]_{10} &amp; [1]_{10} &amp; [9]_{10} &amp; [1]_{10} \end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Látható, hogy ennek a csoportnak két generátoreleme is van, méghozzá a [latex][3]_{10}[/latex] és a [latex][7]_{10}[/latex] redukált maradékosztályok, így a [latex](\Z/10\Z)^{\times}[/latex] csoport bizony ciklikus. A maradékosztálygyűrűk multiplikatív csoportjai esetén tehát a kérdés már nem ennyire egyértelmű, ám ezzel a következő részben fogunk bővebben foglalkozni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ebben a részben tehát némileg kibővítettük csoportelméleti eszköztárunkat. A <a href="https://youproof.hu/kriptografia/18-modularis-aritmetika-homomorfizmus-kongruencia-reszgyuru-ideal-maradekosztalygyuru/" target="_blank" rel="noreferrer noopener">18. részben</a> megismert gyűrűhomomorfizmusok mintájára bevezettük a csoporthomomorfizmus fogalmát, valamint pontosan jellemeztük ezek magjait. Fontos párhuzamokat felfedve megmutattuk, hogy ezeknek is – a gyűrűhomomorfizmusok kapcsán bevezetett ideálokhoz hasonlóan – bizonyos speciális tulajdonságoknak kell megfelelniük. Így jutottunk el a normálosztó és a faktorcsoport fogalmához, majd ismertettük a csoportok homomorfizmustételét és további struktúratartó tulajdonságokat igazoltunk. Végül megismerkedtünk a generálás és az ehhez kapcsolódó ciklikus csoportok fogalmával.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ezeket a csoportelméleti ismereteket a következő részben a Miller-Rabin-prímteszt hibavalószínűség-becslésének javítására fogjuk felhasználni. A cikksorozat lezárásaként igazolni fogjuk ugyanis, hogy a redukált maradékosztályoknak nemhogy a fele, de legalább a háromnegyede Miller-Rabin-tanú, így a prímteszt még gyorsabban ad majdnem biztos eredményt.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A következő részt <a href="https://youproof.hu/kriptografia/26-polinom-primitiv-gyok-carmichael-szam-korselt-kriterium-miller-rabin-primteszt/">itt</a> találod...</em></strong></p>
+<!-- /wp:paragraph -->

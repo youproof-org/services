@@ -1,0 +1,60 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+.book-ref {
+  display: flex;
+  padding: 3rem 0 2rem;
+  gap: 1.5rem;
+  text-decoration: none;
+  justify-content: center;
+  color: inherit;
+
+  @include tablet {
+    padding: 3rem 0 0;
+  }
+}
+
+.book-ref__logo {
+  position: relative;
+  width: 5rem;
+  height: 5rem;
+  flex-shrink: 0;
+
+  @include tablet {
+    width: 7rem;
+    height: 7rem;
+  }
+}
+
+.book-ref__info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.book-ref__episode {
+  font-size: 1rem;
+  font-weight: $font-normal;
+  letter-spacing: 0.4rem;
+  text-transform: uppercase;
+  color: $gray-400;
+  margin: 0;
+
+  @include tablet {
+    letter-spacing: 0.5rem;
+    font-size: 1.25rem;
+  }
+}
+
+.book-ref__title {
+  font-size: 1.25rem;
+  font-weight: $font-normal;
+  text-transform: lowercase;
+  letter-spacing: 0.4rem;
+  margin: 0;
+
+  @include tablet {
+    letter-spacing: 0.5rem;
+    font-size: 1.5rem;
+  }
+}

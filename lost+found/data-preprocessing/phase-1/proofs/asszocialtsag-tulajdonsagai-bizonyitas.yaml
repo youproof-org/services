@@ -1,0 +1,69 @@
+type: proof
+name: asszocialtsag-tulajdonsagai-bizonyitas
+remarks: []
+references:
+  asszocialtsag-ekvivalenciarelacio:
+    target:
+      type: theorem
+      name: asszocialtsag-ekvivalenciarelacio
+  gyuruk-alapveto-tulajdonsagai:
+    target:
+      type: theorem
+      name: gyuruk-alapveto-tulajdonsagai
+  oszthatosag-tulajdonsagai:
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+content:
+  - type: narrative
+    content: |
+      ***A tétel 1. állításához*** két dolgot kell bizonyítani. Egyrészt azt, hogy bármely $d$ gyűrűelem akkor és
+      csak akkor ***osztója*** $a$-nak, ha $(-a)$-nak is. A [oszthatosag-tulajdonsagai] 8. pontja épp azt mondja
+      ki, hogy ha teljesül $d|a$, akkor teljesül $d|(-a)$ is. Ez azonban természetesen visszafelé is igaz a
+      [gyuruk-alapveto-tulajdonsagai] 2. pontja miatt, miszerint minden elem ellentettjének az ellentettje önmaga.
+      Azaz ha teljesül $d|(-a)$ akkor teljesül $d|\underbrace{(-(-a))}_{=a}$ is.
+  - type: narrative
+    content: |
+      A másik dolog, ami bizonyítani kell, hogy bármely $d$ gyűrűelem akkor és csak akkor ***többszöröse***
+      $a$-nak, ha $(-a)$-nak is. Azaz $a|d$ akkor és csak akkor teljesül, ha $(-a)|d$ is teljesül. A
+      [oszthatosag-tulajdonsagai] 8. pontja azonban azt is kimondja, hogy ha teljesül $a|d$, akkor teljesül
+      $(-a)|d$ is, így az előző gondolatmenet szinte szó szerint érvényes itt is.
+  - type: narrative
+    content: |
+      ***A 2. állítás*** az 1. állítás egyszerű következménye. Ugyanis például $b$-re a tétel alapján igaz, hogy
+      $b\sim (-b)$, így ha $a\sim b$ teljesül, akkor a tranzitivitás miatt $a\sim (-b)$ is. A másik két asszociáció
+      ugyanezen okok miatt teljesül.
+  - type: narrative
+    content: |
+      ***A 3. állítás:*** Mivel az asszociáció a [asszocialtsag-ekvivalenciarelacio] értelmében reflexív, ezért
+      nyilván teljesül a $0\sim 0$ asszociáció. Azt kell megmutatni, hogy a nullelemnek nincs más asszociáltja.
+      Tegyük fel indirekt, hogy nem ez a helyzet, azaz létezik olyan $a\eq 0$ elem a gyűrűben, amelyre teljesül a
+      $0\sim a$ asszociáció. Ez tehát azt jelenti, hogy a $0$-nak és az $a$ elemnek pontosan ugyanazok az osztóik.
+      A $0$-nak viszont a [oszthatosag-tulajdonsagai] 3. pontja alapján osztója minden gyűrűelem. Az asszociáltság
+      miatt ekkor $a$-nak is osztója az összes gyűrűelem, tehát speciálisan a $0$ is. A [oszthatosag-tulajdonsagai]
+      4. pontja alapján azonban a $0|a$ oszthatóságból következik, hogy $a=0$, ami ellentmond indirekt
+      feltételezésünknek, miszerint $a\eq 0$.
+  - type: narrative
+    content: |
+      ***A 4. állítás:*** Tegyük fel, hogy egyszerre teljesülnek az $a|b$ és a $b|a$ oszthatóságok. Ekkor ha
+      bármely $d_1$ elemre fennáll a $d_1|a$ oszthatóság (azaz $d_1$ ***osztója*** $a$-nak), akkor az oszthatóság
+      tranzitivitása miatt &ndash; mivel ugye $a|b$ teljesül &ndash; fennáll a $d_1|b$ oszthatóság is (azaz $d_1$
+      ***osztója*** $b$-nek is). Ugyanezen okok miatt ha bármely $d_2$ elem ***osztója*** $b$-nek, akkor $a$-nak
+      is. Az $a$ elemnek tehát pontosan ugyanazok az ***osztói***, mint a $b$ elemnek.
+  - type: narrative
+    content: |
+      Ugyanez a gondolatmenet a többszörösökre is végigjátszható. Ha bármely $t_1$ elemre fennáll az $a|t_1$
+      oszthatóság (azaz $t_1$ ***többszöröse*** $a$-nak), akkor az oszthatóság tranzitivitása miatt &ndash; mivel
+      ugye $b|a$ teljesül &ndash; fennáll a $b|t_1$ oszthatóság is (azaz $t_1$ ***többszöröse*** $b$-nek is).
+      Ugyanezen okok miatt ha bármely $t_2$ elem ***többszöröse*** $b$-nek, akkor $a$-nak is. Az $a$ elemnek tehát
+      ponotosan ugyanazok a ***többszörösei*** is, mint a $b$ elemnek.
+  - type: narrative
+    content: |
+      Láttuk tehát, hogy $a|b$ és $b|a$ együttes fennállása esetén $a$ és $b$ osztói is és többszörösei is
+      megegyeznek. Ez viszont épp azt jelenti, hogy $a\sim b$.
+  - type: narrative
+    content: |
+      ***Végül az 5. állítás:*** Egyrészt mivel $e$ egység, ezért ő minden elemnek osztója, vagy másként fogalmazva
+      neki minden elem a többszöröse. Ha mármost $e\sim f$, akkor $f$-nek is minden elem a többszöröse, és így ő is
+      egység. ***Visszafelé:*** Mivel $e$ és $f$ egység, ezért ők minden elemnek osztói. Speciálisan tehát
+      egymásnak is, és így a tétel ***4. állítása*** miatt valóban asszociáltak.

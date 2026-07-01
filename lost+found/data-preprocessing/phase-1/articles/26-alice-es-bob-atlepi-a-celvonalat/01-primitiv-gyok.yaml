@@ -1,0 +1,111 @@
+type: section
+name: 01-primitiv-gyok
+title: Primitív gyök
+
+references:
+  ciklikus-csoportok-strukturatetele:
+    target:
+      type: theorem
+      name: ciklikus-csoportok-strukturatetele
+
+body:
+  - type: narrative
+    content: |
+      A $\Z$ gyűrű multiplikatív csoportja tehát ciklikus, ezért most térjünk rá arra a kérdésre, hogy vajon milyen
+      $m\gt 0$ esetén lesz a $\Z/m\Z$ gyűrű multiplikatív csoportja is ciklikus? Ez rögtön elvezet minket az alábbi
+      fontos fogalomhoz.
+  - type: embed
+    target:
+      type: definition
+      name: primitiv-gyok
+  - type: embed
+    target:
+      type: remark
+      name: primitiv-gyok-megjegyzes
+  - type: narrative
+    content: |
+      Az előző rész végén megállapítottuk, hogy a $(\Z/10\Z)^{\times}$ csoport ciklikus, mivel a $[3]_{10}$ és a
+      $[7]_{10}$ maradékosztályok külön-külön generálják a teljes csoportot.
+  - type: formula
+    lead-in: |
+      A mostani szóhasználattal élve tehát a $[3]_{10}$ és a $[7]_{10}$ maradékosztályok mindketten ***primitív
+      gyökök modulo $10$***, továbbá az iménti megjegyzés alapján $\varphi(10)=4$ miatt fennáll az alábbi
+      izomorfia:
+    content: |
+      (\Z/10\Z)^{\times} \simeq (\Z/4\Z)^+
+  - type: narrative
+    content: |
+      A primitív gyökök valamelyikét felhasználva az előző rész végén megadott hatványtáblázat segítségével könnyen
+      meg is adhatunk egy $f:(\Z/10\Z)^{\times} \to (\Z/4\Z)^+$ izomorfizmust is a két csoport között. Ehhez csupán
+      a táblázatban meg kell nézni, hogy egy adott $[a]_{10}$ redukált maradékosztály a kiválasztott primitív
+      gyöknek hanyadik hatványa. Ezután az $f$ izomorfizmus az $[a]_{10}$-hez azt a modulo $4$ maradékosztályt
+      fogja hozzárendelni, amelybe az így kapott hatványkitevő esik.
+  - type: formula
+    lead-in: |
+      Például a $[3]_{10}$ primitív gyök felhasználásával az $f$ izomorfizmus az alábbi lesz:
+    content: |
+      \begin{aligned}[3]_{10} &\xmapsto{f} [1]_4 \\ [1]_{10} &\xmapsto{f} [0]_4 \\ [7]_{10} &\xmapsto{f} [3]_4 \\
+      [9]_{10} &\xmapsto{f} [2]_4\end{aligned}
+  - type: narrative
+    content: |
+      Az Olvasó is könnyen leellenőrizheti, hogy valóban minden esetben teljesül az $f$ függvény művelettartó
+      tulajdonsága a két csoport között.
+  - type: formula
+    lead-in: |
+      Például:
+    content: |
+      \begin{aligned}&f([9]_{10}\odot [7]_{10})=f([63]_{10})=f([3]_{10})=[1]_4 \\ &f([9]_{10}) \oplus f([7]_{10}) =
+      [2]_4 \oplus [3]_4=[5]_4=[1]_4\end{aligned}
+  - type: formula
+    lead-in: |
+      Természetesen ha a $[3]_{10}$ helyett a $[7]_{10}$ primitív gyököt használtuk volna, akkor pedig az alábbi
+      $g:(\Z/10\Z)^{\times} \to (\Z/4\Z)^+$ izomorfizmust kapjuk a hatványtáblázat alapján:
+    content: |
+      \begin{aligned}[7]_{10} &\xmapsto{g} [1]_4 \\ [1]_{10} &\xmapsto{g} [0]_4 \\ [3]_{10} &\xmapsto{g} [3]_4 \\
+      [9]_{10} &\xmapsto{g} [2]_4\end{aligned}
+  - type: narrative
+    content: |
+      Ez &ndash; habár különbözik az előzőtől &ndash; szintén egy izomorfizmus, mivel ebben az esetben is teljesül
+      a művelettartó tulajdonság.
+  - type: formula
+    lead-in: |
+      Például:
+    content: |
+      \begin{aligned}&g([9]_{10}\odot [7]_{10})=g([63]_{10})=g([3]_{10})=[3]_4 \\ &g([9]_{10}) \oplus g([7]_{10}) =
+      [2]_4 \oplus [1]_4=[3]_4\end{aligned}
+  - type: narrative
+    content: |
+      Ezzel szemben a $(\Z/8\Z)^{\times}$ multiplikatív csoport nem ciklikus, mivel ebben a csoportban minden elem
+      rendje $2$ &ndash; az egységelemet kivéve, amelynek rendje $1$ &ndash;, ugyanakkor magának a csoportnak a
+      rendje $\varphi(8)=4$. A mostani szóhasználattal élve tehát ***nem létezik primitív gyök modulo $8$***, és
+      így a [ciklikus-csoportok-strukturatetele] alapján nem létezik olyan $m\gt 0$ pozitív egész szám sem, amely
+      esetén a $(\Z/8\Z)^{\times}$ multiplikatív csoport izomorf lenne a $(\Z/m\Z)^+$ additív csoporttal.
+  - type: narrative
+    content: |
+      ***Érdekes kérdés tehát***, hogy pontosan mely $m\gt 0$ pozitív egész számok esetén létezik primitív gyök
+      modulo $m$, és melyek esetén nem létezik.
+  - type: formula
+    lead-in: |
+      Az alábbiakban felsoroltuk az első néhány ilyen $m$-et (egy hosszabb sorozat található itt):
+    content: |
+      1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 13, 14, 17, \ldots
+  - type: narrative
+    content: |
+      Látható, hogy ebben a sorozatban egyaránt előfordulnak prímek és összetett számok is. Egyáltalán nem
+      nyilvánvaló tehát, hogy pontosan mi a szabály. Nekünk ebben a részben csak egy speciális esetre lesz
+      szükségünk, így az általános szabályt &ndash; amely a ***számelmélet egy nevezetes tétele*** &ndash; az
+      alábbiakban bizonyítás nélkül mondjuk ki.
+  - type: embed
+    target:
+      type: theorem
+      name: primitiv-gyokokrol-szolo-tetel
+  - type: narrative
+    content: |
+      Az $m=1,2,4$ esetek nyilvánvalóak, ezt az Olvasó akár próbálgatással is leellenőrizheti. A tétel többi
+      részéhez egyrészt azt kéne bizonyítani, hogy minden páratlan prímhatvány, továbbá ezek kétszerese esetén
+      létezik primitív gyök. Másrészt azt is meg kéne mutatni, hogy ez nem csak elégséges, hanem szükséges feltétel
+      is, azaz hogy a tételben felsoroltakon kívül semmilyen más esetben nem létezik primitív gyök. Számunkra
+      elegendő lesz annyit igazolni, hogy bármilyen pozitív $p$ prím esetén létezik modulo $p$ primitív gyök. Ez
+      tehát az $m=2$ és $m=p^k$ eseteket fedi le a $k=1$ kitevőre &ndash; és annak is csak az elégségességét. A
+      tétel többi részének bizonyítására ebben a cikksorozatban nem térünk ki, cserébe viszont nem is fogjuk
+      felhasználni őket. Először azonban további fontos fogalmakkal kell megismerkednünk.

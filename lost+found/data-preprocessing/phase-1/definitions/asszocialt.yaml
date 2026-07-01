@@ -1,0 +1,14 @@
+type: definition
+name: asszocialt
+remarks:
+  - asszocialt-megjegyzes
+content:
+  - type: narrative
+    content: |
+      Egy ***kommutatív gyűrű*** valamely $a$ és $b$ elemeire akkor mondjuk, hogy ***egymás asszociáltjai***, ha
+      pontosan ugyanazok a többszöröseik és az osztóik is. Pontosabban fogalmazva, ha tetszőleges $r$ gyűrűelem
+      esetén $a|r$ ***akkor és csak akkor*** teljesül, amikor $b|r$ is teljesül, valamint $r|a$ ***akkor és csak
+      akkor*** teljesül, amikor $r|b$ is teljesül.
+  - type: narrative
+    content: |
+      Azt, hogy $a$ és $b$ egymás asszociáltjai így jelöljük: $a\sim b$.

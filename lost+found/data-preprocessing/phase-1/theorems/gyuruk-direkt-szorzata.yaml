@@ -1,0 +1,41 @@
+type: theorem
+name: gyuruk-direkt-szorzata
+proofs:
+  - gyuruk-direkt-szorzata-bizonyitas
+remarks: []
+content:
+  - type: formula
+    lead-in: |
+      Legyenek $R_1$, $R_2$, ..., $R_n$ ***tetszőleges gyűrűk***, és értelmezzünk két műveletet az $R_1\times
+      R_2\times \ldots \times R_n$ halmaz tetszőleges $(a_1;a_2;\ldots;a_n)$ és $(b_1;b_2;\ldots;b_n)$ elemei
+      között az alábbi módon:
+    content: |
+      \begin{aligned}(a_1;a_2;\ldots;a_n)\oplus (b_1;b_2;\ldots;b_n)&=(a_1+b_1;a_2+b_2;\ldots;a_n+b_n) \\
+      (a_1;a_2;\ldots;a_n)\odot (b_1;b_2;\ldots;b_n)&=(a_1\cdot b_1;a_2\cdot b_2;\ldots;a_n\cdot b_n)\end{aligned}
+  - type: narrative
+    content: |
+      Azaz a $\oplus$ illetve a $\odot$ műveleteket úgy kell elvégezni, hogy az azonos pozícióban lévő komponensek
+      összegeit illetve szorzatait képezzük a megfelelő gyűrűkben.
+  - type: narrative
+    content: |
+      Ekkor az $R_1\times R_2\times \ldots \times R_n$ halmaz ***szintén egy gyűrűt alkot*** ezzel a két
+      művelettel. Ezt a gyűrűt az $R_1$, $R_2$, ..., $R_n$ gyűrűk ***direkt szorzatának***, vagy
+      ***szorzatgyűrűjének*** nevezzük.
+  - type: narrative
+    content: |
+      A szorzatgyűrű ***nulleleme*** egy olyan rendezett $n$-es, amelynek minden komponensében a megfelelő gyűrű
+      nulleleme áll.
+  - type: formula
+    lead-in: |
+      Azaz:
+    content: |
+      0_{R_1\times R_2\times \ldots \times R_n}=(0_{R_1};0_{R_2};\ldots;0_{R_n})
+  - type: narrative
+    content: |
+      A szorzatgyűrű egy tetszőleges $(a_1;a_2;\ldots;a_n)$ elemének $\ominus (a_1;a_2;\ldots;a_n)$-nel jelölt
+      ***ellentettjét*** úgy kapjuk meg, hogy vesszük minden komponens ellentettjét a megfelelő gyűrűben.
+  - type: formula
+    lead-in: |
+      Azaz:
+    content: |
+      \ominus (a_1;a_2;\ldots;a_n)=(-a_1;-a_2;\ldots;-a_n)

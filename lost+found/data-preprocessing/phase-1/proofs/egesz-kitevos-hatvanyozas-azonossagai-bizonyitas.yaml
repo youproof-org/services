@@ -1,0 +1,290 @@
+type: proof
+name: egesz-kitevos-hatvanyozas-azonossagai-bizonyitas
+remarks: []
+references:
+  egesz-kitevos-hatvany:
+    target:
+      type: definition
+      name: egesz-kitevos-hatvany
+  gyuru-test:
+    target:
+      type: definition
+      name: gyuru-test
+  hatvanyozas-azonossagai:
+    target:
+      type: theorem
+      name: hatvanyozas-azonossagai
+  inverz-elem:
+    target:
+      type: definition
+      name: inverz-elem
+  szorzat-inverze:
+    target:
+      type: theorem
+      name: szorzat-inverze
+content:
+  - type: narrative
+    content: |
+      ***Tegyük fel először, hogy $n$ és $k$ mindketten pozitívak.***
+  - type: narrative
+    content: |
+      Ekkor az ***1., 2., és 3. tulajdonságok*** igazolása szinte szóról szóra megegyezik a
+      [hatvanyozas-azonossagai] bizonyításának gondolatmenetével. Mindössze két különbség van. Egyrészt most a
+      tétel szövegéből tudjuk, hogy a $\cdot$ művelet asszociatív, emiatt nem kell hivatkoznunk a [gyuru-test]
+      szerinti 4. gyűrűaxiómára &ndash; amit amúgy nem is tudnánk megtenni, hiszen most nem gyűrűről van szó.
+      Másrészt pedig az ***1. tulajdonság*** esetén ugyancsak a tétel szövegéből tudjuk, hogy $ab=ba$, így nem kell
+      hivatkoznunk a művelet kommutativitására sem.
+  - type: formula
+    lead-in: |
+      A ***4. tulajdonsághoz*** az inverz elem [inverz-elem]ja alapján az alábbi két dolgot kell igazolni (itt
+      $e$-vel jelöltük a $\cdot$ művelet neutrális elemét):
+    content: |
+      \begin{aligned}a^{-n}\cdot a^n&=e \\ a^n\cdot a^{-n}&=e\end{aligned}
+  - type: narrative
+    content: |
+      Egyrészt a [egesz-kitevos-hatvany] alapján $a^{-n}=(a^{-1})^n$, továbbá $a$ és $a^{-1}$ felcserélhetők,
+      hiszen a [inverz-elem] szerint $a\cdot a^{-1}=a^{-1}\cdot a=e$. Másrészt, mivel az ***1. tulajdonságot*** már
+      bizonyítottuk pozitív $n$ esetén, ezért ezt most felhasználhatjuk.
+  - type: formula
+    lead-in: |
+      Ez alapján egyrészt:
+    content: |
+      a^{-n}\cdot a^n=(a^{-1})^n\cdot a^n =(a^{-1}\cdot a)^n=e^n=e
+  - type: formula
+    lead-in: |
+      Másrészt:
+    content: |
+      a^n\cdot a^{-n}=a^n\cdot (a^{-1})^n =(a\cdot a^{-1})^n=e^n=e
+  - type: narrative
+    content: |
+      Így tehát pozitív $n$ esetén $a^n$ és $a^{-n}$ valóban egymás inverzei.
+  - type: narrative
+    content: |
+      ***Most tegyük fel, hogy a két kitevő közül legalább az egyik $0$.*** Ekkor a [egesz-kitevos-hatvany]ból
+      azonnal adódik mind a 4 tulajdonság.
+  - type: ordered-list
+    lead-in: |
+      Ha például $n=0$:
+    items:
+      - '$(a\cdot b)^0=e^0=e=e\cdot e=a^0\cdot b^0$, méghozzá függetlenül attól, hogy $a$ és $b$ felcserélhető-e
+        vagy nem.'
+      - '$(a^0)^k=e^k=e=a^0=a^{0\cdot k}$. Itt az $e^k=e$ lépésnél kihasználtuk, hogy a neutrális elem önmaga
+        inverze, így ez valóban teljesül függetlenül attól, hogy $k$ pozitív, negatív vagy esetleg $0$.'
+      - '$a^0\cdot a^k=e\cdot a^k=a^k=a^{0+k}$'
+      - 'Egyrészt mivel a $0$ ellentettje önmaga, azaz $0=-0$, ezért $a^{-0}=a^0=e$. Másrészt mivel a neutrális
+        elem önmaga inverze, ezért $(a^0)^{-1}=e^{-1}=e$. Vagyis valóban $a^{-0}=(a^0)^{-1}$.'
+  - type: narrative
+    content: |
+      Ha pedig $k=0$, akkor a ***2. és 3. tulajdonságok*** nyilván teljesülnek, hiszen egyrészt
+      $(a^n)^0=e=a^0=a^{n\cdot 0}$, másrészt $a^n\cdot a^0=a^n\cdot e=a^n=a^{n+0}$. Az ***1. és 4.
+      tulajdonságokkal*** ebben az esetben nem kell foglalkoznunk, mivel azokban nem szerepel a $k$ kitevő.
+  - type: narrative
+    content: |
+      Már csak azok az esetek maradtak, amikor a két kitevő közül legalább az egyik negatív. Legyen például $n$
+      negatív. Az átláthatóság érdekében vezessük be az $m=-n$ jelölést. Ekkor $m$ pozitív, és ezt a továbbiakban
+      kihasználjuk.
+  - type: narrative
+    content: |
+      ***Most igazoljuk az 1. tulajdonságot negatív $n$-re.*** A bevezetett jelölésünket alkalmazhatjuk:
+      $(ab)^n=(ab)^{-m}$. Mivel ugye $m$ pozitív, ezért felhasználhatjuk a ***4. tulajdonságot***, hiszen azt
+      pozitív kitevőkre már igazoltuk.
+  - type: formula
+    lead-in: |
+      Ez alapján tehát:
+    content: |
+      (ab)^{-m}=((ab)^m)^{-1}=\ldots
+  - type: formula
+    lead-in: |
+      A külső zárójelen belüli kifejezésre ugyancsak $m$ pozitivitása miatt alkalmazható az ***1. tulajdonság***,
+      hiszen azt szintén igazoltuk pozitív kitevőkre:
+    content: |
+      \ldots=(a^mb^m)^{-1}=\ldots
+  - type: narrative
+    content: |
+      Mivel a tétel szövege alapján most azt feltételezzük, hogy $a$ és $b$ felcserélhetők, ezért ebből következik,
+      hogy a zárójelen belüli $a^m$ és $b^m$ szintén felcserélhetők.
+  - type: formula
+    lead-in: |
+      Ezek szorzata ugyanis az alábbi $2m$ tényezős szorzat:
+    content: |
+      \underbrace{a\cdot a\cdot \ldots \cdot a}_{\text{m darab}} \cdot \underbrace{b\cdot b\cdot \ldots \cdot
+      b}_{\text{m darab}}
+  - type: narrative
+    content: |
+      Itt egymás mellett álló $a$ és $b$ tényezők cserélgetésével nyilván elérhető, hogy minden $b$ tényező a
+      baloldalra kerüljön.
+  - type: formula
+    lead-in: |
+      Mivel tehát $a^m$ és $b^m$ felcserélhetők, ezért a [szorzat-inverze] alapján az $(a^mb^m)^{-1}$ kifejezés
+      tovább alakítható:
+    content: |
+      \ldots=(a^m)^{-1}\cdot (b^m)^{-1}=\ldots
+  - type: formula
+    lead-in: |
+      Most viszont ismét lehet alkalmazni a ***4. tulajdonságot***, hiszen $m$ pozitív:
+    content: |
+      \ldots=a^{-m}\cdot b^{-m}
+  - type: narrative
+    content: |
+      Összefoglalva azt kaptuk tehát, hogy $(ab)^{-m}=a^{-m}b^{-m}$. Visszafelé alkalmazva az $m=-n$ jelölést, ez
+      végülis az ***1. tulajdonságnak*** felel meg.
+  - type: narrative
+    content: |
+      ***Most a 4. tulajdonságot igazoljuk negatív $n$ esetén.*** Maradjunk továbbra is az $m=-n$ jelölésnél.
+  - type: formula
+    lead-in: |
+      Mivel $m$ pozitív, és a ***4. tulajdonságot*** pozitív kitevőkre már igazoltuk, ezért igaz az alábbi:
+    content: |
+      a^{-m}=(a^m)^{-1}
+  - type: narrative
+    content: |
+      Visszafelé alkalmazva az $m=-n$ jelölést ez tehát azt jelenti, hogy, hogy $a^n$ és $a^{-n}$ negatív $n$
+      esetén is egymás inverzei. Tehát a ***4. tulajdonság*** szerinti $a^{-n}=(a^n)^{-1}$ összefüggés valóban
+      teljesül negatív $n$ esetén is.
+  - type: narrative
+    content: |
+      ***Most igazoljuk a 2. tulajdonságot negatív $n$-re és pozitív $k$-ra.*** Maradjunk továbbra is az $m=-n$
+      jelölésnél, azaz $(a^n)^k=(a^{-m})^k$.
+  - type: formula
+    lead-in: |
+      Ekkor mivel $m$ pozitív, ezért a [egesz-kitevos-hatvany] alapján:
+    content: |
+      (a^{-m})^k=((a^{-1})^{m})^k=\ldots
+  - type: narrative
+    content: |
+      Ha most $k$ pozitív, akkor alkalmazhatjuk a pozitív kitevőkre már bizonyított ***2. tulajdonságot***.
+  - type: formula
+    lead-in: |
+      Eszerint tehát:
+    content: |
+      \ldots=(a^{-1})^{mk}=\ldots
+  - type: formula
+    lead-in: |
+      Mivel pedig $m$ is és $k$ is pozitív, ezért $mk$ is az, vagyis ismét a [egesz-kitevos-hatvany] alapján:
+    content: |
+      \ldots=a^{-mk}
+  - type: narrative
+    content: |
+      Visszafelé alkalmazva az $m=-n$ jelölést, ez végülis a ***2. tulajdonságnak*** felel meg.
+  - type: narrative
+    content: |
+      ***Most igazoljuk a 2. tulajdonságot negatív $n$-re és szintén negatív $k$-ra.*** Maradjunk továbbra is az
+      $m=-n$ jelölésnél, de emellé vezessük be az $l=-k$ jelölést is, azaz $(a^n)^k=(a^{-m})^{-l}$.
+  - type: formula
+    lead-in: |
+      Ekkor mivel $m$ pozitív, ezért a [egesz-kitevos-hatvany] alapján:
+    content: |
+      (a^{-m})^{-l}=((a^{-1})^{m})^{-l}=\ldots
+  - type: formula
+    lead-in: |
+      Alkalmazhatjuk a már igazolt ***4. tulajdonságot***:
+    content: |
+      \ldots=(((a^{-1})^{m})^l)^{-1}=\ldots
+  - type: formula
+    lead-in: |
+      Mivel $m$ is és $l$ is pozitív, ezért alkalmazhatjuk a pozitív kitevőkre már igazolt ***2. tulajdonságot***:
+    content: |
+      \ldots=((a^{-1})^{ml})^{-1}=\ldots
+  - type: formula
+    lead-in: |
+      Itt ugye $ml$ pozitív, ezért ismét a [egesz-kitevos-hatvany] alapján:
+    content: |
+      \ldots=(a^{-ml})^{-1}=\ldots
+  - type: formula
+    lead-in: |
+      Végül ismét a már igazolt ***4. tulajdonság*** miatt:
+    content: |
+      \ldots=((a^{ml})^{-1})^{-1}=a^{ml}
+  - type: narrative
+    content: |
+      Visszafelé alkalmazva az $m=-n$ és az $l=-k$ jelöléseket, ez végülis a ***2. tulajdonságnak*** felel meg.
+  - type: narrative
+    content: |
+      ***Végül igazolni kell a 2. tulajdonságot pozitív $n$-re és negatív $k$-ra.*** Ismét vezessük be az $l=-k$
+      jelölést, azaz $(a^n)^k=(a^n)^{-l}$.
+  - type: formula
+    lead-in: |
+      Ekkor a már igazolt ***4. tulajdonság*** miatt:
+    content: |
+      (a^n)^{-l}=((a^n)^l)^{-1}=\ldots
+  - type: formula
+    lead-in: |
+      Mivel $n$ és $l$ pozitívak, és a ***2. tulajdonságot*** már igazoltuk pozitív kitevőkre, ezért az ebben az
+      esetben alkalmazható:
+    content: |
+      \ldots=(a^{nl})^{-1}=\ldots
+  - type: formula
+    lead-in: |
+      Ez viszont újból a ***4. tulajdonság*** miatt az alábbival egyezik meg:
+    content: |
+      \ldots=a^{-nl}
+  - type: narrative
+    content: |
+      Visszafelé alkalmazva az $l=-k$ jelölést, ez végülis a ***2. tulajdonságnak*** felel meg.
+  - type: narrative
+    content: |
+      ***Már csak a 3. tulajdonságot kell bizonyítani azokban az esetekben, amikor $n$ és $k$ közül legalább az
+      egyik negatív.*** Mivel itt $n$ és $k$ szerepe teljesen szimmetrikus, ezért csak azt az esetet fogjuk
+      igazolni, amikor ***$n$ negatív, $k$ pedig bármi más***. Fordított esetben &ndash; tehát amikor $k$ negatív,
+      $n$ pedig bármi más &ndash; ugyanezt a gondolatmenetet kellene végigjátszani $k$ és $n$ szerepének
+      felcserélésével. A $k=0$ esettől most nyugodtan eltekinthetünk, hiszen azt már igazoltuk.
+  - type: narrative
+    content: |
+      Vezessük be a jól megszokott $m=-n$ jelölést, azaz $a^na^k=a^{-m}a^k$.
+  - type: formula
+    lead-in: |
+      Ekkor ugye $m$ pozitív lesz, tehát a [egesz-kitevos-hatvany] szerint az alábbi szorzatot kaptuk:
+    content: |
+      a^{-m}\cdot a^k=(a^{-1})^ma^k=\underbrace{a^{-1}a^{-1}\ldots a^{-1}}_{\text{m darab}}\cdot a^k
+  - type: narrative
+    content: |
+      ***Ha $k$ negatív***, akkor vezessük be ismét az $l=-k$ jelölést is. Ekkor a fenti szorzatban további $l$
+      darab, tehát összesen $m+l$ darab $a^{-1}$ tényező fog szerepelni.
+  - type: formula
+    lead-in: |
+      Mivel $m+l$ pozitív, ezért:
+    content: |
+      a^{-m}a^{-l}=(a^{-1})^{m+l}=a^{-(m+l)}
+  - type: narrative
+    content: |
+      Visszafelé alkalmazva az $m=-n$ és az $l=-k$ jelöléseket, a kitevőben végülis valóban $n+k$ szerepel, ahogyan
+      a ***3. tulajdonság*** állítja.
+  - type: formula
+    lead-in: |
+      ***Ha $k$ pozitív***, akkor a fenti szorzatban $m$ darab $a^{-1}$ tényező és $k$ darab $a$ tényező szerepel,
+      azaz:
+    content: |
+      a^{-m}\cdot a^k=\underbrace{a^{-1}a^{-1}\ldots a^{-1}}_{\text{m darab}}\cdot \underbrace{aa\ldots a}_{\text{k
+      darab}}
+  - type: narrative
+    content: |
+      Az egymás mellett álló $a$ és $a^{-1}$ tényezők ugye szép sorban kiütik egymást, mivel egymás inverzei.
+      Kérdés tehát, hogy melyikből van több. ***Ha $m\leq k$***, akkor legalább annyi $a$ tényező van, mint
+      $a^{-1}$ tényező, így ebben az esetben az $a$ tényezőkből fog megmaradni $k-m$ darab.
+  - type: formula
+    lead-in: |
+      Azaz ebben az esetben:
+    content: |
+      a^{-m}\cdot a^k=a^{k-m}
+  - type: narrative
+    content: |
+      Visszafelé alkalmazva az $m=-n$ jelölést, a kitevőben végülis valóban $n+k$ szerepel, ahogyan a ***3.
+      tulajdonság*** állítja.
+  - type: narrative
+    content: |
+      ***Ha viszont $m\gt k$***, akkor több $a^{-1}$ tényező van, mint $a$, ezért ebben az esetben az $a^{-1}$
+      tényezőkből fog megmaradni $m-k$ darab.
+  - type: formula
+    lead-in: |
+      Azaz:
+    content: |
+      a^{-m}\cdot a^k=(a^{-1})^{m-k}=\ldots
+  - type: formula
+    lead-in: |
+      Az $m-k$ kitevő $m\gt k$ miatt biztosan pozitív, ezért a [egesz-kitevos-hatvany] alapján ezt kapjuk:
+    content: |
+      \ldots=a^{-(m-k)}=a^{k-m}
+  - type: narrative
+    content: |
+      Visszafelé alkalmazva az $m=-n$ jelölést, a kitevőben ebben az esetben is $n+k$ szerepel, ahogyan a ***3.
+      tulajdonság*** állítja.

@@ -1,0 +1,19 @@
+type: definition
+name: egesz-szamok-kivonasa
+remarks: []
+content:
+  - type: formula
+    lead-in: |
+      A $\Z$ halmazon az alábbi képlet szerint értelmezett $\ominus$-szal jelölt kétváltozós műveletet
+      ***kivonásnak*** nevezzük:
+    content: |
+      [(a;b)] \ominus [(c;d)] = [(a;b)] \oplus [(d;c)]
+  - type: formula
+    lead-in: |
+      Vagy a hagyományos jelölésekkel:
+    content: |
+      n - k = n + (-k)
+  - type: narrative
+    content: |
+      Ez tehát azt jelenti, hogy egy $n$ egész számból egy $k$ egész számot ***úgy vonunk ki, hogy hozzáadjuk az
+      ellentettjét***.

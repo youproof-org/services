@@ -1,0 +1,118 @@
+type: section
+name: 06-osszeadas-a-latex-z-latex-halmazon
+title: 'Összeadás a [latex]\Z[/latex] halmazon'
+
+references:
+  ekvivalencia-osztalyok-reprezentansa:
+    target:
+      type: theorem
+      name: ekvivalencia-osztalyok-reprezentansa
+  peano-osszeadas:
+    target:
+      type: definition
+      name: peano-osszeadas
+
+body:
+  - type: narrative
+    content: |
+      Értelmezzük hát az "összeadás" műveletét az egész számok $\Z$ halmazán, amelyet ugye egyelőre a $\oplus$
+      műveleti jellel jelölünk. Ezzel szeretnénk ugyanis hangsúlyozni, hogy ez ***látszólag teljesen független***
+      attól a $+$ szimbólummal jelölt művelettől, amelyet a [peano-osszeadas]ban Peano-összeadásnak neveztünk. A
+      Peano-összeadás ugyanis &ndash; a mostani jelölésekkel &ndash; az $\N_1$ halmazon volt értelmezve, amelynek
+      az elemei ugye a természetes számok. Ezzel szemben a $\oplus$ művelet az imént megkonstruált $\Z$ halmazon
+      van értelmezve, amelynek az elemei ugye a vagyoni helyzeteket jelölő természetes számpárok
+      ekvivalencia-osztályai. Látni fogjuk azonban, hogy e két művelet  között az előző szakaszban megadott $f:\N_1
+      \to \Z$ beágyazófüggvény fog szoros kapcsolatot teremteni.
+  - type: narrative
+    content: |
+      Na de mégis hogyan lehet ekvivalencia-osztályok közötti "műveletről" beszélni? Mi értelme van ennek? Ennek
+      értelmezéséhez megint a vagyoni helyzetekről szóló analógiához nyúlunk. Tegyük fel, hogy Alice vagyonát egy
+      $(a;b)$ számpár reprezentálja. Ez ugye azt jelenti, hogy Alice betéti számláján $a$, hitelszámláján pedig $b$
+      darab aranytallér van nyilvántartva. Hasonlóan tegyük fel, hogy Bob vagyonát egy $(c;d)$ számpár
+      reprezentálja ugyanilyen értelmezéssel. Teljesen értelmes feltenni egy olyan kérdést, hogy ***mennyi lesz az
+      ő közös vagyonuk***, ha összeházasodnak?
+  - type: narrative
+    content: |
+      Kézenfekvő, ha azt mondjuk, hogy ebben az esetben ezt a közös vagyont &ndash; Alice és Bob vagyonának
+      ***"összegét"*** &ndash; az $(a+c;b+d)$ számpár reprezentálja. Ezzel tehát logikusan azt fejezzük ki, hogy a
+      betéti számlák egyenlegén kívül a hitelszámlák egyenlegeit is össze kell adni. Vegyük észre, hogy ilyen módon
+      a $\oplus$ művelet definícióját visszavezethetjük egy már definiált fogalomra, nevezetesen a
+      Peano-összeadásra ([peano-osszeadas]).
+  - type: narrative
+    content: |
+      Fontos azonban megjegyezni, hogy nekünk valójában vagyoni helyzeteknek megfelelő ekvivalencia-osztályokat
+      kellene tudni "összeadni". Márpedig az imént csak egy-egy természetes számpárt adtunk össze. Azonban a
+      [ekvivalencia-osztalyok-reprezentansa] értelmében tetszőleges számpárról egyértelműen azonosítani lehet, hogy
+      ő melyik ekvivalencia-osztályhoz tartozik. Ha tehát adva van két ekvivalencia-osztály, amelyeket szeretnénk
+      "összeadni", akkor az a kérdés, hogy vajon mindegy-e, hogy e két ekvivalencia-osztálynak mely elemein
+      végezzük el a "számlánkénti" összeadást?
+  - type: narrative
+    content: |
+      Nézzük például a $[(3;0)]$ és a $[(0;5)]$ ekvivalencia-osztályok "összegét".
+  - type: formula
+    lead-in: |
+      Ennek a két osztálynak az alábbiakban felsoroltuk néhány elemét az egyenlőségjelek utáni kapcsoszárójelek
+      között:
+    content: |
+      \begin{aligned} [(3;0)]&=\{ (3;0), (4;1), (5;2), (6;3), \dots \} \\ [(0;5)]&=\{ (0;5), (1;6), (2;7), (3;8),
+      \dots \} \end{aligned}
+  - type: narrative
+    content: |
+      E két osztálynak egy-egy eleme a $(3;0)$ és a $(0;5)$ számpár. Ezeken elvégezve a "számlánkénti" összeadást a
+      $(3;5)$ számpárt kapjuk, amely a $[(0;2)]$ ekvivalencia-osztályba tartozik.
+  - type: formula
+    lead-in: |
+      Ennek az "eredmény-osztálynak" az elemeit soroltuk fel alább:
+    content: |
+      [(0;2)]=\{ (0;2), (1;3), (2;4), (3;5), (4;6), (5;7), \dots \}
+  - type: narrative
+    content: |
+      Kérdés, hogy mondhatjuk-e nyugodt szívvel azt, hogy $[(3;0)]\oplus [(0;5)]=[(0;2)]$? Nem lehetséges-e, hogy
+      ha a $[(3;0)]$ és a $[(0;5)]$ osztályok valamely más elemeit összegezzük, akkor eredményül egy olyan számpárt
+      kapunk, amely nem a $[(0;2)]$ osztályba tartozik? Elvégre minden osztályban végtelen sok számpár van, miért
+      ne választhatnánk épp ilyen szerencsétlenül?
+  - type: narrative
+    content: |
+      A most következő tétel azt állítja, hogy ***ilyen nem fordulhat elő***.
+  - type: embed
+    target:
+      type: theorem
+      name: egesz-szamok-osszeadasa-joldefinialt
+  - type: embed
+    target:
+      type: proof
+      name: egesz-szamok-osszeadasa-joldefinialt-bizonyitas
+  - type: narrative
+    content: |
+      Eszerint tehát mindegy, hogy a két ekvivalencia-osztály mely elemein végezzük el a "számlánkénti" összegzést.
+      Az eredmény minden esetben ugyanabból az ekvivalencia-osztályból fog kikerülni. Azt mondhatjuk tehát, hogy a
+      $\Z$ halmaz elemei között az alábbi definícióval értelmezett $\oplus$ művelet ***jóldefiniált***.
+  - type: embed
+    target:
+      type: definition
+      name: egesz-szamok-osszeadasa
+  - type: narrative
+    content: |
+      Most vizsgáljuk meg, hogy az előző szakaszban definiált $f$ beágyazófüggvény valóban tartja-e a $+$
+      műveletet.
+  - type: embed
+    target:
+      type: theorem
+      name: termeszetes-szamok-beagyazasa-osszegtarto
+  - type: embed
+    target:
+      type: proof
+      name: termeszetes-szamok-beagyazasa-osszegtarto-bizonyitas
+  - type: narrative
+    content: |
+      Végezetül vizsgáljuk meg, hogy vajon az egész számok $\Z$ halmazán értelmezett $\oplus$ művelet is
+      teljesíti-e az általános iskolában már megszokott tulajdonságokat a természetes számok között értelmezett
+      Peano-összeadáshoz hasonlóan.
+  - type: embed
+    target:
+      type: theorem
+      name: egesz-szamok-osszeadasa-kommutativ-es-asszociativ
+  - type: embed
+    target:
+      type: proof
+      name: egesz-szamok-osszeadasa-kommutativ-es-asszociativ-bizonyitas

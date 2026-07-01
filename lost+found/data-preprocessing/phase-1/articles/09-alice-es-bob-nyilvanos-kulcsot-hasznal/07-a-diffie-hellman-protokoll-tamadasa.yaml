@@ -1,0 +1,68 @@
+type: section
+name: 07-a-diffie-hellman-protokoll-tamadasa
+title: A Diffie-Hellman protokoll támadása
+
+body:
+  - type: narrative
+    content: |
+      Jelenleg ugyan &ndash; mint azt fentebb már említettük &ndash; még nincs bizonyítva a diszkrét logaritmus
+      problémájának NP-teljessége, de tegyük fel, hogy ez valóban egy reménytelen feladat. Ezután jogosan merül fel
+      a kérdés, hogy vajon milyen módszerek állnak egy passzív támadó &ndash; például Eve &ndash; rendelkezésére
+      ahhoz, hogy sikeres támadást hajtson végre a protokoll ellen, és megszerezze Alice és Bob kulcsát.
+  - type: narrative
+    content: |
+      A protokoll egy gyenge pontja lehet az, amikor Alice és Bob megállapodnak a használt egyirányú függvény
+      paramétereiben.
+  - type: formula
+    lead-in: |
+      Egy Diffie-Hellman protokollban használt függvény általános alakja így néz ki:
+    content: |
+      f(n)=g^n \pmod{N}
+  - type: narrative
+    content: |
+      Itt a $g$ paramétert ***generátorelemnek***, az $N$ paramétert pedig ***modulusnak*** nevezzük. A fentebb
+      ismertetett egyszerű példában Alice és Bob a $g=2$ generátorelemben és az $N=11$ modulusban egyeztek meg. Ám
+      egy valódi kulcscsere esetén ennél jóval nagyobb számokat használunk. Egy tipikus $N$ modulus például
+      nagyságrendileg 200 számjegyből áll.
+  - type: narrative
+    content: |
+      Előfordulhat, hogy bizonyos szerencsétlenül megválasztott $g$ generátorelem és $N$ modulus esetén Eve-nek
+      lényegesen könnyebb dolga van egy ilyen függvény megfordításával még akkor is, ha nagy számokat használnak.
+      Azonban eléggé jól ismerjük azokat a számelméleti kritériumokat, amelyeket e paramétereknek teljesíteniük
+      kell a megfelelő biztonság érdekében. Ezekről a későbbiekben még bőven lesz szó, most azonban nyugodtan
+      feltételezhetjük, hogy Alice és Bob ilyen értelemben megfelelő körültekintéssel választja meg a használt
+      paramétereket.
+  - type: narrative
+    content: |
+      Ilyen feltételezések mellett kimondhatjuk, hogy a Diffie-Hellman protokoll egy passzív támadó &ndash; például
+      Eve &ndash; számára gyakorlatilag feltörhetetlen. Sajnos azonban egy aktív támadó &ndash; például a csaló
+      Mallory &ndash; könnyedén ki tud csalni titkos információkat Alice-tól és Bob-tól egy úgynevezett
+      ***közbeékelődéses támadás (man-in-the-middle attack)*** segítségével.
+  - type: narrative
+    content: |
+      Mallory ezt úgy tudja elérni, hogy Alice és Bob közé ékelődik a kommunikációs folyamat során, és elhiteti
+      velük, hogy egymással folytatják le a kulcscsere folyamatot. Valójában azonban Alice és Bob is Mallory-vel
+      kommunikál közvetlenül, nem pedig egymással.
+  - type: figure
+    lead-in: |
+      Ennek folyamatát az alábbi ábra mutatja:
+    src: 10-diffie-hellman-tamadas.jpg
+    alt: A Diffie-Hellmann protokoll támadása
+    caption: A Diffie-Hellmann protokoll támadása
+  - type: narrative
+    content: |
+      Itt Alice kulcscserét kezdeményez Bob-bal, ez a kezdeményezés azonban nem jut el Bob-hoz, mivel Mallory
+      eltéríti az üzenetet. Bob helyett Mallory folytatja le a kulcscserét Alice-szal Bob-nak kiadva magát. Így
+      Alice azt hiszi, hogy Bob-bal állapodott meg a $k_1 = 9$ közös kulcsban. Ezzel párhuzamosan Mallory Bob-bal
+      is kezdeményez egy kulcscserét Alice-nak kiadva magát. Így Bob azt hiszi, hogy Alice-szal állapodott meg a
+      $k_2 = 5$ közös kulcsban.
+  - type: narrative
+    content: |
+      A kulcscserét követően tehát Alice és Bob is azt hiszi, hogy egymással beszélgetnek közvetlenül. Ám valójában
+      Mallory-n keresztül kommunikálnak, aki így gond nélkül birtokába jut a bizalmas információknak, ráadásul
+      teljesen észrevétlenül.
+  - type: narrative
+    content: |
+      Ez igen pofátlan dolog, nemde? A kérdés tehát az, hogy Alice hogyan tudja igazolni Bob-nak, hogy ő valóban
+      Alice, és viszont? Erre a következő részben fogjuk megadni a választ, amelyhez most felvázoljuk egy olyan
+      rejtjelező rendszer alapjait, amely ezt lehetővé teszi.

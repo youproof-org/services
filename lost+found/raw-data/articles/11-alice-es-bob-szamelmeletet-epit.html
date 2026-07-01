@@ -1,0 +1,351 @@
+<!-- wp:paragraph -->
+<p><strong><em>Az </em></strong><a rel="noreferrer noopener" aria-label="előző részben (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/10-publikus-privat-kulcs-digitalis-alairas-kriptografiai-hash-fuggveny-szuletesnap-paradoxon-tanusitvany/" target="_blank"><strong><em>előző részben</em></strong></a><strong><em> megismerkedtünk a digitális aláírások és a kriptográfiai hash függvények fogalmával. Láttuk, hogy hogyan építhetünk fel e kriptográfiai primitívekből egy olyan rendszert, amelyben a résztvevők az úgynevezett tanúsítványok segítségével ellenőrizni tudják egymás hitelességét. Az ilyen rendszereket összefoglaló néven publikus kulcs infrastruktúrának neveztük. Megemlítettük, hogy az 1977-ben publikált RSA-algoritmus esetén a publikus és titkos kulcsok szerepe felcserélhető, amely így alkalmas rejtjelezésen kívül digitális aláírások előállítására is. Az RSA működésének megértéséhez azonban tisztában kell lennünk a mögötte meghúzódó számelméleti összefüggésekkel, és úgy általában a matematika alapvető működésével. De vajon hogyan építhető fel egy matematikai elmélet gyakorlatilag a semmiből? Mit nevezünk axiómáknak, amelyek egy ilyen elmélet kiindulópontjai? Mi az a 4 axióma, amelyből következik minden, amit az egész számokról tudunk – és az is, amit még nem tudunk? Hogyan lesz egy állításból tétel? Ebben a részben erről lesz szó...</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"dropCap":true} -->
+<p class="has-drop-cap">Az emberek többsége minden bizonnyal nincs elragadtatva a matematikától. Ennek főként az lehet az oka, hogy sok esetben olyan absztrakt dolgokkal foglalkozik, amelyeket nehéz a valósághoz kötni. Rejtvényeket fejteni viszont talán sokkal többen szeretnek. Ez azért jó hír, mivel a modern kriptográfia a matematikának épp egy olyan ágára – nevezetesen a <strong><em>számelméletre</em></strong> – épül, amely tele van a rejtvényekhez hasonló érdekes problémákkal. Ezek a problémák bizonyos esetekben a laikusok számára is könnyen érthetők. Megoldásuk azonban még a legnagyobb elméknek is komoly, sőt sokszor szinte megoldhatatlan kihívást jelentett – és jelent mind a mai napig. Talán épp ez adta a vonzerőt ahhoz, hogy az évszázadok során a matematikusokon kívül rengeteg laikus is szívesen foglalkozzon ezzel a területtel pusztán kedvtelésből.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez ahhoz hasonló, mint amikor valaki szeret <a rel="noreferrer noopener" aria-label="Sudoku (új fülön nyitja meg)" href="https://hu.wikipedia.org/wiki/Sz%C3%BAdoku" target="_blank">Sudoku</a> rejtvényeket megoldani. Az ilyen rejtvényeknek önmagukban a szórakoztatáson kívül nem sok hasznuk van. Azonban általános tulajdonságaik vizsgálata elvezethet bennünket igen mély összefüggésekhez, amelyeknek a kutatók szerint lehetnek különböző ipari és tudományos alkalmazásuk is. Hasonló dolog történt a számelmélettel is, amely egészen a közelmúltig a matematikának egy haszontalan ága volt több ezer éven keresztül. A 20. század második felére azonban a számítógépek és az Internet megjelenésével a kódelmélet és azon belül is a kriptográfia fejlődése miatt egy csapásra alapvetően fontossá vált.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4 id="axioms">Mik azok az axiómák?</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Minden logikai játéknak vannak bizonyos <strong><em>alapfogalmai</em></strong> és az ezekre épülő <strong><em>játékszabályai</em></strong>, amelyeket meg kell ismernünk ahhoz, hogy játszani tudjunk. Ezeket az alapfogalmakat és játékszabályokat <strong><em>nincs értelme kétségbe vonnunk</em></strong>, mivel azokat a játék megalkotója hozta létre – mondhatni önkényesen – abból a célból, hogy a játék épp olyan legyen, amilyen. Például kérdezhetnénk, hogy a sakkban a vezér miért nem tud lóugrásban lépni, csak vízszintesen, függőlegesen és átlósan? Erre nagyon egyszerű a válasz: <strong><em>azért mert ez a szabály</em></strong>. Lehetne persze az is a szabály, hogy a vezér lóugrásban is tudjon lépni. Minden bizonnyal az is egy nagyszerű játék lenne, de konkrétan a sakkban ez a lépés meg van tiltva.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A matematika összes területe – így például a számelmélet is – ugyanígy épül fel azzal a különbséggel, hogy itt az alapfogalmakat és a játékszabályokat <strong><em>definícióknak</em></strong> és/vagy <strong><em>axiómáknak</em></strong> nevezik, mert így tudományosabban hangzik. Egy matematikai elmélet axiómáiban ugyanúgy nincs értelme kételkednünk, mint a sakk játékszabályaiban. És nem azért nincs értelme, mert ezek abszolút igazságok lennének, hanem azért, mert ha valamelyik axiómát nem tekintenénk igaznak, akkor az vagy ellentmondáshoz vezetne, vagy pedig egy teljesen más elméletet kapnánk teljesen más logikai következményekkel. Lehet-e egy ilyen módosított elmélet ugyanúgy hasznos, mint az eredeti? „Mi az, hogy! Nagyon is!” – hogy egy klasszikust idézzek.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Erre az egyik legszemléletesebb példát a geometriában találhatjuk. A geometria alapfogalmai közül nézzük a következő hármat: <strong><em>pont, egyenes, egyenesek metszése</em></strong>. Az, hogy ezek lényegét köznyelven hogyan lehet megfogalmazni alapjában véve csak azért fontos, hogy valahogy el tudjuk őket képzelni. Biztos vagyok benne, hogy minden olvasónak él is valamilyen kép a fejében ezekről a fogalmakról. De mégis mi alapján képzelünk el egy egyenest vagy egy pontot épp úgy, ahogy? Habár a megszokás miatt sokan nincsenek ennek tudatában, de ezeket a képeket e geometriai fogalmak alaptulajdonságait leíró <strong><em>axiómák</em></strong>, vagy ha úgy tetszik, a <strong><em>geometria játékszabályai</em></strong> okozzák.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az egyik ilyen axióma a geometriában az úgynevezett <strong><em>párhuzamossági axióma</em></strong>, amely a következőt mondja ki. Ha van egy [latex]e[/latex] egyenes és egy ezen kívüli [latex]P[/latex] pont, akkor pontosan egy olyan [latex]f[/latex] egyenes létezik, amely átmegy a [latex]P[/latex] ponton, de nem metszi az [latex]e[/latex] egyenest. És valóban: egy papírlapon kipróbálva a fenti axiómát tényleg pontosan egyféleképpen tudunk egy adott egyenessel párhuzamos másik egyenest rajzolni, amely egy adott ponton áthalad:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":2600} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_11_parhuzamos_rajzolasa.jpg" alt="Párhuzamos rajzolása" class="wp-image-2600"/><figcaption>Párhuzamos rajzolása</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>De vajon miért van ez így? Hogyan lehetne erre matematikai bizonyítást adni? A meglepő válasz a következő: <strong><em>ezt nem kell bizonyítani, ez ugyanis egy axióma</em></strong>. A sakkos példa analógiájával élve azért lehet egy adott egyeneshez egy adott ponton keresztül pontosan 1 (azaz se nem több, se nem kevesebb) párhuzamos másik egyenest rajzolni, <strong><em>mert egész egyszerűen ez a szabály</em></strong>. Lehetne persze az is a szabály, hogy ne lehessen egyáltalán párhuzamost rajzolni, vagy hogy éppenséggel végtelen sok párhuzamost lehessen rajzolni. Minden bizonnyal ezek is nagyszerű geometriák lennének... Valóban így van? Nézzük is meg gyorsan egy gondolatkísérlettel!</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A játékszabályok megváltoztatása</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Önkényesen <strong><em>változtassuk meg a párhuzamossági axiómát</em></strong> – azaz az egyik játékszabályt – a következőképpen. Ha van egy [latex]e[/latex] egyenes, és egy ezen kívüli [latex]P[/latex] pont, akkor nem létezik olyan egyenes, amely átmegy a [latex]P[/latex] ponton, és nem metszi az [latex]e[/latex] egyenest. Vagy ami ennek közvetlen logikai következménye: <strong><em>nem léteznek párhuzamos egyenesek</em></strong>. Mi a gond ezzel? Első olvasatra butaságnak tűnik? Már hogyne léteznének párhuzamosok? Hiszen az előbb próbáltuk ki a papírlapon – mondhatnánk, de meglepő módon tévedünk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Sokaknak nem tűnik fel, de az előző mondatban a „papírlap” szó kulcsfontosságú volt. Méghozzá azért, mert a papírlapra rajzolt vonalak valójában nem maguk az egyenesek, mint absztrakt geometriai objektumok, hanem azoknak csak a <strong><em>modelljei</em></strong>. Sőt az egész papírlap maga is csak egy modell. Méghozzá annak a geometriának a modellje, amelyben szerepel a párhuzamossági axióma, mint játékszabály. Nem modellje viszont ennek a nagyon furcsának tűnő másik geometriának, amelyből önkényesen kihajítottuk a párhuzamossági axiómát, és felvettünk helyette egy, a párhuzamosságot megtiltó új axiómát. Ha jobban belegondolunk, modellekre csakis nekünk embereknek van szükségünk ahhoz, hogy el tudjuk képzelni a matematikát. A matematika azonban köszöni szépen, de e nélkül is nagyon jól működik. Mi lehet hát a modellje ennek az új geometriának, és vajon hasznos-e egyáltalán?</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A válasz az, hogy e nélkül nem létezne hajózás, repülőzés, űrhajózás, és valószínűleg műholdakat sem tudnánk Föld körüli pályára állítani. E geometria ugyanis nem más, mint az úgynevezett <strong><em>gömbi geometria</em></strong>. Ennek egyik – de nem az egyetlen – modellje egy sík papírlap helyett egy gömbfelület. Az <strong><em>„egyenesek”</em></strong> pedig az e gömbfelületen elhelyezkedő úgynevezett <strong><em>főköröknek</em></strong> feleltethetők meg. Főkörnek nevezzük a gömbfelület és egy tetszőleges, a gömb középpontjára illeszkedő sík metszésvonalát. Ha belegondolunk, az „egyenes” fogalmának ilyen módon történő definíciója esetén valóban nem léteznek párhuzamos „egyenesek”, azaz olyanok, amelyek ne metszenék egymást. Ez látható az alábbi ábrán:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":2601} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_11_gombi_geometria_fokorok.jpg" alt="Főkörök a gömbi geometriában" class="wp-image-2601"/><figcaption>Főkörök a gömbi geometriában</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Mondhatnánk, hogy jó-jó, de milyen butaság már „egyeneseknek” hívni a főköröket, amikor a nevükben is benne van, hogy „kör”. Ez azonban <strong><em>pusztán fogalomalkotás kérdése</em></strong>, hiszen nem a neve határozza meg egy adott matematikai objektum tulajdonságait, hanem a rá kimondott axiómák. Az „egyenes” kifejezés használata mellett szól például az, hogy gömbi geometria esetén is igaz marad az a szokásos megállapítás, miszerint 2 pont között a legrövidebb út az őket összekötő „egyenes” mentén helyezkedik el.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Gondoljunk csak mondjuk a repülésre. Biztosan mindenki elgondolkozott már azon, hogy vajon miért tesznek akkora kerülőt Grönland felé az Európából az USA-ba tartó repülőgépek, holott mehetnének nyugat felé is, ami a térképeken látszólag rövidebb út lenne? A válasz nagyon egyszerű. Azért mert a látszat ellenére, ha a kapitány Európában Grönland felé irányítja a gép orrát, és csak egyenesen halad előre irányváltoztatás nélkül, akkor az USA nyugati partján fog kikötni. Mindenki fogjon a kezébe egy földgolyót, és azonnal látni fogja, hogy ez valóban így van.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>De akkor miért tűnik mégis kerülőútnak a világtérképen a Grönland felé vezető útvonal? Ennek pusztán az az oka, hogy egy világtérkép a valódi gömbfelületnek csak egy sík felületre történő vetítése, amelyen a távolságok szükségszerűen torzulnak az útvonal mentén. Attól függően, hogy milyen vetítéssel készült az adott térkép, a gömbi geometriának más és más modelljét kapjuk, és ezekben az „egyenesek” modelljei is más és más görbék lesznek. Egy szokásos világtérképen például az „egyenesek” modelljei szinuszhullámok lesznek. Biztos sokan láttak már űrhajós filmet, ahol az irányítóközpont falára volt kivetítve az űrhajó pályája, amely a világtérképen egy szabályos szinuszhullámhoz hasonló görbeként jelent meg.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi ábrán például a fehér görbe a Nemzetközi Űrállomás (ISS) földfelszínre vetített pályájának 2 periódusát jelzi. Itt a dolog még annyiban bonyolódik, hogy mivel az ISS másfél óra alatt kerüli meg a Földet, amely ezidő alatt elfordul valamennyit, ezért az egyes periódusok nem ugyanott végződnek a térképen, mint ahol kezdődtek. A térképen ezen kívül látszik még a nappali és az éjszakai oldal határvonala is (világosabb és sötétebb rész):</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":2404} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_11_iss_palya.jpeg" alt="A Nemzetközi Űrállomás pályája" class="wp-image-2404"/><figcaption>A Nemzetközi Űrállomás pályája</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Most, hogy van már kétféle geometriánk, felmerül a kérdés, hogy melyik a jobb, melyiket használjuk? Egy ilyen kérdést feltenni önmagában nincs értelme, hiszen a válaszhoz tudnunk kell, hogy mihez akarjuk használni. Amennyiben például házat tervezünk, vagy ki akarjuk számolni, hogy mennyi festéket vegyünk egy adott falfelületre, akkor bőven elég a hagyományos síkgeometriát használnunk, hiszen ebben jóval egyszerűbb számolni. Ha viszont egy világkörüli hajóutat kell megterveznünk adott állomásokkal a Föld különböző pontjain, akkor nem árt, ha meg tudjuk mérni az állomások közti távolságokat a szükséges üzemanyagmennyiségek kiszámításához. Erre nyilvánvalóan a síkgeometria nem alkalmas, lévén hogy egy gömbfelületen fogunk hajózni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egyszóval a matematika mindössze eszközöket ad a kezünkbe a világ dolgainak modellezésére. Azt azonban mi döntjük el, hogy mennyire pontos modellre van szükségünk az adott feladathoz. A többi „sallangra” nem vagyunk kíváncsiak, ezért ezeket kizárjuk a vizsgálatainkból. Ezt nevezik <strong><em>absztrakciónak</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>De mi köze ennek a geometriai példának a kriptográfiához? Közvetlenül természetesen az égvilágon semmi, közvetetten viszont igen fontos látni azt a mechanizmust, amely alapján egy-egy matematikai elmélet felépül. Ezekkel a példákkal remélhetőleg világossá vált, hogy mit értünk axiómák alatt, amik a kiindulópontot adják ehhez az építkezéshez – csakúgy, mint egy valódi ház alapja.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most az előző részekben megismert kriptográfiai eljárások alapjait jelentő számelmélet „játékszabályait” fogjuk rögzíteni. Ez az axiómarendszer <a href="https://hu.wikipedia.org/wiki/Giuseppe_Peano" target="_blank" rel="noreferrer noopener" aria-label="Giuseppe Peano (új fülön nyitja meg)">Giuseppe Peano</a> olasz matematikustól származik 1889-ből.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4 id="peano-arithmetic">A Peano-féle axiómarendszer</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Vélhetően mindenkinek van valamilyen intuitív elképzelése a számokról, azon belül is az úgynevezett <strong><em>természetes számokról</em></strong>. Ezek a pozitív egész számok és a 0. Megjegyezzük, hogy évszázadok óta megy a hitvita arról, hogy a 0-t is természetes számnak kell-e tekinteni vagy nem. Mi ebben a vitában az igenlők pártjára helyezkedünk – azaz természetes számnak tekintjük a 0-t –, ennek azonban pusztán praktikussági okai vannak. Sokak fejében él egy kép valamiféle egyik irányban végtelen – a negatív számokkal egyelőre nem foglalkozunk – számegyenesről, amely a 0-val kezdődik, és a többi természetes szám ettől jobbra helyezkedik el szép sorban, egymástól egyenlő távolságokra. Talán még összeadni és szorozni is tudunk ezen a számegyenesen egy valamely korábbi részben <a rel="noreferrer noopener" aria-label="leírtakhoz (új fülön nyitja meg)" href="https://youproof.hu/kriptografia/9-diffie-hellman-protokoll-egyiranyu-fuggveny-modularis-aritmetika-asszimmetrikus-kulcs#modular-arithmetic" target="_blank">leírtakhoz</a> hasonló módon.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Azonban ne feledjük: egy matematikai objektum tulajdonságait csak és kizárólag a rá kimondott axiómák határozzák meg, nem holmi intuitív kép, ami a fejünkben van. Mivel most a természetes számokra vonatkozó axiómákat fogjuk ismertetni, ezért átmenetileg töröljünk ki mindent a fejünkből, amit ezekről az objektumokról eddig gondoltunk. Tekintsük őket pusztán „valamiknek”, amelyekről ezen a ponton csak annyit tudunk, hogy egy valamilyen <strong><em>halmaz</em></strong> („összesség” vagy „sokaság”) elemei. Ezt a <strong><em>természetes számok halmazának</em></strong> nevezzük, és [latex]\N[/latex]-nel jelöljük. Az, hogy pontosan miként lehet ezeket a „valamiket” elképzelni, igazából ezen a ponton nem is fontos. Minket pusztán a tulajdonságaik érdekelnek, ezeket pedig kizárólag a rájuk kimondott axiómák fogják meghatározni. És mint azt hamarosan látni fogjuk, ezek pontosan összeegyeztethetők lesznek azzal az intuitív képpel, amit az imént átmenetileg kitöröltünk a fejünkből (ugye?!).</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi definíció ezeket az axiómákat ismerteti szigorúan matematikailag megfogalmazva, az ehhez kapcsolódó intuitív magyarázat a definíció után következik. A definíciók végét a &#x2663; karakterrel fogjuk jelölni mostantól.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-axiomarendszer" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most vizsgáljuk meg ezeket az axiómákat egyesével.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az első axióma tulajdonképpen azt követeli meg, hogy minden [latex]x[/latex] természetes számhoz létezzen egy olyan természetes szám is, amely [latex]x[/latex] <strong><em>„rákövetkezője”</em></strong>. Ez azt jelenti, hogy bármelyik természetes számból indulunk ki, a „rákövetkezésen” keresztül mindig tovább tudunk lépni egy másik természetes számhoz, azaz utunk soha nem szakad meg.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A második axióma lényegében azt mondja ki, hogy egy adott természetes számhoz a „rákövetkezésen” keresztül nem érkezhetünk meg két különböző irányból, bárhonnan is indulunk. Ez tehát megakadályozza egy ehhez hasonló „hurok” kialakulását:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":2603} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_11_hurok_a_szamegyenesen.jpg" alt="Hurok a számegyenesen" class="wp-image-2603"/><figcaption>Hurok a számegyenesen</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>A harmadik axióma kimondja egy és csakis egy olyan speciális természetes szám létezését, amely <strong><em>nem rákövetkezője semmilyen más természetes számnak sem</em></strong>. Ezzel lényegében két nagyon fontos dolgot kapunk. Egyrészt megtudjuk, hogy a „számegyenes” valóban egy egyik irányban végtelen egyenes, amely elkezdődik valahol. Másrészt pedig tulajdonképpen ez az axióma biztosítja, hogy természetes számok egyáltalán léteznek. A másik három axióma ugyanis a szigorúan vett matematikai logika szerint abban az esetben is teljesülne, ha az [latex]\N[/latex] halmaz történetesen üres lenne. Például furcsamód a <em>„minden ismert egyszarvú fehér”</em> állítás igaz. Az persze más kérdés, hogy a „minden” jelen esetben épp 0 darabot jelent, de ettől még az állítás igaz. Akárcsak az az állítás, miszerint <em>„minden ismert egyszarvú fekete”</em>. Általánosságban is elmondható, hogy egy üres halmaz elemeire vonatkozó bármilyen állítás szintén igaz. Furcsa dolog ez a logika, nemde?</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Végül a negyedik axióma azt biztosítja, hogy a 0-ból kiindulva a „rákövetkezésen” keresztül minden természetes számhoz eljutunk. Azaz nem léteznek a számegyenestől elszigetelt természetes számok:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":2604} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_11_elszigetelt_szamok.jpg" alt="Elszigetelt számok" class="wp-image-2604"/><figcaption>Elszigetelt számok</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Ezen kívül ez az axióma teszi lehetővé az úgynevezett <strong><em>teljes indukciós bizonyításokat</em></strong>. Erre hamarosan néhány remek példát fogunk látni. Lényegét tekintve arról van szó, hogy ha egy állítás igaz 0-ra – amely alapján őt az axiómában említett [latex]P[/latex] halmazba helyeztük –, továbbá az állítás igazsága a „rákövetkezésen” keresztül öröklődik, akkor igaz lesz minden természetes számra.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Első ránézésre ez egy igencsak szegényesre sikerült axiómarendszer. Azonban lényegében ebből a 4 axiómából következik minden, amit a természetes számokról tudunk. Most vizsgáljuk meg, hogy mennyire sokmindent vagyunk képesek felépíteni ebből a mindössze 4 darab axiómából.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A matematikai bizonyítás fogalma</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Az olyan állításokat, amelyek nem axiómák, hanem azoknak valamilyen logikai következményei, <strong><em>tételeknek </em></strong>nevezzük. Ahhoz, hogy egy matematikai állítást tételnek nevezhessünk, <strong><em>bizonyítást </em></strong>kell adnunk rá. Ennek során az állítást szigorú logikai érveléssel vissza kell vezetnünk vagy magukra az axiómákra, vagy pedig korábban már bizonyított tételekre.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Példaként <strong><em>fogalmazzuk meg első tételünket</em></strong>, és nézzük meg, hogyan történik egy bizonyítás. Ez egy roppant magától értetődő állításnak fog tűnni. Azonban ne feledjük, hogy mivel valóban kitöröltünk mindent a fejünkből a természetes számokkal kapcsolatban (ugye?!), ezért most kizárólag a fenti 4 axiómára szorítkozhatunk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A tételek végét a definíciókéhoz hasonlóan a &#x2663; karakterrel, a bizonyítások végét pedig a ∎ karakterrel fogjuk jelölni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-szamossag" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-szamossag-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Látható, hogy a természetes számok végtelensége egyáltalán nem magától értetődő, amennyiben kizárólag a Peano-axiómarendszer 4 darab állítására támaszkodhatunk az érvelésben. Ez a példa jól tükrözi, hogy milyen körültekintően kell eljárni egy logikai érvelés során. Halkan megjegyezzük ugyanakkor, hogy a fenti tétel kimondása előtt tisztáznunk kellett volna, hogy pontosan mit értünk <strong><em>„végtelen sok elemet tartalmazó halmaz”</em></strong> alatt. A szükséges halmazelméleti ismereteket most nem részletezzük, azonban egy rövid példával megpróbálunk rávilágítani a lényegre.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Képzeljünk el egy szállodát végtelen sok szobával, amelyek 0-tól vannak sorszámozva. A kérdés: hogyan tudunk elszállásolni egy újonnan érkező vendéget, ha az összes szoba foglalt? A megoldás roppant egyszerű: megkérünk minden vendéget, hogy költözzön át az 1-gyel nagyobb sorszámú szobába. Ezt minden további nélkül meg tudjuk tenni, következésképp felszabadul a 0-ás sorszámú szoba, ahová az újonnan érkező vendéget elhelyezhetjük. Sőt, ha a vendégeket arra kérjük, hogy költözzenek át a kétszer nagyobb sorszámú szobába, akkor minden páratlan sorszámú szoba felszabadul, így akár végtelen sok új vendég is elhelyezhető.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A költöztetéssel lényegében egy úgynevezett <strong><em>kölcsönösen egyértelmű megfeleltetést</em></strong> létesítettünk az összes szobák [latex]A[/latex] halmazából egy olyan [latex]B[/latex] halmazba, amely nem tartalmazta az összes szobát. A kölcsönösen egyértelműség itt azt jelenti, hogy [latex]A[/latex] minden szobájából elköltöztettük a vendégeket, és [latex]B[/latex] minden szobájába pontosan egy [latex]A[/latex]-beli szobából költöztettünk vendégeket. A matematikában is hasonlóan definiáljuk a végtelen számosságot: egy <strong><em>halmaz számossága akkor végtelen</em></strong>, ha létezik kölcsönösen egyértelmű megfeleltetés saját maga és egy valódi részhalmaza között. A Peano-axiómarendszerben bevezetett [latex]s[/latex] függvény épp egy ilyen megfeleltetést valósít meg.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most bevezetünk egy általános iskolából is jól ismert műveletet az [latex]\N[/latex] halmazon, azaz a természetes számok között. Ennek a műveletnek a konstrukciójához azonban szintén az axiómáinkat fogjuk csak használni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4 id="operations-on-natural-numbers">Művelet bevezetése az [latex]\N[/latex] halmazon</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Először is tisztázzuk, hogy pontosan mit értünk <strong><em>művelet</em></strong> alatt. Minket most speciálisan az olyan műveletek érdekelnek, amelyeknek két bemenetük van, de az alábbi definíció általánosítható lenne tetszőleges számú bemenetre is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="ketvaltozos-muvelet" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az általános iskolában ezt olyan képzeletbeli gépekkel szokták szemléltetni, amelyeknek a tetején 2, az alján pedig 1 lyuk van. Ha a [latex]H[/latex] halmaz két tetszőleges elemét beledobjuk a gép tetején lévő lyukakba, akkor a gép alján kipottyan az eredmény, amely szintén a [latex]H[/latex] halmaz eleme kell legyen. Ez látható az alábbi ábrán:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":2606} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_11_ketvaltozos_muvelet.jpg" alt="Kétváltozós művelet" class="wp-image-2606"/><figcaption>Kétváltozós művelet</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Egy műveletnél tehát meg kell mondanunk azt is, hogy milyen halmazon értelmezzük. Fontos, hogy a művelet „ne vezessen ki” ebből a halmazból. Ez alapján a szokásos <strong><em>összeadás a páratlan számok halmazán nem művelet</em></strong>, mivel például a [latex]3+5[/latex] eredménye nem páratlan, azaz nem eleme az alaphalmaznak. A páros számok halmazán azonban az összeadás már művelet, hiszen páros számok összege is páros.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most definiáljuk, hogy mit értünk <strong><em>összeadás, mint művelet</em></strong> alatt az előzőekben bemutatott [latex]\N[/latex] halmazon, azaz a természetes számok között. Ne feledjük, hogy mivel kitöröltünk a fejünkből mindent (ugye?!), amit a természetes számokról tudni véltünk, ezért csak a Peano-axiómákat használhatjuk ennek az új fogalomnak a bevezetésére:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-osszeadas" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez a definíció tehát két dolgot mond. Egyrészt tetszőleges számhoz 0-t adva az eredmény nem változik. Másrészt pedig ha egy tetszőleges [latex]a[/latex] számhoz egy szintén tetszőleges [latex]b[/latex] szám rákövetkezőjét adjuk hozzá, akkor az eredmény megegyezik annak rákövetkezőjével, mintha [latex]a[/latex]-hoz csak [latex]b[/latex]-t adtunk volna hozzá. Figyeljük meg, hogy semmi mást nem használtunk fel ehhez a definícióhoz, csak a Peano-axiómarendszerben ismertetett 0-val jelölt elemet, valamint az [latex]s[/latex] rákövetkezés függvényt, mint alapfogalmakat.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez alapján kiszámítható bármely két természetes szám összege. Amennyiben például [latex]\N[/latex] elemeit a szokásos módon, 10-es számrendszerben jelöljük, akkor a [latex]2+3[/latex] összeg az alábbi lépésekben fejthető ki szigorúan a fenti definíció szerint:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}2+0&amp;=2 \\ 2+1&amp;=2+s(0)=s(2+0)=s(2)=3 \\ 2+2&amp;=2+s(1)=s(2+1)=s(3)=4 \\ 2+3&amp;=2+s(2)=s(2+2)=s(4)=5 \end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Értelmeztünk tehát egy műveletet az [latex]\N[/latex] halmazon, amelyet önkényesen „összeadásnak” neveztünk, és a [latex]+[/latex] műveleti jellel jelöltünk. Vizsgáljuk hát meg, hogy ez valóban teljesíti-e azokat a jól megszokott tulajdonságokat, amelyeket általános iskolai tanulmányaink alapján elvárnánk tőle.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4 id="peano-addition-commutativity">Az összeadás kommutativitása</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Általános iskolában megtanultuk, hogy teljesen mindegy, milyen sorrendben adunk össze két számot, ugyanazt az eredményt kell kapnunk. Megköveteljük tehát, hogy az összeadásban a tagok sorrendje felcserélhető legyen. Az olyan műveleteket, amelyek esetén ez teljesül, <strong><em>kommutatív műveleteknek</em></strong> nevezzük. Első jogos kérdés tehát, hogy vajon a [yp_element slug="peano-osszeadas" type="link" /]ban ismertetett „összeadásnak” nevezett művelet teljesíti-e ezt a kritériumot?</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most meg fogjuk mutatni, hogy ez a tulajdonság bizony teljesül, méghozzá a Peano-axiómák logikai következményeként. Ehhez először egy úgynevezett segédtételt – tudományosabb nevén <strong><em>lemmát</em></strong> – fogunk bizonyítani. Egy lemma semmiben sem különbözik egy sima tételtől. Ezzel az elnevezéssel pusztán azt szeretnénk jelezni, hogy egy olyan állításról van szó, amelynek önmagában nincs jelentősége, viszont felhasználjuk más tételek – jelen esetben például a kommutativitás – bizonyításához. Nézzük is meg ezt a segédtételt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-osszeadas-kommutativitas-lemma" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ennek belátására mutatunk egy remek példát <strong><em>teljes indukciós bizonyításra</em></strong>, amelyet ugye a Peano-axiómarendszer 4. pontja tesz lehetővé. Ez jól szemléltethető egy valamelyik irányban végtelen dominósorral, amelyről belátjuk, hogy bármely dominót felborítva az fel fogja borítani a soron következő dominót is. Ezek után nincs más dolgunk, mint egy laza mozdulattal felborítani az első dominót, és élvezni a – végtelen hosszú – műsort. Most lássuk, hogyan működik ez a gyakorlatban:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-osszeadas-kommutativitas-lemma-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az imént bizonyított segédtételt fogjuk felhasználni az összeadás kommutativitásának bizonyításához. Ezt két lépésben fogjuk megtenni ismét a teljes indukciót alkalmazva. Egyrészt bizonyítjuk, hogy ha tetszőleges [latex]a[/latex] számra valamilyen [latex]n[/latex] esetén teljesül, hogy [latex]a + n = n + a[/latex], akkor teljesülni fog [latex]a+s(n)=s(n)+a[/latex] is, azaz felállítjuk a dominósort. Másrészt felborítjuk az első dominót, azaz bizonyítjuk, hogy konkrétan [latex]n=0[/latex] esetén valóban teljesül a kommutativitás. Kezdjük ez utóbbival.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-osszeadas-kommutativitas-0-lemma" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-osszeadas-kommutativitas-0-lemma-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most tehát rendelkezésünkre áll a [yp_element slug="peano-osszeadas-kommutativitas-lemma" type="link" /] és a [yp_element slug="peano-osszeadas-kommutativitas-0-lemma" type="link" /]. Ezek segítségével már be tudjuk látni az összeadás kommutativitását:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-osszeadas-kommutativitas" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-osszeadas-kommutativitas-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Látható tehát, hogy a [yp_element slug="peano-osszeadas" type="link" /]ban értelmezett „összeadásnak” nevezett művelet valóban kommutatív, ahogy azt az általános iskolában már megszokhattuk tőle. Ez azonban csak és kizárólag a Peano-axiómák logikai következménye, nem pedig holmi fejünkben élő intuitív kép miatt van ez így. A bizonyításához két segédtételen keresztül vezetett az út, azaz kicsit sem mondható magától értetődőnek. A továbbiakban azonban egészen nyugodtan felhasználhatjuk majd ezt a tulajdonságot, hiszen az megnyugtató bizonyosságot nyert.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most nézzük meg az összeadás egy másik nagyon fontos tulajdonságát, amely szintén jól ismert az általános iskolából.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Az összeadás asszociativitása</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Az összeadást egy kétváltozós műveletként definiáltuk, de mi van akkor, ha nem kettő, hanem három – vagy akár ennél több – számot szeretnénk összeadni? Nagyon jó lenne, ha nem kéne újabb és újabb 2-nél többváltozós műveletet bevezetni a tagok számától függően. Tegyük fel például, hogy az [latex]a+b+c[/latex] összeget kell kiszámítani. Hogyan fogjunk hozzá?</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Számítsuk ki először az első kettő összegét, és ennek eredményéhez adjuk hozzá a harmadikat? Vagy először számítsuk ki az utolsó kettő összegét, és ennek eredményét adjuk hozzá az elsőhöz? Ezt a két lehetőséget mutatja az alábbi két ábra:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":2608} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_11_asszociativ_muvelet_1.jpg" alt="Műveleti sorrend - 1. lehetőség" class="wp-image-2608"/><figcaption>Műveleti sorrend - 1. lehetőség</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:image {"align":"center","id":2609} -->
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://youproof.hu/wp-content/uploads/kriptografia_11_asszociativ_muvelet_2.jpg" alt="Műveleti sorrend - 2. lehetőség" class="wp-image-2609"/><figcaption>Műveleti sorrend - 2. lehetőség</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Az olyan műveleteket, amelyek esetén ez mindegy, <strong><em>asszociatív műveleteknek</em></strong> nevezzük. Kérdésünk tehát, hogy vajon a [yp_element slug="peano-osszeadas" type="link" /]ban ismertetett „összeadásnak” nevezett művelet teljesíti-e ezt a kritériumot is? Most megmutatjuk, hogy szintén a Peano-axiómák következménye ennek a teljesülése is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-osszeadas-asszociativitas" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="peano-osszeadas-asszociativitas-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Látható tehát, hogy a [yp_element slug="peano-osszeadas" type="link" /]ban értelmezett „összeadásnak” nevezett művelet azon kívül, hogy kommutatív, teljesíti az asszociativitást is, ahogy azt az általános iskolában már megszokhattuk tőle.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Megjegyezzük ugyanakkor, hogy a fentiekben a kommutativitást csak 2 tagú, míg az asszociativitást csak 3 tagú összegekre bizonyítottuk. Nem jelent túl nagy kihívást azonban annak belátása sem, hogy tetszőleges számú tagból álló összegek is hasonló tulajdonsággal rendelkeznek. Sőt, általánosságban érvényes az alábbi állítás, amelynek belátását azonban az Olvasóra bízom.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="asszociativ-kommutativ-tetszoleges-sorrend-zarojelezes" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ebben a részben tehát ízelítőt mutattunk abból, hogy hogyan történik egy matematikai elmélet felépítése. Egy ilyen építménynek az alapja mindig egy úgynevezett axiómarendszer, amely néhány olyan állításból áll, amelyeket igaznak fogadunk el. Ezekből kiindulva aztán újabb fogalmak definiálhatók, és újabb állítások eredeztethetők a matematikai logika szigorú szabályai szerint. Példaként bemutattuk a Peano-axiómarendszert, amely mindössze 4 állítást fogalmaz meg. Ebből következik minden, amit a természetes számokkal kapcsolatban jelenleg tudunk, de az is, amit majd csak az utókor fog felfedezni a jövőben. A Peano-axiómák segítségével bevezettünk egy műveletet is a természetes számok között, amelyet összeadásnak neveztünk el. Végül a teljes indukciós bizonyításra mutattunk példákat, amelyekkel bizonyítottuk, hogy az összeadás jól megszokott tulajdonságai valóban teljesülnek, mint az axiómák logikai következményei.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A következő részben egy másik műveletet is be fogunk vezetni, amelyet szorzásnak fogunk nevezni. Erre a műveletre is hasonló tulajdonságokat fogunk bizonyítani az axiómákból, valamint megmutatunk egy nagyon fontos kapcsolatot a két művelet között. Ezután végre rátérhetünk azokra a kérdésekre, amelyek lehetővé teszik az előző részekben bemutatott kriptográfiai primitívek működését, és amelyek nélkül ma nem létezne információs társadalom.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A következő részt <a href="https://youproof.hu/kriptografia/12-szorzas-disztributivitas-teljes-indukcio-indirekt-bizonyitas-relacio-teljes-rendezes-rendezett-halmaz/">itt</a> találod...</em></strong></p>
+<!-- /wp:paragraph -->

@@ -1,0 +1,63 @@
+type: proof
+name: euklideszi-norma-egyenlotlensegi-tulajdonsaga-bizonyitas
+remarks: []
+references:
+  termeszetes-szamok-minimumtetele:
+    target:
+      type: theorem
+      name: termeszetes-szamok-minimumtetele
+content:
+  - type: narrative
+    content: |
+      A bizonyítás konstruktív lesz, azaz az $f$ euklidészi norma segítségével definiálni fogunk egy olyan $g$
+      függvényt, amely maga is euklidészi norma, de ezen felül teljesíti a tételben szereplő egyenlőtlenségi
+      tulajdonságot is.
+  - type: narrative
+    content: |
+      Tegyük fel, hogy valamilyen tetszőleges $k$ elemre szeretnénk kiszámítani a $g(k)$ függvényértéket. Ehhez
+      először képezzük a $k$ elem összes nemnulla többszörösének az $f$ norma szerinti értékét, azaz minden
+      $R$-beli $x\eq 0$ elemre kiszámítjuk az $f(kx)$ természetes számokat. Ezután válasszuk $g(k)$ értékének ezek
+      közül a legkisebbet, amely ugye a [termeszetes-szamok-minimumtetele] miatt biztosan létezik. Más szavakkal a
+      $g(k)$ függvényérték legyen az eredeti $f$ normának a $k$ elem nemnulla többszörösein felvett minimuma.
+  - type: narrative
+    content: |
+      A $g$ függvény fenti definíciója alapján tehát a tételben szereplő $a$ és $b\eq 0_R$ elemek esetén létezik
+      olyan $c\eq 0_R$ elem, amelyre $g(ab)=f(abc)$ teljesül (nevezetesen épp az a $c$ elem, amelyre az $f(abc)$
+      felveszi a minimumát).
+  - type: formula
+    lead-in: |
+      Mivel ugyanakkor az $abc$ szorzat az $ab$ elemen kívül az $a$ elemnek is egy nemnulla többszöröse, ezért
+      ismét a $g$ függvény fenti definíciója miatt $g(a)\leq f(abc)$, azaz valóban teljesül a tételben szereplő
+      egyenlőtlenség:
+    content: |
+      g(a)\leq \underbrace{g(ab)}_{=f(abc)}
+  - type: narrative
+    content: |
+      Már csak annyit kell igazolni, hogy $g$ is euklidészi norma $R$-ben. Legyen $b\eq 0_R$ egy tetszőleges
+      nemnulla $R$-beli elem, valamint válasszuk ki $b$-nek egy olyan nemnulla többszörösét, amelyre az eredeti $f$
+      norma épp a minimumát veszi fel (ez ugye biztosan létezik, mint azt már láttuk fentebb). Azaz válasszunk ki
+      egy olyan $c\eq 0_R$ elemet, amelyre $g(b)=f(bc)$ teljesül.
+  - type: narrative
+    content: |
+      Minthogy $b\eq 0_R$ és $c\eq 0_R$ ezért a nullosztómentesség miatt $bc\eq 0_R$. Azaz tetszőleges $a$ elem
+      maradékosan elosztható a $bc$ elemmel az eredeti $f$ norma szerint.
+  - type: formula
+    lead-in: |
+      Ez azt jelenti, hogy létezik olyan $k$ hányados és $r$ maradék, amelyekre teljesülnek az alábbiak:
+    content: |
+      \begin{aligned}a&=k\cdot (bc) + r \\ f(r)&\lt f(bc)\end{aligned}
+  - type: narrative
+    content: |
+      Egyrészt a $g$ függvény definíciója miatt $g(r)\leq f(r\cdot 1) = f(r)$. Másrészt viszont a $c$ elemet épp
+      úgy választottuk ki, hogy $f(bc)=g(b)$ teljesüljön.
+  - type: formula
+    lead-in: |
+      Létezik tehát olyan hányados (nevezetesen $kc$) és maradék (nevezetesen $r$), amelyre teljesülnek az
+      alábbiak:
+    content: |
+      \begin{aligned}a&=(kc)\cdot b + r \\ \underbrace{g(r)}_{\leq f(r)}&\lt
+      \underbrace{g(b)}_{=f(bc)}\end{aligned}
+  - type: narrative
+    content: |
+      Azaz tetszőleges $a$ elem tetszőleges $b\eq 0_R$ elemmel elosztható maradékosan a $g$ függvény szerint is,
+      így $g$ valóban egy euklidészi norma.

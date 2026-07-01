@@ -1,0 +1,63 @@
+type: section
+name: 02-karp-redukcio-pelda
+title: Karp-redukció (példa)
+
+body:
+  - type: narrative
+    content: |
+      Ehhez egy olyan ***polinomiális időkomplexitású algoritmust*** kell találnunk, amely egy tetszőleges $G$
+      gráfból (azaz a 3-színezhetőség problémájának egy példányából) előállít egy $H$ gráfot és egy $k$ egész
+      számot (azaz a k-függetlenség problémájának egy példányát), méghozzá úgy, hogy a $H$ gráf **akkor és csak
+      akkor** legyen k-független, **ha** a $G$ gráf 3-színezhető. Az ***"akkor és csak akkor"*** mondatszerkezetet
+      ismét a fentebb már említett szigorú értelemben kell venni.
+  - type: narrative
+    content: |
+      A $H$ gráf és a $k$ egész szám előállítása $G$-ből (tehát maga a Karp-redukció) a következő: másoljuk le a
+      $G$ gráfot 3 példányban, és kössük össze azokat a csúcsokat éllel, amelyek ugyanannak az eredeti $G$-beli
+      csúcsnak a másolatai. Az így kapott "nagy" gráf legyen a $H$, valamint $k$ értéke legyen az eredeti $G$ gráf
+      csúcsainak száma.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán egy konkrét 5 csúcsú problémapéldány konverziója látható:
+    src: 03-karp-redukcio-pelda.jpg
+    alt: Karp-redukció (példa)
+    caption: Karp-redukció (példa)
+  - type: narrative
+    content: |
+      A fenti $G$ gráf a 3-színezhetőség problémának egy konkrét példánya, a csúcsokhoz rendelt 0, 1 és 2 számok a
+      $G$ gráf egy konkrét színezését jelölik. Ebből a fenti Karp-redukció szerint képeztük a lenti $H$ gráfot és a
+      $k$ egész számot, mint a k-függetlenség problémájának egy példányát. A $H$ gráf vízszintes szintjei a $G$
+      gráf kiterített másolatai, míg a függőleges irányítású élek azokat a csúcsokat kötik össze, amelyek
+      ugyanannak a $G$-beli csúcsnak a másolatai.
+  - type: narrative
+    content: |
+      Most kezdjünk el végigmenni a $G$ gráf csúcsain szép sorban, és mindegyikhez jelöljük meg az ő $G$-beli
+      színének megfelelő szinten lévő másolatát a $H$ gráfban. A 0, 1 és 2 színeknek rendre a felső, a középső és
+      az alsó szintek feleljenek meg. A fenti ábrán a megjelölt csúcsokat vastagított körökkel jelöltük. Ha tehát
+      például egy $G$-beli csúcs színe 2, akkor jelöljük meg az ő $H$-beli másolatát az alsó szinten. Vegyük észre,
+      hogy ebből épp $k=5$ darab van (hiszen a $G$ gráfnak $k=5$ darab csúcsa volt).
+  - type: narrative
+    content: |
+      Igaz továbbá, hogy a megjelölt csúcsok között nincs él a $H$ gráfban, azaz ***függetlenek***. Az adott
+      szinten belüli él azért nincs közöttük, mivel ha lenne, akkor a $G$-beli megfelelőjük között is lenne, és így
+      nem kaphatták volna ugyanazt a színt. Függőleges irányú él pedig azért nincs, mert mindegyik oszlopból csak
+      egy csúcsot jelöltünk meg $H$-ban. Ez a gondolatmenet tetszőleges 3-színezhető $G$ gráf tetszőleges
+      színezésére működik. Azt tehát már tudjuk, hogy **ha** a $G$ gráf ***3-színezhető***, **akkor** a $H$ gráf
+      ***k-független***.
+  - type: narrative
+    content: |
+      Vegyük észre továbbá, hogy a $H$ gráf nem is lehet másként k-független, azaz a k-függetlenség valóban **csak
+      akkor** teljesül, **ha** a $G$ gráf 3-színezhető. Tegyük fel ugyanis, hogy a $G$ gráf **nem** 3-színezhető
+      (azaz minimum 4 szín kell a kiszínezéséhez). **Ekkor** a $H$ gráfban sem lehet $k$ darab független csúcs,
+      hiszen ha lenne, akkor végigmehetnénk rajtuk, és mindegyikük $G$-beli eredetijét kiszínezhetnénk annak a
+      $H$-beli szintnek megfelelő színnel, amelyben helyet foglalnak. Így viszont $G$-nek egy jó 3-színezését
+      kapnánk, tehát $G$ mégiscsak 3-színezhető lenne, és ez ellentmondana a feltételezésünknek.
+  - type: narrative
+    content: |
+      Természetesen egy Turing-gép vagy valódi számítógép számára ennél jóval pontosabb leírást kéne adnunk a fenti
+      "átalakító" algoritmusra. A lényegen azonban ez nem változtatna. Most vizsgáljuk meg ennek az "átalakító"
+      algoritmusnak a lépésszámát. Könnyen látható, hogy az a bemeneti $G$ gráf méretének polinomiális függvénye.
+      Hiszen ha $G$ csúcsainak száma $n$, éleinek száma pedig $e$, akkor a belőle létrehozott $H$ gráf $3n$ darab
+      csúcsot és $3n+3e$ darab élet fog tartalmazni. Másrészt $k$ értéke is könnyen számítható, hiszen csak meg
+      kell számolni $G$ csúcsait. A fenti "átalakító" algoritmus tehát valóban egy a Karp-redukció a
+      3-színezhetőségről a k-függetlenség problémájára.

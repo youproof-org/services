@@ -1,0 +1,107 @@
+type: section
+name: 06-a-cook-levin-tetel
+title: A Cook-Levin tétel
+
+body:
+  - type: narrative
+    content: |
+      A most következő egyszerű tétel hasznos eszköz, ha egy nyelv NP-teljességét szeretnénk bizonyítani. ***Ha egy
+      $L$ nyelv NP-teljes, egy $K$ nyelv pedig $NP$-ben van, valamint létezik egy $L \prec K$ Karp-redukció, akkor
+      a $K$ nyelv is NP-teljes.*** Az NP-teljesség tehát a Karp-redukción keresztül ***"öröklődik"***.
+  - type: narrative
+    content: |
+      Ez azt jelenti, hogy egy $K$ nyelv NP-teljességének bizonyításához nem szükséges, hogy redukáljuk az
+      ***összes*** $NP$-beli nyelvet $K$-ra, elegendő ezt megtenni ***egyetlen*** NP-teljes nyelvvel. Vegyünk
+      ugyanis egy tetszőleges $NP$-beli $X$ nyelvet. Mivel a fenti tételbeli $L$ nyelv NP-teljes, ezért az $X$
+      nyelv felismerését polinomiális idejű extra munkával redukálni tudjuk az $L$ nyelv felismerésére. Ha az $L$
+      nyelv felismerését szintén polinomiális időben tovább tudjuk redukálni a $K$ nyelv felismerésére, akkor e két
+      redukció egymás utáni alkalmazásával tulajdonképpen az $X$ nyelvet is redukálni tudjuk $K$-ra polinomiálisan,
+      azaz $K$ valóban NP-teljes.
+  - type: narrative
+    content: |
+      ***A fenti tétel alkalmazásához azonban szükségünk van legalább egy NP-teljes nyelvre***, amiről tovább
+      örökíthetnénk ezt a tulajdonságot más nyelvekre. Kiemelt jelentőségű volt emiatt Stephen Cook és Leonid Levin
+      1971-es eredménye, amely ***az első NP-teljes nyelvet mutatta meg***. Ez az eredmény ***Cook-Levin tétel***
+      néven ismeretes. Ez a nyelv az úgynevezett ***kielégíthető logikai hálózatok*** nyelve. Egy ***logikai
+      hálózat*** úgynevezett logikai kapukból és a közöttük lévő összeköttetésekből épül fel. A kapuknak vannak
+      bemenetei, amelyek kétféle logikai értéket vehetnek fel &ndash; **1** vagy **0** (**igaz** vagy **hamis**).
+      Ezenkívül van egy kimenete, amelyen a kapu szintén egy logikai értéket állít elő a típusának és a bemenetein
+      lévő logikai értékeknek a függvényében.
+  - type: unordered-list
+    lead-in: |
+      Egy hálózat építéséhez 3 féle logikai kaput használhatunk:
+    items:
+      - "**ÉS-kapu:** két bemenete van, a kimenetén pedig akkor és csak akkor állít elő **1**-et, ha **mindkét** bemenetének értéke **1**."
+      - "**VAGY-kapu:** szintén két bemenete van, a kimenetén pedig akkor és csak akkor állít elő **1**-et, ha **legalább az egyik** bemenetének értéke **1**."
+      - "**NEM-kapu:** egy bemenete van, a kimenetén pedig akkor és csak akkor állít elő **1**-et, ha a bemenetének értéke **0**."
+  - type: narrative
+    content: |
+      E három féle kapu működését az igazságtáblázatukkal adhatjuk meg, amely minden lehetséges bemeneti
+      kombinációra megadja, hogy mi lesz a kimeneten.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrákon a három féle kapu igazságtáblázata és jelölése látható:
+    src: 08-es-kapu.jpg
+    alt: ÉS-kapu jelölése és igazságtáblázata
+    caption: ÉS-kapu jelölése és igazságtáblázata
+  - type: figure
+    src: 09-vagy-kapu.jpg
+    alt: VAGY-kapu jelölése és igazságtáblázata
+    caption: VAGY-kapu jelölése és igazságtáblázata
+  - type: figure
+    src: 10-nem-kapu.jpg
+    alt: NEM-kapu jelölése és igazságtáblázata
+    caption: NEM-kapu jelölése és igazságtáblázata
+  - type: narrative
+    content: |
+      Egy logikai hálózat e kapuk segítségével a hálózat $n$ darab bemenetéből egy kimenetet állít elő. Egy kapu
+      bármely bemenetére akármelyik másik kapu kimenetét, vagy közvetlenül a logikai hálózat valamely bemenetét
+      köthetjük. Hasonlóan egy kapu kimenetét akármelyik másik kapu (vagy kapuk) bemenetére, vagy közvetlenül a
+      logikai hálózat kimenetére köthetjük. Mindössze két megkötés van. Egyrészt minden kapu-bemenetre illetve a
+      hálózat kimenetére is pontosan egy jel lehet kötve. Másrészt a hálózat tetszőleges bemenetétől a hálózat
+      kimenetéhez vezető útvonalak mentén minden kapu legfeljebb egyszer fordulhat elő. Azaz nem lehetnek "hurkok"
+      a hálózatban. Akkor beszélünk ***kielégíthető logikai hálózatról***, ha létezik a bemeneteinek olyan
+      kombinációja, amelyre a hálózat a kimenetén a logikai **1** értéket állítja elő.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán egy 3 bemenetű logikai hálózatot láthatunk egy ilyen "kielégítő" bemeneti kombinációval:
+    src: 11-kielegitheto-logikai-halozat.jpg
+    alt: Kielégíthető logikai hálózat (példa)
+    caption: Kielégíthető logikai hálózat (példa)
+  - type: narrative
+    content: |
+      Javasoljuk az olvasónak, hogy kövesse végig, hogy ez a bemeneti kombináció valóban a $D=1$ kimenetet
+      eredményezi. ***Ezek után a döntési feladatunk egy tetszőleges logikai hálózatról eldönteni, hogy
+      kielégíthető-e a fenti értelemben.*** Formális nyelvekre átfogalmazva: nevezzük $SAT$-nak az olyan
+      jelsorozatokat tartalmazó nyelvet, amely jelsorozatok egyrészt valamilyen logikai hálózat leírásai, másrészt
+      az általuk leírt logikai hálózat a fenti értelemben kielégíthető. A feladatunk pedig egy olyan Turing-gép
+      létrehozása, amely tetszőleges $x$ jelsorozatra eldönti, hogy a $SAT$ nyelvbe tartozik-e. ***A Cook-Levin
+      tétel állítása a következő: a $SAT$ nyelv NP-teljes.***
+  - type: narrative
+    content: |
+      Annak bizonyítása viszonylag egyszerű, hogy a $SAT$ nyelv $NP$-ben van, hiszen egy helyes kiértékelés &ndash;
+      mint tanú &ndash; ellenőrzése hatékonyan megoldható, ahogy azt az olvasó a fenti példából érzékelhette. Az
+      NP-teljességhez azonban azt is bizonyítani kell, hogy ***tetszőleges*** $NP$-beli $L$ nyelvről létezik
+      Karp-redukció a $SAT$ nyelvre. A Cook-Levin tétel bizonyítása lényegében egy olyan polinomiális
+      időkomplexitású algoritmus leírása, amely egy tetszőleges $NP$-beli $L$ nyelvhez és tetszőleges $x$
+      jelsorozathoz konstruál egy $y$ jelsorozatot (azaz az általa leírt logikai hálózatot) úgy, hogy az $x$
+      jelsorozat akkor és csak akkor tartozik $L$-be, ha az $y$ jelsorozat $SAT$-ba tartozik (azaz az általa leírt
+      logikai hálózat kielégíthető).
+  - type: narrative
+    content: |
+      A bizonyítás leírása hosszadalmas és erősen technikai jellegű, ezért ettől most eltekintünk. Arra azonban
+      érdemes felhívni a figyelmet, hogy ezek szerint tetszőleges $NP$-beli döntési probléma egy adott példányát le
+      lehet írni egyetlen logikai kifejezéssel, vagy egy azt reprezentáló logikai hálózattal. Ez jól mutatja a
+      logika kifejező erejét.
+  - type: narrative
+    content: |
+      Ezen túlmenően a $SAT$ nyelv NP-teljességének önmagában is komoly jelentősége van. A valódi számítógépek
+      integrált áramkörei ugyanis szintén a fentihez hasonló &ndash; persze annál lényegesen bonyolultabb &ndash;
+      logikai hálózatokat valósítanak meg. Ezek optimalizálása épp az NP-teljesség miatt általában nem egyszerű.
+      Optimalizálás alatt ebben az esetben ugyanannak a logikai hálózatnak a minél kevesebb logikai kapu
+      használatával történő megvalósítását értjük.
+  - type: narrative
+    content: |
+      A Cook-Levin tétel fontossága azonban elsősorban abban nyilvánul meg, hogy szinte az összes többi
+      NP-teljességi bizonyítás &ndash; például a fentebb már említett említett 3-színezhetőség vagy k-függetlenség
+      NP-teljessége is &ndash; közvetetten vagy közvetlenül a $SAT$ nyelv NP-teljességén alapszik.

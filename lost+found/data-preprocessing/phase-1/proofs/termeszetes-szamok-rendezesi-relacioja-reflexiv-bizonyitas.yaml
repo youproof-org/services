@@ -1,0 +1,14 @@
+type: proof
+name: termeszetes-szamok-rendezesi-relacioja-reflexiv-bizonyitas
+remarks: []
+references:
+  peano-osszeadas:
+    target:
+      type: definition
+      name: peano-osszeadas
+content:
+  - type: narrative
+    content: |
+      Tekintve, hogy a Peano-összeadás [peano-osszeadas]jának 1. pontja szerint tetszőleges $a$-ra teljesül, hogy
+      $a+0=a$, ezért nyilvánvalóan létezik olyan természetes szám &ndash; nevezetesen a 0 &ndash;, amelyet
+      hozzáadva bármihez azt a bármit kapjuk eredményül. Így tehát $a\leq a$ tetszőleges $a$ esetén teljesül.

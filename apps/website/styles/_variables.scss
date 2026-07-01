@@ -1,0 +1,31 @@
+$black:      #000;
+$white:      #fff;
+$gray-100:   #f3f4f6;
+$gray-200:   #e5e7eb;
+$gray-300:   #d1d5db;
+$gray-400:   #9ca3af;
+$gray-500:   #6b7280;
+$gray-600:   #4b5563;
+$gray-800:   #1f2937;
+
+$blue-500:   #0066cc;
+
+$red-100:    #ff0000;
+
+$font-light:  300;
+$font-normal: 400;
+$font-bold:   500;
+$font-x-bold:  600;
+
+$bp-tablet:        40rem;    // 640px
+$bp-desktop:       64rem;    // 1024px
+$bp-wide:          86.25rem; // 1380px
+
+$max-width:        64rem;   // max-w-5xl
+$max-width-narrow: 48rem;   // max-w-3xl
+$max-width-card:   24rem;   // max-w-sm
+$pad-x:            1.5rem;  // px-6
+
+$chapter-width-mobile: 92%;
+$chapter-width-tablet: 75%;
+$chapter-width-desktop: 60%;

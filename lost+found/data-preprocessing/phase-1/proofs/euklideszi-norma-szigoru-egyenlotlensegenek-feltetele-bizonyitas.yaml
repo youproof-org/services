@@ -1,0 +1,71 @@
+type: proof
+name: euklideszi-norma-szigoru-egyenlotlensegenek-feltetele-bizonyitas
+remarks: []
+references:
+  egysegek-es-egysegelem-viszonya:
+    target:
+      type: theorem
+      name: egysegek-es-egysegelem-viszonya
+  euklideszi-gyuru:
+    target:
+      type: definition
+      name: euklideszi-gyuru
+  gyuru-test:
+    target:
+      type: definition
+      name: gyuru-test
+content:
+  - type: narrative
+    content: |
+      Előszöris, mivel $R$ euklidészi gyűrű, így a [euklideszi-gyuru] alapján ***létezik egységelem***.
+  - type: narrative
+    content: |
+      Ha $b$ egység, akkor a [egysegek-es-egysegelem-viszonya] tétel értelmében osztója az egységelemnek. Létezik
+      tehát olyan $c$ elem, amelyre $bc=1$ teljesül. Mivel $c\eq 0_R$ (máskülönben a $bc$ szorzat a nullelem
+      lenne), ezért a $g$ norma egyenlőtlenségi tulajdonsága miatt $g(ab)\leq g(a\underbrace{bc}_{=1})=g(a)$.
+      Ugyanakkor szintén az egyenlőtlenségi tulajdonság miatt $g(a)\leq g(ab)$. Mindkét irányban fennáll tehát a
+      $\leq$ reláció, így az antiszimmetria miatt szükségképpen $g(a)=g(ab)$.
+  - type: narrative
+    content: |
+      Azt tehát már tudjuk, hogy ha $b$ egység, akkor valóban teljesül az egyenlőség. Azt kell még megmutatni, hogy
+      más esetben viszont nem teljesül. Ezért most indirekt tegyük fel, hogy $b$ nem egység, ám ennek ellenére
+      teljesül $g(a)=g(ab)$.
+  - type: narrative
+    content: |
+      Mivel $a$-ról és $b$-ről tudjuk, hogy egyik sem a nullelem, ezért a nullosztómentesség miatt az $ab$ szorzat
+      sem lehet az. Emiatt az $a$ elem elosztható maradékosan az $ab$ elemmel a $g$ norma szerint.
+  - type: formula
+    lead-in: |
+      Azaz létezik olyan $k$ hányados és $r$ maradék, hogy teljesülnek az alábbiak:
+    content: |
+      \begin{aligned}a&=kab + r \\ g(r)&\lt g(ab)\end{aligned}
+  - type: formula
+    lead-in: |
+      Az egyenlet mindkét oldalából $kab$-t levonva ezt kapjuk:
+    content: |
+      a-kab=r
+  - type: formula
+    lead-in: |
+      A baloldalt a disztributivitási szabályok miatt ([gyuru-test] 5. pont) így írhatjuk át:
+    content: |
+      a\cdot (1-kb)=r
+  - type: narrative
+    content: |
+      Mivel $b$-ről indirekt azt mondtuk, hogy nem egység, ezért a [egysegek-es-egysegelem-viszonya] miatt nem
+      lehet osztója az egységelemnek. Emiatt $kb\eq 1$, és így $1-kb$ biztosan nem a nullelem.
+  - type: formula
+    lead-in: |
+      A tétel szövegéből tudjuk ugyanakkor, hogy $a$ sem a nullelem, azaz a nullosztómentesség miatt $r$ az $a$-nak
+      egy nemnulla többszöröse  (egész konkrétan $1-kb$-szerese), és így a $g$ norma egyenlőtlenségi tulajdonsága
+      miatt teljesül a következő egyenlőtlenség:
+    content: |
+      g(a)\leq g(\underbrace{a\cdot (1-kb)}_{=r})
+  - type: narrative
+    content: |
+      Azt kaptuk tehát, hogy $g(a)\leq g(r)$. Ugyanakkor indirekt feltételeztük, hogy $g(a)=g(ab)$, így a fentebbi
+      maradékos osztásból kapott $g(r)\lt g(ab)$ szigorú egyenlőtlenségből $g(r)\lt g(a)$ következik.
+  - type: narrative
+    content: |
+      Ez ***ellentmondás***, hiszen $g(r)$ nem lehet egyszerre legalább akkora, mint $g(a)$, és határozottan kisebb
+      is nála. Az indirekt feltételezésünk hibás volt, azaz a $g(a)=g(ab)$ egyenlőség nem állhat fenn, amennyiben
+      $b$ nem egység.

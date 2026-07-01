@@ -1,0 +1,15 @@
+type: theorem
+name: egesz-szamok-osszeadasa-joldefinialt
+proofs:
+  - egesz-szamok-osszeadasa-joldefinialt-bizonyitas
+remarks: []
+references:
+  termeszetes-szamparok-ekvivalenciarelacioja:
+    target:
+      type: definition
+      name: termeszetes-szamparok-ekvivalenciarelacioja
+content:
+  - type: narrative
+    content: |
+      Jelölje $\sim$ a [termeszetes-szamparok-ekvivalenciarelacioja] szerinti relációt. Ebben az esetben ha
+      $(a_1;b_1)\sim (a_2;b_2)$ és $(c_1;d_1)\sim (c_2;d_2)$, akkor $(a_1+c_1;b_1+d_1)\sim (a_2+c_2;b_2+d_2)$.

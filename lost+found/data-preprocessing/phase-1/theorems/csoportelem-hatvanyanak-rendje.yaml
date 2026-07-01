@@ -1,0 +1,27 @@
+type: theorem
+name: csoportelem-hatvanyanak-rendje
+proofs:
+  - csoportelem-hatvanyanak-rendje-bizonyitas
+remarks: []
+references:
+  egesz-kitevos-hatvany:
+    target:
+      type: definition
+      name: egesz-kitevos-hatvany
+content:
+  - type: formula
+    lead-in: |
+      Legyen $G$ tetszőleges csoport, $g$ pedig ennek egy tetszőleges eleme, amelynek rendje $d$, azaz:
+    content: |
+      o(g)=d
+  - type: formula
+    lead-in: |
+      Ekkor $g$ tetszőleges $k$-adik ***hatványának*** (lásd a [egesz-kitevos-hatvany]t) rendjét az alábbi képlet
+      adja meg, ahol $\frac{d}{(d,k)}$ azt az egész számot jelöli, amelyet a $(d,k)$ kitüntetett közös osztóval
+      megszorozva $d$-t kapunk:
+    content: |
+      o(g^k)=\frac{d}{(d,k)}
+  - type: narrative
+    content: |
+      A $g^k$ hatvány rendje ***akkor és csak akkor*** egyezik meg $g$ rendjével &ndash; azaz $d$-vel &ndash;, ha a
+      $k$ kitevő relatív prím $d$-hez.

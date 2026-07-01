@@ -1,0 +1,86 @@
+type: proof
+name: prim-modulus-hatvanyozasa-bizonyitas
+remarks: []
+references:
+  egesz-szam-p-adikus-rendje:
+    target:
+      type: definition
+      name: egesz-szam-p-adikus-rendje
+  egesz-szamok-kozotti-kongruencia:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia
+  p-edik-hatvanyok-kulonbsegenek-p-adikus-rendje:
+    target:
+      type: theorem
+      name: p-edik-hatvanyok-kulonbsegenek-p-adikus-rendje
+content:
+  - type: narrative
+    content: |
+      ***Egyrészt*** az általánosság megsértése nélkül feltehetjük, hogy $a\eq 1$, ebben az esetben ugyanis a tétel
+      nyilvánvalóan igaz. Továbbá azt is feltehetjük, hogy $a\eq -1$, mivel ebben az esetben a $-1\equiv 1\pmod p$
+      feltétel alapján $p$ csak $2$ lehet, és ekkor a tétel ismét nyilvánvalóan igaz.
+  - type: narrative
+    content: |
+      ***Másrészt*** az $a$ egész szám biztosan nem osztható $p$-vel, hiszen a tétel szövegében szereplő $a\equiv
+      1\pmod p$ kongruencia alapján $1$-et ad maradékul $p$-vel osztva. Az $1$ szintén nem osztható $p$-vel. Emiatt
+      a [egesz-szam-p-adikus-rendje] szerint a szorzatuk $p$-adikus rendje biztosan 0.
+  - type: formula
+    lead-in: |
+      ***Harmadrészt*** az $a\equiv 1\pmod p$ a [egesz-szamok-kozotti-kongruencia] 3. pontja alapján azt is
+      jelenti, hogy teljesül az alábbi oszthatóság:
+    content: |
+      p|a-1
+  - type: narrative
+    content: |
+      Így ismételten a [egesz-szam-p-adikus-rendje] szerint az $a-1$ különbség $p$-adikus rendje biztosan nem 0.
+  - type: formula
+    lead-in: |
+      ***Összefoglalva*** tehát az $a$ és az $1$ egész számokra teljesül a
+      [p-edik-hatvanyok-kulonbsegenek-p-adikus-rendje] mindhárom feltétele, azaz:
+    content: |
+      \begin{aligned}a&\ eq 1\\v_p(a\cdot 1)&=0\\v_p(a-1)&\ eq 0\end{aligned}
+  - type: formula
+    lead-in: |
+      Ekkor viszont ugye teljesül az alábbi összefüggés:
+    content: |
+      v_p(a^p-1^p)=v_p(a-1)+1
+  - type: narrative
+    content: |
+      Ez tehát azt jelenti, hogy az $a^p-1$ különbség prímtényezős felbontásában 1-gyel többször szerepel $p$, mint
+      az $a-1$ felbontásában.
+  - type: formula
+    lead-in: |
+      Következésképp, mivel ugye teljesül a $p|a-1$ oszthatóság, ezért szükségképpen teljesülnie kell a $p^2|a^p-1$
+      oszthatóságnak is, ami a [egesz-szamok-kozotti-kongruencia] 3. pontja alapján az alábbi kongruenciát jelenti:
+    content: |
+      a^p\equiv 1\pmod{p^2}
+  - type: narrative
+    content: |
+      Most ugyanezt a gondolatmenetet eljátszhatjuk az $a^p$ és az $1$ egész számokra is. ***Egyrészt*** mivel
+      $a\eq 1$ és $a\eq -1$, ezért nyilván $a^p\eq 1$ is teljesül. ***Másrészt*** mivel $a$-ról tudjuk, hogy nem
+      osztható $p$-vel, ezért nyilván $a^p$ sem osztható $p$-vel, azaz $v_p(a^p\cdot 1)=0$. ***Harmadrészt*** mivel
+      teljesül a $p^2|a^p-1$ oszthatóság, ezért nyilván $v_p(a^p-1)\eq 0$.
+  - type: formula
+    lead-in: |
+      Ám ekkor ismét a [p-edik-hatvanyok-kulonbsegenek-p-adikus-rendje] alapján:
+    content: |
+      v_p((a^p)^p-1^p)=v_p(a^p-1)+1
+  - type: narrative
+    content: |
+      Vagyis az $(a^p)^p-1=a^{p^2}-1$ különbség prímtényezős felbontásában 1-gyel többször szerepel $p$, mint az
+      $a^p-1$ felbontásában.
+  - type: formula
+    lead-in: |
+      Következésképp, mivel ugye teljesül a $p^2|a^p-1$ oszthatóság, ezért szükségképpen teljesülnie kell a
+      $p^3|a^{p^2}-1$ oszthatóságnak is, ami a [egesz-szamok-kozotti-kongruencia] 3. pontja alapján az alábbi
+      kongruenciát jelenti:
+    content: |
+      a^{p^2}\equiv 1\pmod{p^3}
+  - type: formula
+    lead-in: |
+      A fenti gondolatmenetet akárhányszor megismételhetjük, melynek során a $c-1$-edik lépésben épp a tétel
+      állítását kapjuk:
+    content: |
+      \begin{aligned}a^{p^3}&\equiv 1\pmod{p^4} \\ a^{p^4}&\equiv 1\pmod{p^5} \\ a^{p^5}&\equiv 1\pmod{p^6} \\
+      &\vdots \\ a^{p^{c-1}}&\equiv 1\pmod{p^c}\end{aligned}

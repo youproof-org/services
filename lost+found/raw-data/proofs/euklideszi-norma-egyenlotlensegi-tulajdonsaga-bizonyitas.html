@@ -1,0 +1,48 @@
+<!-- wp:paragraph -->
+<p>A bizonyítás konstruktív lesz, azaz az [latex]f[/latex] euklidészi norma segítségével definiálni fogunk egy olyan [latex]g[/latex] függvényt, amely maga is euklidészi norma, de ezen felül teljesíti a tételben szereplő egyenlőtlenségi tulajdonságot is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel, hogy valamilyen tetszőleges [latex]k[/latex] elemre szeretnénk kiszámítani a [latex]g(k)[/latex] függvényértéket. Ehhez először képezzük a [latex]k[/latex] elem összes nemnulla többszörösének az [latex]f[/latex] norma szerinti értékét, azaz minden [latex]R[/latex]-beli [latex]x\
+eq 0[/latex] elemre kiszámítjuk az [latex]f(kx)[/latex] természetes számokat. Ezután válasszuk [latex]g(k)[/latex] értékének ezek közül a legkisebbet, amely ugye a [yp_element slug="termeszetes-szamok-minimumtetele" type="link" /] miatt biztosan létezik. Más szavakkal a [latex]g(k)[/latex] függvényérték legyen az eredeti [latex]f[/latex] normának a [latex]k[/latex] elem nemnulla többszörösein felvett minimuma.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A [latex]g[/latex] függvény fenti definíciója alapján tehát a tételben szereplő [latex]a[/latex] és [latex]b\
+eq 0_R[/latex] elemek esetén létezik olyan [latex]c\
+eq 0_R[/latex] elem, amelyre [latex]g(ab)=f(abc)[/latex] teljesül (nevezetesen épp az a [latex]c[/latex] elem, amelyre az [latex]f(abc)[/latex] felveszi a minimumát). Mivel ugyanakkor az [latex]abc[/latex] szorzat az [latex]ab[/latex] elemen kívül az [latex]a[/latex] elemnek is egy nemnulla többszöröse, ezért ismét a [latex]g[/latex] függvény fenti definíciója miatt [latex]g(a)\leq f(abc)[/latex], azaz valóban teljesül a tételben szereplő egyenlőtlenség:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]g(a)\leq \underbrace{g(ab)}_{=f(abc)}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Már csak annyit kell igazolni, hogy [latex]g[/latex] is euklidészi norma [latex]R[/latex]-ben. Legyen [latex]b\
+eq 0_R[/latex] egy tetszőleges nemnulla [latex]R[/latex]-beli elem, valamint válasszuk ki [latex]b[/latex]-nek egy olyan nemnulla többszörösét, amelyre az eredeti [latex]f[/latex] norma épp a minimumát veszi fel (ez ugye biztosan létezik, mint azt már láttuk fentebb). Azaz válasszunk ki egy olyan [latex]c\
+eq 0_R[/latex] elemet, amelyre [latex]g(b)=f(bc)[/latex] teljesül.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Minthogy [latex]b\
+eq 0_R[/latex] és [latex]c\
+eq 0_R[/latex] ezért a nullosztómentesség miatt [latex]bc\
+eq 0_R[/latex]. Azaz tetszőleges [latex]a[/latex] elem maradékosan elosztható a [latex]bc[/latex] elemmel az eredeti [latex]f[/latex] norma szerint. Ez azt jelenti, hogy létezik olyan [latex]k[/latex] hányados és [latex]r[/latex] maradék, amelyekre teljesülnek az alábbiak:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a&amp;=k\cdot (bc) + r \\ f(r)&amp;\lt f(bc)\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Egyrészt a [latex]g[/latex] függvény definíciója miatt [latex]g(r)\leq f(r\cdot 1) = f(r)[/latex]. Másrészt viszont a [latex]c[/latex] elemet épp úgy választottuk ki, hogy [latex]f(bc)=g(b)[/latex] teljesüljön. Létezik tehát olyan hányados (nevezetesen [latex]kc[/latex]) és maradék (nevezetesen [latex]r[/latex]), amelyre teljesülnek az alábbiak:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a&amp;=(kc)\cdot b + r \\ \underbrace{g(r)}_{\leq f(r)}&amp;\lt \underbrace{g(b)}_{=f(bc)}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azaz tetszőleges [latex]a[/latex] elem tetszőleges [latex]b\
+eq 0_R[/latex] elemmel elosztható maradékosan a [latex]g[/latex] függvény szerint is, így [latex]g[/latex] valóban egy euklidészi norma.</p>
+<!-- /wp:paragraph -->

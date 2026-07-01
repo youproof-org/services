@@ -1,0 +1,20 @@
+type: theorem
+name: euler-fuggveny-szorzattarto-tulajdonsaga
+proofs:
+  - euler-fuggveny-szorzattarto-tulajdonsaga-bizonyitas
+remarks: []
+references:
+  relativ-primek:
+    target:
+      type: definition
+      name: relativ-primek
+content:
+  - type: narrative
+    content: |
+      Legyen $a$ és $b$ két tetszőleges ***pozitív*** egész szám. Tegyük fel továbbá, hogy $a$ és $b$ egymáshoz
+      ***relatív prímek*** (lásd a [relativ-primek]t).
+  - type: formula
+    lead-in: |
+      Ekkor teljesül az alábbi:
+    content: |
+      \varphi(ab)=\varphi(a) \cdot \varphi(b)

@@ -1,0 +1,87 @@
+type: section
+name: 01-digitalis-alairasok
+title: Digitális aláírások
+
+body:
+  - type: narrative
+    content: |
+      Láthattuk, hogy egy aszimmetrikus kulcsú rejtjelező esetén a kulcspár nyilvános részével kódolt üzeneteket
+      kizárólag ugyanezen kulcspár titkos részével lehet dekódolni. Igen hasznos eszközt kapunk a kezünkbe,
+      amennyiben ***a kulcsok szerepe ilyen értelemben felcserélhető***. Nevezetesen, ha a kulcspár titkos részével
+      kódolt üzeneteket viszont kizárólag a kulcspár nyilvános részével lehet dekódolni. Nem minden aszimmetrikus
+      kulcsú rejtjelező teljesíti ezt a kritériumot, de történetesen a már sokszor említett ***RSA-algoritmus***
+      igen. De vajon miért olyan hasznos ez?
+  - type: narrative
+    content: |
+      Rejtjelezésre nyilván nem használható. Ha ugyanis Alice kódol egy üzenetet a saját titkos kulcsával, akkor
+      azt a fentiek alapján bárki dekódolni tudja Alice nyilvános kulcsával, hiszen az bárki számára elérhető.
+      Vegyük észre azonban, miszerint az a tény, hogy egy üzenet dekódolható Alice nyilvános kulcsával egyben azt
+      is jelenti, hogy azt csak egy olyan résztvevő kódolhatta, aki Alice titkos kulcsának birtokában volt.
+      Márpedig ha Alice nem teljesen bolond, és valóban sosem adja ki a kezéből a titkos kulcsát, akkor ez
+      bizonyíték arra, hogy az üzenetet kizárólag ő küldhette. Ily módon Bob könnyedén meggyőződhet arról, hogy
+      Mallory vagy más belekontárkodott-e az üzenetbe az átvitel során vagy nem.
+  - type: narrative
+    content: |
+      Tegyük fel ugyanis, hogy Alice szeretne egy $x$ üzenetet küldeni Bob számára, de azt is szeretné, ha Bob
+      ellenőrizni tudná, hogy valóban az az üzenet érkezik-e meg hozzá, amelyet ő elküldött. Alice-nak nincs más
+      dolga, mint kódolni az üzenetet, de ezúttal nem Bob nyilvános kulcsát, hanem a saját $k_A$ titkos kulcsát
+      használva. Az így kapott $y$ kódszöveget ezután Alice az elküldeni kívánt $x$ üzenethez fűzi, és az így
+      keletkezett $(x,y)$ összetett üzenetet küldi el Bob-nak.
+  - type: figure
+    lead-in: |
+      Ez látható az alábbi ábrán:
+    src: 03-digitalis-alairas-alapvaltozat.jpg
+    alt: Digitális aláírás (alapváltozat)
+    caption: Digitális aláírás (alapváltozat)
+  - type: narrative
+    content: |
+      Bob a vételi oldalon szétszedi a megérkező $(x,y)$ összetett üzenetet, de mielőtt annak $x$ komponensét
+      felhasználná, szeretne meggyőződni róla, hogy az sértetlenül érkezett-e meg hozzá. Ezt könnyen megteheti,
+      hiszen csak vennie kell Alice $K_A$ nyilvános kulcsát, azzal dekódolni a kapott összetett üzenet $y$
+      komponensét, és az eredményt összehasonlítani $x$-szel. Amennyiben ez a kettő megegyezik, úgy Bob biztos
+      lehet benne, hogy az üzenet küldője Alice titkos kulcsának birtokában volt. Következésképp a küldő csak Alice
+      lehetett.
+  - type: narrative
+    content: |
+      Amennyiben viszont Bob különbséget észlel, akkor ez azt bizonyítja számára, hogy egy aktív támadó
+      garázdálkodik a kommunikációs csatornán. Hiszen Mallory hiába próbálja meg korrumpálni az $x$ üzenetet, a
+      megváltoztatott üzenethez tartozó $y$ komponenst nem fogja tudni előállítani, mivel nem ismeri Alice titkos
+      kulcsát. Az $y$ komponens tehát tulajdonképpen hitelesíti az $x$ komponens eredetét Bob számára, így azt
+      szemléletesen Alice ***digitális aláírásának*** nevezzük.
+  - type: narrative
+    content: |
+      Ez mind szép és jó, van azonban három probléma, amit mindenképpen meg kéne oldani. Az első, és legkisebb
+      probléma az, hogy az $(x,y)$ összetett üzenet $x$ komponense teljesen nyílt szövegként halad át a
+      kommunikációs csatornán. Így annak tartalmát egy támadó &ndash; habár módosítani nem tudja az $y$ digitális
+      aláírás miatt &ndash; minden erőfeszítés nélkül megismerheti. Ez a probléma könnyen kiküszöbölhető, ha Alice
+      először rejtjelezi az $x$ üzenetet Bob $K_B$ nyilvános kulcsával, és az így kapott $s$ kódszöveget látja el a
+      saját digitális aláírásával $x$ helyett.
+  - type: narrative
+    content: |
+      Bob ebben az esetben ugyanúgy ellenőrizni tudja az $s$ kódszöveg hitelességét az előbb ismertetett módon,
+      csak ezután még dekódolnia kell azt a saját $k_B$ titkos kulcsával annak érdekében, hogy megkapja az eredeti
+      $x$ üzenetet. Ilyen módon tehát az üzenet eredetiségének védelme mellett a tartalmának elrejtése is
+      biztosítható.
+  - type: figure
+    lead-in: |
+      Ez látható az alábbi ábrán:
+    src: 04-digitalis-alairas-rejtjelezovel.jpg
+    alt: Digitális aláírás (rejtjelezővel)
+    caption: Digitális aláírás (rejtjelezővel)
+  - type: narrative
+    content: |
+      A második probléma a digitális aláírás méretével függ össze. Vegyük észre, hogy a digitális aláírás nem más,
+      mint az aláírni kívánt bitsorozat Alice titkos kulcsával kódolt változata. Következésképp ugyanolyan hosszú,
+      mint maga az üzenet. Ezt a problémát a következő szakaszban tárgyalt úgynevezett ***kriptográfiai hash
+      függvényekkel*** iktathatjuk ki.
+  - type: narrative
+    content: |
+      Végül a harmadik probléma Bobnak az Alice nyilvános kulcsába vetett bizalmával függ össze. Nevezetesen,
+      amikor Bob ellenőrzi egy üzenet digitális aláírását Alice nyilvános kulcsával, hogyan győződhet meg arról,
+      hogy az valóban Alice nyilvános kulcsa, nem pedig Mallory-é, aki csak azt hazudja a kulcsról, hogy Alice-é?
+      Bob vagy egy nyilvános kulcstárból kérdezi le Alice kulcsát, vagy pedig maga Alice küldi el neki. De
+      gondoljunk bele, hogy Mallory kontrollálni tudja a résztvevők teljes kommunikációját. Így azt is elérheti,
+      hogy Bob-hoz már egy olyan nyilvános kulcs jut el, ami valójában Mallory titkos kulcsának a párja. Mallory
+      tehát ebben az esetben képes digitálisan aláírni egy meghamisított üzenetet oly módon, hogy Bob rendben
+      találja az aláírást, mivel azt hiszi, hogy Alice nyilvános kulcsát használta az ellenőrzéshez. Ennek
+      kivédésére szolgálnak a ***digitális tanúsítványok***, amelyekről szintén ebben a részben lesz szó.

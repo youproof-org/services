@@ -1,0 +1,89 @@
+<!-- wp:paragraph -->
+<p><strong><em>Az 1. állítás:</em></strong> Itt tulajdonképpen két <strong><em>halmazrendszer</em></strong> (lásd a [yp_element slug="halmazrendszerek" type="link" /]t) elemei között kell kölcsönösen egyértelmű megfeleltetést létesíteni. Az első halmazrendszer tehát a [latex]G[/latex] csoport azon részcsoportjaiból áll, amelyek tartalmazzák [latex]N[/latex]-t, mint az [latex]f[/latex] csoporthomomorfizmus magját. Ezt jelöljük [latex]\mathcal{G}[/latex]-vel. A második halmazrendszer pedig [latex]H[/latex] összes részcsoportjaiból áll. Ezt jelöljük [latex]\mathcal{H}[/latex]-val.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="reszcsoport-kepe" type="link" /]ben már láttuk, hogy tetszőleges [latex]G[/latex]-beli [latex]K[/latex] részcsoport [latex]f[/latex] szerinti képe részcsoport [latex]H[/latex]-ban, azaz [latex]f(K)\leq H[/latex]. A [yp_element slug="kep-teljes-inverz-kep" type="link" /] alapján [latex]f(K)[/latex] a <strong><em>legszűkebb</em></strong> olyan részcsoport [latex]H[/latex]-ban, amely [latex]K[/latex] minden elemének képét tartalmazza, és így a [yp_element slug="halmazrendszer-legkisebb-es-legnagyobb-eleme-egyertelmu" type="link" /] értelmében [latex]f(K)[/latex] egyértelműen meghatározott. Mindez természetesen speciálisan igaz az [latex]N[/latex]-et tartalmazó [latex]G[/latex]-beli részcsoportokra is. Az a leképezés tehát, amely tetszőleges [latex]K\in \mathcal{G}[/latex] részcsoportból képzi az [latex]f(K)\in \mathcal{H}[/latex] részcsoportot, tekinthető egy [latex]\mathcal{G}[/latex]-ből [latex]\mathcal{H}[/latex]-ba mutató függvénynek is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Visszafelé:</em></strong> Mivel [latex]f[/latex] most <strong><em>szürjektív</em></strong> csoporthomomorfizmus, ezért minden [latex]H[/latex]-beli elem legalább egy [latex]G[/latex]-beli elem képe, és így [latex]H[/latex] tetszőleges [latex]L[/latex] részcsoportjának <strong><em>létezik</em></strong> teljes inverz képe [latex]G[/latex]-ben (vesd össze a [yp_element slug="kep-teljes-inverz-kep" type="link" /] utáni megjegyzéssel). A [yp_element slug="reszcsoport-teljes-inverz-kepe" type="link" /] alapján ez a bizonyos [latex]f^{-1}(L)[/latex]-lel jelölt teljes inverz kép részcsoport [latex]G[/latex]-ben. Ezenkívül [latex]f^{-1}(L)[/latex] a <strong><em>legbővebb</em></strong> olyan részcsoport, amelynek minden elemének képe [latex]L[/latex]-ben van, és így egyrészt a [yp_element slug="halmazrendszer-legkisebb-es-legnagyobb-eleme-egyertelmu" type="link" /] értelmében egyértelműen meghatározott. Másrészt pedig mivel [latex]L[/latex] tartalmazza [latex]H[/latex] egységelemét – hiszen részcsoport [latex]H[/latex]-ban –, ezért [latex]f^{-1}(L)[/latex] szükségképpen tartalmaz minden olyan [latex]G[/latex]-beli elemet, amelyek erre az egységelemre képződnek. Ezek viszont épp az [latex]N[/latex] homomorfizmus-magot alkotják, azaz [latex]f^{-1}(L)[/latex] tartalmazza [latex]N[/latex]-et, és így benne van a [latex]\mathcal{G}[/latex] halmazrendszerben. Így tehát az előző gondolatmenethez hasonlóan a teljes inverz kép képzése tekinthető egy [latex]\mathcal{H}[/latex]-ból [latex]\mathcal{G}[/latex]-be mutató függvénynek.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most már tehát van egy [latex]g:\mathcal{G}\to \mathcal{H}[/latex], valamint egy [latex]h:\mathcal{H}\to \mathcal{G}[/latex] függvényünk a két halmazrendszer között. A <strong><em>kölcsönösen egyértelműséghez</em></strong> azt kell megmutatni, hogy e két függvény épp egymás megfordítása. Ez azt jelenti, hogy bármilyen sorrendben is alkalmazzuk őket egymás után, pontosan a kiinduló részcsoportot kell kapnunk eredményül. Azaz tetszőleges [latex]K\in \mathcal{G}[/latex] és [latex]L\in \mathcal{H}[/latex] esetén igazolnunk kell az alábbi hozzárendelések érvényességét:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}K&amp;\xmapsto{g} f(K)\xmapsto{h} f^{-1}(f(K))=K \\ L&amp;\xmapsto{h} f^{-1}(L) \xmapsto{g} f(f^{-1}(L))=L\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>második megfeleltetés</em></strong> nyilvánvalóan teljesül, hiszen a [yp_element slug="kep-teljes-inverz-kep" type="link" /] utáni megjegyzés alapján tetszőleges [latex]L\in \mathcal{H}[/latex] részcsoport teljes inverz képének képe maga [latex]L[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezzel szemben az <strong><em>első megfeleltetés</em></strong> igazolásánál egy picit nehezebb dolgunk van, ugyanis a [yp_element slug="kep-teljes-inverz-kep" type="link" /] utáni megjegyzés szerint alapból nem mindig teljesül, hogy tetszőleges [latex]K\leq G[/latex] részcsoport képének teljes inverz képe maga [latex]K[/latex]. Most viszont tudjuk, hogy [latex]K\in \mathcal{G}[/latex], azaz ő nem akármilyen részcsoport, hanem olyan, amely tartalmazza az [latex]f[/latex] csoporthomomorfizmus [latex]N[/latex]-nel jelölt magját. Vezessük be az [latex]L=f(K)[/latex] jelölést. Ezek után azt kell tehát megmutatni, hogy ebben a speciális esetben mégis fennáll a [latex]K=f^{-1}(L)[/latex] halmazegyenlőség, ami a [yp_element slug="reszhalmaz" type="link" /] utáni megjegyzés 5. pontja alapján azt jelenti, hogy e két halmaz kölcsönösen tartalmazza egymást.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A [latex]K\sube f^{-1}(L)[/latex] tartalmazás</em></strong> a [yp_element slug="kep-teljes-inverz-kep" type="link" /] utáni megjegyzésből következik, hiszen [latex]f(K)=L[/latex], amiből e megjegyzés alapján [latex]K\sube f^{-1}(L)[/latex] következik.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most nézzük az [latex]f^{-1}(L)\sube K[/latex] tartalmazást. Legyen [latex]a[/latex] az [latex]f^{-1}(L)[/latex] tetszőleges eleme. Ekkor egyrészt a [yp_element slug="kep-teljes-inverz-kep" type="link" /] alapján az [latex]a[/latex] elem [latex]f[/latex] szerinti képe benne van [latex]L[/latex]-ben, azaz [latex]f(a)\in L[/latex]. Másrészt [latex]L=f(K)[/latex] miatt a [yp_element slug="kep-teljes-inverz-kep" type="link" /] alapján minden [latex]L[/latex]-beli elem legalább egy [latex]K[/latex]-beli elemnek a képe. Ez speciálisan igaz az [latex]f(a)\in L[/latex] elemre is, azaz léteznie kell [latex]K[/latex]-ban egy olyan [latex]k[/latex] elemnek, amelyre [latex]f(k)=f(a)[/latex] teljesül.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez viszont a [yp_element slug="csoporthomomorfizmus-magjanak-szukseges-feltetele" type="link" /] 2. pontja alapján azt jelenti, hogy [latex]a[/latex] ugyanabban az [latex]N[/latex] szerinti baloldali mellékosztályban van, mint [latex]k[/latex], azaz [latex]a\in kN[/latex]. Ezek szerint létezik olyan [latex]n\in N[/latex], hogy [latex]a=k\cdot n[/latex]. Most viszont tudjuk, hogy [latex]N\sube K[/latex], így ez a bizonyos [latex]n[/latex] benne van egyúttal a [latex]K[/latex] részcsoportban is, következésképp az [latex]a=k\cdot n[/latex] szorzat is benne van [latex]K[/latex]-ban, hiszen ő zárt a szorzásra nézve. Vagyis valóban teljesül az [latex]f^{-1}(L)\sube K[/latex] tartalmazás, és így az [latex]f^{-1}(L)=K[/latex] halmazegyenlőség is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A 2. állítás:</em></strong> Az 1. állításhoz hasonlóan itt is két <strong><em>halmazrendszer</em></strong> elemei között kell kölcsönösen egyértelmű megfeleltetést létesíteni. Az első halmazrendszer tehát a [latex]K\leq G[/latex] részcsoport szerinti baloldali mellékosztályokból áll. Ezt jelöljük [latex]\mathcal{K}[/latex]-val. A második halmazrendszer pedig az [latex]L\leq H[/latex] részcsoport szerinti baloldali mellékosztályokból áll. Ezt jelöljük [latex]\mathcal{L}[/latex]-lel. Mutatnunk kell egy [latex]\mathcal{K}[/latex] és [latex]\mathcal{L}[/latex] közötti <strong><em>kölcsönösen egyértelmű</em></strong> megfeleltetést. Ehhez azt a [yp_element slug="mellekosztalyok" type="link" /]ben szereplő ekvivalenciarelációt fogjuk használni, amely a baloldali mellékosztályokat kijelöli a [latex]G[/latex] és a [latex]H[/latex] csoportokban.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Legyen ezért [latex]a[/latex] és [latex]b[/latex] két tetszőleges elem [latex]G[/latex]-ben. Ez a két elem a [yp_element slug="mellekosztalyok" type="link" /] szerint akkor és csak akkor van ugyanabban a [latex]K[/latex] részcsoport szerinti mellékosztályban, ha az [latex]a^{-1}b[/latex] szorzat benne van magában a [latex]K[/latex] részcsoportban. Minthogy a [latex]K[/latex] részcsoport az [latex]L[/latex] részcsoport <strong><em>teljes inverz képe</em></strong>, ezért az [latex]a^{-1}b[/latex] szorzat akkor és csak akkor van benne [latex]K[/latex]-ban, ha [latex]f(a^{-1}b)[/latex] benne van [latex]L[/latex]-ben. Az [latex]f[/latex] csoporthomomorfizmus művelet- és inverzképzéstartó tulajdonságai miatt az [latex]f(a^{-1}b)\in L[/latex] állítás ekvivalens az [latex](f(a))^{-1}f(b)\in L[/latex] állítással. Ez viszont szintén a [yp_element slug="mellekosztalyok" type="link" /] alapján akkor és csak akkor teljesül, ha [latex]f(a)[/latex] ugyanabban az [latex]L[/latex] részcsoport szerinti baloldali mellékosztályban van, mint [latex]f(b)[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Egyrészt</em></strong> tehát azt kaptuk, hogy egy adott [latex]K[/latex] szerinti baloldali mellékosztály összes elemének ugyanabban az [latex]L[/latex] szerinti baloldali mellékosztályban lesz az [latex]f[/latex] szerinti képe. Az [latex]f[/latex] csoporthomomorfizmus tehát ilymódon minden [latex]\mathcal{K}[/latex]-beli baloldali mellékosztályhoz egyértelműen kijelöl egy [latex]\mathcal{L}[/latex]-beli baloldali mellékosztályt. Ez tekinthető egy [latex]k:\mathcal{K} \to \mathcal{L}[/latex] <strong><em>függvénynek</em></strong> is. Ha például [latex]g\in G[/latex] egy tetszőleges elem, akkor ez a függvény a [latex]gK[/latex] baloldali mellékosztályhoz az [latex]f(gK)[/latex] halmazt rendeli hozzá, amely tehát épp az [latex]f(g)L[/latex] baloldali mellékosztály lesz, azaz [latex]k(gK)=f(g)L[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Továbbá</em></strong> a [latex]k[/latex] függvényről elmondható, hogy <strong><em>injektív</em></strong>, hiszen azt is megkaptuk, hogy különböző [latex]K[/latex] szerinti baloldali mellékosztályba eső elemek [latex]f[/latex] szerinti képei különböző [latex]L[/latex] szerinti baloldali mellékosztályokban lesznek. Ha tehát valamilyen [latex]a[/latex] és [latex]b[/latex] elemek esetén [latex]k(aK)=k(bK)[/latex], akkor ebből [latex]aK=bK[/latex] következik. Ez egyben azt is jelenti, hogy a [latex]K[/latex] szerinti mellékosztályok a hozzájuk tartozó [latex]L[/latex] szerinti mellékosztályoknak valóban a <strong><em>teljes inverz képei</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Végül</em></strong> a [latex]k[/latex] függvény <strong><em>szürjektív</em></strong> is. Ugyanis a tétel szövege alapján az [latex]f[/latex] csoporthomomorfizmus is az, és így bármely [latex]h\in H[/latex] elemhez van olyan [latex]g\in G[/latex], amelyre [latex]f(g)=h[/latex] teljesül. Így viszont a [latex]hL=f(g)L[/latex] baloldali mellékosztályt épp a [latex]gK[/latex] baloldali mellékosztályhoz rendeli hozzá a [latex]k[/latex] függvény. Vagyis valóban minden [latex]L[/latex] szerinti mellékosztály párja valamelyik [latex]K[/latex] szerinti mellékosztálynak, és így [latex]k[/latex] egy <strong><em>kölcsönösen egyértelmű</em></strong> megfeleltetés.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A 3. állítás:</em></strong> Ugyanígy igazolható, csak ekkor a [yp_element slug="mellekosztalyok" type="link" /]ben szereplő másik ekvivalenciarelációt kell használni, amely a jobboldali mellékosztályokat jelöli ki.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A 4. állítás:</em></strong> Tegyük fel, hogy [latex]K[/latex] normálosztó [latex]G[/latex]-ben. Ez a [yp_element slug="normaloszto" type="link" /] alapján azt jelenti, hogy a [latex]K[/latex] szerinti bal- és jobboldali mellékosztályok megegyeznek, azaz tetszőleges [latex]g\in G[/latex] esetén [latex]gK=Kg[/latex]. Ám ekkor a <strong><em>2.</em></strong> és <strong><em>3. állítás</em></strong> bizonyításában szereplő [latex]k[/latex] megfeleltetés őhozzájuk az [latex]f(g)L=Lf(g)[/latex] mellékosztályokat rendeli, amelyek szintén megegyeznek. A [latex]k[/latex] függvény szürjektivitása miatt ilymódon minden [latex]L[/latex] szerinti baloldali mellékosztályról megkaptuk, hogy megegyezik a megfelelő jobboldali mellékosztállyal, azaz [latex]L[/latex] is normálosztó [latex]H[/latex]-ban.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most tegyük fel, hogy [latex]K[/latex] nem normálosztó [latex]G[/latex]-ben. Azaz létezik olyan [latex]g\in G[/latex], hogy [latex]gK\
+eq Kg[/latex]. Ekkor viszont [latex]f(g)L\
+eq Lf(g)[/latex] is igaz, máskülönben az ő teljes inverz képük, azaz [latex]gK[/latex] és [latex]Kg[/latex] mégiscsak megegyezne. Így tehát [latex]L[/latex] sem normálosztó [latex]H[/latex]-ban.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Végül tegyük fel, hogy [latex]K[/latex] és [latex]L[/latex] normálosztók, és tekintsük a [latex]G/K[/latex] és a [latex]H/L[/latex] faktorcsoportokat. Ezek elemei rendere a [latex]K[/latex] és az [latex]L[/latex] szerinti bal- illetve a velük megegyező jobboldali mellékosztályok. A <strong><em>2.</em></strong> és <strong><em>3. állítás</em></strong> bizonyításában szereplő, közöttük lévő [latex]k[/latex] megfeleltetésről már láttuk, hogy kölcsönösen egyértelmű, ezért már csak azt kell megmutatni, hogy művelettartó is. Legyen tehát [latex]aK[/latex] és [latex]bK[/latex] két tetszőleges baloldali mellékosztály a [latex]G/K[/latex] faktorcsoportban. Azt kell megmutatni, hogy az ő [latex]k[/latex] szerinti megfelelőik szorzata a [latex]H/L[/latex] faktorcsoportban ugyanaz, mint a [latex]G/K[/latex] faktorcsoportban vett szorzatuk [latex]k[/latex] szerinti megfelelője.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az egyértelműség érdekében az alábbiakban a különböző csoportok műveleteit különböző szimbólumokkal jelöltük. Így [latex]\odot[/latex] jelöli a [latex]G/K[/latex] faktorcsoport, [latex]\boxdot[/latex] a [latex]H/L[/latex] faktorcsoport, [latex]\cdot[/latex] a [latex]G[/latex] csoport, végül [latex]\bullet[/latex] a [latex]H[/latex] csoport szorzását:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}k(aK) \boxdot k(bK)&amp;=f(a)L \boxdot f(b)L=(f(a)\bullet f(b))L \\ k(aK \odot bK)&amp;=k((a\cdot b)K)=f(a\cdot b)L=(f(a)\bullet f(b))L\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mindkét esetben azonos végeredményt kaptunk, tehát a [latex]k[/latex] leképezés művelettartó, és így valóban egy <strong><em>izomorfizmus</em></strong> a [latex]G/K[/latex] és [latex]H/L[/latex] faktorcsoportok között.</p>
+<!-- /wp:paragraph -->

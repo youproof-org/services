@@ -1,0 +1,27 @@
+type: proof
+name: kituntetett-kozos-oszto-egyertelmusege-bizonyitas
+remarks: []
+references:
+  asszocialt:
+    target:
+      type: definition
+      name: asszocialt
+  asszocialtsag-egysegelemes-gyuruben:
+    target:
+      type: theorem
+      name: asszocialtsag-egysegelemes-gyuruben
+content:
+  - type: narrative
+    content: |
+      ***Nézzük a tétel első állítását.*** Tegyük fel, hogy $d_1$ kitüntetett közös osztója $a$-nak és $b$-nek,
+      valamint $d_2$-re teljesül, hogy $d_1 \sim d_2$ &ndash; azaz $d_1$ és $d_2$ asszociáltak. Azt kell
+      megmutatni, hogy ekkor $d_2$ is kitüntetett közös osztó. Az asszociáltság [asszocialt]ja alapján $d_2$-nek
+      pontosan ugyanazok az osztói, mint $d_1$-nek. Emiatt, mivel $d_1$-nek osztója az összes közös osztó (hiszen
+      kitüntetett), ezért $d_2$-nek is, így ő is kitüntetett.
+  - type: narrative
+    content: |
+      ***Most nézzük a második állítást.*** Tegyük fel, hogy $d_1$ és $d_2$ is kitüntetett közös osztója $a$-nak és
+      $b$-nek. Azt kell megmutatni, hogy ekkor $d_1 \sim d_2$ &ndash; azaz $d_1$ és $d_2$ asszociáltak. Mivel $d_1$
+      közös osztó, ezért osztója $d_2$-nek, hiszen $d_2$ ugye kitüntetett. Fordítva: mivel $d_2$ közös osztó, ezért
+      osztója $d_1$-nek, hiszen $d_1$ is kitüntetett. A két kitüntetett közös osztó tehát kölcsönösen osztói
+      egymásnak, és így a [asszocialtsag-egysegelemes-gyuruben] értelmében egymás asszociáltjai.

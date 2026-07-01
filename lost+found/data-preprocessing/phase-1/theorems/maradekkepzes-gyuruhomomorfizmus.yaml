@@ -1,0 +1,16 @@
+type: theorem
+name: maradekkepzes-gyuruhomomorfizmus
+proofs:
+  - maradekkepzes-gyuruhomomorfizmus-bizonyitas
+remarks: []
+references:
+  modularis-osszeadas-es-szorzas:
+    target:
+      type: definition
+      name: modularis-osszeadas-es-szorzas
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy $m\eq 0$ egy tetszőleges nemnulla egész szám. Ekkor a [modularis-osszeadas-es-szorzas]ban
+      szereplő $\bmod_m:\Z \to Z_m$ ***maradékképző függvény egy szürjektív gyűrűhomomorfizmus*** $\Z$ és $Z_m$
+      között.

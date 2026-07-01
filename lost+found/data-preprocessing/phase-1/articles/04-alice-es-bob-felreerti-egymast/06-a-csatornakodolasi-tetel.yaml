@@ -1,0 +1,45 @@
+type: section
+name: 06-a-csatornakodolasi-tetel
+title: A csatornakódolási tétel
+
+body:
+  - type: narrative
+    content: |
+      Most térjünk vissza a már említett csatornakódolási tétel meglepő állítására, amely megcáfolta azt az
+      intuitív elképzelést, miszerint a kódsebesség és a hibavalószínűség közötti kompromisszumra lenne szükség egy
+      csatornakód tervezésekor.
+  - type: narrative
+    content: |
+      Ezzel szemben a tétel a következőt állítja: ***ha az elérni kívánt kódsebesség kisebb, mint a
+      csatornakapacitás, akkor létezik tetszőlegesen kicsi hibavalószínűségű csatornakód***.
+  - type: narrative
+    content: |
+      Igaz továbbá a tétel megfordítása is: ***ha az elérni kívánt kódsebesség a csatornakapacitásnál nagyobb,
+      akkor ilyen kód nem létezik***.
+  - type: narrative
+    content: |
+      Gondoljunk csak bele, hogy ez mennyire ellentmond annak, amit gondolnánk az eddigiek alapján. Tegyük fel,
+      hogy a hibavalószínűséget valamilyen nagyon kicsi érték alá szeretnénk szorítani, és mindemellett azt is
+      szeretnénk elérni, hogy a kódsebesség minél közelebb legyen az elvi maximumhoz, azaz a csatornakapacitáshoz.
+      A tétel állítása szerint ilyen kódnak léteznie kell. Az egyetlen bökkenő az, hogy a csatornakódolási tétel
+      pusztán ilyen kód létezését állítja, nem mond azonban semmit arról, hogy azt hogyan kéne megkonstruálni.
+      Például nem tudjuk azt sem, hogy egy adott hibavalószínűségi korlát eléréséhez milyen hosszú kódszavakat
+      kellene használnunk.
+  - type: narrative
+    content: |
+      Az ezzel kapcsolatos kutatások napjainkban is tartanak. Ennek nagy lökést adtak az 1960-as években
+      felfedezett úgynevezett ***konvolúciós kódok***. Ezen kívül a kódelméleti kutatások viszonylag új vonalát
+      jelentik az úgynevezett ***turbó kódok***, melyek kódsebessége már megközelíti a csatornakapacitást. Jelenleg
+      úgy tűnik, hogy széleskörű elterjedésüknek csak a kódolás és dekódolás során fellépő nagy késleltetés és
+      komplexitás szab határt. Legfőbb felhasználási területük az űrtávközlés, azon belül is főként a mélyűr
+      kommunikáció. Itt tipikusan nagyon zajos csatornákon, és emiatt rendkívül alacsony csatornakapacitás mellett
+      kell tudni megbízhatóan kommunikálni. Gondoljunk csak például a New Horizons nevű űrszondára, amelynek nemrég
+      a Plútó térségéből kellett képeket és mérési adatokat visszaküldeni a Földre. Olyan távolságból, ahonnan még
+      a rádiójeleknek is 4-5 óráig tart ideérni fénysebességgel. Egy ilyen csatornán rengeteg a bithiba, ugyanakkor
+      a nagy késleltetés miatt szeretnénk elkerülni az üzenetek újraküldését, amennyire csak lehet.
+  - type: figure
+    lead-in: |
+      A fentiek alapján az információátviteli modellünket az alábbi ábrán látható módon kell tehát kibővítenünk:
+    src: 10-bovitett-informacioatviteli-modell.jpg
+    alt: Információátviteli modell (részlet)
+    caption: Információátviteli modell (részlet)

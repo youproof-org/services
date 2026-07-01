@@ -1,0 +1,47 @@
+<!-- wp:paragraph -->
+<p>Előszöris megjegyezzük, hogy a [yp_element slug="csoporthomomorfizmus-magjanak-szukseges-feltetele" type="link" /] 4. pontja alapján [latex]\ker f[/latex] normálosztó [latex]G[/latex]-ben, így a baloldalon álló [latex]G/\ker f[/latex] faktorcsoport valóban értelmes. Igaz továbbá, hogy a [yp_element slug="csoporthomomorfizmus-kepenek-feltetele" type="link" /] alapján [latex]\text{im} f[/latex] részcsoport abban a csoportban, ahová [latex]f[/latex] mutat, így a tételben szereplő csoportizomorfia jobboldala is értelmes. Most megmutatjuk, hogy az izomorfia valóban teljesül.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az átláthatóság érdekében vezessük be az [latex]N=\ker f[/latex] jelölést. A [latex]G/N[/latex] faktorcsoport elemei tehát az [latex]N=\ker f[/latex], mint normálosztó szerinti baloldali mellékosztályok. A [yp_element slug="csoporthomomorfizmus-magjanak-szukseges-feltetele" type="link" /] 2. pontja alapján minden ilyen baloldali mellékosztályban az ott lévő elemeknek ugyanaz lesz az [latex]f[/latex] szerinti képe [latex]H[/latex]-ban, tehát abban a csoportban, ahová [latex]f[/latex] mutat.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez alapján definiálhatunk egy [latex]g:G/N\to \text{im} f[/latex] leképezést a tételben szereplő faktorcsoport és az [latex]f[/latex] csoporthomomorfizmus képe között. Ennek a leképezésnek a képletét a [latex]G[/latex] csoport elemeinek és az [latex]f[/latex] csoporthomomomorfizmusnak a segítségével adjuk meg. Az alábbi képlet azt fejezi ki, hogy minden [latex]a[/latex] elem esetén a [latex]g[/latex] leképezés az [latex]a[/latex] elemet tartalmazó <strong><em>BALOLDALI MELLÉKOSZTÁLYhoz</em></strong> épp azt az elemet rendeli hozzá a [latex]H[/latex] csoportból, amelyet az [latex]f[/latex] csoporthomomorfizmus is hozzárendel magához az [latex]a[/latex] <strong><em>ELEMhez</em></strong>:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]g(aN)=f(a)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi ábra mutatja a [latex]g[/latex] leképezés iménti konstrukcióját.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":6946,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_25_faktorcsoport_izomorfizmusa.jpg" alt="" class="wp-image-6946"/><figcaption>Faktorcsoport elemeinek leképezése</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Ez egy értelmes leképezés, ha ugyanis valamely [latex]a[/latex] és [latex]b[/latex] elemek ugyanabban a baloldali mellékosztályban vannak, akkor a [yp_element slug="csoporthomomorfizmus-magjanak-szukseges-feltetele" type="link" /] 2. pontja alapján az ő [latex]f[/latex] szerinti képük megegyezik. Így tehát a [latex]g[/latex] leképezés eredménye nem függ attól, hogy a bemeneti baloldali mellékosztály mely reprezentánselemének segítségével számítottuk azt ki a fenti képlettel.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most igazoljuk, hogy a [latex]g[/latex] leképezés <strong><em>kölcsönösen egyértelmű</em></strong>. Előszöris azt mutatjuk meg, hogy két különböző baloldali mellékosztály [latex]g[/latex] szerinti képe is különbözik. Tegyük fel ezért indirekt, hogy a [latex]G[/latex] csoport [latex]a[/latex] és [latex]b[/latex] elemei két <strong><em>különböző</em></strong> baloldali mellékosztályban vannak, ám e két mellékosztálynak ennek ellenére ugyanaz a [latex]g[/latex] szerinti képe, azaz [latex]g(aN)=g(bN)[/latex]. Ez a [latex]g[/latex] leképezés definíciója alapján azt jelentené, hogy [latex]f(a)=f(b)[/latex]. De ez <strong><em>ellentmondás</em></strong>, hiszen ez azt jelentené, hogy [latex]a[/latex] és [latex]b[/latex] mégis ugyanabban a baloldali mellékosztályban van. Azt tehát már tudjuk, hogy a [latex]H[/latex]-beli [latex]\text{im} f[/latex] részcsoport minden eleme <strong><em>legfeljebb egy</em></strong> baloldali mellékosztálynak lehet a [latex]g[/latex] szerinti képe, azaz [latex]g[/latex] <strong><em>injektív</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A kölcsönös egyértelműséghez azt kell még igazolni, hogy [latex]\text{im} f[/latex]-ben nincs olyan elem, amely ne lenne képe valamely baloldali mellékosztálynak a [latex]g[/latex] függvény szerint (azaz, hogy [latex]g[/latex] <strong><em>szürjektív</em></strong>). Ez viszont természetesen teljesül, hiszen [latex]\text{im} f[/latex] nem más, mint az [latex]f[/latex] csoporthomomorfizmus képe. Következésképp minden itt lévő [latex]a[/latex] elemhez létezik olyan [latex]x[/latex] elem a [latex]G[/latex] csoportban, amelynek épp [latex]a[/latex] a képe az [latex]f[/latex] függvény szerint (azaz [latex]f(x)=a[/latex]). Ez az [latex]x[/latex] elem viszont benne van az [latex]xN[/latex] baloldali mellékosztályban, amelyhez viszont a [latex]g[/latex] függvény rendeli hozzá az [latex]a[/latex] elemet [latex]H[/latex]-ban. A [latex]g[/latex] függvény tehát valóban <strong><em>kölcsönösen egyértelmű</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A [latex]g[/latex] <strong><em>művelettartási tulajdonsága</em></strong> a fenti képletből már könnyen adódik. Felhívjuk az Olvasó figyelmét, hogy az alábbi levezetésben három különböző csoport is érintett, ennek megfelelően az ezekben értelmezett műveletek között jelölésbeli különbséget is tettünk. A [latex]G/N[/latex] faktorcsoport műveletét a [latex]\odot[/latex], a [latex]G[/latex] csoport műveletét a [latex]\cdot[/latex], míg a [latex]H[/latex] csoport műveletét a [latex]\boxdot[/latex] szimbólumokkal jelöltük:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}g(aN\odot bN)&amp;=g((a\cdot b)N)=\\&amp;=f(a\cdot b)=f(a)\boxdot f(b)=\\&amp;=g(aN)\boxdot g(bN)\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Így tehát [latex]g[/latex] valóban <strong><em>csoportizomorfizmus</em></strong> a [latex]G/N[/latex] faktorcsoport és [latex]f[/latex] képe között.</p>
+<!-- /wp:paragraph -->

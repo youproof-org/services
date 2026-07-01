@@ -1,0 +1,85 @@
+type: remark
+name: polinomok-megjegyzes
+references:
+  gyuruhomomorfizmus:
+    target:
+      type: definition
+      name: gyuruhomomorfizmus
+  termeszetes-szamok-beagyazasa-osszegtarto:
+    target:
+      type: theorem
+      name: termeszetes-szamok-beagyazasa-osszegtarto
+  termeszetes-szamok-beagyazasa-rendezestarto:
+    target:
+      type: theorem
+      name: termeszetes-szamok-beagyazasa-rendezestarto
+  termeszetes-szamok-beagyazasa-szorzattarto:
+    target:
+      type: theorem
+      name: termeszetes-szamok-beagyazasa-szorzattarto
+content:
+  - type: formula
+    lead-in: |
+      Tekintsük például az alábbi egész számokból álló végtelen sorozatot, amely tehát a definíció alapján egy $\Z$
+      feletti harmadfokú polinom, hiszen a $4$-es indexű tagjától kezdve csupa $0$ számokból áll (ne feledjük, a
+      számozás a nulladik indextől indul):
+    content: |
+      (1,3,0,1,0,0,0,\ldots)
+  - type: narrative
+    content: |
+      Ez a polinom tulajdonképpen az $1+3x+0x^2+x^3$ kifejezést reprezentálja, de ugyanúgy reprezentálja az
+      $x^3+3x+1$ és az $1+x+2x^3+2x-x^3$ kifejezéseket is, hiszen ezek csupán a tagok sorrendjében és az $x$
+      hatványainak csoportosításában különböznek egymástól, lényegüket tekintve viszont mind ugyanannak a
+      polinomnak a különböző megnyilvánulásai.
+  - type: narrative
+    content: |
+      Amikor polinomokkal számolunk, sok esetben kézenfekvőbb a definícióhoz képest ebben a kevésbé szigorú
+      formájukban gondolnunk rájuk. Azt, hogy intuitív módon a "szokásos szabályok" szerint lehet ezekkel a
+      kifejezésekkel "számolni" az a kikötés biztosítja, hogy a polinom együtthatói valamilyen ***kommutatív
+      gyűrűből*** kell származzanak, és hogy a definícióban lévő képletekben szereplő összeadások illetve szorzások
+      alatt e ***gyűrű műveleteit*** kell érteni. Ettől függetlenül a kellő precizitás érdekében mi továbbra is a
+      definícióban szereplő, végtelen sorozatokkal történő reprezentációt fogjuk használni.
+  - type: narrative
+    content: |
+      Ezen túlmenően a végtelen sorozatokkal történő reprezentációnak praktikussági okai is vannak. Így ugyanis a
+      polinomok összegének illetve szorzatának definiálásakor nem kell foglalkozni azzal, hogy a két összeadandó
+      vagy összeszorzandó polinomnak mi a foka. A képletek ugyanis ettől függetlenül működnek, hiszen ***minden***
+      polinomot egységesen, egy végtelen, gyűrűelemekből álló sorozatként képzelhetünk el ilyenkor.
+  - type: narrative
+    content: |
+      Nagyon fontos kikötés azonban, hogy ***nem minden végtelen sorozatot tekintünk polinomnak***, hanem csak
+      azokat, amelyek esetén véges sok tag után a sorozat minden további tagja a gyűrű nulleleme. Ez biztosítja
+      azt, hogy nem léteznek végtelen fokú polinomok. Ezenkívül a fok tekintetében különbséget kell tennünk a
+      ***nulladfokú polinomok*** és a ***nullapolinom*** között. A definíció szerint előbbieknek létezik foka (ami
+      nevezetesen nulla), míg a utóbbinak nem. Ennek a megkülönböztetésnek fontos szerepe van bizonyos további
+      tételekben is.
+  - type: narrative
+    content: |
+      Végül tartsuk szem előtt, hogy a konstans polinomok jellegüket tekintve teljesen más matematikai objektumok,
+      mint magának az $R$ gyűrűnek az elemei, noha kifejezésként felírva őket ez nem látszik elsőre. Például a $3$
+      jelölhet egy $\Z[x]$-beli konstans polinomot leíró kifejezést is, továbbá egy $\Z$-beli egész számot is.
+  - type: formula
+    lead-in: |
+      Előbbi esetben tulajdonképpen az alábbi végtelen sorozatról van szó, ami nagyon nem ugyanaz, mint maga a $3$
+      egész szám:
+    content: |
+      (3,0,0,0,\ldots)
+  - type: narrative
+    content: |
+      Ez azonban mégsem okoz zavart, ugyanis tetszőleges $R$ kommutatív gyűrű ***beágyazható*** (lásd a
+      [gyuruhomomorfizmus]t) az $R[x]$ halmazba.
+  - type: formula
+    lead-in: |
+      Az $f:R\to R[x]$ beágyazófüggvényt tetszőleges $r\in R$ gyűrűelem esetén az alábbi hozzárendelés valósítja
+      meg:
+    content: |
+      r\xmapsto{f} (r,0_R,0_R,0_R,\ldots)
+  - type: narrative
+    content: |
+      Ez nyilvánvalóan egyrészt egy kölcsönösen egyértelmű megfeleltetés $R$ elemei és a konstans polinomok között,
+      másrészt tartja az $R$ gyűrű összeadását és szorzását. Ilyen értelemben tehát $R$ elemei ***azonosíthatók***
+      a nekik megfelelő konstans polinomokkal. Vagyis az $R$ gyűrűt gyakorlatilag tekinthetjük az $R[x]$ halmaz
+      részének is, habár szigorúan matematikai értelemben nem erről van szó. Ez nagyon hasonló ahhoz, mint ahogy a
+      természetes számok $\N$ halmazát a rajta értelmezett két művelettel és a rendezési relációval együtt az egész
+      számok $\Z$ halmazába ágyaztuk be (lásd az erről szóló [termeszetes-szamok-beagyazasa-osszegtarto],
+      [termeszetes-szamok-beagyazasa-szorzattarto] valamint [termeszetes-szamok-beagyazasa-rendezestarto]eket).

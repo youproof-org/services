@@ -1,0 +1,133 @@
+type: proof
+name: egesz-szamok-maradekos-osztasa-egyertelmu-bizonyitas
+remarks: []
+references:
+  abszolutertek-euklideszi-norma:
+    target:
+      type: theorem
+      name: abszolutertek-euklideszi-norma
+  egesz-szamok-abszoluterteke:
+    target:
+      type: definition
+      name: egesz-szamok-abszoluterteke
+  euklideszi-gyuru:
+    target:
+      type: definition
+      name: euklideszi-gyuru
+  gyuru-reszbenrendezesenek-tulajdonsagai:
+    target:
+      type: theorem
+      name: gyuru-reszbenrendezesenek-tulajdonsagai
+  gyuru-test:
+    target:
+      type: definition
+      name: gyuru-test
+  maradekok-kulonbsege-oszthato-a-modulussal:
+    target:
+      type: theorem
+      name: maradekok-kulonbsege-oszthato-a-modulussal
+  oszthatosag:
+    target:
+      type: definition
+      name: oszthatosag
+content:
+  - type: narrative
+    content: |
+      Előszöris azt igazoljuk, hogy a maradékos osztás ezekkel a szigorúbb feltételekkel is elvégezhető, azaz
+      mindenképpen ***létezik nemnegatív maradék is***. Ezután fogjuk igazolni ennek ***egyértelműségét***.
+  - type: narrative
+    content: |
+      A [abszolutertek-euklideszi-norma]ből tudjuk, hogy az abszolútérték függvény egy euklidészi norma a $\Z$
+      gyűrűn.
+  - type: formula
+    lead-in: |
+      Ez a [euklideszi-gyuru] alapján azt jelenti, hogy tetszőleges $a$ és $b\eq 0$ egész számhoz létezik olyan
+      $k_0$ hányados és $r_0$ maradék, amelyekre teljesülnek az alábbiak:
+    content: |
+      \begin{aligned}a&=k_0\cdot b + r_0 \\ |r_0|&\lt |b|\end{aligned}
+  - type: narrative
+    content: |
+      Feladatunk megmutatni, hogy ezekből előállítható olyan $k$ hányados és $r$ maradék is, amelyek a tételben
+      szereplő szigorúbb feltételeknek is eleget tesznek.
+  - type: narrative
+    content: |
+      Amennyiben $r_0\geq 0$, akkor az abszolútérték-függvény [egesz-szamok-abszoluterteke]ja miatt $|r_0|=r_0$.
+      Ekkor az $r=r_0$ és a $k=k_0$ választás épp megfelel a feltételeknek.
+  - type: narrative
+    content: |
+      Így elegendő csak azzal az esettel foglalkozni, amikor $r_0\lt 0$. Ekkor az abszolútérték-függvény
+      definíciója miatt $|r_0|=-r_0$. Mivel $r_0\lt 0$, ezért a [gyuru-reszbenrendezesenek-tulajdonsagai] 1. pontja
+      miatt $-r_0\gt 0$.
+  - type: ordered-list
+    lead-in: |
+      Ekkor az euklidészi normára vonatkozó $|r_0|\lt|b|$ feltétel az alábbi két eset valamelyikével ekvivalens
+      attól függően, hogy $b$ pozitív vagy negatív:
+    items:
+      - 'Ha $b$ ***pozitív***, akkor $0\lt \overbrace{-r_0}^{=|r_0|}\lt \overbrace{b}^{=|b|}$.'
+      - 'Ha $b$ ***negatív***, akkor $0\lt \underbrace{-r_0}_{=|r_0|}\lt \underbrace{-b}_{=|b|}$.'
+  - type: ordered-list
+    lead-in: |
+      A jobboldali egyenlőtlenségekhez $r_0$-t, a baloldali egyenlőtlenségekhez pedig az 1. esetben $(r_0+b)$-t, a
+      2. esetben pedig $(r_0-b)$-t adva az alábbiakat kapjuk:
+    items:
+      - 'Ha $b$ ***pozitív***, akkor $0\lt r_0+b\lt \overbrace{b}^{=|b|}$.'
+      - 'Ha $b$ ***negatív***, akkor $0\lt r_0-b\lt \underbrace{-b}_{=|b|}$.'
+  - type: narrative
+    content: |
+      Azaz ha meg tudnánk oldani, hogy az eredeti $a=k_0b+r_0$ egyenletből kiindulva olyan maradékos osztást
+      végezzünk, amelynek eredményeképp az 1. esetben $(r_0+b)$, a 2. esetben pedig $(r_0-b)$ legyen a maradék,
+      akkor ezek eleget tennének a tételben szereplő feltételeknek.
+  - type: formula
+    lead-in: |
+      Ezt viszont a [gyuru-test]ban szereplő 5. gyűrűaxióma szerinti disztributivitási szabályok kihasználásával és
+      egy piszkos kis trükkel minden gond nélkül meg tudjuk tenni:
+    content: |
+      \begin{aligned}a&=k_0b+r_0=k_0b+r_0+b-b=(\overbrace{k_0-1}^{k})b +
+      \overbrace{r_0+b}^{r}\\a&=k_0b+r_0=k_0b+r_0+b-b=(\underbrace{k_0+1}_{k})b +
+      \underbrace{r_0-b}_{r}\end{aligned}
+  - type: narrative
+    content: |
+      Így tehát ***pozitív*** $b$ esetén a $k=k_0-1$ és $r=r_0+b$ választással, míg ***negatív*** $b$ esetén a
+      $k=k_0+1$ és $r=r_0-b$ választással az $r$ maradék garantáltan pozitív lesz. Ezzel minden esetet lefedtünk,
+      az egész számok körében tehát valóban ***mindig elvégezhető a maradékos osztás úgy, hogy a kapott maradék
+      nemnegatív***.
+  - type: narrative
+    content: |
+      Azt kell még megmutatni, hogy ilyen feltételekkel viszont már csak ***egyféleképpen végezhető el***. Tegyük
+      fel, hogy kétféleképpen is elvégezhető a nemnegatív maradékos osztás.
+  - type: formula
+    lead-in: |
+      Ez azt jelenti, hogy léteznek olyan $k_1$ és $k_2$ hányadosok, valamint ***nemnegatív*** $r_1$ és $r_2$
+      maradékok, amelyekre teljesülnek az alábbiak:
+    content: |
+      \begin{aligned}&a=k_1\cdot b + r_1 \\ &a=k_2\cdot b + r_2\\ &0\leq r_1 \lt |b| \\ &0\leq r_2\lt
+      |b|\end{aligned}
+  - type: formula
+    lead-in: |
+      A két fenti egyenletet egymásból kivonva a következőt kapjuk:
+    content: |
+      0=(k_1-k_2)\cdot b + r_1 - r_2
+  - type: formula
+    lead-in: |
+      Mindkét oldalból $(k_1-k_2)\cdot b$-t kivonva az alábbi lesz a szituáció:
+    content: |
+      r_1-r_2=(k_2-k_1)\cdot b
+  - type: narrative
+    content: |
+      Ez viszont az oszthatóság [oszthatosag]ja alapján épp azt jelenti, hogy teljesül a $b|r_1-r_2$ oszthatóság.
+      Mivel $r_1$ és $r_2$ is a $b$-vel való maradékos osztás során kapott nemnegatív maradékok, így ők biztosan
+      szigorúan kisebbek $b$ abszolútértékénél. Ebből viszont a [maradekok-kulonbsege-oszthato-a-modulussal]
+      alapján $r_1=r_2$ következik, azaz a maradékok valóban megegyeznek.
+  - type: formula
+    lead-in: |
+      Ekkor azonban a korábban kapott $r_1-r_2=(k_2-k_1)\cdot b$ egyenlet az alábbi alakra egyszerűsödik:
+    content: |
+      \underbrace{0}_{=r_1-r_2}=(k_2-k_1)\cdot b
+  - type: narrative
+    content: |
+      Mivel a tétel szövegében kikötöttük, hogy $b\eq 0$, ezért a nullosztómentesség miatt ez csak akkor
+      teljesülhet, ha $k_2-k_1=0$, amiből $k_1=k_2$ következik. Így tehát a hányadosok is megegyeznek.
+  - type: narrative
+    content: |
+      ***Azaz valóban:*** tetszőleges $a$ és $b\eq 0$ egész számok között ***pontosan egyféleképpen*** lehet
+      elvégezni a maradékos osztást úgy, hogy a kapott maradék ***nemnegatív***.

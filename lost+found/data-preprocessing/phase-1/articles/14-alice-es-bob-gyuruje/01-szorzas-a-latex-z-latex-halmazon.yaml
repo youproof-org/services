@@ -1,0 +1,48 @@
+type: section
+name: 01-hogyan-szorozzunk-a-Z-halmazon
+title: 'Szorzás a [latex]\Z[/latex] halmazon'
+
+references:
+  ekvivalencia-osztalyok-reprezentansa:
+    target:
+      type: theorem
+      name: ekvivalencia-osztalyok-reprezentansa
+  peano-osszeadas:
+    target:
+      type: definition
+      name: peano-osszeadas
+  peano-szorzas:
+    target:
+      type: definition
+      name: peano-szorzas
+  pozitiv-es-negativ-egesz-szamok:
+    target:
+      type: definition
+      name: pozitiv-es-negativ-egesz-szamok
+
+body:
+  - type: narrative
+    content: |
+      Az előző részben a [pozitiv-es-negativ-egesz-szamok]ban bevezettük a pozitív és negatív egész számok
+      ***általános iskolából már megszokott jelölését*** a meglehetősen szokatlan $[(a;b)]$ jelölésmód helyett.
+      Eszerint az $[(n;0)]$ alakú egész számokat &ndash; amelyek ugye $n$ aranytallérnyi ***betétet*** jelentenek
+      &ndash; pozitív egész számoknak neveztük, és $+n$-nel jelöltük. Ezzel szemben a $[(0;n)]$ alakú egész
+      számokat &ndash; amelyek tehát $n$ aranytallérnyi ***adósságot*** jelölnek &ndash; negatív egész számoknak
+      neveztük, és $-n$-nel jelöltük. Végül a $[(0;0)]$ alakban felírható egész számot ***"nullának"*** neveztük,
+      és $0$-val jelöltük. Ezt a [ekvivalencia-osztalyok-reprezentansa] miatt tehettük meg, amely szerint minden
+      egész szám felírható valamelyik alakban e három közül. Egyelőre azonban maradjunk a "szokatlan" jelölésmódnál
+      mindaddig, amíg a megszokott számolási szabályok be nem bizonyosodnak.
+  - type: narrative
+    content: |
+      Tegyük fel, hogy van egy $[(a;b)]$-vel és egy $[(c;d)]$-vel jelölt egész számunk. Kérdés, hogy mi legyen a
+      $[(a;b)] \odot [(c;d)]$ szorzás, mint művelet eredménye? Szabad kezet kaptunk a képlet megalkotásához, így
+      azt úgy alakíthatjuk ki, ahogy nekünk tetszik. Az egyetlen megkötés, hogy kizárólag az eddig már megalkotott
+      fogalmainkat használhatjuk, mint amilyen például a Peano-összeadás ([peano-osszeadas]) és a Peano-szorzás
+      ([peano-szorzas]). Nyilván azt szeretnénk elérni, hogy a megszokott számolási szabályok teljesüljenek a most
+      bevezetendő $\odot$ és az előző részben bevezetett $\oplus$ műveletekre. Ennek szellemében kell tehát
+      megalkotnunk a képletet.
+  - type: narrative
+    content: |
+      Ehhez azonban egyenleteket kell tudnunk megoldani a Peano-axiómarendszer által meghatározott $(\N ,+,\cdot )$
+      algebrai struktúrában, azaz a természetes számok halmazán. Lévén hogy nem áll rendelkezésünkre mind a négy
+      alapművelet, ezért ehhez szükségünk lesz némi segítségre.

@@ -1,0 +1,99 @@
+type: section
+name: 02-a-jatekszabalyok-megvaltoztatasa
+title: A játékszabályok megváltoztatása
+
+body:
+  - type: narrative
+    content: |
+      Önkényesen ***változtassuk meg a párhuzamossági axiómát*** &ndash; azaz az egyik játékszabályt &ndash; a
+      következőképpen. Ha van egy $e$ egyenes, és egy ezen kívüli $P$ pont, akkor nem létezik olyan egyenes, amely
+      átmegy a $P$ ponton, és nem metszi az $e$ egyenest. Vagy ami ennek közvetlen logikai következménye: ***nem
+      léteznek párhuzamos egyenesek***. Mi a gond ezzel? Első olvasatra butaságnak tűnik? Már hogyne léteznének
+      párhuzamosok? Hiszen az előbb próbáltuk ki a papírlapon &ndash; mondhatnánk, de meglepő módon tévedünk.
+  - type: narrative
+    content: |
+      Sokaknak nem tűnik fel, de az előző mondatban a "papírlap" szó kulcsfontosságú volt. Méghozzá azért, mert a
+      papírlapra rajzolt vonalak valójában nem maguk az egyenesek, mint absztrakt geometriai objektumok, hanem
+      azoknak csak a ***modelljei***. Sőt az egész papírlap maga is csak egy modell. Méghozzá annak a geometriának
+      a modellje, amelyben szerepel a párhuzamossági axióma, mint játékszabály. Nem modellje viszont ennek a nagyon
+      furcsának tűnő másik geometriának, amelyből önkényesen kihajítottuk a párhuzamossági axiómát, és felvettünk
+      helyette egy, a párhuzamosságot megtiltó új axiómát. Ha jobban belegondolunk, modellekre csakis nekünk
+      embereknek van szükségünk ahhoz, hogy el tudjuk képzelni a matematikát. A matematika azonban köszöni szépen,
+      de e nélkül is nagyon jól működik. Mi lehet hát a modellje ennek az új geometriának, és vajon hasznos-e
+      egyáltalán?
+  - type: narrative
+    content: |
+      A válasz az, hogy e nélkül nem létezne hajózás, repülőzés, űrhajózás, és valószínűleg műholdakat sem tudnánk
+      Föld körüli pályára állítani. E geometria ugyanis nem más, mint az úgynevezett ***gömbi geometria***. Ennek
+      egyik &ndash; de nem az egyetlen &ndash; modellje egy sík papírlap helyett egy gömbfelület. Az
+      ***"egyenesek"*** pedig az e gömbfelületen elhelyezkedő úgynevezett ***főköröknek*** feleltethetők meg.
+      Főkörnek nevezzük a gömbfelület és egy tetszőleges, a gömb középpontjára illeszkedő sík metszésvonalát. Ha
+      belegondolunk, az "egyenes" fogalmának ilyen módon történő definíciója esetén valóban nem léteznek párhuzamos
+      "egyenesek", azaz olyanok, amelyek ne metszenék egymást.
+  - type: figure
+    lead-in: |
+      Ez látható az alábbi ábrán:
+    src: 02-fokorok-a-gombi-geometriaban.jpg
+    alt: Főkörök a gömbi geometriában
+    caption: Főkörök a gömbi geometriában
+  - type: narrative
+    content: |
+      Mondhatnánk, hogy jó-jó, de milyen butaság már "egyeneseknek" hívni a főköröket, amikor a nevükben is benne
+      van, hogy "kör". Ez azonban ***pusztán fogalomalkotás kérdése***, hiszen nem a neve határozza meg egy adott
+      matematikai objektum tulajdonságait, hanem a rá kimondott axiómák. Az "egyenes" kifejezés használata mellett
+      szól például az, hogy gömbi geometria esetén is igaz marad az a szokásos megállapítás, miszerint 2 pont
+      között a legrövidebb út az őket összekötő "egyenes" mentén helyezkedik el.
+  - type: narrative
+    content: |
+      Gondoljunk csak mondjuk a repülésre. Biztosan mindenki elgondolkozott már azon, hogy vajon miért tesznek
+      akkora kerülőt Grönland felé az Európából az USA-ba tartó repülőgépek, holott mehetnének nyugat felé is, ami
+      a térképeken látszólag rövidebb út lenne? A válasz nagyon egyszerű. Azért mert a látszat ellenére, ha a
+      kapitány Európában Grönland felé irányítja a gép orrát, és csak egyenesen halad előre irányváltoztatás
+      nélkül, akkor az USA nyugati partján fog kikötni. Mindenki fogjon a kezébe egy földgolyót, és azonnal látni
+      fogja, hogy ez valóban így van.
+  - type: narrative
+    content: |
+      De akkor miért tűnik mégis kerülőútnak a világtérképen a Grönland felé vezető útvonal? Ennek pusztán az az
+      oka, hogy egy világtérkép a valódi gömbfelületnek csak egy sík felületre történő vetítése, amelyen a
+      távolságok szükségszerűen torzulnak az útvonal mentén. Attól függően, hogy milyen vetítéssel készült az adott
+      térkép, a gömbi geometriának más és más modelljét kapjuk, és ezekben az "egyenesek" modelljei is más és más
+      görbék lesznek. Egy szokásos világtérképen például az "egyenesek" modelljei szinuszhullámok lesznek. Biztos
+      sokan láttak már űrhajós filmet, ahol az irányítóközpont falára volt kivetítve az űrhajó pályája, amely a
+      világtérképen egy szabályos szinuszhullámhoz hasonló görbeként jelent meg.
+  - type: narrative
+    content: |
+      Az alábbi ábrán például a fehér görbe a Nemzetközi Űrállomás (ISS) földfelszínre vetített pályájának 2
+      periódusát jelzi. Itt a dolog még annyiban bonyolódik, hogy mivel az ISS másfél óra alatt kerüli meg a
+      Földet, amely ezidő alatt elfordul valamennyit, ezért az egyes periódusok nem ugyanott végződnek a térképen,
+      mint ahol kezdődtek.
+  - type: figure
+    lead-in: |
+      A térképen ezen kívül látszik még a nappali és az éjszakai oldal határvonala is (világosabb és sötétebb
+      rész):
+    src: 03-a-nemzetkozi-urallomas-palyaja.jpeg
+    alt: A Nemzetközi Űrállomás pályája
+    caption: A Nemzetközi Űrállomás pályája
+  - type: narrative
+    content: |
+      Most, hogy van már kétféle geometriánk, felmerül a kérdés, hogy melyik a jobb, melyiket használjuk? Egy ilyen
+      kérdést feltenni önmagában nincs értelme, hiszen a válaszhoz tudnunk kell, hogy mihez akarjuk használni.
+      Amennyiben például házat tervezünk, vagy ki akarjuk számolni, hogy mennyi festéket vegyünk egy adott
+      falfelületre, akkor bőven elég a hagyományos síkgeometriát használnunk, hiszen ebben jóval egyszerűbb
+      számolni. Ha viszont egy világkörüli hajóutat kell megterveznünk adott állomásokkal a Föld különböző
+      pontjain, akkor nem árt, ha meg tudjuk mérni az állomások közti távolságokat a szükséges üzemanyagmennyiségek
+      kiszámításához. Erre nyilvánvalóan a síkgeometria nem alkalmas, lévén hogy egy gömbfelületen fogunk hajózni.
+  - type: narrative
+    content: |
+      Egyszóval a matematika mindössze eszközöket ad a kezünkbe a világ dolgainak modellezésére. Azt azonban mi
+      döntjük el, hogy mennyire pontos modellre van szükségünk az adott feladathoz. A többi "sallangra" nem vagyunk
+      kíváncsiak, ezért ezeket kizárjuk a vizsgálatainkból. Ezt nevezik ***absztrakciónak***.
+  - type: narrative
+    content: |
+      De mi köze ennek a geometriai példának a kriptográfiához? Közvetlenül természetesen az égvilágon semmi,
+      közvetetten viszont igen fontos látni azt a mechanizmust, amely alapján egy-egy matematikai elmélet felépül.
+      Ezekkel a példákkal remélhetőleg világossá vált, hogy mit értünk axiómák alatt, amik a kiindulópontot adják
+      ehhez az építkezéshez &ndash; csakúgy, mint egy valódi ház alapja.
+  - type: narrative
+    content: |
+      Most az előző részekben megismert kriptográfiai eljárások alapjait jelentő számelmélet "játékszabályait"
+      fogjuk rögzíteni. Ez az axiómarendszer Giuseppe Peano olasz matematikustól származik 1889-ből.

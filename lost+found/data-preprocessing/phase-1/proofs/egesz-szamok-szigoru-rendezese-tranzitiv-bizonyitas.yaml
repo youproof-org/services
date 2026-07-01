@@ -1,0 +1,26 @@
+type: proof
+name: egesz-szamok-szigoru-rendezese-tranzitiv-bizonyitas
+remarks: []
+references:
+  egesz-szamok-rendezese:
+    target:
+      type: definition
+      name: egesz-szamok-rendezese
+  peano-nullosszeg-tagjai:
+    target:
+      type: theorem
+      name: peano-nullosszeg-tagjai
+content:
+  - type: narrative
+    content: |
+      Az $a\leq b$ és $b\leq c$ relációk teljesülése, valamint az $a\lt b$ vagy $b\lt c$ relációk közül legalább az
+      egyik teljesülése a [egesz-szamok-rendezese] miatt azt jelenti, hogy léteznek $n$ és $k$ ***természetes
+      számok***, amelyek közül legalább az egyik nem $0$, valamint $a+n=b$ és $b+k=c$. A második egyenletbe $b$
+      helyére az első egyenlet baloldalát behelyettesíthetjük: $\underbrace{(a+n)}_{=b}+k=c$. Ez a kifejezés az
+      összeadás asszociativitása miatt átzárójelezhető: $a+(n+k)=c$. Az $n+k$ összegről viszont tudjuk, hogy
+      mindkét tagja természetes szám, melyek közül legalább az egyik nem $0$. Márpedig a [peano-nullosszeg-tagjai]
+      kimondja, hogy ebben az esetben maga az összeg sem $0$.
+  - type: narrative
+    content: |
+      ***Összefoglalva:*** létezik olyan nem $0$ természetes szám &ndash; nevezetesen az $n+k$ &ndash;, amelyet
+      $a$-hoz adva $c$-t kapunk. Ez a [egesz-szamok-rendezese] miatt épp azt jelenti, hogy $a\lt c$.

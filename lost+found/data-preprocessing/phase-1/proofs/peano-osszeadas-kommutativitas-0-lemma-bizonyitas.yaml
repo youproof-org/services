@@ -1,0 +1,58 @@
+type: proof
+name: peano-osszeadas-kommutativitas-0-lemma-bizonyitas
+remarks: []
+references:
+  peano-osszeadas:
+    target:
+      type: definition
+      name: peano-osszeadas
+  peano-osszeadas-kommutativitas-lemma:
+    target:
+      type: theorem
+      name: peano-osszeadas-kommutativitas-lemma
+content:
+  - type: narrative
+    content: |
+      Most is teljes indukciót alkalmazunk. Tegyük fel, hogy az állítás igaz valamilyen $a=n$ természetes számra.
+      Az tehát az ***indukciós feltétel***, hogy $n+0=0+n$.
+  - type: formula
+    lead-in: |
+      Azt kell bizonyítanunk, hogy ekkor $a=s(n)$-re is igaz lesz, azaz:
+    content: |
+      \underbrace{s(n)}_{=a}+0=0+\underbrace{s(n)}_{=a}
+  - type: formula
+    lead-in: |
+      A korábban bizonyított [peano-osszeadas-kommutativitas-lemma] miatt:
+    content: |
+      s(n)+0=n+s(0)= \ldots
+  - type: formula
+    lead-in: |
+      A [peano-osszeadas] 2. pontja miatt:
+    content: |
+      \ldots =s(n+0)= \ldots
+  - type: formula
+    lead-in: |
+      Az indukciós feltétel miatt:
+    content: |
+      \ldots =s(0+n)= \ldots
+  - type: formula
+    lead-in: |
+      Végül szintén a [peano-osszeadas] 2. pontja miatt:
+    content: |
+      \ldots =0+s(n)
+  - type: narrative
+    content: |
+      Vagyis azt kaptuk, hogy valóban $\underbrace{s(n)}_{=a} + 0 = 0 + \underbrace{s(n)}_{=a}$.
+  - type: narrative
+    content: |
+      Felállítottuk tehát a dominósort, és beláttuk, hogy bármely dominó felborítása esetén a soron következő
+      dominó is fel fog borulni. Ezért most felborítjuk az első dominót, azaz igazoljuk, hogy az állítás igaz
+      $a=0$-ra.
+  - type: formula
+    lead-in: |
+      Ez viszont nyilvánvalóan teljesül:
+    content: |
+      \underbrace{0}_{=a}+0=0+\underbrace{0}_{=a}
+  - type: narrative
+    content: |
+      Borul tehát az első dominó, és vele együtt a teljes dominósor, azaz minden $a$ számra igaz, hogy $a+0=0+a$.

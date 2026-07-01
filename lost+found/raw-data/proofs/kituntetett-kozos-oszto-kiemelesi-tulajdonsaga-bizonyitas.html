@@ -1,0 +1,87 @@
+<!-- wp:paragraph -->
+<p>Ha [latex]c=0[/latex], akkor nyilván igaz az állítás, hiszen a [yp_element slug="kituntetett-kozos-oszto-tulajdonsagai" type="link" /] 1. pontja miatt egyrészt [latex](a\cdot 0,b\cdot 0)=(0,0)=0[/latex], másrészt a [yp_element slug="gyuruk-alapveto-tulajdonsagai" type="link" /] 1. pontja miatt [latex](a,b)\cdot 0 = 0[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ha [latex]a=b=0[/latex], akkor hasonló okok miatt szintén nyilvánvalóan teljesül a tétel, hiszen egyrészt [latex](0\cdot c,0\cdot c)=(0,0)=0[/latex], másrészt [latex](0,0)\cdot c=0\cdot c=0[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az általánosság megsértése nélkül feltehetjük tehát, hogy [latex]c\
+eq 0[/latex], valamint [latex]a[/latex] és [latex]b[/latex] közül legalább az egyik nem [latex]0[/latex], és így egyrészt a [yp_element slug="oszthatosag-tulajdonsagai" type="link" /] 4. pontja miatt [latex](a,b)\
+eq 0[/latex], másrészt a [yp_element slug="kituntetett-kozos-oszto-tulajdonsagai" type="link" /] 3. pontja miatt [latex]R[/latex]-ben létezik <strong><em>egységelem</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex](a,b)[/latex] közös osztó, ezért teljesülnek az alábbi oszthatóságok:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}(a,b)&amp;|a \\ (a,b)&amp;|b\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ekkor azonban a [yp_element slug="oszthatosag-egyszerusitese" type="link" /] miatt teljesülnek az alábbi oszthatóságok is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}(a,b)c&amp;|ac \\ (a,b)c&amp;|bc\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez viszont azt jelenti, hogy [latex](a,b)c[/latex] közös osztója [latex]ac[/latex]-nek és [latex]bc[/latex]-nek. Mivel feltételeztük, hogy bármely két elemnek létezik kitüntetett közös osztója, ezért nyilván létezik az [latex](ac,bc)[/latex] kitüntetett közös osztó is. Ez viszont – kitüntetett lévén – többszöröse bármely más közös osztónak, így [latex](a,b)c[/latex]-nek is. Azt tehát már tudjuk a tételben szereplő két kifejezésről, hogy teljesül közöttük az alábbi oszthatóság:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](a,b)c|(ac,bc)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez viszont az oszthatóság [yp_element slug="oszthatosag" type="link" /]ja alapján épp azt jelenti, hogy létezik olyan [latex]k[/latex] elem, amelyre teljesül az alábbi egyenlet:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](a,b)c \cdot k = (ac,bc)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt fogjuk megmutatni, hogy [latex]k[/latex] egység, mivel ebből a [yp_element slug="asszocialtsag-es-egysegek-kapcsolata" type="link" /] miatt már következik az [latex](a,b)c\sim (ac,bc)[/latex] asszociáció. Vizsgáljuk hát meg a fenti egyenletet.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ennek jobboldala [latex]ac[/latex] és [latex]bc[/latex] közös osztója, így az egyenlet baloldala is. Fennállnak tehát az alábbi oszthatóságok:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}(a,b)c\cdot k &amp;|ac \\ (a,b)c\cdot k &amp;|bc\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel a bizonyítás elején az általánosság megsértése nélkül feltehettük, hogy [latex]c\
+eq 0[/latex], így mindkét oszthatóságot egyszerűsíteni lehet vele a [yp_element slug="oszthatosag-egyszerusitese" type="link" /] miatt. Ekkor ezt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}(a,b)k &amp;|a \\ (a,b)k &amp;|b\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt kaptuk tehát, hogy [latex](a,b)k[/latex] közös osztója [latex]a[/latex]-nak és [latex]b[/latex]-nek, és így osztója az ő kitüntetett közös osztójuknak. Azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](a,b)k|(a,b)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel a bizonyítás elején láttuk, hogy létezik egységelem, valamint [latex](a,b)\
+eq 0[/latex], így mindkét oszthatóságot egyszerűsíteni lehet [latex](a,b)[/latex]-vel a [yp_element slug="oszthatosag-egyszerusitese" type="link" /] miatt. Ekkor ezt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]k|1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [latex]k[/latex] elem tehát osztója az egységelemnek, emiatt a [yp_element slug="egysegek-es-egysegelem-viszonya" type="link" /] értelmében valóban egység, és így [latex](a,b)c\cdot k=(ac,bc)[/latex]-ből következik az [latex](a,b)c\sim (ac,bc)[/latex] asszociáció, ahogyan a tétel állítja.</p>
+<!-- /wp:paragraph -->

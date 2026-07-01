@@ -1,0 +1,126 @@
+type: section
+name: 03-a-kituntetett-kozos-oszto-jelentosege
+title: A kitüntetett közös osztó jelentősége
+
+references:
+  felbontas-egyertelmusegenek-elegseges-feltetele:
+    target:
+      type: theorem
+      name: felbontas-egyertelmusegenek-elegseges-feltetele
+  legnagyobb-kozos-oszto-kituntetett:
+    target:
+      type: theorem
+      name: legnagyobb-kozos-oszto-kituntetett
+  oszthatosag-tulajdonsagai:
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+  primtulajdonsagu-elem:
+    target:
+      type: definition
+      name: primtulajdonsagu-elem
+  szamelmelet-alaptetele:
+    target:
+      type: definition
+      name: szamelmelet-alaptetele
+
+body:
+  - type: narrative
+    content: |
+      Ebben a szakaszban azt fogjuk megmutatni, hogy amennyiben egy $R$ integritástartományban bármely két elemnek
+      létezik kitüntetett közös osztója, akkor $R$ minden felbonthatatlan eleme prímtulajdonságú, következésképp a
+      [felbontas-egyertelmusegenek-elegseges-feltetele] alapján teljesül a ***számelmélet alaptételének
+      egyértelműségi része*** (lásd a [szamelmelet-alaptetele]t).
+  - type: narrative
+    content: |
+      Ehhez szükségünk lesz 3 segédtételre. Először az oszthatósági reláció egy újabb egyszerű tulajdonságát
+      igazoljuk, amely nagyon hasonló a [oszthatosag-tulajdonsagai] 7. pontjában megfogalmazott állításhoz, ám
+      annál egy kicsit többet mond. Ez hasznunkra lesz a továbbiakban.
+  - type: embed
+    target:
+      type: theorem
+      name: oszthatosag-egyszerusitese
+  - type: narrative
+    content: |
+      Például az egész számok $\Z$ gyűrűjében teljesül a $6|18$ oszthatóság, és így a tétel alapján teljesül a
+      $3|9$ oszthatóság is.
+  - type: embed
+    target:
+      type: proof
+      name: oszthatosag-egyszerusitese-bizonyitas
+  - type: narrative
+    content: |
+      Az oszthatóságnak ezt a tulajdonságát most fel fogjuk használni egy, a kitüntetett közös osztóval kapcsolatos
+      fontos összefüggés igazolásához.
+  - type: embed
+    target:
+      type: theorem
+      name: kituntetett-kozos-oszto-kiemelesi-tulajdonsaga
+  - type: narrative
+    content: |
+      Például a $\Z$ gyűrűben $(6,9)=3$, és így $(18,27)=(6\cdot 3, 9\cdot 3)=(6,9)\cdot 3=9$.
+  - type: embed
+    target:
+      type: proof
+      name: kituntetett-kozos-oszto-kiemelesi-tulajdonsaga-bizonyitas
+  - type: narrative
+    content: |
+      Végül igazoljuk az úgynevezett ***euklidészi lemmát***. Ez arra ad feltételt, hogy egy elem mely esetekben
+      osztója egy adott szorzat valamelyik tényezőjének, ha egyébként magának a szorzatnak osztója. Az előző
+      részben már megemlítettük, hogy ez általánosságban nem igaz. Például $8|2\cdot 12$, ugyanakkor sem a $8|2$,
+      sem pedig a $8|12$ oszthatóság nem teljesül. A [primtulajdonsagu-elem]ban épp azokat az elemeket neveztük
+      ***prímeknek***, amelyek bármely olyan szorzatra teljesítik ezt a kritériumot, amelynek egyébként osztói.
+  - type: narrative
+    content: |
+      Az ***euklidészi lemma*** a prímtulajdonságnál gyengébb feltételt határoz meg erre vonatkozóan. Ez alapján
+      egy elemnek nem kell prímnek lennie ahhoz, hogy egy szorzat valamely tényezőjének osztója legyen. Viszont
+      szükséges, hogy a másik tényezőjével a ***"lehető legkevesebb közös osztójuk legyen"***. Először is
+      tisztázzuk, hogy mikor mondjuk két elemről, hogy a ***"lehető legkevesebb közös osztójuk van"***. Ennek az
+      esetnek külön neve is van, amelyet a továbbiakban gyakran fogunk használni.
+  - type: embed
+    target:
+      type: definition
+      name: relativ-primek
+  - type: embed
+    target:
+      type: remark
+      name: relativ-primek-megjegyzes
+  - type: narrative
+    content: |
+      Ezek után az ***euklidészi lemma*** a következőképpen fogalmazható meg.
+  - type: embed
+    target:
+      type: theorem
+      name: euklideszi-lemma
+  - type: narrative
+    content: |
+      Például a $\Z$ gyűrűben $4|9\cdot 8$, és mivel $4$ és $9$ relatív prímek, ezért $4|8$.
+  - type: embed
+    target:
+      type: proof
+      name: euklideszi-lemma-bizonyitas
+  - type: narrative
+    content: |
+      Az euklidészi lemma felhasználásával mostmár igazolhatjuk a kitüntetett közös osztó létezésének jelentőségét
+      a számelmélet alaptétele kapcsán.
+  - type: embed
+    target:
+      type: theorem
+      name: kituntetett-kozos-oszto-letezesenek-kovetkezmenye
+  - type: embed
+    target:
+      type: proof
+      name: kituntetett-kozos-oszto-letezesenek-kovetkezmenye-bizonyitas
+  - type: narrative
+    content: |
+      Mostmár tehát tudjuk, hogy ha egy integritástartományban bármely két elemnek létezik a kitüntetett közös
+      osztója, akkor minden felbonthatatlan elem prímtulajdonságú. Ebből viszont a
+      [felbontas-egyertelmusegenek-elegseges-feltetele] miatt következik, hogy ***teljesül a számelmélet
+      alaptételének egyértelműségi állítása***.
+  - type: narrative
+    content: |
+      Az előző szakasz végén a [legnagyobb-kozos-oszto-kituntetett]ben már láttuk, hogy a kriptográfiai szempontból
+      számunkra fontos $\Z$ gyűrűben ***HA*** egy elempárnak létezik kitüntetett közös osztója, ***AKKOR*** a
+      legnagyobb közös osztójuk is kitüntetett. Megemlítettük ugyanakkor, hogy ez a tétel még nem garantálja azt,
+      hogy bármely két egész számnak létezik a kitüntetett közös osztója. Ennek igazolására most megismerkedünk egy
+      igen fontos számelméleti algoritmussal.

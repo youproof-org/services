@@ -1,0 +1,58 @@
+type: proof
+name: foidealok-es-oszthatosag-kapcsolata-egysegelemes-bizonyitas
+remarks: []
+references:
+  asszocialtsag-egysegelemes-gyuruben:
+    target:
+      type: theorem
+      name: asszocialtsag-egysegelemes-gyuruben
+  ideal:
+    target:
+      type: definition
+      name: ideal
+  oszthatosag-tulajdonsagai:
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+  reszhalmaz:
+    target:
+      type: definition
+      name: reszhalmaz
+  vegesen-generalt-idealok-es-foidealok:
+    target:
+      type: definition
+      name: vegesen-generalt-idealok-es-foidealok
+content:
+  - type: narrative
+    content: |
+      Előszöris vizsgáljuk meg az $(a)$ főideál szerkezetét. A [vegesen-generalt-idealok-es-foidealok] alapján az
+      $(a)$ főideál az a ***legszűkebb*** ideál, amely tartalmazza az $a$ elemet. Mivel $a\in (a)$, ezért a [ideal]
+      szerint tetszőleges $r\in R$ elem esetén szükségképpen $ra\in (a)$ is teljesül. Azaz az $(a)$ ideál biztosan
+      tartalmazza az $a$ elemen kívül annak összes többszörösét is. Egyéb elemet viszont nem tartalmaz, hiszen úgy
+      már nem ő lenne az $a$ elemet tartalmazó ***legszűkebb*** ideál. Ugyanezen okok miatt a $(b)$ főideál a $b$
+      elemet és annak többszöröseit tartalmazza, és ezeken kívül nincs más eleme. Ezek után már igazolhatjuk a
+      tétel állításait.
+  - type: narrative
+    content: |
+      ***Az 1. állítás:*** Egyrészt azt kell bizonyítani, hogy ha teljesül az $a|b$ oszthatóság, akkor bármilyen
+      $c\in (b)$ esetén $c\in (a)$ is teljesül. A $c\in (b)$ a fentiek alapján azt jelenti, hogy $c$ vagy
+      megegyezik $b$-vel, vagy pedig annak többszöröse. ***Egységelemes*** gyűrűben mindkét feltétel azt jelenti,
+      hogy teljesül a $b|c$ oszthatóság. De mivel azt mondtuk, hogy teljesül az $a|b$ oszthatóság, ezért az
+      oszthatóság tranzitivitása miatt ([oszthatosag-tulajdonsagai] 5. pont) teljesül az $a|c$ oszthatóság is. Ez
+      viszont azt jelenti, hogy $c$ egyike az $a$ elem többszöröseinek is, azaz $c\in (a)$. Mivel megmutattuk, hogy
+      a $(b)$ főideál bármely eleme egyúttal eleme az $(a)$ főideálnak is, így a [reszhalmaz] alapján valóban
+      $(b)\sube (a)$.
+  - type: narrative
+    content: |
+      Másrészt azt is bizonyítani kell, hogy ha $(b)\sube (a)$, akkor teljesül az $a|b$ oszthatóság. A $(b)\sube
+      (a)$ tartalmazási reláció a [reszhalmaz] alapján azt jelenti, hogy a $(b)$ főideál bármely eleme egyúttal
+      eleme az $(a)$ főideálnak is. Ez természetesen magára $b$-re is igaz, azaz $b\in (a)$. Így tehát $b$ vagy
+      megegyezik $a$-val, vagy pedig egyike az $a$ elem többszöröseinek. ***Egységelemes*** gyűrűben mindkét
+      feltétel azt jelenti, hogy teljesül az $a|b$ oszthatóság.
+  - type: narrative
+    content: |
+      A ***2. állítás*** könnyen adódik az 1. állításból. A [reszhalmaz] utáni megjegyzés 5. pontja alapján ugyanis
+      az $(a)=(b)$ halmazegyenlőség akkor és csak akkor teljesül, ha $(a)$ és $(b)$ kölcsönösen egymás
+      részhalmazai. Ez az 1. állítás miatt azzal ekvivalens, hogy egyszerre teljesülnek az $a|b$, valamint a $b|a$
+      oszthatóságok. A [asszocialtsag-egysegelemes-gyuruben] miatt azonban a kölcsönös oszthatóság ***kommutatív és
+      egységelemes*** gyűrűkben akkor és csak akkor teljesül, ha $a$ és $b$ egymásnak asszociáltjai.

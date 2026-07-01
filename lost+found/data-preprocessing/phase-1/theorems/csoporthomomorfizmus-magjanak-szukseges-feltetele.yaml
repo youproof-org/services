@@ -1,0 +1,20 @@
+type: theorem
+name: csoporthomomorfizmus-magjanak-szukseges-feltetele
+proofs:
+  - csoporthomomorfizmus-magjanak-szukseges-feltetele-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy egy $G$ csoport valamely $N$ részhalmaza egy $G$-ből kiinduló csoporthomomorfizmus magja.
+  - type: ordered-list
+    lead-in: |
+      Ekkor teljesülnek az alábbiak:
+    items:
+      - 'Az $N$ halmaz egy részcsoport $G$-ben.'
+      - 'Tetszőleges $a\in G$ és $b\in G$ elemek esetén $f(a)=f(b)$ ***akkor és csak akkor***, ha $a$ és $b$
+        ugyanabban az $N$ részcsoport szerinti ***baloldali mellékosztályban*** van, azaz $b\in aN$.'
+      - 'Tetszőleges $a\in G$ és $b\in G$ elemek esetén $f(a)=f(b)$ ***akkor és csak akkor***, ha $a$ és $b$
+        ugyanabban az $N$ részcsoport szerinti ***jobboldali mellékosztályban*** van, azaz $b\in Na$.'
+      - 'A $G$ csoport $N$ részcsoportja szerinti bal- és jobboldali mellékosztályok megegyeznek, azaz tetszőleges
+        $a\in G$ elem esetén $aN=Na$.'

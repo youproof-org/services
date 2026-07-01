@@ -1,0 +1,15 @@
+type: theorem
+name: termeszetes-szamok-rendezesi-relacioja-reflexiv
+proofs:
+  - termeszetes-szamok-rendezesi-relacioja-reflexiv-bizonyitas
+remarks: []
+references:
+  termeszetes-szamok-rendezese:
+    target:
+      type: definition
+      name: termeszetes-szamok-rendezese
+content:
+  - type: narrative
+    content: |
+      A [termeszetes-szamok-rendezese]ban bevezetett $\leq$ reláció ***reflexív***, azaz az $\N$ halmaz tetszőleges
+      $a$ elemére teljesül, hogy $a\leq a$.

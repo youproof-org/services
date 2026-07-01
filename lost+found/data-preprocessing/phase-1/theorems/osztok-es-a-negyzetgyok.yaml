@@ -1,0 +1,18 @@
+type: theorem
+name: osztok-es-a-negyzetgyok
+proofs:
+  - osztok-es-a-negyzetgyok-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $n\eq 0$ egy tetszőleges ***nemnulla*** egész szám, amely ***nem egység***, valamint jelöljük $r$-rel
+      a lehető ***legnagyobb*** olyan egész számot, amelyre $r^2\leq |n|$ teljesül.
+  - type: narrative
+    content: |
+      Ebben az esetben az $n$ egész szám ***akkor és csak akkor prím*** (azaz felbonthatatlan), ha ***nem
+      létezik*** olyan osztója, amely $1$-nél nagyobb, de legfeljebb $r$.
+  - type: narrative
+    content: |
+      ***Ezzel ekvivalens megfogalmazás:*** Az $n$ egész szám ***akkor és csak akkor összetett*** (tehát nem prím,
+      azaz nem felbonthatatlan), ha ***létezik*** olyan osztója, amely $1$-nél nagyobb, de legfeljebb $r$.

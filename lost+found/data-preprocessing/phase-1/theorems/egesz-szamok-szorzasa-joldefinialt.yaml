@@ -1,0 +1,14 @@
+type: theorem
+name: egesz-szamok-szorzasa-joldefinialt
+proofs:
+  - egesz-szamok-szorzasa-joldefinialt-bizonyitas
+remarks: []
+references:
+  egesz-szamok-szorzasa:
+    target:
+      type: definition
+      name: egesz-szamok-szorzasa
+content:
+  - type: narrative
+    content: |
+      A [egesz-szamok-szorzasa]ban bevezetett $\odot$ művelet ***jóldefiniált*** a teljes $\Z$ halmazon.

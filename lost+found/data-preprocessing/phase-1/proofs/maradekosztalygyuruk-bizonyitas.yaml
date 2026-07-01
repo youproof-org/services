@@ -1,0 +1,118 @@
+type: proof
+name: maradekosztalygyuruk-bizonyitas
+remarks: []
+references:
+  gyuru-test:
+    target:
+      type: definition
+      name: gyuru-test
+  ideal-szerinti-muveletek-joldefinialtsaga:
+    target:
+      type: theorem
+      name: ideal-szerinti-muveletek-joldefinialtsaga
+  reszgyuru-feltetele:
+    target:
+      type: theorem
+      name: reszgyuru-feltetele
+content:
+  - type: narrative
+    content: |
+      A [ideal-szerinti-muveletek-joldefinialtsaga] alapján a maradékosztályok közötti $\oplus$ és $\odot$
+      műveletek jóldefiniáltak, azaz az eredményként kapott maradékosztály nem függ az $a$ és $b$
+      reprezentánselemek megválasztásától. Így $R/I$-re elegendő a [gyuru-test] szerinti ***gyűrűaxiómákat***
+      ellenőrizni.
+  - type: formula
+    lead-in: |
+      ***Az asszociativitási és disztributivitási tulajdonságok, valamint a $\oplus$ művelet kommutativitása:***
+      Azt kell megmutatni, hogy tetszőleges $A=a+I$, $B=b+I$ és $C=c+I$ maradékosztályok esetén teljesülnek az
+      alábbiak:
+    content: |
+      \begin{aligned}A\oplus B&=B\oplus A \\ (A\oplus B)\oplus C&=A\oplus (B\oplus C) \\ (A\odot B)\odot C&=A\odot
+      (B\odot C)\\A\odot (B\oplus C)&=(A\odot B)\oplus (A\odot C) \\ (A\oplus B)\odot C &= (A\odot C)\oplus (B\odot
+      C)\end{aligned}
+  - type: formula
+    lead-in: |
+      A műveletek tételben szereplő definíciói alapján ezek így írhatók fel az $a$, $b$ és $c$ reprezentánselemek
+      segítségével:
+    content: |
+      \begin{aligned}(a+b)+I &= (b+a)+I \\ ((a+b)+c)+I&=(a+(b+c))+I \\ ((a\cdot b)\cdot c)+I&=(a\cdot (b\cdot c))+I
+      \\ (a\cdot (b+c))+I&=(ab+ac)+I \\ ((a+b)\cdot c)+I &= (ac+bc)+I\end{aligned}
+  - type: narrative
+    content: |
+      A reprezentánselemek között viszont teljesülnek ezek a tulajdonságok, hiszen ők az $R$ gyűrű elemei.
+  - type: formula
+    lead-in: |
+      ***Nullelem létezése:*** Az $R/I$ gyűrűben kell egy olyan $N$ maradékosztályt mutatni, amelyre tetszőleges
+      $A=a+I$ maradékosztály esetén teljesül az alábbi:
+    content: |
+      A\oplus N=N\oplus A=A
+  - type: narrative
+    content: |
+      Mivel az $\oplus$ műveletről már láttuk, hogy kommutatív, így elegendő csak az egyik irányú összeadást
+      figyelembe venni.
+  - type: formula
+    lead-in: |
+      Ha az $R$ gyűrű nulleleme $0_R$, akkor az $N=0_R+I$ maradékosztály épp megfelelő lesz nullelemnek az $R/I$
+      gyűrűben, hiszen:
+    content: |
+      (\underbrace{a+I}_{=A})\oplus (\underbrace{0_R+I}_{=N})=(a+0_R)+I=a+I=A
+  - type: formula
+    lead-in: |
+      ***Ellentett elem létezése:*** Itt azt kell megmutatni, hogy amennyiben $N$ az $R/I$ faktorgyűrű nulleleme,
+      úgy tetszőleges $A=a+I$ elemhez létezik olyan $\ominus A$-val jelölt elem, amelyre teljesül az alábbi:
+    content: |
+      A\oplus (\ominus A)=(\ominus A)\oplus A=N
+  - type: narrative
+    content: |
+      Mivel az $\oplus$ műveletről már láttuk, hogy kommutatív, így elegendő csak az egyik irányú összeadást
+      figyelembe venni.
+  - type: formula
+    lead-in: |
+      A $\ominus A=(-a)+I$ maradékosztály épp megfelelő lesz ellentett elemnek az $R/I$ gyűrűben, hiszen:
+    content: |
+      (\underbrace{a+I}_{=A})\oplus (\underbrace{(-a)+I}_{=\ominus A})=(a-a)+I=0_R+I=N
+  - type: narrative
+    content: |
+      Az $R/I$ halmaz tehát ***valóban gyűrűt alkot*** a tételben szereplő műveletekkel. Tegyük most fel, hogy $R$
+      ***egységelemes***, és jelöljük $1_R$-rel az egységelemet.
+  - type: formula
+    lead-in: |
+      Feladatunk mutatni az $R/I$ gyűrűben egy olyan $E$ maradékosztályt, amelyre tetszőleges $A=a+I$
+      maradékosztály esetén teljesül az alábbi:
+    content: |
+      A\odot E=E\odot A=A
+  - type: formula
+    lead-in: |
+      Ha az $R$ gyűrű egységeleme $1_R$, akkor az $1_R+I$ maradékosztály épp megfelelő lesz egységelemnek az $R/I$
+      gyűrűben, hiszen:
+    content: |
+      \begin{aligned}(\underbrace{a+I}_{=A})\odot (\underbrace{1_R+I}_{=E})&=(a\cdot 1_R)+I=a+I=A
+      \\(\underbrace{1_R+I}_{=E})\odot (\underbrace{a+I}_{=A})&=(1_R\cdot a)+I=a+I=A\end{aligned}
+  - type: narrative
+    content: |
+      Most tegyük fel, hogy $R$ ***kommutatív***, és legyen az $A=a+I$ valamint a $B=b+I$ két tetszőleges
+      maradékosztály az $R/I$ gyűrűben.
+  - type: formula
+    lead-in: |
+      Ekkor $R$ kommutativitása miatt teljesül az alábbi, azaz $R/I$ is valóban ***kommutatív***:
+    content: |
+      \begin{aligned}A\odot B&=(a+I)\odot (b+I)=(a\cdot b)+I=\\&=(b\cdot a)+I=(b+I)\odot (a+I)=B\odot
+      A\end{aligned}
+  - type: narrative
+    content: |
+      Végezetül meg kell mutatni, hogy a tételben szereplő $f:R\to R/I$ függvény egy ***gyűrűhomomorfizmus*** az
+      eredeti és az $R/I$ faktorgyűrű között. Az $f$ függvény tehát minden $R$-beli $r$ elemhez az $r+I$
+      maradékosztályt rendeli hozzá. Tegyük fel, hogy $r$ és $s$ az $R$ gyűrű tetszőleges elemei.
+  - type: formula
+    lead-in: |
+      Ekkor a művelettartó tulajdonságok az alábbiak alapján valóban teljesülnek:
+    content: |
+      \begin{aligned}f(r)\oplus f(s)&=(r+I)\oplus (s+I)=(r+s)+I=f(r+s) \\ f(r)\odot f(s)&=(r+I)\odot (s+I)=(r\cdot
+      s)+I=f(r\cdot s) \end{aligned}
+  - type: narrative
+    content: |
+      Végül azt kell megmutatni, hogy $f$ ***magja*** épp az $I$ ideál. Egy tetszőleges $R$-beli $s$ elemhez az $f$
+      gyűrűhomomorfizmus pontosan akkor rendeli hozzá az $R/I$ gyűrű nullelemét, azaz a $0_R+I$ maradékosztályt, ha
+      $f(s)=s+I=0_R+I$. Minthogy $I$ egy részgyűrű $R$-ben (hiszen ideál), ezért a [reszgyuru-feltetele] 3. pontja
+      alapján ő az, aki tartalmazza $0_R$-t, azaz $0_R+I=I$. Az $f(s)=0_R+I$ tehát akkor és csak akkor teljesül, ha
+      $s$ benne van $I$-ben. Az $I$ ideál tehát valóban magja az $f$ gyűrűhomomorfizmusnak.

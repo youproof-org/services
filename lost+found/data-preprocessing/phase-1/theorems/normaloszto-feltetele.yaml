@@ -1,0 +1,13 @@
+type: theorem
+name: normaloszto-feltetele
+proofs:
+  - normaloszto-feltetele-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Egy $G$ csoport valamely $N$ részcsoportja ***akkor és csak*** akkor normálosztó, ha ***minden*** $n\in N$ és
+      $g\in G$ esetén a $gng^{-1}$ szorzat benne van $N$-ben.
+  - type: narrative
+    content: |
+      Az állítás a $g^{-1}ng$ szorzatra is ugyanígy kimondható.

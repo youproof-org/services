@@ -1,0 +1,32 @@
+type: theorem
+name: vegesen-generalt-ideal-elemei
+proofs:
+  - vegesen-generalt-ideal-elemei-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ egy tetszőleges ***egységelemes gyűrű***, továbbá legyenek $a_1$, $a_2$, ..., $a_n$ az $R$ gyűrű
+      tetszőleges elemei.
+  - type: narrative
+    content: |
+      Ekkor az ezen elemek által generált ***balideál*** minden eleme felírható $r_1a_1+r_2a_2+\ldots +r_na_n$
+      alakban az $R$ gyűrű alkalmasan választott $r_1$, $r_2$, ..., $r_n$ elemeinek segítségével. ***Visszafelé:***
+      Ha egy $r\in R$ gyűrűelem felírható $r=r_1a_1+r_2a_2+\ldots +r_na_n$ alakban az $R$ gyűrű alkalmasan
+      választott $r_1$, $r_2$, ..., $r_n$ elemeinek segítségével, akkor $r$ benne van az $a_1$, $a_2$, ..., $a_n$
+      elemek által generált ***balideálban***.
+  - type: narrative
+    content: |
+      Ehhez hasonlóan az $a_1$, $a_2$, ..., $a_n$ elemek által generált ***jobbideál*** minden eleme felírható
+      $a_1s_1+a_2s_2+\ldots +a_ns_n$ alakban az $R$ gyűrű alkalmasan választott $s_1$, $s_2$, ..., $s_n$ elemeinek
+      segítségével. ***Visszafelé:*** Ha egy $s\in R$ gyűrűelem felírható $s=a_1s_1+a_2s_2+\ldots +a_ns_n$ alakban
+      az $R$ gyűrű alkalmasan választott $s_1$, $s_2$, ..., $s_n$ elemeinek segítségével, akkor $s$ benne van az
+      $a_1$, $a_2$, ..., $a_n$ elemek által generált ***jobbideálban***.
+  - type: narrative
+    content: |
+      Végül az $(a_1,a_2,\ldots,a_n)$ ***(kétoldali) ideál*** minden eleme felírható $r_1a_1+r_2a_2+\ldots +r_na_n$
+      és $a_1s_1+a_2s_2+\ldots +a_ns_n$ alakban az $R$ gyűrű alkalmasan választott $r_1$, $r_2$, ..., $r_n$ és
+      $s_1$, $s_2$, ..., $s_n$ elemeinek segítségével. ***Visszafelé:*** Ha egy $r\in R$ gyűrűelem felírható
+      $r=r_1a_1+r_2a_2+\ldots +r_na_n=a_1s_1+a_2s_2+\ldots +a_ns_n$ alakban az $R$ gyűrű alkalmasan választott
+      $r_1$, $r_2$, ..., $r_n$ és $s_1$, $s_2$, ..., $s_n$ elemeinek segítségével, akkor $r$ benne van az $(a_1,
+      a_2, ..., a_n)$ ***ideálban***.

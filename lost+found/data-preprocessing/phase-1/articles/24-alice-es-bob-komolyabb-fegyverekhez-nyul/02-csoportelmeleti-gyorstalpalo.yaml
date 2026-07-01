@@ -1,0 +1,95 @@
+type: section
+name: 02-csoportelmeleti-gyorstalpalo
+title: Csoportelméleti gyorstalpaló
+
+references:
+  egesz-szamok-maradekosztalygyurui:
+    target:
+      type: theorem
+      name: egesz-szamok-maradekosztalygyurui
+  gyuru-test:
+    target:
+      type: definition
+      name: gyuru-test
+  redukalt-maradekosztaly:
+    target:
+      type: definition
+      name: redukalt-maradekosztaly
+
+body:
+  - type: narrative
+    content: |
+      A [gyuru-test]ban megismerkedtünk a ***gyűrű*** fogalmával, amely eddigi vizsgálataink tárgyát képezte. Egy
+      gyűrű tulajdonképpen nem más, mint egy halmaz, amelyen értelmezve van két művelet, és ezek a műveletek
+      teljesítenek néhány egyszerű követelményt, amelyeket gyűrűaxiómáknak nevezünk.
+  - type: narrative
+    content: |
+      A ***csoportok*** a gyűrűkhöz hasonló algebrai struktúrák, azonban alaphalmazukon nem kettő, hanem csak egy
+      művelet van értelmezve. Az alábbi definíció tartalmazza azokat a követelményeket &ndash; a
+      ***csoportaxiómákat*** &ndash;, amelyeknek e művelet meg kell feleljen.
+  - type: embed
+    target:
+      type: definition
+      name: csoport
+  - type: narrative
+    content: |
+      Például az egész számok $\Z$ halmaza Abel-csoportot alkot a szokásos összeadásra nézve. Ebben a csoportban a
+      neutrális elem a $0$ egész szám, egy $a$ egész szám inverze pedig az ellentettje, azaz $-a$, hiszen őket
+      összeadva épp a neutrális elemet, azaz a $0$ egész számot kapjuk eredményül.
+  - type: narrative
+    content: |
+      A $\Z$ halmaz a szorzásra nézve viszont ***nem alkot csoportot***. Igaz ugyan, hogy a szorzásra nézve létezik
+      neutrális elem &ndash; az $1$ egész szám &ndash;, azonban rajta és a $-1$-en kívül más egész számnak nem
+      létezik inverze. A csak az $1$-ből és a $-1$-ből álló kételemű halmaz viszont már csoportot alkot a szorzásra
+      nézve is.
+  - type: narrative
+    content: |
+      A most következő tétel egy fontos összefüggést mond ki két elem inverzei és a szorzatuk inverze között. A
+      tételt teljes általánosságban, azaz nem kimondottan csoportokra fogalmazzuk meg.
+  - type: embed
+    target:
+      type: theorem
+      name: szorzat-inverze
+  - type: embed
+    target:
+      type: proof
+      name: szorzat-inverze-bizonyitas
+  - type: narrative
+    content: |
+      Az imént megismert csoport és félcsoport fogalmának segítségével az alábbi definícióban egyrészt jóval
+      egyszerűbb módon megadhatjuk a [gyuru-test]ban szereplő gyűrűaxiómákat. Másrészt újabb fontos, gyűrűkkel
+      kapcsolatos csoportelméleti fogalmakkal is megismerkedünk.
+  - type: embed
+    target:
+      type: definition
+      name: gyuru-additiv-es-multiplikativ-csoportja
+  - type: embed
+    target:
+      type: remark
+      name: gyuru-additiv-es-multiplikativ-csoportja-megjegyzes
+  - type: narrative
+    content: |
+      Az iménti megjegyzés alapján tehát egy kommutatív, egységelemes gyűrű invertálható elemei csoportot alkotnak
+      a gyűrű szorzására nézve. Számunkra ebben a részben főként a [egesz-szamok-maradekosztalygyurui]ben definiált
+      ***modulo $n$ maradékosztálygyűrű multiplikatív csoportja*** lesz érdekes. Ez a [redukalt-maradekosztaly]
+      alapján épp a ***redukált maradékosztályokból*** áll.
+  - type: formula
+    lead-in: |
+      Például a $\Z/10\Z$ maradékosztálygyűrű multiplikatív csoportját $(\Z/10\Z)^{\times}$-vel jelöljük, és az
+      alábbi 4 elemből áll:
+    content: |
+      (\Z/10\Z)^{\times}=\{[1]_{10}; [3]_{10}; [7]_{10}; [9]_{10}\}
+  - type: formula
+    lead-in: |
+      A [egesz-szamok-maradekosztalygyurui]ben definiált maradékosztályok közötti szorzás műveleti táblája így néz
+      ki ebben a csoportban:
+    content: |
+      \begin{array}{c|cccc}\odot & [1]_{10} & [3]_{10} & [7]_{10} & [9]_{10}  \\ \hline  [1]_{10} & [1]_{10} &
+      [3]_{10} & [7]_{10} & [9]_{10}  \\  [3]_{10} & [3]_{10} & [9]_{10} & [1]_{10} & [7]_{10}  \\  [7]_{10} &
+      [7]_{10} & [1]_{10} & [9]_{10} & [3]_{10}  \\ [9]_{10} & [9]_{10} & [7]_{10} & [3]_{10} & [1]_{10}
+      \end{array}
+  - type: narrative
+    content: |
+      Látható, hogy valóban minden elemnek létezik inverze. Például a $[7]_{10}$ maradékosztály inverze a
+      $[3]_{10}$ maradékosztály, hiszen az ő szorzatuk az $[1]_{10}$ maradékosztály, amely a $(\Z/10\Z)^{\times}$
+      csoport neutrális eleme.

@@ -1,0 +1,75 @@
+<!-- wp:paragraph -->
+<p>Ezúttal [latex]c[/latex]-re vonatkozó teljes indukciót alkalmazunk. Tegyük fel, hogy az állítás igaz valamely [latex]c=n[/latex] természetes számra. Az tehát az <strong><em>indukciós feltétel</em></strong>, hogy [latex](a+b)+n = a+(b+n)[/latex]. Azt kell bizonyítanunk, hogy ebben az esetben [latex]c=s(n)[/latex]-re is igaz, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](a+b)+\underbrace{s(n)}_{=c} = a+(b+\underbrace{s(n)}_{=c})[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="peano-osszeadas" type="link" /] 2. pontja miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](a+b)+s(n)=s((a+b)+n) = \ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az indukciós feltétel miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots =s(a+(b+n)) = \ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ismételten a [yp_element slug="peano-osszeadas" type="link" /] 2. pontja miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots = a+s(b+n) = \ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>És végül megint csak a [yp_element slug="peano-osszeadas" type="link" /] 2. pontja miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots = a+(b+s(n))[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Vagyis azt kaptuk, hogy valóban [latex](a+b)+\underbrace{s(n)}_{=c} = a+(b+\underbrace{s(n)}_{=c})[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Felállítottuk tehát a dominósort, és beláttuk, hogy bármely dominó felborítása esetén a soron következő dominó is fel fog borulni. Ezért most felborítjuk az első dominót, vagyis igazoljuk, hogy az állítás igaz&nbsp;[latex]c=0[/latex]-ra, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](a+b)+\underbrace{0}_{=c} = a+(b+\underbrace{0}_{=c})[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="peano-osszeadas" type="link" /] 1. pontja miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](a+b)+0 = a+b = \ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ismételten a [yp_element slug="peano-osszeadas" type="link" /] 1. pontja miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots = a+(b+0)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Vagyis azt kaptuk, hogy valóban [latex](a+b)+\underbrace{0}_{=c} = a+(b+\underbrace{0}_{=c})[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Borul tehát az első dominó, és vele együtt a teljes dominósor, azaz minden&nbsp;[latex]a[/latex], [latex]b[/latex] és [latex]c[/latex] számra igaz, hogy [latex](a+b)+c=a+(b+c)[/latex].</p>
+<!-- /wp:paragraph -->

@@ -1,0 +1,11 @@
+type: theorem
+name: gyuruk-homomorfizmustetele
+proofs:
+  - gyuruk-homomorfizmustetele-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyenek $R$ és $S$ tetszőleges gyűrűk, valamint tegyük fel, hogy adva van egy $f:R\to S$ gyűrűhomomorfizmus.
+      Ekkor $R/\ker f \simeq \text{im} f$, azaz az $R$-ből képzett $f$ magja szerinti faktorgyűrű ***izomorf*** $f$
+      képével.

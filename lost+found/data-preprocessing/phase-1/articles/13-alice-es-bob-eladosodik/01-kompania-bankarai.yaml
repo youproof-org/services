@@ -1,0 +1,53 @@
+type: section
+name: 01-kompania-bankarai
+title: Kompánia bankárai
+
+body:
+  - type: narrative
+    content: |
+      A 7. részben már megismert Kompánia országában az állampolgárok már időtlen idők óta aranytallérokat
+      használtak fizetőeszközként. Sajnos azonban &ndash; ahogy az lenni szokott &ndash; egyre jobban kezdett
+      elterjedni a bűnözés. Ezért az emberek egy idő után már nem szívesen tárolták aranytallérjaikat otthon a
+      párna alatt. Volt, aki elásta a kertben, mások elrejtették a padláson vagy egyéb helyeken. Azaz egyre nagyobb
+      piaci igény kezdett el kialakulni egy olyan szolgáltatásra, amely biztosítani tudja az állampolgárok számára
+      pénzük biztonságos tárolását.
+  - type: narrative
+    content: |
+      Megjelentek tehát a bankok, akik vállalták, hogy megőrzik és nyilvántartják az emberek aranytallérjait némi
+      jutalékért cserébe. Minden ügyfelük számára nyitottak tehát egy úgynevezett ***betéti számlát***. Ez azt
+      tartalmazta, hogy a banknál tárolt összes aranytallér közül hány darab tartozik az adott ügyfélhez. Ennek
+      leírására logikus módon a természetes számok már jól ismert $\N$ halmazának elemeit használták.
+  - type: narrative
+    content: |
+      A kapzsi bankárok azonban hamar felismerték, hogy mivel kereshetnének jóval több pénzt annál, mint amit a
+      betéti számlák után jutalékként kapnak az ügyfelektől. Elkezdtek hát további jutalékért cserébe
+      ***kölcsönadni*** aranytallérokat az embereknek. Egyre többet és többet. Egy idő után már annál is többet,
+      mint amennyi aranytallért összesen őriztek a páncéltermeikben. Ezt a látszólagos ellentmondást egy roppant
+      egyszerű trükkel oldották fel. Minden ügyfél számára nyitottak egy úgynevezett ***hitelszámlát*** is a már
+      meglévő betéti számla mellé. Ez azt tartalmazta, hogy az adott ügyfél a banknak mennyi aranytallérral
+      tartozik. Logikus módon ennek leírására is a természetes számok $\N$ halmazának elemeit használták.
+  - type: narrative
+    content: |
+      Természetesen sok esetben nem történt valódi aranytallér kifizetés az ügyfél számára, hiszen nem is mindig
+      volt rá szükség. Tegyük fel például, hogy Alice vásárol valamit Bobtól $n$ aranytallérért, de nincs rá pénze.
+      Megkéri ezért a bankot, hogy adjon hozzá a saját hitelszámlájához $n$ aranytallérnyi összeget, Bob betéti
+      számlájához pedig szintén adjon hozzá egy ugyanekkora összeget. Vegyük észre, hogy habár nem történt valódi
+      aranytallér fizetés Alice és Bob között, a banknál nyilvántartott számláik alapján azonban mégis
+      elmondhatjuk, hogy Bob "vagyona" $n$ aranytallérral növekedett, miközben Alice "vagyona" ugyanekkora
+      összeggel csökkent.
+  - type: narrative
+    content: |
+      Ebből mindaddig nincs probléma, ameddig az ügyfelek nem kezdik el tömegesen kivenni az aranytallérjaikat a
+      bankokból. Ha azonban ez mégis megtörténik valami miatt, akkor nagy meglepetésben lesz részük. A bank
+      páncéltermében tárolt valódi aranytallérok száma ugyanis jóval kevesebb, mint amennyinek a betéti és
+      hitelszámlák alapján ott kéne lennie. Nyilvánvaló tehát, hogy szabályozni kell, hogy a bankok mennyi
+      aranytallérnyi összeget tarthatnak nyilván az ügyfelek számláin ahhoz képest, mint amennyit valóban tárolnak
+      a páncéltermükben. Kompánia országában például 8:1 ez az arány. Ez azt jelenti, hogy ha egy bank
+      páncéltermében 100 valódi aranytallér van, akkor az ügyfelek számláin összesen 800 virtuális aranytallér
+      lehet nyilvántartva. De természetesen Kompánia csak egy képzeletbeli ország...
+  - type: narrative
+    content: |
+      Számunkra most nem is a hitelkihelyezés állami szabályozásának módja az érdekes, ezért feltételezzük, hogy a
+      bankok természetesen tisztességesen ***és*** a törvényeknek megfelelően működnek. Szándékosan az "és", nem
+      pedig az "azaz" szót használtam. Most inkább azt vizsgáljuk meg, hogy mi az, ami egy ügyfél ***vagyonát***
+      jellemzi a fenti felállásban.

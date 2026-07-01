@@ -1,0 +1,40 @@
+type: proof
+name: kituntetett-kozos-oszto-letezesenek-kovetkezmenye-bizonyitas
+remarks: []
+references:
+  euklideszi-lemma:
+    target:
+      type: theorem
+      name: euklideszi-lemma
+  felbonthatatlan-elem:
+    target:
+      type: definition
+      name: felbonthatatlan-elem
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy $p$ felbonthatatlan elem $R$-ben. Azt kell megmutatni, hogy prímtulajdonságú, azaz hogy ha
+      valamilyen $a$ és $b$ elemek esetén teljesül a $p|ab$ oszthatóság, de $p\mid a$, akkor szükségképpen teljesül
+      a $p|b$ oszthatóság.
+  - type: narrative
+    content: |
+      ***Tegyük hát fel***, hogy $p\mid a$. Mivel azt mondtuk, hogy bármely két elemnek létezik kitüntetett közös
+      osztója $R$-ben, ezért nyilván $p$-nek is és $a$-nak is létezik a $(p,a)$ kitüntetett közös osztója.
+  - type: narrative
+    content: |
+      Mivel $(p,a)$ közös osztó, ezért nyilván teljesül a $(p,a)|p$ oszthatóság.
+  - type: formula
+    lead-in: |
+      De mivel $p$ felbonthatatlan, ezért a [felbonthatatlan-elem] miatt az alábbi két eset lehetséges:
+    content: |
+      \begin{aligned}(p,a)&\sim p \\ (p,a)&\sim 1\end{aligned}
+  - type: narrative
+    content: |
+      Azaz $(p,a)$ vagy egység, vagy pedig $p$ valamely asszociáltja. Ez utóbbi azonban lehetetlen, hiszen &ndash;
+      lévén, hogy $(p,a)$ közös osztó &ndash; teljesül a $(p,a)|a$ oszthatóság, és így $(p,a)\sim p$ miatt
+      teljesülne a $p|a$ oszthatóság is, ami ellentmond a feltételezésünknek, miszerint $p\mid a$.
+  - type: narrative
+    content: |
+      Azt kaptuk tehát, hogy $(p,a)$ csak egység lehet, azaz $p$ és $a$ relatív prímek. Ebből viszont a $p|ab$
+      oszthatóság és az ***euklidészi lemma*** ([euklideszi-lemma]) miatt következik, hogy $p|b$. Azaz $p$ valóban
+      ***prímtulajdonságú***, ahogy a tétel állítja.

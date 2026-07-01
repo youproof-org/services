@@ -1,0 +1,30 @@
+type: section
+name: 06-csoportok-direkt-szorzata
+title: Csoportok direkt szorzata
+
+references:
+  gyuru-test:
+    target:
+      type: definition
+      name: gyuru-test
+  gyuruk-direkt-szorzata:
+    target:
+      type: theorem
+      name: gyuruk-direkt-szorzata
+
+body:
+  - type: narrative
+    content: |
+      A 22. részben a kínai maradéktétel kapcsán került elő egy ***szorzatgyűrűnek*** nevezett konstrukció,
+      amelynek a segítségével kettő vagy több gyűrűből egy további gyűrűt lehet képezni. A
+      [gyuruk-direkt-szorzata]ben definiáltuk is, hogy pontosan mit értünk szorzatgyűrű alatt, és igazoltuk, hogy
+      ez a konstrukció valóban teljesíti a [gyuru-test]ben felsorolt gyűrűaxiómákat. Most egy ehhez nagyon hasonló
+      konstrukciót mutatunk be a csoportok esetére is, amelynek szintén a következő részben fogjuk hasznát venni.
+  - type: embed
+    target:
+      type: theorem
+      name: csoportok-direkt-szorzata
+  - type: embed
+    target:
+      type: proof
+      name: csoportok-direkt-szorzata-bizonyitas

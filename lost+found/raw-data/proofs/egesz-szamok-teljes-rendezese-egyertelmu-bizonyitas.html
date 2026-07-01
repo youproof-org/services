@@ -1,0 +1,35 @@
+<!-- wp:paragraph -->
+<p>A [yp_element slug="pozitiv-es-negativ-egesz-szamok" type="link" /]ban az egész számok halmazát 3 részre osztottuk: <strong><em>pozitív</em></strong> egész számok, <strong><em>negatív</em></strong> egész számok és a [latex]0[/latex] egész szám. A pozitív egész számok halmazát jelöljük a továbbiakban [latex]P[/latex]-vel, a negatív egész számok halmazát pedig [latex]-P[/latex]-vel. A [latex]P[/latex] halmaz nem tartalmazza a gyűrű nullelemét, azaz a [latex]0[/latex] egész számot, valamint a [yp_element slug="termeszetes-szamok-beagyazasa-osszegtarto" type="link" /] és a [yp_element slug="termeszetes-szamok-beagyazasa-szorzattarto" type="link" /] miatt zárt a [latex](\Z ,+,\cdot )[/latex] gyűrű összeadására és szorzására. Mivel a gyűrű nullosztómentes, ezért a [yp_element slug="pozitivitastartomany-szukseges-es-elegseges-feltetele" type="link" /] alapján annyi már bizonyos, hogy a [latex]P[/latex] halmaz valóban egy <strong><em>részbenrendezés pozitivitástartománya</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="egesz-szamok-gyuruje" type="link" /] bizonyítása alapján a [latex]P[/latex]-ben lévő egész számok ellentettjei épp a [latex]-P[/latex]-ben lévő egész számok. Így a [yp_element slug="pozitivitastartomany" type="link" /] utáni megjegyzés miatt a [latex]P[/latex]-hez tartozó rendezés <strong><em>negativitástartománya</em></strong> épp a [latex]-P[/latex] halmaz, aminek tehát <strong><em>nincs közös eleme</em></strong> [latex]P[/latex]-vel. Mivel a [latex]P[/latex] és a [latex]-P[/latex] halmazok ketten együtt tartalmazzák a [latex]0[/latex] egész számon kívüli <strong><em>összes</em></strong> egész számot, így a [yp_element slug="teljes-rendezes-szukseges-es-elegseges-feltetele" type="link" /] alapján a [latex]P[/latex] halmazhoz tartozó rendezés <strong><em>valójában egy teljes rendezés</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Már csak azt kell belátni, hogy <strong><em>ez az egyetlen</em></strong>, a rendezési axiómákat is kielégítő teljes rendezés. Tegyük fel ezért indirekt, hogy egy másik ilyen teljes rendezés is létezik az egész számok gyűrűjén. Jelöljük az ehhez tartozó pozitivitástartományt [latex]Q[/latex]-val, a negativitástartományt pedig [latex]-Q[/latex]-val. Mivel rendezésről van szó, ezért a [latex]Q[/latex] és a [latex]-Q[/latex] halmazoknak <strong><em>szintén nincs közös elemük</em></strong>, továbbá – mivel ez a hipotetikus rendezés teljes – ketten együtt tartalmazzák a [latex]0[/latex] egész számon kivüli <strong><em>összes</em></strong> egész számot. A [yp_element slug="rendezesek-es-pozitivitastartomanyok-kapcsolata" type="link" /] alapján az indirekt feltevésünk pontosan azt jelenti, hogy a [latex]P[/latex] és [latex]Q[/latex] pozitivitástartományok különbözőek.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Vegyük észre azonban, hogy a [yp_element slug="teljes-rendezesek-pozitivitastartomanyainak-metszete" type="link" /] alapján mindazon egész számok, amelyek felírhatók egy <strong><em>akármilyen</em></strong> egész szám önmagával vett szorzataként, vagy ilyen szorzatok akárhánytagú összegeként, benne vannak mind a [latex]P[/latex], mind pedig a [latex]Q[/latex] halmazban. Ez viszont igaz minden [latex]P[/latex]-beli egész számra. Az első néhány példa alapján az Olvasó is könnyen megértheti, miért:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}1&amp;=1\cdot 1 \\ 2&amp;=1\cdot 1 + 1\cdot 1 \\ 3&amp;=1\cdot 1 + 1\cdot 1 + 1\cdot 1 \\ &amp;\ldots \end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az tehát már bizonyos, hogy [latex]P[/latex] része [latex]Q[/latex]-nak. Ebből viszont következik, hogy [latex]-P[/latex] is része [latex]-Q[/latex]-nak. Hiszen ha egy tetszőleges [latex]a[/latex] nemnulla egész szám benne van [latex]-P[/latex]-ben, akkor az ellentettje benne van [latex]P[/latex]-ben. Azonban [latex]P[/latex] része [latex]Q[/latex]-nak, így tehát ez az ellentett benne van [latex]Q[/latex]-ban is. Ekkor viszont maga [latex]a[/latex] benne van [latex]-Q[/latex]-ban. A szituáció tehát valójában a következő:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":3792,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_15_Z_teljes_rendezeseinek_pozitivitastartomanyai.jpg" alt="Teljes rendezések pozitivitás- és negativitástartományai Z-n" class="wp-image-3792"/><figcaption>Teljes rendezések pozitivitás- és negativitástartományai [latex]\Z[/latex]-n</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Az indirekt feltételezésünk ugye az volt, hogy a [latex]P[/latex] és a [latex]Q[/latex] halmazok különböznek. Azaz létezik olyan [latex]x[/latex] nemnulla egész szám, amely benne van [latex]Q[/latex]-ban, de nincs benne [latex]P[/latex]-ben. Egyrészt, mivel [latex]Q[/latex]-nak és [latex]-Q[/latex]-nak nincs közös eleme, ezért ha [latex]x[/latex] benne van [latex]Q[/latex]-ban, akkor nincs benne [latex]-Q[/latex]-ban. Másrészt, mivel [latex]P[/latex] és [latex]-P[/latex] ketten együtt tartalmazzák az összes nemnulla egész számot, ezért ha [latex]x[/latex] nincs benne [latex]P[/latex]-ben, akkor benne van [latex]-P[/latex]-ben. Mivel azonban [latex]-P[/latex] része [latex]-Q[/latex]-nak, ezért ha [latex]x[/latex] benne van [latex]-P[/latex]-ben, akkor benne van [latex]-Q[/latex]-ban is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az indirekt feltételezésünkből tehát az következik, hogy létezik olyan egész szám, amely benne is van [latex]-Q[/latex]-ban, és nincs is benne. Ez teljes képtelenség, így csak az a feltételezésünk lehet hibás, miszerint [latex]P[/latex] és [latex]Q[/latex] különböznek, azaz valójában [latex]P[/latex] és [latex]Q[/latex] megegyeznek. Ekkor viszont a [yp_element slug="rendezesek-es-pozitivitastartomanyok-kapcsolata" type="link" /] miatt a hozzájuk tartozó teljes rendezések is megegyeznek. <strong><em>Az egész számok gyűrűje tehát valóban csak egyféleképpen rendezhető teljesen.</em></strong></p>
+<!-- /wp:paragraph -->

@@ -1,0 +1,61 @@
+type: section
+name: 04-lagrange-tetele
+title: Lagrange tétele
+
+references:
+  ekvivalenciarelacio:
+    target:
+      type: definition
+      name: ekvivalenciarelacio
+  ideal-szerinti-kongruencia:
+    target:
+      type: definition
+      name: ideal-szerinti-kongruencia
+
+body:
+  - type: narrative
+    content: |
+      Ebben a szakaszban egy kulcsfontosságú tételt fogunk igazolni, amely egy tetszőleges véges csoport illetve
+      annak részcsoportjainak elemszáma között mond ki egy fontos összefüggést. Először azonban tisztázzuk, hogy
+      pontosan mit értünk egy csoport elemszámán.
+  - type: embed
+    target:
+      type: definition
+      name: csoport-rendje
+  - type: narrative
+    content: |
+      Most bevezetünk egy fontos relációt egy adott $G$ csoport elemei között, amely relációt $G$ egy adott
+      részcsoportja segítségével határozunk meg. Továbbá igazoljuk, hogy ez egy ***ekvivalenciareláció***
+      ([ekvivalenciarelacio]), amely tehát ekvivalencia-osztályokra bontja a $G$ csoportot. Ez az
+      ekvivalenciareláció némileg speciálisabb formában korábban már szerepelt a [ideal-szerinti-kongruencia]ban,
+      ahol őt ***ideál szerinti kongruenciának*** hívtuk. Erre a tétel utáni megjegyzésben bővebben is kitérünk.
+  - type: embed
+    target:
+      type: theorem
+      name: mellekosztalyok
+  - type: embed
+    target:
+      type: proof
+      name: mellekosztalyok-bizonyitas
+  - type: embed
+    target:
+      type: remark
+      name: mellekosztalyok-megjegyzes
+  - type: narrative
+    content: |
+      Mostmár megfogalmazhatjuk azt a véges csoportok részcsoportjainak elemszámára vonatkozó fontos összefüggést,
+      amely kulcsfontosságú lesz annak igazolásához, miszerint a Miller-Rabin-prímtesztre nézve nem léteznek
+      univerzális álprímek. Ez az összefüggés Joseph Louis Lagrange olasz születésű francia matematikustól
+      származik, és igen fontos a matematika egyéb területein is.
+  - type: embed
+    target:
+      type: theorem
+      name: lagrange-tetele
+  - type: embed
+    target:
+      type: proof
+      name: lagrange-tetele-bizonyitas
+  - type: embed
+    target:
+      type: remark
+      name: lagrange-tetele-megjegyzes

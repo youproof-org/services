@@ -1,0 +1,21 @@
+type: theorem
+name: euler-fuggveny-osszege
+proofs:
+  - euler-fuggveny-osszege-bizonyitas
+remarks: []
+references:
+  euler-fuggveny:
+    target:
+      type: definition
+      name: euler-fuggveny
+content:
+  - type: narrative
+    content: |
+      Legyen $n\gt 0$ tetszőleges ***pozitív*** egész szám, valamint $\varphi$ a [euler-fuggveny] szerinti
+      ***Euler-függvény***.
+  - type: formula
+    lead-in: |
+      Amennyiben $d_1$, $d_2$, ..., $d_k$ az $n$ egész szám ***összes*** pozitív osztója, akkor teljesül az alábbi
+      összefüggés:
+    content: |
+      \varphi(d_1)+\varphi(d_2)+\ldots +\varphi(d_k)=n

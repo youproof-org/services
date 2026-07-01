@@ -1,0 +1,54 @@
+type: section
+name: 01-mik-azok-az-axiomak
+title: Mik azok az axiómák?
+
+body:
+  - type: narrative
+    content: |
+      Minden logikai játéknak vannak bizonyos ***alapfogalmai*** és az ezekre épülő ***játékszabályai***, amelyeket
+      meg kell ismernünk ahhoz, hogy játszani tudjunk. Ezeket az alapfogalmakat és játékszabályokat ***nincs
+      értelme kétségbe vonnunk***, mivel azokat a játék megalkotója hozta létre &ndash; mondhatni önkényesen
+      &ndash; abból a célból, hogy a játék épp olyan legyen, amilyen. Például kérdezhetnénk, hogy a sakkban a vezér
+      miért nem tud lóugrásban lépni, csak vízszintesen, függőlegesen és átlósan? Erre nagyon egyszerű a válasz:
+      ***azért mert ez a szabály***. Lehetne persze az is a szabály, hogy a vezér lóugrásban is tudjon lépni.
+      Minden bizonnyal az is egy nagyszerű játék lenne, de konkrétan a sakkban ez a lépés meg van tiltva.
+  - type: narrative
+    content: |
+      A matematika összes területe &ndash; így például a számelmélet is &ndash; ugyanígy épül fel azzal a
+      különbséggel, hogy itt az alapfogalmakat és a játékszabályokat ***definícióknak*** és/vagy ***axiómáknak***
+      nevezik, mert így tudományosabban hangzik. Egy matematikai elmélet axiómáiban ugyanúgy nincs értelme
+      kételkednünk, mint a sakk játékszabályaiban. És nem azért nincs értelme, mert ezek abszolút igazságok
+      lennének, hanem azért, mert ha valamelyik axiómát nem tekintenénk igaznak, akkor az vagy ellentmondáshoz
+      vezetne, vagy pedig egy teljesen más elméletet kapnánk teljesen más logikai következményekkel. Lehet-e egy
+      ilyen módosított elmélet ugyanúgy hasznos, mint az eredeti? "Mi az, hogy! Nagyon is!" &ndash; hogy egy
+      klasszikust idézzek.
+  - type: narrative
+    content: |
+      Erre az egyik legszemléletesebb példát a geometriában találhatjuk. A geometria alapfogalmai közül nézzük a
+      következő hármat: ***pont, egyenes, egyenesek metszése***. Az, hogy ezek lényegét köznyelven hogyan lehet
+      megfogalmazni alapjában véve csak azért fontos, hogy valahogy el tudjuk őket képzelni. Biztos vagyok benne,
+      hogy minden olvasónak él is valamilyen kép a fejében ezekről a fogalmakról. De mégis mi alapján képzelünk el
+      egy egyenest vagy egy pontot épp úgy, ahogy? Habár a megszokás miatt sokan nincsenek ennek tudatában, de
+      ezeket a képeket e geometriai fogalmak alaptulajdonságait leíró ***axiómák***, vagy ha úgy tetszik, a
+      ***geometria játékszabályai*** okozzák.
+  - type: narrative
+    content: |
+      Az egyik ilyen axióma a geometriában az úgynevezett ***párhuzamossági axióma***, amely a következőt mondja
+      ki. Ha van egy $e$ egyenes és egy ezen kívüli $P$ pont, akkor pontosan egy olyan $f$ egyenes létezik, amely
+      átmegy a $P$ ponton, de nem metszi az $e$ egyenest.
+  - type: figure
+    lead-in: |
+      És valóban: egy papírlapon kipróbálva a fenti axiómát tényleg pontosan egyféleképpen tudunk egy adott
+      egyenessel párhuzamos másik egyenest rajzolni, amely egy adott ponton áthalad:
+    src: 01-parhuzamos-rajzolasa.jpg
+    alt: Párhuzamos rajzolása
+    caption: Párhuzamos rajzolása
+  - type: narrative
+    content: |
+      De vajon miért van ez így? Hogyan lehetne erre matematikai bizonyítást adni? A meglepő válasz a következő:
+      ***ezt nem kell bizonyítani, ez ugyanis egy axióma***. A sakkos példa analógiájával élve azért lehet egy
+      adott egyeneshez egy adott ponton keresztül pontosan 1 (azaz se nem több, se nem kevesebb) párhuzamos másik
+      egyenest rajzolni, ***mert egész egyszerűen ez a szabály***. Lehetne persze az is a szabály, hogy ne lehessen
+      egyáltalán párhuzamost rajzolni, vagy hogy éppenséggel végtelen sok párhuzamost lehessen rajzolni. Minden
+      bizonnyal ezek is nagyszerű geometriák lennének... Valóban így van? Nézzük is meg gyorsan egy
+      gondolatkísérlettel!

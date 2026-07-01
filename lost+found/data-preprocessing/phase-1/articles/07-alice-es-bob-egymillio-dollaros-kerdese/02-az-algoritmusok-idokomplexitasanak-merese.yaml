@@ -1,0 +1,89 @@
+type: section
+name: 02-az-algoritmusok-idokomplexitasanak-merese
+title: Az algoritmusok időkomplexitásának mérése
+
+body:
+  - type: narrative
+    content: |
+      Vegyük észre, hogy gyakorlatilag lényegtelen, hogy a két algoritmust egy primitív Turing-gép leírásának
+      szintjén, vagy a fenti magasabbszintű leírások alapján vizsgáljuk. A kettő között csak annyi a különbség,
+      hogy mit tekintünk elemi lépésnek. Elképzelhető, hogy egy Turing-gép primitív lépéseiben számolva az előző
+      szakaszban kiszámolt lépésszámoknak a többszörösét kapnánk. Az azonban elmondható, hogy ez a szorzó tényező
+      nem, vagy csak elhanyagolható mértékben függ a bemeneti gráf méretétől. Feltéve persze, hogy értelmes
+      formában írtuk le a Turing-gép bemeneti szalagján a gráfot a használt ábécé szimbólumaival.
+  - type: narrative
+    content: |
+      Egy algoritmus komplexitásának mérésekor tehát elsősorban nem konkrét lépésszámokra vagyunk kíváncsiak.
+      Ilyenkor alapvetően az a lényeges számunkra, hogy a bemenet méretének növelésével ***milyen gyorsan
+      növekszik*** a végrehajtáshoz szükséges lépésszám. Ezt az algoritmus ***skálázódásának*** nevezzük. Egy olyan
+      "vízválasztót" keresünk tehát, amely elválasztja egymástól a "gyors" és a "lassú" algoritmusokat.
+  - type: narrative
+    content: |
+      Jelöljük a bemenet méretét $n$-nel. Azt, hogy $n$ adott esetben pontosan mire vonatkozik az határozza meg,
+      hogy milyen szinten vizsgáljuk az algoritmust. Egy Turing-gép primitív szintjén például jelölheti a bemeneti
+      jelsorozat szimbólumainak számát. Mi most egy ennél absztraktabb szinten vizsgáljuk a fenti két algoritmust.
+      Gráfalgoritmusokról lévén szó, célszerű az $n$ mennyiséget valamilyen módon a bemeneti gráf méretéhez kötni.
+      Jelölje például $n$ a gráf csúcsainak számát.
+  - type: narrative
+    content: |
+      Célunk, hogy találjunk egy olyan $n$-től függő $f(n)$ mennyiséget, amelyet a tényleges lépésszám biztosan nem
+      fog meghaladni "elegendően nagy" $n$ értékektől kezdve. Más szavakkal valamilyen módon ***felső becslést***
+      szeretnénk adni a szükséges lépésszámra a bemenet méretének függvényében.
+  - type: narrative
+    content: |
+      Az első, "buta" algoritmusnál láttuk, hogy a lépésszám $n$ csúcsú gráf esetén egy olyan mennyiséggel
+      becsülhető felülről, amely $2^n$-nel arányos. Az olyan függvényeket, ahol a változó mennyiség (amely jelen
+      esetben $n$) a kitevőben is előfordul, ***exponenciális függvényeknek*** nevezzük. Ezzel szemben a második,
+      "okos" algoritmus esetén a lépésszám egy $n^2$-tel arányos mennyiséggel becsülhető felülről. Az olyan
+      függvényeket, ahol a változónak csak valamilyen rögzített kitevőjű hatványai fordulnak elő, ***polinomiális
+      függvényeknek*** nevezzük. Mindkét függvénycsaládnak megvan az a tulajdonsága, hogy zárt a négy
+      alapműveletre. Például két tetszőleges polinomiális függvény összege és szorzata is polinomiális, és ugyanez
+      a zártság igaz az exponenciális függvényekre is.
+  - type: narrative
+    content: |
+      Ezen kívül igaz az is, hogy ***bármilyen exponenciális függvény*** &ndash; feltéve, hogy az alapja 1-nél
+      nagyobb &ndash; előbb-utóbb ***minden polinomiális függvénynél gyorsabban kezd el növekedni***. Vegyük
+      például az $1.1^n$ és az $n^5$ függvényeket. Az első egy 1-hez közeli alapú (tehát relatíve lassan növekvő)
+      exponenciális függvény, a második pedig egy viszonylag magas kitevőjű (tehát relatíve gyorsan növekvő)
+      polinomiális függvény.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán e két függvény grafikonja látható:
+    src: 03-exponencialis-vs-polinomialis.jpg
+    alt: Exponenciális és polinomiális függvények összehasonlítása
+    caption: Exponenciális és polinomiális függvények összehasonlítása
+  - type: narrative
+    content: |
+      Látható, hogy kezdetben ugyan az exponenciális függvény a polinomiális függvény alatt marad, $n\approx 300$
+      körül azonban végül "beelőzi" azt, és onnantól már sokkal nagyobb sebességgel növekszik. De választhattunk
+      volna egy még lassabban növekvő exponenciális függvényt (például $1.001^n$) és egy még gyorsabban növekvő
+      polinomiális függvényt (például $n^{100}$). Azokra ugyanúgy igaz lenne, hogy az előbbi "beelőzi" az utóbbit,
+      maximum ez $n$ magasabb értékénél következik be.
+  - type: narrative
+    content: |
+      Ezek után a Turing-gép fogalmára lefordítva meg tudjuk adni egy algoritmus "hatékonyságát". Tegyük fel, hogy
+      egy probléma megoldására alkottunk egy Turing-gépet. Ha a probléma egy példányának reprezentációja (a fenti
+      példában egy konkrét gráf leírása) a Turing-gép bemeneti szalagján $n$ "betűből" áll, és a Turing-gép
+      legfeljebb $f(n)$ lépésben be tudja fejezni a számolást tetszőleges bemenetre, de ennél gyorsabban nem, akkor
+      azt mondjuk, hogy ***a Turing-gép időkomplexitása*** $f(n)$. Ha $f(n)$ egy valamilyen polinomiális
+      függvénnyel felülről becsülhető, akkor azt mondjuk, hogy ***a Turing-gép polinomiális időkomplexitású***. Ha
+      $f(n)$ polinomiális függvénnyel nem, csak exponenciális függvénnyel becsülhető felülről, akkor ***a
+      Turing-gép exponenciális időkomplexitású***. A továbbiakban a "probléma" és a "formális nyelv" szavakat,
+      valamint az "algoritmus" és a "Turing-gép" szavakat szinonimaként fogjuk használni. Az előző részben ugyanis
+      láttuk, hogy ezek gyakorlatilag ugyanazt jelentik.
+  - type: narrative
+    content: |
+      A gyakorlatban felmerülő problémák esetén egy algoritmus hatékonyságának általában egy jó vízválasztója az,
+      hogy ***polinomiális vagy exponenciális időkomplexitású-e***. Elképzelhető azonban, hogy a szóba jövő
+      bemenet-méretek esetén jobb egy exponenciális időkomplexitású algoritmus, mint egy polinomiális. Az előző
+      grafikonon például láthattuk, hogy egy relatíve lassan növő exponenciális függvény értéke egy ideig alatta
+      maradhat egy relatíve gyorsan növő polinomiális függvény értékének. Amennyiben ez a két függvény két
+      különböző algoritmus időkomplexitását jelöli, úgy elmondható, hogy az exponenciális algoritmus mindaddig
+      hatékonyabb a polinomiálisnál, ameddig $n$ értéke 300 alatt marad (bármit is jelentsen $n$ a bemenet méretére
+      vonatkozóan).
+  - type: narrative
+    content: |
+      Amennyiben tudható, hogy a bemenet mérete biztosan az $n<300$ értéktartomány alatt fog maradni az algoritmus
+      használata során, úgy nyilvánvalóan ebben a konkrét esetben sokkal jobban megéri az exponenciális algoritmust
+      alkalmazni. Ettől függetlenül nagy általánosságban elmondható, hogy ***a polinomiális algoritmusokat
+      tekinthetjük "hatékony", míg az exponenciálisakat "rossz" algoritmusoknak***.

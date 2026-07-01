@@ -1,0 +1,35 @@
+type: section
+name: 09-a-megallasi-problema
+title: A megállási probléma
+
+body:
+  - type: narrative
+    content: |
+      Gyakorlati szempontból hasznos volna, ha egy algoritmusról el tudnánk dönteni, hogy létezik-e olyan bemenet,
+      amelyre végtelen ciklusba kerülne. Gondoljunk csak bele: egy csomó teszteléstől meg tudnák magukat kímélni a
+      szoftverfejlesztők, ha lenne egy olyan "szuperalgoritmusuk", amely bármilyen programról ítéletet tudna
+      mondani ilyen tekintetben. Legyünk szerények: vizsgáljuk csak azt a kérdést, hogy ***egy algoritmus egy adott
+      konkrét bemenettel kerülhet-e végtelen ciklusba***. Ezt ***megállási problémának*** nevezik, ahol az
+      eldöntendő kérdés tehát az, hogy egy $w$ jelsorozattal leírt Turing-gép egy adott $x$ bemenetre megáll-e vagy
+      sem. Az ilyen tulajdonságú $(w,x)$ párokat leíró mondatokat tartalmazó nyelvet ***megállási nyelvnek***
+      nevezzük és $L_h$-val jelöljük.
+  - type: narrative
+    content: |
+      Sajnos az a helyzet, hogy az $L_h$ nyelv ugyan rekurzívan felsorolható, de ***nem rekurzív***. A
+      bizonyításnak csak a vázlatát ismertetjük, annak részleteit mellőzzük. A rekurzívan felsorolhatóság könnyen
+      adódik: bütyköljük meg az univerzális Turing-gépet úgy, hogy ha megáll valamilyen $(w,x)$ bemenetre, akkor
+      mindig ***"igen"*** választ adjon. Az így megbütykölt gép nyilván felismeri az $L_h$ nyelvet, tehát az
+      ***rekurzívan felsorolható***. Ezután azt kell megvizsgálni, hogy ***mi lenne, ha ezen felül még rekurzív is
+      lenne***. Ebben az esetben lenne olyan $M$ Turing-gép, amely $L_h$-t ismeri fel és mindig megáll. Ekkor
+      azonban &ndash; itt nem részletezett módon &ndash; tudnánk konstruálni $M$ segítségével egy olyan
+      "szuperokos" Turing-gépet is, amely a fentebb ismertetett ***diagonális nyelvet ismerné fel***. De ez ugye
+      &ndash; mint láttuk &ndash; képtelenség, hiszen a diagonális nyelv nem rekurzívan felsorolható. ***Nem
+      létezhet*** tehát a "szuperokos" Turing-gép alapjául szolgáló $M$ Turing-gép sem, amely mindig megáll és
+      $L_h$-t ismeri fel, azaz $L_h$ ***nem lehet rekurzív***.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán az eddig megismert $RE$ és $R$ nyelvosztályok egymáshoz való viszonya, valamint az eddig
+      megismert 2 nyelv (a diagonális és a megállási nyelv) elhelyezkedése látható:
+    src: 08-r-re-nyelvosztalyok.jpg
+    alt: R és RE nyelvosztályok viszonya
+    caption: R és RE nyelvosztályok viszonya

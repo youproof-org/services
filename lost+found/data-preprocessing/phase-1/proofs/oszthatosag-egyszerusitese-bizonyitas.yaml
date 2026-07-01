@@ -1,0 +1,58 @@
+type: proof
+name: oszthatosag-egyszerusitese-bizonyitas
+remarks: []
+references:
+  gyuru-test:
+    target:
+      type: definition
+      name: gyuru-test
+  szorzat-egyszerusitese-gyurukben:
+    target:
+      type: theorem
+      name: szorzat-egyszerusitese-gyurukben
+content:
+  - type: formula
+    lead-in: |
+      Az, hogy fennáll az $a|b$ oszthatóság azt jelenti, hogy létezik olyan $k$ gyűrűelem, amelyre teljesül az
+      alábbi egyenlet:
+    content: |
+      a\cdot k = b
+  - type: formula
+    lead-in: |
+      Az egyenlet mindkét oldalát a $c$ gyűrűelemmel megszorozva ezt kapjuk:
+    content: |
+      (a\cdot k)\cdot c = b\cdot c
+  - type: formula
+    lead-in: |
+      Mivel azonban a [gyuru-test]ban megfogalmazott 4. gyűrűaxióma alapján a szorzás asszociatív, valamint &ndash;
+      kommutatív gyűrűről lévén szó &ndash; kommutatív is, ezért ennek az egyenletnek a baloldala átzárójelezhető
+      és átrendezhető:
+    content: |
+      (a\cdot c)\cdot k = b\cdot c
+  - type: narrative
+    content: |
+      Létezik tehát olyan gyűrűelem, amellyel $ac$-t megszorozva $bc$-t kapunk (nevezetesen a $k$). Ez viszont épp
+      azt jelenti, hogy $ac|bc$. Vegyük észre, hogy ehhez nem használtuk fel a nullosztómentességet, valamint a
+      $c=0$ esetre is működik. Így tehát bármely kommutatív gyűrűben tetszőleges $a$, $b$ és $c$ elemekre igaz,
+      hogy az $a|b$ oszthatóságból következik az $ac|bc$ oszthatóság.
+  - type: narrative
+    content: |
+      ***A visszafele irányhoz*** már fel kell használni a nullosztómentességet is.
+  - type: formula
+    lead-in: |
+      Ebben az esetben az $ac|bc$ oszthatóságból az előző lépéseket visszafele eljátszva következik az alábbi
+      egyenlet:
+    content: |
+      (a\cdot k)\cdot c = b\cdot c
+  - type: narrative
+    content: |
+      Ezt a $c\eq 0$ feltétel, valamint a nullosztómentesség miatt a [szorzat-egyszerusitese-gyurukben] alapján
+      egyszerűsíteni lehet $c$-vel.
+  - type: formula
+    lead-in: |
+      Így:
+    content: |
+      a\cdot k = b
+  - type: narrative
+    content: |
+      Ez viszont épp azt jelenti, hogy $a|b$.

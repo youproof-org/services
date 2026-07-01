@@ -1,0 +1,22 @@
+type: theorem
+name: asszocialtsag-ekvivalenciarelacio
+proofs:
+  - asszocialtsag-ekvivalenciarelacio-bizonyitas
+remarks: []
+references:
+  asszocialt:
+    target:
+      type: definition
+      name: asszocialt
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ egy tetszőleges ***kommutatív gyűrű***. Ekkor a [asszocialt] szerinti ***asszociáltság egy
+      ekvivalenciareláció*** a gyűrű $R$ alaphalmazán.
+  - type: ordered-list
+    lead-in: |
+      Más szavakkal tetszőleges $a$, $b$ és $c$ elemekre teljesülnek az alábbiak:
+    items:
+      - '$a\sim a$ (reflexivitás).'
+      - 'Ha $a\sim b$, akkor $b\sim a$ (szimmetria).'
+      - 'Ha $a\sim b$ és $b\sim c$, akkor $a\sim c$ (tranzitivitás).'

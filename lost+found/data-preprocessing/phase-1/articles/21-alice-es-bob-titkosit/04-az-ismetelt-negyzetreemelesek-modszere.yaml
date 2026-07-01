@@ -1,0 +1,163 @@
+type: section
+name: 04-az-ismetelt-negyzetreemelesek-modszere
+title: Az ismételt négyzetreemelések módszere
+
+references:
+  gyuru-test:
+    target:
+      type: definition
+      name: gyuru-test
+  hatvanyozas-azonossagai:
+    target:
+      type: theorem
+      name: hatvanyozas-azonossagai
+  maradekkepzes-gyuruhomomorfizmus:
+    target:
+      type: theorem
+      name: maradekkepzes-gyuruhomomorfizmus
+  modularis-osszeadas-es-szorzas:
+    target:
+      type: definition
+      name: modularis-osszeadas-es-szorzas
+
+body:
+  - type: narrative
+    content: |
+      A 18. részben többek között a ***Diffie-Hellman kulcscsere protokoll*** kapcsán merült fel &ndash; ebben a
+      részben pedig az ***RSA eljárás*** kapcsán fog felmerülni &ndash; az igény arra, hogy hatékonyan tudjunk
+      hatványozni az úgynevezett ***óraaritmetikában***. Egy ott szereplő példa volt annak meghatározása, hogy a
+      $2^{328}$ hatvány mennyi maradékot ad $11$-gyel osztva. Megmutattuk, hogy ez tulajdonképpen a
+      [modularis-osszeadas-es-szorzas] szerinti $Z_{11}$ gyűrűben elvégzett hatványozásnak felel meg, méghozzá a
+      $\bmod_{11}$ maradékképző függvény művelettartó tulajdonságai miatt.
+  - type: narrative
+    content: |
+      Eszerint tehát ahelyett, hogy először a $\Z$ gyűrűben számítanánk ki a $2^{328}$ hatványt, és vennénk ennek a
+      bődületesen nagy számnak a $11$-gyel való osztási maradékát, a $Z_{11}$ gyűrűben végezzük el az alábbi $328$
+      tényezős moduláris szorzást.
+  - type: formula
+    lead-in: |
+      Ezt képlettel kifejezve:
+    content: |
+      \bmod_{11}(\underbrace{2\cdot 2\cdot \ldots \cdot 2}_{\text{328 darab}})=\underbrace{\bmod_{11}(2)\odot
+      \bmod_{11}(2)\odot \ldots \odot \bmod_{11}(2)}_{\text{328 darab}}
+  - type: narrative
+    content: |
+      Ez azért szerencsés, mert így számolgatás közben nem fogunk olyan óriási részeredményeket kapni, amelyek
+      túllépik a számítógép számábrázolási határait. A gyakorlatban azonban a kitevő nagyságrendje a többszázjegyű
+      számok körében mozog, így ez a módszer beláthatatlanul sok moduláris szorzást igényel. Most egy olyan
+      módszert fogunk mutatni, amelynek a segítségével még ezek az óriási kitevős moduláris hatványok is pillanatok
+      alatt kiszámíthatók. Ez az ***ismételt négyzetre emelések módszere*** néven ismeretes, és a moduláris
+      hatványozás [hatvanyozas-azonossagai] szerinti azonosságait használja ki igen trükkös módon.
+  - type: narrative
+    content: |
+      Maradjunk továbbra is a $\bmod_{11}(2^{328})$ moduláris hatvány kiszámításának példájánál.
+  - type: formula
+    lead-in: |
+      Első lépésként a $328$-as kitevőt felírjuk kettes számrendszerben:
+    content: |
+      328 \to 101001000‬
+  - type: narrative
+    content: |
+      A különböző számrendszerekről részletesen a 3. részben volt szó. Az ott leírtaknak megfelelően ez
+      tulajdonképpen a $328$ felírása bizonyos 2-hatványok összegeként. Ebben az összegben épp azok a 2-hatványok
+      szerepelnek, amelyeknek megfelelő helyiértéken $1$-es áll a fenti bináris számábrázolásban.
+  - type: formula
+    lead-in: |
+      Azaz:
+    content: |
+      328=2^8+2^6+2^3‬
+  - type: narrative
+    content: |
+      Ennek az összegnek a tagjaiból a [gyuru-test] 5.
+  - type: formula
+    lead-in: |
+      pontjának megfelelő ***disztributivitási szabályt*** alkalmazva kiemelhetjük a $2^3$ hatványt:
+    content: |
+      328=(2^5+2^3+1)‬\cdot 2^3
+  - type: formula
+    lead-in: |
+      Ehhez hasonlóan a zárójelben maradt összeg első két tagjából ismételten kiemelhető a $2^3$ hatvány:
+    content: |
+      328=((2^2+1)\cdot 2^3+1)‬\cdot 2^3
+  - type: formula
+    lead-in: |
+      Így tehát az eredeti $\bmod_{11}(2^{328})$ moduláris hatvány felírható a következőképpen:
+    content: |
+      \bmod_{11}(2^{328})=\bmod_{11}(2^{((2\cdot 2+1)\cdot 2\cdot 2\cdot 2+1)‬\cdot 2\cdot 2\cdot 2})
+  - type: narrative
+    content: |
+      A hatványozás azonosságairól szóló [hatvanyozas-azonossagai] 2. és 3.
+  - type: formula
+    lead-in: |
+      pontjai alapján ez így írható fel:
+    content: |
+      \bmod_{11}(2^{328})=\bmod_{11}((((((((2^2)^2\cdot 2)^2)^2)^2\cdot 2)^2)^2)^2)
+  - type: narrative
+    content: |
+      Azaz egy olyan műveletsorozatot kell elvégeznünk, amelynek minden lépésében az előző lépésben kapott
+      részeredményt vagy négyzetre emeljük, vagy pedig megszorozzuk a $2$ alappal. Ebben a konkrét példában egy
+      dupla négyzetreemelés után először szorozni kell. Ezután következik egy tripla négyzetreemelés, aztán ismét
+      egy szorzás, végül megint egy tripla négyzetreemelés.
+  - type: narrative
+    content: |
+      Minthogy a $\bmod_{11}$ maradékképző függvény a [maradekkepzes-gyuruhomomorfizmus] alapján egy
+      gyűrűhomomorfizmus az egész számok $\Z$ gyűrűje és a $Z_{11}$ gyűrű között, ezért ez a műveletsorozat a
+      $Z_{11}$ gyűrűben is elvégezhető.
+  - type: formula
+    lead-in: |
+      Ezt az alábbiakban el is végezzük lépésenként:
+    content: |
+      \begin{aligned}\bmod_{11}&(2^2)=4 \\ \bmod_{11}&(4^2)=5 \\ \bmod_{11}&(5\cdot 2)=10 \\ \bmod_{11}&(10^2)=1 \\
+      \bmod_{11}&(1^2)=1 \\ \bmod_{11}&(1^2)=1 \\ \bmod_{11}&(1\cdot 2)=2 \\ \bmod_{11}&(2^2)=4 \\
+      \bmod_{11}&(4^2)=5 \\ \bmod_{11}&(5^2)=3 \end{aligned}
+  - type: narrative
+    content: |
+      Azaz a $\bmod_{11}(2^{328})=3$ végeredményt $327$ helyett megkaptuk mindössze $10$ darab moduláris
+      szorzásból.
+  - type: narrative
+    content: |
+      Most vizsgáljuk meg az imént leírt módszer lépésszámát általánosságban is. Tegyük fel, hogy a
+      $\bmod_{m}(a^x)$ moduláris hatványt szeretnénk meghatározni. Lépésszám alatt most értelemszerűen a szükséges
+      moduláris szorzások számát értjük. Ezt az $x$ kitevő nagysága határozza meg, amelyről most tegyük fel, hogy
+      $n$ darab számjeggyel írható le a kettes számrendszerben.
+  - type: formula
+    lead-in: |
+      A legrosszabb eset nyilván az, amikor minden bináris számjegy értéke $1$, hiszen ekkor az összes neki
+      megfelelő 2-hatvány szerepel az összegben:
+    content: |
+      x=2^{n-1}+2^{n-2}+2^{n-3}+\ldots +2^3+2^2+2^1+1
+  - type: formula
+    lead-in: |
+      A sorozatos kiemelések hatására egy olyan kifejezést kapunk, amely $n-2$ darab egymásba ágyazott zárójelet
+      tartalmaz:
+    content: |
+      \begin{aligned}x&=(2^{n-2}+2^{n-3}+\ldots +2^2+2^1+1)\cdot 2+1=\\&=((2^{n-3}+2^{n-4}+\ldots +2^1+1)\cdot
+      2+1)\cdot 2+1=\\&\vdots \\&=\underbrace{((\ldots (}_{n-2 \text{ darab}}2+1)\cdot 2 + 1)\cdot 2 +\ldots
+      +1)\cdot 2 + 1\end{aligned}
+  - type: narrative
+    content: |
+      Azaz mind az $n-2$ darab zárójel esetén az addigi részeredményhez hozzá kell adni $1$-et, majd az egészet
+      megszorozni $2$-vel. Végül az utolsó lépésben mégegyszer hozzá kell adni az egészhez $1$-et. Mivel ez a
+      kifejezés a $\bmod_m(a^x)$ moduláris hatvány kitevőjében szerepel, ezért a [hatvanyozas-azonossagai] 2. és 3.
+      pontjai alapján ennek a hatványnak a kiszámítása összesen $2n-1$ darab moduláris szorzásból megúszható.
+      Ráadásul ez a lehető legrosszabb eset, amikor a kitevő bináris számábrázolásában minden bit értéke $1$.
+  - type: narrative
+    content: |
+      Ez tehát azt jelenti, hogy mind a ***Diffie-Hellman kulcscsere protokoll***, mind pedig a következő
+      szakaszban bemutatott ***RSA-eljárás*** során előforduló moduláris hatványokat rendkívül gyorsan ki tudjuk
+      számítani még abban az esetben is, ha több ezer bites számokról van szó. Ugyanis legrosszabb esetben is a
+      kitevő bináris számjegyei számának duplája lesz az elvégzendő moduláris szorzások száma.
+  - type: narrative
+    content: |
+      ***Az itt lévő oldalon egy hasznos kis kalkulátor található, amelynek a segítségével a további numerikus
+      példákban szereplő moduláris hatványokat tudjuk majd kiszámítani a most ismertetett módszerrel.***
+  - type: unordered-list
+    lead-in: |
+      Eddig tehát megismertük a továbbiakban fontos 3 összetevőt:
+    items:
+      - 'lineáris kongruenciák megoldása'
+      - 'az Euler-féle $\varphi$-függvény kiszámítása'
+      - 'az ismételt négyzetreemelések módszere'
+  - type: narrative
+    content: |
+      Ezek után minden készen áll arra, hogy megismerkedjünk az emberiség egyik legfontosabb találmányával.

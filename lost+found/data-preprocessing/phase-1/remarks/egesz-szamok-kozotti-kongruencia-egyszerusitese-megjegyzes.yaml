@@ -1,0 +1,15 @@
+type: remark
+name: egesz-szamok-kozotti-kongruencia-egyszerusitese-megjegyzes
+references:
+  relativ-primek:
+    target:
+      type: definition
+      name: relativ-primek
+content:
+  - type: narrative
+    content: |
+      E tétel egy egyszerű következménye, hogy ha a $c$ szorzó tényező ***relatív prím*** az $m$ modulushoz, akkor
+      a $c$-vel való egyszerűsítés után a kongruencia ***változatlan modulus mellett érvényben marad***. Azaz ebben
+      az esetben az $ac\equiv bc\pmod m$ kongruenciából következik az $a\equiv b\pmod m$ kongruencia. Ekkor ugyanis
+      a [relativ-primek] utáni megjegyzés miatt $d=(c,m)=1$, és így az egyszerűsített $\frac{m}{d}$ modulus meg fog
+      egyezni az eredeti $m$ modulussal.

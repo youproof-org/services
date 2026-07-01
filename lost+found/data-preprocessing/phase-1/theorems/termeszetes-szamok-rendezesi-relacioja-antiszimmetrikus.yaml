@@ -1,0 +1,10 @@
+type: theorem
+name: termeszetes-szamok-rendezesi-relacioja-antiszimmetrikus
+proofs:
+  - termeszetes-szamok-rendezesi-relacioja-antiszimmetrikus-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Az $\N$ halmaz tetszőleges $a$ és $b$ elemére teljesül, hogy $a\leq b$ és $b\leq a$ együttes fennállása
+      esetén szükségképpen $a=b$ &ndash; azaz a $\leq$ reláció ***antiszimmetrikus***.

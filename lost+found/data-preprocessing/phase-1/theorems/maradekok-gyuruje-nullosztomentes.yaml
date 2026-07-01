@@ -1,0 +1,10 @@
+type: theorem
+name: maradekok-gyuruje-nullosztomentes
+proofs:
+  - maradekok-gyuruje-nullosztomentes-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Tetszőleges $m\eq 0$ egész szám esetén legyen $Z_m$ a ***modulo m maradékok*** gyűrűje a moduláris összeadás
+      és szorzás műveletével. A $Z_m$ gyűrű ***akkor és csak akkor nullosztómentes***, ha $m$ prímszám.

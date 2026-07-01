@@ -1,0 +1,174 @@
+type: proof
+name: polinomgyuru-bizonyitas
+remarks: []
+references:
+  gyuru-test:
+    target:
+      type: definition
+      name: gyuru-test
+  ketvaltozos-muvelet:
+    target:
+      type: definition
+      name: ketvaltozos-muvelet
+  nullosztomentes-gyuru:
+    target:
+      type: definition
+      name: nullosztomentes-gyuru
+  osszeg-es-szorzatpolinom-foka:
+    target:
+      type: theorem
+      name: osszeg-es-szorzatpolinom-foka
+  polinomok:
+    target:
+      type: definition
+      name: polinomok
+content:
+  - type: narrative
+    content: |
+      Előszöris megmutatjuk, hogy a [polinomok]ban bevezetett műveletek nem vezetnek ki az $R[x]$ halmazból, azaz
+      algebrai értelemben is műveletek (lásd a [ketvaltozos-muvelet]t).
+  - type: narrative
+    content: |
+      A [osszeg-es-szorzatpolinom-foka] 1. és 2. pontjai alapján ugyanis ***nemnulla*** polinomok összegének foka
+      legfeljebb a polinomok fokainak maximuma, továbbá ugyanezen tétel 3. pontja alapján ***nemnulla*** polinomok
+      szorzatának foka legfeljebb a polinomok fokainak összege, hacsak az eredmény nem maga a nullapolinom. Ezekben
+      az esetekben tehát ha egy összeg tagjainak vagy egy szorzat tényezőinek foka véges, akkor az eredmény foka is
+      véges, vagy az eredmény a nullapolinom. Emiatt $R[x]$ valóban ***zárt a nemnulla polinomok összeadására és
+      szorzására*** nézve.
+  - type: narrative
+    content: |
+      Az nyilvánvaló, hogy a polinomok ***összeadása kommutatív és asszociatív***, hiszen a [polinomok] alapján azt
+      tagonként kell elvégezni az $R$ gyűrűben, ahol teljesül ez a két tulajdonság. Ezenkívül ha egy polinomhoz
+      akár jobbról, akár balról a ***nullapolinomot*** adjuk, akkor az eredmény nem változik, hiszen a nullapolinom
+      minden tagja az $R$ gyűrű nulleleme, ezért a tagonkénti összeadás egyetlen tagot sem változtat meg. Egyrészt
+      tehát az $R[x]$ halmaz a ***nullapolinommal való összeadásra nézve is zárt***, másrészt a nullapolinom
+      valóban ***neutrális elem*** az $R[x]$-beli összeadásra nézve.
+  - type: formula
+    lead-in: |
+      A tételben szereplő $-f$-fel jelölt polinomra továbbá teljesül az alábbi, amennyiben az $R$ gyűrű nullelemét
+      $0_R$-rel jelöljük:
+    content: |
+      f+(-f)=(a_0-a_0, a_1-a_1,\ldots)=(0_R,0_R,\ldots)
+  - type: narrative
+    content: |
+      A már bizonyított kommutativitás miatt a másik irányú összeadásra ugyanez teljesül. Az $f$-et $-f$-fel akár
+      jobbról, akár balról összeadva tehát a nullapolinomot kapjuk, amely emiatt $f$ ***ellentettje*** a polinomok
+      összeadására nézve.
+  - type: formula
+    lead-in: |
+      Továbbá ha egy polinomot jobbról vagy balról a nullapolinommal szorozzuk, akkor az eredmény tetszőleges
+      $k$-adik tagja a [polinomok]ban szereplő képlet alapján az alábbiak szerint alakul:
+    content: |
+      \begin{aligned}&a_0\cdot 0_R+a_1\cdot 0_R+\ldots +a_k\cdot 0_R = 0_R \\ &0_R\cdot a_k + 0_R\cdot a_{k-1} +
+      \ldots + 0_R\cdot a_0 = 0_R\end{aligned}
+  - type: narrative
+    content: |
+      Ilyenkor az eredmény tehát a nullapolinom, és így $R[x]$ ***zárt a nullapolinommal való szorzásra nézve
+      is***.
+  - type: narrative
+    content: |
+      Igazoltuk tehát a műveleti zártságot, továbbá a [gyuru-test]ban szereplő ***1., 2. és 3. gyűrűaxiómákat***.
+      Így annak igazolásához, hogy $R[x]$ gyűrű, már csak a szorzás ***kommutativitását***, ***asszociativitását***
+      és a ***disztributivitási tulajdonságot*** kell ellenőrizni. A továbbiakban ezért legyenek
+      $f=(a_0,a_1,\ldots)$, $g=(b_0,b_1,\ldots)$ és $h=(c_0,c_1,\ldots)$ az $R[x]$ halmaz tetszőleges elemei.
+  - type: formula
+    lead-in: |
+      A ***kommutativitás*** igazolásához írjuk fel az $f\cdot g$ és a $g\cdot f$ szorzatpolinomok tetszőleges
+      $k$-adik tagját a [polinomok]ban szereplő képlettel:
+    content: |
+      \begin{aligned}&a_0b_k+a_1b_{k-1}+\ldots +a_kb_0 \\ &b_0a_k + b_1a_{k-1}+ \ldots + b_ka_0\end{aligned}
+  - type: narrative
+    content: |
+      Mivel az $R$ gyűrűben a szorzás kommutatív, ezért ez a két kifejezés azonos, így tehát az $R[x]$-beli szorzás
+      is ***kommutatív***.
+  - type: formula
+    lead-in: |
+      Az ***asszociativitáshoz*** írjuk fel először az $f\cdot g$ szorzatpolinom tagjait:
+    content: |
+      \begin{array}{rl}\text{0. tag:} & a_0b_0 \\ \text{1. tag:} & a_0b_1 + a_1b_0 \\ \text{2. tag:} &
+      a_0b_2+a_1b_1+a_2b_0 \\ & \vdots \\ \text{k. tag:} & a_0b_k + a_1b_{k-1} + a_2b_{k-2} +\ldots +a_kb_0 \\ &
+      \vdots \end{array}
+  - type: formula
+    lead-in: |
+      Ha ezt a szorzatpolinomot megszorozzuk jobbról a $h$ polinommal, akkor az $(f\cdot g)\cdot h$
+      szorzatpolinomot kapjuk, amelynek tetszőleges $k$-adik tagja a [polinomok] alapján az alábbi összeg lesz:
+    content: |
+      \begin{aligned}&a_0b_0c_k + \\ + &a_0b_1c_{k-1} + a_1b_0c_{k-1} + \\ + &a_0b_2c_{k-2} + a_1b_1c_{k-2} +
+      a_2b_0c_{k-2} + \\ &\vdots \\ + &a_0b_kc_0 + a_1b_{k-1}c_0 + a_2k_{k-2}c_0 + \ldots + a_kb_0c_0\end{aligned}
+  - type: formula
+    lead-in: |
+      Most írjuk fel a $g\cdot h$ szorzatpolinom tagjait fordított sorrendben:
+    content: |
+      \begin{array}{rl}& \vdots \\ \text{k. tag:} & b_0c_k + b_1c_{k-1}+\ldots +b_kc_0 \\ \text{k-1. tag:} &
+      b_0c_{k-1} + b_1c_{k-2} + \ldots + b_{k-1}c_0 \\ \text{k-2. tag:} & b_0c_{k-2} + b_1c_{k-3} +\ldots +
+      b_{k-2}c_0 \\ & \vdots \\ \text{0. tag:} & b_0c_0 \end{array}
+  - type: formula
+    lead-in: |
+      Ha ezt a szorzatpolinomot megszorozzuk balról az $f$ polinommal, akkor az $f\cdot (g\cdot h)$
+      szorzatpolinomot kapjuk, amelynek tetszőleges $k$-adik tagja a [polinomok] alapján az alábbi összeg lesz:
+    content: |
+      \begin{aligned}&a_0b_0c_k + a_0b_1c_{k-1}+\ldots +a_0b_kc_0 + \\ + &a_1b_0c_{k-1} + a_1b_1c_{k-2} + \ldots +
+      a_1b_{k-1}c_0 + \\ + &a_2b_0c_{k-2} + a_2b_1c_{k-3} +\ldots + a_2b_{k-2}c_0 + \\ &\vdots \\ + &a_kb_0c_0
+      \end{aligned}
+  - type: narrative
+    content: |
+      Látható, hogy ennek az összegnek a soraiban pontosan ugyanazok a tagok szerepelnek, mint annak az összegnek
+      az oszlopaiban, amelyet az $(f\cdot g)\cdot h$ szorzatpolinom $k$-adik tagjára kaptunk.
+  - type: formula
+    lead-in: |
+      A két polinom tehát valóban megegyezik, azaz teljesül az alábbi ***asszociativitási tulajdonság***:
+    content: |
+      (f\cdot g)\cdot h=f\cdot (g\cdot h)
+  - type: narrative
+    content: |
+      Ezután a ***disztributivitási tulajdonságot*** igazoljuk. Mivel a szorzás kommutativitását már megmutattuk,
+      ezért elegendő a [gyuru-test]ban szereplő 5. gyűrűaxiómából csak az egyik diszributivitási szabállyal
+      foglalkozni.
+  - type: formula
+    lead-in: |
+      Írjuk fel az $f\cdot (g+h)$ polinom tetszőleges $k$-adik tagját a [polinomok]ban szereplő képletek alapján:
+    content: |
+      a_0(b_k+c_k)+a_1(b_{k-1}+c_{k-1})+\ldots +a_k(b_0+c_0)
+  - type: formula
+    lead-in: |
+      A zárójeleket felbonthatjuk, hiszen az $R$ gyűrűben teljesülnek a disztributivitási szabályok:
+    content: |
+      \overbrace{a_0b_k + a_0c_k}^{=a_0(b_k+c_k)} + \overbrace{a_1b_{k-1} + a_1c_{k-1}}^{=a_1(b_{k-1}+c_{k-1})} +
+      \ldots + \overbrace{a_kb_0 + a_kc_0}^{=a_k(b_0+c_0)}
+  - type: formula
+    lead-in: |
+      Ezután írjuk fel az $f\cdot g + f\cdot h$ polinom tetszőleges $k$-adik tagját is szintén a [polinomok]ban
+      szereplő képletek alapján:
+    content: |
+      \begin{aligned}&a_0b_k + a_1b_{k-1} +\ldots a_kb_0 + \\ + &a_0c_k + a_1c_{k-1} + \ldots + a_kc_0\end{aligned}
+  - type: narrative
+    content: |
+      Ugyanazokat a tagokat kaptuk, csak épp más sorrendben.
+  - type: formula
+    lead-in: |
+      Mivel azonban az $R$ gyűrűben az összeadás kommutatív, ezért a két kapott kifejezés megegyezik, azaz valóban
+      teljesül az alábbi ***disztributivitási szabály***:
+    content: |
+      f\cdot (g + h)=f\cdot g + f\cdot h
+  - type: narrative
+    content: |
+      Ezzel igazoltuk, hogy $R[x]$ ***gyűrű*** a polinomok közötti műveletekkel. Most tegyük fel, hogy $R$
+      ***egységelemes***, és nézzük meg, hogy mi a helyzet, ha $f$-et akár balról, akár jobbról megszorozzuk a
+      tételben szereplő $(1_R,0_R,0_R,\ldots)$ polinommal. Mivel a szorzás ugye kommutatív, ezért elegendő csak az
+      egyik, például a jobboldali szorzást ellenőrizni.
+  - type: formula
+    lead-in: |
+      E szorzat $k$-adik tagja a [polinomok]ban szereplő képlet alapján az alábbi lesz:
+    content: |
+      a_0\cdot 0_R + a_1\cdot 0_R + \ldots a_{k-1}\cdot 0_R + a_k\cdot 1_R
+  - type: narrative
+    content: |
+      Látható, hogy ebben az összegben a $k$-adik tagot kivéve minden tag $0_R$ lesz. Azaz az $(1_R, 0_R, 0_R,
+      \ldots)$ polinommal való szorzás $f$ minden együtthatóját helybenhagyja, és így $R[x]$ valóban
+      ***egységelemes***.
+  - type: narrative
+    content: |
+      Végül tegyük fel, hogy $R$ ***nullosztómentes***. Ekkor a [osszeg-es-szorzatpolinom-foka] 4. pontja alapján
+      bármely két nemnulla polinom szorzatának foka pontosan a két polinom fokának összege lesz. Vagyis az
+      eredménynek van foka, és így az semmiképpen sem lehet a nullapolinom, ami ugye a [nullosztomentes-gyuru]
+      alapján azt jelenti, hogy ***$R[x]$ is nullosztómentes***.

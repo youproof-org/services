@@ -1,0 +1,41 @@
+type: definition
+name: gyuruhomomorfizmus
+remarks:
+  - gyuruhomomorfizmus-megjegyzes
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy adva van egy $(R,+,\cdot)$ és egy $(S,\oplus,\odot)$ gyűrű.
+  - type: formula
+    lead-in: |
+      Ekkor egy $f:R\to S$ függvényt ***gyűrűhomomorfizmusnak*** nevezünk, amennyiben tetszőleges $R$-beli $a$ és
+      $b$ elemekre teljesülnek az alábbi követelmények:
+    content: |
+      \begin{aligned}f(a+b)&=f(a)\oplus f(b)\\f(a\cdot b)&=f(a)\odot f(b)\end{aligned}
+  - type: narrative
+    content: |
+      Amennyiben $S$ minden eleme ***legalább egy*** $R$-beli elemhez hozzá van rendelve, akkor $f$-et
+      ***szürjektív gyűrűhomomorfizmusnak*** vagy ***gyűrűráképzésnek*** nevezzük.
+  - type: figure
+    src: szurjektiv_gyuruhomomorfizmus.jpg
+    alt: Szürjektív gyűrűhomomorfizmus
+    caption: Szürjektív gyűrűhomomorfizmus
+  - type: narrative
+    content: |
+      Amennyiben $S$ minden eleme ***legfeljebb egy*** $R$-beli elemhez van hozzárendelve, akkor $f$-et ***injektív
+      gyűrűhomomorfizmusnak*** vagy ***gyűrűbeágyazásnak*** nevezzük.
+  - type: figure
+    src: injektiv_gyuruhomomorfizmus.jpg
+    alt: Injektív gyűrűhomomorfizmus
+    caption: Injektív gyűrűhomomorfizmus
+  - type: narrative
+    content: |
+      Amennyiben $S$ minden eleme ***pontosan egy*** $R$-beli elemhez van hozzárendelve, akkor $f$-et ***bijektív
+      gyűrűhomomorfizmusnak*** vagy ***gyűrűizomorfizmusnak*** nevezzük.
+  - type: figure
+    src: gyuruizomorfizmus.jpg
+    alt: Gyűrűizomorfizmus
+    caption: Gyűrűizomorfizmus
+  - type: narrative
+    content: |
+      Ilyenkor azt mondjuk, hogy az $R$ és az $S$ gyűrű ***izomorf egymással***. Ezt így jelöljük: $R\simeq S$.

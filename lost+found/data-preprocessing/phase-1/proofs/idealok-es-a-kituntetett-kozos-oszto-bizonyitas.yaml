@@ -1,0 +1,40 @@
+type: proof
+name: idealok-es-a-kituntetett-kozos-oszto-bizonyitas
+remarks: []
+references:
+  foidealok-es-oszthatosag-kapcsolata-egysegelemes:
+    target:
+      type: theorem
+      name: foidealok-es-oszthatosag-kapcsolata-egysegelemes
+  generalt-reszgyuru-es-ideal:
+    target:
+      type: theorem
+      name: generalt-reszgyuru-es-ideal
+  kituntetett-kozos-oszto:
+    target:
+      type: definition
+      name: kituntetett-kozos-oszto
+content:
+  - type: narrative
+    content: |
+      Az $a$ elem nyilván benne van az $(a,b)$ ideálban, ami a feltétel alapján a $(d)$ főideállal egyezik meg.
+      Emiatt az $a$ elem összes többszöröse is $(d)$-ben van. Ezek viszont épp az $(a)$ főideál elemei, azaz
+      $(a)\sube (d)$, és így a [foidealok-es-oszthatosag-kapcsolata-egysegelemes] alapján teljesül a $d|a$
+      oszthatóság. Hasonló okok miatt teljesül a $d|b$ oszthatóság is, így $d$ közös osztója $a$-nak és $b$-nek.
+      Azt kell még megmutatni, hogy $d$ rendelkezik a [kituntetett-kozos-oszto] szerinti ***kitüntetett***
+      tulajdonsággal.
+  - type: narrative
+    content: |
+      Ehhez tegyük fel, hogy $c$ szintén valamilyen közös osztó, azaz $c|a$ és $c|b$. Ekkor a
+      [foidealok-es-oszthatosag-kapcsolata-egysegelemes] miatt teljesülnek az $(a)\sube (c)$ és a $(b)\sube (c)$
+      tartalmazási relációk. Ez azt jelenti, hogy minden, ami az $(a)$ vagy a $(b)$ főideálok közül legalább az
+      egyiknek eleme, az eleme egyúttal a $(c)$ főideálnak is. Ez nyilván igaz magára az $a$ és $b$ elemekre is,
+      azaz $a\in (c)$ és $b\in (c)$. Minthogy az $(a,b)$ ideál a [generalt-reszgyuru-es-ideal] alapján a legszűkebb
+      olyan ideál, amely tartalmazza az $a$ és $b$ elemeket, ezért az ugyanilyen tulajdonsággal rendelkező $(c)$
+      főideál biztosan nem lehet nála szűkebb, azaz $(a,b)\sube (c)$. A tételben szereplő $(a,b)=(d)$ feltétel
+      miatt tehát $(d)\sube (c)$ teljesül, azaz a [foidealok-es-oszthatosag-kapcsolata-egysegelemes] miatt fennáll
+      a $c|d$ oszthatóság.
+  - type: narrative
+    content: |
+      Ugyanezzel a gondolatmenettel bármilyen közös osztóról igazolható, hogy osztója a $d$ közös osztónak, amely
+      emiatt ***valóban kitüntetett közös osztó***.

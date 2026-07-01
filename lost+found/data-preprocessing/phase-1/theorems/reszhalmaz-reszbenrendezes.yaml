@@ -1,0 +1,15 @@
+type: theorem
+name: reszhalmaz-reszbenrendezes
+proofs:
+  - reszhalmaz-reszbenrendezes-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $H$ egy tetszőleges halmaz, $\mathcal{H}$ pedig egy $H$ feletti halmazrendszer. Ekkor a $H$ hamaz
+      részhalmazai közötti $\sube$ reláció egy ***részbenrendezés*** a $\mathcal{H}$ halmazrendszer elemei között.
+      Azaz a $\sube$ reláció ***reflexív***, ***antiszimmetrikus*** és ***tranzitív***.
+  - type: narrative
+    content: |
+      A $\sub$ ***szigorú tartalmazási reláció*** ezzel szemben nem részbenrendezés, mivel ***nem reflexív*** és
+      ***nem antiszimmetrikus***. A ***tranzitivitást*** viszont ez a reláció is teljesíti.

@@ -1,0 +1,10 @@
+type: theorem
+name: egesz-szamok-es-maradekosztalygyuruk-additiv-csoportja-ciklikus
+proofs:
+  - egesz-szamok-es-maradekosztalygyuruk-additiv-csoportja-ciklikus-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      A $\Z^+$ additív csoport továbbá tetszőleges $m\geq 0$ esetén a $(\Z/m\Z)^+$ additív csoportok ***ciklikus
+      csoportok***. Előbbi generátoreleme az $1$ egész szám, utóbbi generátoreleme pedig az $[1]_m$ maradékosztály.

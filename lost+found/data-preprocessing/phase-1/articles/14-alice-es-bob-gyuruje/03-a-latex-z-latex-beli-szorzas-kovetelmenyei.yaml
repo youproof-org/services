@@ -1,0 +1,62 @@
+type: section
+name: 03-a-latex-z-latex-beli-szorzas-kovetelmenyei
+title: 'A [latex]\Z[/latex]-beli szorzás követelményei'
+
+body:
+  - type: narrative
+    content: |
+      ***Egy rövid előzetes megjegyzés: eddig a Peano-szorzás jelölésére minden esetben kiírtuk a $\cdot$ műveleti
+      jelet. Mostantól azonban a jobb olvashatóság kedvéért ezt esetenként el fogjuk hagyni. Így például az $xy$
+      kifejezés ugyanazt fogja jelenteni, mint az $x\cdot y$ kifejezés. Remélhetőleg ez nem fogja összezavarni az
+      Olvasót, hiszen már az általános iskolában is bevett szokás időnként elhagyni a szorzást jelölő $\cdot$
+      műveleti jelet.***
+  - type: narrative
+    content: |
+      Térjünk most vissza a $\Z$ halmazon értelmezendő $\odot$ művelethez, és intuitív módon alkossuk meg az
+      $[(a;b)]\odot [(c;d)]$ szorzat eredményének képletét. Az eredmény ugye szintén valamilyen egész szám lesz egy
+      betétet és egy adósságot jelző komponenssel.
+  - type: narrative
+    content: |
+      Az intuíciónk azt mondatja velünk, hogy mindkét komponens valamilyen módon függeni fog az eredeti $[(a;b)]$
+      és $[(c;d)]$ egész számok mindkét komponensétől.
+  - type: formula
+    lead-in: |
+      Ennél közelebbit azonban egyelőre nem tudunk mondani, ezért az alábbi viszonylag általános képletből indulunk
+      ki, aztán meglátjuk, jól tippeltünk-e:
+    content: |
+      \begin{aligned}[(a;b)]\odot [(c;d)] = [(&\overbrace{A\cdot ac + B\cdot ad + C\cdot bc + D\cdot bd}^{\text{1.
+      komponens}}; \\ &\underbrace{E\cdot ac + F\cdot ad + G\cdot bc + H\cdot bd}_{\text{2.
+      komponens}})]\end{aligned}
+  - type: narrative
+    content: |
+      Az ***eredmény első komponensét*** tehát úgy kapjuk, hogy képezzük az eredeti két egész szám két-két
+      komponensének összes lehetséges szorzatát, ezeket a szorzatokat ellátjuk valamilyen &ndash; egyelőre még
+      ismeretlen &ndash; $A$, $B$, $C$ és $D$ együtthatókkal, majd az így kapott tagokat összeadjuk. Az ***eredmény
+      második komponensét*** ugyanígy kapjuk, csak ott az $E$, $F$, $G$ és $H$ &ndash; egyelőre szintén ismeretlen
+      &ndash; együtthatókat használjuk.
+  - type: figure
+    lead-in: |
+      Ez a folyamat látható az alábbi ábrán:
+    src: 01-egesz-szamok-szorzaskepletenek-konstrukcioja.jpg
+    alt: Egész számok szorzásképletének konstrukciója
+    caption: Egész számok szorzásképletének konstrukciója
+  - type: narrative
+    content: |
+      A feladatunk tehát az $A$, $B$, $C$ és $D$, valamint az $E$, $F$, $G$ és $H$ természetes számok, mint
+      együtthatók meghatározása oly módon, hogy érvényben maradjanak a szokásos számolási szabályok.
+  - type: narrative
+    content: |
+      Az első és legfontosabb követelményünk, hogy az $f(n)=[(n;0)]$ ***legyen egy szorzattartó leképezés*** a
+      "régi" $\N_1$ és az "új" $\N_2$ halmaz között. Azaz ha tetszőleges $a$ és $b$ természetes számoknak képezzük
+      az $a\cdot b$ Peano-szorzatát az $\N_1$ halmazban, majd vesszük ennek $f$ szerinti képét az $\N_2$ halmazban,
+      akkor ugyanazt kapjuk, mintha az $a$ és $b$ elemek $f(a)$ és $f(b)$ képeit $\odot$-oznánk össze az $\N_2$
+      halmazban.
+  - type: figure
+    lead-in: |
+      Ez látható az alábbi ábrán:
+    src: 02-szorzattarto-lekepezes.jpg
+    alt: Szorzattartó leképezés
+    caption: Szorzattartó leképezés
+  - type: narrative
+    content: |
+      Most nézzük meg, milyen megkötést kell tennünk a keresett 8 együtthatóra ahhoz, hogy ez teljesüljön.

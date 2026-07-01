@@ -1,0 +1,80 @@
+type: section
+name: 02-a-kituntetett-kozos-oszto
+title: A kitüntetett közös osztó
+
+references:
+  kituntetett-kozos-oszto:
+    target:
+      type: definition
+      name: kituntetett-kozos-oszto
+  legnagyobb-kozos-oszto-letezese:
+    target:
+      type: theorem
+      name: legnagyobb-kozos-oszto-letezese
+
+body:
+  - type: narrative
+    content: |
+      Ebben a szakaszban tehát általánosítjuk a legnagyobb közös osztó fogalmát. Így már tetszőleges
+      integritástartományra átvihető lesz ez a fogalom rendezési reláció nélkül is. Ezért bevezetjük a
+      ***kitüntetett közös osztó*** fogalmát.
+  - type: embed
+    target:
+      type: definition
+      name: kituntetett-kozos-oszto
+  - type: narrative
+    content: |
+      A definícióból azonnal következnek az alábbi egyszerű állítások.
+  - type: embed
+    target:
+      type: theorem
+      name: kituntetett-kozos-oszto-tulajdonsagai
+  - type: embed
+    target:
+      type: proof
+      name: kituntetett-kozos-oszto-tulajdonsagai-bizonyitas
+  - type: narrative
+    content: |
+      A legnagyobb közös osztóval ellentétben ***kitüntetett közös osztóból létezhet több is***. Például az előző
+      szakasz elején közölt példában szereplő $24$ és $18$ egész számoknak a $6$-on kívül a $-6$ is kitüntetett
+      közös osztója. Szerencsére ez nem fog gondot okozni, mivel az alábbi tétel biztosít egyfajta egyértelműséget
+      a kitüntetett közös osztóra.
+  - type: embed
+    target:
+      type: theorem
+      name: kituntetett-kozos-oszto-egyertelmusege
+  - type: embed
+    target:
+      type: proof
+      name: kituntetett-kozos-oszto-egyertelmusege-bizonyitas
+  - type: narrative
+    content: |
+      Jogosan merülhet fel a kérdés az Olvasóban, hogy miért használtuk ugyanazt a jelölést a kitüntetett és a
+      legnagyobb közös osztó esetén, amikor ezek látszólag teljesen különböző fogalmak. Ennek tisztázása érdekében
+      most megmutatjuk, hogy ***HA*** két egész számnak egyáltalán létezik ***kitüntetett közös osztója***, akkor
+      az csak a ***legnagyobb közös osztó*** valamelyik asszociáltja lehet. Erről szól az alábbi tétel.
+  - type: embed
+    target:
+      type: theorem
+      name: legnagyobb-kozos-oszto-kituntetett
+  - type: embed
+    target:
+      type: proof
+      name: legnagyobb-kozos-oszto-kituntetett-bizonyitas
+  - type: narrative
+    content: |
+      ***Ez mind szép és jó, azonban vigyázzunk!*** Ez a tétel csak annyit garantál, hogy ***HA ***valamely egész
+      számpárnak létezik kitüntetett közös osztója, ***AKKOR*** e számok legnagyobb közös osztója is rendelkezni
+      fog a [kituntetett-kozos-oszto]ban szereplő kitüntetett tulajdonsággal (azaz, hogy ő többszöröse bármely
+      közös osztónak). A legnagyobb közös osztó a [legnagyobb-kozos-oszto-letezese] miatt egy esetet leszámítva
+      mindig létezik, ám ***a kitüntetett közös osztó létezése egyáltalán nem magától értetődő***.
+  - type: narrative
+    content: |
+      Szerencsére a $\Z$ gyűrűben valóban mindig létezik a kitüntetett közös osztó, amelyre hamarosan egy
+      úgynevezett ***konstruktív bizonyítást*** adunk. Ez azt jelenti, hogy a bizonyítás egy meglehetősen hatékony
+      eljárást is fog szolgáltatni a kitüntetett közös osztó kiszámításához. Ez az eljárás az ókorból ered, és
+      ***euklidészi algoritmus*** néven ismeretes.
+  - type: narrative
+    content: |
+      Mielőtt azonban erre rátérnénk, vizsgáljuk meg, hogy miért is olyan fontos nekünk a kitüntetett közös osztó
+      létezése egy adott integritástartományban.

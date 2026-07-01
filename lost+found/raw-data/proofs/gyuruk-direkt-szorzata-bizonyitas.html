@@ -1,0 +1,55 @@
+<!-- wp:paragraph -->
+<p>A [yp_element slug="gyuru-test" type="link" /]ban felsorolt gyűrűaxiómákat kell ellenőrizni:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A [latex]\oplus[/latex] művelet <strong><em>kommutativitása</em></strong> könnyedén adódik az [latex]R_1[/latex], [latex]R_2[/latex], ..., [latex]R_n[/latex] gyűrűkön értelmezett összeadások ugyanezen tulajdonságából:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}(&amp;a_1;\ldots;a_n)\oplus(b_1;\ldots;b_n)=\\ &amp;= (a_1+b_1;\ldots;a_n+b_n) =\\&amp;=(b_1+a_1;\ldots;b_n+a_n) =\\&amp;= (b_1;\ldots;b_n) \oplus (a_1;\ldots;a_n)\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Hasonlóképpen adódik a [latex]\oplus[/latex] művelet <strong><em>asszociativitása</em></strong>:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}((&amp;a_1;\ldots;a_n)\oplus(b_1;\ldots;b_n))\oplus(c_1;\ldots;c_n) =\\&amp;= (a_1+b_1;\ldots;a_n+b_n)\oplus(c_1;\ldots;c_n) =\\&amp;=((a_1+b_1)+c_1;\ldots;(a_n+b_n)+c_n) =\\&amp;= (a_1+(b_1+c_1);\ldots;a_n+(b_n+c_n)) =\\&amp;=(a_1;\ldots;a_n)\oplus(b_1+c_1;\ldots;b_n+c_n)=\\&amp;=(a_1;\ldots;a_n)\oplus((b_1;\ldots;b_n)\oplus(c_1;\ldots;c_n))\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>És a [latex]\odot[/latex] művelet <strong><em>asszociativitása</em></strong> is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}((&amp;a_1;\ldots;a_n)\odot(b_1;\ldots;b_n))\odot(c_1;\ldots;c_n) =\\&amp;= (a_1\cdot b_1;\ldots;a_n\cdot b_n)\odot(c_1;\ldots;c_n) =\\&amp;=((a_1\cdot b_1)\cdot c_1;\ldots;(a_n\cdot b_n)\cdot c_n) =\\&amp;= (a_1\cdot (b_1\cdot c_1);\ldots;a_n\cdot (b_n\cdot c_n)) =\\&amp;=(a_1;\ldots;a_n)\odot(b_1\cdot c_1;\ldots;b_n\cdot c_n)=\\&amp;=(a_1;\ldots;a_n)\odot((b_1;\ldots;b_n)\odot(c_1;\ldots;c_n))\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Továbbá a két művelet közötti mindkét oldali <strong><em>disztributivitás</em></strong> is teljesül. Nézzük először a baloldali disztributivitást, a jobboldali disztributivitás ugyanígy igazolható:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}(&amp;a_1;\ldots;a_n)\odot((b_1;\ldots;b_n)\oplus(c_1;\ldots;c_n))=\\&amp;=(a_1;\ldots;a_n)\odot (b_1+c_1;\ldots;b_n+c_n)=\\&amp;=(a_1\cdot(b_1+c_1);\ldots;a_n\cdot (b_n+c_n))=\\&amp;=(a_1b_1+a_1c_1;\ldots;a_nb_n+a_nc_n)=\\&amp;=(a_1b_1;\ldots;a_nb_n)\oplus (a_1c_1;\ldots;a_nc_n)=\\&amp;=((a_1;\ldots;a_n)\odot (b_1;\ldots;b_n))\oplus ((a_1;\ldots;a_n)\odot (c_1;\ldots;c_n))\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Végül igazoljuk a <strong><em>nullelemre</em></strong> és az <strong><em>ellentett elemre</em></strong> vonatkozó állításokat. Legyen [latex](a_1;\ldots;a_n)[/latex] az [latex]R_1\times \ldots \times R_n[/latex] halmaz egy tetszőleges eleme. Ezt az [latex](0_{R_1};\ldots;0_{R_n})[/latex] elemmel összeadva az eredmény valóban nem változik, hiszen minden komponensben a megfelelő gyűrű nullelemével való összeadás fog szerepelni:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}(&amp;a_1;\ldots;a_n)\oplus(0_{R_1};\ldots;0_{R_n})=\\&amp;=(a_1+0_{R_1};\ldots;a_n+0_{R_n})=\\&amp;=(a_1;\ldots;a_n)\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ehhez hasonlóan az [latex](a_1;\ldots;a_n)[/latex] elemet a [latex](-a_1;\ldots;-a_n)[/latex] elemmel összeadva az eredmény valóban a [latex](0_{R_1};\ldots;0_{R_n})[/latex] elem lesz, hiszen minden komponensben az adott komponens és annak a megfelelő gyűrűben vett ellentettjének összege fog szerepelni:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}(&amp;a_1;\ldots;a_n)\oplus(-a_1;\ldots;-a_n)=\\&amp;=(a_1-a_1;\ldots;a_n-a_n)=\\&amp;=(0_{R_1};\ldots;0_{R_n})\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p></p>
+<!-- /wp:paragraph -->

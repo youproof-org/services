@@ -1,0 +1,36 @@
+type: proof
+name: egesz-szamok-osszeadasa-kommutativ-es-asszociativ-bizonyitas
+remarks: []
+references:
+  egesz-szamok-osszeadasa:
+    target:
+      type: definition
+      name: egesz-szamok-osszeadasa
+  peano-osszeadas-kommutativitas:
+    target:
+      type: theorem
+      name: peano-osszeadas-kommutativitas
+content:
+  - type: formula
+    lead-in: |
+      Az első egyenlet baloldala az egész számok összeadásának [egesz-szamok-osszeadasa]ja miatt így írható:
+    content: |
+      [(a;b)] \oplus [(c;d)] = [(a+c;b+d)] = \dots
+  - type: formula
+    lead-in: |
+      Ebből a Peano-összeadás kommutativitása miatt ([peano-osszeadas-kommutativitas]) következik, hogy az egész
+      számok összeadása is kommutatív:
+    content: |
+      \dots = [(c+a;d+b)] = [(c;d)] \oplus [(a;b)]
+  - type: formula
+    lead-in: |
+      Ehhez hasonlóan a második egyenletben megfogalmazott asszociativitás pedig a Peano-összeadás
+      asszociativitására vezethető vissza:
+    content: |
+      ([(a;b)] \oplus [(c;d)]) \oplus [(e;f)] = [(a+c;b+d)] \oplus [(e;f)] = \dots
+  - type: formula
+    content: |
+      \dots = [((a+c)+e;(b+d)+f)] = [(a+(c+e);b+(d+f))] = \dots
+  - type: formula
+    content: |
+      \dots = [(a;b)] \oplus [(c+e;d+f)] = [(a;b)] \oplus ([(c;d)] \oplus [(e;f)])

@@ -1,0 +1,141 @@
+type: proof
+name: bezout-lemma-euklideszi-gyurukben-bizonyitas-2
+remarks: []
+references:
+  euklideszi-gyuru:
+    target:
+      type: definition
+      name: euklideszi-gyuru
+  euklideszi-gyuruben-letezik-kituntetett-kozos-oszto:
+    target:
+      type: theorem
+      name: euklideszi-gyuruben-letezik-kituntetett-kozos-oszto
+  gyuru-test:
+    target:
+      type: definition
+      name: gyuru-test
+  kituntetett-kozos-oszto-tulajdonsagai:
+    target:
+      type: theorem
+      name: kituntetett-kozos-oszto-tulajdonsagai
+content:
+  - type: narrative
+    content: |
+      Legyen $a$ és $b$ az $R$ integritástartomány két tetszőleges eleme, és jelöljük $0_R$-rel a nullelemet,
+      $1_R$-rel pedig az egységelemet &ndash; amely ugye létezik, hiszen a [euklideszi-gyuru] alapján minden
+      euklidészi gyűrű ***egységelemes***.
+  - type: formula
+    lead-in: |
+      Ha $a$ és $b$ közül ***mindkettő*** $0_R$, akkor a [kituntetett-kozos-oszto-tulajdonsagai] 1. pontja miatt a
+      kitüntetett közös osztójuk $0_R$, amely nyilvánvalóan kifejezhető a kívánt alakban, méghozzá tetszőleges $u$
+      és $v$ gyűrűelemekkel:
+    content: |
+      \underbrace{0_R}_{=a}\cdot u+\underbrace{0_R}_{=b}\cdot v=\underbrace{0_R}_{=(a,b)}
+  - type: narrative
+    content: |
+      Ha $a$ és $b$ közül ***csak az egyikük*** $0_R$, akkor viszont ugyanezen tétel 4. pontja miatt a kitüntetett
+      közös osztójuk a másik elem lesz. Ha például $a\eq 0_R$ és $b=0_R$, akkor $(a,b)=(a,0_R)=a$.
+  - type: formula
+    lead-in: |
+      Ez nyilván kifejezhető a kívánt alakban $u=1_R$ és tetszőleges $v$ gyűrűelemekkel:
+    content: |
+      a\cdot \underbrace{1_R}_{=u}+\underbrace{0_R}_{=b}\cdot v=\underbrace{(a,b)}_{=a}
+  - type: narrative
+    content: |
+      Értelemszerűen ha $a=0_R$ és $b\eq 0_R$, akkor pedig $v=1_R$ és $u$ tetszőleges.
+  - type: narrative
+    content: |
+      Feltételezhetjük tehát, hogy $a\eq 0_R$ és $b\eq 0_R$. Ekkor lefuttathatjuk erre a két gyűrűelemre, mint
+      bemenetre a [euklideszi-gyuruben-letezik-kituntetett-kozos-oszto] bizonyításában ismertetett ***euklidészi
+      algoritmust***. Ez ugye garantáltan befejeződik véges számú lépés után. Tegyük fel, hogy az algoritmus
+      futtatásakor az $n$-edik maradékos osztás során kapjuk meg az utolsó nemnulla maradékot, amely ugye az
+      $(a,b)$ kitüntetett közös osztó lesz. Ez tehát az alábbi $n$ darab maradékos osztást jelenti.
+  - type: formula
+    lead-in: |
+      Az $(n+1)$-edik maradékos osztást itt nem tüntettük fel, amelynek során végül a $0_R$ maradékot megkapjuk és
+      amely terminálja az algoritmust:
+    content: |
+      \begin{aligned}a&=k_1b+r_1\\b&=k_2r_1+r_2\\ _1&=k_3r_2+r_3\\ _2&=k_4r_3+r_4\\&\vdots\\
+      _{n-2}&=k_nr_{n-1}+\underbrace{r_n}_{=(a,b)}\end{aligned}
+  - type: narrative
+    content: |
+      Célunk tehát, hogy az $n$-edik lépésben megkapott $r_n$ maradékot kifejezzük $r_n=au+bv$ alakban valamilyen
+      $u$ és $v$ gyűrűelemek segítségével.
+  - type: narrative
+    content: |
+      Vegyük észre, hogy az első maradékos osztást leíró egyenlet mindkét oldalából $k_1b$-t kivonva kapunk egy
+      ehhez hasonló kifejezést az $r_1$ maradékra.
+  - type: formula
+    lead-in: |
+      Jelöljük az így kapott együtthatókat $u_1$-gyel és $v_1$-gyel:
+    content: |
+      r_1=a-k_1b=a\cdot \underbrace{1}_{=u_1}+b\cdot \underbrace{(-k_1)}_{=v_1}
+  - type: narrative
+    content: |
+      Az első lépésben kapott $r_1$ maradékot tehát ilymódon kifejeztük az $a$ és $b$ lineáris kombinációjaként az
+      $u_1=1$ és a $v_1=-k_1$ együtthatók segítségével. Most tegyük meg ugyanezt a második lépésben kapott $r_2$
+      maradékkal is. Ehhez semmi mást nem kell tennünk, mint a második maradékos osztást leíró egyenlet mindkét
+      oldalából levonnunk $k_2r_1$-et, majd $r_1$ helyére behelyettesíteni az előző lépésben kapott kifejezést.
+  - type: formula
+    lead-in: |
+      Jelöljük az így kapott együtthatókat $u_2$-vel és $v_2$-vel:
+    content: |
+      \begin{aligned}r_2&=b-k_2r_1=b-k_2(\overbrace{a-k_1b}^{=r_1})=\\&=a\cdot \underbrace{(-k_2)}_{=u_2} + b\cdot
+      \underbrace{(1+k_1k_2)}_{=v_2}\end{aligned}
+  - type: narrative
+    content: |
+      A második lépésben kapott $r_2$ maradékot tehát szintén kifejeztük az $a$ és $b$ lineáris kombinációjaként az
+      $u_2=-k_2$ és a $v_2=1+k_1k_2$ együtthatók segítségével.
+  - type: narrative
+    content: |
+      Ezt a bizonyítást persze folytathatnánk egészen az $n$-edik lépésig, amikor végül az $r_n=(a,b)$ kitüntetett
+      közös osztót is megkapnánk $a$ és $b$ lineáris kombinációjaként. Mi azonban lusták vagyunk, ezért adunk egy
+      általános képletet, amely megadja, hogy a soron következő $r_i$ maradékot hogyan lehet előállítani $a$ és $b$
+      lineáris kombinációjaként, ha egyébként az $r_{i-2}$ és $r_{i-1}$ maradékokra ez az előállítás már ismert.
+  - type: formula
+    lead-in: |
+      Tegyük fel tehát, hogy az alábbi lineáris kombinációs előállításokat már ismerjük, azaz az alábbi
+      kifejezésekben szereplő $u_{i-2}$ és $v_{i-2}$ valamint $u_{i-1}$ és $v_{i-1}$ együtthatókat már
+      kiszámítottuk:
+    content: |
+      \begin{aligned}r_{i-2}&=a\cdot u_{i-2} + b\cdot v_{i-2} \\ r_{i-1}&=a\cdot u_{i-1} + b\cdot
+      v_{i-1}\end{aligned}
+  - type: narrative
+    content: |
+      Feladatunk tehát előállítani az $r_i$ maradékot az $a$ és $b$ elemek lineáris kombinációjaként.
+  - type: formula
+    lead-in: |
+      Ehhez először is tekintsük az euklidészi algoritmus futtatása során kapott $i$-edik maradékos osztást leíró
+      egyenletet:
+    content: |
+      r_{i-2}=k_ir_{i-1}+r_i
+  - type: formula
+    lead-in: |
+      Mindkét oldalából vonjunk le $k_ir_{i-1}$-et:
+    content: |
+      r_i=r_{i-2}-k_ir_{i-1}
+  - type: narrative
+    content: |
+      Az $i$-edik lépésben kapott $r_i$ maradékot tehát kifejeztük az $r_{i-2}$ és $r_{i-1}$ lineáris
+      kombinációjaként. Ez utóbbi kettőről viszont azt mondtuk, hogy már előállítottuk őket $a$ és $b$ lineáris
+      kombinációjaként.
+  - type: formula
+    lead-in: |
+      Helyettesítsük is be a fenti egyenletbe ezeket az előállításokat:
+    content: |
+      r_i=(\underbrace{au_{i-2} + bv_{i-2}}_{=r_{i-2}})-k_i\cdot (\underbrace{au_{i-1} + bv_{i-1}}_{=r_{i-1}})
+  - type: narrative
+    content: |
+      Ezt a gyűrűaxiómáknak megfelelően ([gyuru-test]) átrendezve megkapjuk $r_i$-t is $a$ és $b$ lineáris
+      kombinációjaként.
+  - type: formula
+    lead-in: |
+      Jelöljük az így kapott együtthatókat $u_i$-vel és $v_i$-vel:
+    content: |
+      r_i=a\cdot (\underbrace{u_{i-2}-k_iu_{i-1}}_{=u_i}) + b\cdot (\underbrace{v_{i-2}-k_iv_{i-1}}_{=v_i})
+  - type: narrative
+    content: |
+      Ezzel a bizonyításunk teljes, mivel az első két lépésben kapott $r_1$ és $r_2$ maradékokat előállítottuk $a$
+      és $b$ lineáris kombinációjaként, az imént látott indukció alapján pedig elő tudjuk állítani a további
+      maradékokat is. Ezek közül ugye az $n$-edik lépés során kapott $r_n=au_n+bv_n$ előállítás épp az $(a,b)$
+      kitüntetett közös osztó előállítása az $a$ és $b$ lineáris kombinációjaként.

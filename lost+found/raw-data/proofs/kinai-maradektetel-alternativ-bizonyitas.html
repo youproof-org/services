@@ -1,0 +1,55 @@
+<!-- wp:paragraph -->
+<p>Az [latex]A=[a]_p[/latex] és [latex]B=[b]_q[/latex] maradékosztályok metszete pontosan azokat az egész számokat fogja tartalmazni, amelyek mindkét maradékosztályban benne vannak. Ezek az alábbi kongruenciarendszert kielégítő egész számok lesznek:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}x&amp;\equiv a\pmod p \\ x&amp;\equiv b\pmod q\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>kínai maradéktétel</em></strong> ([yp_element slug="kinai-maradektetel" type="link" /]) alapján ezek az egész számok pontosan egy modulo [latex]pq[/latex] maradékosztályt alkotnak, azaz valóban [latex]A\cap B\in \Z/pq\Z[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most igazoljuk, hogy a tételben megadott képlet valóban az [latex]A\cap B[/latex] maradékosztály egy reprezentánselemét adja. Ehhez azt kell megmutatni, hogy az [latex]aqx_2 + bpx_1[/latex] egész szám benne van ebben a halmazban. A halmazműveletekről szóló [yp_element slug="halmazmuveletek" type="link" /] alapján ez pontosan akkor teljesül, ha teljesül az alábbi két feltétel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}aqx_2 + bpx_1 &amp;\in A \\ aqx_2 + bpx_1 &amp;\in B\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Nézzük először az első feltételt!</em></strong> Mivel az [latex]A[/latex] halmaz egy modulo [latex]p[/latex] maradékosztály, amelynek az [latex]a[/latex] egész szám egy reprezentánsa, ezért ez a feltétel pontosan akkor teljesül, ha fennáll az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]aqx_2 + bpx_1 \equiv a\pmod p[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A kongruencia baloldalán szereplő összeg második, [latex]bpx_1[/latex] tagja ugye [latex]p[/latex]-nek többszöröse, így ő [latex]0[/latex]-val kongruens modulo [latex]p[/latex]. Az összeg első, [latex]aqx_2[/latex] tagjában viszont a [latex]qx_2[/latex] tényező a tétel szövege alapján [latex]1[/latex]-gyel, és így ez a tag [latex]a[/latex]-val kongruens modulo [latex]p[/latex]. Összefoglalva tehát valóban teljesül a fenti kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a\cdot \underbrace{qx_2}_{\equiv 1} + \underbrace{bpx_1}_{\equiv 0} \equiv a\pmod p[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Most nézzük a második feltételt!</em></strong> Mivel a [latex]B[/latex] halmaz egy modulo [latex]q[/latex] maradékosztály, amelynek a [latex]b[/latex] egész szám egy reprezentánsa, ezért ez a feltétel pontosan akkor teljesül, ha fennáll az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]aqx_2 + bpx_1 \equiv b\pmod q[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A kongruencia baloldalán szereplő összeg első, [latex]aqx_2[/latex] tagja ugye [latex]q[/latex]-nek többszöröse, így ő [latex]0[/latex]-val kongruens modulo [latex]q[/latex]. Az összeg második, [latex]bpx_1[/latex] tagjában viszont a [latex]px_1[/latex] tényező a tétel szövege alapján [latex]1[/latex]-gyel, és így ez a tag [latex]b[/latex]-vel kongruens modulo [latex]q[/latex]. Összefoglalva tehát valóban teljesül a fenti kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{aqx_2}_{\equiv 0} + b\cdot \underbrace{px_1}_{\equiv 1} \equiv b\pmod q[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [latex]aqx_2 + bpx_1[/latex] összeg tehát benne van az [latex]A\cap B[/latex] metszetben, amely – mint láttuk – egy modulo [latex]pq[/latex] maradékosztály, és így valóban annak egy reprezentánselemét adja.</p>
+<!-- /wp:paragraph -->

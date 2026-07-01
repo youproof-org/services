@@ -1,0 +1,51 @@
+type: definition
+name: polinomok
+remarks:
+  - polinomok-megjegyzes
+references:
+  gyuru-test:
+    target:
+      type: definition
+      name: gyuru-test
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ tetszőleges kommutatív gyűrű (lásd a [gyuru-test]t).
+  - type: formula
+    lead-in: |
+      Legyen továbbá $f$ egy végtelen sorozat, amelynek tagjai az $R$ gyűrű elemei:
+    content: |
+      f=(a_0, a_1, a_2, \ldots)
+  - type: narrative
+    content: |
+      Amennyiben az $f$ sorozatnak ***csak véges sok tagja nem az $R$ gyűrű nulleleme***, akkor $f$-et az ***$R$
+      gyűrű feletti polinomnak***, az $a_i$ gyűrűelemeket az $f$ polinom ***együtthatóinak***, speciálisan az $a_0$
+      gyűrűelemet az $f$ polinom ***konstans tagjának*** nevezzük. Az $R$ gyűrű feletti polinomok halmazának jele:
+      $R[x]$.
+  - type: narrative
+    content: |
+      Jelöljük az $R$ gyűrű nullelemét $0_R$-rel. Ha valamilyen $n\geq 0$ nemnegatív egész esetén $a_n \eq 0_R$, de
+      minden $k\gt n$ esetén $a_k=0_R$, akkor $f$-et ***$n$-edfokú polinomnak*** nevezzük, vagy azt mondjuk, hogy
+      ***$f$ foka $n$***. Ezt így jelöljük: $\deg(f)=n$. Ilyenkor az $a_n$ gyűrűelemet az $f$ polinom
+      ***főegyütthatójának*** nevezzük. A nulladfokú polinomokat ***konstans polinomoknak*** nevezzük.
+  - type: narrative
+    content: |
+      Ha minden $k\geq 0$ esetén $a_k=0_R$, akkor $f$-et ***nullapolinomnak*** nevezzük és a $0$ szimbólummal
+      jelöljük. ***A nullapolinomnak nincs foka***, azaz ebben az esetben $\deg(f)$ nem értelmezhető.
+  - type: narrative
+    content: |
+      Az $f=(a_0,a_1,\ldots)$ és $g=(b_0,b_1,\ldots)$ polinomokra azt mondjuk, hogy ***egyenlőek***, ha minden
+      $k\geq 0$ esetén $a_k=b_k$, azaz ha az őket reprezentáló két sorozat teljesen megegyezik. Ezt így jelöljük:
+      $f=g$
+  - type: formula
+    lead-in: |
+      Az $f=(a_0,a_1,\ldots)$ és $g=(b_0,b_1,\ldots)$ ***polinomok összegén*** azt az $f+g=(c_0,c_1,\ldots)$
+      polinomot értjük, amelynek tagjait minden $k\geq 0$ esetén az alábbi képlet állítja elő:
+    content: |
+      c_k=a_k+b_k
+  - type: formula
+    lead-in: |
+      Ugyanezen ***polinomok szorzatán*** azt az $f\cdot g=(c_0,c_1,\ldots)$ polinomot értjük, amelynek tagjait
+      minden $k\geq 0$ esetén az alábbi képlet állítja elő:
+    content: |
+      c_k=a_0b_k+a_1b_{k-1}+a_2b_{k-2}+\ldots +a_kb_0

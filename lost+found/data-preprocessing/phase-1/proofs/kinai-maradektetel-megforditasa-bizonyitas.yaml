@@ -1,0 +1,132 @@
+type: proof
+name: kinai-maradektetel-megforditasa-bizonyitas
+remarks: []
+references:
+  egesz-szamok-kozotti-kongruencia-tulajdonsagai:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia-tulajdonsagai
+  kinai-maradektetel:
+    target:
+      type: theorem
+      name: kinai-maradektetel
+  reszhalmaz:
+    target:
+      type: definition
+      name: reszhalmaz
+content:
+  - type: ordered-list
+    lead-in: |
+      A tétel bizonyításához az alábbi két állítást kell igazolni:
+    items:
+      - 'Az $X$ maradékosztály valóban az $(A;B)\in \Z/p\Z\times \Z/q\Z$ maradékosztálypár metszete, azaz $X=A\cap
+        B$.'
+      - 'Nincs másik olyan maradékosztálypár a $\Z/p\Z\times \Z/q\Z$ halmazban, amelynek $X$ a metszete lenne.'
+  - type: formula
+    lead-in: |
+      ***Az 1. állítás:*** A [reszhalmaz] utáni megjegyzés 5. pontja alapján $X$ és $A\cap B$ akkor és csak akkor
+      egyezik meg, ha egymásnak részhalmazai, azaz teljesülnek az alábbiak:
+    content: |
+      \begin{aligned}X&\sube A\cap B \\ A\cap B &\sube X\end{aligned}
+  - type: narrative
+    content: |
+      Az $X\sube A\cap B$ tartalmazási reláció a [reszhalmaz] alapján azt jelenti, hogy az $X=[s]_{pq}$
+      maradékosztály minden eleme egyúttal az $A=[s]_p$-nek is és $B=[s]_q$-nak is eleme.
+  - type: narrative
+    content: |
+      Legyen például $t\in X$ egy tetszőleges elem az $X=[s]_{pq}$ maradékosztályban. Ezt úgy is megfogalmazhatjuk,
+      hogy $t$ ugyanúgy az $X$ maradékosztályt reprezentálja, mint $s$.
+  - type: formula
+    lead-in: |
+      Azaz $[s]_{pq}=[t]_{pq}$, ami ugye az alábbi kongruenciát jelenti:
+    content: |
+      s\equiv t\pmod{pq}
+  - type: formula
+    lead-in: |
+      Mivel azonban a $p|pq$ és $q|pq$ oszthatóságok nyilvánvalóan teljesülnek, ezért a
+      [egesz-szamok-kozotti-kongruencia-tulajdonsagai] 9. pontja miatt teljesülnek az alábbi kongruenciák is:
+    content: |
+      \begin{aligned}s&\equiv t\pmod p \\ s&\equiv t\pmod q\end{aligned}
+  - type: narrative
+    content: |
+      Tehát $t$ benne van az $A=[s]_p$ és $B=[s]_q$ maradékosztályokban, azaz valóban teljesül az $X\sube A\cap B$
+      tartalmazási reláció.
+  - type: narrative
+    content: |
+      Most az $A\cap B\sube X$ tartalmazási relációt igazoljuk. Ez a [reszhalmaz] alapján azt jelenti, hogy az
+      $A=[s]_p$ és $B=[s]_q$ maradékosztályok közös elemei egyúttal az $X=[s]_{pq}$ maradékosztálynak is elemei.
+  - type: narrative
+    content: |
+      Legyen például $t\in A\cap B$ egy tetszőleges elem az $A=[s]_p$ és $B=[s]_q$ maradékosztályok metszetében.
+      Ezt úgy is megfogalmazhatjuk, hogy $t$ ugyanúgy benne van mind az $A$, mind pedig a $B$ maradékosztályokban,
+      mint $s$.
+  - type: formula
+    lead-in: |
+      Az $A=[s]_p$ maradékosztályba pontosan azok az egész számok tartoznak bele, amelyeket az alábbi kongruenciába
+      az $x$ ismeretlen helyére behelyettesítve a kongruencia teljesül:
+    content: |
+      x\equiv s\pmod p
+  - type: formula
+    lead-in: |
+      Ehhez hasonlóan a $B=[s]_q$ maradékosztályba pontosan azok az egész számok tartoznak bele, amelyeket az
+      alábbi kongruenciába az $x$ ismeretlen helyére behelyettesítve a kongruencia teljesül:
+    content: |
+      x\equiv s\pmod q
+  - type: narrative
+    content: |
+      A fentebb említett $t$ tehát $s$-sel karöltve kielégíti az iménti két kongruenciából álló rendszert. Ám a
+      ***kínai maradéktétel*** ([kinai-maradektetel]) állítása szerint minden ilyen tulajdonságú egész szám
+      ugyanabba az egyetlen modulo $pq$ maradékosztályba esik. Az nyilvánvaló, hogy $s\in X$, hiszen a tétel
+      szövege alapján ő épp az $X$ maradékosztály reprezentánseleme. Következésképp $t$ is szükségképpen $X$-ben
+      van, azaz valóban teljesül az $A\cap B\sube X$ tartalmazási reláció.
+  - type: narrative
+    content: |
+      Mivel mindkét irányú tartalmazási reláció teljesül $X$ és $A\cap B$ között, ezért a két halmaz az ***1.
+      állításnak*** megfelelően megegyezik.
+  - type: formula
+    lead-in: |
+      ***A 2. állítás:*** Tegyük fel ***indirekt***, hogy létezik egy $(A;B)$-től különböző $(C;D)$
+      maradékosztálypár a $\Z/p\Z\times \Z/q\Z$ halmazban, amelynek $X$ a metszete, azaz:
+    content: |
+      C\cap D=X
+  - type: formula
+    lead-in: |
+      Tegyük fel továbbá, hogy a $C$ maradékosztályt a $c$ egész számmal, míg a $D$ maradékosztályt a $d$ egész
+      számmal reprezentáljuk, azaz:
+    content: |
+      \begin{aligned}C&=[c]_p \\ D&=[d]_q\end{aligned}
+  - type: narrative
+    content: |
+      Legyen $t$ egy tetszőleges elem az $X=[s]_{pq}$ maradékosztályban.
+  - type: formula
+    lead-in: |
+      Egyrészt a fentebb egyszer már leírt gondolatmenetet megismételve ez az alábbi kongruenciákat jelenti:
+    content: |
+      \begin{aligned}s&\equiv t\pmod p \\ s&\equiv t\pmod q\end{aligned}
+  - type: narrative
+    content: |
+      Másrészt viszont az indirekt feltételezésünk miatt $X$ a $C=[c]_p$ és $D=[d]_q$ maradékosztályok metszete.
+      Emiatt $t$ ugyanúgy benne van a $C=[c]_p$ maradékosztályban, mint $c$, valamint ugyanúgy benne van a
+      $D=[d]_q$ maradékosztályban, mint $d$.
+  - type: formula
+    lead-in: |
+      Teljesülnek tehát az alábbi kongruenciák:
+    content: |
+      \begin{aligned}t&\equiv c\pmod p \\ t&\equiv d\pmod q\end{aligned}
+  - type: formula
+    lead-in: |
+      A kongruencia tranzitivitása miatt ([egesz-szamok-kozotti-kongruencia-tulajdonsagai] 3. pontja) teljesülnek
+      tehát az alábbi kongruenciák is:
+    content: |
+      \begin{aligned}s&\equiv c\pmod p \\ s&\equiv d\pmod q\end{aligned}
+  - type: narrative
+    content: |
+      Azaz egyrészt az $s$ által reprezentált modulo $p$ maradékosztály (ez ugye az $A$ halmaz) megegyezik a $c$
+      által reprezentált modulo $p$ maradékosztállyal (ez pedig ugye a $C$ halmaz). Másrészt az $s$ által
+      reprezentált modulo $q$ maradékosztály (ez ugye a $B$ halmaz) megegyezik a $d$ által reprezentált modulo $q$
+      maradékosztállyal (ez pedig ugye a $D$ halmaz).
+  - type: narrative
+    content: |
+      Minthogy $A=C$ és $B=D$, ezért indirekt feltételezésünkkel ellentétben az $(A;B)$ maradékosztálypár mégiscsak
+      megegyezik a $(C;D)$ maradékosztálypárral. Azaz a ***2. állításnak*** megfelelően az $(A;B)$ páron kívül
+      nincs másik olyan maradékosztálypár a $\Z/p\Z\times \Z/q\Z$ halmazban, amelynek $X$ a metszete lenne.

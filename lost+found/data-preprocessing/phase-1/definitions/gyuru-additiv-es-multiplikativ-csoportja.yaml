@@ -1,0 +1,33 @@
+type: definition
+name: gyuru-additiv-es-multiplikativ-csoportja
+remarks:
+  - gyuru-additiv-es-multiplikativ-csoportja-megjegyzes
+references:
+  csoport:
+    target:
+      type: definition
+      name: csoport
+  gyuru-test:
+    target:
+      type: definition
+      name: gyuru-test
+content:
+  - type: narrative
+    content: |
+      A [gyuru-test]-ban szereplő gyűrűaxiómák a [csoport]ban ismertetett félcsoport és csoport fogalmának
+      segítségével átfogalmazhatók. Eszerint tegyük fel, hogy adva van egy $R$ halmaz, amelyen értelmezve van egy
+      $+$-szal és egy $\cdot$-tal jelölt kétváltozós művelet.
+  - type: ordered-list
+    lead-in: |
+      Az $(R,+,\cdot)$ algebrai struktúrát ***gyűrűnek*** nevezzük, ha teljesülnek az alábbiak:
+    items:
+      - 'Az $R$ halmaz a $+$ művelettel ***Abel-csoportot*** alkot.'
+      - 'Az $R$ halmaz a $\cdot$ művelettel ***félcsoportot*** alkot.'
+  - type: narrative
+    content: |
+      Az 1. pontban szereplő $(R,+)$ Abel-csoportot ***az $R$ gyűrű additív csoportjának*** nevezzük és $R^+$-szal
+      jelöljük. Amennyiben az $R$ gyűrű ***egységelemes***, akkor vannak olyan elemei, amelyeknek a $\cdot$
+      műveletre nézve is létezik inverze &ndash; az egységelem és ellentettje például mindenképpen ilyen. Ezeknek
+      az invertálható elemeknek a halmaza &ndash; amely tehát $R$-nek egy nemüres részhalmaza &ndash; a $\cdot$
+      művelettel szintén csoportot alkot, amelyet ***az $R$ gyűrű multiplikatív csoportjának*** nevezzük és
+      $R^{\times}$-tel jelöljük.

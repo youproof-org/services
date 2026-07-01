@@ -1,0 +1,140 @@
+type: section
+name: 02-linearis-diofantoszi-egyenlet-megoldasai
+title: Lineáris diofantoszi egyenlet megoldásai
+
+references:
+  linearis-diofantoszi-egyenlet-osszes-megoldasa:
+    target:
+      type: theorem
+      name: linearis-diofantoszi-egyenlet-osszes-megoldasa
+  linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga:
+    target:
+      type: theorem
+      name: linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga
+
+body:
+  - type: narrative
+    content: |
+      Most vizsgáljuk meg, hogy a kibővített euklidészi algoritmus segítségével hogyan kapható meg egy lineáris
+      diofantoszi egyenlet ***összes*** megoldása. Az alábbi tételben ezt a kérdést válaszoljuk meg.
+  - type: embed
+    target:
+      type: theorem
+      name: linearis-diofantoszi-egyenlet-osszes-megoldasa
+  - type: embed
+    target:
+      type: proof
+      name: linearis-diofantoszi-egyenlet-osszes-megoldasa-bizonyitas
+  - type: embed
+    target:
+      type: remark
+      name: linearis-diofantoszi-egyenlet-osszes-megoldasa-megjegyzes
+  - type: narrative
+    content: |
+      Most térjünk vissza a kompániai példánkhoz, és az iménti tétel alapján határozzuk meg, hogy hányféleképpen
+      tudja Alice kifizetni a Bob-nak szánt 10000 aranytalléros ajándékot, amennyiben csak 79 és 47 aranytallér
+      névértékű bankjegyek állnak rendelkezésére.
+  - type: formula
+    lead-in: |
+      Keressük tehát a ***nemnegatív egész*** megoldásait az alábbi lineáris diofantoszi egyenletnek:
+    content: |
+      \underbrace{79}_{=a}\cdot x + \underbrace{47}_{=m}\cdot y=\underbrace{10000}_{=b}
+  - type: narrative
+    content: |
+      Azt már az euklidészi algoritmus segítségével kiszámítottuk, hogy a $(79,47)$ kitüntetett közös osztó $1$,
+      aminek nyilván többszöröse az egyenlet jobboldalán szereplő $10000$. Így tehát ennek az egyenletnek létezik
+      egész megoldása. Kérdés, hogy vajon ***nemnegatív*** egész megoldás is létezik-e, és ha igen, akkor mennyi?
+  - type: narrative
+    content: |
+      Az imént bizonyított [linearis-diofantoszi-egyenlet-osszes-megoldasa] 1. pontja alapján az ***egyik***
+      megoldást a ***kibővített euklidészi algoritmus*** segítségével határozhatjuk meg, amelyből aztán a 2. és 3.
+      pont értelmében könnyedén előállíthatjuk az ***összes*** megoldást. Ezekből már látni fogjuk, hogy van-e
+      közöttük olyan, amely esetén $x$ is és $y$ is nemnegatív.
+  - type: formula
+    lead-in: |
+      Futtassuk hát le a két együtthatón a ***kibővített euklidészi algoritmust***, és állítsuk elő a kitüntetett
+      közös osztójukat a lineáris kombinációjukként:
+    content: |
+      \begin{array}{c|c|c|c|c|c|c}i & r_{i-2} & r_{i-1} & r_i & k_i & u_i & v_i \\ \hline 1 & 79 & 47 & 32 & 1 & 1
+      & -1 \\ \hline 2 & 47 & 32 & 15 & 1 & -1 & 2 \\ \hline 3 & 32 & 15 & 2 & 2 & 3 & -5 \\ \hline 4 & 15 & 2 & 1
+      & 7 & -22 & 37 \\ \hline 5 & 2 & 1 & 0 & - & - & -\end{array}
+  - type: formula
+    lead-in: |
+      A megkapott lineáris kombináció tehát az alábbi:
+    content: |
+      (79,47) = \underbrace{(-22)}_{=u}\cdot 79 + \underbrace{37}_{=v}\cdot 47=1
+  - type: formula
+    lead-in: |
+      Minthogy fennáll az oszthatóság a $(79,47)$ kitüntetett közös osztó és az egyenlet jobboldala &ndash; azaz
+      $10000$ &ndash; között, ezért létezik a $\frac{10000}{(79,47)}$ hányados, amelyre teljesül az alábbi:
+    content: |
+      (79,47)\cdot \frac{10000}{(79,47)}=10000
+  - type: formula
+    lead-in: |
+      A hányadost egy ***egész osztással*** kiszámítva, valamint felhasználva az imént előállított ***lineáris
+      kombinációt***, az alábbit kapjuk:
+    content: |
+      (\underbrace{79\cdot (-22)+47\cdot 37}_{=(79,47)})\cdot \underbrace{10000}_{=\frac{10000}{(79,47)}}=10000
+  - type: formula
+    lead-in: |
+      A baloldalon lévő zárójelet felbontva tulajdonképpen megkaptuk a $79x+47y=10000$ egyenlet egyik megoldását:
+    content: |
+      \underbrace{79}_{=a}\cdot \underbrace{(-220000)}_{=x} + \underbrace{47}_{=m}\cdot
+      \underbrace{370000}_{=y}=\underbrace{10000}_{=b}
+  - type: narrative
+    content: |
+      Ebben a megoldásban az $x$ sajnos negatív, így ez nem egy jó megoldás számunkra. A
+      [linearis-diofantoszi-egyenlet-osszes-megoldasa] 2. és 3.
+  - type: formula
+    lead-in: |
+      pontjai alapján azonban az alábbi képlet segítségével megkapjuk az ***összes*** megoldást, amennyiben a $k$
+      paraméterrel végigszaladunk az összes létező egész számon:
+    content: |
+      \begin{aligned}x&=-220000+47k \\ y&=370000-79k\end{aligned}
+  - type: narrative
+    content: |
+      Mi alapvetően lusták vagyunk, így nem szeretnénk a $k$ paraméter végtelen sok lehetséges értékét
+      végigvizsgálni azért, hogy megtudjuk, mikor kapunk nemnegatív számot $x$-re és $y$-ra egyaránt.
+  - type: formula
+    lead-in: |
+      Ehelyett az alábbi egyenlőtlenségeket írjuk fel:
+    content: |
+      \begin{aligned}0\leq \overbrace{-220000+47k}^{=x} \\ 0\leq \underbrace{370000-79k}_{=y}\end{aligned}
+  - type: narrative
+    content: |
+      Ezeket megoldva azt kapjuk, hogy mindössze a $k=4681$, $k=4682$ és a $k=4683$ esetekben kapunk nemnegatív
+      megoldást.
+  - type: formula
+    lead-in: |
+      Alice tehát háromféleképpen tudja kifizetni a 10000 aranytallért a Bobnak szánt ajándékra, amennyiben csak 79
+      és 47 aranytallér névértékű bankjegyek vannak nála:
+    content: |
+      \begin{aligned}10000&=7\cdot 79+201\cdot 47=\\&=54\cdot 79+122\cdot 47=\\&=101\cdot 79+43\cdot
+      47\end{aligned}
+  - type: narrative
+    content: |
+      Félretéve a szöveges feladatot, most próbáljuk meg a $79x+47y=10000$ diofantoszi egyenlet összes megoldását
+      &ndash; amelyekbe tehát mostmár a negatívakat is beleértjük &ndash; egy kétdimenziós koordináta-rendszerben
+      ábrázolni, ahol a két tengely a megoldásokhoz tartozó $x$ és $y$ értékeket jelenti. A megoldásokat
+      szolgáltató fentebbi képletből látható, hogy ha egy adott megoldásból kiindulva a $k$ értékét $1$-gyel
+      megnöveljük, akkor az így kapott új megoldáshoz tartozó $x$ értéke $47$-tel nő, míg az $y$ értéke $79$-cel
+      csökken.
+  - type: narrative
+    content: |
+      Így tehát a megoldások mindannyian egy ferdén lefelé tartó egyenes mentén fognak elhelyezkedni.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán a $k$ paraméternek az adott megoldásokhoz tartozó értékeit is feltüntettük:
+    src: 01-linearis-diofantoszi-egyenlet-megoldasai.jpg
+    alt: Lineáris diofantoszi egyenlet megoldásai
+    caption: Lineáris diofantoszi egyenlet megoldásai
+  - type: narrative
+    content: |
+      Ebből szépen látható, hogy mindössze a $k=4681$, $k=4682$ és a $k=4683$ értékekhez tartozó megoldások esnek a
+      jobb-felső síknegyedbe &ndash; amikoris mindkét koordináta pozitív.
+  - type: narrative
+    content: |
+      Az ebben a szakaszban ismertetett módszerrel tehát bármilyen lineáris diofantoszi egyenletet, és így a
+      [linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga] alapján bármilyen lineáris
+      kongruenciát meg tudunk oldani. Így az ***RSA kriptográfiai eljárás*** egyik fontos összetevője már a
+      kezünkben van. Most ismerkedjünk meg egy másik fontos összetevővel.

@@ -1,0 +1,39 @@
+<!-- wp:paragraph -->
+<p>Legyen [latex]p[/latex] egy tetszőleges felbonthatatlan elem [latex]R[/latex]-ben. Azt tudjuk, hogy [latex]p[/latex] nem a nullelem (hiszen tetszőleges [latex]a[/latex] esetén [latex]0\cdot a[/latex] egy nemtriviális felbontás), valamint a [yp_element slug="felbonthatatlan-elem" type="link" /] miatt nem is egység. Azt kell megmutatni, hogy prímtulajdonságú, azaz hogy ha bármilyen [latex]r[/latex] és [latex]s[/latex] elemek esetén teljesül a [latex]p|rs[/latex] oszthatóság, akkor a [latex]p|r[/latex] vagy [latex]p|s[/latex] oszthatóságok közül is legalább az egyik teljesül. A [latex]p|rs[/latex] oszthatóság a [yp_element slug="oszthatosag" type="link" /] alapján azt jelenti, hogy létezik olyan [latex]t[/latex] elem, amelyre teljesül az alábbi egyenlet:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]pt=rs[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Nézzük először, mi lehet a helyzet a jobboldalon. Ha [latex]r[/latex] (vagy [latex]s[/latex]) a nullelem, akkor nyilván fennáll a [latex]p|r[/latex] (vagy [latex]p|s[/latex]) oszthatóság, így ebben az esetben nyilván teljesül a prímtulajdonság.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az általánosság megsértése nélkül tehát feltehetjük, hogy [latex]r\
+eq 0[/latex] és [latex]s\
+eq 0[/latex], azaz [latex]rs\
+eq 0[/latex] (a nullosztómentesség miatt). Ez viszont azt jelenti, hogy az egyenlet baloldalán álló [latex]pt[/latex] sem lehet nulla, és így alkalmazható a [yp_element slug="egysegtenyezo-nullosztomentes-esetben" type="link" /]. Nevezetesen: ha [latex]r[/latex] és [latex]s[/latex] közül valamelyik egység, akkor a másik [latex]pt[/latex] asszociáltja, azaz szintén osztható [latex]p[/latex]-vel. Így ebben az esetben is teljesül a prímtulajdonság.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A speciális esetekből még azt kell megvizsgálni, amikor [latex]t[/latex] egység (nullelem ugye nem lehet, hiszen azt mondtuk, hogy [latex]pt\
+eq 0[/latex]). A [yp_element slug="egyseg-letezesenek-szukseges-es-elegseges-feltetele" type="link" /] miatt ilyenkor a gyűrű <strong><em>egységelemes</em></strong>, alkalmazható tehát a [yp_element slug="asszocialtsag-es-egysegek-kapcsolata" type="link" /]. Ez alapján a jobboldalon álló [latex]rs[/latex] asszociáltja [latex]p[/latex]-nek, hiszen egységszerese. De mivel [latex]p[/latex] felbonthatatlan, ezért [latex]r[/latex] és [latex]s[/latex] közül az egyik [latex]p[/latex]-nek asszociáltja, és így osztható vele (hiszen egységelemes gyűrűről van szó). A prímtulajdonság tehát ebben az esetben is teljesül.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A fennmaradó esetekben az [latex]r[/latex], [latex]s[/latex] és [latex]t[/latex] elemeket felírhatjuk felbonthatatlan elemek szorzataként, hiszen [latex]R[/latex]-ben teljesül a számelmélet alaptétele. Így a fenti egyenletből ezt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]p\cdot \underbrace{t_1\cdot t_2 \cdot \ldots \cdot t_k}_{=t} = \underbrace{r_1\cdot r_2 \cdot \ldots \cdot r_n}_{=r} \cdot \underbrace{s_1\cdot s_2 \cdot \ldots \cdot s_m}_{=s}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A számelmélet alaptétele ugyanakkor azt is kimondja, hogy a felbontás asszociáltságtól és a tényezők sorrendjétől eltekintve egyértelmű. Ebből következik, hogy a baloldalon álló felbonthatatlan elemek mindegyikének kell legyen egy asszociált párja a jobboldalon, így [latex]p[/latex]-nek is. Ha ez az [latex]r=r_1\cdot \ldots \cdot r_n[/latex] szorzat valamelyik tényezője, akkor teljesül a [latex]p|r[/latex] oszthatóság. Ha pedig az [latex]s=s_1\cdot \ldots \cdot s_m[/latex] szorzat valamelyik tényezője, akkor pedig teljesül a [latex]p|s[/latex] oszthatóság.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Minden esetben azt kapjuk, hogy [latex]p[/latex] valóban prímtulajdonságú, ahogy a tétel állítja.</p>
+<!-- /wp:paragraph -->

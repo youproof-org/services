@@ -1,0 +1,19 @@
+type: definition
+name: egesz-szamok-osszeadasa
+remarks: []
+references:
+  peano-osszeadas:
+    target:
+      type: definition
+      name: peano-osszeadas
+content:
+  - type: formula
+    lead-in: |
+      A $\Z$ halmazon az alábbi képlet szerint értelmezett $\oplus$-szal jelölt kétváltozós műveletet
+      ***összeadásnak*** nevezzük:
+    content: |
+      [(a;b)] \oplus [(c;d)] = [(a+c; b+d)]
+  - type: narrative
+    content: |
+      A fentiekben $+$ a [peano-osszeadas] szerinti Peano-összeadást, $[(x;y)]$ pedig a $\Z$ halmaznak azon elemét
+      jelöli, amelynek &ndash; mint ekvivalencia-osztálynak &ndash; eleme az $(x;y)$ természetes számpár.

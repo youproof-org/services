@@ -1,0 +1,87 @@
+type: proof
+name: gyuruk-homomorfizmustetele-bizonyitas
+remarks: []
+references:
+  gyuruhomomorfizmus-kepenek-feltetele:
+    target:
+      type: theorem
+      name: gyuruhomomorfizmus-kepenek-feltetele
+  gyuruhomomorfizmus-magja-es-kepe:
+    target:
+      type: definition
+      name: gyuruhomomorfizmus-magja-es-kepe
+  gyuruhomomorfizmus-magjanak-szukseges-feltetele:
+    target:
+      type: theorem
+      name: gyuruhomomorfizmus-magjanak-szukseges-feltetele
+  gyuruhomomorfizmus-szerinti-kongruencia:
+    target:
+      type: definition
+      name: gyuruhomomorfizmus-szerinti-kongruencia
+content:
+  - type: narrative
+    content: |
+      Előszöris megjegyezzük, hogy a [gyuruhomomorfizmus-magjanak-szukseges-feltetele] alapján $\ker f$ ideál
+      $R$-ben, így a baloldalon álló $R/\ker f$ faktorgyűrű valóban értelmes. Igaz továbbá, hogy a
+      [gyuruhomomorfizmus-kepenek-feltetele] alapján $\text{im} f$ részgyűrű abban a gyűrűben, ahová $f$ mutat, így
+      a tételben szereplő gyűrűizomorfia jobboldala is értelmes. Most megmutatjuk, hogy az izomorfia valóban
+      teljesül.
+  - type: narrative
+    content: |
+      Az $R/\ker f$ faktorgyűrű elemei a $\ker f$, mint ideál szerinti maradékosztályok. Ezek a
+      [gyuruhomomorfizmus-magja-es-kepe] utáni megjegyzés alapján pontosan ugyanazok a maradékosztályok lesznek,
+      mint a [gyuruhomomorfizmus-szerinti-kongruencia] által definiált $f$ gyűrűhomomorfizmus szerinti
+      maradékosztályok.
+  - type: narrative
+    content: |
+      Most definiálunk egy $g:R/\ker f\to \text{im} f$ leképezést e faktorgyűrű és az $f$ gyűrűhomomorfizmus képe
+      között. Ennek a leképezésnek a képletét az $R$ gyűrű elemeinek és az $f$ gyűrűhomomomorfizmusnak a
+      segítségével adjuk meg.
+  - type: formula
+    lead-in: |
+      Az alábbi képlet azt fejezi ki, hogy minden $r$ elem esetén a $g$ leképezés az $r$-et tartalmazó
+      ***MARADÉKOSZTÁLYhoz*** épp azt az elemet rendeli hozzá a célgyűrűből, amelyet az $f$ gyűrűhomomorfizmus is
+      hozzárendel magához az $r$ ***ELEMhez***:
+    content: |
+      g(r+\ker f)=f(r)
+  - type: narrative
+    content: |
+      Az alábbi ábra mutatja a $g$ leképezés iménti konstrukcióját.
+  - type: figure
+    src: faktorgyuru_izomorfizmus.jpg
+    alt: A faktorgyűrű elemeinek leképezése
+    caption: A faktorgyűrű elemeinek leképezése
+  - type: narrative
+    content: |
+      Ez egy értelmes leképezés, ha ugyanis valamely $r_1$ és $r_2$ elemek ugyanabban a maradékosztályban vannak,
+      akkor az ő különbségük benne van $f$ magjában, ami épp azt jelenti, hogy az $f$ szerinti képük megegyezik.
+      Így tehát a $g$ leképezés eredménye nem függ attól, hogy a bemeneti maradékosztály mely reprezentánselemének
+      segítségével számítottuk azt ki a fenti képlettel.
+  - type: narrative
+    content: |
+      Most igazoljuk, hogy a $g$ leképezés ***kölcsönösen egyértelmű***. Előszöris azt mutatjuk meg, hogy két
+      különböző maradékosztály $g$ szerinti képe is különbözik. Tegyük fel ezért indirekt, hogy az $R$ gyűrű $r$ és
+      $s$ elemei két ***különböző*** maradékosztályban vannak, ám e két maradékosztálynak ennek ellenére ugyanaz a
+      $g$ szerinti képe, azaz $g(r+\ker f)=g(s+\ker f)$. Ez a $g$ leképezés definíciója alapján azt jelentené, hogy
+      $f(r)=f(s)$. De ez ***ellentmondás***, hiszen ez azt jelentené, hogy $r$ és $s$ mégis ugyanabban a
+      maradékosztályban van. Azt tehát már tudjuk, hogy az $\text{im} f$ célgyűrű minden eleme ***legfeljebb egy***
+      maradékosztálynak lehet a $g$ szerinti képe, azaz $g$ ***injektív***.
+  - type: narrative
+    content: |
+      A kölcsönös egyértelműséghez azt kell még igazolni, hogy a célgyűrűben nincs olyan elem, amely ne lenne képe
+      valamely maradékosztálynak a $g$ függvény szerint (azaz, hogy $g$ ***szürjektív***). Ez viszont természetesen
+      teljesül, hiszen a célgyűrű nem más, mint $\text{im} f$, azaz az $f$ gyűrűhomomorfizmus képe. Következésképp
+      minden itt lévő $s$ elemhez létezik olyan $x$ elem az $R$ gyűrűben, amelynek épp $s$ a képe az $f$ függvény
+      szerint (azaz $f(x)=s$). Ez az $x$ elem viszont benne van az $x+\ker f$ maradékosztályban, amelyhez viszont a
+      $g$ függvény rendeli hozzá az $s$ elemet a célgyűrűben. A $g$ függvény tehát valóban ***kölcsönösen
+      egyértelmű***.
+  - type: formula
+    lead-in: |
+      A $g$ ***művelettartási tulajdonságai*** a fenti képletből már könnyen adódnak:
+    content: |
+      \begin{aligned}g((r+\ker f)\oplus (s+\ker f))&=g((r+s)+\ker f)=\\&=f(r+s)=f(r)+f(s)=\\&=g(r+\ker f)+g(s+\ker
+      f) \\ g((r+\ker f)\odot (s+\ker f))&=g((r\cdot s)+\ker f)=\\&=f(r\cdot s)=f(r)\cdot f(s)=\\&=g(r+\ker f)\cdot
+      g(s+\ker f)\end{aligned}
+  - type: narrative
+    content: |
+      Így tehát $g$ valóban ***gyűrűizomorfizmus*** az $R/\ker f$ faktorgyűrű és $f$ képe között.

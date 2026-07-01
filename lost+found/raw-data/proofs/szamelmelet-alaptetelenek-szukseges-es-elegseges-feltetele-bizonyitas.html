@@ -1,0 +1,43 @@
+<!-- wp:paragraph -->
+<p><strong><em>Nézzük először az elégségességet!</em></strong> Azaz egyrészt tegyük fel, hogy [latex]R[/latex]-ben minden felbonthatatlan elem prímtulajdonságú, másrészt pedig azt, hogy a főideálokból álló [latex]\mathcal{R}[/latex] halmazrendszer bármely nemüres részhalmazának létezik maximuma. Ez utóbbi azt jelenti, hogy akárhogyan is választunk ki akár végtelen sok főideált az [latex]\mathcal{R}[/latex] halmazrendszerből, azok között mindig lesz <strong><em>maximális elem</em></strong> a [yp_element slug="halmazrendszer-minimuma-es-maximuma" type="link" /] szerinti értelemben. Ezt röviden úgy fogjuk mondani, hogy az [latex]\mathcal{R}[/latex] halmazrendszerre <strong><em>teljesül maximumfeltétel</em></strong>. Tegyük fel továbbá <strong><em>indirekt</em></strong>, hogy ennek ellenére léteznek olyan, a nullelemtől és egységektől különböző elemek, amelyek nem bonthatók fel felbonthatatlanok szorzatára. Minden ilyen elemhez készítsük el az általa generált főideált, és legyen [latex]\mathcal{H}[/latex] az összes ilyen főideál halmaza, amely tehát az [latex]\mathcal{R}[/latex] halmazrendszer egy részhalmaza. Mivel [latex]\mathcal{R}[/latex]-re teljesül a maximumfeltétel, ezért [latex]\mathcal{H}[/latex]-ban van maximális elem. Jelöljük ezt a főideált [latex](m)[/latex]-mel, amely tehát az [latex]m[/latex] elemet és annak többszöröseit tartalmazza.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az indirekt feltevésünk alapján ugye [latex]m[/latex]-nek nem létezik prímtényezős felbontása. Emiatt az [latex]m[/latex] elem maga nem lehet felbonthatatlan, máskülönben ő saját magának az egytényezős felbontása lenne a [yp_element slug="szamelmelet-alaptetele" type="link" /] értelmében. Mivel [latex]m[/latex] nem felbonthatatlan, ezért a [yp_element slug="felbonthatatlan-elem" type="link" /] alapján ő felírható [latex]m=a\cdot b[/latex] alakban, méghozzá olymódon, hogy sem [latex]a[/latex], sem pedig [latex]b[/latex] nem egység, és nem is asszociáltja [latex]m[/latex]-nek. Teljesülnek tehát az [latex]a|m[/latex] és a [latex]b|m[/latex] oszthatóságok. Emiatt ha [latex]R[/latex] egységelemes, akkor a [yp_element slug="foidealok-es-oszthatosag-kapcsolata-egysegelemes" type="link" /], ha pedig [latex]R[/latex] nem egységelemes, akkor a [yp_element slug="foidealok-es-oszthatosag-kapcsolata-nem-egysegelemes" type="link" /] alapján teljesülnek az [latex](m)\sub (a)[/latex]  és az [latex](m)\sub (b)[/latex] szigorú tartalmazási relációk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mivel az [latex](m)[/latex] főideálról azt mondtuk, hogy a [latex]\mathcal{H}[/latex] halmazrendszer maximális eleme, így sem az [latex](a)[/latex], sem pedig a [latex](b)[/latex] főideálok nem lehetnek benne [latex]\mathcal{H}[/latex]-ban. Ezért nekik már létezik prímtényezős felbontásuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a&amp;=p_1p_2\ldots p_k \\ b&amp;=q_1q_2\ldots q_n\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ám ekkor [latex]m=ab[/latex] miatt e tényezők szorzata valójában [latex]m[/latex]-nek lenne egy prímtényezős felbontása, amiről ugye azt mondtuk, hogy nem létezik. A [latex]\mathcal{H}[/latex] halmazrendszer tehát szükségképpen üres, azaz – indirekt feltevésünkkel ellentétben – mégiscsak <strong><em>minden elemnek létezik prímtényezős felbontása</em></strong>. Továbbá, mivel minden felbonthatatlan elem prímtulajdonságú, ezért a [yp_element slug="felbontas-egyertelmusegenek-elegseges-feltetele" type="link" /] értelmében egy ilyen prímtényezős felbontás – a tényezők sorrendjétől és asszociáltságtól eltekintve – szükségképpen <strong><em>egyértelmű</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A tételben szereplő feltételek tehát valóban elégségesek az alaptételhez. Most <strong><em>vizsgáljuk meg, hogy vajon tényleg szükségesek-e?</em></strong> Tételezzük fel tehát, hogy [latex]R[/latex]-ben teljesül az alaptétel. Ebben az esetben egyrészt a [yp_element slug="szamelmelet-alaptetele-nem-egysegelemes-integritastartomanyokban" type="link" /] miatt [latex]R[/latex] biztosan <strong><em>egységelemes</em></strong>. Másrészt a [yp_element slug="szamelmelet-alaptetelenek-szukseges-feltetele" type="link" /] miatt valóban <strong><em>minden felbonthatatlan elem prímtulajdonságú</em></strong>, így már csak a tételben szereplő 1. feltétel teljesülését kell ellenőrizni. Tegyük fel <strong><em>indirekt</em></strong>, hogy nem teljesül az 1. feltétel, azaz a főideálokból álló [latex]\mathcal{R}[/latex] halmazrendszernek van olyan nemüres részhalmaza, amelyben nincs maximális elem. Ez a [yp_element slug="halmazrendszer-minimuma-es-maximuma" type="link" /], valamint a [latex]\sub[/latex] reláció tranzitivitása ([yp_element slug="reszhalmaz-reszbenrendezes" type="link" /]) miatt azt jelenti, hogy létezik olyan végtelen, főideálokból álló sorozat, amelyben minden főideál szigorúan tartalmazza a sorozatban előtte lévőt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](a_1)\sub (a_2)\sub (a_3)\sub \ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]R[/latex] <strong><em>egységelemes</em></strong>, ezért a [yp_element slug="foidealok-es-oszthatosag-kapcsolata-egysegelemes" type="link" /] miatt az [latex]a_1, a_2, a_3, \ldots[/latex] elemek közül semelyik sem asszociáltja semelyik másiknak, továbbá teljesülnek az alábbi oszthatóságok:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a_2&amp;|a_1 \\ a_3&amp;|a_2 \\ a_4&amp;|a_3 \\ &amp;\vdots\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ebből egyrészt következik, hogy legkésőbb [latex]a_2[/latex]-től kezdve <strong><em>a sorozat egyik tagja sem lehet a nullelem</em></strong>. Máskülönben ugyanis az általa generált főideál csak a nullelemet tartalmazná, és így a [yp_element slug="reszgyuru-feltetele" type="link" /] 3. pontja miatt nem létezhetne nála szűkebb főideál. Másrészt viszont <strong><em>a sorozat egyetlen tagja sem lehet egység</em></strong>, máskülönben ugyanis az általa generált főideál a teljes [latex]R[/latex] gyűrű lenne – hiszen a [yp_element slug="egyseg" type="link" /] alapján egy egységnek minden gyűrűelem többszöröse –, és így nem létezhetne nála bővebb főideál.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]a_2[/latex] tehát egy olyan elem, amely nem a nullelem és nem is egység, továbbá az oszthatóság tranzitivitása miatt végtelen sok olyan osztója van, amelyek közül egyik sem egység, és egyik sem asszociáltja [latex]a_2[/latex]-nek. Így tehát [latex]a_2[/latex]-nek nem létezik prímtényezős felbontása, ami viszont lehetetlen, hiszen azt mondtuk, hogy [latex]R[/latex]-ben teljesül a számelmélet alaptétele. Csak az indirekt feltevésünk lehetett hibás, azaz a főideálokból álló [latex]\mathcal{R}[/latex] halmazrendszernek valóban nem létezhet olyan nemüres részhalmaza, amelyben ne lenne maximális elem.</p>
+<!-- /wp:paragraph -->

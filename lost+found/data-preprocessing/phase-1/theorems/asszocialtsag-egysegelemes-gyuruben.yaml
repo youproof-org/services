@@ -1,0 +1,16 @@
+type: theorem
+name: asszocialtsag-egysegelemes-gyuruben
+proofs:
+  - asszocialtsag-egysegelemes-gyuruben-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Egy ***kommutatív és egységelemes gyűrűben*** két elem ***akkor és csak akkor*** asszociáltjai egymásnak, ha
+      egymás osztói. Azaz valamely $a$ és $b$ elemek között akkor és csak akkor teljesül az $a\sim b$ asszociáció,
+      ha fennállnak az $a|b$ és $b|a$ oszthatóságok.
+  - type: narrative
+    content: |
+      Amennyiben a gyűrű ***csak kommutatív***, de nem feltétlenül egységelemes, úgy csak annyit tudunk mondani,
+      hogy az egymással való oszthatóságból következik az asszociáltság. Ebben az esetben az asszociáltságból még
+      nem következik az egymással való oszthatóság.

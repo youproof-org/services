@@ -1,0 +1,12 @@
+type: theorem
+name: korselt-kriterium
+proofs:
+  - korselt-kriterium-bizonyitas
+remarks: []
+content:
+  - type: formula
+    lead-in: |
+      Egy $n$ ***pozitív összetett*** egész szám ***akkor és csak akkor*** Carmichael-szám, ha négyzetmentes és
+      bármely pozitív $p$ prímosztójára teljesül az alábbi oszthatóság:
+    content: |
+      p-1|n-1

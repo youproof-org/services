@@ -1,0 +1,30 @@
+type: section
+name: 05-az-np-nehez-problemak-kezelese
+title: Az NP-nehéz problémák kezelése
+
+body:
+  - type: narrative
+    content: |
+      Jogosan merül fel a kérdés, hogy mitévők legyünk akkor, ha munkánk során olyan problémába ütközünk, amely
+      bizonyítottan NP-nehéz. Ez ugyanis viszonylag gyakran előfordul, mégsem kell ezen problémák megoldásáról
+      teljesen lemondanunk.
+  - type: narrative
+    content: |
+      Az egyik lehetőség, hogy megvizsgáljuk, ***milyen méretű bemenetek várhatók a gyakorlati alkalmazás során***,
+      és olyan exponenciális időkomplexitású algoritmust keresünk, amely e bemenetméretek esetén is elfogadható idő
+      alatt lefut.
+  - type: narrative
+    content: |
+      Előfordulhat az is, hogy egy, a gyakorlatban felmerülő NP-nehéz problémáról kiderül, hogy valójában csak egy
+      ***speciális esetét*** kell kezelnünk, amire már elképzelhető, hogy létezik polinomiális algoritmus.
+  - type: narrative
+    content: |
+      Bevett módszer az is, hogy a problémára optimális, de lassú eljárás helyett az optimumnál rosszabb eredményt
+      produkáló, de gyors algoritmust próbálunk keresni. Amennyiben bizonyítani tudjuk, hogy a gyors algoritmus
+      eredményének az optimálistól való eltérése adott korlát alatt marad, úgy ***közelítő algoritmusról***
+      beszélünk.
+  - type: narrative
+    content: |
+      Végül előfordulhat, hogy sikerül gyors algoritmust találnunk, amely közelíti ugyan az optimumot, de nem
+      tudjuk bizonyítani azt, hogy a közelítés hibája adott korlát alatt marad, azonban a tapasztalat azt mutatja,
+      hogy megfelelő eredményt ad a legtöbb esetben. Ezeket ***heurisztikus algoritmusoknak*** nevezzük.

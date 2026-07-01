@@ -1,0 +1,161 @@
+type: section
+name: 06-gyuruhomomorfizmus-magja-es-kepe
+title: Gyűrűhomomorfizmus magja és képe
+
+references:
+  gyuruhomomorfizmus:
+    target:
+      type: definition
+      name: gyuruhomomorfizmus
+  gyuruhomomorfizmus-szerinti-kongruenciak-ekvivalenciajanak-feltetele:
+    target:
+      type: theorem
+      name: gyuruhomomorfizmus-szerinti-kongruenciak-ekvivalenciajanak-feltetele
+  maradekkepzes-gyuruhomomorfizmus:
+    target:
+      type: theorem
+      name: maradekkepzes-gyuruhomomorfizmus
+  modularis-osszeadas-es-szorzas:
+    target:
+      type: definition
+      name: modularis-osszeadas-es-szorzas
+  osszegtarto-lekepezes-nullelem-es-ellentettkepzestarto:
+    target:
+      type: theorem
+      name: osszegtarto-lekepezes-nullelem-es-ellentettkepzestarto
+
+body:
+  - type: narrative
+    content: |
+      Képzeljük el azt a szituációt, hogy adva van egy valamilyen $R$ gyűrű, valamint egy ezen értelmezett $f$
+      gyűrűhomomorfizmus, de nem ismerjük azt az $S$ gyűrűt, amelybe $f$ képez. Szeretnénk azonban feltárni $S$
+      szerkezetét. Hamarosan látni fogjuk, hogy ehhez előszöris az $f$ szerinti kongruenciareláció által
+      meghatározott $R$-beli maradékosztályokat kell meghatároznunk.
+  - type: narrative
+    content: |
+      Első körben azt gondolnánk, hogy erre nincs más mód, mint $R$ összes elemére alkalmazni az $f$ függvényt, és
+      a kapott függvényértékek alapján meghatározni ezeket a maradékosztályokat. Szerencsére van egy ennél sokkal
+      egyszerűbb módszer, ám ehhez már szükségünk lesz $f$ ***összegtartó tulajdonságára***. Először ismertetünk
+      egy hasznos segédtételt, amely ezt a tulajdonságot használja ki.
+  - type: embed
+    target:
+      type: theorem
+      name: osszegtarto-lekepezes-nullelem-es-ellentettkepzestarto
+  - type: embed
+    target:
+      type: proof
+      name: osszegtarto-lekepezes-nullelem-es-ellentettkepzestarto-bizonyitas
+  - type: narrative
+    content: |
+      Térjünk most vissza az eredeti problémánkhoz, amikoris egy $R$ gyűrűből kiinduló, $S$ gyűrűbe mutató
+      valamilyen $f$ ***gyűrűhomomorfizmus*** szerinti kongruenciareláció maradékosztályait szeretnénk
+      meghatározni. Az előző segédtétel következményeként most meg fogjuk mutatni, hogy ezek között van egy
+      kitüntetett maradékosztály, amely már egyértelműen meghatározza az összes többit. Ez a kitüntetett
+      maradékosztály épp azokból az $R$-beli elemekből áll, amelyekhez az $f$ leképezés az $S$ gyűrű
+      ***nullelemét*** rendeli hozzá. Ennek a kitüntetett maradékosztálynak, valamint az $f$ értékkészletének külön
+      nevet is ad az alábbi definíció.
+  - type: embed
+    target:
+      type: definition
+      name: gyuruhomomorfizmus-magja-es-kepe
+  - type: embed
+    target:
+      type: remark
+      name: gyuruhomomorfizmus-magja-es-kepe-megjegyzes
+  - type: narrative
+    content: |
+      Például az előző szakaszban felhozott $\Z$ és $Z_3$ közötti $\bmod_3$ maradékképző függvény &ndash; mint
+      gyűrűhomomorfizmus &ndash; magja épp a $3$-mal osztható egész számokból áll. A $\bmod_3$ maradékképző
+      függvény ugyanis pontosan ezekhez rendeli hozzá a $Z_3$ gyűrű nullelemét, azaz a $0$ maradékot. A $\bmod_3$
+      függvény képe pedig a [modularis-osszeadas-es-szorzas] utáni megjegyzés 5. pontja miatt maga a $Z_3$ halmaz.
+  - type: narrative
+    content: |
+      Megjegyezzük, hogy egy $f:R\to S$ gyűrűhomomorfizmus magja ***soha nem lehet üres***. A
+      [osszegtarto-lekepezes-nullelem-es-ellentettkepzestarto] 1. pontja alapján ugyanis szükségképpen tartalmazza
+      legalább az $R$ gyűrű nullelemét, hiszen ennek képe biztosan az $S$ gyűrű nulleleme lesz.
+  - type: narrative
+    content: |
+      Most azt mutatjuk meg, hogy egy gyűrűhomomorfizmus magja már egyértelműen meghatározza az általa indukált
+      kongruenciarelációt.
+  - type: embed
+    target:
+      type: theorem
+      name: gyuruhomomorfizmus-szerinti-kongruenciak-ekvivalenciajanak-feltetele
+  - type: embed
+    target:
+      type: proof
+      name: gyuruhomomorfizmus-szerinti-kongruenciak-ekvivalenciajanak-feltetele-bizonyitas
+  - type: narrative
+    content: |
+      Ez alapján tehát egy $f$ gyűrűhomomorfizmus szerinti kongruenciarelációt kizárólag annak magja, nem pedig
+      maga az $f$ határozza meg. Még csak az sem érdekes, hogy $f$ milyen gyűrűbe képez. Nézzünk is erre egy
+      egyszerű példát.
+  - type: narrative
+    content: |
+      Legyen most a kiindulási gyűrűnk az egész számok $\Z$ gyűrűje, és legyen az egyik célgyűrű a $Z_2$ gyűrű. A
+      másik célgyűrű elsőre szokatlan lesz, mivel ennek alaphalmaza nem számokból, hanem az $e$ és az $o$ betűkből
+      áll. Ezt a halmazt $P$-vel fogjuk jelölni a példában. Vezessünk be ezen a halmazon is két műveletet, és
+      jelöljük őket a $\boxplus$ és a $\boxdot$ szimbólumokkal.
+  - type: formula
+    lead-in: |
+      Ezt a két műveletet önkényesen az alábbi műveleti táblákkal definiáljuk:
+    content: |
+      \begin{array}{cc}\begin{array}{c|cc}\boxplus &e&o\\ \hline e&e&o \\o&o&e \end{array} &
+      \begin{array}{c|cc}\boxdot &e&o\\ \hline e&e&e \\o&e&o\\ \end{array}\end{array}
+  - type: narrative
+    content: |
+      Könnyű leellenőrizni, hogy a $P$ halmaz ezzel a két művelettel szintén gyűrűt alkot, melynek nulleleme az $e$
+      betű, egységeleme pedig az $o$ betű. Ennek legegyszerűbb módja, ha meggondoljuk, hogy ez a gyűrű $Z_2$-től
+      pusztán abban különbözik, hogy máshogy jelöltük az elemeit és a két műveletét.
+  - type: formula
+    lead-in: |
+      Valóban, az Olvasó is könnyedén leellenőrizheti, hogy az alábbi $h$ leképezés tulajdonképpen egy
+      [gyuruhomomorfizmus] szerinti ***izomorfizmus*** a $Z_2$ és a $P$ gyűrűk között, azaz $Z_2\simeq P$:
+    content: |
+      \begin{aligned}h(0)&=e\\h(1)&=o\end{aligned}
+  - type: narrative
+    content: |
+      Hamarosan meg fogjuk mutatni, hogy ez az izomorfizmus nem véletlenül teljesül e két gyűrű között. Ám egyelőre
+      tegyük félre ezt a dolgot. Van tehát egy kiindulási gyűrűnk, amely az egész számok $\Z$ gyűrűje, valamint van
+      két célgyűrűnk: a $Z_2$ és az imént definiált, meglehetősen szokatlan $P$. Nincs más hátra, mint találni két
+      $\Z$-ből kiinduló gyűrűhomomorfizmust, amelyeknek ugyanaz a magja $\Z$-ben, azonban az egyiknek a célgyűrűje
+      $Z_2$, a másiknak pedig $P$.
+  - type: narrative
+    content: |
+      Az első viszonylag egyszerű, hiszen a [modularis-osszeadas-es-szorzas] szerinti $\bmod_2$ maradékképző
+      függvény a [maradekkepzes-gyuruhomomorfizmus] alapján egy gyűrűhomomorfizmus $\Z$ és $Z_2$ között. Ennek
+      magja a $2$-vel osztható (tehát páros) számokból áll, hiszen pontosan ezek fognak $0$ maradékot adni $2$-vel
+      osztva.
+  - type: formula
+    lead-in: |
+      A másik gyűrűhomomorfizmust az alábbi $f$ függvénnyel adjuk meg:
+    content: |
+      f(x)=\begin{cases} e &\text{ha}\ x\ \text{páros} \\ o &\text{ha}\ x\ \text{páratlan}\end{cases}
+  - type: narrative
+    content: |
+      Az Olvasóra bízzuk annak átgondolását, hogy $f$ valóban egy gyűrűhomomorfizmus $\Z$ és $P$ között. Mivel az
+      $e$ betű a $P$ gyűrű nulleleme, ezért az $f$ gyűrűhomomorfizmus magja szintén a páros számokból áll.
+  - type: figure
+    lead-in: |
+      A három gyűrűt és a közöttük lévő $\bmod_2:\Z\to Z_2$ és $f:\Z\to P$ gyűrűhomomorfizmusokat, illetve ezek
+      közös magját mutatja az alábbi ábra:
+    src: 03-z-z-2-es-p-gyuruk.jpg
+    alt: Z, Z_2 és P gyűrűk viszonya
+    caption: 'A $\Z$, $Z_2$ és $P$ gyűrűk viszonya'
+  - type: narrative
+    content: |
+      Erre a szituációra már alkalmazhatjuk a kongruenciák ekvivalenciájáról szóló
+      [gyuruhomomorfizmus-szerinti-kongruenciak-ekvivalenciajanak-feltetele]t. Eszerint tehát a két
+      gyűrűhomomorfizmus &ndash; habár azok teljesen más gyűrűkre képeznek &ndash; szerinti kongruenciarelációk
+      teljesen azonosak lesznek.
+  - type: formula
+    lead-in: |
+      Ez azt jelenti, hogy az alábbi két reláció tetszőleges $a$ és $b$ egész számok között vagy egyszerre
+      teljesül, vagy egyszerre nem teljesül:
+    content: |
+      \begin{aligned}a&\equiv b\pod {\bmod_2}\\a&\equiv b\pod f\end{aligned}
+  - type: narrative
+    content: |
+      Ezt a két kongruenciarelációt tehát teljesen felesleges megkülönböztetni egymástól. Sőt, általában is hasznos
+      lenne bevezetni egy olyan kongruencia-fogalmat, amely nem támaszkodik közvetlenül egy adott konkrét
+      gyűrűhomomorfizmusra, hanem annak csak a magjára. Erről szól a következő szakasz.

@@ -1,0 +1,18 @@
+type: theorem
+name: gyuruhomomorfizmus-szerinti-kongruenciak-ekvivalenciajanak-feltetele
+proofs:
+  - gyuruhomomorfizmus-szerinti-kongruenciak-ekvivalenciajanak-feltetele-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyenek $R$, $S$ és $T$ valamilyen tetszőleges gyűrűk, és tegyük fel, hogy adva van egy $f:R\to S$, valamint
+      egy $g:R\to T$ ***gyűrűhomomorfizmus***. Legyen továbbá $a$ és $b$ az $R$ gyűrű két tetszőleges eleme.
+  - type: narrative
+    content: |
+      Amennyiben $\ker f=\ker g$, úgy az $a\equiv b\pod f$ kongruencia ***pontosan akkor*** teljesül, amikor az
+      $a\equiv b\pod g$ kongruencia is.
+  - type: narrative
+    content: |
+      ***Visszafelé:*** Amennyiben az $a\equiv b\pod f$ kongruencia ***pontosan akkor*** teljesül, amikor az
+      $a\equiv b\pod g$ kongruencia is, úgy $\ker f=\ker g$.

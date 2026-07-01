@@ -1,0 +1,39 @@
+type: proof
+name: bezout-lemma-bizonyitas
+remarks: []
+references:
+  asszocialt:
+    target:
+      type: definition
+      name: asszocialt
+  idealok-es-a-kituntetett-kozos-oszto-megforditas:
+    target:
+      type: theorem
+      name: idealok-es-a-kituntetett-kozos-oszto-megforditas
+  kituntetett-kozos-oszto-egyertelmusege:
+    target:
+      type: theorem
+      name: kituntetett-kozos-oszto-egyertelmusege
+content:
+  - type: narrative
+    content: |
+      Jelöljük $d$-vel az $a$ és $b$ elemek kitüntetett közös osztóját. Mivel $R$ főideálgyűrű, ezért az $(a,b)$
+      ideál is szükségképpen főideál, azaz generálható egyetlen elemmel is. Létezik tehát olyan $e$ gyűrűelem, hogy
+      $(a,b)=(e)$. Ekkor azonban a [idealok-es-a-kituntetett-kozos-oszto-megforditas] 2. pontja alapján $e$ is
+      kitüntetett közös osztója $a$-nak és $b$-nek.
+  - type: narrative
+    content: |
+      Mármost a kitüntetett közös osztó a [kituntetett-kozos-oszto-egyertelmusege] szerint asszociáltság erejéig
+      egyértelmű, azaz teljesül az $e\sim d$ asszociáció. Ez viszont az asszociáltság [asszocialt]ja alapján azt
+      jelenti, hogy $e$-nek és $d$-nek pontosan ugyanazok a többszöröseik, vagyis az általuk generált főideálok
+      megegyeznek, azaz $(e)=(d)$.
+  - type: formula
+    lead-in: |
+      Teljesül tehát az alábbi halmazegyenlőség:
+    content: |
+      (d)=\underbrace{(a,b)}_{=(e)}
+  - type: narrative
+    content: |
+      Ebből viszont a [idealok-es-a-kituntetett-kozos-oszto-megforditas] 2. pontja miatt következik, hogy $d$
+      valóban kifejezhető $u\cdot a+v\cdot b$ alakban az $R$ integritástartomány alkalmas $u$ és $v$ elemeinek
+      segítségével.

@@ -1,0 +1,55 @@
+<!-- wp:paragraph -->
+<p>Jelöljük az [latex]R[/latex] gyűrű összeadását a [latex]+[/latex], míg az [latex]S[/latex] gyűrű összeadását a [latex]\oplus[/latex] szimbólummal.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Az 1. állítás:</em></strong> Mivel egyrészt [latex]0_R[/latex] az [latex]R[/latex] gyűrű nulleleme, valamint [latex]f[/latex] tartja az összeadást, ezért az [latex]R[/latex] gyűrű tetszőleges [latex]a[/latex] elemére felírható az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f(a)=f(a+0_R)=f(a)\oplus f(0_R)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Másrészt, mivel [latex]0_S[/latex] az [latex]S[/latex] gyűrű nulleleme, ezért [latex]f(a)=f(a)\oplus 0_S[/latex] is igaz. Ezt az előző egyenlettel összevetve az alábbit kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{f(a)\oplus f(0_R)}_{=f(a)}=f(a)\oplus 0_S[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha mindkét oldalhoz hozzáadjuk az [latex]f(a)[/latex] elem [latex]S[/latex]-beli ellentettjét, akkor megkapjuk a tétel 1. állítását:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f(0_R)=0_S[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A 2. állítás:</em></strong> Legyen [latex]a[/latex] az [latex]R[/latex] gyűrű valamely tetszőleges eleme, amelynek [latex]R[/latex]-beli ellentettjét jelöljük [latex]-a[/latex]-val. Ekkor az 1. állítás miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f(a+(-a))=f(0_R)=0_S[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Másrészt viszont [latex]f[/latex] tartja az összeadást, így igaz az alábbi is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f(a+(-a))=f(a)\oplus f(-a)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A két egyenletet egymással összevetve ezt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f(a)\oplus f(-a)=0_S[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]f(a)[/latex] és [latex]f(-a)[/latex] összege épp az [latex]S[/latex] gyűrű nulleleme, valamint az ellentettképzés a [yp_element slug="inverz-elem-egyertelmu" type="link" /] alapján egyértelmű, ezért [latex]f(-a)[/latex] valóban az [latex]f(a)[/latex] elem [latex]S[/latex]-beli ellentettjével egyezik meg. Azaz [latex]f(-a)=\ominus f(a)[/latex], ahogyan a tétel állítja.</p>
+<!-- /wp:paragraph -->

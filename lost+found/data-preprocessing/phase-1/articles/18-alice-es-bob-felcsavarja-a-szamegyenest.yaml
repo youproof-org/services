@@ -1,0 +1,139 @@
+type: chapter
+name: 18-alice-es-bob-felcsavarja-a-szamegyenest
+title: Alice és Bob felcsavarja a számegyenest
+
+abstract:
+  - type: narrative
+    content: |
+      Az előző részben a legnagyobb közös osztó fogalmát általánosítva megismerkedtünk a kitüntetett közös osztó
+      fogalmával. Megmutattuk, hogy amennyiben bármely két elemnek létezik a kitüntetett közös osztója egy
+      integritástartományban, úgy az elemek prímtényezős felbontásai &ndash; ha egyáltalán léteznek &ndash;
+      egyértelműek lesznek. A kitüntetett közös osztó kiszámításához ismertettük az euklidészi algoritmus
+      alapgondolatát a pozitív egész számokon. Ezt az euklidészi norma fogalmának bevezetésével sikerült működésre
+      bírni egyéb integritástartományokon is. Ezeket euklidészi gyűrűknek neveztük. Igazoltuk azt is, hogy a
+      prímtényezős felbontás egyértelműségén túl annak létezése is biztosított ezekben a speciális gyűrűkben. Végül
+      igazoltuk, hogy az egész számok $\Z$ gyűrűje szintén euklidészi gyűrű, és így valóban teljesül benne a
+      számelmélet alaptétele.
+  - type: narrative
+    content: |
+      De vajon hogyan lehet "felcsavarni" a számegyenest úgy, hogy az alkalmas legyen kriptográfiai kódoló és
+      dekódoló függvények képzéséhez? Mit jelent a "kongruencia" fogalma, és hogyan lehet ezt általánosítani az
+      úgynevezett "ideálok" és "gyűrűhomomorfizmusok" segítségével? Mik azok a "maradékosztálygyűrűk" és hogyan
+      kell bennük számolni? Ebben a részben erről lesz szó...
+prerequisite-warning:
+  - type: narrative
+    content: |
+      Figyelem! Ez a rész erőteljesen épít a 13. és 14. részben felépített alábbi definíciókra, valamint a hozzájuk
+      kapcsolódó tételekre:
+  - type: recall
+    target:
+      type: definition
+      name: ekvivalenciarelacio
+  - type: recall
+    target:
+      type: definition
+      name: homomorfizmus-izomorfizmus-beagyazas
+  - type: recall
+    target:
+      type: definition
+      name: gyuru-test
+  - type: recall
+    target:
+      type: definition
+      name: neutralis-elem
+  - type: recall
+    target:
+      type: definition
+      name: inverz-elem
+  - type: narrative
+    content: |
+      Ezek kontextusba helyezése miatt erőteljesen ajánlott elolvasni a 13. és 14. részt, mivel gyakran hivatkozni
+      fogunk rájuk. Ezenkívül érdemes átismételni a Diffie-Hellman kulcscsere protokollról szóló 9. részt is,
+      ugyanis az ott felületesen már érintett moduláris aritmetika matematikai hátterét fogjuk ebben a részben
+      tárgyalni. A teljes cikksorozat elejét itt találod.
+prologue:
+  - type: narrative
+    content: |
+      A Diffie-Hellman kulcscsere protokoll kapcsán a 9. részben már szóba kerültek az úgynevezett ***egyirányú
+      függvények***. Ezek olyan függvények, amelyek esetén a bemenetből algoritmikusan könnyű kiszámítani a
+      kimenetet. Ezzel szemben ha csak a kimenet ismert, abból borzasztóan nehéz kitalálni, hogy mi lehetett a
+      bemenet. Kriptográfiai szempontból az ilyen tulajdonságú függvények azért hasznosak Alice és Bob számára,
+      mert ezek segítségével könnyen közölhetnek egymással olyan információt a nembiztonságos csatornán keresztül,
+      ami a gonosz Eve számára rejtve marad. Eve csak valamilyen egyéb titkos információ birtokában tudná ezeket a
+      függvényeket hatékonyan megfordítani. A számelméleti összefüggések azonban lehetővé teszik, hogy Alice-nak és
+      Bob-nak ezt a &ndash; támadó számára létfontosságú &ndash; titkot egyáltalán ne kelljen közölniük.
+  - type: narrative
+    content: |
+      A Diffie-Hellman kulcscsere protokoll során például Alice és Bob egy közös titkos kulcsban való megegyezéshez
+      használt ilyen függvényeket. Ezenkívül az úgynevezett RSA-eljárás is hasonló függvényeket használ. Ez
+      utóbbiról egy későbbi cikkben lesz szó részletesen, miután az ehhez szükséges számelméleti fogalmakkal
+      megismerkedtünk. Mindkét eljárás az úgynevezett ***moduláris hatványozáson*** alapul. A hagyományos
+      hatványozás a már jól ismert szorzásra vezethető vissza. Így például az $a^n$ kifejezést egy olyan
+      szorzatként kell értelmezni, amelynek $n$ darab tényezője van, és minden tényezője $a$.
+  - type: formula
+    lead-in: |
+      Azaz:
+    content: |
+      a^n=\underbrace{a\cdot a\cdot a\cdot \ldots \cdot a}_{\text{n darab}}
+  - type: narrative
+    content: |
+      A moduláris hatványozást ugyanígy egy $n$ tényezős szorzatként értelmezzük. A különbség pusztán annyi, hogy a
+      szorzást ilyenkor nem a hagyományos módon, a mindkét irányban végtelen számegyenesen kell elvégezni, hanem
+      egy véges sok számot tartalmazó "óralapon". A 9. részben erről részletesen szó volt, ám az ott szereplő
+      példát vizsgáljuk meg mégegyszer, de mostmár az előző részben az euklidészi algoritmus kapcsán tanult
+      ***maradékos osztás*** ismeretében.
+  - type: narrative
+    content: |
+      Az említett példában a $4\cdot 5$ szorzatot kellett kiszámítani a $11$ elemet tartalmazó óralapon számolva.
+      Ezt a szorzást akkor úgy végeztük el, hogy először végrehajtottuk a hagyományos szorzást, amiből megkaptuk,
+      hogy összesen $4\cdot 5=20$ lépést kell megtenni az óralapon. Ezután a $0$-ból kiindulva az óramutató
+      járásával megegyező irányban megtettük a $20$ lépést. A végeredmény az a szám lett, ahová megérkeztük, azaz
+      $9$.
+  - type: figure
+    lead-in: |
+      Ez látható az alábbi ábrán:
+    src: 01-modulo-11-szorzas.jpg
+    alt: Modulo 11 szorzás
+    caption: Modulo 11 szorzás
+  - type: narrative
+    content: |
+      Vegyük észre, hogy itt tulajdonképpen egy ***maradékos osztásról*** van szó. Ha ugyanis a $11$ elemű óralapon
+      lépkedünk, akkor a lépegetés során a $11$ egész számú többszöröseinél újra és újra visszajutunk a
+      kiindulópontra. Így azt kell csak meghatározni, hogy az összlépésszám (jelen esetben $20$) mennyi maradékot
+      ad $11$-gyel osztva. A végeredmény a keresett maradék lesz.
+  - type: formula
+    lead-in: |
+      Jelen esetben a $20$ és a $11$ közötti maradékos osztást elvégezve ez adódik:
+    content: |
+      20=\underbrace{1}_{\text{hányados}}\cdot 11 + \underbrace{9}_{\text{maradék}}
+  - type: narrative
+    content: |
+      A kapott ***hányados*** azt adja meg, hogy a lépegetés során összesen hányszor fogunk visszajutni a
+      kezdőpontba. A ***maradékból*** pedig megkapjuk, hogy ezen felül még hány lépést kell pluszban megtennünk. A
+      végeredmény szempontjából az óraaritmetikában ***csak a maradék fontos***, a kapott hányadost elfelejtjük.
+sections:
+  - 01-szamolas-maradekokkal
+  - 02-egyenletek-megoldasa-a-latex-z-m-latex-gyuruben
+  - 03-a-modularis-hatvanyozas-tulajdonsagai
+  - 04-a-diffie-hellman-kulcscsere-protokoll-helyessege
+  - 05-kongruenciak
+  - 06-gyuruhomomorfizmus-magja-es-kepe
+  - 07-reszgyuruk-es-idealok
+  - 08-maradekosztalygyuruk
+  - 09-gyuruk-homomorfizmustetele
+
+epilogue:
+  - type: narrative
+    content: |
+      Ebben a részben tehát megismerkedtünk a Diffie-Hellman kulcscsere protokollban és az RSA-eljárásban használt
+      moduláris aritmetika matematikai alapjaival. Ennek kapcsán megismerkedtünk olyan gyűrűkkel, amelyeknek csak
+      véges sok elemük van, és meg is tanultunk számolni ezekben a gyűrűkben. Ehhez kulcsfontosságú volt a
+      gyűrűhomomorfizmus fogalmának megismerése, amelynek a segítségével mellesleg igazoltuk a Diffie-Hellman
+      kulcscsere protokoll helyességét. Ezután tetszőleges gyűrűkben azonosítottuk azokat a részhalmazokat, amelyek
+      valamilyen gyűrűhomomorfizmusok magjai lehetnek. Mindeközben megismerkedtünk a kongruenciák, az ideálok és a
+      maradékosztálygyűrűk fogalmával.
+  - type: narrative
+    content: |
+      A következő részekben az ideálok segítségével végleg lezárjuk a számelmélet alaptételének kérdését. Ennek
+      során megismerkedünk az úgynevezett főideálgyűrűkkel, majd az egész számokon értelmezett kongruenciákat
+      fogjuk tanulmányozni.

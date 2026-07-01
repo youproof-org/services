@@ -1,0 +1,49 @@
+type: proof
+name: miller-rabin-tanuk-szama-bizonyitas
+remarks: []
+references:
+  lagrange-tetele:
+    target:
+      type: theorem
+      name: lagrange-tetele
+  nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten:
+    target:
+      type: theorem
+      name: nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten
+  nem-miller-rabin-tanuk-csoportja-primhatvanyok-eseten:
+    target:
+      type: theorem
+      name: nem-miller-rabin-tanuk-csoportja-primhatvanyok-eseten
+content:
+  - type: narrative
+    content: |
+      ***1. eset: $n$ valamilyen prímhatvány***
+  - type: narrative
+    content: |
+      Ekkor tehát $n=p^c$, ahol $p$ valamilyen páratlan prímszám, továbbá $c\geq 2$, máskülönben $n=p$ nem lenne
+      összetett. A [nem-miller-rabin-tanuk-csoportja-primhatvanyok-eseten] 2. és 3. pontjai alapján a nem
+      Miller-Rabin-tanúk $G_n$-nel jelölt halmaza egy ***valódi részcsoportot*** alkot a $(\Z/n\Z)^{\times}$
+      multiplikatív csoportban. A ***Lagrange-tétel*** ([lagrange-tetele]) alapján a $G_n$ részcsoport rendje
+      osztója a $(\Z/n\Z)^{\times}$ csoport rendjének. Minthogy $G_n$ ***valódi részcsoport***, ezért ez alapján az
+      elemeinek a száma legfeljebb feleannyi, mint a $(\Z/n\Z)^{\times}$ csoport elemeinek a száma. A redukált
+      maradékosztályoknak tehát legfeljebb a fele lehet nem Miller-Rabin-tanú. Másként fogalmazva legalább a felük
+      Miller-Rabin-tanú kell legyen.
+  - type: narrative
+    content: |
+      ***2. eset: $n$ nem prímhatvány, azaz legalább két prímtényezője van.***
+  - type: narrative
+    content: |
+      Ekkor a nem Miller-Rabin-tanúk ugyan nem alkotnak részcsoportot $(\Z/n\Z)^{\times}$-ben, azonban a
+      [nem-miller-rabin-tanuk-csoportja-nem-primhatvanyok-eseten] alapján létezik olyan $H_n$-nel jelölt ***valódi
+      részcsoport***, amely viszont minden nem Miller-Rabin-tanút tartalmaz.
+  - type: figure
+    lead-in: |
+      Azaz a következő a helyzet:
+    src: Hn_elhelyezkedese.jpg
+    alt: A Hn részcsoport elhelyezkedése
+    caption: A $H_n$ részcsoport elhelyezkedése
+  - type: narrative
+    content: |
+      Ismét a ***Lagrange-tétel*** ([lagrange-tetele]) miatt a redukált maradékosztályoknak legfeljebb a fele
+      &ndash; köztük az összes nem Miller-Rabin-tanú &ndash; tartozhat $H_n$-be. Következésképp ebben az esetben is
+      legalább a felük Miller-Rabin-tanú.

@@ -1,0 +1,23 @@
+type: theorem
+name: euklideszi-norma-szigoru-egyenlotlensegenek-feltetele
+proofs:
+  - euklideszi-norma-szigoru-egyenlotlensegenek-feltetele-bizonyitas
+remarks: []
+references:
+  euklideszi-norma-egyenlotlensegi-tulajdonsaga:
+    target:
+      type: theorem
+      name: euklideszi-norma-egyenlotlensegi-tulajdonsaga
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ tetszőleges ***euklidészi gyűrű***, $g:R\to \N$ pedig egy olyan ***euklidészi norma*** ezen a
+      gyűrűn, amelyre teljesül a [euklideszi-norma-egyenlotlensegi-tulajdonsaga]ben szereplő ***egyenlőtlenségi
+      tulajdonság***.
+  - type: narrative
+    content: |
+      Ekkor tetszőleges $a\eq 0_R$ és $b\eq 0_R$ elemek esetén $g(a)=g(ab)$ ***akkor és csak akkor*** teljesül, ha
+      $b$ egység. Minden más esetben szigorú egyenlőtlenség áll fenn, azaz $g(a)\lt g(ab)$.
+  - type: narrative
+    content: |
+      A fentiekben $0_R$-rel jelöltük az $R$ gyűrű nullelemét.

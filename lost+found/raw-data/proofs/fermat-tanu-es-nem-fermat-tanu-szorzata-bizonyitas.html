@@ -1,0 +1,40 @@
+<!-- wp:paragraph -->
+<p>Képezzük e két maradékosztály szorzatát, azaz az [latex][a]_n \odot [b]_n[/latex] maradékosztályt. A [latex]\odot[/latex] művelet [yp_element slug="egesz-szamok-maradekosztalygyurui" type="link" /]ben ismertetett definíciója alapján ez épp az [latex][ab]_n[/latex] maradékosztály lesz. Először azt kell bizonyítanunk, hogy ez a maradékosztály Fermat-tanú. Ez a [yp_element slug="fermat-tanu" type="link" /] alapján az alábbit jelenti:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](ab)^{n-1} \ \cancel{\equiv} \ 1 \pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az [latex](ab)^{n-1}[/latex] kifejezés a hatványozás azonosságairól szóló [yp_element slug="hatvanyozas-azonossagai" type="link" /] 1. pontja alapján így is írható: [latex]a^{n-1}b^{n-1}[/latex]. Mivel [latex]b\
+eq 0[/latex] és [latex][b]_n[/latex] <strong><em>nem Fermat-tanú</em></strong>, ezért a [yp_element slug="fermat-tanu" type="link" /] alapján teljesül az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]b^{n-1}\equiv 1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Következésképp a [yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" type="link" /] 5. pontja miatt teljesül az alábbi kongruencia is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{a^{n-1}b^{n-1}}_{=(ab)^{n-1}} \equiv a^{n-1} \pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex][a]_n[/latex] <strong><em>Fermat-tanú</em></strong>, ezért ugyancsak a [yp_element slug="fermat-tanu" type="link" /] alapján a jobboldali kifejezés biztosan nem kongruens [latex]1[/latex]-gyel modulo [latex]n[/latex]. Így hát a baloldali kifejezés sem, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](ab)^n \ \cancel{\equiv} \ 1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez tehát azt jelenti, hogy az [latex][ab]_n=[a]_n\odot [b]_n[/latex] maradékosztály valóban egy <strong><em>Fermat-tanú</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most azt igazoljuk, hogy [latex][ab]_n[/latex] egy <strong><em>redukált maradékosztály</em></strong>. Mivel az [latex][a]_n[/latex] egy redukált maradékosztály, ezért [latex]a[/latex] egy redukált maradékrendszer egyik eleme. Továbbá, mivel [latex][b]_n[/latex] szintén egy redukált maradékosztály, ezért [latex]b[/latex] relatív prím [latex]n[/latex]-hez. Így tehát az [latex]ab[/latex] szorzat a [yp_element slug="teljes-es-redukalt-maradekrendszer-kepzese" type="link" /] miatt szintén egy redukált maradékrendszer egyik eleme lesz. Ebből következően az [latex][ab]_n[/latex] maradékosztály egy <strong><em>redukált maradékosztály</em></strong>.</p>
+<!-- /wp:paragraph -->

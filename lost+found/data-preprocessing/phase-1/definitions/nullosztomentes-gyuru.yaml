@@ -1,0 +1,24 @@
+type: definition
+name: nullosztomentes-gyuru
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $(R,+,\cdot )$ tetszőleges gyűrű a szokásos jelölésekkel, valamint legyen $a$ és $b$ a gyűrű két
+      tetszőleges eleme. Ha $a\cdot b=0$, de sem $a\eq 0$, sem pedig $b\eq 0$, akkor azt mondjuk, hogy $a$
+      ***baloldali nullosztó***, $b$ pedig ***jobboldali nullosztó***.
+  - type: narrative
+    content: |
+      Másként fogalmazva egy $a$ elemet akkor nevezünk ***baloldali nullosztónak***, ha $a\eq 0$, és létezik olyan
+      $b\eq 0$ elem, amelyre $a\cdot b=0$ teljesül. Megint másként fogalmazva egy $b$ elemet akkor nevezünk
+      ***jobboldali nullosztónak***, ha $b\eq 0$, és létezik olyan $a\eq 0$ elem, amelyre $a\cdot b=0$ teljesül.
+  - type: narrative
+    content: |
+      Az $(R,+,\cdot )$ gyűrűt ***nullosztómentes gyűrűnek*** hívjuk, ha nincs benne sem jobb-, sem pedig baloldali
+      nullosztó. Másként fogalmazva egy nullosztómentes gyűrűben $a\cdot b=0$-ból következik, hogy $a=0$ ***vagy***
+      $b=0$.
+  - type: narrative
+    content: |
+      A szakirodalomban sok helyen találkozhatunk még a ***zérusosztó***, illetve a ***zérusosztómentes gyűrű***
+      kifejezésekkel is. Kontextustól függően mi is felváltva fogjuk használni ezeket a fogalmakat, ettől
+      függetlenül ezek mind ugyanazt jelentik.

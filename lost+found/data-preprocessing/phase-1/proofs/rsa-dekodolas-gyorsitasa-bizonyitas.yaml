@@ -1,0 +1,68 @@
+type: proof
+name: rsa-dekodolas-gyorsitasa-bizonyitas
+remarks: []
+references:
+  egesz-szamok-kozotti-kongruencia:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia
+  egesz-szamok-kozotti-kongruencia-tulajdonsagai:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia-tulajdonsagai
+  hatvanyozas-azonossagai:
+    target:
+      type: theorem
+      name: hatvanyozas-azonossagai
+  oszthatosag:
+    target:
+      type: definition
+      name: oszthatosag
+  primhatvanyhoz-relativ-primek:
+    target:
+      type: theorem
+      name: primhatvanyhoz-relativ-primek
+content:
+  - type: formula
+    lead-in: |
+      A $d_p\equiv d\pmod{p-1}$ kongruencia a [egesz-szamok-kozotti-kongruencia] 3. pontja alapján az alábbi
+      oszthatóság teljesülését jelenti:
+    content: |
+      p-1|d_p-d
+  - type: formula
+    lead-in: |
+      Ez az oszthatóság a [oszthatosag] alapján azt jelenti, hogy létezik olyan $k$ egész szám, amelyre teljesül az
+      alábbi egyenlet:
+    content: |
+      k\cdot (p-1)=d_p-d
+  - type: formula
+    lead-in: |
+      Az egyenlet mindkét oldalához $d$-t adva az alábbi kifejezést kapjuk $d_p$-re:
+    content: |
+      d_p=k(p-1)+d
+  - type: formula
+    lead-in: |
+      Ez alapján az $y^d\equiv y^{d_p}\pmod p$ kongruencia így írható fel:
+    content: |
+      y^d\equiv y^{\overbrace{k(p-1)+d}^{=d_p}}\pmod p
+  - type: formula
+    lead-in: |
+      Ez a hatványozás azonosságairól szóló [hatvanyozas-azonossagai] 2. és 3. pontjai alapján az alábbi alakra
+      hozható:
+    content: |
+      y^d\equiv (y^{p-1})^k \cdot y^d\pmod p
+  - type: formula
+    lead-in: |
+      Amennyiben $y$ ***relatív prím*** $p$-hez, akkor alkalmazható a ***kis Fermat-tétel***, amely alapján a fenti
+      kongruencia jobboldalán szereplő $y^{p-1}$ tényező $1$-gyel kongruens modulo $p$:
+    content: |
+      y^d\equiv 1^k \cdot y^d\pmod p
+  - type: narrative
+    content: |
+      Így tehát a kongruencia jobboldala a [egesz-szamok-kozotti-kongruencia-tulajdonsagai] 5. és 8. pontja alapján
+      valóban $y^d$-vel kongruens modulo $p$.
+  - type: narrative
+    content: |
+      Amennyiben $y$ ***NEM relatív prím*** $p$-hez, akkor a [primhatvanyhoz-relativ-primek] alapján többszöröse
+      neki, azaz teljesül a $p|y$ oszthatóság. Ilyenkor tehát ugyancsak teljesül a fenti kongruencia, hiszen
+      mindkét oldal $0$-val kongruens modulo $p$.

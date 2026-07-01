@@ -1,0 +1,50 @@
+type: proof
+name: egysegtenyezo-nullosztomentes-esetben-bizonyitas
+remarks: []
+references:
+  asszocialtsag-es-egysegek-kapcsolata:
+    target:
+      type: theorem
+      name: asszocialtsag-es-egysegek-kapcsolata
+  asszocialtsag-tulajdonsagai:
+    target:
+      type: theorem
+      name: asszocialtsag-tulajdonsagai
+  egyseg-letezesenek-szukseges-es-elegseges-feltetele:
+    target:
+      type: theorem
+      name: egyseg-letezesenek-szukseges-es-elegseges-feltetele
+  oszthatosag-tulajdonsagai:
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy $a=b\cdot c$, és $b$ egység. A [egyseg-letezesenek-szukseges-es-elegseges-feltetele]
+      értelmében a gyűrűben létezik egységelem, mivel egység is létezik (hiszen $b$ az). Ekkor azonban alkalmazható
+      a [asszocialtsag-es-egysegek-kapcsolata], amely szerint ha két elem közül az egyik a másik egységszerese,
+      akkor asszociáltak. Tekintve, hogy jelen esetben ugye $a=b\cdot c$, és $b$ egység, ezért valóban $a\sim c$.
+      Ugyanezen okok miatt ha $b$ helyett $c$ az egyég, akkor pedig az $a\sim b$ asszociáció teljesül.
+  - type: narrative
+    content: |
+      ***Visszafelé:*** tegyük fel, hogy $a=b\cdot c$, és teljesül az $a\sim b$ asszociáció. Mivel $a\eq 0$, ezért
+      $b\eq 0$ szintén igaz, hiszen a [asszocialtsag-tulajdonsagai] 3. pontja alapján a nullelem csak önmaga
+      asszociáltja. Mivel $bc=a$, ezért teljesül a $b|a$ oszthatóság, azaz $b$ osztója $a$-nak. De ekkor $b$
+      önmagának is osztója kell legyen (azaz $b|b$-nek teljesülnie kell), hiszen $a$ és $b$ asszociáltak, tehát
+      pontosan ugyanazok az osztóik. De ha teljesül a $b|b$ oszthatóság, akkor a [oszthatosag-tulajdonsagai] 2.
+      pontjának értelmében a gyűrű egységelemes.
+  - type: narrative
+    content: |
+      Ekkor azonban alkalmazható a [asszocialtsag-es-egysegek-kapcsolata], mely szerint $a$ szükségképpen $b$
+      egységszerese kell legyen, tekintve, hogy asszociáltak. Azaz léteznie kell olyan $e$ egységnek a gyűrűben,
+      hogy $a=b\cdot e$.
+  - type: formula
+    lead-in: |
+      Ezek szerint tehát teljesül az alábbi:
+    content: |
+      \underbrace{b\cdot c}_{=a}=b\cdot e
+  - type: narrative
+    content: |
+      Mivel a gyűrű ***nullosztómentes***, ezért ebből $c=e$ következik, azaz $c$ valóban egység. Ugyanezen okok
+      miatt ha $b$ helyett $c$ asszociáltja $a$-nak, akkor pedig $b$ lesz szükségképpen egység.

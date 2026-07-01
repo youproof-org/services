@@ -1,0 +1,39 @@
+@use 'variables' as *;
+
+.quote {
+  margin: 0.75rem 0 0.75rem;
+}
+
+.lead-in {
+  margin-top: 0.75rem;
+}
+
+.quote-body {
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.blockquote {
+  position: relative;
+  padding-left: 1.75rem;
+  font-style: italic;
+  margin: 1.5rem 0 0;
+
+  &::before {
+    content: '\201C';
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 3rem;
+    line-height: 1;
+    color: $gray-300;
+    font-style: normal;
+  }
+}
+
+.author {
+  padding-left: 1.75rem;
+  font-size: 0.875rem;
+  color: $gray-500;
+  margin: 0 0 1.5rem;
+}

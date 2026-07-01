@@ -1,0 +1,94 @@
+type: section
+name: 05-a-hibajavito-kodok-mukodese
+title: A hibajavító kódok működése
+
+body:
+  - type: narrative
+    content: |
+      ***Hibajavításról*** akkor beszélünk, ha az Alice által Bobnak szánt közleményeket úgy juttatjuk át a zajos
+      és megbízhatatlan csatornán, hogy a vételi oldal a csatorna által okozott bithibákat lehetőség szerint képes
+      legyen kijavítani, és ne legyen szükség a közlemények újraküldésére. ***Hibajelzés*** esetén ezzel szemben
+      csak jelezni tudjuk, ha volt bithiba, ám azt a vételi oldal kijavítani nem képes, így ilyenkor a közlemények
+      újraküldése szükséges. A gyakorlatban használt hibajavító kódok általában mindkét tulajdonsággal
+      rendelkeznek. Bizonyos mértékig képesek jelezni a bithibákat, egy ennél kisebb mértékben pedig javítani is.
+  - type: narrative
+    content: |
+      Egy hibajavító kódoló a bemenetére érkező k bit hosszúságú közleményeket valamilyen szabályok alapján k-nál
+      hosszabb, n bit hosszúságú kódszavakba képezi le oly módon, hogy ez a leképezés invertálható (megfordítható)
+      legyen. Invertálhatóság alatt azt értjük, hogy egy kódszóról mindig egyértelműen el lehessen dönteni, hogy az
+      melyik közleményből lett leképezve. A kódsebességet a $\frac{k}{n}$ hányados adja meg.
+  - type: formula
+    lead-in: |
+      A fenti triplázásos példában a k=2 hosszú közleményeket n=6 hosszú kódszavakra képeztük le az alábbi
+      szabályok alapján:
+    content: |
+      \begin{aligned}00 &\to 000000 \\ 01 &\to 000111 \\ 10 &\to 111000 \\ 11 &\to 111111\end{aligned}
+  - type: narrative
+    content: |
+      A hibajavító és hibajelző képességet itt az adja, hogy 6 biten 64 különböző bitsorozat írható le, ám ezek
+      közül itt mindössze csak négyet tekintünk tényleges kódszónak. Ezért ha a vételi oldalra valamilyen ettől a
+      négytől különböző 6-hosszú bitsorozat érkezik meg, Bob azonnal detektálhatja, hogy hiba történt az átvitel
+      során, sőt bizonyos esetekben még javítani is képes ezeket a hibákat. Nézzük meg, mi kell ahhoz, hogy a
+      hibákat javítani is lehessen.
+  - type: narrative
+    content: |
+      A javításhoz Bobnak valahogyan el kell tudnia dönteni, hogy a hozzá megérkező hibás bitsorozat melyik
+      kódszóhoz áll a "legközelebb". Két azonos hosszúságú bitsorozat "távolságának" mérésére szolgál az
+      úgynevezett ***Hamming-távolság***, amely azt adja meg, hogy a két bitsorozat hány pozícióban különbözik
+      egymástól. Például a **000000** és a **000111** sorozatok Hamming-távolsága 3, mivel az utolsó 3 pozícióban
+      különböznek.
+  - type: unordered-list
+    lead-in: |
+      A Hamming-távolság teljesíti a "távolsággal", mint fogalommal szemben elvárt intuitív követelményeket, azaz
+      tetszőleges a, b és c bitsorozatra igazak az alábbiak:
+    items:
+      - '**Szimmetria:** a "távolsága" b-től ugyanannyi, mint b "távolsága" a-tól.'
+      - '**Egyenlőségi tulajdonság:** a és b "távolsága" akkor és csak akkor 0, ha a és b megegyeznek.'
+      - '**Háromszög-egyenlőtlenség:** az a és b közötti, valamint a b és c közötti "távolságok" összege legalább annyi, mint az a és c közötti közvetlen "távolság".'
+  - type: narrative
+    content: |
+      Ahhoz, hogy Bob minél több hibát tudjon javítani vagy jelezni n bites kódszavak használata esetén, célszerű
+      az összes n hosszú bitsorozat közül azokat kiválasztani kódszavaknak, amelyek minél "távolabb" vannak
+      egymástól a fenti értelemben. Egy hibajavító kódolásnak ezért egy rendkívül fontos paramétere az úgynevezett
+      ***kódtávolság***, amely nem más, mint a két egymáshoz "legközelebb" eső kódszó Hamming-távolsága. Ezt a
+      mennyiséget d^min^-nel jelöljük.
+  - type: figure
+    lead-in: |
+      Az alábbi ábrán egy d^min^ kódtávolságú hibajavító kód két legközelebbi kódszava (a és b) látható:
+    src: 09-kodtavolsag.jpg
+    alt: Kódtávolság
+    caption: Kódtávolság
+  - type: narrative
+    content: |
+      A baloldali (vagy jobboldali) körben lévő kisebb pontok azokat az n hosszú bitsorozatokat jelölik, amelyek
+      nem kódszavak, viszont Hamming-távolságuk alapján a-hoz (vagy b-hez) közelebb vannak, mint bármely más
+      kódszóhoz. Ha Bob a vételi oldalra megérkező n hosszú bitsorozatokat mindig a hozzájuk legközelebbi kódszóra
+      javítja, akkor biztos lehet benne, hogy bármely $\frac{d_{min}-1}{2}$-nél nem nagyobb számú átállítódásos
+      bithibát képes javítani. Ennél nagyobb számú bithiba esetén azonban előfordulhat, hogy a vett bitsorozat már
+      egy másik kódszóhoz van a legközelebb, mint amit Alice elküldött. Ezen kívül Bob bármely $d_{min}-1$-nél nem
+      nagyobb számú bithibát képes detektálni. Ennél nagyobb számú bithiba esetén azonban előfordulhat, hogy Bob
+      éppenséggel egy kódszót kapott a vételi oldalon, amely azonban egy másik kódszó, mint amit Alice elküldött.
+  - type: narrative
+    content: |
+      Elméletben Alice és Bob a fentiek alapján könnyen konstruálhat magának egy adott számú bithibát javítani
+      képes hibajavító kódot, hiszen nincs más dolguk, mint a lehető legmesszebb "elhelyezni" egymástól a
+      kódszavakat. Ezen kívül a dekódolás is elméletben könnyű, hiszen Bob-nak a csatornáról érkező vett
+      bitsorozathoz kell csupán megtalálnia a hozzá legközelebbi kódszót. A problémát az adja, hogy k hosszú
+      közleményekhez 2^k^ darab kódszót kell ilyen módon "elhelyezni" a hibajavító kód konstrukciójakor, a
+      dekódoláskor pedig Bob-nak a vett bitsorozat ugyancsak 2^k^ darab kódszótól mért Hamming-távolságait kell
+      kiszámítania ahhoz, hogy megtalálja közöttük a legközelebbit. A 2^k^ mennyiség nagyon gyorsan növekszik k
+      függvényében, ezért ezzel az elméleti módszerrel adott esetben egyetlen közlemény dekódolása is reménytelenül
+      sokáig tartana még a leggyorsabb számítógépeknek is.
+  - type: narrative
+    content: |
+      A ***kódelmélet*** tudománya azzal foglalkozik, hogy hogyan lehet oly módon elvégezni a hibajavítást, hogy ne
+      kelljen mind a 2^k^ darab Hamming-távolságot kiszámítani. E kódok műkődési alapelve az, hogy bizonyos
+      követelményeket kielégítő műveleteket értelmezünk a kódszavak halmazán, és az így kialakított matematikai
+      objektumok algebrai tulajdonságait és összefüggéseit próbáljuk meg kihasználni a kódolás és dekódolás során.
+      A legfontosabb polgári életben használt hibajavító kód a ***Reed-Solomon kódcsalád***, amelyet Irving S. Reed
+      és Gustave Solomon fejlesztettek ki az 1950-es években. Ezzel védik többek között a különböző optikai
+      adathordozókon (CD, DVD, Blu-ray) lévő adatokat a fizikai sérülésektől. Ha például egy CD véletlenül
+      megkarcolódik, azzal rengeteg bit olvashatatlanná válik, ennek ellenére a Reed-Solomon hibajavító kódolásnak
+      köszönhetően az adatok továbbra is kinyerhetőek, feltételezve persze, hogy a sérülés mértéke egy bizonyos
+      szint alatt marad. Ezen kívül a manapság szinte minden reklámon megtalálható QR-kódokat is Reed-Solomon
+      kóddal védik a rossz képminőség okozta felismerési hibák ellen.

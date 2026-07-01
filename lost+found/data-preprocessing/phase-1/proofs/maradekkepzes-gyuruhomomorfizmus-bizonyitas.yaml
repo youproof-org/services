@@ -1,0 +1,105 @@
+type: proof
+name: maradekkepzes-gyuruhomomorfizmus-bizonyitas
+remarks: []
+references:
+  maradekok-kulonbsege-oszthato-a-modulussal:
+    target:
+      type: theorem
+      name: maradekok-kulonbsege-oszthato-a-modulussal
+  modularis-osszeadas-es-szorzas:
+    target:
+      type: definition
+      name: modularis-osszeadas-es-szorzas
+content:
+  - type: narrative
+    content: |
+      Azt kell megmutatni, hogy a $\bmod_m$ függvény tartja az eredeti $\Z$ gyűrű mindkét műveletét. Nézzük először
+      az ***összeadást***.
+  - type: formula
+    lead-in: |
+      Itt az alábbi összefüggést kell igazolni:
+    content: |
+      \bmod_m(a+b)=\bmod_m(a)\oplus \bmod_m(b)
+  - type: narrative
+    content: |
+      Fejtsük ki mindkét oldalt a [modularis-osszeadas-es-szorzas] alapján.
+  - type: formula
+    lead-in: |
+      A bal- és jobboldalon képződő maradékokat jelöljük $r$-rel, $q_1$-gyel, $q_2$-vel és $q_3$-mal:
+    content: |
+      \begin{aligned}&\bmod_m(a+b)=r \\ &\underbrace{\bmod_m(a)}_{=q_1}\oplus
+      \underbrace{\bmod_m(b)}_{=q_2}=\bmod_m(q_1+q_2)=q_3\end{aligned}
+  - type: narrative
+    content: |
+      Azt kell megmutatnunk, hogy $r=q_3$, azaz mindegy, hogy melyik gyűrűben végezzük el az összeadást, a
+      végeredmény ugyanaz lesz.
+  - type: formula
+    lead-in: |
+      A $\bmod_m$ függvény szerinti maradékos osztásokat elvégezve négy egyenletet írhatunk fel az $r$, $q_1$,
+      $q_2$ és $q_3$ maradékokra valamilyen $k$, $n_1$, $n_2$ és $n_3$ hányadosokkal:
+    content: |
+      \begin{aligned}a+b&=km+r \\ a&=n_1m+q_1  \\ b&=n_2m+q_2 \\ q_1+q_2&=n_3m+q_3\end{aligned}
+  - type: formula
+    lead-in: |
+      Az első egyenletből kifejezhetjük $r$-et, amely a $\bmod_m(a+b)$ maradékképzés eredménye:
+    content: |
+      r=a+b-km
+  - type: formula
+    lead-in: |
+      A második és harmadik egyenletből kifejezhetjük $q_1$-et és $q_2$-t, amely a $\bmod_m(a)\oplus \bmod_m(b)$
+      moduláris összeg két tagját fogja adni:
+    content: |
+      \begin{aligned}q_1&=a-n_1m  \\ q_2&=b-n_2m\end{aligned}
+  - type: formula
+    lead-in: |
+      A kapott $q_1$ és $q_2$ maradékokat a harmadik egyenletbe behelyettesítve ezt kapjuk:
+    content: |
+      \underbrace{a-n_1m}_{=q_1}+\underbrace{b-n_2m}_{=q_2}=n_3m+q_3
+  - type: formula
+    lead-in: |
+      Ezt átrendezve megkapjuk $q_3$-at:
+    content: |
+      q_3=\underbrace{a-n_1m}_{=q_1}+\underbrace{b-n_2m}_{=q_2}-n_3m
+  - type: narrative
+    content: |
+      Azt kell tehát igazolnunk, hogy $r$ és $q_3$ valójában megegyeznek.
+  - type: formula
+    lead-in: |
+      Ehhez írjuk fel kettejük különbségét:
+    content: |
+      \begin{aligned}r-q_3&=\overbrace{\bcancel{a}+\bcancel{b}-km}^{r}\overbrace{-\bcancel{a}+n_1m-\bcancel{b}+n_2m+n_3m}^{-q_3}=\\&=(n_1+n_2+n_3-k)\cdot
+      m\end{aligned}
+  - type: narrative
+    content: |
+      Azt kaptuk tehát, hogy teljesül az $m|r-q_3$ oszthatóság. Mivel $r$ és $q_3$ nemnegatív maradékok, így
+      alkalmazható rájuk a [maradekok-kulonbsege-oszthato-a-modulussal], amiből $r=q_3$ következik. A $\bmod_m$
+      függvény tehát valóban ***tartja az összeadást***.
+  - type: narrative
+    content: |
+      Most a ***szorzás tartását*** ellenőrizzük nagyjából ugyanezzel a módszerrel. Azt kell megmutatni, hogy
+      $\bmod_m(a\cdot b)=\bmod_m(a)\odot \bmod_m(b)$.
+  - type: formula
+    lead-in: |
+      Ismét fejtsük ki mindkét oldalt a kapott maradékokat $r$-rel, $q_1$-gyel, $q_2$-vel és $q_3$-mal jelölve:
+    content: |
+      \begin{aligned}&\bmod_m(a\cdot b)=r \\ &\underbrace{\bmod_m(a)}_{=q_1}\odot
+      \underbrace{\bmod_m(b)}_{=q_2}=\bmod_m(q_1\cdot q_2)=q_3\end{aligned}
+  - type: formula
+    lead-in: |
+      A $\bmod_m$ függvény szerinti maradékos osztásokat elvégezve ismét négy egyenletet írhatunk fel az $r$,
+      $q_1$, $q_2$ és $q_3$ maradékokra valamilyen $k$, $n_1$, $n_2$ és $n_3$ hányadosokkal:
+    content: |
+      \begin{aligned}a\cdot b&=km+r \\ a&=n_1m+q_1  \\ b&=n_2m+q_2 \\ q_1\cdot q_2&=n_3m+q_3\end{aligned}
+  - type: narrative
+    content: |
+      Az összeadás tartásánál látott módon ismét kifejezhetjük az $r-q_3$ különbséget &ndash; a részleteket az
+      Olvasóra bízzuk &ndash;, amelyből megint azt fogjuk kapni, hogy teljesül az $m|r-q_3$ oszthatóság. Ebből
+      viszont ugyancsak a [maradekok-kulonbsege-oszthato-a-modulussal] miatt $r=q_3$ következik, azaz a $\bmod_m$
+      függvény a ***szorzást is tartja***, és így valóban egy ***gyűrűhomomorfizmus*** $\Z$ és $Z_m$ között.
+  - type: narrative
+    content: |
+      Azt kell még igazolni, hogy ***szürjektív***, ami itt azt jelenti, hogy minden $Z_m$-beli elemhez létezik
+      ***legalább egy*** olyan egész szám, amelynek épp ő a modulo $m$ maradéka. Ez viszont nyilvánvalóan
+      következik a [modularis-osszeadas-es-szorzas] utáni megjegyzés 5. pontjából. Eszerint ugyanis a $0$, $1$,
+      $2$, ..., $|m|-1$ egész számokat a $\bmod_m$ függvény önmagukra képezi le, amelyek viszont pontosan a $Z_m$
+      elemei.

@@ -1,0 +1,162 @@
+type: proof
+name: euler-fuggveny-szorzattarto-tulajdonsaga-bizonyitas
+remarks: []
+references:
+  egesz-szamok-maradekosztalyai:
+    target:
+      type: theorem
+      name: egesz-szamok-maradekosztalyai
+  euklideszi-gyurukben-teljesul-a-szamelmelet-alaptetele:
+    target:
+      type: theorem
+      name: euklideszi-gyurukben-teljesul-a-szamelmelet-alaptetele
+  euler-fuggveny:
+    target:
+      type: definition
+      name: euler-fuggveny
+  euler-fuggveny-alternativ-definicio:
+    target:
+      type: theorem
+      name: euler-fuggveny-alternativ-definicio
+  oszthatosag-tulajdonsagai:
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+  redukalt-maradekosztaly-feltetele:
+    target:
+      type: theorem
+      name: redukalt-maradekosztaly-feltetele
+  rendezett-gyuru:
+    target:
+      type: definition
+      name: rendezett-gyuru
+  teljes-es-redukalt-maradekrendszer-kepzese:
+    target:
+      type: theorem
+      name: teljes-es-redukalt-maradekrendszer-kepzese
+content:
+  - type: narrative
+    content: |
+      A $\varphi(ab)$ tehát azon $ab$-nél nemnagyobb pozitív egészeknek a számával egyezik meg, amelyek $ab$-hez
+      relatív prímek. Vegyük észre, hogy tetszőleges egész szám ***akkor és csak akkor*** relatív prím $ab$-hez, ha
+      relatív prím $a$-hoz is **és** $b$-hez is.
+  - type: narrative
+    content: |
+      Tegyük fel ugyanis ***indirekt***, hogy egy valamilyen $c$ egész szám relatív prím $ab$-hez, de nem relatív
+      prím $a$-hoz. Ez azt jelentené, hogy létezik olyan $n$ egész szám, amely közös osztója $a$-nak és $c$-nek, de
+      nem egység. Ekkor a [oszthatosag-tulajdonsagai] 7. pontja miatt $n$ közös osztója lenne $ab$-nek és $c$-nek,
+      és mivel nem egység, ezért $c$ nem lehetne relatív prím az $ab$ szorzathoz. Ilyen $n$ közös osztó tehát nem
+      létezhet, következésképp minden $ab$-hez relatív prím egész egyben relatív prím $a$-hoz. Ehhez hasonlóan
+      igazolható, hogy minden $ab$-hez relatív prím egész egyben relatív prím $b$-hez is.
+  - type: narrative
+    content: |
+      ***Visszafelé:*** Tegyük fel, hogy egy valamilyen $c$ egész szám relatív prím $a$-hoz is és $b$-hez is. Ez
+      azt jelenti, hogy sem $a$-nak, sem pedig $b$-nek nincs $c$-vel közös osztója az egységeken kívül. Mivel a
+      [euklideszi-gyurukben-teljesul-a-szamelmelet-alaptetele] szerint az egész számok $\Z$ gyűrűjében ***teljesül
+      a számelmélet alaptétele***, ezért ez azt is jelenti, hogy $a$ és $b$ prímtényezői mind különböznek $c$
+      prímtényezőitől, és így a szorzatuknak sincs $c$-vel közös prímtényezője, tehát osztója sem az egységeken
+      kívül. Azaz $c$ valóban ***relatív prím*** $ab$-hez.
+  - type: narrative
+    content: |
+      Eddig tehát azt igazoltuk, hogy a $\varphi(ab)$ érték kiszámításához azokat az ***$ab$-nél nemnagyobb pozitív
+      egészeket*** kell megszámlálnunk, amelyek relatív prímek $a$-hoz is és $b$-hez is.
+  - type: ordered-list
+    lead-in: |
+      Ezt a következő lépésekben fogjuk megtenni:
+    items:
+      - 'Összegyűjtjük az ***összes*** $a$-hoz relatív prím egész számot.'
+      - 'Ezek közül kiválasztjuk azokat, amelyek $0$ és $ab$ közé esnek.'
+      - 'Végül a maradékból kiválogatjuk azokat, amelyek $b$-hez is relatív prímek.'
+  - type: narrative
+    content: |
+      **Az 1. lépés:** A [redukalt-maradekosztaly-feltetele] alapján az $a$-hoz relatív prímek pontosan a modulo
+      $a$ redukált maradékosztályok elemei lesznek. Ilyen maradékosztályból épp $\varphi(a)$ darab van. E
+      $\varphi(a)$ darab modulo $a$ redukált maradékosztály mindegyikéből válasszuk ki a legkisebb pozitív elemet.
+      Az így kapott $r_1$, $r_2$, ..., $r_{\varphi(a)}$ számok tehát reprezentálják az összes modulo $a$ redukált
+      maradékosztályt.
+  - type: formula
+    lead-in: |
+      A [egesz-szamok-maradekosztalyai] alapján e maradékosztályok elemei (és csak azok) kifejezhetők az $r_1$,
+      $r_2$, ..., $r_{\varphi(a)}$ reprezentánselemek segítségével az alábbi táblázat szerint (minden oszlop
+      egy-egy redukált maradékosztálynak felel meg):
+    content: |
+      \begin{array}{c|c|c|c}[r_1]_a & [r_2]_a & \cdots & [r_{\varphi(a)}]_a \\ \hline \vdots & \vdots & & \vdots \\
+      r_1-2a & r_2-2a & \cdots & r_{\varphi(a)}-2a \\ r_1-1a & r_2-1a & \cdots & r_{\varphi(a)}-1a \\ r_1+0a &
+      r_2+0a & \cdots & r_{\varphi(a)}+0a \\ r_1+1a & r_2+1a & \cdots & r_{\varphi(a)}+1a \\ r_1+2a & r_2+2a &
+      \cdots & r_{\varphi(a)}+2a \\ r_1+3a & r_2+3a & \cdots & r_{\varphi(a)}+3a \\ \vdots & \vdots & & \vdots
+      \end{array}
+  - type: narrative
+    content: |
+      **A 2. lépés:** Most minden olyan számot kidobálunk ebből a táblázatból, amely nem $0$ és $ab$ közé esik.
+      Mivel az $r_1$, $r_2$, ..., $r_{\varphi(a)}$ reprezentánselemeket úgy választottuk ki, hogy minden oszlopban
+      ők legyenek a legkisebb pozitív egészek, ezért a táblázat ezek fölötti részét ki is hajíthatjuk, hiszen ott
+      már csupa negatív szám szerepel. Kérdés, hogy lefelé meddig mehetünk el a $k$ paraméterrel úgy, hogy bármely
+      $i$-edik oszlopban az $r_i+ka\lt ab$ egyenlőtlenség még éppen teljesüljön? A határvonal épp a $k=b-1$ érték
+      lesz.
+  - type: formula
+    lead-in: |
+      Ezt ugyanis behelyettesítve az egyenlőtlenségbe, valamint kihasználva a [rendezett-gyuru] szerinti 1.
+      rendezési axiómát, az alábbi adódik:
+    content: |
+      \begin{aligned}r_i+\overbrace{(b-1)}^{=k}a&\lt ab \\ r_i+\cancel{ba}-a&\lt \cancel{ab}\\ _i\lt a\end{aligned}
+  - type: narrative
+    content: |
+      Ez viszont nyilvánvalóan teljesül, hiszen $r_i$ az egyik modulo $a$ maradékosztály legkisebb pozitív eleme.
+      Minthogy a $0$, $1$, $2$, ..., $a-1$ számok az összes létező modulo $a$ maradékosztályt reprezentálják, ezért
+      $r_i$ is szükségképpen közöttük van.
+  - type: formula
+    lead-in: |
+      Másrészt viszont a $k=b$ érték már nem megfelelő, ha ugyanis ezt helyettesítjük be az egyenlőtlenségbe, akkor
+      az alábbit kapjuk:
+    content: |
+      \begin{aligned}r_i+\overbrace{b}^{=k}\cdot a&\lt ab \\ r_i&\lt 0\end{aligned}
+  - type: narrative
+    content: |
+      Ez az egyenlőtlenség már nem teljesül, hiszen az $r_i$-t pozitívnak választottuk.
+  - type: formula
+    lead-in: |
+      Az 1. lépésben keletkezett táblázatból tehát az alábbi rész maradt meg, a többit kidobáltuk:
+    content: |
+      \begin{array}{c|c|c|c}[r_1]_a & [r_2]_a & \cdots & [r_{\varphi(a)}]_a \\ \hline r_1+0a & r_2+0a & \cdots &
+      r_{\varphi(a)}+0a \\ r_1+1a & r_2+1a & \cdots & r_{\varphi(a)}+1a \\ r_1+2a & r_2+2a & \cdots &
+      r_{\varphi(a)}+2a \\ \vdots & \vdots & & \vdots \\ r_1+(b-1)a & r_2+(b-1)a & \cdots & r_{\varphi(a)}+(b-1)a
+      \end{array}
+  - type: narrative
+    content: |
+      Ez a táblázat tehát tartalmazza az összes olyan $0$ és $ab$ közé eső egész számot, amely relatív prím
+      $a$-hoz.
+  - type: narrative
+    content: |
+      **A 3. lépés:** Ez tehát egy $\varphi(a)$ oszlopból álló táblázat, és minden oszlopban $b$ darab szám van.
+      Tekintsük például az $i$-edik oszlopot.
+  - type: formula
+    lead-in: |
+      Ennek elemei a következők:
+    content: |
+      \begin{aligned}r_i&+0a\\ _i&+1a\\ _i&+2a\\&\vdots\\ _i&+(b-1)a\end{aligned}
+  - type: narrative
+    content: |
+      Vegyük észre, hogy ezt a számhalmazt úgy kaptuk, hogy a $\{0;1;2;\ldots;b-1\}$ számhalmaz minden elemét
+      megszoroztuk $a$-val &ndash; ami ugye a tétel szövege alapján relatív prím $b$-hez &ndash;, majd az így
+      kapott számokhoz hozzáadtunk $r_i$-t. Mivel azonban a $\{0;1;2;\ldots;b-1\}$ számhalmaz nem más, mint egy
+      modulo $b$ teljes maradékrendszer, ezért a [teljes-es-redukalt-maradekrendszer-kepzese] alapján az újonnan
+      kapott számhalmaz is az.
+  - type: narrative
+    content: |
+      Mivel a táblázat minden oszlopa ugyanígy képződött, ezért a táblázat minden oszlopában tulajdonképpen egy-egy
+      modulo $b$ teljes maradékrendszer áll. Minden oszlopban képviselve van tehát az összes modulo $b$
+      maradékosztály. Mivel ezek közül a redukált maradékosztályok száma az Euler-függvény [euler-fuggveny]ja
+      alapján $\varphi(b)$, ezért ez egyben azt is jelenti a [euler-fuggveny-alternativ-definicio] alapján, hogy
+      minden oszlopban $\varphi(b)$ darab olyan elem van, amely relatív prím $b$-hez. Minthogy a táblázatban az
+      oszlopok száma $\varphi(a)$, így a táblázatnak összesen $\varphi(a)\cdot \varphi(b)$ eleme relatív prím
+      $b$-hez is.
+  - type: narrative
+    content: |
+      **Összefoglalva:** Összesen tehát $\varphi(a)\cdot \varphi(b)$ darab olyan $0$ és $ab$ közötti egész szám
+      létezik, amely relatív prím $a$-hoz is és $b$-hez is. Ezek száma a bizonyítás elején közölt észrevétel
+      alapján megegyezik azon $0$ és $ab$ közötti egészek számával, amelyek relatív prímek $ab$-hez.
+  - type: formula
+    lead-in: |
+      Ezek száma viszont $\varphi(ab)$, így tehát valóban teljesül a tétel állítása:
+    content: |
+      \varphi(ab)=\varphi(a)\cdot \varphi(b)

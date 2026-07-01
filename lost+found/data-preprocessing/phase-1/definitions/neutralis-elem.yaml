@@ -1,0 +1,30 @@
+type: definition
+name: neutralis-elem
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen adott egy $R$ halmaz és egy ezen értelmezett $*$-gal jelölt kétváltozós művelet, valamint legyen $n$
+      az $R$ halmaz egy eleme.
+  - type: formula
+    lead-in: |
+      Az $n$ elemet ***jobboldali neutrális elemnek*** nevezzük a $*$ műveletre nézve, amennyiben tetszőleges
+      $R$-beli $a$ elemre teljesül az alábbi:
+    content: |
+      a*n=a
+  - type: formula
+    lead-in: |
+      Az $n$ elemet ***baloldali neutrális elemnek*** nevezzük a $*$ műveletre nézve, amennyiben tetszőleges
+      $R$-beli $a$ elemre teljesül az alábbi:
+    content: |
+      n*a=a
+  - type: narrative
+    content: |
+      Ha egy $n$ elem egyszerre jobb- és baloldali neutrális elem, akkor őt ***kétoldali neutrális elemnek***, vagy
+      egyszerűen csak ***neutrális elemnek*** nevezzük.
+  - type: narrative
+    content: |
+      A szakirodalomban sok helyen találkozhatunk még a ***semleges elem***, a ***nullelem***, a ***zéruselem***
+      vagy az ***egységelem*** kifejezésekkel, valamint a $0$ illetve az $1$ jelölésekkel is. Kontextustól függően
+      mi is felváltva fogjuk használni ezeket a fogalmakat és/vagy jelöléseket, ettől függetlenül ezek mind
+      ugyanazt jelentik.

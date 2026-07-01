@@ -1,0 +1,119 @@
+<!-- wp:paragraph -->
+<p>A tétel bizonyításához az alábbi két állítást kell igazolni:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} -->
+<ol><li>Az [latex]X[/latex] maradékosztály valóban az [latex](A;B)\in \Z/p\Z\times \Z/q\Z[/latex] maradékosztálypár metszete, azaz [latex]X=A\cap B[/latex].</li><li>Nincs másik olyan maradékosztálypár a [latex]\Z/p\Z\times \Z/q\Z[/latex] halmazban, amelynek [latex]X[/latex] a metszete lenne.</li></ol>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Az 1. állítás:</em></strong> A [yp_element slug="reszhalmaz" type="link" /] utáni megjegyzés 5. pontja alapján [latex]X[/latex] és [latex]A\cap B[/latex] akkor és csak akkor egyezik meg, ha egymásnak részhalmazai, azaz teljesülnek az alábbiak:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}X&amp;\sube A\cap B \\ A\cap B &amp;\sube X\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]X\sube A\cap B[/latex] tartalmazási reláció a [yp_element slug="reszhalmaz" type="link" /] alapján azt jelenti, hogy az [latex]X=[s]_{pq}[/latex] maradékosztály minden eleme egyúttal az [latex]A=[s]_p[/latex]-nek is és [latex]B=[s]_q[/latex]-nak is eleme.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Legyen például [latex]t\in X[/latex] egy tetszőleges elem az [latex]X=[s]_{pq}[/latex] maradékosztályban. Ezt úgy is megfogalmazhatjuk, hogy [latex]t[/latex] ugyanúgy az [latex]X[/latex] maradékosztályt reprezentálja, mint [latex]s[/latex]. Azaz [latex][s]_{pq}=[t]_{pq}[/latex], ami ugye az alábbi kongruenciát jelenti:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]s\equiv t\pmod{pq}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel azonban a [latex]p|pq[/latex] és [latex]q|pq[/latex] oszthatóságok nyilvánvalóan teljesülnek, ezért a [yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" type="link" /] 9. pontja miatt teljesülnek az alábbi kongruenciák is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}s&amp;\equiv t\pmod p \\ s&amp;\equiv t\pmod q\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Tehát [latex]t[/latex] benne van az [latex]A=[s]_p[/latex] és [latex]B=[s]_q[/latex] maradékosztályokban, azaz valóban teljesül az [latex]X\sube A\cap B[/latex] tartalmazási reláció.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most az [latex]A\cap B\sube X[/latex] tartalmazási relációt igazoljuk. Ez a [yp_element slug="reszhalmaz" type="link" /] alapján azt jelenti, hogy az [latex]A=[s]_p[/latex] és [latex]B=[s]_q[/latex] maradékosztályok közös elemei egyúttal az [latex]X=[s]_{pq}[/latex] maradékosztálynak is elemei.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Legyen például [latex]t\in A\cap B[/latex] egy tetszőleges elem az [latex]A=[s]_p[/latex] és [latex]B=[s]_q[/latex] maradékosztályok metszetében. Ezt úgy is megfogalmazhatjuk, hogy [latex]t[/latex] ugyanúgy benne van mind az [latex]A[/latex], mind pedig a [latex]B[/latex] maradékosztályokban, mint [latex]s[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]A=[s]_p[/latex] maradékosztályba pontosan azok az egész számok tartoznak bele, amelyeket az alábbi kongruenciába az [latex]x[/latex] ismeretlen helyére behelyettesítve a kongruencia teljesül:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x\equiv s\pmod p[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ehhez hasonlóan a [latex]B=[s]_q[/latex] maradékosztályba pontosan azok az egész számok tartoznak bele, amelyeket az alábbi kongruenciába az [latex]x[/latex] ismeretlen helyére behelyettesítve a kongruencia teljesül:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x\equiv s\pmod q[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A fentebb említett [latex]t[/latex] tehát [latex]s[/latex]-sel karöltve kielégíti az iménti két kongruenciából álló rendszert. Ám a <strong><em>kínai maradéktétel</em></strong> ([yp_element slug="kinai-maradektetel" type="link" /]) állítása szerint minden ilyen tulajdonságú egész szám ugyanabba az egyetlen modulo [latex]pq[/latex] maradékosztályba esik. Az nyilvánvaló, hogy [latex]s\in X[/latex], hiszen a tétel szövege alapján ő épp az [latex]X[/latex] maradékosztály reprezentánseleme. Következésképp [latex]t[/latex] is szükségképpen [latex]X[/latex]-ben van, azaz valóban teljesül az [latex]A\cap B\sube X[/latex] tartalmazási reláció.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mivel mindkét irányú tartalmazási reláció teljesül [latex]X[/latex] és [latex]A\cap B[/latex] között, ezért a két halmaz az <strong><em>1. állításnak</em></strong> megfelelően megegyezik.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A 2. állítás:</em></strong> Tegyük fel <strong><em>indirekt</em></strong>, hogy létezik egy [latex](A;B)[/latex]-től különböző [latex](C;D)[/latex] maradékosztálypár a [latex]\Z/p\Z\times \Z/q\Z[/latex] halmazban, amelynek [latex]X[/latex] a metszete, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]C\cap D=X[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Tegyük fel továbbá, hogy a [latex]C[/latex] maradékosztályt a [latex]c[/latex] egész számmal, míg a [latex]D[/latex] maradékosztályt a [latex]d[/latex] egész számmal reprezentáljuk, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}C&amp;=[c]_p \\ D&amp;=[d]_q\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Legyen [latex]t[/latex] egy tetszőleges elem az [latex]X=[s]_{pq}[/latex] maradékosztályban. Egyrészt a fentebb egyszer már leírt gondolatmenetet megismételve ez az alábbi kongruenciákat jelenti:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}s&amp;\equiv t\pmod p \\ s&amp;\equiv t\pmod q\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Másrészt viszont az indirekt feltételezésünk miatt [latex]X[/latex] a [latex]C=[c]_p[/latex] és [latex]D=[d]_q[/latex] maradékosztályok metszete. Emiatt [latex]t[/latex] ugyanúgy benne van a [latex]C=[c]_p[/latex] maradékosztályban, mint [latex]c[/latex], valamint ugyanúgy benne van a [latex]D=[d]_q[/latex] maradékosztályban, mint [latex]d[/latex]. Teljesülnek tehát az alábbi kongruenciák:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}t&amp;\equiv c\pmod p \\ t&amp;\equiv d\pmod q\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A kongruencia tranzitivitása miatt ([yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" type="link" /] 3. pontja) teljesülnek tehát az alábbi kongruenciák is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}s&amp;\equiv c\pmod p \\ s&amp;\equiv d\pmod q\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azaz egyrészt az [latex]s[/latex] által reprezentált modulo [latex]p[/latex] maradékosztály (ez ugye az [latex]A[/latex] halmaz) megegyezik a [latex]c[/latex] által reprezentált modulo [latex]p[/latex] maradékosztállyal (ez pedig ugye a [latex]C[/latex] halmaz). Másrészt az [latex]s[/latex] által reprezentált modulo [latex]q[/latex] maradékosztály (ez ugye a [latex]B[/latex] halmaz) megegyezik a [latex]d[/latex] által reprezentált modulo [latex]q[/latex] maradékosztállyal (ez pedig ugye a [latex]D[/latex] halmaz).</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Minthogy [latex]A=C[/latex] és [latex]B=D[/latex], ezért indirekt feltételezésünkkel ellentétben az [latex](A;B)[/latex] maradékosztálypár mégiscsak megegyezik a [latex](C;D)[/latex] maradékosztálypárral. Azaz a <strong><em>2. állításnak</em></strong> megfelelően az [latex](A;B)[/latex] páron kívül nincs másik olyan maradékosztálypár a [latex]\Z/p\Z\times \Z/q\Z[/latex] halmazban, amelynek [latex]X[/latex] a metszete lenne.</p>
+<!-- /wp:paragraph -->

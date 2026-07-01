@@ -1,0 +1,61 @@
+type: section
+name: 08-algoritmikusan-eldonthetetlen-problemak
+title: Algoritmikusan eldönthetetlen problémák
+
+body:
+  - type: narrative
+    content: |
+      A 19. század végéig mindenki úgy gondolta, hogy egy kellőképpen pontosan megfogalmazott döntési problémára
+      mindig létezik olyan algoritmus (azaz Turing-gép) amely a probléma tetszőleges konkrét példányára (azaz
+      tetszőleges bemenetre) megadja az ***"igen"*** vagy ***"nem"*** választ. Maximum túl sokáig, de mindenképpen
+      véges ideig tart ennek az algoritmusnak a végrehajtása. Vagy esetleg az algoritmus létezik ugyan, de a
+      tudomány jelenlegi állása alapján azt még nem találtuk meg, így az az utókor feladata lesz. A századforduló
+      megdöbbentő felfedezése az, hogy ez egyszerűen nem így van: ***feltehetünk olyan kérdést, amely
+      algoritmikusan eldönthetetlen***. Sőt, olyan kérdés is megfogalmazható, amelynek az algoritmikus
+      eldönthetetlensége is eldönthetetlen, és így tovább, ez az eldönthetetlenségi láncolat vég nélkül
+      folytatható.
+  - type: narrative
+    content: |
+      Most demonstrálunk egy olyan nyelvet, amely nemhogy nem rekurzív, de még csak ***nem is rekurzívan
+      felsorolható***, azaz ***nem létezik olyan Turing-gép, amely a nyelvhez tartozó "szavakat" egyáltalán
+      felismeri***. Ennek a nyelvnek a neve ***diagonális nyelv***, és főként elméleti jelentőségű, mivel
+      demonstrálja rekurzívan nem felsorolható nyelvek létezését.
+  - type: narrative
+    content: |
+      ***Figyelem! Logikai tandemugrás következik***.
+  - type: narrative
+    content: |
+      A ***diagonális nyelv*** olyan $\Sigma$ feletti jelsorozatokból áll, amelyek ***Turing-gép leírások, és az
+      általuk leírt Turing-gép nem fogadja el őket***, azaz vagy a ***"nem"*** választ adja, vagy nem is áll meg. A
+      diagonális nyelv jele $L_d$. Itt a nyelv egy elemét egyszerre tekintjük bemenetnek és algoritmusnak is.
+      Ráadásul azzal a nyakatekert tulajdonsággal, hogy saját magára, mint bemenetre az algoritmus ***"nem"***-et
+      mond, vagy nem áll meg. Most megvizsgáljuk, milyen furcsa tulajdonsággal rendelkezik ez a nyelv.
+  - type: narrative
+    content: |
+      Az $L_d$ nyelv ***nem rekurzívan felsorolható***. Ha ugyanis az lenne, akkor létezne olyan $M$ Turing-gép,
+      amely épp $L_d$-t ismeri fel. Ha létezne ilyen $M$ Turing-gép, akkor azt le lehetne írni egy valamilyen $w$
+      "betűsorozattal". De vajon mit tenne $M$, ha ráküldenénk $w$-t (azaz a saját leírását), mint bemenetet?
+  - type: unordered-list
+    lead-in: |
+      Az alábbi két eset lehetséges:
+    items:
+      - 'Ha $M$ elfogadná $w$-t (azaz ***"igen"*** választ adna rá), akkor az azt jelentené, hogy $w$ eleme az $L_d$ nyelvnek (hiszen $M$ éppen az $L_d$ elemeit fogadja el). Ha $w$ eleme az $L_d$ nyelvnek, akkor ő egy olyan Turing-gép leírása, amely nem fogadja el a saját leírását (hiszen $L_d$ épp az ilyen Turing-gép leírások nyelve). De $w$ épp $M$ leírása, tehát $M$ nem fogadhatja el $w$-t.'
+      - 'Ha $M$ nem fogadná el $w$-t (azaz ***"nem"*** választ adna rá, vagy ***végtelen ciklusba kerülne***), akkor az azt jelentené, hogy $w$ nem eleme az $L_d$ nyelvnek (hiszen $M$ éppen az $L_d$ elemeit fogadja el). Ha $w$ nem eleme az $L_d$ nyelvnek, akkor ő egy olyan Turing-gép leírása, amely elfogadja a saját leírását. De mivel $w$ épp $M$ leírása, ezért $M$-nek el kell fogadnia $w$-t.'
+  - type: narrative
+    content: |
+      Teljes logikai paradoxonba kerülnénk, ha feltételeznénk $M$ létezését, vagyis azt, hogy $L_d$ rekurzívan
+      felsorolható. $L_d$ tehát ***nem lehet rekurzívan felsorolható***. Persze az $L_d$ egy nagyon elborult nyelv,
+      és mondhatnánk, hogy ilyen nyelvet konstruálni nagyon nem egyszerű feladat, pláne ha még gyakorlati hasznot
+      is megkövetelünk tőle. Ez így is van, azonban az az érdekes, hogy halmazelméleti szempontból egy adott
+      $\Sigma$ ábécé feletti nyelvek közül ***"majdnem mindegyik"*** ilyen, és csak "elvétve" fordulnak elő
+      közöttük $RE$-beli (azaz ***algoritmikusan felismerhető***) nyelvek. Az összes $\Sigma$ feletti nyelvek
+      számossága ugyanis ***kontinuum számosságú***, míg az $RE$-beli nyelvek "csak" ***megszámlálhatóan
+      végtelen*** sokan vannak. A pontos matematikai definíciót mellőzzük, de e kétféle végtelen nagyjából úgy
+      viszonyul egymáshoz, mint ahogyan az egész számok végtelensége viszonyul a számegyenesen lévő összes szám
+      végtelenségéhez. Az összes szám folytonosan tölti fel a számegyenest (innen a "kontinuum" elnevezés), míg
+      közöttük az egész számok "csak" elvétve fordulnak elő.
+  - type: narrative
+    content: |
+      De térjünk vissza a Földre, és foglalkozzunk mostantól csak az $RE$-beli nyelvekkel, hiszen a többivel nem
+      sok mindent tudunk kezdeni. A kérdés ezek után az, hogy létezik-e olyan nyelv, amely rekurzívan felsorolható
+      ugyan, de nem rekurzív (azaz ***algoritmikusan eldönthetetlen***)?

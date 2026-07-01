@@ -1,0 +1,13 @@
+type: definition
+name: carmichael-szamok
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $n\gt 1$ tetszőleges pozitív, továbbá $a$ egy $n$-hez relatív prím egész szám, és tegyük fel, hogy $n$
+      ***összetett***. Amennyiben az $[a]_n$ redukált maradékosztály ***NEM Fermat-tanú***, akkor azt mondjuk, hogy
+      ***$n$ álprím az $a$ alapra nézve***.
+  - type: narrative
+    content: |
+      Amennyiben a modulo $n$ redukált maradékosztályok között ***egyáltalán nem létezik Fermat-tanú***, akkor
+      $n$-et ***univerzális álprímnek*** vagy ***Carmichael-számnak*** nevezzük.

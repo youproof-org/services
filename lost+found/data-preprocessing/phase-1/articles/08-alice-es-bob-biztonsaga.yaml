@@ -1,0 +1,64 @@
+type: chapter
+name: 08-alice-es-bob-biztonsaga
+title: Alice és Bob biztonsága
+
+abstract:
+  - type: narrative
+    content: |
+      Az előző részben tovább osztályoztuk az algoritmikusan eldönthető problémákat aszerint, hogy a döntés milyen
+      hatékonysággal hozható meg. Azt mondtuk, hogy hatékonyság szempontjából az a vízválasztó, hogy egy problémára
+      létezik-e polinomiális időkomplexitású algoritmus vagy nem. Mutattunk néhány problémát, amelyekre jelenleg
+      nem ismeretes ebben az értelemben hatékony algoritmus. Megismerkedtünk a $P$ és $NP$ problémaosztályokkal.
+      Előbbibe azokat a problémákat soroltuk, amelyek eldönthetőek polinomiális időkomplexitású determinisztikus
+      Turing-géppel. Utóbbiba pedig azokat, amelyekkel ugyanez megtehető nemdeterminisztikus Turing-géppel.
+  - type: narrative
+    content: |
+      A tanú-tételt ismertetve megmutattuk, hogy ez utóbbi ekvivalens azoknak a problémáknak az osztályával,
+      amelyek esetén az "igen" válasznak létezik polinomiális időben ellenőrizhető bizonyítéka. Végül megemlítettük
+      a számítástudomány legjelentősebb megválaszolatlan kérdését, miszerint vajon e két problémaosztály
+      megegyezik-e, vagy az általunk nehéznek gondolt problémák valóban nehezek. Ennek megválaszolása ugyanis
+      kulcsfontosságú a kriptográfia szempontjából. De még ha nem is tudjuk ezt a kérdést jelenleg megválaszolni,
+      miért lehetünk majdnem biztosak abban, hogy $P \neq NP$? Hogyan tudjuk az algoritmikus problémák nehézségét
+      összehasonlítani egymással? Melyek azok a problémák, amelyek minden más $NP$-beli problémánál nehezebbek
+      ilyen értelemben? Ebben a részben erről lesz szó...
+prologue:
+  - type: narrative
+    content: |
+      Most visszanyúlunk az előző részben ismertetett két nehéznek gondolt döntési problémához. A
+      ***3-színezhetőség*** ***problémája*** így hangzott: adott egy gráf, amelyről el kell dönteni, hogy a csúcsai
+      kiszínezhetők-e legfeljebb 3 színnel úgy, hogy a szomszédos csúcsok különböző színűek legyenek. Azokat a
+      gráfokat, amelyekre ez teljesül, ***3-színezhető gráfoknak*** neveztük. A ***k-függetlenség problémája***
+      pedig így hangzott: adott egy gráf és egy $k$ egész szám, és azt kell eldönteni, hogy ki lehet-e választani a
+      gráfból $k$ darab csúcsot úgy, hogy ezek között a csúcsok között ne legyen él. Ezt úgy is mondhatjuk, hogy
+      található-e a gráfban $k$ darab független csúcs. Azokat a gráfokat, amelyekre ez teljesül, ***k-független
+      gráfoknak*** neveztük.
+  - type: narrative
+    content: |
+      Mivel mindkét fenti probléma igencsak fontos az informatikában, ezért eléggé fájó, hogy egyikre sem ismeretes
+      polinomiális időkomplexitású &ndash; azaz hatékony &ndash; algoritmus. E két döntési probléma között azonban
+      ***algoritmikus komplexitási kapcsolat*** mutatható ki. Nevezetesen: bizonyítható, hogy az egyik ***"legalább
+      olyan nehéz"***, mint a másik. Ez azt jelenti, hogyha a ***"nehezebbre"*** található polinomiális algoritmus,
+      akkor a ***"könnyebbre"*** is. Megfordítva, ha a ***"könnyebbre"*** nem található polinomiális algoritmus,
+      akkor a ***"nehezebbre"*** sem. De mit jelent pontosan, hogy egy döntési probléma "legalább olyan nehéz",
+      mint egy másik?
+sections:
+  - 01-problemak-nehezsegnek-osszehasonlitasa
+  - 02-karp-redukcio-pelda
+  - 03-az-np-problemaosztaly-kremje
+  - 04-np-teljes-es-np-nehez-problemak
+  - 05-az-np-nehez-problemak-kezelese
+  - 06-a-cook-levin-tetel
+  - 07-egy-meglepo-fordulat
+  - 08-de-hogy-jon-ide-a-kriptografia
+
+epilogue:
+  - type: narrative
+    content: |
+      Ebben a részben tehát megismertük a Karp-redukció fogalmát, amelynek segítségével összehasonlíthatóvá válnak
+      az algoritmikus problémák a nehézségük szempontjából. Definiáltuk az NP-teljes problémák osztályát,
+      amelyekről ugyan nem tudjuk biztosan, hogy valóban olyan nehezek, mint amilyennek látszanak, de megmutattuk,
+      hogy miért lenne rendkívül meglepő, ha mégsem ez lenne a helyzet. Most már van egy átfogó képünk arról, hogy
+      mit tekintünk algoritmikusan "nehéz" vagy "könnyű" feladatnak. A következő részekben felvázoljuk egy olyan
+      rejtjelező rendszer alapjait, amellyel Alice és Bob meg tudja oldani a kulcsmegosztás problémáját anélkül,
+      hogy személyesen találkozniuk kéne. Ez az eljárás továbbá az 5. részben bemutatott Mallory, mint aktív támadó
+      elleni védelemben is komoly szerepet játszik, mint azt látni fogjuk.

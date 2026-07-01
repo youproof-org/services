@@ -1,0 +1,102 @@
+type: section
+name: 03-az-osszeadas-es-a-szorzas-kapcsolata
+title: Az összeadás és a szorzás kapcsolata
+
+references:
+  peano-osszeadas:
+    target:
+      type: definition
+      name: peano-osszeadas
+  peano-szorzas:
+    target:
+      type: definition
+      name: peano-szorzas
+
+body:
+  - type: narrative
+    content: |
+      Biztosan sokan emlékeznek még általános iskolából az úgynevezett ***"zárójelfelbontási szabályra"***. Tegyük
+      fel, hogy van két darab kétváltozós műveletünk egy valamilyen $H$ halmazon. Jelöljük az egyik műveletet
+      $\circ$-rel, a másikat pedig $\bullet$-tal. Szándékosan választottam két semleges szimbólumot annak
+      érdekében, hogy nehogy véletlenül bárki bármilyen konkrét műveletre asszociáljon.
+  - type: formula
+    lead-in: |
+      Tegyük fel, hogy a következő kifejezést kell kiértékelnünk a $H$ halmaz $a$, $b$ és $c$ elemeire:
+    content: |
+      a\bullet (b \circ c)
+  - type: figure
+    lead-in: |
+      Ennek a kifejezésnek a kiértékelését mutatja az alábbi ábra:
+    src: 01-disztributiv-muvelet-kiertekelese-1-valtozat.jpg
+    alt: Disztributív művelet kiértékelése (1. változat)
+    caption: Disztributív művelet kiértékelése (1. változat)
+  - type: formula
+    lead-in: |
+      Elképzelhető, hogy a $\circ$ és a $\bullet$ művelet olyan, hogy a fenti kifejezés átalakítható erre:
+    content: |
+      (a\bullet b)\circ (a\bullet c)
+  - type: figure
+    lead-in: |
+      Ennek a kifejezésnek a kiértékelését mutatja az alábbi ábra:
+    src: 02-disztributiv-muvelet-kiertekelese-2-valtozat.jpg
+    alt: Disztributív művelet kiértékelése (2. változat)
+    caption: Disztributív művelet kiértékelése (2. változat)
+  - type: narrative
+    content: |
+      Látható, hogy a két fenti kifejezés kiértékelése teljesen máshogyan történik. Első esetben először a $\circ$
+      műveletet kell elvégezni $b$-re és $c$-re, majd ennek az eredményét kell össze-$\bullet$-ozni $a$-val balról.
+      Második esetben viszont először össze-$\bullet$-ozzuk $b$-t és $c$-t $a$-val balról, majd az így kapott két
+      eredményt $\circ$-özzük össze.
+  - type: narrative
+    content: |
+      Amennyiben a $\circ$ és $\bullet$ műveletek olyanok, hogy tetszőleges $a$-ra, $b$-re és $c$-re a két fenti
+      kifejezés végeredménye ***mindig ***megegyezik egymással, azaz
+  - type: formula
+    content: |
+      a\bullet (b \circ c) = (a\bullet b) \circ (a\bullet c)
+  - type: narrative
+    content: |
+      teljesül, akkor azt mondjuk, hogy a $\bullet$ művelet ***baldisztributív*** a $\circ$ műveletre nézve.
+      Amennyiben
+  - type: formula
+    content: |
+      (b \circ c)\bullet a = (b\bullet a) \circ (c\bullet a)
+  - type: narrative
+    content: |
+      teljesül, akkor azt mondjuk, hogy a $\bullet$ művelet ***jobbdisztributív*** a $\circ$ műveletre nézve.
+      Amennyiben mindkét azonosság egyszerre teljesül, akkor egyszerűen azt mondjuk, hogy a $\bullet$ művelet
+      ***disztributív ***a $\circ$ műveletre nézve.
+  - type: narrative
+    content: |
+      Ha például a $\bullet$ művelet kommutatív, akkor automatikusan mindkét oldali disztributivitás teljesül. Az
+      állítás megfordítása azonban nem feltétlenül igaz, azaz a kétoldali disztributivitásból nem következik a
+      $\bullet$ művelet kommutativitása.
+  - type: narrative
+    content: |
+      Ezen kívül a disztributivitási kapcsolat két művelet között általában nem szimmetrikus. Például ha a
+      $\bullet$ művelet disztributív a $\circ$ műveletre nézve, abból még nem következik, hogy a $\circ$ művelet is
+      disztributív a $\bullet$ műveletre nézve. Elképzelhetőek azonban olyan algebrai struktúrák, amelyekben még ez
+      a szimmetria is teljesül.
+  - type: formula
+    lead-in: |
+      Például a halmazműveletek közül a metszetképzés ($\cap$) és az unió ($\cup$) műveletei kölcsönösen
+      disztributívak egymásra nézve:
+    content: |
+      \begin{aligned}A\cap (B\cup C) &= (A\cap B)\cup (A\cap C) \\ A\cup (B\cap C) &= (A\cup B)\cap (A\cup
+      C)\end{aligned}
+  - type: narrative
+    content: |
+      Most nézzük meg, hogy disztributivitási szempontból mit tudunk elmondani a [peano-osszeadas] szerinti
+      "összeadásnak" és a [peano-szorzas] szerinti "szorzásnak" nevezett műveletekről.
+  - type: embed
+    target:
+      type: theorem
+      name: peano-szorzas-disztributivitas
+  - type: embed
+    target:
+      type: proof
+      name: peano-szorzas-disztributivitas-bizonyitas
+  - type: narrative
+    content: |
+      Mostantól tehát nyugodtan alkalmazhatjuk az általános iskolából már jól ismert zárójelfelbontási szabályt,
+      mivel a Peano-axiómák segítségével értelmezett két műveletünk teljesíti ezt a követelményt is.

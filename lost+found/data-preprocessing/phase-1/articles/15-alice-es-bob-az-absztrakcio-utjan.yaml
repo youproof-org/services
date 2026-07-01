@@ -1,0 +1,98 @@
+type: chapter
+name: 15-alice-es-bob-az-absztrakcio-utjan
+title: Alice és Bob az absztrakció útján
+
+references:
+  peano-axiomarendszer:
+    target:
+      type: definition
+      name: peano-axiomarendszer
+  termeszetes-szamok-rendezese:
+    target:
+      type: definition
+      name: termeszetes-szamok-rendezese
+
+abstract:
+  - type: narrative
+    content: |
+      Az előző részben intuitív módon kiterjesztettük a szorzás műveletét is az egész számok $\Z$ halmazára. Ezzel
+      többnyire teljessé vált a Peano-axiómarendszer ([peano-axiomarendszer]) által definiált természetes számok
+      $\N$ halmazának beágyazása ebbe a bővebb, már a negatív számokat is tartalmazó számkörbe. Ezután megmutattuk,
+      hogy mind az összeadás, mind pedig a szorzás művelete ugyanúgy viselkedik az eredeti $\N$ halmazon, mint
+      annak a beágyazófüggvény szerinti képén. Ez a képhalmaz a $\Z$-nek azon részhalmaza, amely a pozitív egész
+      számokat és a $0$ egész számot tartalmazza. Ebben tehát ugyanúgy érvényes a Peano-axiómarendszer, így
+      mostantól ezt fogjuk a természetes számok halmazának tekinteni. Ezután megvizsgáltuk, hogy mit értünk
+      azalatt, hogy teljesülnek a "szokásos számolási szabályok". Ennek keretében megismerkedtünk a "neutrális
+      elem", az "inverz elem", a "gyűrű" és a "test" fogalmával. Végül megmutattuk, hogy az egész számok halmaza az
+      összeadás és szorzás műveletével egy kommutatív, egységelemes gyűrűt alkot.
+  - type: narrative
+    content: |
+      De vajon mit jelent a "nullosztómentesség" és az "integritástartomány" fogalma? Hogyan terjesszük ki a
+      "kisebb-nagyobb" fogalmát az egész számok körére is, és miért fontos ez a kriptográfiai eljárások
+      szempontjából? Milyen absztrakt algebrai megfontolások állnak ennek hátterében, és mit jelent ez általános
+      gyűrűk esetén? Ebben a részben erről lesz szó...
+prerequisite-warning:
+  - type: narrative
+    content: |
+      Figyelem! Ez a rész erőteljesen épít az előző részben bevezetett alábbi definíciókra és a hozzájuk kapcsolódó
+      tételekre:
+  - type: recall
+    target:
+      type: definition
+      name: egesz-szamok-szorzasa
+  - type: recall
+    target:
+      type: definition
+      name: neutralis-elem
+  - type: recall
+    target:
+      type: definition
+      name: inverz-elem
+  - type: recall
+    target:
+      type: definition
+      name: egesz-szamok-kivonasa
+  - type: recall
+    target:
+      type: definition
+      name: gyuru-test
+  - type: recall
+    target:
+      type: theorem
+      name: egesz-szamok-gyuruje
+  - type: narrative
+    content: |
+      E definíciók kontextusba helyezése, valamint a hozzájuk kapcsolódó tételek és egyéb fogalmak megismerése
+      miatt erőteljesen ajánlott elolvasni az előző és az azelőtti részt, mivel gyakran hivatkozni fogunk rájuk. A
+      teljes cikksorozat elejét itt találod.
+prologue:
+  - type: narrative
+    content: |
+      A bevezetőben azt írtuk, hogy a természetes számok beágyazása $\Z$-be "többnyire" teljessé vált. Ami még
+      hátra van, és ami a továbbiakban szintén fontos lesz számunkra, az a [termeszetes-szamok-rendezese] szerinti
+      $\leq$ ***rendezési reláció kiterjesztése*** erre a számhalmazra. Szeretnénk azonban ezt a problémakört minél
+      általánosabban &ndash; lehetőleg az előző részben megismert gyűrűk szintjén &ndash; tárgyalni. Ehhez először
+      a gyűrűk néhány alapvető tulajdonságával fogunk megismerkedni.
+sections:
+  - 01-gyuruk-alapveto-tulajdonsagai
+  - 02-relaciok-es-muveletek-kapcsolata-gyurukben
+  - 03-hogy-ez-miert-sajnalatos
+  - 04-gyuruk-rendezesi-axiomai
+  - 05-teljes-rendezes-az-egesz-szamok-gyurujeben
+
+epilogue:
+  - type: narrative
+    content: |
+      Ebben a részben tehát definiáltuk a "kisebb-nagyobb" fogalmát az egész számok gyűrűjében is. Ezután
+      megmutattuk, hogy az valóban a korábban csupán a természetes számok körében értelmezett hasonló reláció
+      kiterjesztése. Megvizsgáltuk ezt a kérdéskört egy magasabb absztrakciós szinten általános gyűrűkre is. E
+      vizsgálódásaink során sikerült megmutatni, hogy e reláció kiterjesztésének ez az egyetlen módja. Feltéve
+      persze, ha bizonyos, az általános iskolából is jól ismert számolási szabályokat az egész számok halmazán is
+      érvényben szeretnénk tartani.
+  - type: narrative
+    content: |
+      A továbbiakban ennek a relációnak a felhasználásával meg fogunk ismerkedni az úgynevezett oszthatóság és a
+      maradékos osztás fogalmával. Ezek végre elvezetnek majd minket a prímszámokkal kapcsolatos összefüggésekhez.
+      Ezeket a kérdéseket továbbra is az általános gyűrűk szintjén fogjuk vizsgálni, már amennyire lehetséges.
+      Ezáltal ugyanis átfogóbb képet kaphatunk a modern kriptográfiai eljárások mögött meghúzódó számelméleti
+      gondolatokról.

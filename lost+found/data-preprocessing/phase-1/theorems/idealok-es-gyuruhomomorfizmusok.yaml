@@ -1,0 +1,10 @@
+type: theorem
+name: idealok-es-gyuruhomomorfizmusok
+proofs:
+  - idealok-es-gyuruhomomorfizmusok-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen adva egy $R$ gyűrű és annak egy $I$ részhalmaza. Az $I$ részhalmaz ***akkor és csak akkor*** magja egy
+      valamilyen $R$-ből kiinduló gyűrűhomomorfizmusnak, ha ideál $R$-ben.

@@ -1,0 +1,39 @@
+type: remark
+name: egesz-szamok-kozotti-kongruencia-tulajdonsagai-megjegyzes
+references:
+  hatvanyozas-azonossagai:
+    target:
+      type: theorem
+      name: hatvanyozas-azonossagai
+content:
+  - type: narrative
+    content: |
+      Vegyük észre, hogy a tétel bizonyításához kizárólag néhány, ideál szerinti kongruenciákra vonatkozó korábbi
+      állítást, valamint &ndash; a ***9. állítás*** esetében &ndash; egy ideálok közötti tartalmazási relációt
+      használtunk fel. Emiatt az összes most bizonyított azonosság automatikusan teljesül erre az általánosabb
+      kongruencia-fogalomra is. Így tehát legyenek $a$, $b$, $c$ és $d$ egy ***tetszőleges $R$ gyűrű*** elemei,
+      valamint $I$ és $J$ tetszőleges ideálok $R$-ben.
+  - type: ordered-list
+    lead-in: |
+      Ekkor teljesülnek az alábbiak:
+    items:
+      - 'Teljesül az $a\equiv a\pod I$ kongruencia, azaz minden gyűrűelem kongruens önmagával az $I$ ideál
+        szerint.'
+      - 'Ha $a\equiv b\pod I$, akkor $b\equiv a\pod I$.'
+      - 'Ha $a\equiv b\pod I$ és $b\equiv c\pod I$, akkor $a\equiv c\pod I$.'
+      - 'Ha $a\equiv b\pod I$ és $c\equiv d\pod I$, akkor $a+c\equiv b+d\pod I$ és $a-c\equiv b-d\pod I$.'
+      - 'Ha $a\equiv b\pod I$ és $c\equiv d\pod I$, akkor $a\cdot c\equiv b\cdot d\pod I$.'
+      - 'Ha $a\equiv b\pod I$, akkor $a+c\equiv b+c\pod I$ és $a-c\equiv b-c\pod I$.'
+      - 'Ha $a\equiv b\pod I$, akkor $a\cdot c\equiv b\cdot c\pod I$.'
+      - 'Ha $a\equiv b\pod I$ akkor bármilyen pozitív egész $n$ kitevő esetén $a^n\equiv b^n\pod I$.'
+      - 'Ha $a\equiv b\pod I$ és $I\sube J$, akkor $a\equiv b\pod J$.'
+  - type: narrative
+    content: |
+      A ***8. állításban*** szereplő $n$-edik hatvány alatt ugyanazt értjük, mint a hatványozás azonosságairól
+      szóló [hatvanyozas-azonossagai] esetén.
+  - type: formula
+    lead-in: |
+      Azaz ha $x$ az $R$ gyűrű valamely eleme, $n$ pedig tetszőleges pozitív egész, akkor az $x^n$ ***hatványon***
+      az alábbi $n$ tényezős szorzatot értjük:
+    content: |
+      x^n=\underbrace{x\cdot x\cdot x\cdot \ldots \cdot x}_{\text{n darab}}

@@ -1,0 +1,11 @@
+type: theorem
+name: peano-osszeadas-kommutativitas-lemma
+proofs:
+  - peano-osszeadas-kommutativitas-lemma-bizonyitas
+remarks: []
+content:
+  - type: formula
+    lead-in: |
+      Az $\N$ halmaz tetszőleges $a$ és $b$ elemeire igaz az alábbi összefüggés:
+    content: |
+      a+s(b)=s(a)+b

@@ -1,0 +1,66 @@
+<!-- wp:paragraph -->
+<p>Az abszolútérték-függvény képhalmaza a [yp_element slug="egesz-szamok-abszoluterteke" type="link" /] alapján valóban a természetes számok [latex]\N[/latex] halmaza, hiszen az abszolútérték biztosan nemnegatív. A [latex]\Z[/latex] gyűrű nullelemének képe szintén a definíció alapján a [latex]0[/latex] természetes szám. Visszafelé: ha [latex]|a|=0[/latex], akkor az alábbi két eset lehetséges:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a&amp;=0\\-a&amp;=0\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]\Z[/latex] gyűrűben tehát pontosan a nullelemnek lesz [latex]0[/latex] az abszolútértéke, azaz teljesül az euklidészi normákra vonatkozó 1. követelmény (lásd a [yp_element slug="euklideszi-gyuru" type="link" /]t). Így már csak azt kell megmutatni, hogy tetszőleges [latex]a[/latex] és [latex]b\
+eq 0[/latex] egész számok között elvégezhető a maradékos osztás az abszolútérték-függvény, mint norma szerint. Azaz léteznek [latex]k[/latex] és [latex]r[/latex] egész számok úgy, hogy teljesülnek az alábbiak:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a=&amp;kb+r \\ |r|&amp;\lt |b|\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ehhez ki fogjuk használni, hogy a [yp_element slug="egesz-szamok-rendezese" type="link" /] szerinti [latex]\leq[/latex] reláció teljesíti a [yp_element slug="rendezett-gyuru" type="link" /]ban megfogalmazott rendezési axiómákat. A bizonyítás konstruktív lesz, azaz [latex]k[/latex] és [latex]r[/latex] létezését azáltal igazoljuk, hogy egy eljárást mutatunk a kiszámításukra. Ez az eljárás a gyakorlatban nem lenne túl hatékony, ám nekünk a bizonyításhoz épp elegendő lesz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Először szorítkozzunk arra az esetre, amikor egyik bemeneti számunk sem negatív, azaz [latex]a\geq 0[/latex] és [latex]b\gt 0[/latex]. Tegyük fel továbbá, hogy [latex]k_1=0[/latex] és [latex]r_1=a[/latex]. Ekkor nyilván teljesül az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a=\underbrace{k_1}_{=0}b+\underbrace{r_1}_{=a}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha [latex]r_1\lt b[/latex], akkor az eljárást befejezhetjük, és [latex]r_1[/latex] lesz a keresett maradék. Ha nem – azaz [latex]r_1\geq b[/latex] –, akkor folytatnunk kell az eljárást. A jobboldalhoz hozzáadva és levonva [latex]b[/latex]-t az eredmény nyilván nem változik. Így a fenti egyenlet a disztributivitási szabályokat kihasználva az alábbi alakba írható, megkapva ezáltal a [latex]k_2[/latex] és [latex]r_2[/latex] számokat:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a=k_1b+r_1-b+b=\underbrace{(k_1+1)}_{=k_2}b+\underbrace{r_1-b}_{=r_2}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel ugye [latex]r_1\geq b[/latex], és a [yp_element slug="rendezett-gyuru" type="link" /] 1. pontja alapján a rendezési reláció kompatibilis az összeadással, ezért az egyenlőtlenség mindkét oldalához [latex]-b[/latex]-t adva [latex]\underbrace{r_1-b}_{=r_2}\geq 0[/latex]. Igaz továbbá, hogy [latex]r_2+b=r_1[/latex], és mivel [latex]b[/latex]-ről kikötöttük, hogy nem [latex]0[/latex], ezért ez azt jelenti, hogy [latex]r_2\lt r_1[/latex]. Találtunk tehát egy [latex]r_1[/latex]-nél kisebb nemnegatív jelöltet a keresett maradékra.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ha [latex]r_2\lt b[/latex], akkor az eljárást befejezhetjük, és [latex]r_2[/latex] lesz a keresett maradék. Ha nem, akkor az előbbi gondolatmenetet megismételve tudunk találni újabb és újabb nemnegatív jelölteket, melyek mindegyike kisebb, mint az előző lépésben kapott jelölt. Az eljárásnak garantáltan véget kell érnie egyszer, máskülönben az alábbi végtelen hosszú nemnegatív egészekből álló sorozatot kapnánk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]r_1\gt r_2\gt r_3\gt \ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez a természetes számoknak egy olyan részhalmaza lenne, amelynek nem létezne minimuma, ami a [yp_element slug="termeszetes-szamok-minimumtetele" type="link" /] alapján lehetetlen. Így megmutattuk, hogy [latex]a\geq 0[/latex] és [latex]b\gt 0[/latex] esetén az [latex]a[/latex] elem felírható [latex]a=kb+r[/latex] alakban úgy, hogy teljesüljön a [latex]0\leq r\lt b[/latex] egyenlőtlenség. Ez az egyenlőtlenség viszont ebben a speciális esetben épp azt jelenti, hogy [latex]|r|\lt |b|[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most általánosítsuk ezt az eredményt először a [latex]b\lt 0[/latex] esetre. Ekkor a [yp_element slug="gyuru-reszbenrendezesenek-tulajdonsagai" type="link" /] 1. pontja miatt [latex](-b)\gt 0[/latex]. Így a fenti gondolatmenet alapján az [latex]a[/latex] egész szám felírható [latex]a=k(-b)+r=(-k)b+r[/latex] alakban úgy, hogy teljesüljön a [latex]0\leq r\lt (-b)[/latex] egyenlőtlenség. Minthogy [latex]0\lt r[/latex] és [latex]b\lt 0[/latex], ezért ez az egyenlőtlenség az abszolútértékekre vonatkozóan épp azt jelenti, hogy [latex]|r|\lt \underbrace{|b|}_{=|-b|}[/latex]. Így lefedtük az összes olyan esetet, amikor [latex]a\geq 0[/latex] és [latex]b\
+eq 0[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Végül nézzük meg, mi van akkor, ha [latex]a\leq 0[/latex]. Ekkor szintén a [yp_element slug="gyuru-reszbenrendezesenek-tulajdonsagai" type="link" /] miatt [latex](-a)\geq 0[/latex], és így a fentiek alapján ő felírható [latex](-a)=kb+r[/latex] alakban úgy, hogy [latex]|r|\lt |b|[/latex]. De ekkor mindkét oldal ellentettjét véve azt kapjuk, hogy [latex]a=(-k)b+(-r)[/latex], miközben teljesül, hogy [latex]\underbrace{|-r|}_{=|r|}\lt |b|[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezzel már minden esetet lefedtünk, azaz tetszőleges [latex]a[/latex] és [latex]b\
+eq 0[/latex] elemek között elvégezhető az abszolútérték-függvény szerinti maradékos osztás. Ez a függvény tehát valóban egy <strong><em>euklidészi norma</em></strong> a [latex]\Z[/latex] gyűrűn.</p>
+<!-- /wp:paragraph -->

@@ -1,0 +1,81 @@
+type: section
+name: 06-a-turing-gep-altal-felismert-nyelv
+title: A Turing-gép által felismert nyelv
+
+body:
+  - type: narrative
+    content: |
+      Algoritmussal általában ***optimalizálási feladatokat*** oldunk meg, azaz egy megoldáshalmazból olyan
+      megoldást keresünk, amely bizonyos szempontok szerint a "legjobb". Például legrövidebb vagy leggyorsabb
+      útvonal keresése egy térképen.
+  - type: narrative
+    content: |
+      Amikor azonban egy optimalizálási feladat "nehézségéről" szeretnénk képet kapni, akkor célszerű azt egy
+      úgynevezett ***döntési problémára*** visszavezetni. Például létezik-e olyan útvonal, amely egy adott
+      küszöbértéknél rövidebb vagy gyorsabb. Ha ugyanis az optimalizálási feladat "könnyű", akkor a belőle képzett
+      döntési feladat is "könnyű", hiszen csak a kapott eredményt kell összehasonlítani a küszöbértékkel. Másként
+      fogalmazva: ha egy döntési feladat "nehéz", akkor a hozzátartozó optimalizálási feladat is "nehéz". A
+      ***döntési problémák*** lényegében olyan függvények, amelyek a bemeneti jelsorozatokhoz kétféle kimeneti
+      jelsorozatot rendelhetnek, amelyek egy ***"igen"*** vagy egy ***"nem"*** választ reprezentálnak. Ezeket
+      ***döntőfüggvényeknek*** nevezzük.
+  - type: narrative
+    content: |
+      Az alábbi ábrán egy olyan döntőfüggvény látható, amely nem minden bemeneti jelsorozatra van értelmezve.
+  - type: figure
+    lead-in: |
+      De amelyekre értelmezve van, azok esetén a kimenet kétféle lehet: az egyik az ***"igen"***, míg a másik a
+      ***"nem"*** választ jelenti:
+    src: 07-dontofuggveny.jpg
+    alt: Döntőfüggvény
+    caption: Döntőfüggvény
+  - type: narrative
+    content: |
+      Mivel ***egy döntőfüggvény*** is épp olyan függvény, mint amikről eddig szó volt, ezért ő ***is lehet
+      parciálisan rekurzív***. Ebben az esetben tehát létezik olyan $M$ Turing-gép, amely őt kiszámolja.
+  - type: unordered-list
+    lead-in: |
+      Ilyenkor 3 eset lehetséges erre a Turing-gépre vonatkozólag:
+    items:
+      - 'A fenti ábrán az $L$ részhalmazba tartozó bemenetekre a Turing-gép megáll, és az ***"igen"*** választ adja.'
+      - 'Az ábrán a $K$ részhalmazba tartozó bemenetekre a Turing-gép megáll, és a ***"nem"*** választ adja.'
+      - "A többi bemenetre a Turing-gép végtelen ciklusba kerül."
+  - type: narrative
+    content: |
+      Ilyen esetekben tehát ***a Turing-gép egy döntési problémát old meg***. A probléma példányai ebben az esetben
+      valamilyen ***eldöntendő kérdések***. Ezeket reprezentálják a bemeneti jelsorozatok a Turing-gép számára,
+      amelytől választ várunk a kérdésre. Azok a bemeneti jelsorozatok, amelyekre a Turing-gép az ***"igen"***
+      választ adja, egy részhalmazt alkotnak az összes bemeneti jelsorozat között. Ezt a részhalmazt ***a
+      Turing-gép által felismert nyelvnek*** nevezzük és $L_M$-mel jelöljük. A most következő definíciók egyfajta
+      alapvető osztályozását adják az összes lehetséges $\Sigma$ feletti formális nyelvnek &ndash; hasonlóan ahhoz,
+      mint ahogy a függvényeket osztályoztuk.
+  - type: narrative
+    content: |
+      Egy $L$ nyelvet ***rekurzívan felsorolható***, vagy ***algoritmikusan felismerhető nyelvnek*** nevezzük, ha
+      létezik olyan Turing-gép, amely által felismert nyelv épp $L$. Az elnevezés ismét a matematika egy másik
+      területéről ered, ennek részleteit most mellőzzük. Egy rekurzívan felsorolható nyelv ***mondatait*** tehát
+      tulajdonképpen ***egy olyan döntőfüggvény jelöli ki, amely parciálisan rekurzív***. Az ilyen nyelvek
+      osztályát $RE$-vel jelöljük.
+  - type: narrative
+    content: |
+      Egy nyelv rekurzívan felsorolhatósága azonban önmagában még kevés, mivel az csak annyit garantál, hogy a
+      nyelvbe tartozó jelsorozatokra a Turing-gép mindig megáll, és az ***"igen"*** választ adja. Ha azonban
+      véletlenül egy olyan jelsorozat kerül a bemenetre, amely nem mondata a nyelvnek, akkor nem garantált, hogy a
+      Turing-gép valaha is megáll, és megkapjuk a ***"nem"*** választ. Azokat a nyelveket, amelyek esetén még ez
+      utóbbi is garantált, ***rekurzív***, vagy más néven ***algoritmikusan eldönthető nyelveknek*** nevezzük, az
+      ilyen nyelvek osztályát pedig $R$-rel jelöljük.
+  - type: narrative
+    content: |
+      Vegyük észre, hogy a döntési problémák és egy adott $\Sigma$ ábécé feletti nyelvek között megfeleltetés
+      létesíthető. Minden döntési probléma ugyanis kijelöl egy $\Sigma$ feletti formális nyelvet. Ennek épp azok a
+      $\Sigma$ feletti jelsorozatok lesznek a mondatai, amelyek a döntési probléma ***igenpéldányait***
+      reprezentálják. Megfordítva, tetszőleges $\Sigma$ feletti formális nyelvnek megfeleltethető egy olyan döntési
+      probléma, amelynek ***igenpéldányai*** épp a nyelv mondataival reprezentálhatók.
+  - type: narrative
+    content: |
+      Azokat a döntési problémákat tekintjük tehát ***algoritmikusan eldönthető problémák***nak, amelyeket
+      reprezentáló nyelvek az $R$ osztályban vannak, azaz rekurzívak. Az $R$ nyilvánvalóan részhalmaza $RE$-nek,
+      azaz ***minden rekurzív nyelv egyben rekurzívan felsorolható is***. Az olvasó jól érzékeli, hogy most az
+      algoritmikus eldönthetőség határait feszegetjük, ezért természetesen adódik a kérdés, hogy ***vajon valódi
+      részhalmazról van-e szó***? Esetleg létezik-e olyan $\Sigma$ feletti nyelv, amely rekurzívan felsorolható
+      ugyan, de nem rekurzív? Sőt továbbmegyek: vajon létezik-e olyan nyelv, amely még csak nem is rekurzívan
+      felsorolható? A továbbiakban ezekre a kérdésekre adjuk meg a választ.

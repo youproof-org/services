@@ -1,0 +1,36 @@
+type: proof
+name: peano-szamossag-bizonyitas
+remarks: []
+references:
+  peano-axiomarendszer:
+    target:
+      type: definition
+      name: peano-axiomarendszer
+content:
+  - type: narrative
+    content: |
+      A [peano-axiomarendszer]ban szereplő 3. axióma lényegében kimondja, hogy legalább egy természetes szám
+      létezik, nevezetesen a 0. Felfedeztük tehát az első természetes számot.
+  - type: narrative
+    content: |
+      Az 1. axióma szerint minden természetes számnak &ndash; így nyilván a 0-nak is &ndash; létezik rákövetkezője.
+      Jelölje most a 0 rákövetkezőjét $s(0)$. Ez a 0-tól különböző kell legyen, hiszen a 0 szintén a 3. axióma
+      miatt semmilyen természetes számnak sem rákövetkezője &ndash; így saját magának sem &ndash;, vagyis $0\eq
+      s(0)$. Felfedeztünk tehát a második természetes számot, nevezetesen az $s(0)$-t. A tétel bizonyításához azt
+      kell belátni, hogy ezeket az újabb és újabb felfedezéseket vég nélkül folytathatjuk.
+  - type: narrative
+    content: |
+      Tegyük fel most, hogy a legutóbb felfedezett természetes szám az $x$. Az 1. axióma miatt minden természetes
+      számnak &ndash; így nyilván $x$-nek is &ndash; létezik rákövetkezője, jelöljük ezt $s(x)$-szel. Ez minden
+      eddig felfedezett természetes számtól különböző kell legyen. A 0-tól a 3. axióma miatt különbözik, amely
+      kimondja, hogy a 0 semmilyen természetes számnak nem lehet rákövetkezője &ndash; és így $x$-nek sem.
+  - type: narrative
+    content: |
+      De $s(x)$-nek különböznie kell az összes többi, már felfedezett számtól is, hiszen azokhoz korábban már
+      eljutottunk a 0-ból kiindulva a rákövetkezést követve. Márpedig ha korábban már eljutottunk hozzájuk, akkor a
+      2. axióma miatt $x$-ből már nem juthatunk vissza egyikhez sem. Így tehát $s(x)$ egy újabb felfedezett
+      természetes szám. Ugyanezzel a gondolatmenettel újabb és újabb természetes számokat fedezhetünk fel, amelyek
+      mind különbözőek lesznek az addig már felfedezettektől.
+  - type: narrative
+    content: |
+      Másként fogalmazva a természetes számok $\N$ halmazának végtelen sok eleme van.

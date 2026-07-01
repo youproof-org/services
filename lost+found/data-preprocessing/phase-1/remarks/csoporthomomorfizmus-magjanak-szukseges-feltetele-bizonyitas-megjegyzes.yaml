@@ -1,0 +1,16 @@
+type: remark
+name: csoporthomomorfizmus-magjanak-szukseges-feltetele-bizonyitas-megjegyzes
+content:
+  - type: narrative
+    content: |
+      Megjegyezzük, hogy az iménti bizonyítás gondolatmenete alapján a tételben az ***1. állítás*** mellett
+      elegendő lett volna kizárólag a ***4. állítást*** megfogalmazni, hiszen az ekvivalens a ***2.*** és ***3.
+      állítások*** együttes teljesülésével.
+  - type: narrative
+    content: |
+      Tegyük fel ugyanis, hogy teljesül a ***4. állítás***. Ekkor ha valamilyen $a$ és $b$ elemek ugyanabban a
+      baloldali mellékosztályban vannak, akkor a ***4. állítás*** miatt egyúttal ugyanabban a jobboldali
+      mellékosztályban is vannak &ndash; hiszen ezek ugye megegyeznek &ndash;, és ebben az esetben a ***2.*** és
+      ***3. állítások*** bizonyításának ***"visszafele"-irányú*** gondolatmenete ugyanúgy működik.
+      ***Megfordítva:*** ha teljesülnek a ***2.*** és ***3. állítások***, akkor az iménti bizonyításban már
+      megmutattuk, hogy teljesül a ***4. állítás*** is.

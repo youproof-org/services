@@ -1,0 +1,395 @@
+<!-- wp:paragraph -->
+<p>Előszöris nyilván létezik <strong><em>legalább egy</em></strong> a tételben említett feltételnek megfelelő [latex]j[/latex] kitevő, hiszen például [latex]j=0[/latex] és [latex]x=-1[/latex] választással teljesül az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](\underbrace{-1}_{=x})^{2^{\overbrace{0}^{=j}}}\equiv -1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Tehát az ilyen kitevők között <strong><em>létezik legnagyobb</em></strong> is, amelyet ugye [latex]j_{\text{max}}[/latex]-szal jelöltünk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Nézzük először az 1. állítást</em></strong>, és mutassuk meg, hogy a [latex]H_n[/latex]-ben lévő összes [latex][a]_n[/latex] maradékosztály <strong><em>redukált</em></strong>. A [latex]H_n[/latex] halmaz definíciója miatt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{2^{j_{\text{max}}}k} \equiv \pm 1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Akár [latex]1[/latex], akár [latex]-1[/latex] szerepel a jobboldalon, a kongruenciát négyzetre emelve a következőt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{2^{j_{\text{max}}+1}k} \equiv 1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Találtunk tehát egy olyan pozitív kitevőt – nevezetesen [latex]2^{j_{\text{max}}+1}k[/latex]-t – amelyre emelve [latex]a[/latex]-t az eredmény kongruens lesz [latex]1[/latex]-gyel modulo [latex]n[/latex]. Ebből viszont a [yp_element slug="euler-fermat-tetel-megforditasa" type="link" /] alapján következik, hogy [latex]a[/latex] relatív prím [latex]n[/latex]-hez, azaz a [yp_element slug="redukalt-maradekosztaly-feltetele" type="link" /] értelmében [latex][a]_n[/latex] <strong><em>redukált maradékosztály</em></strong>. Ezzel igazoltuk a tétel <strong><em>1. állítását</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>2. állítás</em></strong> igazolásához a [yp_element slug="reszcsoport-feltetele-veges-csoportok-eseten" type="link" /] értelmében azt kell megmutatni, hogy [latex]H_n[/latex] <strong><em>nemüres</em></strong> és <strong><em>zárt</em></strong> a maradékosztályok közötti szorzásra, azaz a [latex](\Z/n\Z)^{\times}[/latex] csoport műveletére nézve. Mivel [latex]1^{2^{j_{\text{max}}}k}\equiv 1\pmod n[/latex], ezért a tétel szövege alapján [latex]H_n[/latex] <strong><em>nemüres</em></strong>, hiszen tartalmazza legalább az [latex][1]_n[/latex] maradékosztályt. Legyen most [latex][a]_n[/latex] és [latex][b]_n[/latex] a [latex]H_n[/latex] halmaz két tetszőleges eleme. A [latex]H_n[/latex] halmaz definíciója miatt ekkor teljesülnek az alábbi kongruenciák:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}a^{2^{j_{\text{max}}}k} &amp;\equiv \pm 1\pmod n \\ b^{2^{j_{\text{max}}}k} &amp;\equiv \pm 1\pmod n\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" type="link" /] 5. pontja szerint ez a két kongruencia összeszorozható. Ekkor a [yp_element slug="hatvanyozas-azonossagai" type="link" /] 1. pontjának alkalmazása után ezt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](ab)^{2^{j_{\text{max}}}k} \equiv \pm 1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt kaptuk tehát, hogy az [latex][ab]_n[/latex] maradékosztály is a [latex]H_n[/latex] halmaz eleme. Minthogy az [latex][ab]_n[/latex] maradékosztály a [yp_element slug="egesz-szamok-maradekosztalygyurui" type="link" /]ben bevezetett műveletek definíciója alapján épp az [latex][a]_n[/latex] és [latex][b]_n[/latex] maradékosztályok szorzata, ezért [latex]H_n[/latex] zárt a [latex](\Z/n\Z)^{\times}[/latex] multiplikatív csoport műveletére nézve, azaz a [yp_element slug="reszcsoport-feltetele-veges-csoportok-eseten" type="link" /] értelmében annak valóban <strong><em>részcsoportja</em></strong>. Ezzel igazoltuk a tétel <strong><em>2. állítását</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>3. állítás</em></strong> igazolásához tekintsünk egy tetszőleges [latex][a]_n[/latex] maradékosztályt, amely <strong><em>nem Miller-Rabin-tanú</em></strong>. Ekkor a Miller-Rabin-tanúk [yp_element slug="miller-rabin-tanu" type="link" /]ja alapján vagy teljesül az [latex]a^k\equiv 1\pmod n[/latex] kongruencia, vagy pedig létezik olyan [latex]j[/latex] kitevő a [latex]\{0; 1;2; \ldots ; e-1\}[/latex] számok között, amelyre teljesül az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{2^j\cdot k}\equiv -1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Amennyiben az [latex]a^k\equiv 1\pmod n[/latex] kongruencia teljesül, akkor mindkét oldalt [latex]j_{\text{max}}[/latex]-szor négyzetre emelve, továbbá alkalmazva a [yp_element slug="hatvanyozas-azonossagai" type="link" /] 2. pontját, az alábbit kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{2^{j_{\text{max}}}k}\equiv 1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Következésképp az [latex][a]_n[/latex] maradékosztály benne van a [latex]H_n[/latex] halmazban.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most nézzük meg, mi a helyzet akkor, ha nem teljesül az [latex]a^k\equiv 1\pmod n[/latex] kongruencia. Ekkor ugye – mint már említettük – létezik olyan [latex]j[/latex] kitevő a [latex]\{0; 1;2; \ldots ; e-1\}[/latex] számok között, amelyre teljesül az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{2^j\cdot k}\equiv -1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Alkalmazva a hatványozás azonosságairól szóló [yp_element slug="hatvanyozas-azonossagai" type="link" /] 2. pontját ez így írható fel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](a^k)^{2^j}\equiv -1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]a^k[/latex] tehát egy olyan egész szám, amelyet a [latex]2[/latex]-nek a [latex]j[/latex]-edik hatványára, mint kitevőre emelve egy olyan egész számot kapunk, amely [latex]-1[/latex]-gyel kongruens modulo [latex]n[/latex]. A tétel szövegében bevezetett [latex]j_{\text{max}}[/latex] definíciója alapján ekkor [latex]j\leq j_{\text{max}}[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Amennyiben egyenlőség áll fenn, azaz [latex]j=j_{\text{max}}[/latex], akkor teljesül az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{2^{\overbrace{j}^{=j_{\text{max}}}}\cdot k}\equiv -1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez a [latex]H_n[/latex] halmaz definíciója alapján azt jelenti, hogy [latex][a]_n\in H_n[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Amennyiben nem áll fenn egyenlőség, akkor [latex]j\lt j_{\text{max}}[/latex]. Az alábbi kongruenciáról ugye már tudjuk, hogy teljesül:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](a^k)^{2^j}\equiv -1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mindkét oldalt sorozatosan négyzetre emelve az alábbi kongruenciákat kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}(a^k)^{2^{j+1}}&amp;\equiv 1\pmod n \\ (a^k)^{2^{j+2}}&amp;\equiv 1\pmod n \\ (a^k)^{2^{j+3}}&amp;\equiv 1\pmod n \\ &amp;\vdots \end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]j\lt j_{\text{max}}[/latex], ezért a sorozatos négyzetre emelések hatására előbb-utóbb a alábbi kongruenciát fogjuk kapni:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](a^k)^{2^{j_{\text{max}}}}\equiv 1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Alkalmazva a hatványozás azonosságairól szóló [yp_element slug="hatvanyozas-azonossagai" type="link" /] 2. pontját ez így írható fel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{2^{j_{\text{max}}}k}\equiv 1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez a [latex]H_n[/latex] halmaz definíciója alapján ugyancsak azt jelenti, hogy [latex][a]_n\in H_n[/latex]. Igazoltuk tehát a tétel <strong><em>3. állítását</em></strong>, miszerint minden nem Miller-Rabin-tanú a [latex]H_n[/latex] részcsoportban van.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Végül a <strong><em>4. állításhoz</em></strong> azt kell igazolni, hogy [latex]H_n[/latex] valódi részcsoport [latex](\Z/n\Z)^{\times}[/latex]-ben, azaz találni kell egy olyan redukált maradékosztályt, amely nincs benne [latex]H_n[/latex]-ben. Az [latex]n[/latex]-ről a tétel szövegében kikötöttük, hogy ő egy olyan [latex]1[/latex]-nél nagyobb páratlan összetett szám, amelynek <strong><em>legalább két</em></strong> egymástól különböző <strong><em>prímtényezője van</em></strong>. Legyen [latex]n[/latex] egyik prímtényezője [latex]p[/latex]. Ekkor létezik olyan [latex]c\geq 1[/latex] kitevő és [latex]m\gt 1[/latex] páratlan egész szám, hogy egyrészt [latex]m[/latex] tovább már nem osztható [latex]p[/latex]-vel, másrészt pedig [latex]n[/latex] felírható az alábbi alakban:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]n=p^cm[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="egesz-szam-p-adikus-rendje" type="link" /] alapján úgy is mondhatjuk, hogy az [latex]n[/latex] egész szám <strong><em>[latex]p[/latex]-adikus rendje</em></strong> [latex]c\geq 1[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ekkor [latex]p^c[/latex]-nek és [latex]m[/latex]-nek nincs közös prímtényezője, mert ha lenne, akkor az csak [latex]p[/latex] valamilyen nulladiknál nagyobb hatványa lehetne, és így az [latex]n[/latex] egész szám [latex]p[/latex]-adikus rendje biztosan nagyobb lenne [latex]c[/latex]-nél. Így tehát [latex]p^c[/latex] és [latex]m[/latex] <strong><em>relatív prímek</em></strong>. Ebben az esetben érvényes a <strong><em>kínai maradéktétel</em></strong> ([yp_element slug="kinai-maradektetel" type="link" /]), amelynek következményeként a [yp_element slug="maradekosztalygyuruk-dekompozicioja" type="link" /] alapján fennáll az alábbi <strong><em>gyűrűizomorfizmus</em></strong>:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\Z/n\Z \simeq \Z/p^c\Z \times \Z/m\Z[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A tétel szövegéből tudjuk, hogy a [latex]j_{\text{max}}[/latex] kitevőhöz létezik olyan egész szám, amelyet [latex]x[/latex] helyére behelyettesítve teljesül az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x^{2^{j_{\text{max}}}}\equiv -1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Jelöljük az egyik ilyen egész számot [latex]s[/latex]-sel, és tekintsük az [latex][s]_n[/latex] maradékosztályt a [latex]\Z/n\Z[/latex] gyűrűben. Neki a [yp_element slug="maradekosztalygyuruk-dekompozicioja" type="link" /]ben szereplő [latex]g[/latex] gyűrűizomorfizmus az alábbi maradékosztálypárt felelteti meg a [latex]\Z/p^c\Z \times \Z/m\Z[/latex] gyűrűben:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][s]_n \xmapsto{g} ([s]_{p^c};[s]_m)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha a baloldali [latex][s]_n[/latex] maradékosztályt a [latex]2^{j_{\text{max}}}k[/latex]-adik hatványra emeljük a [latex]\Z/n\Z[/latex] gyűrűben, akkor a [latex]g[/latex] gyűrűizomorfizmus a művelettartó tulajdonság miatt ehhez épp a jobboldali maradékosztálypárnak a [latex]\Z/p^c\Z \times \Z/m\Z[/latex] gyűrűben vett [latex]2^{j_{\text{max}}}k[/latex]-adik hatványát fogja hozzárendelni. Azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][s]_n^{2^{j_{\text{max}}}k} \xmapsto{g} ([s]_{p^c};[s]_m)^{2^{j_{\text{max}}}k}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A jobboldalon szereplő szorzatgyűrűbeli szorzást – és így a hatványozást – a [yp_element slug="gyuruk-direkt-szorzata" type="link" /] alapján komponensenként kell elvégezni, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][s]_n^{2^{j_{\text{max}}}k} \xmapsto{g} ([s]_{p^c}^{2^{j_{\text{max}}}k};[s]_m^{2^{j_{\text{max}}}k})[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A maradékosztályok közötti szorzást – és így a hatványozást – viszont a [yp_element slug="egesz-szamok-maradekosztalygyurui" type="link" /] szerint a reprezentánselemeken kell elvégezni, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][s^{2^{j_{\text{max}}}k}]_n \xmapsto{g} ([s^{2^{j_{\text{max}}}k}]_{p^c};[s^{2^{j_{\text{max}}}k}]_m)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A baloldalon szereplő modulo [latex]n[/latex] maradékosztály reprezentánseleme tehát [latex]s^{2^{j_{\text{max}}}k}[/latex], amely a hatványozás azonosságairól szóló [yp_element slug="hatvanyozas-azonossagai" type="link" /] 2. pontja alapján [latex](s^{2^{j_{\text{max}}}})^k[/latex]-val egyezik meg. Az [latex]s[/latex] definíciójából tudjuk azonban, hogy:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]s^{2^{j_{\text{max}}}}\equiv -1\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mindkét oldalt [latex]k[/latex]-adik hatványra emelve a kongruencia jobboldalán továbbra is [latex]-1[/latex] marad, hiszen [latex]k[/latex] a tétel szövege alapján páratlan:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]s^{2^{j_{\text{max}}}k}\equiv \underbrace{-1}_{=(-1)^k}\pmod n[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Vagyis a fenti [latex]g[/latex] szerinti hozzárendelés baloldalán tulajdonképpen a [latex][-1]_n[/latex] maradékosztály szerepel. Ám ekkor a [latex]g[/latex] gyűrűizomorfizmus [yp_element slug="maradekosztalygyuruk-dekompozicioja" type="link" /]ben szereplő definíciója alapján a jobboldalon pedig a [latex]([-1]_{p^c};[-1]_m)[/latex] maradékosztálypár kell szerepeljen:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{[s^{2^{j_{\text{max}}}k}]_n}_{=[-1]_n} \xmapsto{g} (\underbrace{[s^{2^{j_{\text{max}}}k}]_{p^c}}_{=[-1]_{p^c}};\underbrace{[s^{2^{j_{\text{max}}}k}]_m}_{=[-1]_m})[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Vagyis azt kaptuk, hogy az [latex]s^{2^{j_{\text{max}}}k}[/latex] hatvány [latex]-1[/latex]-gyel kongruens modulo [latex]p^c[/latex] is, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]s^{2^{j_{\text{max}}}k}\equiv -1\pmod{p^c}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezt a kongruenciát hamarosan felhasználjuk, amikoris a [latex]g[/latex] gyűrűizomorfizmus segítségével megmutatjuk, hogy létezik olyan [latex]X\in \Z/n\Z[/latex] redukált maradékosztály, amely nincs benne [latex]H_n[/latex]-ben. A [latex]H_n[/latex] definíciója alapján ez a keresett [latex]X[/latex] maradékosztály pontosan akkor nincs benne [latex]H_n[/latex]-ben, ha az ő [latex]\Z/n\Z[/latex] gyűrűben vett [latex]2^{j_{\text{max}}}k[/latex]-adik hatványa különbözik mind az [latex][1]_n[/latex], mind pedig a [latex][-1]_n[/latex] maradékosztálytól.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Legyen ez a keresett [latex]X[/latex] az a maradékosztály, amely esetén a [latex]g[/latex] gyűrűizomorfizmus épp az alábbi hozzárendelést valósítja meg:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]X \xmapsto{g} ([s]_{p^c};[1]_m)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ilyen [latex]X[/latex] ugye létezik, hiszen [latex]g[/latex] <strong><em>kölcsönösen egyértelmű</em></strong> leképezés, azaz minden [latex]\Z/p^c\Z \times \Z/m\Z[/latex]-beli maradékosztálypárt hozzárendeli valamelyik [latex]\Z/n\Z[/latex]-beli maradékosztályhoz – jelen esetben az [latex]([s]_{p^c};[1]_m)[/latex] párt [latex]X[/latex]-hez. A [latex]g[/latex] <strong><em>művelettartó tulajdonsága</em></strong> alapján ekkor teljesül az alábbi hozzárendelés is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]X^{2^{j_{\text{max}}}k} \xmapsto{g} ([s]_{p^c};[1]_m)^{2^{j_{\text{max}}}k}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A jobboldalon szereplő szorzatgyűrűbeli szorzást – és így a hatványozást – a [yp_element slug="gyuruk-direkt-szorzata" type="link" /] alapján komponensenként kell elvégezni, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]X^{2^{j_{\text{max}}}k} \xmapsto{g} ([s]_{p^c}^{2^{j_{\text{max}}}k};[1]_m^{2^{j_{\text{max}}}k})[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A maradékosztályok közötti szorzást – és így a hatványozást – viszont a [yp_element slug="egesz-szamok-maradekosztalygyurui" type="link" /] szerint a reprezentánselemeken kell elvégezni, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]X^{2^{j_{\text{max}}}k} \xmapsto{g} ([s^{2^{j_{\text{max}}}k}]_{p^c};[\underbrace{1^{2^{j_{\text{max}}}k}}_{=1}]_m)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt azonban már tudjuk, hogy teljesül az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]s^{2^{j_{\text{max}}}k}\equiv -1\pmod{p^c}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Így tehát a fenti [latex]g[/latex] szerinti hozzárendelés valójában az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]X^{2^{j_{\text{max}}}k} \xmapsto{g} ([-1]_{p^c};[1]_m)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Így viszont a baloldalon szereplő [latex]X^{2^{j_{\text{max}}}k}[/latex] hatvány biztosan nem lehet az [latex][1]_n[/latex] maradékosztály. Ebben az esetben ugyanis a [latex]g[/latex] gyűrűizomorfizmus a [yp_element slug="maradekosztalygyuruk-dekompozicioja" type="link" /] alapján az alábbi hozzárendelést valósítaná meg:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{[1]_n}_{=X^{2^{j_{\text{max}}}k}} \xmapsto{g} \underbrace{([1]_{p^c};[1]_m)}_{=([-1]_{p^c};[1]_m)}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez csak akkor volna lehetséges, ha [latex][1]_{p^c}=[-1]_{p^c}[/latex] teljesülne, azaz fennállna az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]1\equiv -1\pmod{p^c}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez viszont azt jelentené, hogy teljesül az alábbi oszthatóság:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]p^c|\underbrace{1-(-1)}_{=2}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez viszont lehetetlen, hiszen [latex]p[/latex] az [latex]n[/latex] prímtényezője, amely páratlan, ezért [latex]p[/latex] is, és így [latex]p^c[/latex] is páratlan, azaz legalább [latex]3[/latex]. Márpedig a [yp_element slug="oszthatosag-es-rendezesi-relacio-kapcsolata" type="link" /] alapján egy pozitív egész szám bármely osztója legfeljebb akkora lehet, mint maga a szám.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Hasonló gondolatmenet alapján az [latex]X^{2^{j_{\text{max}}}k}[/latex] hatvány biztosan nem lehet a [latex][-1]_n[/latex] maradékosztály sem, hiszen ekkor a [latex]g[/latex] gyűrűizomorfizmus a [yp_element slug="maradekosztalygyuruk-dekompozicioja" type="link" /] alapján az alábbi hozzárendelést valósítaná meg:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{[-1]_n}_{=X^{2^{j_{\text{max}}}k}} \xmapsto{g} \underbrace{([-1]_{p^c};[-1]_m)}_{=([-1]_{p^c};[1]_m)}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez csak akkor volna lehetséges, ha [latex][-1]_m=[1]_m[/latex] teljesülne, azaz fennállna az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]1\equiv -1\pmod m[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez viszont azt jelentené, hogy teljesül az alábbi oszthatóság:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]m|\underbrace{1-(-1)}_{=2}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez viszont ugyancsak lehetetlen, hiszen [latex]m[/latex]-ről azt mondtuk, hogy [latex]1[/latex]-nél nagyobb páratlan egész, azaz legalább [latex]3[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Azt kaptuk tehát, hogy az [latex]X[/latex] maradékosztály [latex]2^{j_{\text{max}}}k[/latex]-adik hatványa különbözik az [latex][1]_n[/latex] és [latex][-1]_n[/latex] maradékosztályoktól, és így valóban nem lehet [latex]H_n[/latex]-ben.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Annyit kell még igazolni, hogy [latex]X[/latex] <strong><em>redukált maradékosztály</em></strong>, és <strong><em>ennek ellenére</em></strong> nincs [latex]H_n[/latex]-ben – azt ugyanis már az <strong><em>1. állításban</em></strong> igazoltuk, hogy nem redukált maradékosztályok amúgysem lehetnek benne [latex]H_n[/latex]-ben. Az [latex]X[/latex] konstrukciója alapján a [latex]g[/latex] gyűrűizomorfizmus ugye az alábbi hozzárendelést valósítja meg:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]X \xmapsto{g} ([s]_{p^c};[1]_m)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most tegyük fel, hogy az [latex]a[/latex] egész szám az [latex]X[/latex] maradékosztály egy reprezentánseleme, azaz legyen [latex]X=[a]_n[/latex]. A [yp_element slug="maradekosztalygyuruk-dekompozicioja" type="link" /] alapján azonban teljesül az alábbi hozzárendelés is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{[a]_n}_{=X} \xmapsto{g} ([a]_{p^c};[a]_m)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel a [latex]g[/latex] által megvalósított hozzárendelés <strong><em>kölcsönösen egyértelmű</em></strong>, ezért a fenti két hozzárendelés egyszerre csak akkor teljesülhet, ha a jobboldalakon szereplő két maradékosztálypár egy és ugyanaz, azaz fennállnak a maradékosztályok közötti alábbi egyenlőségek:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}[a]_{p^c}&amp;=[s]_{p^c} \\ [a]_m&amp;=[1]_m\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A második egyenlőségből a [yp_element slug="redukalt-maradekosztaly-feltetele" type="link" /] alapján következik, hogy [latex]a[/latex] relatív prím [latex]m[/latex]-hez. Az [latex][a]_m=[1]_m[/latex] maradékosztály ugyanis nyilván invertálható a [latex]\Z/m\Z[/latex] gyűrűben, hiszen ő ennek a gyűrűnek az egységeleme, amelynek inverze önmaga.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az első egyenlőségből szintén a [yp_element slug="redukalt-maradekosztaly-feltetele" type="link" /] alapján következik, hogy [latex]a[/latex] pontosan akkor relatív prím [latex]p^c[/latex]-hez, ha [latex]s[/latex] is az, hiszen ők ugyanannak a modulo [latex]p^c[/latex] maradékosztálynak a reprezentánselemei. Az [latex]s[/latex]-ről azonban korábban már megmutattuk, hogy teljesül rá az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]s^{2^{j_{\text{max}}}k}\equiv -1\pmod{p^c}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" type="link" /] 8. pontja alapján mindkét oldalt négyzetre emelhetjük:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]s^{2^{j_{\text{max}}+1}k}\equiv 1\pmod{p^c}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Találtunk tehát egy olyan pozitív kitevőt – nevezetesen [latex]2^{j_{\text{max}}+1}k[/latex]-t – amelyre emelve [latex]s[/latex]-t az eredmény kongruens lesz [latex]1[/latex]-gyel modulo [latex]p^c[/latex]. Ebből viszont a [yp_element slug="euler-fermat-tetel-megforditasa" type="link" /] alapján következik, hogy [latex]s[/latex] relatív prím [latex]p^c[/latex]-hez, és így [latex]a[/latex] is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egyrészt azt kaptuk tehát, hogy [latex]a[/latex] relatív prím [latex]m[/latex]-hez, vagyis nincs vele közös prímtényezője. Másrészt [latex]a[/latex] relatív prím [latex]p^c[/latex]-hez is, tehát vele sincs közös prímtényezője. Ekkor viszont a [latex]p^cm=n[/latex] szorzattal sincs közös prímtényezője, tehát [latex]n[/latex]-hez is relatív prím. Vagyis a [yp_element slug="redukalt-maradekosztaly-feltetele" type="link" /] szerint az [latex]X=[a]_n[/latex] valóban egy <strong><em>redukált maradékosztály</em></strong> a [latex]\Z/n\Z[/latex] gyűrűben.</p>
+<!-- /wp:paragraph -->

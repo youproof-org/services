@@ -1,0 +1,103 @@
+type: section
+name: 07-reszgyuruk-es-idealok
+title: Részgyűrűk és ideálok
+
+references:
+  gyuruhomomorfizmus-magjanak-szukseges-feltetele:
+    target:
+      type: theorem
+      name: gyuruhomomorfizmus-magjanak-szukseges-feltetele
+  gyuruhomomorfizmus-szerinti-kongruenciak-ekvivalenciajanak-feltetele:
+    target:
+      type: theorem
+      name: gyuruhomomorfizmus-szerinti-kongruenciak-ekvivalenciajanak-feltetele
+
+body:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy van egy $R$ gyűrű, amelyen egy kongruenciarelációt szeretnénk megadni. Nem szeretnénk
+      ugyanakkor foglalkozni semmiféle más gyűrűvel, abba mutató gyűrűhomomorfizmusokkal meg aztán pláne nem.
+      Szerencsére az előző szakaszban bizonyított
+      [gyuruhomomorfizmus-szerinti-kongruenciak-ekvivalenciajanak-feltetele] alapján nekünk elegendő $R$-ben egy
+      olyan részhalmazt keresni, amely alkalmas arra, hogy ***valamilyen*** gyűrűhomomorfizmus magja legyen. Ezt
+      azonban ennek a hipotetikus gyűrűhomomorfizmusnak a konkrét ismerete nélkül szeretnénk megtenni. Ehhez
+      először is definiálunk egy, a továbbiakban is hasznos fogalmat.
+  - type: embed
+    target:
+      type: definition
+      name: reszgyuru
+  - type: narrative
+    content: |
+      A 16. részben az oszthatóság kapcsán már láttuk, hogy például a páros számok $2\Z$-vel jelölt halmaza maga is
+      gyűrű a $\Z$-n értelmezett összeadásra és szorzásra nézve, így $2\Z$ részgyűrű $\Z$-ben. Mivel nem minden
+      egész szám páros, ezért $2\Z\lt \Z$, azaz $2\Z$ valódi részgyűrű $\Z$-ben. A páratlan számok szintén
+      részhalmazt alkotnak $\Z$-n belül, ez a részhalmaz azonban nem részgyűrű, hiszen már a műveleti zártság sem
+      teljesül az összeadásra. Például $3+5=8$, ami nem páratlan szám.
+  - type: narrative
+    content: |
+      Az alábbi tétel abban nyújt segítséget, hogy ne kelljen minden gyűrűaxiómát ellenőriznünk ahhoz, hogy egy
+      részhalmazról eldöntsük, vajon részgyűrű-e vagy sem.
+  - type: embed
+    target:
+      type: theorem
+      name: reszgyuru-feltetele
+  - type: embed
+    target:
+      type: proof
+      name: reszgyuru-feltetele-bizonyitas
+  - type: narrative
+    content: |
+      Még mielőtt visszatérnénk egy $R$ gyűrűből kiinduló gyűrűhomomorfizmusok ***magjainak*** azonosítására,
+      vizsgáljuk meg azt a kérdést, hogy hogyan azonosíthatjuk egy $S$ gyűrűbe mutató gyűrűhomomorfizmusok
+      ***képeit***. Az alábbi tétel alapján ezekről sajnos nem tudunk túl sokat mondani.
+  - type: embed
+    target:
+      type: theorem
+      name: gyuruhomomorfizmus-kepenek-feltetele
+  - type: embed
+    target:
+      type: proof
+      name: gyuruhomomorfizmus-kepenek-feltetele-bizonyitas
+  - type: narrative
+    content: |
+      Egy $S$ gyűrűben tehát az odamutató gyűrűhomomorfizmusok ***képeiről*** mindössze annyit tudunk mondani, hogy
+      azok pontosan $S$ részgyűrűi lesznek. Ezzel szemben egy $R$ gyűrű azon részhalmazairól, amelyek valamilyen
+      $R$-ből kiinduló gyűrűhomomorfizmusok ***magjai*** lehetnek, ennél többet is fogunk tudni mondani. Most erre
+      mutatunk egy szükséges feltételt, majd a következő szakaszban igazoljuk azt az egyáltalán nem nyilvánvaló
+      tényt, hogy ez a feltétel egyben elégséges is.
+  - type: embed
+    target:
+      type: theorem
+      name: gyuruhomomorfizmus-magjanak-szukseges-feltetele
+  - type: narrative
+    content: |
+      A 2. feltételben azért kellett mindkét irányú szorzást megemlíteni, mert ez a tétel ***tetszőleges*** &ndash;
+      azaz nem feltétlenül csak kommutatív &ndash; ***gyűrűre*** érvényes. Vegyük észre, hogy ez a szorzásra
+      szigorúbb feltételt ír elő annál, mintha $I$-ről egyszerűen csak annyit kötnénk ki, hogy részgyűrű legyen
+      (azaz, hogy az $I$-beli elemek között végzett szorzás ne vezessen ki az $I$ halmazból). A 2. feltétel ezen
+      felül megköveteli még azt is, hogy ***bármely*** $R$-beli elemmel szorzunk is egy $I$-beli elemet &ndash;
+      akár jobbról, akár balról &ndash;, az így kapott eredménynek is a szűkebb $I$ halmazban kell maradnia.
+  - type: embed
+    target:
+      type: proof
+      name: gyuruhomomorfizmus-magjanak-szukseges-feltetele-bizonyitas
+  - type: narrative
+    content: |
+      Az iménti tételben felsorolt két feltételt tehát egy gyűrű minden olyan részhalmaza teljesíti, amely egy
+      valamilyen gyűrűhomomorfizmus magja lehet. Ezeknek a részhalmazoknak külön nevet is ad az alábbi definíció.
+  - type: embed
+    target:
+      type: definition
+      name: ideal
+  - type: narrative
+    content: |
+      Természetesen kommutatív gyűrűk esetén nincs értelme külön jobb- vagy balideálokról beszélni, hiszen ott
+      minden jobbideál egyben balideál is, és fordítva. Például az egész számok $\Z$ gyűrűjében ideált alkot a
+      páros számok $2\Z$-vel jelölt halmaza, hiszen ha egy páros számot bármilyen tetszőleges egész számmal
+      megszorzunk, az eredmény ugyancsak páros.
+  - type: narrative
+    content: |
+      Ezzel a szóhasználattal élve a [gyuruhomomorfizmus-magjanak-szukseges-feltetele] úgy is megfogalmazható, hogy
+      amennyiben egy $R$ gyűrű valamely $I$ részhalmaza magja valamilyen gyűrűhomomorfizmusnak, akkor $I$ ideál
+      $R$-ben. A következő szakaszban azt fogjuk megmutatni, hogy más részhalmaz nem is lehet gyűrűhomomorfizmus
+      magja.

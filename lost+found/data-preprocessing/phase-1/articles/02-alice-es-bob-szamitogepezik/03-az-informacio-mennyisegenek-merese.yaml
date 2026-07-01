@@ -1,0 +1,51 @@
+type: section
+name: 03-az-informacio-mennyisegenek-merese
+title: Az információ mennyiségének mérése
+
+body:
+  - type: narrative
+    content: |
+      Azt a kérdést tehát megválaszoltuk, hogy milyen információt kódol a példaként felhozott 24 bites
+      **010000100110111101100010** adat. Az ASCII kódtábla értelmezése szerint a **Bob** szöveget. A második
+      kérdésünk viszont az volt, hogy mennyi ennek az információnak a mennyisége (amelynek a mértékegysége ugye
+      szintén bit)? Ez már egy sokkal nehezebben megfogható dolog, ugyanis az információ mennyisége nem feltétlenül
+      azonos az őt leíró adat mennyiségével. Például ha ugyanezt a szöveget a 16 bites karaktereket használó
+      Unicode szabvány szerint kódoltuk volna, akkor 24 helyett 48 bitre lett volna szükségünk, mégis ugyanazt az
+      információt tartalmazná ez a hosszabb bitsorozat. Következésképp a mennyiségének is ugyanannyinak kéne
+      lennie.
+  - type: narrative
+    content: |
+      Az információmennyiség méréséhez &ndash; fura módon &ndash; el kell vonatkoztatnunk a konkrét
+      szimbólumsorozat által reprezentált tartalomtól. Ehelyett egy, az adott ***információforrásra*** jellemző
+      mennyiséget kell meghatároznunk. Az információforrás absztrakt modellje egy olyan objektum, amely egy véges
+      szimbólumkészlet &ndash; a ***forrásábécé*** &ndash; elemeit bocsájtja ki magából szép sorban. Az
+      információforrás jellege meghatározza, hogy a forrásábécé egy-egy eleme milyen kontextusokban milyen
+      valószínűségekkel fordul elő a forrásból érkező sorozatokban. Minél egyenletesebb az egyes szimbólumok
+      eloszlása, annál bizonytalanabb, hogy milyen konkrét sorozat fog érkezni a forrásból.
+  - type: narrative
+    content: |
+      Az előző részben már említett Claude Shannon amerikai matematikus és híradástechnikai szakember ennek a
+      bizonytalanságnak a mérésére vezette be az 1940-es évek végén az ***információs entrópia*** fogalmát. Ennek
+      tanulmányozása az információelmélet egyik alapja, és ennek a segítségével válik mérhetővé a forrásból érkező
+      információ mennyisége. Az entrópia érdekessége abban áll, hogy független a konkrét tartalomtól. Ehelyett az
+      egy, az adott információforrásra jellemző statisztikai mennyiség. Minél nagyobb a forrás entrópiája, annál
+      kevésbé megjósolható, hogy mi lesz a forrásból érkező következő szimbólum. Következésképp egy-egy
+      szimbólumnak annál nagyobb lesz a hírértéke.
+  - type: narrative
+    content: |
+      A fenti, **010000100110111101100010** bináris sorozatra vonatkozó kérdés helyett tehát azt a kérdést kell
+      feltennünk, hogy átlagosan mennyi információt tartalmaz egy-egy forrásszimbólum egy olyan információforrás
+      esetén, amely magyar nyelven íródott szövegek betűit bocsájtja ki magából. Az információforrás entrópiája
+      pontosan ez a mennyiség lesz, amely statisztikai módszerekkel mérhető. Minél több korábbi szimbólumsorozat
+      áll rendelkezésünkre, annál pontosabban. A természetes nyelveken íródott szövegek implicit módon rengeteg
+      szabályosságot tartalmaznak. Figyeljük meg például, hogy a magyar nyelvben nem túl gyakori, hogy egymás után
+      két magánhangzó áll. Előfordul persze, de alapvetően nem jellemző.
+  - type: narrative
+    content: |
+      Az ehhez hasonló nyelvi jellemzők által okozott statisztikai összefüggések miatt az ilyen jellegű
+      információforrások viselkedése "kiszámíthatóbb", mint mondjuk egy olyan információforrás, amely teljesen
+      véletlenszerűen bocsájtja ki magából a szimbólumokat. Ha megmérnénk e két információforrás entrópiáját, akkor
+      azt tapasztalnánk, hogy a magyar nyelvű szövegek entrópiája lényegesen alacsonyabb, mint a teljesen
+      véletlenszerű betűsorozatoké. Mivel ennek a cikksorozatnak nem ez a fő témája, ezért ennek matematikai
+      részleteibe nem megyünk bele. Azonban egy egyszerű kísérlettel megpróbáljuk érzékeltetni, hogy mi a
+      gyakorlati jelentősége az információs entrópiának.

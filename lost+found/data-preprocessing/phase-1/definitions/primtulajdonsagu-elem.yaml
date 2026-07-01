@@ -1,0 +1,11 @@
+type: definition
+name: primtulajdonsagu-elem
+remarks:
+  - primtulajdonsagu-elem-megjegyzes
+content:
+  - type: narrative
+    content: |
+      Egy $R$ kommutatív gyűrű valamely $p$ elemét ***prímtulajdonságú elemnek*** (vagy egyszerűen csak
+      ***prímnek***) nevezzük, ha nem a nullelem, nem egység, és ***csak úgy*** lehet osztója két gyűrűelem
+      szorzatának, ha legalább az egyik tényezőnek osztója. Azaz ha valamely $a$ és $b$ gyűrűelemekre teljesül a
+      $p|ab$ oszthatóság, akkor a $p|a$ vagy $p|b$ oszthatóságok közül ***legalább az egyik*** ugyancsak teljesül.

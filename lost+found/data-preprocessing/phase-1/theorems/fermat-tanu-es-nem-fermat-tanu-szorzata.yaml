@@ -1,0 +1,24 @@
+type: theorem
+name: fermat-tanu-es-nem-fermat-tanu-szorzata
+proofs:
+  - fermat-tanu-es-nem-fermat-tanu-szorzata-bizonyitas
+remarks: []
+references:
+  egesz-szamok-maradekosztalygyurui:
+    target:
+      type: theorem
+      name: egesz-szamok-maradekosztalygyurui
+content:
+  - type: narrative
+    content: |
+      Legyen $n\gt 1$ tetszőleges pozitív egész szám. Tegyük fel, hogy adva van egy valamilyen $a$ egész szám által
+      reprezentált $[a]_n$ redukált maradékosztály, amely ***Fermat-tanú***. Legyen adott továbbá egy valamilyen
+      $b\eq 0$ egész szám által reprezentált $[b]_n$ redukált maradékosztály, amely ***nem Fermat-tanú***.
+  - type: narrative
+    content: |
+      Ekkor e két maradékosztály szorzata, vagyis az $[a]_n \odot [b]_n$ maradékosztály egyrészt ***Fermat-tanú***,
+      másrészt ***szintén redukált maradékosztály***.
+  - type: narrative
+    content: |
+      Itt "szorzás" alatt a modulo $n$ maradékosztálygyűrű $\odot$ szimbólummal jelölt szorzás műveletét értjük
+      (lásd a [egesz-szamok-maradekosztalygyurui]t).

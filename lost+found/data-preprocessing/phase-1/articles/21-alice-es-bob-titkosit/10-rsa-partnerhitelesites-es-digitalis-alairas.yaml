@@ -1,0 +1,66 @@
+type: section
+name: 10-rsa-partnerhitelesites-es-digitalis-alairas
+title: RSA partnerhitelesítés és digitális aláírás
+
+references:
+  hatvanyozas-azonossagai:
+    target:
+      type: theorem
+      name: hatvanyozas-azonossagai
+  maradekkepzes-gyuruhomomorfizmus:
+    target:
+      type: theorem
+      name: maradekkepzes-gyuruhomomorfizmus
+
+body:
+  - type: narrative
+    content: |
+      Korábban volt szó bővebben arról, hogy egy ***aktív támadó*** &ndash; például Mallory &ndash; ezt a rendszert
+      könnyedén kijátszhatja. Ő ugyanis képes elérni, hogy Alice a Bob-nak szánt üzenetek kódolásához Mallory
+      publikus kulcsát használja, miközben azt gondolja, hogy az valójában Bob publikus kulcsa. Alice-nak emiatt
+      meg kell tudnia győződnie arról, hogy a kódoláshoz használt publikus kulcs valóban Bob publikus kulcsa, és
+      nem pedig Mallory-é, aki csak azt hazudja magáról, hogy ő Bob. Ezt ***partnerhitelesítésnek*** nevezzük, és a
+      hozzá kapcsolódó problémakört részletesen kifejtettük a 10. részben. A megoldást a ***digitális aláírások***
+      jelentik, amelynek lényegét most röviden átismételjük.
+  - type: narrative
+    content: |
+      Egy aszimmetrikus kulcsú rejtjelezési eljárás esetén a kulcspár nyilvános részével kódolt üzeneteket
+      kizárólag ugyanezen kulcspár titkos részével lehet dekódolni. Most igazolni fogjuk, hogy az RSA esetében ***a
+      kulcsok szerepe felcserélhető***. Nevezetesen: a kulcspár titkos részével kódolt üzeneteket kizárólag a
+      kulcspár nyilvános részével lehet dekódolni. Az alábbi egyenlet a publikus kulcscsal való kódolás, majd a
+      privát kulcscsal való dekódolás műveletének egymás után való alkalmazását írja le.
+  - type: formula
+    lead-in: |
+      Tegyük fel, hogy ennek eredményeként valóban az eredeti $x$ üzenetet kapjuk vissza &ndash; ezt természetesen
+      a következő részben igazolni fogjuk:
+    content: |
+      \bmod_m((\underbrace{\bmod_m(x^e)}_{=y})^d)=x
+  - type: narrative
+    content: |
+      Minthogy a $\bmod_m$ maradékképző függvény a [maradekkepzes-gyuruhomomorfizmus] alapján egy
+      gyűrűhomomorfizmus az egész számok $\Z$ gyűrűje és a $Z_m$ gyűrű között, ezért a zárójelen belüli
+      $y=\bmod_m(x^e)$ hatványozás a $Z_m$ gyűrűben is elvégezhető. Ugyanezen okok miatt a $d$ kitevővel való
+      külső $x=\bmod_m(y^d)$ hatványozás szintén elvégezhető a $Z_m$ gyűrűben.
+  - type: formula
+    lead-in: |
+      Ha tehát ezt a két egymás utáni hatványozást a $Z_m$ gyűrűben értjük, akkor az alábbi egyenlet írható fel:
+    content: |
+      \underbrace{(x^e)^d}_{Z_m \text{ gyűrűben}}=x
+  - type: narrative
+    content: |
+      A hatványozás azonosságairól szóló [hatvanyozas-azonossagai] bármilyen kommutatív gyűrű esetén alkalmazható,
+      így nyilván a $Z_m$ gyűrű esetén is. Ennek 2.
+  - type: formula
+    lead-in: |
+      pontja alapján az alábbit kapjuk:
+    content: |
+      (x^e)^d=x^{e\cdot d}=x^{d\cdot e}=(x^d)^e = x
+  - type: narrative
+    content: |
+      Vagyis valóban, ha először kódolunk egy üzenetet egy kulcspár titkos részével, majd ezt dekódoljuk ugyanazon
+      kulcspár publikus részével, akkor szintén az eredeti üzenetet kapjuk vissza. Ez alkalmassá teszi az RSA
+      eljárást ***digitális aláírások*** képzéséhez is. Ha ugyanis egy bitsorozat dekódolható például Bob publikus
+      kulcsával, akkor azt csak egy olyan résztvevő kódolhatta, aki Bob titkos kulcsának birtokában volt. Márpedig
+      ha Bob nem teljesen bolond, és valóban sosem adja ki a kezéből a titkos kulcsát, akkor ez bizonyíték arra,
+      hogy az adott üzenetet kizárólag ő küldhette. A digitális aláíráson alapuló ***partnerhitelesítésről*** a 10.
+      részben volt szó részletesen, így azt itt nem ismételjük meg.

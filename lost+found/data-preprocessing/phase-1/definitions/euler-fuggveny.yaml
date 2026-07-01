@@ -1,0 +1,9 @@
+type: definition
+name: euler-fuggveny
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $m\gt 0$ tetszőleges ***pozitív*** egész szám. Ekkor a modulo $m$ ***redukált maradékosztályok
+      számát*** a $\varphi(m)$-mel jelölt függvény értéke adja meg. Ezt a függvényt ***Euler-féle
+      $\varphi$-függvénynek (ejtsd: "fi")*** nevezzük.

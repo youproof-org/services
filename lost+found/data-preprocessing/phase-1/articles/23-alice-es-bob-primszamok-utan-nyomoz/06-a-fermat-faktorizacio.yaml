@@ -1,0 +1,112 @@
+type: section
+name: 06-a-fermat-faktorizacio
+title: A Fermat-faktorizáció
+
+references:
+  miller-rabin-szorzat:
+    target:
+      type: theorem
+      name: miller-rabin-szorzat
+  osztok-es-a-negyzetgyok:
+    target:
+      type: theorem
+      name: osztok-es-a-negyzetgyok
+
+body:
+  - type: narrative
+    content: |
+      Az RSA implementációja során sok apró részleten múlhat a biztonság. Számos hatékony támadás ismert ugyanis,
+      amelyek az üzenethalmaz, a kulcsgeneráláshoz használt prímpár, valamint a kódoló és dekódoló kulcs nem elég
+      körültekintő megválasztását használják ki. Ezt néhány példán keresztül illusztráljuk, amelyek közül az első
+      az úgynevezett Fermat-faktorizációs algoritmus.
+  - type: narrative
+    content: |
+      Ez az eljárás bizonyos körülmények között lehetővé teszi egy támadó számára, hogy hatékonyan kiszámíthassa a
+      kódoláshoz és dekódoláshoz használt $n$ modulus prímtényezőit, és így tulajdonképpen ő maga is a titkos kulcs
+      birtokába juthasson. Erre akkor nyílik lehetősége, ha a prímtényezők közötti ***különbség*** nem eléggé nagy.
+      Ebben az esetben a két prímtényező közel van a [osztok-es-a-negyzetgyok]ben szereplő $r$ számhoz. Ez ugye a
+      legnagyobb olyan egész szám, amelynek négyzete még éppen nemnagyobb $n$-nél. Így ennek a környékén jó
+      eséllyel hamar megtalálhatjuk a prímtényezőket. Az erre szolgáló alább ismertetett módszer magától Pierre de
+      Fermat-tól származik, amely a [miller-rabin-szorzat] bizonyításának elején már említett $x^2-y^2 = (x+y)\cdot
+      (x-y)$ összefüggésen alapul.
+  - type: narrative
+    content: |
+      Képzeljük magunkat Eve helyébe, és tegyük fel, hogy az $n=57\ 319\ 249\ 499$ RSA-modulus prímtényezőit
+      szeretnénk megtalálni.
+  - type: formula
+    lead-in: |
+      Azaz keressük azt a $p$ és $q$ prímszámot, amelyre teljesül az alábbi egyenlet &ndash; itt nyugodtan
+      feltételezhetjük, hogy $p\gt q$, ha pedig mégsem, akkor nevezzük el őket fordítva:
+    content: |
+      n=p\cdot q
+  - type: narrative
+    content: |
+      Ez első látásra reménytelennek tűnik, azonban abban reménykedhetünk, hogy az ismeretlen $p$ és $q$
+      prímtényezőket a kulcsgeneráláskor óvatlanul választották ki, és a különbségük kicsi. Most megmutatjuk, hogy
+      mindig léteznek olyan $a$ és $b$ egész számok, amelyeknek összege $p$-vel, különbsége pedig $q$-val egyenlő.
+  - type: formula
+    lead-in: |
+      Azaz:
+    content: |
+      \begin{aligned}p&=a+b \\ q&=a-b\end{aligned}
+  - type: formula
+    lead-in: |
+      Adjuk össze, és vonjuk ki egymásból a két egyenletet:
+    content: |
+      \begin{aligned}p+q&=2a \\ p-q&=2b\end{aligned}
+  - type: narrative
+    content: |
+      Mivel $p$ és $q$ is biztosan páratlan &ndash; hiszen mindketten $2$-től különböző prímek &ndash; ezért a
+      fenti két egyenlet baloldalán álló $p+q$ összeg és $p-q$ különbség biztosan páros, azaz osztható $2$-vel. A
+      keresett $a$ és $b$ egész számok tehát valóban léteznek.
+  - type: formula
+    lead-in: |
+      Ekkor a fentebb említett összefüggés alapján:
+    content: |
+      n=(\underbrace{a+b}_{=p})\cdot (\underbrace{a-b}_{=q})=a^2-b^2
+  - type: narrative
+    content: |
+      Ha valóban igaz a feltételezésünk, miszerint a két prím egymáshoz közel van, akkor a $p-q=2b$ összefüggés
+      alapján $b$ kicsi. Ha viszont $b$ kicsi, akkor a négyzete is kicsi, amit az $n=a^2-b^2$ összefüggés
+      jobboldaláról elhanyagolhatunk. Azaz feltételezhetjük, hogy a keresett $a$ közel lesz a
+      [osztok-es-a-negyzetgyok]ben szereplő $r$ számhoz, ami ugye a legnagyobb olyan egész szám, amelynek a
+      négyzete nemnagyobb $n$-nél.
+  - type: formula
+    lead-in: |
+      Ha most az $n=a^2-b^2$ összefüggésből kifejezzük $b^2$-et, akkor az alábbit kapjuk:
+    content: |
+      b^2=a^2-n
+  - type: narrative
+    content: |
+      Feladatunk $a$ megkeresése. Azt tudjuk, hogy $r$ környékén van, ezért innen kiindulva elkezdünk tippelni
+      mindaddig, míg a jobboldali kifejezésre nem négyzetszámot kapunk.
+  - type: narrative
+    content: |
+      A fenti példában tehát $n=57\ 319\ 249\ 499$. Ekkor $r=239\ 414$, mivel ez az a legnagyobb szám, amelynek a
+      négyzete még nemnagyobb $n$-nél.
+  - type: formula
+    lead-in: |
+      Ebből kiindulva adunk tippeket $a$-ra, és vizsgáljuk, hogy az $a^2-n$ négyzetszám-e:
+    content: |
+      \begin{array}{c|c|c}a & a^2-n & \text{négyzetszám?} \\ \hline 239\ 415 & 292\ 726 & \text{nem} \\ 239\ 416 &
+      771\ 557 & \text{nem} \\ 239\ 417 & 1\ 250\ 390 & \text{nem} \\ 239\ 418 & 1\ 729\ 225 & \text{igen}
+      \end{array}
+  - type: narrative
+    content: |
+      Meglepően gyorsan, mindössze $4$ lépés után négyzetszámot kaptunk a második oszlopban, amely tehát $b^2$-tel
+      egyezik meg.
+  - type: formula
+    lead-in: |
+      Ebből $b=1315$ adódik, és mivel $a$-t is sikerült megtippelnünk, végülis megkaptuk a két prímtényezőt is:
+    content: |
+      \begin{aligned}p&=a+b=239\ 418 + 1315 = 240\ 733 \\ q&=a-b=239\ 418 - 1315=238\ 103\end{aligned}
+  - type: narrative
+    content: |
+      Látható, hogy eléggé hatékonyan sikerült prímtényezőire bontani a bemeneti számunkat. Mostmár látszik is,
+      hogy miért: a két prím különbsége mindössze $2630$ volt, ami nagyon kicsi a két prímhez képest.
+  - type: narrative
+    content: |
+      Amikor tehát Alice és Bob kulcspárt generálnak maguknak, vigyázniuk kell, hogy a kiválasztott prímszámok
+      átlagosan az őket leíró bitek felében különbözzenek egymástól. Ezzel viszonylag hamar elvehetik Eve kedvét a
+      fenti eljárástól, a keresett $a$ ugyanis ebben az esetben nagyon messze lesz $r$-től, amelyet így az idők
+      végezetéig keresgélhet.

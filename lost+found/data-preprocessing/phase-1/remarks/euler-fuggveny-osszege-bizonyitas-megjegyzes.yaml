@@ -1,0 +1,38 @@
+type: remark
+name: euler-fuggveny-osszege-bizonyitas-megjegyzes
+content:
+  - type: narrative
+    content: |
+      A bizonyításban szereplő $f$ és $g$ függvények képlete első ránézésre kissé mesterkéltnek tűnhet. Ennek
+      technikai oka van, ugyanis a szám fogalmát eddig csak a természetes és az egész számok körére korlátoztuk, az
+      úgynevezett tört- vagy racionális számokat még nem vezettük be, így nem is tudunk hivatkozni rájuk. Az
+      Olvasónak azonban az iskolából minden bizonnyal dereng valami a törtszámok egyszerűsítésének szabályaival
+      kapcsolatban. Egy $\frac{a}{b}$ alakban felírt törtszámot ugyanis adott esetben egyszerűbb alakban is fel
+      lehet írni. Ha például az $a$ ***számlálónak*** és a $b$ ***nevezőnek*** van valamilyen $1$-nél nagyobb közös
+      osztója, akkor ezzel a közös osztóval elosztva mind a számlálót, mind a nevezőt ugyanazt a törtszámot tudjuk
+      felírni, csak egyszerűbb alakban. Ezt ***egyszerűsítésnek*** nevezzük.
+  - type: formula
+    lead-in: |
+      Például:
+    content: |
+      \frac{231}{1001}=\frac{3}{13}
+  - type: narrative
+    content: |
+      A legegyszerűbb alakot akkor kapjuk, ha az egyszerűsítést a kitüntetett közös osztóval végezzük el, ami a
+      fenti példában a $77$. Most írjuk fel a $\frac{0}{n}$, $\frac{1}{n}$, $\frac{2}{n}$, ..., $\frac{n-1}{n}$
+      törteket, majd ugyanezen törteket írjuk fel a legegyszerűbb alakjukban is.
+  - type: formula
+    lead-in: |
+      Például $n=6$ esetén ezek az egyszerűsítések a következőképpen néznek ki:
+    content: |
+      \begin{array}{cccccc}\frac{0}{6} & \frac{1}{6} & \frac{2}{6} & \frac{3}{6} & \frac{4}{6} & \frac{5}{6} \\
+      \downarrow & \downarrow & \downarrow & \downarrow & \downarrow & \downarrow & \\ \frac{0}{1} & \frac{1}{6} &
+      \frac{1}{3} & \frac{1}{2} & \frac{2}{3} & \frac{5}{6}\end{array}
+  - type: narrative
+    content: |
+      A bizonyításban szereplő $T$ halmaz elemeinek a felső sorban szereplő törtek ***számlálói***, míg az $S$
+      halmaz elemeinek az alsó sorban szereplő egyszerűsített törtek ***nevezőiből és számlálóiból alkotott
+      számpárok*** felelnek meg. A $g$ függvény ennek megfelelően minden $a$ számlálójú törthöz az
+      $\frac{n}{(a,n)}$ nevezőjű és $\frac{a}{(a,n)}$ számlálójú egyszerűsített törtet rendeli hozzá, míg az $f$
+      függvény tulajdonképpen ennek az egyszerűsítésnek a megfordítása, amelyet egyébként ***bővítésnek***
+      nevezünk.

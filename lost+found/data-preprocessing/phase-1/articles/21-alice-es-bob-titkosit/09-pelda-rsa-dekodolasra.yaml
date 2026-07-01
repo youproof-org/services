@@ -1,0 +1,107 @@
+type: section
+name: 09-pelda-rsa-dekodolasra
+title: Példa RSA-dekódolásra
+
+references:
+  euler-fuggveny-primhatvanyokra:
+    target:
+      type: theorem
+      name: euler-fuggveny-primhatvanyokra
+  euler-fuggveny-szorzattarto-tulajdonsaga:
+    target:
+      type: theorem
+      name: euler-fuggveny-szorzattarto-tulajdonsaga
+
+body:
+  - type: narrative
+    content: |
+      Most nézzük meg, hogy mit tud kezdeni ezzel a titkosított bitsorozattal a vételi oldalon lévő Bob, illetve a
+      kommunikációs csatornát pofátlanul lehallgató Eve.
+  - type: narrative
+    content: |
+      Bob publikus kulcsát mindketten ismerik. Bob nyilván, hiszen ő maga generálta azt az előző szakaszban. Eve
+      pedig akkor értesül róla, amikor Bob közli azt Alice-szal a kommunikációs csatornán keresztül, vagy pedig
+      közvetlenül letölti a nyilvános kulcstárból.
+  - type: formula
+    lead-in: |
+      Így tehát mindketten ismerik az $m=29329$ modulust, azaz tudják, hogy az Alice által elküldött titkosított
+      bitsorozatot 15 bites részekre kell darabolni ahhoz, hogy megkapják a $0$ és $29329$ közötti számokból álló
+      $y_1,y_2,\ldots,y_7$ sorozatot, amely tehát a következő:
+    content: |
+      \begin{aligned}001111010000100‬ &\to y_1=7812 \\ 000‭001101100101‬ &\to y_2=869 \\ ‭000000110111101‬ &\to
+      y_3=445 \\ ‭‭110001000100011‬‬ &\to y_4=25123 \\ ‭000100000101010‬ &\to y_5=2090 \\ ‭110000010010110‬ &\to
+      y_6=24726 \\ ‭010011001000001‬ &\to y_7=9793\end{aligned}
+  - type: narrative
+    content: |
+      Ebből a Bob ***titkos kulcsát*** alkotó $m=29329$ modulus és $d=11623$ kitevő segítségével lehet kiszámítani
+      az eredeti számsorozatot.
+  - type: formula
+    lead-in: |
+      Ezeket a moduláris hatványokat Bob a fentebb ismertetett ***ismételt négyzetreemelés módszerének***
+      segítségével hatékonyan tudja kiszámítani, az Olvasó pedig az itt található kalkulátorral ellenőrizheti:
+    content: |
+      \begin{aligned}x_1&=\bmod_{29329}({7812}^{11623})=9620 \\ x_2&=\bmod_{29329}({869}^{11623})=11 \\
+      x_3&=\bmod_{29329}({445}^{11623})=8369 \\ x_4&=\bmod_{29329}({25123}^{11623})=14 \\
+      x_5&=\bmod_{29329}({2090}^{11623})=4472 \\ x_6&=\bmod_{29329}({24726}^{11623})=12873 \\
+      x_7&=\bmod_{29329}({9793}^{11623})=14953 \\ \end{aligned}
+  - type: narrative
+    content: |
+      Bob tehát valóban visszakapta az Alice által küldött eredeti számsorozatot. Eve azonban ezen a ponton bajba
+      kerül, mivel nem ismeri a $d=11623$ kitevőt, hiszen azt Bob mindvégig titokban tartotta. Sebaj, gondolja Eve,
+      és megkísérli kiszámítani a publikus kulcsból a titkos kulcsot, pontosan úgy, ahogyan Bob tette a
+      kulcsgenerálás során. Ehhez Eve-nek meg kéne tudnia határozni az $e=187$ egész szám multiplikatív inverzét a
+      $Z_{\varphi(m)}$ gyűrűben, hiszen ez épp a keresett $d$ kitevő lesz.
+  - type: narrative
+    content: |
+      Igenám, csakhogy a $\varphi(m)$ értékének meghatározásához Eve-nek a
+      [euler-fuggveny-szorzattarto-tulajdonsaga] és a [euler-fuggveny-primhatvanyokra] alapján szüksége volna az
+      $m=29329$ modulus prímtényezős felbontására. Nem ismeretes ugyanis olyan algoritmikus módszer, amellyel a
+      $\varphi(m)$ értéke hatékonyan kiszámítható $m$ prímtényezőinek ismerete nélkül. Ezért Eve sajnos
+      (szerencsére) kénytelen megkeresni $m$ prímtényezőit, amelyre szintén nem ismert hatékony algoritmus. Így ez
+      a feladat az idők végezetéig is eltarthat neki a világ összes számítógépével, amennyiben a Bob által
+      választott prímszámok megfelelően nagyok.
+  - type: narrative
+    content: |
+      Ezzel szemben Bob azért volt képes olyan gyorsan meghatározni $\varphi(m)$-et, és így a $d$ titkos kitevőt,
+      mivel ő ismerte a $p=211$ és $q=139$ prímtényezőket. Nyilván, hiszen azokat ő maga választotta, és a
+      kulcsgenerálás során ezek szorzatából képezte az $m=29329$ modulust. Természetesen &ndash; mint már
+      említettük &ndash; a gyakorlatban a választott prímszámoknak többszázjegyűeknek kell lenniük a megfelelő
+      biztonsági szint eléréséhez.
+  - type: narrative
+    content: |
+      Bob tehát minden gond nélkül ki tudta számítani az $x_1, x_2, \ldots, x_7$ számsorozatot. És ami még
+      fontosabb: mivel kizárólag ő ismeri a $d=11623$ titkos kitevőt, ezért rajta kívül bárki más, aki az üzenet
+      megfejtésével próbálkozik Eve-vel azonos helyzetben találja magát.
+  - type: narrative
+    content: |
+      Az $x_1, x_2, \ldots, x_7$ számsorozatból már viszonylag egyszerűen megkapható az Alice által elküldött
+      karaktersorozat.
+  - type: formula
+    lead-in: |
+      A modulusból ugyanis tudható, hogy Alice 14 bites számokat használt, amikor előállította ezt a sorozatot:
+    content: |
+      \begin{aligned}10010110010100 &\gets x_1=9620 \\ 00000000001011 &\gets x_2=11 \\ 10000010110001 &\gets
+      x_3=8369 \\ 00000000001110 &\gets x_4=14 \\ 01000101111000 &\gets x_5=4472 \\ 11001001001001 &\gets x_6=12873
+      \\ 11101001101001 &\gets x_7=14953\end{aligned}
+  - type: narrative
+    content: |
+      Bob ezeket a biteket összefűzi, és az így kapott bitsorozatból a kódábécé alapján dekódolja az üzenetet.
+  - type: formula
+    lead-in: |
+      Amikor az üzenet végét jelző **#** karakterhez ér, a fennmaradó kitöltő biteket eldobja:
+    content: |
+      \begin{aligned}&\underbrace{10010}_{\text{s}} \underbrace{11001}_{\text{z}} \underbrace{01000}_{\text{i}}
+      \underbrace{00000}_{\text{a}} \underbrace{00001}_{\text{b}} \underbrace{01110}_{\text{o}}
+      \underbrace{00001}_{\text{b}} \\ &\underbrace{01100}_{\text{m}} \underbrace{01000}_{\text{i}}
+      \underbrace{00000}_{\text{a}} \underbrace{00111}_{\text{h}} \underbrace{00100}_{\text{e}}
+      \underbrace{01011}_{\text{l}} \underbrace{11000}_{\text{y}} \\ &\underbrace{11001}_{\text{z}}
+      \underbrace{00100}_{\text{e}} \underbrace{10011}_{\text{t}} \underbrace{11010}_{\#}
+      \underbrace{01101001}_{\text{eldobható}} \end{aligned}
+  - type: narrative
+    content: |
+      Ezután pedig válaszolhat Alice-nak ugyanezen a módon. Ekkor azonban Alice publikus kulcsával kell
+      rejtjeleznie a választ, amelyet viszont csak Alice fog tudni visszafejteni a saját titkos kulcsával.
+      Alice-nak és Bob-nak tehát nincs szükségük biztonságos csatornára &ndash; például személyes találkozó &ndash;
+      ahhoz, hogy egy közös kulcsban megegyezzenek, amelyet aztán egy valamilyen szimmetrikus kulcsú rejtjelező
+      eljáráshoz használhatnak. Az 1. részben ismertetett ***kulcsmegosztás problémája*** tehát megoldódni látszik.
+      Van azonban még egy probléma, amelyet meg kell oldani.

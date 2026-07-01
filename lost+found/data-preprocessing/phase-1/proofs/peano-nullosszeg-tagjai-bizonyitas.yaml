@@ -1,0 +1,39 @@
+type: proof
+name: peano-nullosszeg-tagjai-bizonyitas
+remarks: []
+references:
+  peano-axiomarendszer:
+    target:
+      type: definition
+      name: peano-axiomarendszer
+  peano-osszeadas:
+    target:
+      type: definition
+      name: peano-osszeadas
+  peano-osszeadas-kommutativitas:
+    target:
+      type: theorem
+      name: peano-osszeadas-kommutativitas
+content:
+  - type: narrative
+    content: |
+      ***Tegyük fel, hogy nem igaz az állítás***, azaz $a+b=0$, de $a$ és $b$ közül legalább az egyik nem 0. Az
+      összeadás kommutativitása ([peano-osszeadas-kommutativitas]) miatt mindegy, hogy melyiket választjuk, a
+      másikkal ugyanez a gondolatmenet végigjátszható. Legyen például most $b\eq 0$. Vizsgáljuk meg, hogy egy ilyen
+      galád feltételezésnek milyen képtelen logikai következményei lennének.
+  - type: narrative
+    content: |
+      Ha $b\eq 0$, akkor a Peano-axiómarendszer ([peano-axiomarendszer]) 3. pontja miatt létezik olyan természetes
+      szám, amelynek épp $b$ a rákövetkezője (hiszen egyedül a 0 nem rákövetkezője semminek). Jelöljük ezt a számot
+      $n$-nel, amelyre tehát igaz, hogy $s(n)=b$.
+  - type: narrative
+    content: |
+      Az $a+b=0$ kifejezést tehát így is írhatjuk: $a+\underbrace{s(n)}_{=b}=0$. Ez a Peano-összeadás
+      ([peano-osszeadas]) 2. pontja miatt így írható fel: $s(a+n)=0$. Vagyis azt kaptuk, hogy az $a+n$
+      rákövetkezője 0. ***Ez azonban lehetetlen***, hiszen a Peano-axiómarendszer ([peano-axiomarendszer]) 3.
+      pontja szerint a 0 nem rákövetkezője semminek.
+  - type: narrative
+    content: |
+      Ha tehát a tételünk hamisságát továbbra is tartani szeretnénk, akkor hamisnak kellene tekintenünk a 3.
+      axiómát is. Megfordítva: ha a 3. axiómát igaznak fogadjuk el &ndash; márpedig annak fogadjuk el &ndash;,
+      akkor a tétel is szükségképpen igaz kell legyen.

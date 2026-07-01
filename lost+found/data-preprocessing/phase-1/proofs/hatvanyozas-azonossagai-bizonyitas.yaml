@@ -1,0 +1,37 @@
+type: proof
+name: hatvanyozas-azonossagai-bizonyitas
+remarks: []
+references:
+  gyuru-test:
+    target:
+      type: definition
+      name: gyuru-test
+content:
+  - type: narrative
+    content: |
+      A bizonyításban a [gyuru-test] szerinti gyűrűaxiómákra fogunk hivatkozni.
+  - type: narrative
+    content: |
+      ***Az 1. tulajdonság:*** Az $(a\cdot b)^n$ hatvány egy olyan $n$ tényezős szorzat, amelynek minden tényezője
+      $(a\cdot b)$. A 4. gyűrűaxióma alapján a szorzás asszociatív, valamint &ndash; mivel kommutatív gyűrűről van
+      szó &ndash; kommutatív is, ezért ezt a szorzatot tetszőlegesen átrendezhetjük és átzárójelezhetjük. Így az
+      $a$ és $b$ tényezőket csoportosítva két $n$ tényezős szorzathoz jutunk.
+  - type: formula
+    lead-in: |
+      Az elsőnek minden tényezője $a$, a másodiknak pedig $b$:
+    content: |
+      \begin{aligned}(a\cdot b)^n&=\overbrace{(ab)\cdot (ab)\cdot \ldots \cdot (ab)}^{\text{n
+      darab}}=\\&=(\underbrace{a\cdot a\cdot \ldots \cdot a}_{\text{n darab}})\cdot(\underbrace{b\cdot b\cdot
+      \ldots \cdot b}_{\text{n darab}})=a^n\cdot b^n\end{aligned}
+  - type: narrative
+    content: |
+      ***A 2. tulajdonság:*** Az $(a^n)^k$ egy olyan $k$ tényezős szorzat, amelynek minden tényezője $a^n$. Ezen
+      tényezők mindegyike viszont egy-egy olyan $n$ tényezős szorzat, amelynek minden tényezője $a$. A 4.
+      gyűrűaxióma alapján a szorzás asszociatív, ezért ez tulajdonképpen egy olyan $n\cdot k$ tényezős szorzatként
+      is felfogható, amelynek minden tényezője $a$.
+  - type: narrative
+    content: |
+      ***A 3. tulajdonság:*** Az $a^n$ és $a^k$ szorzatoknak rendre $n$ és $k$ darab tényezője van. A 4.
+      gyűrűaxióma alapján a szorzás asszociatív, ezért az ő szorzatuk tulajdonképpen felfogható egy olyan nagy
+      szorzatként, amelyben ezen tényezők száma összeadódik. Azaz az $a^n\cdot a^k$ szorzatnak $n+k$ darab
+      tényezője lesz.

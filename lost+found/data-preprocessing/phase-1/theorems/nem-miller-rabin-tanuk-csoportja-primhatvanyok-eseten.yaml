@@ -1,0 +1,21 @@
+type: theorem
+name: nem-miller-rabin-tanuk-csoportja-primhatvanyok-eseten
+proofs:
+  - nem-miller-rabin-tanuk-csoportja-primhatvanyok-eseten-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $n$ egy tetszőleges, ***$1$-nél nagyobb páratlan szám***, amely valamilyen ***prímhatvány***. Azaz
+      $n=p^c$, ahol $p$ valamilyen ***pozitív, páratlan prímszám***, $c$ pedig tetszőleges ***pozitív kitevő***.
+      Jelöljük $G_n$-nel azon modulo $n$ maradékosztályok halmazát, amelyek ***NEM Miller-Rabin-tanúi*** $n$-nek.
+  - type: ordered-list
+    lead-in: |
+      Ekkor igazak az alábbiak:
+    items:
+      - 'Egy valamilyen $a$ egész szám által reprezentált $[a]_n$ maradékosztály esetén $[a]_n\in G_n$ ***akkor és
+        csak akkor*** teljesül, ha fennáll az $a^{p-1}\equiv 1\pmod n$ kongruencia.'
+      - 'A $G_n$ halmaz a $\Z/n\Z$ maradékosztálygyűrű multiplikatív csoportjának egy ***részcsoportja***, azaz
+        $G_n\leq (\Z/n\Z)^{\times}$.'
+      - 'A $G_n$ halmaz akkor és csak akkor ***valódi részcsoport*** &ndash; azaz $G_n\lt(\Z/n\Z)^{\times}$
+        &ndash;, ha $c\gt 1$. Egyébként $c=1$ esetben $G_n=(\Z/n\Z)^{\times}$.'

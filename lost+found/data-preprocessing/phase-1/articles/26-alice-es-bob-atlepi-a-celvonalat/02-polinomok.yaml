@@ -1,0 +1,173 @@
+type: section
+name: 02-polinomok
+title: Polinomok
+
+references:
+  egesz-kitevos-hatvany:
+    target:
+      type: definition
+      name: egesz-kitevos-hatvany
+  egesz-kitevos-hatvanyozas-azonossagai:
+    target:
+      type: theorem
+      name: egesz-kitevos-hatvanyozas-azonossagai
+  gyuru-test:
+    target:
+      type: definition
+      name: gyuru-test
+  polinomok:
+    target:
+      type: definition
+      name: polinomok
+
+body:
+  - type: narrative
+    content: |
+      A 24. részben ismerkedtünk meg bizonyos típusú egyenletekkel, amelyekhez a matematikusok akkoriban lázasan
+      keresték az úgynevezett megoldóképleteket, és amely problémakör tüzetesebb vizsgálata végül elvezetett a
+      csoportelmélet megszületéséhez.
+  - type: formula
+    lead-in: |
+      Ezek az úgynevezett első-, másod-, harmad- vagy általánosságban $n$-edfokú egyenletek a következőképpen
+      néztek ki:
+    content: |
+      \begin{aligned}a_0+a_1x&=0 \\ a_0+a_1x+a_2x^2&=0 \\ a_0+a_1x+a_2x^2+a_3x^3&=0 \\ &\vdots \\
+      a_0+a_1x+a_2x^2+a_3x^3+\ldots +a_nx^n&=0 \\ &\vdots\end{aligned}
+  - type: narrative
+    content: |
+      Egy ilyen egyenletben az $a_0$, $a_1$, $a_2$, ..., $a_n$ számok &ndash; amelyeket ***együtthatóknak***
+      nevezünk &ndash; konkrétan meg vannak adva, és a feladat megtalálni az összes olyan számot, amelyeket az $x$
+      ***ismeretlen*** helyére beírva az adott egyenlőség fennáll. Ezeket a számokat az egyenlet
+      ***megoldásainak*** vagy tudományosabban ***gyökeinek*** nevezzük.
+  - type: narrative
+    content: |
+      Vegyük észre, hogy még ha nem is ismerjük egy-egy ilyen egyenlet konkrét megoldásait, magukkal az egyenletek
+      baloldalain álló kifejezésekkel formálisan is "számolhatunk". Például beszélhetünk két ilyen kifejezés
+      "összegéről" vagy "szorzatáról", amennyiben ezen "összeadás" vagy "szorzás" során betartjuk a "szokásos
+      számolási szabályokat".
+  - type: formula
+    lead-in: |
+      Ekkor az eredmény szintén egy hasonló alakban felírható kifejezés lesz:
+    content: |
+      \begin{aligned}(1+2x) \oplus (2+x) &= 3+3x \\ (1+2x) \odot (2+x) &= 2+x+4x+2x^2 = 2+5x+2x^2\end{aligned}
+  - type: narrative
+    content: |
+      Az "összeadás" viszonylag egyszerű, mivel ilyenkor csak az "azonos pozíciókban" álló együtthatókat kell
+      összeadni egymással. Tegyük fel például, hogy egy $n$-edfokú és egy $m$-edfokú kifejezést szeretnénk
+      egymással összeadni, és legyen $n\leq m$. Írjuk fel egymás alá a két összeadandó kifejezést az egyes tagokat
+      az $x$ ismeretlen hatványai szerint sorbarendezve.
+  - type: formula
+    lead-in: |
+      Az $a_0$ tagot &ndash; amelyben tehát $x$ egyáltalán nem szerepel &ndash; a [egesz-kitevos-hatvany]val
+      összhangban $x$-nek a ***nulladik hatványaként*** fogjuk fel:
+    content: |
+      \begin{alignedat}{100} &a_0+a_1\cdot &x + &\ldots + a_n\cdot &x^n +\overbrace{0}^{=a_{n+1}}\cdot &x^{n+1} +
+      &\ldots + \overbrace{0}^{=a_m}\cdot &x^m \\ &b_0+b_1\cdot &x + &\ldots + b_n\cdot &x^n +b_{n+1}\cdot &x^{n+1}
+      + &\ldots + b_m\cdot &x^m\end{alignedat}
+  - type: narrative
+    content: |
+      Itt $n\leq m$ miatt az első kifejezésben az $n$-nél nagyobb indexű együtthatók nullák lesznek. Ezeket a
+      tagokat és az esetleges többi nulla együtthatójú tagot nem kötelező kiírni, praktikussági okokból azonban ezt
+      mi mégis megtettük, amit a fenti felírásban szemléltettük is.
+  - type: formula
+    lead-in: |
+      Ekkor, ha ezt a két kifejezést "összeadjuk" a "szokásos számolási szabályok" betartásával, akkor eredményül
+      az alábbi kifejezést kapjuk, amelyben minden együttható a két eredeti kifejezés "azonos pozíciókban" lévő
+      együtthatóinak összege:
+    content: |
+      (a_0+b_0)+(a_1+b_1)\cdot x + (a_2+b_2)\cdot x^2 + \ldots + (a_m+b_m)\cdot x^m
+  - type: narrative
+    content: |
+      Értelemszerűen $n\geq m$ esetén ugyanígy kell eljárni, csak ekkor a második kifejezésben az $m$-nél nagyobb
+      indexű tagok lesznek nullák.
+  - type: narrative
+    content: |
+      A "szorzás" esetén már egy kicsit bonyolultabb dolgunk van. Ha ugyanis követni szeretnénk a "szokásos
+      számolási szabályokat", akkor a disztributivitási szabály (lásd a gyűrűk és testek [gyuru-test]jának 5.
+      pontját) szerint az első kifejezés minden tagját a második kifejezés minden tagjával össze kell szorozni, és
+      az így kapott eredmény tagjait $x$ hatványai szerint kell összevonni és sorbarendezni. Ezt a fentebbi konkrét
+      számpéldában már láttuk, ezért most nézzük meg általánosságban is.
+  - type: formula
+    lead-in: |
+      Ismét legyen $n\leq m$, és írjuk fel egymás alá a két "összeszorzandó" kifejezést az egyes tagokat az $x$
+      ismeretlen hatványai szerint sorbarendezve:
+    content: |
+      \begin{alignedat}{100} &a_0+a_1\cdot &x + &\ldots + a_n\cdot &x^n +\overbrace{0}^{=a_{n+1}}\cdot &x^{n+1} +
+      &\ldots + \overbrace{0}^{=a_m}\cdot &x^m \\ &b_0+b_1\cdot &x + &\ldots + b_n\cdot &x^n +b_{n+1}\cdot &x^{n+1}
+      + &\ldots + b_m\cdot &x^m\end{alignedat}
+  - type: narrative
+    content: |
+      Nézzük meg általánosságban, hogy tetszőleges $k$ kitevő esetén mi lesz az $x^k$ tényezőt tartalmazó tag
+      együtthatója az eredményben. Ehhez a taghoz nyilván pontosan azok az $a_ix^i$ és $b_jx^j$ tagok fognak
+      "hozzájárulni" az eredeti két kifejezésből, amelyek esetén $i+j=k$, hiszen két ilyen tag szorzata a
+      [egesz-kitevos-hatvanyozas-azonossagai] 3.
+  - type: formula
+    lead-in: |
+      pontja alapján az alábbi lesz:
+    content: |
+      a_ib_j\cdot x^ix^j=a_ib_j\cdot x^{\overbrace{i+j}^{=k}}
+  - type: narrative
+    content: |
+      Az eredményben tehát az $x^k$ tag együtthatóját úgy kapjuk meg, hogy az összes olyan $a_i$ és $b_j$
+      együtthatót összeszorozzuk az eredeti kifejezésekből, amelyek esetén $i+j=k$, és az így kapott szorzatokat
+      összeadjuk. Jelöljük ezt az együtthatót $c_k$-val.
+  - type: formula
+    lead-in: |
+      Ekkor a $c_k$ együttható képlete az alábbi:
+    content: |
+      c_k=a_0b_k+a_1b_{k-1}+a_2b_{k-2}+\ldots +a_kb_0
+  - type: narrative
+    content: |
+      Ez látszólag egy $k+1$ tagú összeg, azonban $k$-tól függően bizonyos tagok nullák lesznek.
+  - type: narrative
+    content: |
+      Most, hogy vázlatosan ismertettük, hogyan is kell elvégezni formálisan az ilyen kifejezések "összeadását" és
+      "szorzását", jogosan merülhet fel az Olvasóban a kérdés, hogy vajon pontosan hogyan fog alakulni az
+      eredményül kapott kifejezés foka. Erre hamarosan rátérünk, most azonban adunk egy precíz matematikai
+      definíciót is az eddigiekre.
+  - type: narrative
+    content: |
+      Ennek a definíciónak első olvasásra semmi köze nem lesz az eddig tárgyaltakhoz. Itt a fentiekhez hasonló
+      kifejezések lényegét próbáljuk ugyanis megragadni, és ezáltal kizárni bármiféle kétértelműséget a közöttük
+      lévő műveletek értelmezésének, a fok fogalmának vagy bármi egyébnek a tekintetében. Márpedig egy ilyen
+      kifejezésről kizárólag az együtthatói, illetve azok sorrendje hordoz érdemi információt. Az alábbi
+      definícióban is ezt állítjuk a középpontba, a definíció utáni megjegyzésben pedig további intuitív
+      magyarázatot fogunk adni erre az absztrakcióra.
+  - type: embed
+    target:
+      type: definition
+      name: polinomok
+  - type: embed
+    target:
+      type: remark
+      name: polinomok-megjegyzes
+  - type: narrative
+    content: |
+      Az iménti megjegyzésben szereplő beágyazófüggvény jóvoltából tehát egy tetszőleges $R$ kommutatív gyűrű
+      esetén az $R[x]$ halmazban lévő konstans polinomok szintén gyűrűt alkotnak a polinomok között definiált
+      összeadás és szorzás műveletekkel. Hamarosan igazoljuk, hogy ez bizony szerencsére nem csak a konstans
+      polinomokra, hanem a teljes $R[x]$ halmazra is igaz. Előbb azonban korábbi ígéretünknek megfelelően egy
+      hasznos összefüggést bizonyítunk az összeg- és szorzatpolinomok fokaival kapcsolatban.
+  - type: embed
+    target:
+      type: theorem
+      name: osszeg-es-szorzatpolinom-foka
+  - type: embed
+    target:
+      type: proof
+      name: osszeg-es-szorzatpolinom-foka-bizonyitas
+  - type: narrative
+    content: |
+      Ez alapján már igazolni tudjuk az $R[x]$-re vonatkozó alábbi fontos tételt.
+  - type: embed
+    target:
+      type: theorem
+      name: polinomgyuru
+  - type: embed
+    target:
+      type: proof
+      name: polinomgyuru-bizonyitas
+  - type: narrative
+    content: |
+      A következő szakaszban megvizsgáljuk, hogy mi a kapcsolat a [polinomok]ban szereplő végtelen sorozatokat
+      használó reprezentáció, és a kevésbé szigorú $x$-et tartalmazó kifejezésekkel történő ábrázolásmód között.

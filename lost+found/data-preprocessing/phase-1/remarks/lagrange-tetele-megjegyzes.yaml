@@ -1,0 +1,21 @@
+type: remark
+name: lagrange-tetele-megjegyzes
+references:
+  mellekosztalyok:
+    target:
+      type: theorem
+      name: mellekosztalyok
+content:
+  - type: narrative
+    content: |
+      A [mellekosztalyok] utáni megjegyzésben megemlítettük, hogy egy $G$ csoportnak egy $H$ részcsoportja szerinti
+      bal- illetve jobboldali mellékosztályai általában nem azonos halmazok. Azaz ha $g$ a $G$ csoport egy eleme,
+      akkor általában $gH\eq Hg$. Azonban a ***Lagrange-tételből*** azonnal következik, hogy ***véges*** $G$
+      csoport esetén a számuk viszont megegyezik és ez a szám épp $|G:H|$-val egyezik meg.
+  - type: narrative
+    content: |
+      Ennél azonban több is igaz. Viszonylag könnyen belátható, hogy a bal- és jobboldali mellékosztályok száma
+      akkor is megegyezik, ha $G$ rendje esetleg végtelen. Sőt, a bal- és jobboldali mellékosztályok között
+      kölcsönösen egyértelmű megfeleltetés létesíthető akkor is, ha történetesen ezek száma is végtelen &ndash; és
+      így ebben a végtelen számosságú esetben is "ugyanannyi van belőlük". Ezek igazolását &ndash; illetve az
+      ***index*** fogalmának ilyen jellegű általánosítását &ndash; azonban most mellőzzük.

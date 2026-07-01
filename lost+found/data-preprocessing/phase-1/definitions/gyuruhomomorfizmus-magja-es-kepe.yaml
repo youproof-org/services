@@ -1,0 +1,22 @@
+type: definition
+name: gyuruhomomorfizmus-magja-es-kepe
+remarks:
+  - gyuruhomomorfizmus-magja-es-kepe-megjegyzes
+content:
+  - type: narrative
+    content: |
+      Legyenek $R$ és $S$ tetszőleges gyűrűk, valamint legyen adva közöttük egy $f:R\to S$
+      ***gyűrűhomomorfizmus***. Ekkor az $f$ ***gyűrűhomomorfizmus magjának*** nevezzük azon $R$-beli elemek
+      halmazát, melyeknek $f$ szerinti képe az $S$ gyűrű nulleleme. Az $f$ magját &ndash; az angol "kernel" szóból
+      eredeztetve &ndash; így jelöljük: $\ker f$.
+  - type: narrative
+    content: |
+      Az $f$ ***gyűrűhomomorfizmus képének*** nevezzük azoknak az $S$-beli elemeknek a halmazát, amelyek képei
+      ***legalább egy*** $R$-beli elemnek. Az $f$ képét &ndash; az angol "image" szóból eredeztetve &ndash; így
+      jelöljük: $\text{im} f$.
+  - type: figure
+    lead-in: |
+      Az alábbi ábra szemlélteti a fenti fogalmakat:
+    src: gyuruhomomorfizmus_magja_es_kepe.jpg
+    alt: Gyűrűhomomorfizmus magja és képe
+    caption: Gyűrűhomomorfizmus magja és képe

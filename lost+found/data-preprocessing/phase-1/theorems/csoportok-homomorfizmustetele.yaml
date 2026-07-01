@@ -1,0 +1,11 @@
+type: theorem
+name: csoportok-homomorfizmustetele
+proofs:
+  - csoportok-homomorfizmustetele-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyenek $G$ és $H$ tetszőleges csoportok, valamint tegyük fel, hogy adva van egy $f:G\to H$
+      csoporthomomorfizmus. Ekkor $G/\ker f \simeq \text{im} f$, azaz a $G$-ből képzett $f$ magja szerinti
+      faktorcsoport ***izomorf*** $f$ képével.

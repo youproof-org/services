@@ -1,0 +1,227 @@
+type: section
+name: 04-kongruenciarendszerek-megoldasa
+title: Kongruenciarendszerek megoldása
+
+references:
+  egesz-szamok-maradekosztalygyurui:
+    target:
+      type: theorem
+      name: egesz-szamok-maradekosztalygyurui
+  ketvaltozos-muvelet:
+    target:
+      type: definition
+      name: ketvaltozos-muvelet
+  ketvaltozos-relacio:
+    target:
+      type: definition
+      name: ketvaltozos-relacio
+  kinai-maradektetel-alternativ:
+    target:
+      type: theorem
+      name: kinai-maradektetel-alternativ
+  kinai-maradektetel-megforditasa:
+    target:
+      type: theorem
+      name: kinai-maradektetel-megforditasa
+
+body:
+  - type: narrative
+    content: |
+      Most megmutatjuk, hogy ez a "bekeretezős" módszer mindig működik, és eljárást is adunk a keresett
+      maradékosztály kiszámítására. Tulajdonképpen az a feladat, hogy adva van egy modulo $p$ maradékosztályból
+      (jelöljük ezt $A$-val) és egy modulo $q$ maradékosztályból (jelöljük ezt $B$-vel) álló úgynevezett
+      ***"rendezett pár"***, ahol $p$ és $q$ egymáshoz relatív prímek.
+  - type: formula
+    lead-in: |
+      A feladat megtalálni azt az $X$-szel jelölt halmazt, amely épp a megadott két maradékosztály metszetével
+      egyezik meg:
+    content: |
+      X=A\cap B
+  - type: narrative
+    content: |
+      A ***kínai maradéktétel*** tehát azt állítja, hogy amennyiben $p$ és $q$ egymáshoz ***relatív prímek***,
+      akkor az $X$-szel jelölt halmaz éppenséggel egy modulo $pq$ maradékosztály lesz. Hamarosan látni fogjuk, hogy
+      ennél jóval több is igaz.
+  - type: narrative
+    content: |
+      Ehhez először ismételjük át a ***"rendezett pár"*** fogalmát, amelyről néhány korábbi részben már volt szó.
+      Elsőként a ***kétváltozós művelet*** fogalmának bevezetésekor találkoztunk vele a 11. részben. Ezt a fogalmat
+      a [ketvaltozos-muvelet]ban egy olyan függvényként definiáltuk, amely egy valamilyen $H$ halmaz elemeiből
+      alkotott párokhoz a $H$ halmaz elemeit rendeli hozzá. Például az egész számok $\Z$ halmazán értelmezett
+      szokásos összeadás művelet, mint függvény a $(3;2)$ rendezett párhoz az $5$ egész számot rendeli hozzá.
+  - type: narrative
+    content: |
+      Másodszor a 12. részben definiált ***kétváltozós reláció*** kapcsán került elő ez a fogalom. Egy szintén
+      valamilyen $H$ halmazon értelmezett ***kétváltozós relációt*** a [ketvaltozos-relacio]ban a $H$ elemeiből
+      alkotott párok halmazának egy részhalmazaként definiáltuk. Azt mondtuk, hogy egy $R$ reláció akkor áll fenn
+      két $H$-beli $a$ és $b$ elem között, ha az $(a;b)$ rendezett pár eleme az $R$ halmaznak. Például a $\Z$
+      halmazon értelmezett $\leq$ relációnak, mint halmaznak eleme a $(2;3)$ rendezett pár &ndash; hiszen $2\leq 3$
+      &ndash;, de nem eleme a $(3;2)$ rendezett pár &ndash; hiszen $3\ leq 2$.
+  - type: narrative
+    content: |
+      Végül a 13. részben magukat az ***egész számokat*** is a természetes számok $\N$ halmazának elemeiből
+      alkotott rendezett párok segítségével definiáltuk.
+  - type: narrative
+    content: |
+      A felsorolt példákban egyrészt ***PÁRokról***, azaz kétkomponensű objektumokról volt szó, másrészt pedig a
+      ***PÁR*** két komponense ugyanabból a halmazból került ki. Egy ennél általánosabb fogalomhoz jutunk, ha
+      ezeket a megszorításokat elhagyjuk.
+  - type: embed
+    target:
+      type: definition
+      name: halmazok-direkt-szorzata
+  - type: narrative
+    content: |
+      Egy kézenfekvő példa direkt szorzatra a ***sík pontjainak halmaza***. Ezeket általában egy derékszögű
+      koordinátarendszerben szoktuk ábrázolni. Ilyenkor felrajzolunk két egymásra merőleges számegyenest, amelyek a
+      $0$-nál metszik egymást. Ezek után egy síkbeli pontot egy számpárral írhatunk le, amelynek komponenseit a
+      ***pont koordinátáinak*** nevezzük. Az első koordináta azt adja meg, hogy a két számegyenes metszéspontjából
+      kiindulva mennyit kell haladni az első &ndash; általában vízszintes &ndash; számegyenes mentén, míg a második
+      koordináta azt adja meg, hogy innen mennyit kell továbbhaladni a másik &ndash; általában függőleges
+      számegyenes irányával párhuzamosan.
+  - type: figure
+    lead-in: |
+      Ezt mutatja az alábbi ábra:
+    src: 01-derekszogu-koordinatarendszer.jpg
+    alt: Derékszögű koordinátarendszer
+    caption: Derékszögű koordinátarendszer
+  - type: narrative
+    content: |
+      A számegyenes pontjainak halmazát $\R$-rel szoktuk jelölni, a sík pontjainak halmaza pedig ennek megfelelően
+      az $\R\times \R$, vagy másként az $\R^2$ direkt szorzat lesz. Ehhez hasonlóan a $3$, $4$, ..., $n$ dimenziós
+      tér pontjainak halmazát $\R^3$, $\R^4$, ..., $\R^n$ jelöli.
+  - type: narrative
+    content: |
+      Egy másik kézenfekvő példa direkt szorzatra az ***52 lapos franciakártya***. Egy ilyen pakliban minden
+      kártyalapnak van valamilyen "színe" (angolul "suit") és "értéke" (angolul "rank").
+  - type: formula
+    lead-in: |
+      Jelöljük a lehetséges színek halmazát $S$-sel, a lehetséges értékek halmazát pedig $R$-rel:
+    content: |
+      \begin{aligned}S&=\{\clubs;\diamonds;\spades;\hearts\} \\
+      R&=\{2;3;4;5;6;7;8;9;10;\text{J};\text{Q};\text{K};\text{A}\}\end{aligned}
+  - type: narrative
+    content: |
+      Mivel a kártyapakliban lévő lapok minden lehetséges színt és értéket felvehetnek, ezért e lapok halmaza
+      tulajdonképpen az $S\times R$ direkt szorzat lesz. Ekkor egy kártyalapot egy olyan rendezett pár reprezentál,
+      amelynek első komponense az $S$, a második komponense pedig az $R$ halmaz eleme. Például a "treff hetest"
+      reprezentáló rendezett pár a $(\clubs;7)$ lesz.
+  - type: narrative
+    content: |
+      Most vonatkoztassuk a ***direkt szorzat*** fogalmát a ***kínai maradéktétel*** állítására. A szakasz elején
+      szereplő $A$-ból és $B$-ből álló ***rendezett pár*** első komponense tehát a modulo $p$, míg a második
+      komponense a modulo $q$ maradékosztálygyűrű eleme. Maga az $(A;B)$ rendezett pár tehát eleme e két
+      maradékosztálygyűrű ***direkt szorzatának***.
+  - type: formula
+    lead-in: |
+      Azaz a [egesz-szamok-maradekosztalygyurui]ben szereplő és a most bevezetett jelölésekkel:
+    content: |
+      \begin{aligned}A &\in \Z/p\Z \\ B &\in \Z/q\Z \\ (A;B) &\in \Z/p\Z \times \Z/q\Z\end{aligned}
+  - type: narrative
+    content: |
+      Ezek után az alábbi tételben megadjuk a ***kínai maradéktétel*** egy alternatív megfogalmazását, valamint egy
+      eljárást is mutatunk a tételben szereplő $A\cap B$ halmaz előllítására:
+  - type: embed
+    target:
+      type: theorem
+      name: kinai-maradektetel-alternativ
+  - type: embed
+    target:
+      type: proof
+      name: kinai-maradektetel-alternativ-bizonyitas
+  - type: embed
+    target:
+      type: remark
+      name: kinai-maradektetel-alternativ-megjegyzes
+  - type: formula
+    lead-in: |
+      Most térjünk vissza az előző szakaszban szereplő példára, amelynek során a "bekeretezős" módszerrel az alábbi
+      két kongruenciarendszer megoldását kerestük meg:
+    content: |
+      \begin{array}{ccc} \boxed{\begin{aligned}x&\equiv 4\pmod 5 \\ x&\equiv 6\pmod 8\end{aligned}} & \to &
+      [14]_{40} \\ \\ \boxed{\begin{aligned}x&\equiv 4\pmod 5 \\ x&\equiv 2\pmod 8\end{aligned}} & \to & [34]_{40}
+      \end{array}
+  - type: narrative
+    content: |
+      Az első rendszernek tehát a $[14]_{40}$, a másodiknak pedig a $[34]_{40}$ maradékosztály volt a megoldása. Ez
+      a módszer azonban a gyakorlatban nem használható, így most próbáljuk meg megtalálni a megoldásokat a
+      [kinai-maradektetel-alternativ]ben ismertetett eljárás segítségével.
+  - type: narrative
+    content: |
+      Az első kongruenciarendszer esetén keressük tehát az $A=[4]_5$ és a $B=[6]_8$ maradékosztályok metszetét.
+  - type: formula
+    lead-in: |
+      Ehhez a tétel szerint kell keresnünk olyan $x_1$ és $x_2$ egész számokat, amelyek kielégítik az alábbi
+      kongruenciákat:
+    content: |
+      \begin{aligned}5\cdot x_1&\equiv 1\pmod 8 \\ 8\cdot x_2&\equiv 1\pmod 5\end{aligned}
+  - type: formula
+    lead-in: |
+      Ezeket az előző részben ismertetett ***kibővített euklidészi algoritmussal*** megoldva például az alábbi
+      számokat választhatjuk $x_1$-nek és $x_2$-nek:
+    content: |
+      \begin{aligned}x_1&=5 \\ x_2&=2\end{aligned}
+  - type: formula
+    lead-in: |
+      Ezután a tételben szereplő képletet alkalmazva az $A\cap B$ maradékosztály alábbi reprezentánselemét kapjuk:
+    content: |
+      4\cdot 8\cdot 2 + 6\cdot 5\cdot 5=64+150=214
+  - type: narrative
+    content: |
+      Valóban, az eredményül kapott $214$ egész szám benne van a $[14]_{40}$ maradékosztályban, amelyet a
+      "bekeretezős" módszerrel kaptunk az első kongruenciarendszerre az előző szakaszban.
+  - type: narrative
+    content: |
+      Most nézzük meg a második kongruenciarendszert. Ebben az esetben az $A=[4]_5$ és a $B=[2]_8$ maradékosztályok
+      metszetét keressük. Az előző példánál már megkaptuk az $5\cdot x_1\equiv 1\pmod 8$ és a $8\cdot x_2\equiv
+      1\pmod 5$ kongruenciák megoldásait, így azokat most is használhatjuk.
+  - type: formula
+    lead-in: |
+      A tételben szereplő képletet alkalmazva most az alábbi reprezentánselemét kapjuk meg az $A\cap B$ halmaznak:
+    content: |
+      4\cdot 8\cdot 2 + 2\cdot 5\cdot 5=64+50=114
+  - type: narrative
+    content: |
+      Valóban, az eredményül kapott $114$ egész szám benne van a $[34]_{40}$ maradékosztályban, amelyet a
+      "bekeretezős" módszerrel kaptunk a második kongruenciarendszerre az előző szakaszban.
+  - type: narrative
+    content: |
+      A most tanult eljárás tehát tulajdonképpen egy ***függvényt*** valósít meg, amely a $\Z/p\Z \times \Z/q\Z$
+      halmazt képezi le a $\Z/pq\Z$ halmazra, méghozzá minden maradékosztálypárt e párban szereplő maradékosztályok
+      metszetére.
+  - type: figure
+    lead-in: |
+      Kérdés, hogy vajon ez a leképezés ***bijektív-e***, azaz vajon minden modulo $pq$ maradékosztály pontosan egy
+      $\Z/p\Z \times \Z/q\Z$-beli maradékosztálypárnak a metszete-e? Az alábbi ábrák mutatják, hogy mi lenne a
+      helyzet nemleges és igenlő válasz esetén:
+    src: 02-pelda-nem-bijektiv-lekepezesre.jpg
+    alt: Példa nem bijektív leképezésre
+    caption: Példa nem bijektív leképezésre
+  - type: figure
+    src: 03-pelda-bijektiv-lekepezesre.jpg
+    alt: Példa bijektív leképezésre
+    caption: Példa bijektív leképezésre
+  - type: narrative
+    content: |
+      Most igazoljuk, hogy az utóbbi a helyzet. Hamarosan kiderül, hogy ez miért olyan fontos.
+  - type: embed
+    target:
+      type: theorem
+      name: kinai-maradektetel-megforditasa
+  - type: embed
+    target:
+      type: proof
+      name: kinai-maradektetel-megforditasa-bizonyitas
+  - type: narrative
+    content: |
+      Ez azt bizonyítja, hogy a $\Z/p\Z \times \Z/q\Z$ és a $\Z/pq\Z$ halmazok közötti függvény egy ***kölcsönösen
+      egyértelmű*** leképezés. Ha úgy tetszik egy kétirányú híd képezhető a két halmaz között. Ez azt jelenti, hogy
+      az egyik halmazban lévő bármely elemnek egyértelműen megvan a párja a másik halmazban és viszont. A $\Z/p\Z
+      \times \Z/q\Z$ halmazból a $\Z/pq\Z$ halmazba  a [kinai-maradektetel-alternativ], visszafelé pedig a
+      [kinai-maradektetel-megforditasa] biztosítja ezt a fajta átjárást.
+  - type: narrative
+    content: |
+      Például egyrészt a $\Z/5\Z\times \Z/8\Z$ halmazban lévő $([4]_5;[6]_8)$ maradékosztálypárnak a $[14]_{40}$
+      maradékosztály, míg a $([4]_5;[2]_8)$ párnak a $[34]_{40}$ maradékosztály a megfelelője a $\Z/40\Z$
+      halmazban. Másrészt pedig biztosak lehetünk benne, hogy a $[14]_{40}$ és a $[34]_{40}$ maradékosztályok
+      csakis ezekhez a párokhoz vannak ilymódon hozzárendelve.

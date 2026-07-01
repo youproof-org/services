@@ -1,0 +1,68 @@
+type: proof
+name: peano-szorzat-egyszerusites-bizonyitas
+remarks: []
+references:
+  peano-nullszorzat-tenyezoi:
+    target:
+      type: theorem
+      name: peano-nullszorzat-tenyezoi
+  peano-szorzas-disztributivitas:
+    target:
+      type: theorem
+      name: peano-szorzas-disztributivitas
+  termeszetes-szamok-rendezese:
+    target:
+      type: definition
+      name: termeszetes-szamok-rendezese
+  termeszetes-szamok-rendezesi-relacioja-trichotom:
+    target:
+      type: theorem
+      name: termeszetes-szamok-rendezesi-relacioja-trichotom
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy nem igaz az állítás, azaz valamilyen $c\eq 0$ mellett léteznek olyan galád $a$ és $b$
+      természetes számok, amelyekre $a\cdot c=b\cdot c$ teljesül, ugyanakkor $a\eq b$.
+  - type: narrative
+    content: |
+      Ekkor $a$ és $b$ kisebb-nagyobb viszonyaira vonatkozóan a $\leq$ reláció ([termeszetes-szamok-rendezese])
+      trichotómiája ([termeszetes-szamok-rendezesi-relacioja-trichotom]) miatt két eset lehetséges: $a\lt b$ vagy
+      $b\lt a$.
+  - type: formula
+    lead-in: |
+      Ha $a\lt b$, akkor ez a rendezési reláció [termeszetes-szamok-rendezese]ja miatt azt jelenti, hogy létezik
+      olyan $k\eq 0$ természetes szám, hogy:
+    content: |
+      a+k=b
+  - type: formula
+    lead-in: |
+      Ezt behelyettesítve az $a\cdot c=b\cdot c$ egyenletbe a következőt kapjuk:
+    content: |
+      a\cdot c=(\underbrace{a+k}_{=b})\cdot c
+  - type: formula
+    lead-in: |
+      A Peano-szorzás disztributivitása miatt ([peano-szorzas-disztributivitas]) az egyenlet jobboldalán lévő
+      zárójel felbontható:
+    content: |
+      a\cdot c=a\cdot c + k\cdot c
+  - type: narrative
+    content: |
+      Azt viszont tudjuk, hogy egyrészt $k\eq 0$, másrészt $c\eq 0$, ezért a [peano-nullszorzat-tenyezoi] alapján a
+      szorzatuk sem lehet 0.
+  - type: formula
+    content: |
+      a\cdot c=a\cdot c + \underbrace{k\cdot c}_{\ eq 0}
+  - type: formula
+    lead-in: |
+      Azaz a $\lt$ reláció [termeszetes-szamok-rendezese]ja alapján lényegében ezt kaptuk:
+    content: |
+      a\cdot c \lt a\cdot c
+  - type: narrative
+    content: |
+      Ez ugye lehetetlen, hiszen semmilyen természetes szám nem lehet kisebb önmagánál. A másik esetben &ndash;
+      tehát amikor $b\lt a$ &ndash; ugyanilyen módon juthatunk ellentmondásra. Ekkor azt fogjuk kapni, hogy $b\cdot
+      c \lt b\cdot c$.
+  - type: narrative
+    content: |
+      Mivel mindkét esetben ellentmondásra jutottunk, ezért csak az eredeti felételezésünk &ndash; miszerint a
+      tétel állítása nem igaz &ndash; lehetett hibás.

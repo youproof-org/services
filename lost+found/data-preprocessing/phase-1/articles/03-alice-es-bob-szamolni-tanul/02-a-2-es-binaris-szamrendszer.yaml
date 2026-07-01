@@ -1,0 +1,47 @@
+type: section
+name: 02-a-2-es-binaris-szamrendszer
+title: A 2-es (bináris) számrendszer
+
+body:
+  - type: narrative
+    content: |
+      Most nézzük meg, hogy n=2 esetén (azaz 2-es számrendszerben) hogyan tudjuk leírni az előző példában szereplő
+      2019-es számot. A 2-es számrendszer helyiértékei rendre 2^0^=1, 2^1^=2, 2^2^=4, 2^3^=8, 2^4^=16, és így
+      tovább. A helyiértékeket reprezentáló körök tartalma ebben az esetben 2 féle lehet: vagy nincs kavics az
+      adott körben, vagy pedig van. Ezt a két esetet rendre a **0** és az **1** szimbólumokkal fogjuk jelölni a
+      számábrázolásban. Ezután megkeressük azt a legnagyobb helyiértéket, amely még éppen nem nagyobb az ábrázolni
+      kívánt számunknál, azaz 2019-nél. Ez a 2^10^=1024 lesz, így az ennek megfelelő körbe annyi kavicsot
+      helyezünk, amennyinek az összértéke még éppen nem haladja meg a 2019-et. Ez jelen esetben a maximális 1 darab
+      kavics lesz, így leírjuk az ennek megfelelő **1** szimbólumot, és az elhelyezett kavics értékét (1024)
+      levonjuk a 2019-ből, eredményül 995-öt kaptunk. Ezután ezzel az 995-tel megyünk tovább az eggyel alacsonyabb
+      helyiértékre, ez a 2^9^=512 lesz. Ebbe a körbe megint annyi kavicsot helyezünk, hogy ezek összértéke ne
+      legyen nagyobb 995-nél. Ez megint a maximális 1 darab kavics lesz, tehát leírjuk az ennek megfelelő **1**
+      szimbólumot is, és az elhelyezett kavics értékét (512) levonjuk az 995-ből. Így a számunk ábrázolása eddig az
+      **11** szimbólumsorozat, a maradék pedig 483. Ezt az eljárást folytatjuk egészen a legalacsonyabb
+      helyiértékig.
+  - type: figure
+    lead-in: |
+      Végeredményül az **11111100011** szimbólumsorozatot kapjuk, amely tehát a 2019-es szám 2-es számrendszerbeli
+      ábrázolása:
+    src: 05-binaris-szamrendszer-2019.jpg
+    alt: A 2019-es szám 2-es számrendszerben
+    caption: A 2019-es szám 2-es számrendszerben
+  - type: narrative
+    content: |
+      A most bemutatott 2-es (vagy más néven ***bináris***) számrendszer rendkívül fontos az informatikai
+      rendszerek szempontjából. A **0** és **1** szimbólumokat ugyanis könnyű elektronikus eszközökkel kezelni.
+      Például folyik-e áram egy vezetékben vagy nem? Van-e töltés egy kondenzátorban vagy nincs? Van-e lyuk égetve
+      egy DVD lemezre vagy nincs? Egy bináris szám számjegyeit ***bit***-eknek nevezzük, amely kifejezés az angol
+      "binary digit" (azaz ***bináris számjegy***) rövidített változata. Megfelelő áramkörökkel bináris számokon
+      műveleteket tudunk végezni az őket reprezentáló fizikai jelek manipulálása által, méghozzá veszettül gyorsan.
+      Például 64-bites egész számok szorzásának időtartama egy mai átlagos processzor esetén a néhány
+      nanoszekundumos nagyságrendbe esik. Ez egyetlen másodperc alatt nagyságrendileg 1 milliárd szorzás elvégzését
+      jelenti. A bináris számok szorzása, összeadása, és egyéb műveletek végzése helyiértékenként történik nagyon
+      hasonlóan ahhoz, mint ahogyan az írásban számolást tanultuk általános iskolában, 10-es számrendszerben.
+  - type: formula
+    lead-in: |
+      Az alábbi ábrán például ugyanazon két szám írásbeli összeadásának folyamata látható bináris és 10-es
+      számrendszerben:
+    content: |
+      \begin{array}{rr}{\begin{array}{rr} & \ 11010 \\ + & \ 10011 \\ \hline \ & 101101 \end{array}} &
+      {\begin{array}{rr} & \ 26 \\ + & \ 19 \\ \hline \ & 45 \end{array}}\end{array}

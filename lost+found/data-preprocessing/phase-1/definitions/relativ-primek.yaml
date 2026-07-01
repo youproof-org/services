@@ -1,0 +1,9 @@
+type: definition
+name: relativ-primek
+remarks:
+  - relativ-primek-megjegyzes
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ tetszőleges integritástartomány. Amennyiben valamely $a$ és $b$ elemeknek ***minden közös osztója
+      egység***, akkor azt mondjuk, hogy $a$ és $b$ ***relatív prímek*** egymáshoz.

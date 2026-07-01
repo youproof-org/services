@@ -1,0 +1,39 @@
+type: section
+name: 10-a-miller-rabin-tanuk-szama
+title: A Miller-Rabin-tanúk száma
+
+references:
+  carmichael-szamok:
+    target:
+      type: definition
+      name: carmichael-szamok
+  fermat-tanuk-szama:
+    target:
+      type: theorem
+      name: fermat-tanuk-szama
+
+body:
+  - type: narrative
+    content: |
+      Az előző két szakaszban igazolt két tétel következményeként most már könnyedén tudunk alsó becslést adni a
+      Miller-Rabin-tanúk számára vonatkozóan.
+  - type: embed
+    target:
+      type: theorem
+      name: miller-rabin-tanuk-szama
+  - type: embed
+    target:
+      type: proof
+      name: miller-rabin-tanuk-szama-bizonyitas
+  - type: narrative
+    content: |
+      Hasonlítsuk össze ezt az állítást a Fermat-tanúk számára vonatkozó [fermat-tanuk-szama] állításával. Ott
+      mindössze annyit állítottunk, hogy ***ha*** $n$-hez ***létezik*** Fermat-tanú, ***akkor*** a redukált
+      maradékosztályoknak legalább a fele az. Ez tehát nem minden összetett $n$-re érvényes, hanem csak azokra,
+      amelyekhez ***létezik*** Fermat-tanú. A [carmichael-szamok]ban ismertetett ***Carmichael-számok*** például
+      olyan összetett számok, amelyekhez egyáltalán nincsen Fermat-tanú.
+  - type: narrative
+    content: |
+      Ezzel szemben az imént bizonyított állítás ***minden összetett*** $n$-re érvényes, azaz Miller-Rabin-tanúja
+      minden összetett számnak van, méghozzá &ndash; ahogy láttuk &ndash; eléggé sok. Így a
+      Miller-Rabin-prímtesztre nézve valóban nem léteznek univerzális álprímek.

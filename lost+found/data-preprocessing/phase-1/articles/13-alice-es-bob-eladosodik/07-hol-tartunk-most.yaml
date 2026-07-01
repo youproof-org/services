@@ -1,0 +1,66 @@
+type: section
+name: 07-hol-tartunk-most
+title: Hol tartunk most?
+
+body:
+  - type: narrative
+    content: |
+      Ismételten álljunk meg, és szedjük össze, hol tartunk most a számelmélet felépítésében.
+  - type: narrative
+    content: |
+      Megállapítottuk, hogy a természetes számok $\N$ halmaza algebrai értelemben túlságosan szűkösnek bizonyul.
+      Elkezdtük ezért végigkövetni azt a nem kis absztrakciós utat, amelynek eredményeként őseink felfedezték a
+      számegyenes nullától balra lévő részét, azaz a ***negatív számokat***.
+  - type: narrative
+    content: |
+      Egy banki analógiával élve és a Peano-axiómáknál maradva ezeket az absztrakt objektumokat ***természetes
+      számpárokkal*** próbáltuk leírni, amelyek első komponense banki betétet, második komponense pedig banki
+      adósságot jelöl. Az alábbi definícióval bevezettünk e számpárok között egy relációt, amely az ugyanolyan
+      vagyoni helyzeteket jelölő számpárokat azonosítja:
+  - type: recall
+    target:
+      type: definition
+      name: termeszetes-szamparok-ekvivalenciarelacioja
+  - type: narrative
+    content: |
+      Megismerkedtünk az ***ekvivalenciareláció*** fogalmával:
+  - type: recall
+    target:
+      type: definition
+      name: ekvivalenciarelacio
+  - type: narrative
+    content: |
+      Ezután megmutattuk, hogy a $\sim$ reláció egy ekvivalenciareláció az $\N \times \N$ halmazon, amely ezt a
+      halmazt ekvivalencia-osztályokra bontja. Ezeket az osztályokat neveztük ***egész számoknak***:
+  - type: recall
+    target:
+      type: definition
+      name: egesz-szamok-halmaza
+  - type: narrative
+    content: |
+      Ezekre egy, az iskolai tanulmányainkból már jól ismert jelölést is bevezettünk:
+  - type: recall
+    target:
+      type: definition
+      name: pozitiv-es-negativ-egesz-szamok
+  - type: narrative
+    content: |
+      Ezután definiáltunk egy &ndash; egyelőre &ndash; $\oplus$-szal jelölt műveletet a $\Z$ halmazon, amelyet az
+      ***egész számok összeadásának*** neveztünk, és amelyről megmutattuk, hogy ***kommutatív és asszociatív***:
+  - type: recall
+    target:
+      type: definition
+      name: egesz-szamok-osszeadasa
+  - type: recall
+    target:
+      type: theorem
+      name: egesz-szamok-osszeadasa-kommutativ-es-asszociativ
+  - type: narrative
+    content: |
+      Végül megadtunk egy függvényt, amellyel elkezdtük algebrai értelemben ***beágyazni*** a természetes számokat
+      az egész számok $\Z$ halmazába. Egyelőre azt mutattuk meg, hogy ez a függvény valóban ***tartja*** a
+      Peano-összeadás műveletét:
+  - type: recall
+    target:
+      type: theorem
+      name: termeszetes-szamok-beagyazasa-osszegtarto

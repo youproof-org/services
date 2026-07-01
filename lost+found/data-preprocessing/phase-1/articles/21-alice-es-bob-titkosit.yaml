@@ -1,0 +1,204 @@
+type: chapter
+name: 21-alice-es-bob-titkosit
+title: Alice és Bob titkosít
+
+references:
+  abszolutertek-euklideszi-norma:
+    target:
+      type: theorem
+      name: abszolutertek-euklideszi-norma
+  egesz-szamok-abszoluterteke:
+    target:
+      type: definition
+      name: egesz-szamok-abszoluterteke
+  euklideszi-gyuru:
+    target:
+      type: definition
+      name: euklideszi-gyuru
+  euklideszi-gyuruben-letezik-kituntetett-kozos-oszto:
+    target:
+      type: theorem
+      name: euklideszi-gyuruben-letezik-kituntetett-kozos-oszto
+  linearis-kongruenciak:
+    target:
+      type: definition
+      name: linearis-kongruenciak
+  linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga:
+    target:
+      type: theorem
+      name: linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga
+  termeszetes-szamok-minimumtetele:
+    target:
+      type: theorem
+      name: termeszetes-szamok-minimumtetele
+
+abstract:
+  - type: narrative
+    content: |
+      Az előző részben azt vizsgáltuk meg, hogy a 18. részben bevezetett kongruencia, maradékosztály és
+      maradékosztálygyűrű fogalmai mit jelentenek az egész számok esetében. Láthattuk, hogy a kongruenciákkal
+      nagyjából ugyanúgy kell számolni, mint a hagyományos egyenletekkel, de azért bizonyos esetekben vigyázni
+      kell. Ezután megismerkedtünk az Euler-féle $\varphi$-függvénnyel, amely a modulo $m$ redukált
+      maradékosztályok számát adja meg. Végül az úgynevezett lineáris kongruenciák megoldhatóságának feltételeit,
+      valamint az Euler-Fermat tételt ismertük meg. Ugyanis az ebben a részben ismertetett RSA-eljárás esetén ezek
+      teremtik meg a nyilvános és titkos kulcsok közötti számelméleti kapcsolatot.
+  - type: narrative
+    content: |
+      De vajon hogyan lehet a legnagyobb közös osztó kiszámítására szolgáló euklidészi algoritmust lineáris
+      kongruenciák megoldásához is használni? Hogyan kell kiszámítani az Euler-féle $\varphi$-függvény értékét egy
+      adott számra, és milyen információra van ehhez szükség? Hogyan működik az RSA nevű aszimmetrikus kulcsú
+      rejtjelező eljárás? Ebben a részben erről lesz szó...
+prerequisite-warning:
+  - type: narrative
+    content: |
+      Figyelem! Ez a rész erőteljesen épít a 17., 19. és 20. részekben felépített alábbi definíciókra, valamint a
+      hozzájuk kapcsolódó tételekre:
+  - type: recall
+    target:
+      type: definition
+      name: euklideszi-gyuru
+  - type: recall
+    target:
+      type: definition
+      name: foidealgyuruk
+  - type: recall
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia
+  - type: recall
+    target:
+      type: theorem
+      name: egesz-szamok-maradekosztalyai
+  - type: recall
+    target:
+      type: definition
+      name: redukalt-maradekosztaly
+  - type: recall
+    target:
+      type: definition
+      name: euler-fuggveny
+  - type: recall
+    target:
+      type: definition
+      name: linearis-kongruenciak
+  - type: recall
+    target:
+      type: theorem
+      name: bezout-lemma
+  - type: narrative
+    content: |
+      Ezek kontextusba helyezése miatt erőteljesen ajánlott elolvasni a 17., 19. és 20. részeket, mivel gyakran
+      hivatkozni fogunk rájuk. A teljes cikksorozat elejét itt találod.
+prologue:
+  - type: narrative
+    content: |
+      Kezdjük tehát a lineáris kongruenciák megoldásával. Rögzítsünk egy $m\gt 0$ ***pozitív*** modulust. A
+      [linearis-kongruenciak] és az utána lévő megjegyzés alapján egy $ax\equiv b\pmod m$ lineáris kongruencia egy
+      megoldása alatt egy olyan ***modulo $m$ maradékosztályt*** értünk, amelynek bármely elemét behelyettesítve
+      $x$ helyére a kongruencia fennáll.
+  - type: formula
+    lead-in: |
+      A [linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga] alapján a fenti lineáris
+      kongruencia akkor és csak akkor oldható meg &ndash; azaz létezik ilyen maradékosztály &ndash;, ha megoldható
+      az alábbi úgynevezett ***lineáris diofantoszi egyenlet***:
+    content: |
+      ax+my=b
+  - type: narrative
+    content: |
+      Ebben az esetben tehát megoldás alatt olyan ***EGÉSZ számpárt*** értünk, amelyet a fenti egyenletbe $x$ és
+      $y$ helyére behelyettesítve fennáll az egyenlet. Ha tehát egy ilyen egyenletet meg tudunk oldani, akkor
+      bármilyen lineáris kongruenciát is meg tudunk oldani. Azok mindegyike ugyanis egy-egy ilyen egyenletre
+      vezethető vissza. Nézzünk is egy gyors példát egy lineáris diofantoszi egyenlethez vezető egyszerű
+      problémára.
+  - type: narrative
+    content: |
+      A 7., 10. és 13. részekben szó volt már a messzi-messzi Kompánia országáról. Tegyük fel, hogy ebben az
+      országban az emberek aranytallérokon kívül bankjegyeket is használnak fizetőeszközként. Igenám, csakhogy
+      ebben a furcsa országban mindössze kétféle címlet létezik: 79 és 47 aranytallér névértékű bankjegy. Tegyük
+      fel, hogy Alice kinézett valamilyen ajándékot Bob-nak, amely 10000 aranytallérba kerül, viszont csak
+      bankjegyek vannak nála.
+  - type: formula
+    lead-in: |
+      Kérdés, hogy Alice ki tudja-e fizetni pontosan az összeget ezen bankjegyek segítségével, és ha igen, akkor
+      hányféleképpen? Keressük tehát az alábbi lineáris diofantoszi egyenlet megoldásait:
+    content: |
+      \underbrace{79}_{=a}\cdot x+\underbrace{47}_{=m}\cdot y=\underbrace{10000}_{=b}
+  - type: narrative
+    content: |
+      Ne feledjük, hogy $x$-nek és $y$-nak is ***EGÉSZ ***számnak kell lennie, ráadásul ***NEMNEGATÍV*** egésznek,
+      mivel a kifizetendő bankjegyek számáról van szó. A
+      [linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga] alapján a fenti egyenlet akkor és
+      csak akkor oldható meg, ha az $(a,m)=(79,47)$ kitüntetett közös osztó osztója az egyenlet jobboldalának, azaz
+      $b=10000$-nek. Előszöris tehát ki kell számítanunk a $(79,47)$ kitüntetett közös osztót annak érdekében, hogy
+      eldöntsük, egyáltalán létezik-e megoldás.
+  - type: narrative
+    content: |
+      A 17. részben ismertettük az ***euklidészi algoritmus*** alapgondolatát, amely pontosan erre való. Azt is
+      megmutattuk, hogy ez az eljárás minden olyan gyűrűn végrehajtható, amelynek elemei között valamilyen
+      absztrakt értelemben elvégezhető a ***maradékos osztás***. Ezeket a [euklideszi-gyuru]ban ***euklidészi
+      gyűrűknek*** neveztük el, és a [euklideszi-gyuruben-letezik-kituntetett-kozos-oszto] bizonyításában
+      általánosságban is ismertettük az euklidészi algoritmus menetét.
+  - type: formula
+    lead-in: |
+      Eszerint bármely $a$ és $b$ gyűrűelem kitüntetett közös osztóját megkapjuk az alábbi maradékos osztások során
+      kapott utolsó nemnulla maradékként:
+    content: |
+      \begin{aligned}a&=k_1b+r_1\\b&=k_2r_1+r_2\\ _1&=k_3r_2+r_3\\ _2&=k_4r_3+r_4\\&\vdots\\
+      _{n-2}&=k_nr_{n-1}+r_n\\ _{n-1}&=k_{n+1}r_n+0\end{aligned}
+  - type: formula
+    lead-in: |
+      Ez jelen esetben tehát $r_n$ lesz:
+    content: |
+      \begin{aligned}(a,b)&=(b,r_1)=(r_1,r_2)=\ldots\\\ldots&=(r_{n-1},r_n)=(r_n,0)=r_n\end{aligned}
+  - type: narrative
+    content: |
+      Azt is megmutattuk, hogy az eljárás garantáltan végetér véges számú lépés után, mivel a kapott maradékok
+      ***euklidészi normája*** egy szigorúan monoton csökkenő sorozatot alkot a természetes számok halmazán, és így
+      a [termeszetes-szamok-minimumtetele] miatt előbb-utóbb biztosan eléri a $0$-t.
+  - type: narrative
+    content: |
+      Az egész számok $\Z$ gyűrűjében a [egesz-szamok-abszoluterteke] szerinti ***abszolútérték-függvény*** a
+      [abszolutertek-euklideszi-norma] értelmében egy ***euklidészi norma*** &ndash; azaz $\Z$ euklidészi gyűrű
+      &ndash;, és így ezen a gyűrűn alkalmazható az euklidészi algoritmus.
+  - type: formula
+    lead-in: |
+      Végrehajtva az algoritmus lépéseit a $79$ és $47$ bemeneti számokon, az alábbi maradékos osztásokat kapjuk:
+    content: |
+      \begin{aligned}79&=1\cdot 47+32 \\ 47&=1\cdot 32+15 \\ 32&=2\cdot 15+2 \\ 15&=7\cdot 2+1 \\ 2&=2\cdot
+      1+0\end{aligned}
+  - type: narrative
+    content: |
+      Az utolsó nemnulla maradék lesz a két bemeneti szám kitüntetett közös osztója, azaz jelen esetben
+      $(79,47)=1$. Ez a szám természetesen osztója a $79x+47y=10000$ diofantoszi egyenlet jobboldalának,
+      következésképp ennek az egyenletnek a
+      [linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga] értelmében létezik megoldása. A
+      következő szakaszokban megmutatjuk, hogy egyrészt hogyan található meg egy megoldás az ***euklidészi
+      algoritmus*** segítségével, másrészt, hogy ebből hogyan számítható ki az összes többi.
+sections:
+  - 01-a-kibovitett-euklideszi-algoritmus
+  - 02-linearis-diofantoszi-egyenlet-megoldasai
+  - 03-az-euler-fele-latex-varphi-latex-fuggveny-kiszamitasa
+  - 04-az-ismetelt-negyzetreemelesek-modszere
+  - 05-a-rivest-shamir-adleman-rsa-aszimmetrikus-kulcsu-rejtjelezo-eljaras
+  - 06-rsa-kulcspar-generalasa
+  - 07-rsa-kodolas-es-dekodolas
+  - 08-pelda-rsa-rejtjelezesre
+  - 09-pelda-rsa-dekodolasra
+  - 10-rsa-partnerhitelesites-es-digitalis-alairas
+
+epilogue:
+  - type: narrative
+    content: |
+      Ebben a részben tehát megtanultunk lineáris diofantoszi egyenleteket megoldani a kibővített euklidészi
+      algoritmus segítségével. Ezután az Euler-féle $\varphi$-függvény kiszámításához szükséges összefüggéseket
+      tisztáztuk. Végül a moduláris hatványozáshoz mutattunk egy igen hatékony módszert, az úgynevezett ismételt
+      négyzetreemelések módszerét. Ezután ismertettük az RSA-algoritmus részleteit, amelyet egy konkrét példán ki
+      is próbáltunk.
+  - type: narrative
+    content: |
+      Ebből úgy tűnik, hogyha egy üzenetet egy kulcspár valamelyik tagjával &ndash; legyen az akár a publikus, akár
+      a titkos kulcs &ndash; kódolunk, majd az így kapott eredményt dekódoljuk a kulcspár másik tagjával, akkor
+      varázslatos módon az eredeti üzenetet kapjuk vissza. A következő részben matematikai bizonyítást adunk arra,
+      hogy ez az összefüggés valóban bármilyen, az ismertetett kritériumoknak megfelelő kulcspár, továbbá bármilyen
+      üzenet esetén fennáll. Ezután megismerjük azokat a módszereket, amelyek segítségével viszonylag könnyedén
+      találhatunk többszázjegyű prímszámokat az RSA kulcsok generálásához.

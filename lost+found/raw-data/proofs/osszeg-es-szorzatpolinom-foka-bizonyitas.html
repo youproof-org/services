@@ -1,0 +1,95 @@
+<!-- wp:paragraph -->
+<p>Legyen [latex]0_R[/latex] az [latex]R[/latex] gyűrű nulleleme, továbbá vezessük be az alábbi jelöléseket:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}\deg(f)&amp;=n \\ \deg(g)&amp;=m\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ennek megfelelően [latex]f[/latex] és [latex]g[/latex] az alábbi sorozatokkal reprezentálhatók:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}f&amp;=(a_0,a_1,\ldots,\overbrace{a_n}^{\
+eq 0_R}, 0_R, 0_R, \ldots) \\ g&amp;=(b_0,b_1,\ldots,\underbrace{b_m}_{\
+eq 0_R}, 0_R, 0_R, \ldots)\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Az 1. állítás:</em></strong> Mivel [latex]n=\deg(f)\gt \deg(g)=m[/latex], vagyis az [latex]n[/latex] index nagyobb [latex]g[/latex] fokánál, emiatt [latex]b_n=0_R[/latex], tehát az összegpolinom [latex]n[/latex]-edik tagja [latex]a_n+b_n=a_n[/latex]. Az [latex]n[/latex] index viszont megegyezik [latex]f[/latex] fokával, így ez az [latex]n[/latex]-edik tag biztosan nem [latex]0_R[/latex]. Az összegpolinom további tagjai viszont már mind nullák, mivel az [latex]n[/latex]-nél nagyobb indexek nagyobbak [latex]f[/latex] és [latex]g[/latex] fokánál is. Ez a [yp_element slug="polinomok" type="link" /] alapján azt jelenti, hogy [latex]\deg(f+g)=n=\deg(f)[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A 2. állítás:</em></strong> Az továbbra is igaz, hogy az [latex]n[/latex]-nél nagyobb indexek nagyobbak [latex]f[/latex] és [latex]g[/latex] fokánál is, így az ilyen indexű tagok biztosan nullák mindkét polinomban, ami természetesen az összegükre is igaz, azaz [latex]\deg(f+g)[/latex] legfeljebb akkora lehet, mint [latex]f[/latex] (vagy [latex]g[/latex]) foka. Ennél többet viszont nem is mondhatunk, mivel attól még, hogy sem [latex]a_n[/latex] sem pedig [latex]b_n[/latex] nemnulla, az összegük még lehet az – történetesen ha épp egymás ellentettjei az [latex]R[/latex] gyűrűben.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A 3. állítás:</em></strong> Az [latex]f\cdot g[/latex] szorzatpolinom együtthatóira vezessük be az alábbi jelölést:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f\cdot g=(c_0,c_1,c_2,\ldots)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt kell bizonyítani, hogy ennek a szorzatpolinomnak a [latex]\deg(f)+\deg(g)=n+m[/latex]-nél nagyobb indexű tagjai mind nullák (hiszen ekkor lesz a szorzatpolinom foka <strong><em>legfeljebb</em></strong> [latex]n+m[/latex]). Legyen ezért [latex]k[/latex] egy tetszőleges ilyen index (azaz [latex]k\geq n+m+1[/latex]), és mutassuk meg, hogy ekkor [latex]c_k=0_R[/latex]. A [yp_element slug="polinomok" type="link" /] alapján a [latex]c_k[/latex] együttható olyan [latex]a_ib_j[/latex] szorzatok összegéből áll, ahol [latex]i+j=k[/latex]. Igaz tehát a következő:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{i+j}_{=k}\geq n+m+1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ha [latex]i\leq n[/latex], akkor</em></strong> ez a [yp_element slug="egesz-szamok-rendezese" type="link" /] alapján azt jelenti, hogy létezik olyan <strong><em>nemnegatív</em></strong> [latex]l\geq 0[/latex] egész szám, hogy [latex]i+l=n[/latex]. Ezt behelyettesítve a fenti egyenlőtlenségbe az alábbit kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]i+j\geq \underbrace{i+l}_{=n}+m+1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mindkét oldalból [latex]i[/latex]-t levonhatunk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]j\geq l+m+1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]l+1[/latex] pozitív – hiszen [latex]l[/latex] legalább [latex]0[/latex] –, ezért ez az egyenlőtlenség ugyancsak a [yp_element slug="egesz-szamok-rendezese" type="link" /] alapján azt jelenti, hogy [latex]j\gt m[/latex]. Ám ekkor az [latex]a_ib_j[/latex] szorzatban a [latex]b_j[/latex] tényező nulla, mivel [latex]m[/latex] a [latex]g[/latex] polinom foka. Ha viszont [latex]i\gt n[/latex], akkor meg az [latex]a_i[/latex] tényező nulla, mivel [latex]n[/latex] viszont az [latex]f[/latex] polinom foka. Azt kaptuk tehát, hogy a szorzatpolinom [latex]c_k[/latex] tagját előállító képletben minden tag nulla, vagyis maga [latex]c_k[/latex] is.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Végül a 4. és 5. állítás:</em></strong> Az előző ponthoz hasonló gondolatmenetet fogunk követni. Azt a <strong><em>3. állításban</em></strong> már megmutattuk, hogy a szorzatpolinomban az [latex]n+m[/latex]-nél nagyobb indexű tagok mind nullák. Legyen most [latex]k=n+m[/latex], és mutassuk meg, hogy ekkor viszont [latex]c_k\
+eq 0_R[/latex]. A [latex]c_k[/latex] együttható olyan [latex]a_ib_j[/latex] szorzatok összegéből áll, ahol [latex]i+j=k[/latex]. Igaz tehát a következő:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\underbrace{i+j}_{=k}=n+m[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ha [latex]i\lt n[/latex], akkor</em></strong> ez a [yp_element slug="egesz-szamok-rendezese" type="link" /] alapján azt jelenti, hogy létezik olyan <strong><em>pozitív</em></strong> [latex]l\gt 0[/latex] egész szám, hogy [latex]i+l=n[/latex]. Ezt behelyettesítve a fenti egyenletbe az alábbit kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]i+j=\underbrace{i+l}_{=n}+m[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mindkét oldalból [latex]i[/latex]-t levonhatunk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]j=l+m[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Létezik tehát olyan <strong><em>pozitív</em></strong> egész szám, amelyet [latex]m[/latex]-hez adva [latex]j[/latex]-t kapunk (nevezetesen [latex]l[/latex]), ami azt jelenti, hogy [latex]j\gt m[/latex]. Ám ekkor az [latex]a_ib_j[/latex] szorzatban a [latex]b_j[/latex] tényező nulla, mivel [latex]m[/latex] a [latex]g[/latex] polinom foka. Ha viszont [latex]i\gt n[/latex], akkor meg az [latex]a_i[/latex] tényező nulla, mivel [latex]n[/latex] viszont az [latex]f[/latex] polinom foka.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egyedül [latex]i=n[/latex] esetben lesz nemnulla az [latex]a_ib_j[/latex] szorzat, hiszen ekkor [latex]j=m[/latex], és sem [latex]a_n[/latex], sem pedig [latex]b_m[/latex] nem lehet nulla, mivel az [latex]f[/latex] polinom foka [latex]n[/latex], a [latex]g[/latex] polinom foka pedig [latex]m[/latex]. De a tételben szereplő feltételek esetén az ő szorzatuk sem lehet nulla: ha [latex]R[/latex] <strong><em>egységelemes</em></strong> és [latex]a_n[/latex] vagy [latex]b_m[/latex] az egységelem, akkor azért, ha pedig [latex]R[/latex] <strong><em>nullosztómentes</em></strong>, akkor pedig azért. Vagyis [latex]c_k=a_nb_m\
+eq 0_R[/latex]. Ez viszont azt jelenti, hogy az [latex]f\cdot g[/latex] szorzatpolinom foka épp [latex]k=n+m=\deg(f)+\deg(g)[/latex].</p>
+<!-- /wp:paragraph -->

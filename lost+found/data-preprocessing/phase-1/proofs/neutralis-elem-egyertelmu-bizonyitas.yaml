@@ -1,0 +1,24 @@
+type: proof
+name: neutralis-elem-egyertelmu-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy két neutrális elem is létezik a $*$ műveletre nézve. Jelöljük ezeket $n$-nel és $m$-mel.
+      Egyrészt, mivel $n$ neutrális, ezért egyben baloldali neutrális is.
+  - type: formula
+    lead-in: |
+      Így igaz az alábbi:
+    content: |
+      n*m = m
+  - type: narrative
+    content: |
+      Másrész, mivel $m$ is neutrális, ezért egyben jobboldali neutrális is.
+  - type: formula
+    lead-in: |
+      Így igaz az alábbi is:
+    content: |
+      n*m = n
+  - type: narrative
+    content: |
+      Azt kaptuk tehát, hogy $n=m$, vagyis a neutrális elem egyértelmű, amennyiben létezik.

@@ -1,0 +1,51 @@
+<!-- wp:paragraph -->
+<p>Azt a jól ismert azonosságot fogjuk használni, miszerint bármilyen kommutatív gyűrű tetszőleges [latex]x[/latex] és [latex]y[/latex] elemeire teljesül az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x^2-y^2=(x-y)\cdot (x+y)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez a [yp_element slug="gyuru-test" type="link" /]ben szereplő gyűrűaxiómák közvetlen következménye, amelyet most le is ellenőrzünk. Rögtön alkalmazhatjuk az 5. pontban lévő első disztributivitási szabályt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](x-y)\cdot (x+y)=(x-y)\cdot x + (x-y)\cdot y=\ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A kapott összeg két tagjára a második disztributivitási szabályt alkalmazhatjuk. Figyelembe véve a [yp_element slug="gyuruk-alapveto-tulajdonsagai" type="link" /] 3. pontját valóban a fent szereplő kifejezést kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots = x^2-yx + xy-y^2 = x^2-y^2[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezek után alkalmazhatjuk ezt az azonosságot az [latex]a^{2^ek}-1[/latex] kifejezésre. Ez ugyanis a hatványozás azonosságairól szóló [yp_element slug="hatvanyozas-azonossagai" type="link" /] 2. és 3. pontjai alapján a következőképpen alakítható át:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a^{2^ek}-1=a^{2^{e-1}\cdot k\cdot 2}-1=(a^{2^{e-1}\cdot k})^2-1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Erre már alkalmazhatjuk a fenti azonosságot [latex]x=a^{2^{e-1}\cdot k}[/latex] és [latex]y=1[/latex] szereposztással:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](\underbrace{a^{2^{e-1}\cdot k}}_{=x})^2-(\underbrace{1}_{=y})^2=(\underbrace{a^{2^{e-1}\cdot k}}_{=x}-\underbrace{1}_{=y})\cdot (\underbrace{a^{2^{e-1}\cdot k}}_{=x}+\underbrace{1}_{=y})=\ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Amennyiben az [latex]e-1[/latex] kitevő még mindig nagyobb [latex]0[/latex]-nál, akkor a kapott szorzat első tényezőjére megismételhetjük a fenti eljárást:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\ldots=\underbrace{(a^{2^{e-2}\cdot k}-1)\cdot (a^{2^{e-2}\cdot k}+1)}_{=a^{2^{e-1}\cdot k}-1}\cdot (a^{2^{e-1}\cdot k}+1)=\ldots[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha még az [latex]e-2[/latex] kitevő is nagyobb [latex]0[/latex]-nál, akkor az első tényezőt ugyanígy tovább bonthatjuk. Minden lépésben tovább fog csökkenni a kitevő, és előbb-utóbb – egészen pontosan [latex]e[/latex] lépés után – eléri a [latex]0[/latex]-t. Ekkor épp a tételben szereplő szorzatot fogjuk kapni.</p>
+<!-- /wp:paragraph -->

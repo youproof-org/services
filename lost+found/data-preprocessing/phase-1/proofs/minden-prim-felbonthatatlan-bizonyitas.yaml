@@ -1,0 +1,45 @@
+type: proof
+name: minden-prim-felbonthatatlan-bizonyitas
+remarks: []
+references:
+  asszocialtsag-egysegelemes-gyuruben:
+    target:
+      type: theorem
+      name: asszocialtsag-egysegelemes-gyuruben
+  egysegtenyezo-nullosztomentes-esetben:
+    target:
+      type: theorem
+      name: egysegtenyezo-nullosztomentes-esetben
+  oszthatosag-tulajdonsagai:
+    target:
+      type: theorem
+      name: oszthatosag-tulajdonsagai
+content:
+  - type: formula
+    lead-in: |
+      Tegyük fel, hogy $p$ tetszőleges prím, és tekintsük ennek valamilyen felbontását:
+    content: |
+      p=a\cdot b
+  - type: narrative
+    content: |
+      Azt kell bizonyítani, hogy $a$ és $b$ közül az egyik szükségképpen egység kell legyen. A $p=ab$ felbontásból
+      egyrészt következik, hogy teljesülnek az $a|p$ és $b|p$ oszthatóságok.
+  - type: narrative
+    content: |
+      Másrészt, mivel a gyűrű egységelemes, ezért a [oszthatosag-tulajdonsagai] 1. pontja miatt minden elem osztója
+      önmagának. Így $p=ab$-ből következik, hogy teljesül a $p|ab$ oszthatóság is. Ám $p$ prímtulajdonsága miatt
+      ekkor a $p|a$ és $p|b$ oszthatóságok közül legalább az egyik teljesül.
+  - type: narrative
+    content: |
+      Tegyük fel, hogy $p|a$ teljesül. A bizonyítás elején ugyanakkor megállapítottuk, hogy $a|p$ is teljesül. A
+      [asszocialtsag-egysegelemes-gyuruben] miatt az egymással való oszthatóságból következik, hogy $a$ és $p$
+      egymás asszociáltjai, amiből a [egysegtenyezo-nullosztomentes-esetben] alapján az következik, hogy $b$
+      szükségképpen egység.
+  - type: narrative
+    content: |
+      Ha $p|a$ mégsem teljesül, akkor $p$ prímtulajdonsága miatt $p|b$ biztosan teljesül. Ebben az esetben az
+      előbbi gondolatmenetet szinte szóról szóra megismételve azt fogjuk kapni, hogy $a$ egység.
+  - type: narrative
+    content: |
+      Igaz tehát, hogy bármely prímnek bármilyen felbontásában az egyik tényező mindenképpen egység. Azaz valóban
+      minden prím felbonthatatlan.

@@ -1,0 +1,135 @@
+<!-- wp:paragraph -->
+<p>A tételt a [latex]c[/latex] kitevőre vonatkozó <strong><em>teljes indukcióval</em></strong> fogjuk igazolni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Nézzük először a [latex]c=1[/latex] esetet!</em></strong> A [yp_element slug="nem-miller-rabin-tanuk-csoportja-primhatvanyok-eseten" type="link" /] 3. pontja alapján ekkor [latex]G_p[/latex] épp megegyezik a [latex](\Z/p\Z)^{\times}[/latex] multiplikatív csoporttal. Ennek rendje a modulo [latex]p[/latex] redukált maradékosztályok számával, azaz [latex]\varphi(p)[/latex]-vel egyezik meg, ami a [yp_element slug="euler-fuggveny-primhatvanyokra" type="link" /] alapján valóban [latex]p-1[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Az indukció megindításához</em></strong> tegyük fel, hogy valamilyen [latex]c[/latex] kitevő – mint például a most megmutatott [latex]c=1[/latex] – esetén a tétel igaz, azaz [latex]G_{p^c}[/latex] elemszáma [latex]p-1[/latex]. Azt kell igazolnunk, hogy ekkor [latex]G_{p^{c+1}}[/latex] elemszáma is [latex]p-1[/latex]. Rögzítsük [latex]G_{p^c}[/latex] egy reprezentánsrendszerét, azaz válasszunk ki <strong><em>mindegyik</em></strong> [latex]G_{p^c}[/latex]-beli nem Miller-Rabin-tanúból <strong><em>pontosan egy</em></strong> reprezentánselemet. Ekkor a [latex]G_{p^c}[/latex] halmaz – amelynek tehát indukciós feltételezésünknek megfelelően [latex]p-1[/latex] eleme van – a következőképpen írható fel a most rögzített [latex]a_1[/latex], [latex]a_2[/latex], ..., [latex]a_{p-1}[/latex] reprezentánselemek segítségével:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]G_{p^c}=\{[a_1]_{p^c}; [a_2]_{p^c}; [a_3]_{p^c};\ldots ;[a_{p-1}]_{p^c}\}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>E reprezentánsrendszer felhasználásával most definiálunk egy [latex]f:G_{p^c}\to G_{p^{c+1}}[/latex] függvényt, amely tehát a [latex]G_{p^c}[/latex] halmaz minden eleméhez hozzárendel egy-egy elemet a [latex]G_{p^{c+1}}[/latex] halmazból. Tekintsük a fenti reprezentánsrendszer szerinti bármelyik tetszőleges elemet, legyen ez például az [latex][a_i]_{p^c}\in G_{p^c}[/latex] nem Miller-Rabin-tanú. Ekkor a [yp_element slug="nem-miller-rabin-tanuk-csoportja-primhatvanyok-eseten" type="link" /] 1. pontja alapján az [latex]a_i[/latex] reprezentánselemre teljesül az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a_i^{p-1}\equiv 1\pmod{p^c}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ebben az esetben a [yp_element slug="nem-miller-rabin-tanuk-csoportjara-vonatkozo-lemma-primhatvanyok-eseten" type="link" /] alapján <strong><em>pontosan egy</em></strong> olyan modulo [latex]p^{c+1}[/latex] maradékosztály létezik, amelynek elemeire (és csak azokra) fennáll az alábbi mindkét kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}x&amp;\equiv a_i\pmod{p^c} \\ x^{p-1}&amp;\equiv 1\pmod{p^{c+1}}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Jelöljük ezt a modulo [latex]p^{c+1}[/latex] maradékosztályt [latex]B_i[/latex]-vel. Mivel tehát [latex]B_i[/latex] elemeire teljesül a fenti kongruenciarendszer, és így az abban lévő második kongruencia is, ezért a [yp_element slug="nem-miller-rabin-tanuk-csoportja-primhatvanyok-eseten" type="link" /] 1. pontja alapján a [latex]B_i[/latex] maradékosztály nem Miller-Rabin-tanúja [latex]p^{c+1}[/latex]-nek, azaz [latex]B_i\in G_{p^{c+1}}[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ez tehát azt jelenti, hogy ha a keresett [latex]f[/latex] függvényt az alábbi képlettel definiáljuk, akkor az valóban minden [latex]G_{p^c}[/latex]-beli nem Miller-Rabin-tanúhoz egyértelműen hozzárendel egy-egy [latex]G_{p^{c+1}}[/latex]-beli nem Miller-Rabin-tanút:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f([a_i]_{p^c})=B_i[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Előszöris</em></strong> azt mutatjuk meg, hogy az így definiált [latex]f[/latex] függvény <strong><em>injektív</em></strong>, azaz különböző [latex]G_{p^c}[/latex]-beli elemekhez különböző [latex]G_{p^{c+1}}[/latex]-beli elemeket rendel hozzá. <strong><em>Indirekt</em></strong> tegyük fel, hogy nem ez a helyzet, azaz létezik olyan <strong><em>egymástól különböző</em></strong> [latex]a_i[/latex] és [latex]a_j[/latex] a fent rögzített reprezentánsrendszerben, amelyekre teljesül az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f([a_i]_{p^c})=f([a_j]_{p^c})[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]f[/latex] függvény tehát indirekt feltételezésünk szerint az [latex][a_i]_{p^c}[/latex] és az [latex][a_j]_{p^c}[/latex] maradékosztályokhoz <strong><em>ugyanazt</em></strong> az alábbi ábrán [latex]B[/latex]-vel jelölt modulo [latex]p^{c+1}[/latex] maradékosztályt rendeli hozzá:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":7350,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_26_nem_injektiv_fuggveny.jpg" alt="Nem injektív függvény" class="wp-image-7350"/><figcaption>Nem injektív függvény</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Tekintsük [latex]B[/latex]-nek egy tetszőleges [latex]b[/latex] reprezentánselemét. Ekkor [latex]b[/latex]-re teljesülni fog a fenti kongruenciarendszer, és így az abban lévő első kongruencia [latex]a_i[/latex] és [latex]a_j[/latex] esetén is, azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}b&amp;\equiv a_i\pmod{p^c} \\ b&amp;\equiv a_j\pmod{p^c}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ám ekkor a [yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" type="link" /] 2. és 3. pontjai miatt teljesül az alábbi kongruencia is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a_i\equiv a_j\pmod{p^c}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ám ez <strong><em>ellentmondás</em></strong>, hiszen indirekt feltételezésünkben azt mondtuk, hogy [latex]a_i[/latex] és [latex]a_j[/latex] <strong><em>egymástól különbözőek</em></strong>, és így – mivel ők a [latex]G_{p^c}[/latex] halmaz egy reprezentánsrendszerének elemei – nem lehetnének azonos modulo [latex]p^c[/latex] maradékosztályban. Az [latex]f[/latex] függvény tehát valóban <strong><em>injektív</em></strong>, azaz különböző [latex]G_{p^c}[/latex]-beli elemekhez szükségképpen különböző [latex]G_{p^{c+1}}[/latex]-beli elemeket rendel hozzá.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Végül</em></strong> azt igazoljuk, hogy [latex]f[/latex] az injektivitáson kívül <strong><em>szürjektív</em></strong> is, azaz nem létezik olyan [latex]G_{p^{c+1}}[/latex]-beli elem, amely ne lenne hozzárendelve valamelyik [latex]G_{p^c}[/latex]-beli elemhez. <strong><em>Indirekt</em></strong> tegyük fel, hogy nem ez a helyzet, vagyis létezik az alábbi ábrán látható [latex]B\in G_{p^{c+1}}[/latex] maradékosztály, amely nincs hozzárendelve semelyik [latex]G_{p^c}[/latex]-beli maradékosztályhoz [latex]f[/latex] által:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":7351,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_26_nem_szurjektiv_fuggveny.jpg" alt="Nem szürjektív függvény" class="wp-image-7351"/><figcaption>Nem szürjektív függvény</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Tekintsük [latex]B[/latex] egy tetszőleges [latex]b[/latex] reprezentánselemét, azaz legyen [latex]B=[b]_{p^{c+1}}[/latex]. Mivel [latex][b]_{p^{c+1}}\in G_{p^{c+1}}[/latex], ezért a [yp_element slug="nem-miller-rabin-tanuk-csoportja-primhatvanyok-eseten" type="link" /] 1. pontja alapján [latex]b[/latex]-re teljesül az alábbi kongruencia:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]b^{p-1}\equiv 1\pmod{p^{c+1}}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ám mivel a [latex]p^c|p^{c+1}[/latex] oszthatóság nyilvánvalóan teljesül, ezért a [yp_element slug="egesz-szamok-kozotti-kongruencia-tulajdonsagai" type="link" /] 9. pontja alapján teljesül az alábbi kongruencia is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]b^{p-1}\equiv 1\pmod{p^c}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ám ekkor a [yp_element slug="nem-miller-rabin-tanuk-csoportja-primhatvanyok-eseten" type="link" /] 1. pontja szerint a [latex]b[/latex] által reprezentált modulo [latex]p^c[/latex] maradékosztály nem Miller-Rabin-tanúja [latex]p^c[/latex]-nek, azaz [latex][b]_{p^c}\in G_{p^c}[/latex]. Mivel azonban a korábban rögzített [latex]a_1[/latex], [latex]a_2[/latex], [latex]a_3[/latex], ..., [latex]a_{p-1}[/latex] egész számok a [latex]G_{p^c}[/latex] halmaz egy reprezentánsrendszerét alkotják, ezért [latex]b[/latex] szükségképpen azonos modulo [latex]p^c[/latex] maradékosztályban van pontosan az egyikükkel. Azaz létezik olyan [latex]a_i[/latex] ebben a reprezentánsrendszerben, amely esetén [latex]b[/latex]-re teljesül az alábbi kongruencia is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]b\equiv a_i\pmod{p^c}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Összegezve</em></strong> tehát [latex]b[/latex] az egyike azon egész számoknak, amelyek kielégítik az alábbi kongruenciarendszert:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}x&amp;\equiv a_i\pmod{p^c} \\ x^{p-1}&amp;\equiv 1\pmod{p^{c+1}}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Azt is láttuk, hogy [latex]b[/latex]-re teljesül az alábbi kongruencia is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]b^{p-1}\equiv 1\pmod{p^c}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ekkor azonban a [yp_element slug="nem-miller-rabin-tanuk-csoportjara-vonatkozo-lemma-primhatvanyok-eseten" type="link" /] alapján a fenti kongruenciarendszert kielégítő egész számok épp egy modulo [latex]p^{c+1}[/latex] maradékosztályt alkotnak, amelyben ezek szerint [latex]b[/latex] is benne van, így ez épp a [latex]B=[b]_{p^{c+1}}[/latex] maradékosztály. Az [latex]f[/latex] függvény viszont épp ezt a maradékosztályt rendeli hozzá [latex][a_i]_{p^c}[/latex]-hez, ami <strong><em>ellentmond</em></strong> indirekt feltételezésünknek, miszerint [latex]B[/latex] egy olyan [latex]G_{p^{c+1}}[/latex]-beli maradékosztály, amely nincs hozzárendelve semelyik [latex]G_{p^c}[/latex]-beli maradékosztályhoz sem [latex]f[/latex] által. Az [latex]f[/latex] függvény tehát valóban <strong><em>szürjektív</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Mivel [latex]f[/latex]-ről megmutattuk, hogy egyszerre injektív és szürjektív, ezért ő tulajdonképpen egy <strong><em>kölcsönösen egyértelmű megfeleltetést</em></strong> létesít [latex]G_{p^c}[/latex] és [latex]G_{p^{c+1}}[/latex] elemei között, így e két halmaznak pontosan ugyanannyi eleme van tetszőleges pozitív [latex]c[/latex] kitevő esetén. A bizonyítás elején a [latex]c=1[/latex] kitevő esetén láttuk, hogy a [latex]G_p[/latex] halmaznak [latex]p-1[/latex] eleme van. A most bizonyított indukció miatt ekkor [latex]p-1[/latex] eleme lesz [latex]G_{p^2}[/latex]-nek is, majd emiatt [latex]G_{p^3}[/latex]-nak is, stb. Tehát tetszőleges pozitív [latex]c[/latex] kitevő esetén [latex]G_{p^c}[/latex]-nek is valóban [latex]p-1[/latex] eleme lesz, ahogyan a tétel állítja.</p>
+<!-- /wp:paragraph -->

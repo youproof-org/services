@@ -1,0 +1,75 @@
+<!-- wp:paragraph -->
+<p>A [yp_element slug="normaloszto-szerinti-muvelet-joldefinialtsaga" type="link" /] alapján a baloldali mellékosztályok közötti [latex]\odot[/latex] műveletek jóldefiniáltak, azaz az eredményként kapott baloldali mellékosztály nem függ az [latex]a[/latex] és [latex]b[/latex] reprezentánselemek megválasztásától. Így [latex]G/N[/latex]-re elegendő a [yp_element slug="csoport" type="link" /] szerinti <strong><em>csoportaxiómákat</em></strong> ellenőrizni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Az asszociativitási tulajdonság:</em></strong> Azt kell megmutatni, hogy tetszőleges [latex]A=aN[/latex], [latex]B=bN[/latex] és [latex]C=cN[/latex] baloldali mellékosztályok esetén teljesül az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](A\odot B)\odot C=A\odot (B\odot C)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [latex]\odot[/latex] tételben szereplő definíciója alapján ez így írható fel az [latex]a[/latex], [latex]b[/latex] és [latex]c[/latex] reprezentánselemek segítségével:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]((a\cdot b)\cdot c)N=(a\cdot (b\cdot c))N[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A reprezentánselemek között viszont teljesül az asszociativitás, hiszen ők a [latex]G[/latex] csoport elemei.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Egységelem létezése:</em></strong> A [latex]G/N[/latex] faktorcsoportban kell egy olyan [latex]E[/latex] baloldali mellékosztályt mutatni, amelyre tetszőleges [latex]A=aN[/latex] baloldali mellékosztály esetén teljesül az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]A\odot E=E\odot A=A[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha a [latex]G[/latex] csoport egységeleme [latex]e_G[/latex], akkor az [latex]E=e_GN[/latex] baloldali mellékosztály épp megfelelő lesz egységelemnek a [latex]G/N[/latex] faktorcsoportban, hiszen:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}(\underbrace{aN}_{=A})\odot (\underbrace{e_GN}_{=E})&amp;=(a\cdot e_G)N=aN=A \\ (\underbrace{e_GN}_{=E})\odot (\underbrace{aN}_{=A})&amp;=(e_G\cdot a)N=aN=A\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Inverz elem létezése:</em></strong> Itt azt kell megmutatni, hogy amennyiben [latex]E=e_GN[/latex] a [latex]G/N[/latex] faktorcsoport egységeleme, úgy tetszőleges [latex]A=aN[/latex] elemhez létezik olyan [latex]A^{-1}[/latex]-gyel jelölt elem, amelyre teljesül az alábbi:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]A\odot A^{-1}=A^{-1}\odot A=E[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az [latex]A^{-1}=(a^{-1})N[/latex] baloldali mellékosztály épp megfelelő lesz inverz elemnek a [latex]G/N[/latex] faktorcsoportban, hiszen:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}(\underbrace{aN}_{=A})\odot (\underbrace{(a^{-1})N}_{=A^{-1}})&amp;=(a\cdot a^{-1})N=e_GN=E \\ (\underbrace{(a^{-1})N}_{=A^{-1}})\odot (\underbrace{aN}_{=A})&amp;=(a^{-1}\cdot a)N=e_GN=E\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [latex]G/N[/latex] halmaz tehát <strong><em>valóban csoportot alkot</em></strong> a tételben szereplő művelettel. Tegyük most fel, hogy [latex]G[/latex] <strong><em>kommutatív</em></strong>, és legyen az [latex]A=aN[/latex] valamint a [latex]B=bN[/latex] két tetszőleges baloldali mellékosztály a [latex]G/N[/latex] faktorcsoportban. Ekkor [latex]G[/latex] kommutativitása miatt teljesül az alábbi, azaz [latex]G/N[/latex] is valóban <strong><em>kommutatív</em></strong>:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}A\odot B&amp;=(aN)\odot (bN)=(a\cdot b)N=\\&amp;=(b\cdot a)N=(bN)\odot (aN)=B\odot A\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Végezetül meg kell mutatni, hogy a tételben szereplő [latex]f:G\to G/N[/latex] függvény egy <strong><em>csoporthomomorfizmus</em></strong> az eredeti és a [latex]G/N[/latex] faktorcsoport között. Az [latex]f[/latex] függvény tehát minden [latex]G[/latex]-beli [latex]a[/latex] elemhez az [latex]aN[/latex] baloldali mellékosztályt rendeli hozzá. Tegyük fel, hogy [latex]g[/latex] és [latex]h[/latex] a [latex]G[/latex] csoport tetszőleges elemei. Ekkor a <strong><em>művelettartó tulajdonság</em></strong> az alábbi alapján valóban teljesül:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f(g)\odot f(h)=(gN)\odot (hN)=(g\cdot h)N=f(g\cdot h)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Végül azt kell megmutatni, hogy [latex]f[/latex] <strong><em>magja</em></strong> épp az [latex]N[/latex] normálosztó. Egy tetszőleges [latex]G[/latex]-beli [latex]g[/latex] elemhez az [latex]f[/latex] csoporthomomorfizmus pontosan akkor rendeli hozzá a [latex]G/N[/latex] faktorcsoport egységelemét, azaz az [latex]e_GN[/latex] baloldali mellékosztályt, ha [latex]f(g)=gN=e_GN[/latex]. Minthogy [latex]N[/latex] egy részcsoport [latex]G[/latex]-ben (hiszen normálosztó), ezért a [yp_element slug="reszcsoport-feltetele" type="link" /] 2. pontja alapján ő az, aki tartalmazza [latex]e_G[/latex]-t, azaz [latex]e_GN=N[/latex]. Az [latex]f(g)=e_GN[/latex] tehát akkor és csak akkor teljesül, ha [latex]g[/latex] benne van [latex]N[/latex]-ben. Az [latex]N[/latex] normálosztó tehát valóban magja az [latex]f[/latex] csoporthomomorfizmusnak.</p>
+<!-- /wp:paragraph -->

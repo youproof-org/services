@@ -1,0 +1,18 @@
+@use 'variables' as *;
+
+.formula {
+  margin: 1.5rem 0;
+}
+
+.lead-in {
+  margin-bottom: 0.5rem;
+}
+
+.display {
+  overflow-x: auto;
+  padding: 0.5rem 0;
+}
+
+.lead-out {
+  margin-top: 0.5rem;
+}

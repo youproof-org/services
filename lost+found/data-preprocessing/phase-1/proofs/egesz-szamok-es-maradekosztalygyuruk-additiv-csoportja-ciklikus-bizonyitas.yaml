@@ -1,0 +1,39 @@
+type: proof
+name: egesz-szamok-es-maradekosztalygyuruk-additiv-csoportja-ciklikus-bizonyitas
+remarks: []
+references:
+  csoport:
+    target:
+      type: definition
+      name: csoport
+  egesz-kitevos-hatvany:
+    target:
+      type: definition
+      name: egesz-kitevos-hatvany
+  egesz-szamok-maradekosztalygyurui:
+    target:
+      type: theorem
+      name: egesz-szamok-maradekosztalygyurui
+content:
+  - type: narrative
+    content: |
+      Mivel a $\Z^+$ és a $(\Z/m\Z)^+$ csoportok esetén a csoportműveletet $+$ jelöli, ezért a [csoport]nak
+      megfelelően az "egységelem" és "inverz" helyett a ***"nullelem"*** és ***"ellentett"*** kifejezéseket
+      használjuk, továbbá a [egesz-kitevos-hatvany] utáni megjegyzés alapján a szokásos $x^n$ helyett az $nx$
+      írásmódot követjük és hatvány helyett ***többszörösről*** beszélünk.
+  - type: narrative
+    content: |
+      A $\Z^+$ csoportban az $1$ egész szám ellentettje a $-1$ egész szám. A pozitív egész számok ennek megfelelően
+      $n1$, míg a negatív számok $n(-1)$ alakban fejezhetők ki. Végül a $0$ egész szám a $\Z^+$ csoport nulleleme,
+      így a [egesz-kitevos-hatvany] alapján ő $0\cdot 1$-ként fejezhető ki, mint az $1$ egész szám többszöröse. A
+      $\Z^+$ csoport tehát valóban ciklikus, melynek generátoreleme $1$.
+  - type: narrative
+    content: |
+      Ehhez hasonlóan a $(\Z/m\Z)^+$ csoportban az $[1]_m$ maradékosztály ellentettje a $[-1]_n$ maradékosztály.
+      Ebben a csoportban a $+$ műveletet a [egesz-szamok-maradekosztalygyurui]ben leírtaknak megfelelően a
+      reprezentánselemeken kell elvégezni. Így az $n[1]_m$ többszörös tulajdonképpen az $[n1]_m$ maradékosztály
+      lesz, ahol $n1$ a fentiekhez hasonlóan az $1$ egész szám valamilyen többszörösét jelöli. Minthogy fentebb már
+      bizonyítottuk, hogy bármely egész szám felírható az $1$ többszöröseként &ndash; hiszen ugye $\Z^+$ ciklikus
+      &ndash; ezért ez azt jelenti, hogy az $[1]_m$ maradékosztály többszöröseiként is minden létező modulo $m$
+      maradékosztályt megkaphatunk. A $(\Z/m\Z)^+$ csoport tehát valóban ciklikus, melynek generátoreleme az
+      $[1]_m$ maradékosztály.

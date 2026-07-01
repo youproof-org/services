@@ -1,0 +1,137 @@
+type: proof
+name: primitiv-gyok-modulo-p-bizonyitas
+remarks: []
+references:
+  csoportelem-hatvanyanak-rendje:
+    target:
+      type: theorem
+      name: csoportelem-hatvanyanak-rendje
+  csoportelem-rendjere-vonatkozo-osszefuggesek:
+    target:
+      type: theorem
+      name: csoportelem-rendjere-vonatkozo-osszefuggesek
+  egesz-kitevos-hatvanyozas-azonossagai:
+    target:
+      type: theorem
+      name: egesz-kitevos-hatvanyozas-azonossagai
+  elem-rendje-es-csoport-rendje:
+    target:
+      type: theorem
+      name: elem-rendje-es-csoport-rendje
+  euler-fuggveny:
+    target:
+      type: definition
+      name: euler-fuggveny
+  euler-fuggveny-alternativ-definicio:
+    target:
+      type: theorem
+      name: euler-fuggveny-alternativ-definicio
+  euler-fuggveny-osszege:
+    target:
+      type: theorem
+      name: euler-fuggveny-osszege
+  euler-fuggveny-primhatvanyokra:
+    target:
+      type: theorem
+      name: euler-fuggveny-primhatvanyokra
+  maradekok-gyuruje-nullosztomentes:
+    target:
+      type: theorem
+      name: maradekok-gyuruje-nullosztomentes
+  polinom-gyokeinek-szama:
+    target:
+      type: theorem
+      name: polinom-gyokeinek-szama
+  polinomok-gyokei:
+    target:
+      type: definition
+      name: polinomok-gyokei
+content:
+  - type: narrative
+    content: |
+      A $(\Z/p\Z)^{\times}$ csoport a $\Z/p\Z$ maradékosztálygyűrű redukált maradékosztályaiból áll, ezért a
+      [euler-fuggveny] alapján ennek a csoportnak a rendje $\varphi(p)$, azaz a [euler-fuggveny-primhatvanyokra]
+      miatt $p-1$. Mivel a [elem-rendje-es-csoport-rendje] miatt bármely elem rendje osztója a csoport rendjének,
+      ezért ha $d\mid p-1$, akkor $(\Z/p\Z)^{\times}$-ben ***nincs $d$ rendű elem***.
+  - type: narrative
+    content: |
+      Az általánosság megsértése nélkül feltehetjük tehát, hogy $d|p-1$.
+  - type: formula
+    lead-in: |
+      A $d$ rendű redukált maradékosztályok a [csoportelem-rendjere-vonatkozo-osszefuggesek] 4. pontja szerint mind
+      megoldásai a $\Z/p\Z$ maradékosztálygyűrű elemein értelmezett alábbi egyenletnek:
+    content: |
+      x^d=[1]_p
+  - type: formula
+    lead-in: |
+      Mindkét oldalból kivonva az $[1]_p$ maradékosztályt az alábbi egyenletet kapjuk:
+    content: |
+      x^d-[1]_p=[0]_p
+  - type: narrative
+    content: |
+      Vegyük észre, hogy ennek az egyenletnek a megoldásai a [polinomok-gyokei] alapján épp egy $\Z/p\Z$ feletti
+      $d$-edfokú polinom gyökei. Mivel $\Z/p\Z$ izomorf $Z_p$-vel, ami pedig a [maradekok-gyuruje-nullosztomentes]
+      alapján nullosztómentes, így $\Z/p\Z$ is ***nullosztómentes***. Emiatt viszont a [polinom-gyokeinek-szama]
+      alapján ennek a bizonyos polinomnak legfeljebb $d$ darab gyöke, azaz a fenti egyenletnek ***legfeljebb $d$
+      darab*** megoldása van. Azt ugyan nem tudjuk még, hogy a $(\Z/p\Z)^{\times}$ csoportban létezik-e egyáltalán
+      $d$ rendű redukált maradékosztály &ndash; hiszen épp ezt szeretnénk igazolni &ndash;, de ha igen, akkor ő
+      mindenképpen megoldás.
+  - type: formula
+    lead-in: |
+      Tegyük fel tehát, hogy például az $[a]_p$ redukált maradékosztály egy $d$ rendű megoldás, azaz:
+    content: |
+      [a]_p^d=[1]_p
+  - type: narrative
+    content: |
+      Mivel $[a]_p$ rendje $d$, így a [csoportelem-rendjere-vonatkozo-osszefuggesek] 3. pontja szerint az ő
+      $[a]_p^0$, $[a]_p^1$, $[a]_p^2$, ..., $[a]_p^{d-1}$ hatványai mind különböznek egymástól, azaz különböző
+      redukált maradékosztályok.
+  - type: formula
+    lead-in: |
+      Ezek a hatványok viszont szintén megoldásai a fenti egyenletnek, hiszen a hatványozás azonosságairól szóló
+      [egesz-kitevos-hatvanyozas-azonossagai] 2. pontja alapján tetszőleges $k$ kitevő esetén teljesül az alábbi:
+    content: |
+      ([a]_p^k)^d=[a]_p^{kd}=[a]_p^{dk}=(\underbrace{[a]_p^d}_{=[1]_p})^k=[1]_p
+  - type: narrative
+    content: |
+      Mivel a megoldásszámról láttuk, hogy nem lehet $d$-nél nagyobb, így az $[a]_p^0$, $[a]_p^1$, ...,
+      $[a]_p^{d-1}$ hatványokon kívül nincs más megoldás. Kérdés, hogy ezek közül melyek azok, amelyek $[a]_p$-hez
+      hasonlóan szintén $d$ rendűek. A ***csoportelem hatványának rendjéről*** szóló
+      [csoportelem-hatvanyanak-rendje] alapján tetszőleges $i$ kitevő esetén $[a]_p^i$ rendje akkor és csak akkor
+      egyezik meg $[a]_p$ rendjével (azaz $d$-vel), ha az $i$ kitevő relatív prím $d$-hez. Így tehát a $d$ rendű
+      elemek száma megegyezik a $0$, $1$, ..., $d-1$ kitevők közül azoknak a számával, amelyek relatív prímek
+      $d$-hez. Ez a [euler-fuggveny-alternativ-definicio] alapján épp $\varphi(d)$.
+  - type: narrative
+    content: |
+      ***Most foglaljuk össze az eddigieket:*** Az egyszerűség kedvéért jelöljük $h(d)$-vel a $d$ rendű elemek
+      számát. Eddig azt igazoltuk, hogy amennyiben $d$ ***nem osztója*** $p-1$-nek, akkor $h(d)=0$, ha pedig $d$
+      ***osztója*** $p-1$-nek, akkor az alábbi két eset lehetséges: $h(d)=\varphi(d)$ vagy $h(d)=0$. A tétel
+      bizonyításához azt kell belátnunk, hogy az utóbbi kizárt.
+  - type: narrative
+    content: |
+      Tekintsük ezért $p-1$ összes pozitív osztóját: $d_1$, $d_2$, ..., $d_k$.
+  - type: formula
+    lead-in: |
+      Mivel a [elem-rendje-es-csoport-rendje] alapján bármely elem rendje csak ezen számok közül kerülhet ki,
+      továbbá ugye összesen $p-1$ darab elem van, ezért egyrészt igaz az alábbi:
+    content: |
+      h(d_1)+h(d_2)+\ldots+h(d_k)=p-1
+  - type: formula
+    lead-in: |
+      Másrészt a [euler-fuggveny-osszege] alapján igaz az alábbi is:
+    content: |
+      \varphi(d_1)+\varphi(d_2)+\ldots+\varphi(d_k)=p-1
+  - type: formula
+    lead-in: |
+      Érvényes tehát az alábbi összefüggés:
+    content: |
+      h(d_1)+\ldots+h(d_k)=\varphi(d_1)+\ldots+\varphi(d_k)
+  - type: narrative
+    content: |
+      Az eddigiek alapján a baloldalon minden $h(d_i)$ tag vagy $0$-val vagy pedig $\varphi(d_i)$-vel egyezik meg.
+      Ez az egyenlőség viszont csak ez utóbbi esetben teljesülhet, azaz $p-1$ minden $d$ osztója esetén a $d$ rendű
+      elemek száma valóban $\varphi(d)$.
+  - type: narrative
+    content: |
+      A modulo $p$ primitív gyökök épp azok az elemek, amelyeknek rendje $p-1$. A fentiek szerint ezekből
+      $\varphi(p-1)$ darab van, ami biztosan nagyobb $0$-nál, azaz ***létezik primitív gyök*** modulo $p$.

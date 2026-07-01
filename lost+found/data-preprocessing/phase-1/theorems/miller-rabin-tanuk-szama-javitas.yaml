@@ -1,0 +1,10 @@
+type: theorem
+name: miller-rabin-tanuk-szama-javitas
+proofs:
+  - miller-rabin-tanuk-szama-javitas-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyen $n\gt 9$ egy tetszőleges páratlan egész szám. Ha $n$ összetett, akkor a modulo $n$ redukált
+      maradékosztályoknak legalább a ***háromnegyede*** Miller-Rabin-tanú.

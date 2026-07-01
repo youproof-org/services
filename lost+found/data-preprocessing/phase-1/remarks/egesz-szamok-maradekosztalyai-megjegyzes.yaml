@@ -1,0 +1,13 @@
+type: remark
+name: egesz-szamok-maradekosztalyai-megjegyzes
+references:
+  egesz-szamok-kozotti-kongruencia:
+    target:
+      type: theorem
+      name: egesz-szamok-kozotti-kongruencia
+content:
+  - type: narrative
+    content: |
+      A [egesz-szamok-kozotti-kongruencia] utáni megjegyzésben szereplő okok miatt ***negatív modulus*** szerinti
+      maradékosztályokról sem szoktunk beszélni. Ugyanis a modulo $m$ kongruencia pontosan ugyanaz a reláció, mint
+      a modulo $-m$ kongruencia, és így az általuk meghatározott maradékosztályok is megegyeznek.

@@ -1,0 +1,100 @@
+type: section
+name: 03-ekvivalenciarelaciok
+title: Ekvivalenciarelációk
+
+references:
+  antiszimmetrikus-relacio:
+    target:
+      type: definition
+      name: antiszimmetrikus-relacio
+
+body:
+  - type: narrative
+    content: |
+      Az előző részben megismerkedtünk az úgynevezett ***rendezési relációkkal***. Ezek ugye arra szolgálnak, hogy
+      egy halmaz elemei között valamilyen egyértelmű sorrendet tudjunk felállítani.
+  - type: ordered-list
+    lead-in: |
+      A rendezési relációk semmiben nem különböznek bármilyen más relációtól azt leszámítva, hogy az alábbi 4
+      speciális tulajdonságot kell teljesíteniük:
+    items:
+      - '***Reflexivitás ([reflexiv-relacio]):*** Minden elem álljon relációban önmagával.'
+      - '***Antiszimmetria ([antiszimmetrikus-relacio]):*** Ha két elem nem azonos, akkor közöttük legfeljebb az egyik irányban teljesüljön a reláció (ahogyan azt egy "kisebb-nagyobb" jellegű fogalomtól elvárnánk).'
+      - '***Tranzitivitás ([tranzitiv-relacio]):*** A reláció láncszerűen öröklődjön az elemek között (vagyis ha $a$ és $b$, valamint $b$ és $c$ között is fennáll, akkor álljon fenn közvetlenül $a$ és $c$ között is).'
+      - '***Trichotómia ([trichotom-relacio]):*** Két tetszőleges elem között legalább az egyik irányban teljesüljön (vagyis bármely két elem legyen "összehasonlítható" egymással).'
+  - type: narrative
+    content: |
+      Ebben a szakaszban relációk egy másik fajtájával fogunk megismerkedni, amelyeket
+      ***ekvivalenciarelációknak*** nevezünk. Ezek nem arra szolgálnak, hogy sorrendet állítsunk fel egy halmaz
+      elemei között, hanem arra, hogy azokat ***csoportosítani, osztályozni*** tudjuk. Méghozzá oly módon, hogy a
+      halmaz minden eleme ***pontosan egy*** osztályba kerüljön. Ez azt jelenti, hogy minden elemről egyértelműen
+      meg lehessen mondani, hogy ő melyik osztályba került. Ezenkívül ne legyen olyan elem, amely nem került bele
+      egyik osztályba sem. Egy valamilyen $H$ halmaz ilyen tulajdonságú osztályozását $H$ ***partíciójának***,
+      magukat az osztályokat pedig ***ekvivalencia-osztályoknak*** nevezzük.
+  - type: figure
+    lead-in: |
+      Az alábbi ábra egy 10 elemű $H$ halmaz egy lehetséges partícióját mutatja:
+    src: 01-particio.jpg
+    alt: Partíció
+    caption: Partíció
+  - type: figure
+    lead-in: |
+      Ezzel szemben az alábbi ábrán lévő osztályozás nem partíció, mivel van olyan elem, amely nem került be
+      egyetlen osztályba sem, valamint van olyan elem, amely egynél több osztályba is bele került:
+    src: 02-nem-particio.jpg
+    alt: Nem partíció
+    caption: Nem partíció
+  - type: narrative
+    content: |
+      Egy ***ekvivalenciarelációnak*** tehát azt kell tudnia megmondani két tetszőleges elemről, hogy ők azonos
+      osztályba kerültek-e, vagy sem. Most vizsgáljuk meg, hogy milyen speciális tulajdonságok szükségesek ahhoz,
+      hogy ez az osztályozás valóban egy partíció legyen. Érezhető, hogy a ***reflexivitás*** és a
+      ***tranzitivitás*** mindenképpen szükséges lesz. Nyilvánvaló ugyanis, hogy egy elem önmagával azonos
+      osztályba kerül bármilyen partíció esetén (az "azonos osztályban van"-reláció tehát reflexív). Ezenkívül az
+      is nyilvánvaló, hogy ha $a$ és $b$ azonos osztályba kerültek, valamint $b$ és $c$ is azonos osztályba
+      kerültek, akkor $a$ és $c$ is azonos osztályba kerültek (a reláció tehát tranzitív).
+  - type: narrative
+    content: |
+      E két speciális tulajdonságon kívül azonban szükség van még egy harmadikra is. Ezt a nem kevésbé nyilvánvaló
+      tulajdonságot rögzíti az alábbi definíció:
+  - type: embed
+    target:
+      type: definition
+      name: szimmetrikus-relacio
+  - type: narrative
+    content: |
+      Ez egész egyszerűen annyit fejez ki, hogyha két elem között fennáll a reláció valamelyik irányban, akkor
+      fennáll a másik irányban is. Megjegyezzük még, hogy a nevével ellentétben ez a tulajdonság ***nem
+      ellentéte*** a [antiszimmetrikus-relacio]ban szereplő ***antiszimmetria*** tulajdonságának. Létezik ugyanis
+      olyan reláció, amely egyszerre szimmetrikus és antiszimmetrikus. Triviális példa erre egy tetszőleges halmaz
+      elemeinek egyenlősége, mint reláció. Létezik továbbá olyan reláció is, amely se nem szimmetrikus, se nem
+      antiszimmetrikus. Erre egy későbbi részben fogunk példát mutatni, amikor bevezetjük az ***oszthatóság***
+      fogalmát, amely alapvető fontosságú lesz minden további vizsgálatunk szempontjából.
+  - type: narrative
+    content: |
+      Ezek után a rendezési relációkhoz hasonlóan most az ekvivalenciareláció fogalmát rögzítjük:
+  - type: embed
+    target:
+      type: definition
+      name: ekvivalenciarelacio
+  - type: narrative
+    content: |
+      Most vizsgáljuk meg, hogy egy ekvivalenciareláció valóban alkalmas-e egy halmaz elemeinek osztályozására oly
+      módon, hogy ez az osztályozás egy partíció legyen. Az alábbi tétel azt mondja ki, hogy a reflexivitáson,
+      tranzitivitáson és szimmetrián kívül nincs szükség egyéb tulajdonságra ehhez.
+  - type: embed
+    target:
+      type: theorem
+      name: ekvivalenciarelacio-tulajdonsagai
+  - type: embed
+    target:
+      type: proof
+      name: ekvivalenciarelacio-tulajdonsagai-bizonyitas
+  - type: narrative
+    content: |
+      ***Az iménti tételből következik, hogy egy tetszőleges halmaz ekvivalenciarelációi és partíciói kölcsönösen
+      egyértelmű megfeleltetésben állnak egymással.*** Ha ugyanis egy ekvivalencarelációból a tételben szereplő
+      módon képezzük a hozzá tartozó partíciót, majd ebből a partícióhoz tartozó ekvivalenciarelációt, akkor e
+      konstrukció ***"pontosan akkor"-jellege*** miatt az eredeti relációt kapjuk vissza. Ehhez hasonlóan ha egy
+      partícióból képezzük a hozzá tartozó ekvivalenciarelációt, majd ebből a relációból a hozzá tartozó partíciót,
+      akkor az eredeti partíciót kapjuk vissza.

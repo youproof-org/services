@@ -1,0 +1,95 @@
+type: proof
+name: reszgyuru-feltetele-bizonyitas
+remarks: []
+references:
+  gyuru-test:
+    target:
+      type: definition
+      name: gyuru-test
+  inverz-elem-egyertelmu:
+    target:
+      type: theorem
+      name: inverz-elem-egyertelmu
+  ketvaltozos-muvelet:
+    target:
+      type: definition
+      name: ketvaltozos-muvelet
+content:
+  - type: narrative
+    content: |
+      Tegyük fel, hogy $S$ részgyűrű $R$-ben. Ekkor a műveleti zártság &ndash; azaz az ***1.*** és ***2.
+      tulajdonság*** &ndash; nyilvánvalóan teljesül, máskülönben $S$ nem lenne gyűrű az $R$-beli műveletekre nézve,
+      és így részgyűrű sem lehetne $R$-ben.
+  - type: narrative
+    content: |
+      Mivel $S$-nek létezik nulleleme &ndash; hiszen maga is gyűrű &ndash;, ezért a ***3. tulajdonsághoz*** azt
+      kell megmutatni, hogy ez a nullelem megegyezik $R$ nullelemével. Jelöljük $S$ nullelemét $0_S$-sel, $R$
+      nullelemét pedig $0_R$-rel, és tegyük fel indirekt, hogy ez a kettő nem ugyanaz. Ha a kettő nem ugyanaz,
+      akkor az sem mindegy, hogy melyik gyűrűben beszélünk ellentettképzésről. Jelölje most $(-0_S)$ a $0_S$ elem
+      $R$-beli ellentettjét.
+  - type: formula
+    lead-in: |
+      Őket összeadva tehát az $R$ gyűrű nullelemét kell kapjuk, azaz:
+    content: |
+      0_S+(-0_S)=0_R
+  - type: formula
+    lead-in: |
+      Mivel $0_S$ az $S$ gyűrű nulleleme, ezért nyilvánvalóan igaz az alábbi:
+    content: |
+      0_S+0_S=0_S
+  - type: formula
+    lead-in: |
+      Végül, mivel $0_R$ az $R$ gyűrű nulleleme, ezért az alábbi is teljesül:
+    content: |
+      0_S+0_R=0_S
+  - type: formula
+    lead-in: |
+      Mivel $S$ gyűrű, így az összeadás asszociativitása miatt:
+    content: |
+      (0_S+0_S)+(-0_S)=0_S+(0_S+(-0_S))
+  - type: formula
+    lead-in: |
+      A baloldalt kifejtve ezt kapjuk:
+    content: |
+      \underbrace{(0_S+0_S)}_{=0_S}+(-0_S)=0_S+(-0_S)=0_R
+  - type: formula
+    lead-in: |
+      A jobboldalt kifejtve pedig ezt:
+    content: |
+      0_S+\underbrace{(0_S+(-0_S))}_{=0_R}=0_S+0_R=0_S
+  - type: narrative
+    content: |
+      Ez a kettő eredmény viszont a fentebb már említett asszociativitás miatt indirekt feltételezésünkkel
+      ellentétben mégis meg kell egyezzen, így valóban $0_R=0_S$.
+  - type: narrative
+    content: |
+      Végül az ellentettképzésre való zártság &ndash; azaz a ***4. tulajdonság*** &ndash; igazolásához képezzük az
+      $S$ gyűrű valamely $a$ elemének ellentettjét mindkét gyűrűben, és megmutatjuk, hogy ezek valójában
+      megegyeznek. Az $S$-beli ellentettet jelöljük $x_S$-sel, míg az $R$-beli ellentettet $x_R$-rel.
+  - type: formula
+    lead-in: |
+      Az $a$ elemet az $R$-beli ellentettjével összeadva az $R$ gyűrű nullelemét kell kapnunk, azaz:
+    content: |
+      a+x_R=0_R
+  - type: narrative
+    content: |
+      Ugyanakkor az $a$ elemet az $S$-beli ellentettjével összeadva az $S$ gyűrű nullelemét kell kapnunk, amiről
+      azonban már láttuk, hogy megegyezik az $R$ gyűrű nullelemével.
+  - type: formula
+    lead-in: |
+      Azaz:
+    content: |
+      a+x_S=0_S=0_R
+  - type: narrative
+    content: |
+      Minthogy az $R$-beli ellentettképzés a [inverz-elem-egyertelmu] alapján egyértelmű, ezért szükségképpen
+      $x_S=x_R$. Azaz az $S$ gyűrű valóban zárt az $R$-beli ellentettképzésre.
+  - type: narrative
+    content: |
+      ***Visszafelé:*** Most azt kell megmutatnunk, hogy amennyiben teljesül mind a 4 tulajdonság, úgy $S$
+      részgyűrű $R$-ben. Az $R$ gyűrű műveletei az 1. és 2. tulajdonságok alapján nem vezetnek ki $S$-ből, így azok
+      algebrai értelemben műveletek ezen a szűkebb halmazon is (lásd a [ketvaltozos-muvelet]t). Továbbá a 3. és 4.
+      tulajdonság miatt létezik nullelem, és minden elemnek létezik ellentettje is $S$-ben. Így a [gyuru-test]
+      szerinti gyűrűaxiómákból már csak a két művelet asszociativitását, valamint a disztributivitási szabályokat
+      kell igazolnunk. Ezeket azonban $S$ megörökli az $R$-től a műveletekkel együtt. Így tehát $S$ valóban
+      részgyűrű $R$-ben.

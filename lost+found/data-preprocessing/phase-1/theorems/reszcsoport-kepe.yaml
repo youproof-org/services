@@ -1,0 +1,11 @@
+type: theorem
+name: reszcsoport-kepe
+proofs:
+  - reszcsoport-kepe-bizonyitas
+remarks: []
+content:
+  - type: narrative
+    content: |
+      Legyenek $G$ és $H$ tetszőleges csoportok, $f:G\to H$ pedig egy csoporthomomorfizmus e két csoport között.
+      Ekkor tetszőleges $K\leq G$ esetén $f(K)\leq H$, azaz $G$ minden részcsoportjának $f$ szerinti képe
+      részcsoport $H$-ban.

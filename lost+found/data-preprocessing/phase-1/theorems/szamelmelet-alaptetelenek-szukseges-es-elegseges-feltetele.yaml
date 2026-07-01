@@ -1,0 +1,23 @@
+type: theorem
+name: szamelmelet-alaptetelenek-szukseges-es-elegseges-feltetele
+proofs:
+  - szamelmelet-alaptetelenek-szukseges-es-elegseges-feltetele-bizonyitas
+remarks: []
+references:
+  halmazrendszer-minimuma-es-maximuma:
+    target:
+      type: definition
+      name: halmazrendszer-minimuma-es-maximuma
+content:
+  - type: narrative
+    content: |
+      Legyen $R$ tetszőleges ***integritástartomány***, $\mathcal{R}$ pedig az $R$ ***összes főideáljából*** álló
+      halmazrendszer $R$ fölött.
+  - type: ordered-list
+    lead-in: |
+      A számelmélet alaptétele ***akkor és csak akkor*** teljesül $R$-ben, ha fennállnak az alábbi feltételek:
+    items:
+      - 'A főideálokból álló $\mathcal{R}$ halmazrendszer bármely ***nemüres*** részhalmazában ***létezik
+        maximális elem*** a [halmazrendszer-minimuma-es-maximuma] szerinti
+        értelemben.'
+      - 'Az $R$ integritástartomány ***minden felbonthatatlan eleme prímtulajdonságú***.'

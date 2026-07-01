@@ -1,0 +1,26 @@
+type: section
+name: 07-az-univerzalis-turing-gep
+title: Az univerzális Turing-gép
+
+body:
+  - type: narrative
+    content: |
+      Képzeljünk most el egy olyan Turing-gépet, amely képes bármilyen más ***Turing-gép működését szimulálni***
+      tetszőleges bemenetre. Az ilyen Turing-gépet logikus módon ***univerzális Turing-gépnek*** nevezzük. Az
+      univerzális Turing-gép bemenete két részből áll: az első rész a szimulálni kívánt Turing-gép valamilyen $w$
+      leírását (amely ugye véges), míg a második rész a szimulálni kívánt Turing-gép $x$ bemenetét tartalmazza. Az
+      univerzális Turing-gép ezután pontosan úgy viselkedik erre az összetett bemenetre, mint ahogyan a $w$
+      "betűsorozat" által leírt szimulált Turing-gép viselkedne az $x$ bemenetre. Kérdés, hogy egyáltalán létezik-e
+      univerzális Turing-gép?
+  - type: narrative
+    content: |
+      A válasz igen, ám ennek konkrét konstrukciójától most eltekintünk, mivel ez inkább technikai jellegű
+      probléma, mintsem elméleti. Az univerzális Turing-gép létezése egyébként nem meglepő, hiszen ha
+      belegondolunk, tulajdonképpen ***minden valódi számítógép tekinthető ilyen konstrukciónak***. A szimulált
+      gépek $w$ leírásai valódi számítógépek esetén a különböző programoknak felelnek meg, maga a szimuláció pedig
+      nem más, mint a $w$ "betűsorozat" által leírt program futtatása. Az, hogy egy tetszőleges Turing-gépet hogyan
+      tudunk leírni egy $w$ "betűsorozattal" szintén technikai jellegű kérdés, de ez nyilván megoldható valamilyen
+      szabványos módon.
+  - type: narrative
+    content: |
+      Ennyi bevezető után végre rátérhetünk az algoritmikus eldönthetőség kérdésére.

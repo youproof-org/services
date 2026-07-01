@@ -1,0 +1,700 @@
+<!-- wp:paragraph -->
+<p><strong><em>Az <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/21-rsa-algoritmus-kibovitett-euklideszi-algoritmus-euler-fuggveny-kulcsgeneralas-ismetelt-negyzetreemeles-modszere/" target="_blank">előző részben</a> megismerkedtünk napjaink egyik legfontosabb aszimmetrikus kulcsú rejtjelezési eljárásával, az RSA-algoritmussal. Ehhez alapvetően három összetevőre volt szükség. Először is hatékonyan kell tudni megoldani lineáris kongruenciákat, amelyhez bemutattuk az euklidészi algoritmus kibővített változatát. Másodszor hatékonyan kell tudni kiszámítani az Euler-féle [latex]\varphi[/latex]-függvény értékét. Láttuk, hogy a bemeneti szám prímtényezőinek ismeretében ez gyerekjáték. Megemlítettük ugyanakkor, hogy a prímtényezők ismerete nélkül jelenlegi tudásunk szerint ez gyakorlatilag kivitelezhetetlen, amennyiben ezek a prímtényezők kellően nagyok. Ez adja az RSA-eljárás biztonságát. Harmadszor a kódoló és dekódoló függvények elvégzéséhez hatékonyan kell tudni moduláris hatványozást végezni, amelyhez az ismételt négyzetreemelések módszerével ismerkedtünk meg. Végül egy konkrét példán ki is próbáltuk az eljárást, és megmutattuk, hogy a kulcspár egyik tagjával kódolt üzenetet varázslatos módon a kulcspár másik tagjával lehet dekódolni.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>De vajon varázslat helyett valójában mi áll az RSA-algoritmus helyes működésének</em></strong> <strong><em>hátterében? Mit állít a kis Fermat-tétel és a kínai maradéktétel, és mi közük van ehhez az egészhez? Mit értünk egy maradékosztálygyűrű dekompozíciója alatt? Hogyan lehet ennek segítségével lényegesen felgyorsítani az RSA-dekódolási algoritmust? Ebben a részben erről lesz szó...</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"className":"prerequisite-warning"} -->
+<p class="prerequisite-warning">Figyelem! Ez a rész erőteljesen épít a <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/20-kongruencia-redukalt-maradekosztaly-euler-fuggveny-linearis-kongruencia-maradekrendszer-euler-fermat-tetel/" target="_blank">20.</a>, és <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/21-rsa-algoritmus-kibovitett-euklideszi-algoritmus-euler-fuggveny-kulcsgeneralas-ismetelt-negyzetreemeles-modszere/" target="_blank">21. részekben</a> felépített alábbi definíciókra, valamint a hozzájuk kapcsolódó tételekre:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-maradekosztalyai" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="egesz-szamok-maradekosztalygyurui" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="linearis-kongruenciak" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="euler-fermat-tetel" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="euler-fuggveny-szorzattarto-tulajdonsaga" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="euler-fuggveny-primhatvanyokra" show_title="true" type="recall-collapsed" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph {"className":"prerequisite-warning"} -->
+<p class="prerequisite-warning">Ezek kontextusba helyezése miatt erőteljesen ajánlott elolvasni a <a href="https://youproof.hu/kriptografia/20-kongruencia-redukalt-maradekosztaly-euler-fuggveny-linearis-kongruencia-maradekrendszer-euler-fermat-tetel/" target="_blank" rel="noreferrer noopener">20</a><a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/19-foidealgyuruk-generalt-ideal-foideal-szamelmelet-alaptetele-halmaz-halmazrendszer-metszet-unio/" target="_blank">.</a> és <a href="https://youproof.hu/kriptografia/21-rsa-algoritmus-kibovitett-euklideszi-algoritmus-euler-fuggveny-kulcsgeneralas-ismetelt-negyzetreemeles-modszere/" target="_blank" rel="noreferrer noopener">21. részeket</a>, mivel gyakran hivatkozni fogunk rájuk. A teljes cikksorozat elejét <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/1-alapfogalmak-caesar-vigenere-enigma-kulcsmegosztas/" target="_blank">itt</a> találod.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"dropCap":true} -->
+<p class="has-drop-cap">Az RSA-algoritmus lépéseit tehát már ismerjük. Mutattunk is egy <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/21-rsa-algoritmus-kibovitett-euklideszi-algoritmus-euler-fuggveny-kulcsgeneralas-ismetelt-negyzetreemeles-modszere#rsa-example" target="_blank">konkrét példát</a> az alkalmazására. Ebben a példában először Bob generált magának egy RSA kulcspárt, amelynek publikus részét elérhetővé tette Alice – illetve bárki más – számára, a titkos részét viszont nem adta ki a kezéből. Alice ezután a <strong>sziabobmiahelyzet</strong> üzenetet kódolta Bob publikus kulcsával, a titkosított üzetetet pedig átküldte a nembiztonságos csatornán. Ezt az üzenetet egy támadó, de még maga Alice sem tudja dekódolni. Arra ugyanis csak Bob képes, mivel nála van az ehhez szükséges titkos kulcs.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Úgy tűnik tehát, hogyha egy üzenetet egy kulcspár valamelyik tagjával – legyen az akár a publikus, akár a titkos kulcs – kódolunk, majd az így kapott eredményt dekódoljuk a kulcspár másik tagjával, akkor varázslatos módon az eredeti üzenetet kapjuk vissza. Most azt fogjuk megmutatni, hogy ez az összefüggés bármilyen, az ismertetett kritériumoknak megfelelő kulcspár, továbbá bármilyen üzenet esetén valóban fennáll. Ehhez azonban szükségünk lesz két nagyon fontos tételre. Ismerkedjünk is meg az elsővel.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:html -->
+<div id="fermat-theorem"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A kis Fermat-tétel</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A kis Fermat-tétel egy fontos számelméleti tétel, amelyet <a rel="noreferrer noopener" href="https://hu.wikipedia.org/wiki/Pierre_de_Fermat" target="_blank">Pierre de Fermat</a> fedezett fel 1636-ban. Fermat-nak bosszantó szokása volt, hogy bizonyítás nélkül közölte felfedezéseit kortársaival, mintegy kihívást intézve hozzájuk: jöjjenek rá ők is a bizonyításra. Fermat szokásához híven a kis Fermat-tételre sem adott bizonyítást. Ezt bizonyíthatóan elsőként <a href="https://hu.wikipedia.org/wiki/Gottfried_Wilhelm_Leibniz" target="_blank" rel="noreferrer noopener">Gottfried Wilhelm Leibniz</a> német matematikus írta le egy dátumozatlan kéziratban, ahol azt is állította, hogy már 1683 előtt is ismert bizonyítást e tételre. A tétel nevében szereplő „kis” jelzőt a híres nevezetes <a rel="noreferrer noopener" href="https://hu.wikipedia.org/wiki/Nagy_Fermat-t%C3%A9tel" target="_blank">nagy Fermat-tételtől</a> való megkülönböztetés miatt szokás használni. Ez utóbbi egészen 1995-ig „nagy Fermat-sejtés” néven volt ismeretes, mivel csak ekkor – mintegy 350 évvel később – sikerült bizonyítást adni rá.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Visszatérve a kis Fermat-tételre, az egy viszonylag egyszerű számelméleti tétel, amely moduláris hatványokról szól, méghozzá azokban az esetekben, amikoris a modulus egy valamilyen pozitív [latex]p[/latex] prímszám. Fermat azt vizsgálta, hogy egy tetszőleges [latex]a[/latex] egész szám moduláris hatványai hogyan alakulnak ebben a modulo [latex]p[/latex] óraaritmetikában. Észrevette, hogy minden olyan esetben, amikor a kitevő megegyezik a [latex]p[/latex] modulussal, akkor az [latex]a[/latex] egész szám [latex]p[/latex]-edik moduláris hatványa is épp megegyezik [latex]a[/latex]-val.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Vizsgáljuk meg például, hogy az [latex]a=2[/latex] egész szám moduláris hatványai hogyan alakulnak a kitevőknek megfelelő óraaritmetikákban. Nyilakkal jelöltük meg azokat a sorokat, amelyekben a kitevő és a modulus prímszám:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}\to 2^2&amp;\equiv 2\pmod 2 \\ \to 2^3&amp;\equiv 2\pmod 3 \\ 2^4&amp;\equiv 0\pmod 4 \\ \to 2^5&amp;\equiv 2\pmod 5 \\ 2^6&amp;\equiv 4\pmod 6 \\ \to 2^7&amp;\equiv 2\pmod 7 \\ 2^8&amp;\equiv 0\pmod 8 \\ 2^9&amp;\equiv 8\pmod 9 \\ 2^{10}&amp;\equiv 4\pmod{10} \\ \to 2^{11}&amp;\equiv 2\pmod{11} \\ &amp;\vdots \end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Valóban úgy tűnik, hogy a prím kitevők esetében a [latex]2[/latex] hatványai mindig kongruensek lesznek [latex]2[/latex]-vel a kitevőnek megfelelő óraaritmetikában.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi tétel második állítása éppen azt fogalmazza meg, hogy ez bármilyen alap – tehát nem csak a [latex]2[/latex] –, továbbá bármilyen pozitív prím kitevő esetén így van. Amennyiben [latex]a[/latex] és [latex]p[/latex] relatív prímek, akkor érvényes az első állítás is, amely a kis Fermat-tétel gyakoribb alakja.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="kis-fermat-tetel" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="kis-fermat-tetel-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="kis-fermat-tetel-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ráadásul az iménti megjegyzésben szereplő [latex]n=561[/latex] ellenpélda különleges abból a szempontból, hogy esetében nemcsak az [latex]a=2[/latex], hanem <strong><em>tetszőleges</em></strong> [latex]a[/latex] alap esetén is teljesül az [latex]a^n\equiv a\pmod n[/latex] kongruencia, ennek ellenére mégsem prím. Ez egyben azt is jelenti, hogy a <strong><em>tétel megfordítása nem igaz!</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Azon túlmenően, hogy a most ismertetett <strong><em>kis Fermat-tétel</em></strong> fontos szerepet játszik az RSA-algoritmus helyességének igazolásában, Alice-nak és Bob-nak is nagy hasznára lesz a kulcsgeneráláshoz szükséges óriási – a gyakorlatban többszázjegyű – prímszámok kereséséhez. Erről a következő részben lesz szó, most azonban ismerkedjünk meg egy másik, az RSA működése szempontjából fontos kérdéssel.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Kongruenciarendszerek</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/20-kongruencia-redukalt-maradekosztaly-euler-fuggveny-linearis-kongruencia-maradekrendszer-euler-fermat-tetel#linear-congruences" target="_blank">20. részben</a> megismerkedtünk az úgynevezett <strong><em>kongruenciaegyenletekkel</em></strong>. Ezek olyan kongruenciák, amelyekben valamilyen [latex]x[/latex] ismeretlen is szerepel, a feladatunk pedig az egész számok egy olyan részhalmazának (vagy részhalmazainak) meghatározása, amelynek (vagy amelyeknek) elemeit behelyettesítve az [latex]x[/latex] ismeretlen helyére a kongruencia teljesül. E kongruenciaegyenletek legegyszerűbb képviselői az úgynevezett <strong><em>lineáris kongruenciák</em></strong> voltak, így a továbbiakban elsősorban ezeket fogjuk példaként felhozni. Legyen például [latex]a[/latex] és [latex]b[/latex] tetszőleges, [latex]m\gt 0[/latex] pedig valamilyen pozitív egész szám, és tekintsük az alábbi lineáris kongruenciát:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]a\cdot x\equiv b\pmod m[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="linearis-kongruenciak" type="link" /] utáni megjegyzés alapján egy ilyen kongruenciaegyenletnek a megoldásai <strong><em>teljes modulo [latex]m[/latex] maradékosztályok</em></strong> lesznek – amennyiben persze létezik megoldás.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most bonyolítsuk meg a dolgot egy kicsit. A hagyományos egyenletekhez hasonlóan a kongruenciaegyenletek esetén is előfordulhat, hogy ugyanarra az ismeretlenre egyidejűleg több, különböző modulus szerinti kongruenciafeltételt is előírunk. Ezeket <strong><em>kongruenciarendszereknek</em></strong> nevezzük. A példa kedvéért továbbra is a lineáris kongruenciáknál maradva tegyük fel, hogy most az egész számoknak azon részhalmát (vagy részhalmazait) keressük, amelynek (vagy amelyeknek) elemei egyszerre elégítik ki az alábbi <strong><em>mindkét</em></strong> kongruenciát:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}3x&amp;\equiv 2\pmod 5 \\ 6x&amp;\equiv 4\pmod 8\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Nyilvánvalóan egy ilyen rendszer megoldhatóságának szükséges feltétele, hogy a benne szereplő kongruenciák külön-külön megolhatók legyenek. Ez ebben a példában természetesen a [yp_element slug="linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga" type="link" /] alapján teljesül, mivel a [latex](3,5)=1[/latex] és a [latex](6,8)=2[/latex] kitüntetett közös osztók osztói a megfelelő kongruenciák jobboldalainak, azaz rendre a [latex]2[/latex] és a [latex]4[/latex] egész számoknak.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A [yp_element slug="linearis-kongruenciak-megoldasai-es-megoldasszama" type="link" /] 1. pontja alapján az első kongruenciának [latex](3,5)=1[/latex] darab modulo [latex]5[/latex] maradékosztály, míg a másodiknak [latex](6,8)=2[/latex] darab modulo [latex]8[/latex] maradékosztály lesz a megoldása. Ezek megtalálásához előszöris a [yp_element slug="linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga" type="link" /] alapján az alábbi két lineáris diofantoszi egyenletet kell megoldani:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}3x+5y&amp;=2 \\ 6x+8y&amp;=4\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezt a [yp_element slug="linearis-diofantoszi-egyenlet-osszes-megoldasa" type="link" /] 1. pontja alapján a <strong><em>kibővített euklidészi algoritmussal</em></strong> tudjuk megtenni. Az így kapott megoldásokat a [yp_element slug="linearis-kongruenciak-es-linearis-diofantoszi-egyenletek-megoldhatosaga" type="link" /]ben leírtaknak megfelelően visszafordítva a kongruenciák nyelvére azt kapjuk, hogy a [latex]3x\equiv 2\pmod 5[/latex] kongruenciának a [latex][4]_5[/latex] modulo [latex]5[/latex] maradékosztály, míg a [latex]6x\equiv 4\pmod 8[/latex] kongruenciának a [latex][6]_8[/latex] modulo [latex]8[/latex] maradékosztály egy-egy megoldása lesz. Előbbinek ugye nincs más megoldása, míg utóbbinak a [yp_element slug="linearis-kongruenciak-megoldasai-es-megoldasszama" type="link" /] 2. pontja alapján egy további megoldása lesz a [latex][2]_8[/latex] modulo [latex]8[/latex] maradékosztály.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A fenti kongruenciarendszerben szereplő két lineáris kongruencia megoldásait az alábbiakban foglaltuk össze a [yp_element slug="halmazelmeleti-alapfogalmak" type="link" /]ban és a [yp_element slug="halmazmuveletek" type="link" /]ban tanult halmazelméleti jelölésekkel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}3x\equiv 2\pmod 5 &amp;\to x\in [4]_5 \\ 6x\equiv 4\pmod 8 &amp;\to x\in [6]_8 \cup [2]_8\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Olyan egész számokat keresünk tehát, amelyek [latex]5[/latex]-tel osztva [latex]4[/latex] maradékot, és [latex]8[/latex]-cal osztva [latex]6[/latex] vagy [latex]2[/latex] maradékot adnak. Azaz tulajdonképpen az alábbi két kongruenciarendszer megoldásait keressük:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{c} \boxed{\begin{aligned}x&amp;\equiv 4\pmod 5 \\ x&amp;\equiv 6\pmod 8\end{aligned}} \\ \\ \boxed{\begin{aligned}x&amp;\equiv 4\pmod 5 \\ x&amp;\equiv 2\pmod 8\end{aligned}} \end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az ilyen jellegű kérdések megválaszolására siet segítségünkre a most bemutatásra kerülő nagyon fontos összefüggés.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>A kínai maradéktétel</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Azt a kérdést szeretnénk tehát megválaszolni, hogy melyek azok az egész számok, amelyek adott modulusokkal osztva adott maradékokat adnak. Itt most csak azzal a számunkra fontos esettel foglalkozunk, amikor ezek a modulusok <strong><em>páronként relatív prímek</em></strong> egymáshoz – azaz bármely két modulus egymáshoz relatív prím. Ilyen például az előző szakaszban felmerülő két példa, hiszen az [latex]5[/latex] és [latex]8[/latex] modulusok egymáshoz relatív prímek.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az írásos emlékek alapján az alábbi tételt már mintegy <strong><em>2000 évvel ezelőtt</em></strong> is ismerte egy bizonyos Szun Cu nevű kínai matematikus, ezért ezt kínai maradéktétel néven szoktuk emlegetni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="kinai-maradektetel" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="kinai-maradektetel-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az előző szakaszban közölt példánál maradva keressük tehát két kongruenciarendszer megoldásait. Ezek az alábbiak:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{c} \boxed{\begin{aligned}x&amp;\equiv 4\pmod 5 \\ x&amp;\equiv 6\pmod 8\end{aligned}} \\ \\ \boxed{\begin{aligned}x&amp;\equiv 4\pmod 5 \\ x&amp;\equiv 2\pmod 8\end{aligned}} \end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Az első kongruenciarendszer</em></strong> megoldáshalmaza a [latex][4]_5[/latex] és a [latex][6]_8[/latex] maradékosztályok közös része, azaz metszete lesz. Mivel az [latex]5[/latex] és a [latex]8[/latex] modulusok egymáshoz relatív prímek, ezért alkalmazhatjuk a <strong><em>kínai maradéktételt</em></strong>. Eszerint a keresett halmaz épp egy modulo [latex]5\cdot 8=40[/latex] maradékosztály lesz. Ellenőrizzük is le, azaz írjuk fel egymás alá a [latex][4]_5[/latex] és a [latex][6]_8[/latex] maradékosztályokat, és keretezzük be a közös elemeiket:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}[4]_5&amp;=\{\ldots; 4;9;\boxed{14};19;24;29;34;39;44;49;\boxed{54};59;\ldots\} \\ [6]_8&amp;=\{\ldots; 6;\boxed{14};22;30;38;46;\boxed{54};62;\ldots\} \end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Látható, hogy a felső sorban az elemek – modulo [latex]5[/latex] maradékosztályról lévén szó – [latex]5[/latex]-ösével követik egymást, és minden [latex]8[/latex]-adik elem lett bekeretezve. Ezzel szemben az alsó sorban az elemek – modulo [latex]8[/latex] maradékosztályról lévén szó – [latex]8[/latex]-asával követik egymást, és minden [latex]5[/latex]-ödik elem lett bekeretezve. Ha tehát kigyűjtjük a bekeretezett elemeket egy halmazba, akkor azok épp [latex]40[/latex]-esével fogják egymást követni, tehát ők valóban egy modulo [latex]40[/latex] maradékosztályt alakotnak, méghozzá a következőt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][14]_{40}=\{\ldots; 14;54;94;134;174;214;\ldots\}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezek – és a <strong><em>kínai maradéktétel</em></strong> alapján csak ezek – az egész számok elégítik ki tehát az <strong><em>első kongruenciarendszert</em></strong>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A második kongruenciarendszer</em></strong> esetén a [latex][4]_5[/latex] és a [latex][2]_8[/latex] maradékosztályok metszetét keressük. Ezt az előzőhöz hasonló módszerrel kaphatjuk meg:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}[4]_5&amp;=\{\ldots; 4;9;14;19;24;29;\boxed{34};39;44;49;54;59;64;69;\boxed{74};\ldots\} \\ [2]_8&amp;=\{\ldots; 2;10;18;26;\boxed{34};42;50;58;66;\boxed{74};\ldots\} \end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ha ismét kigyűjtjük a bekeretezett elemeket egy halmazba, akkor azok szintén [latex]40[/latex]-esével fogják egymást követni, tehát ők ugyancsak egy modulo [latex]40[/latex] maradékosztályt alakotnak, méghozzá a következőt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"][34]_{40}=\{\ldots; 34;74;114;154;194;234;\ldots\}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az alábbiakban összefoglaltuk a két kongruenciarendszer megoldását, amely tehát egy-egy modulo [latex]40[/latex] maradékosztály:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{ccc} \boxed{\begin{aligned}x&amp;\equiv 4\pmod 5 \\ x&amp;\equiv 6\pmod 8\end{aligned}} &amp; \to &amp; [14]_{40} \\ \\ \boxed{\begin{aligned}x&amp;\equiv 4\pmod 5 \\ x&amp;\equiv 2\pmod 8\end{aligned}} &amp; \to &amp; [34]_{40} \end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Kongruenciarendszerek megoldása</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Most megmutatjuk, hogy ez a „bekeretezős” módszer mindig működik, és eljárást is adunk a keresett maradékosztály kiszámítására. Tulajdonképpen az a feladat, hogy adva van egy modulo [latex]p[/latex] maradékosztályból (jelöljük ezt [latex]A[/latex]-val) és egy modulo [latex]q[/latex] maradékosztályból (jelöljük ezt [latex]B[/latex]-vel) álló úgynevezett <strong><em>„rendezett pár”</em></strong>, ahol [latex]p[/latex] és [latex]q[/latex] egymáshoz relatív prímek. A feladat megtalálni azt az [latex]X[/latex]-szel jelölt halmazt, amely épp a megadott két maradékosztály metszetével egyezik meg:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]X=A\cap B[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A <strong><em>kínai maradéktétel</em></strong> tehát azt állítja, hogy amennyiben [latex]p[/latex] és [latex]q[/latex] egymáshoz <strong><em>relatív prímek</em></strong>, akkor az [latex]X[/latex]-szel jelölt halmaz éppenséggel egy modulo [latex]pq[/latex] maradékosztály lesz. Hamarosan látni fogjuk, hogy ennél jóval több is igaz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ehhez először ismételjük át a <strong><em>„rendezett pár”</em></strong> fogalmát, amelyről néhány korábbi részben már volt szó. Elsőként a <strong><em>kétváltozós művelet</em></strong> fogalmának bevezetésekor találkoztunk vele a <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/11-peano-axiomarendszer-termeszetes-szam-muvelet-osszeadas-kommutativitas-asszociativitas-teljes-indukcio#operations-on-natural-numbers" target="_blank">11. részben</a>. Ezt a fogalmat a [yp_element slug="ketvaltozos-muvelet" type="link" /]ban egy olyan függvényként definiáltuk, amely egy valamilyen [latex]H[/latex] halmaz elemeiből alkotott párokhoz a [latex]H[/latex] halmaz elemeit rendeli hozzá. Például az egész számok [latex]\Z[/latex] halmazán értelmezett szokásos összeadás művelet, mint függvény a [latex](3;2)[/latex] rendezett párhoz az [latex]5[/latex] egész számot rendeli hozzá.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Másodszor a <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/12-szorzas-disztributivitas-teljes-indukcio-indirekt-bizonyitas-relacio-teljes-rendezes-rendezett-halmaz#relations" target="_blank">12. részben</a> definiált <strong><em>kétváltozós reláció</em></strong> kapcsán került elő ez a fogalom. Egy szintén valamilyen [latex]H[/latex] halmazon értelmezett <strong><em>kétváltozós relációt</em></strong> a [yp_element slug="ketvaltozos-relacio" type="link" /]ban a [latex]H[/latex] elemeiből alkotott párok halmazának egy részhalmazaként definiáltuk. Azt mondtuk, hogy egy [latex]R[/latex] reláció akkor áll fenn két [latex]H[/latex]-beli [latex]a[/latex] és [latex]b[/latex] elem között, ha az [latex](a;b)[/latex] rendezett pár eleme az [latex]R[/latex] halmaznak. Például a [latex]\Z[/latex] halmazon értelmezett [latex]\leq[/latex] relációnak, mint halmaznak eleme a [latex](2;3)[/latex] rendezett pár – hiszen [latex]2\leq 3[/latex] –, de nem eleme a [latex](3;2)[/latex] rendezett pár – hiszen [latex]3\
+leq 2[/latex].</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Végül a <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/13-adossag-ekvivalenciarelacio-ekvivalencia-osztaly-egesz-szam-homomorfizmus-beagyazas-negativ-szam/" target="_blank">13. részben</a> magukat az <strong><em>egész számokat</em></strong> is a természetes számok [latex]\N[/latex] halmazának elemeiből alkotott rendezett párok segítségével definiáltuk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A felsorolt példákban egyrészt <strong><em>PÁRokról</em></strong>, azaz kétkomponensű objektumokról volt szó, másrészt pedig a <strong><em>PÁR</em></strong> két komponense ugyanabból a halmazból került ki. Egy ennél általánosabb fogalomhoz jutunk, ha ezeket a megszorításokat elhagyjuk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="halmazok-direkt-szorzata" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Egy kézenfekvő példa direkt szorzatra a <strong><em>sík pontjainak halmaza</em></strong>. Ezeket általában egy derékszögű koordinátarendszerben szoktuk ábrázolni. Ilyenkor felrajzolunk két egymásra merőleges számegyenest, amelyek a [latex]0[/latex]-nál metszik egymást. Ezek után egy síkbeli pontot egy számpárral írhatunk le, amelynek komponenseit a <strong><em>pont koordinátáinak</em></strong> nevezzük. Az első koordináta azt adja meg, hogy a két számegyenes metszéspontjából kiindulva mennyit kell haladni az első – általában vízszintes – számegyenes mentén, míg a második koordináta azt adja meg, hogy innen mennyit kell továbbhaladni a másik – általában függőleges számegyenes irányával párhuzamosan. Ezt mutatja az alábbi ábra:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":6142,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_22_derekszogu_koordinatarendszer.jpg" alt="Derékszögű koordinátarendszer" class="wp-image-6142"/><figcaption>Derékszögű koordinátarendszer</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>A számegyenes pontjainak halmazát [latex]\R[/latex]-rel szoktuk jelölni, a sík pontjainak halmaza pedig ennek megfelelően az [latex]\R\times \R[/latex], vagy másként az [latex]\R^2[/latex] direkt szorzat lesz. Ehhez hasonlóan a [latex]3[/latex], [latex]4[/latex], ..., [latex]n[/latex] dimenziós tér pontjainak halmazát [latex]\R^3[/latex], [latex]\R^4[/latex], ..., [latex]\R^n[/latex] jelöli.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Egy másik kézenfekvő példa direkt szorzatra az <strong><em>52 lapos franciakártya</em></strong>. Egy ilyen pakliban minden kártyalapnak van valamilyen „színe” (angolul „suit”) és „értéke” (angolul „rank”). Jelöljük a lehetséges színek halmazát [latex]S[/latex]-sel, a lehetséges értékek halmazát pedig [latex]R[/latex]-rel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}S&amp;=\{\clubs;\diamonds;\spades;\hearts\} \\ R&amp;=\{2;3;4;5;6;7;8;9;10;\text{J};\text{Q};\text{K};\text{A}\}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Mivel a kártyapakliban lévő lapok minden lehetséges színt és értéket felvehetnek, ezért e lapok halmaza tulajdonképpen az [latex]S\times R[/latex] direkt szorzat lesz. Ekkor egy kártyalapot egy olyan rendezett pár reprezentál, amelynek első komponense az [latex]S[/latex], a második komponense pedig az [latex]R[/latex] halmaz eleme. Például a „treff hetest” reprezentáló rendezett pár a [latex](\clubs;7)[/latex] lesz.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most vonatkoztassuk a <strong><em>direkt szorzat</em></strong> fogalmát a <strong><em>kínai maradéktétel</em></strong> állítására. A szakasz elején szereplő [latex]A[/latex]-ból és [latex]B[/latex]-ből álló <strong><em>rendezett pár</em></strong> első komponense tehát a modulo [latex]p[/latex], míg a második komponense a modulo [latex]q[/latex] maradékosztálygyűrű eleme. Maga az [latex](A;B)[/latex] rendezett pár tehát eleme e két maradékosztálygyűrű <strong><em>direkt szorzatának</em></strong>. Azaz a [yp_element slug="egesz-szamok-maradekosztalygyurui" type="link" /]ben szereplő és a most bevezetett jelölésekkel:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}A &amp;\in \Z/p\Z \\ B &amp;\in \Z/q\Z \\ (A;B) &amp;\in \Z/p\Z \times \Z/q\Z\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezek után az alábbi tételben megadjuk a <strong><em>kínai maradéktétel</em></strong> egy alternatív megfogalmazását, valamint egy eljárást is mutatunk a tételben szereplő [latex]A\cap B[/latex] halmaz előllítására:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="kinai-maradektetel-alternativ" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="kinai-maradektetel-alternativ-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="kinai-maradektetel-alternativ-megjegyzes" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most térjünk vissza az előző szakaszban szereplő példára, amelynek során a „bekeretezős” módszerrel az alábbi két kongruenciarendszer megoldását kerestük meg:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{array}{ccc} \boxed{\begin{aligned}x&amp;\equiv 4\pmod 5 \\ x&amp;\equiv 6\pmod 8\end{aligned}} &amp; \to &amp; [14]_{40} \\ \\ \boxed{\begin{aligned}x&amp;\equiv 4\pmod 5 \\ x&amp;\equiv 2\pmod 8\end{aligned}} &amp; \to &amp; [34]_{40} \end{array}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az első rendszernek tehát a [latex][14]_{40}[/latex], a másodiknak pedig a [latex][34]_{40}[/latex] maradékosztály volt a megoldása. Ez a módszer azonban a gyakorlatban nem használható, így most próbáljuk meg megtalálni a megoldásokat a [yp_element slug="kinai-maradektetel-alternativ" type="link" /]ben ismertetett eljárás segítségével.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az első kongruenciarendszer esetén keressük tehát az [latex]A=[4]_5[/latex] és a [latex]B=[6]_8[/latex] maradékosztályok metszetét. Ehhez a tétel szerint kell keresnünk olyan [latex]x_1[/latex] és [latex]x_2[/latex] egész számokat, amelyek kielégítik az alábbi kongruenciákat:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}5\cdot x_1&amp;\equiv 1\pmod 8 \\ 8\cdot x_2&amp;\equiv 1\pmod 5\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezeket az <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/21-rsa-algoritmus-kibovitett-euklideszi-algoritmus-euler-fuggveny-kulcsgeneralas-ismetelt-negyzetreemeles-modszere#extended-euclidean-algorithm" target="_blank">előző részben</a> ismertetett <strong><em>kibővített euklidészi algoritmussal</em></strong> megoldva például az alábbi számokat választhatjuk [latex]x_1[/latex]-nek és [latex]x_2[/latex]-nek:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}x_1&amp;=5 \\ x_2&amp;=2\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezután a tételben szereplő képletet alkalmazva az [latex]A\cap B[/latex] maradékosztály alábbi reprezentánselemét kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]4\cdot 8\cdot 2 + 6\cdot 5\cdot 5=64+150=214[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Valóban, az eredményül kapott [latex]214[/latex] egész szám benne van a [latex][14]_{40}[/latex] maradékosztályban, amelyet a „bekeretezős” módszerrel kaptunk az első kongruenciarendszerre az előző szakaszban.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most nézzük meg a második kongruenciarendszert. Ebben az esetben az [latex]A=[4]_5[/latex] és a [latex]B=[2]_8[/latex] maradékosztályok metszetét keressük. Az előző példánál már megkaptuk az [latex]5\cdot x_1\equiv 1\pmod 8[/latex] és a [latex]8\cdot x_2\equiv 1\pmod 5[/latex] kongruenciák megoldásait, így azokat most is használhatjuk. A tételben szereplő képletet alkalmazva most az alábbi reprezentánselemét kapjuk meg az [latex]A\cap B[/latex] halmaznak:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]4\cdot 8\cdot 2 + 2\cdot 5\cdot 5=64+50=114[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Valóban, az eredményül kapott [latex]114[/latex] egész szám benne van a [latex][34]_{40}[/latex] maradékosztályban, amelyet a „bekeretezős” módszerrel kaptunk a második kongruenciarendszerre az előző szakaszban.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A most tanult eljárás tehát tulajdonképpen egy <strong><em>függvényt</em></strong> valósít meg, amely a [latex]\Z/p\Z \times \Z/q\Z[/latex] halmazt képezi le a [latex]\Z/pq\Z[/latex] halmazra, méghozzá minden maradékosztálypárt e párban szereplő maradékosztályok metszetére. Kérdés, hogy vajon ez a leképezés <strong><em>bijektív-e</em></strong>, azaz vajon minden modulo [latex]pq[/latex] maradékosztály pontosan egy [latex]\Z/p\Z \times \Z/q\Z[/latex]-beli maradékosztálypárnak a metszete-e? Az alábbi ábrák mutatják, hogy mi lenne a helyzet nemleges és igenlő válasz esetén:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":6144,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_22_pelda_nem_bijektiv_lekepezesre.jpg" alt="Példa nem bijektív leképezésre" class="wp-image-6144"/><figcaption>Példa nem bijektív leképezésre</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:image {"align":"center","id":6145,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_22_pelda_bijektiv_lekepezesre.jpg" alt="Példa bijektív leképezésre" class="wp-image-6145"/><figcaption>Példa bijektív leképezésre</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Most igazoljuk, hogy az utóbbi a helyzet. Hamarosan kiderül, hogy ez miért olyan fontos.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="kinai-maradektetel-megforditasa" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="kinai-maradektetel-megforditasa-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ez azt bizonyítja, hogy a [latex]\Z/p\Z \times \Z/q\Z[/latex] és a [latex]\Z/pq\Z[/latex] halmazok közötti függvény egy <strong><em>kölcsönösen egyértelmű</em></strong> leképezés. Ha úgy tetszik egy kétirányú híd képezhető a két halmaz között. Ez azt jelenti, hogy az egyik halmazban lévő bármely elemnek egyértelműen megvan a párja a másik halmazban és viszont. A [latex]\Z/p\Z \times \Z/q\Z[/latex] halmazból a [latex]\Z/pq\Z[/latex] halmazba  a [yp_element slug="kinai-maradektetel-alternativ" type="link" /], visszafelé pedig a [yp_element slug="kinai-maradektetel-megforditasa" type="link" /] biztosítja ezt a fajta átjárást.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Például egyrészt a [latex]\Z/5\Z\times \Z/8\Z[/latex] halmazban lévő [latex]([4]_5;[6]_8)[/latex] maradékosztálypárnak a [latex][14]_{40}[/latex] maradékosztály, míg a [latex]([4]_5;[2]_8)[/latex] párnak a [latex][34]_{40}[/latex] maradékosztály a megfelelője a [latex]\Z/40\Z[/latex] halmazban. Másrészt pedig biztosak lehetünk benne, hogy a [latex][14]_{40}[/latex] és a [latex][34]_{40}[/latex] maradékosztályok csakis ezekhez a párokhoz vannak ilymódon hozzárendelve.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Az RSA-algoritmus helyes működésének bizonyítása</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Az <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/21-rsa-algoritmus-kibovitett-euklideszi-algoritmus-euler-fuggveny-kulcsgeneralas-ismetelt-negyzetreemeles-modszere#rsa" target="_blank">előző részben</a> megismertük napjaink egyik legfontosabb felfedezését, az RSA nevű aszimmetrikus kulcsú rejtjelezési eljárást. Ebben a szakaszban törlesztjük végre az adósságunkat, és igazolni fogjuk, hogy az RSA valóban mindig helyesen működik. Ezért most ismételjük át röviden, hogyan is történik a kulcsok generálása, majd az üzenetek titkosítása és dekódolása.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az RSA biztonsága a nagy számok prímtényezős felbontásának algoritmikus nehézségén alapul. Egy kulcspár generálásához ezért először is választani kell két egymástól különböző óriási prímszámot – jelöljük ezeket [latex]p[/latex]-vel és [latex]q[/latex]-val –, majd képezni kell ezek szorzatából az [latex]m=pq[/latex] modulust, és ki kell számítani a [latex]\varphi(m)[/latex] értéket ([yp_element slug="euler-fuggveny" type="link" /]). Ezután választunk egy tetszőleges [latex]\varphi(m)[/latex]-hez relatív prím [latex]e[/latex] számot a [latex]\Z_{\varphi(m)}[/latex] gyűrűből, amely a kulcspár publikus része lesz, és kiszámítjuk [latex]e[/latex] multiplikatív inverzét ebben a gyűrűben. Az így kapott [latex]d[/latex] szám lesz a kulcspár titkos része. A publikus és titkos kulcsok közötti számelméleti kapcsolatot tehát a [latex]\Z_{\varphi(m)}[/latex] gyűrű jelenti, amely gyűrű ismeretlen marad a támadó számára. Ennek oka, hogy [latex]\varphi(m)[/latex] értéke jelenlegi számelméleti ismereteink szerint csak [latex]m[/latex] prímtényezőinek ismeretében számítható ki hatékonyan.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezután részletesen leírtuk, és egy példával szemléltettük, hogyan történik egy üzenet titkosítása az adó, és dekódolása a vételi oldalon. Ehhez az elküldeni kívánt üzenetet valamilyen szabványos módon a [latex]\Z_m[/latex] gyűrű elemeinek sorozatává kell alakítani, majd a sorozat tagjaira külön-külön kell alkalmazni a kódoló és dekódoló függvényeket. Legyen az üzenetet leíró számsorozat következő tagja [latex]x[/latex]. Ennek titkosítása az alábbi [latex]\Z_m[/latex]-beli moduláris hatványozás elvégzését jelenti:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]y=x^e[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az így képzett [latex]y[/latex] szám nyugodtan átküldhető a kommunikációs csatornán. Ebből ugyanis csak a [latex]d[/latex] titkos kulcs ismeretében állítható vissza „varázslatos módon” az eredeti [latex]x[/latex] üzenet. Ehhez az alábbi, szintén [latex]\Z_m[/latex]-beli moduláris hatványozást kell elvégezni:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x=y^d[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most igazolni fogjuk, hogy ez a „varázslat” tényleg mindig teljesül. Az [latex]y[/latex] helyére behelyettesíthetjük az őt képző, kódolófüggvény szerinti kifejezést. Ekkor az alábbit kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x=({\underbrace{x^e}_{=y}})^d=x^{ed}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/20-kongruencia-redukalt-maradekosztaly-euler-fuggveny-linearis-kongruencia-maradekrendszer-euler-fermat-tetel#integer-residue-class-ring" target="_blank">20. részben</a> láthattuk, hogy a [latex]\Z_m[/latex] gyűrű izomorf a [latex]\Z/m\Z[/latex] maradékosztálygyűrűvel. Így tehát a fenti kifejezést tulajdonképpen úgy is értelmezhetjük, hogy az [latex]x[/latex] egész számnak ugyanabba az [latex]m[/latex] modulus szerinti maradékosztályba kell esnie, mint az [latex]x^{ed}[/latex] egész számnak. Ez az alábbi kongruencia teljesülését jelenti:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]x\equiv x^{ed}\pmod m[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Most igazolni fogjuk, hogy ez a kongruencia valóban teljesül tetszőleges, a megadott kritériumoknak megfelelő [latex]e[/latex], [latex]d[/latex], [latex]m[/latex] és [latex]x[/latex] egész számokra.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="rsa-algoritmus-helyes-mukodese" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="rsa-algoritmus-helyes-mukodese-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:html -->
+<div id="residue-class-ring-decomposition"></div>
+<!-- /wp:html -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Maradékosztálygyűrűk dekompozíciója</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Az RSA-algoritmussal főként az a probléma, hogy szimmetrikus kulcsú társaihoz képest relatíve lassú. Ezt elsősorban a moduláris hatványozás okozza. Ez némileg ellentmond annak, amit az <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/21-rsa-algoritmus-kibovitett-euklideszi-algoritmus-euler-fuggveny-kulcsgeneralas-ismetelt-negyzetreemeles-modszere#modular-exponentiation" target="_blank">előző részben</a> állapítottunk meg erről a műveletről. Akkor ugyanis azt mondtuk, hogy az <strong><em>ismételt négyzetreemelések módszerével</em></strong> rendkívül gyorsan elvégezhető a moduláris hatványozás. Ez algoritmuselméleti értelemben valóban így van, hiszen láttuk, hogy az elvégzendő moduláris szorzások száma legfeljebb a kitevő bináris számjegyei számának a kétszerese lehet. Márpedig egy ilyen jellegű skálázódás a <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/7-algoritmus-bonyolultsag-problemaosztalyok-polinomialis-exponencialis-p-np-sejtes-tanu-tetel/" target="_blank">7. részben</a> leírtak fényében bőven hatékony algoritmusnak tekinthető.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Igenám, csakhogy hiába a megfelelő skálázódás, amennyiben eleve nagyméretű bemenetekről van szó. A gyakorlatban ugyanis több ezer bites számokon kell több ezer moduláris szorzást elvégezni. Az <strong><em>ismételt négyzetreemelések módszerét</em></strong> vizsgálva megállapítottuk, hogy a szükséges moduláris szorzások száma attól függ, hogy a kitevő bináris számábrázolásában hány [latex]1[/latex]-es bit szerepel. Az RSA esetén a <strong><em>publikus kulcsban</em></strong> szereplő, kódoláshoz használt [latex]e[/latex] kitevő megválasztásától nem függ az eljárás biztonsága. Emiatt általában olyan publikus [latex]e[/latex] kitevőt választanak a kulcsgeneráláskor, amelyben minimális számú [latex]1[/latex]-es számjegy van. Célszerű például valamilyen 2-hatványnál 1-gyel nagyobb számot választani, hiszen ebben az esetben csak az első és az utolsó számjegy nem [latex]0[/latex]. Következésképp a kódoláskor elvégzendő moduláris hatványozás mindössze egy-két moduláris szorzásból megúszható.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A probléma érezhetően a dekódoláskor, vagy digitális aláírások képzésekor jön elő, amikor is a titkos [latex]d[/latex] kitevőt kell használni. Ez ugyanis az [latex]e[/latex] publikus kitevő multiplikatív inverze a [latex]\Z_{\varphi(m)}[/latex] gyűrűben. Itt [latex]m[/latex] ugye a kulcsgeneráláskor véletlenszerűen választott [latex]p[/latex] és [latex]q[/latex] prímszámok szorzata. Mivel emiatt a [latex]\varphi(m)[/latex] is gyakorlatilag véletlenszerű lesz, ezért nemigazán lehet szabályozni, hogy a [latex]\Z_{\varphi(m)}[/latex] gyűrűben az [latex]e[/latex] multiplikatív inverzének éppenséggel milyen számjegyei lesznek. Emiatt pedig a fogadó oldal által elvégzendő RSA-dekódolás általában sokkal lassabb művelet, mint a küldő által elvégzett kódolás.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezért most a <strong><em>kínai maradéktétel</em></strong> egy nagyon praktikus alkalmazását mutatjuk be, amelynek a segítségével Alice és Bob a nekik küldött üzenetek <strong><em>dekódolását</em></strong> az <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/21-rsa-algoritmus-kibovitett-euklideszi-algoritmus-euler-fuggveny-kulcsgeneralas-ismetelt-negyzetreemeles-modszere#rsa-encoding-decoding" target="_blank">előző részben</a> leírtakhoz képest <strong><em>sokkal gyorsabban</em></strong> is el tudja végezni. Ehhez a kulcspár generálásakor választott titkos [latex]p[/latex] és [latex]q[/latex] prímszámokat is fel kell használni, így ezt a módszert <strong><em>csak a titkos kulcs birtokában</em></strong> lehet alkalmazni. Az eljárásban kulcsszerepe lesz a fentebb már sokat emlegetett [latex]\Z/p\Z \times \Z/q\Z[/latex] halmaznak.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Most e halmaz elemei között fogunk két műveletet értelmezni. Az egyiket „összeadásnak”, a másikat pedig „szorzásnak” fogjuk nevezni, és rendre a [latex]\oplus[/latex] és a [latex]\odot[/latex] szimbólumokkal fogjuk őket jelölni. A [latex]\Z/p\Z \times \Z/q\Z[/latex] halmaz elemei ugye olyan maradékosztálypárok, amelyeknek első komponense egy modulo [latex]p[/latex], második komponense pedig egy modulo [latex]q[/latex] maradékosztály. Adja magát a kérdés, hogy vajon mi legyen két ilyen maradékosztálypár „összege” és „szorzata”:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}(A;B)\oplus (C;D)&amp;=\text{???} \\ (A;B)\odot (C;D)&amp;=\text{???}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az ötletet a fentebb már említett síkbeli pontok derékszögű koordinátáit leíró számpárok adhatják. Amennyiben a koordinátarendszer kezdőpontjából egy [latex](a;b)[/latex] számpárral megadott pontba képzeletben egy „nyilacskát” rajzolunk, akkor mondhatjuk azt is, hogy az [latex](a;b)[/latex] számpár tulajdonképpen ezt a „nyilacskát”, vagy tudományosabb nevén <strong><em>vektort</em></strong> reprezentálja. E vektorok között az alábbi kézenfekvő módon értelmezhető az összeadás művelete: <strong><em>két vektor „összege”</em></strong> legyen az a vektor, amelynek koordinátáit úgy kapjuk, hogy az eredeti két vektor megfelelő koordinátáit egymással összeadjuk. Azaz:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"](a;b)\oplus (c;d)=(a+c;b+d)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Itt a vektorok közötti összeadást a [latex]\oplus[/latex], míg az egyes koordináták közötti összeadást a [latex]+[/latex] szimbólummal jelöltük. Ezzel azt próbáljuk kihangsúlyozni, hogy ez a két művelet nagyon nem ugyanaz. Nyilván, hiszen teljesen más halmazokon vannak értelmezve: a [latex]\oplus[/latex] művelet az [latex]\R\times\R[/latex], míg a [latex]+[/latex] művelet az [latex]\R[/latex] halmazon.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Az alábbi ábrán az imént definiált vektorok közötti összeadás intuitív értelmezése látható:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"center","id":6147,"sizeSlug":"large"} -->
+<div class="wp-block-image"><figure class="aligncenter size-large"><img src="https://youproof.hu/wp-content/uploads/kriptografia_22_vektorok_osszeadasa.jpg" alt="Vektorok összeadása" class="wp-image-6147"/><figcaption>Vektorok összeadása</figcaption></figure></div>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Eszerint tehát a két vektor összege épp abba a pontba mutat, amelybe úgy juthatunk el, hogy az egyik vektor végpontjába toljuk a másik vektor kezdőpontját, majd a koordinátarendszer kezdőpontjából végigmegyünk az így kijelölt útvonalon.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Visszatérve a [latex]\Z/p\Z \times \Z/q\Z[/latex] halmazhoz, adja magát az ötlet, hogy ezen a halmazon is hasonlóképpen, azaz „koordinátánkénti” műveletvégzésként definiáljuk a két kérdéses műveletet. Nevezetesen:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}(A;B)\oplus (C;D)&amp;=(A+C;B+D) \\ (A;B)\odot (C;D)&amp;=(A\cdot C;B\cdot D)\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A vektorok között definiált összeadáshoz képest itt mindössze annyi a különbség, hogy az egyes „koordináták” <strong><em>nem feltétlenül azonos gyűrűkből</em></strong> származnak. Például jelen esetben az eredmény első „koordinátáját” adó [latex]A+C[/latex] összeadást a modulo [latex]p[/latex], míg a második „koordinátát” adó [latex]B+D[/latex] összeadást a modulo [latex]q[/latex] maradékosztálygyűrűben kell elvégezni. A szorzásokra természetesen ugyanez vonatkozik.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Ezután minden bizonnyal nem lesz túl meglepő, hogy a [latex]\Z/p\Z \times \Z/q\Z[/latex] halmaz az imént értelmezett [latex]\oplus[/latex] és [latex]\odot[/latex] műveletekkel egy <strong><em>gyűrűt</em></strong> alkot. Az alábbi tételben ezt ennél általánosabban igazoljuk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="gyuruk-direkt-szorzata" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="gyuruk-direkt-szorzata-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>E tételből következően <strong><em>a [latex]\Z/p\Z \times \Z/q\Z[/latex] halmaz a komponensenkénti moduláris összeadásra és szorzásra nézve valóban egy gyűrűt alkot</em></strong>. Például a fentebbi példákban szereplő [latex]([4]_5;[6]_8)[/latex] és [latex]([4]_5;[2]_8)[/latex] maradékosztálypárok „összegét” és „szorzatát” az alábbiak módon kapjuk meg:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}([4]_5;[6]_8)\oplus ([4]_5;[2]_8) &amp;= ([4]_5+[4]_5; [6]_8+[2]_8) = ([3]_5; [0]_8) \\ ([4]_5;[6]_8)\odot ([4]_5;[2]_8) &amp;= ([4]_5\cdot [4]_5; [6]_8\cdot [2]_8) = ([1]_5; [4]_8) \end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A szakasz elején említett RSA-dekódolást gyorsító eljárás működésének a kulcsa az a tény, hogy szoros kapcsolat áll fenn a [latex]\Z/p\Z \times \Z/q\Z[/latex] és a [latex]\Z/pq\Z[/latex] gyűrűk között. Olyannyira szoros, hogy az alábbi tétel szerint lényegében ugyanannak a gyűrűnek csupán két megjelenési formájáról van szó.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="maradekosztalygyuruk-dekompozicioja" show_title="true" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="maradekosztalygyuruk-dekompozicioja-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Tekintsük ismét példaként a már sokat emlegetett [latex]([4]_5;[6]_8)[/latex] és [latex]([4]_5;[2]_8)[/latex] maradékosztálypárokat a [latex]\Z/5\Z\times \Z/8\Z[/latex] gyűrűben. Ezek összege és szorzata ebben a gyűrűben az alábbiak voltak:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}([4]_5;[6]_8)\oplus ([4]_5;[2]_8) &amp;= ([3]_5; [0]_8) \\ ([4]_5;[6]_8)\odot ([4]_5;[2]_8) &amp;= ([1]_5; [4]_8) \end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Fentebb már láttuk, hogy az imént tanult gyűrűizomorfizmusok – és persze az ezek hátterében lévő <strong><em>kínai maradéktétel</em></strong> – alapján az ő párjaik a [latex]\Z/40\Z[/latex] gyűrűben rendre a [latex][14]_{40}[/latex] és a [latex][34]_{40}[/latex] maradékosztályok. Most nézzük meg ezek összegét és szorzatát a [latex]\Z/40\Z[/latex] gyűrűben:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}[14]_{40}\boxplus [34]_{40} &amp;= [48]_{40}=[8]_{40} \\ [14]_{40}\boxdot [34]_{40} &amp;= [476]_{40}=[36]_{40}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Valóban, a fenti tételben szereplő [latex]g[/latex] gyűrűizomorfizmus a [latex][8]_{40}[/latex] maradékosztályhoz a [latex]([8]_5;[8]_8)=([3]_5;[0]_8)[/latex], míg a [latex][36]_{40}[/latex] maradékosztályhoz a [latex]([36]_5;[36]_8)=([1]_5;[4]_8)[/latex] maradékosztálypárt rendeli hozzá. Azaz tényleg egy művelettartó leképezésről van szó a [latex]\Z/40\Z[/latex] és a [latex]\Z/5\Z \times \Z/8\Z[/latex] gyűrűk között.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Tulajdonképpen az történt, hogy a [latex]\Z/40\Z[/latex] gyűrűt felbontottuk két kisebb gyűrű direkt szorzatára. A két algebrai struktúra izomorfiája miatt bármelyikben elvégezhetjük a szükséges számításokat, és az egyikben kapott eredményt könnyedén áttranszformálhatjuk a másik struktúrába a gyűrűizomorfizmusok segítségével. Az utolsó szakaszban megvizsgáljuk, hogy mégis miért jó ez Alice és Bob számára.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":4} -->
+<h4>Az RSA-dekódolás gyorsítása</h4>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Térjünk most vissza az <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/21-rsa-algoritmus-kibovitett-euklideszi-algoritmus-euler-fuggveny-kulcsgeneralas-ismetelt-negyzetreemeles-modszere#rsa-example" target="_blank">előző részben</a> közölt példára, amikoris Alice az RSA-algoritmussal rejtjelezett <strong>sziabobmiahelyzet</strong> üzenetet küldte el Bob-nak. Bob a kulcsgenerálás során a [latex]p=211[/latex] és [latex]q=139[/latex] prímszámokat választotta, és ezek segítségével az [latex]m=29329[/latex] modulust, az [latex]e=187[/latex] publikus, valamint a [latex]d=11623[/latex] titkos kitevőt állította elő.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Alice a példában leírt módon a [latex]\Z_{29329}[/latex] gyűrű elemeinek sorozatává alakította az elküldendő üzenetet, melyek közül az első az [latex]x_1=9620[/latex] volt. Ebből a rejtjelezett számsorozat első tagja a [latex]\Z_{29329}[/latex] gyűrűben végrehajtott alábbi moduláris hatványozás eredményeként állt elő:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\Z_{29329} \text{: } 9620^{187}=7812=y_1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Bob ebből a [latex]d=11623[/latex] kitevő segítségével az alábbi, szintén a [latex]\Z_{29329}[/latex] gyűrűben végrehajtott moduláris hatványozással kaphatja vissza az eredeti [latex]x_1[/latex] számot:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\Z_{29329} \text{: } 7812^{11623}=9620=x_1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A <a rel="noreferrer noopener" href="https://youproof.hu/kriptografia/20-kongruencia-redukalt-maradekosztaly-euler-fuggveny-linearis-kongruencia-maradekrendszer-euler-fermat-tetel#integer-residue-class-ring" target="_blank">20. részben</a> az egész számok maradékosztályai kapcsán szó volt róla, hogy a <strong><em>gyűrűk homomorfizmustétele</em></strong> ([yp_element slug="gyuruk-homomorfizmustetele" type="link" /]) miatt tetszőleges [latex]n\gt 0[/latex] pozitív egész szám esetén a [latex]\Z_n[/latex] gyűrű <strong><em>izomorf</em></strong> a [latex]\Z/n\Z[/latex] maradékosztálygyűrűvel. Következésképp a <strong><em>maradékosztálygyűrűk dekompozíciójáról</em></strong> szóló [yp_element slug="maradekosztalygyuruk-dekompozicioja" type="link" /] miatt a [latex]\Z_p \times \Z_q[/latex] gyűrű is <strong><em>izomorf</em></strong> a [latex]\Z_{pq}=\Z_m[/latex] gyűrűvel.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Emiatt Bob a [latex]p[/latex] és [latex]q[/latex] prímszámok ismeretében megteheti, hogy a dekódoláskor elvégzendő moduláris hatványozást a [latex]\Z_m[/latex] gyűrű helyett a [latex]\Z_p \times \Z_q[/latex] gyűrűben végzi el, majd az eredményt visszatranszformálja a [latex]\Z_m[/latex] gyűrűbe. Kérdezhetnénk, hogy ez miért jó neki, amikor így egy helyett gyakorlatilag két moduláris hatványozást kell elvégeznie? Igenám, csakhogy ezeknél már nem [latex]m[/latex], hanem a nagyságrendileg feleannyi számjegyből álló [latex]p[/latex] és [latex]q[/latex] lesz a modulus. A moduláris hatványozás sebessége pedig a kitevő méretén kívül erőteljesen függ a modulus méretétől is. Ráadásul a modulus méretét megfelezve a moduláris hatványozás futásideje kevesebb mint a felére csökken. Így két feleakkora modulussal elvégzett hatványozás összességében hatékonyabb, mintha csak egyet végeznénk el ugyan, de az eredeti modulussal.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A fenti példában ez azt jelenti, hogy megérkezik Bob-hoz az [latex]y_1=7812[/latex] rejtjelezett szám, amely ugye a [latex]\Z_{29329}[/latex] gyűrű egy eleme. Ezt Bob a [yp_element slug="maradekosztalygyuruk-dekompozicioja" type="link" /]ben megadott [latex]g[/latex] izomorfizmus segítségével áttranszformálja a [latex]\Z_{211}\times \Z_{139}[/latex] gyűrűbe, azaz veszi a két prímmel való osztási maradékát:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]g(7812)=(5; 28)[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ezután elvégzi a dekódolást ebben a gyűrűben, azaz kiszámítja az alábbi két moduláris hatványt:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}\Z_{211} &amp;\text{: } 5^{11623} \\ \Z_{139} &amp;\text{: } 28^{11623}\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Itt tehát az első moduláris hatványozást a [latex]\Z_{211}[/latex], míg a másodikat a [latex]\Z_{139}[/latex] gyűrűben kell végrehajtani. Ez hatékonyabban végrehajtható, mintha csak a [latex]7812^{11623}[/latex] moduláris hatványozást hajtanánk végre ugyan, viszont a jóval nagyobb modulusú [latex]\Z_{29329}[/latex] gyűrűben. Az <a href="https://youproof.hu/kriptografia/21-rsa-algoritmus-kibovitett-euklideszi-algoritmus-euler-fuggveny-kulcsgeneralas-ismetelt-negyzetreemeles-modszere#modular-exponentiation" target="_blank" rel="noreferrer noopener">előző részben</a> megismert <strong><em>ismételt négyzetreemelések módszerével</em></strong> Bob az alábbi eredményt kapja:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}\Z_{211} &amp;\text{: } 5^{11623}=125 \\ \Z_{139} &amp;\text{: } 28^{11623}=29\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A kapott pár tehát a [latex](125;29)[/latex]. Ahhoz, hogy Bob ebből megkapja az Alice által küldött eredeti [latex]x_1[/latex] üzenetet, vissza kell transzformálja ezt a [latex]\Z_{211}\times \Z_{139}[/latex]-beli elemet a [latex]\Z_{29329}[/latex] gyűrűbe. Ezt a [yp_element slug="maradekosztalygyuruk-dekompozicioja" type="link" /]ben megadott [latex]f[/latex] izomorfizmussal teheti meg:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]f((125;29))=9620=x_1[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A kapott [latex]x_1=9620[/latex] eredmény helyességét könnyen leellenőrizhetjük. Ha ugyanis alkalmazzuk rá a [latex]g[/latex] függvényt, akkor vissza kell kapnunk a [latex](125;29)[/latex] számpárt, hiszen a [latex]g[/latex] függvény épp az [latex]f[/latex] függvény megfordítása. Valóban: a [latex]9620[/latex] egész számnak a [latex]p=211[/latex]-gyel való osztási maradéka [latex]125[/latex], míg a [latex]q=139[/latex]-cel való osztási maradéka [latex]29[/latex]. Vagyis a [latex](125;29)[/latex] valóban az [latex]x_1=9620[/latex] üzenet párja a két gyűrű közötti izomorfizmus szerint.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Végezetül a <strong><em>kis Fermat-tétel</em></strong> egy egyszerű következményét ismertetjük, aminek a segítségével Alice és Bob nemcsak a dekódolás során használt modulus, hanem <strong><em>a [latex]d[/latex] titkos kitevő</em></strong> méretét is jelentősen képes lecsökkenteni.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[yp_element slug="rsa-dekodolas-gyorsitasa" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:shortcode -->
+[yp_element slug="rsa-dekodolas-gyorsitasa-bizonyitas" show_link_to_related="false" /]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A fenti példánál maradva Bob-nak tehát a dekódoláshoz végre kéne hajtania az alábbi moduláris hatványozásokat a [latex]\Z_{211}[/latex] és a [latex]\Z_{139}[/latex] gyűrűben:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}\Z_{211} &amp;\text{: } 5^{11623}=125 \\ \Z_{139} &amp;\text{: } 28^{11623}=29\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Az iménti tétel alapján ezen a ponton megteheti, hogy veszi a [latex]d=11623[/latex] kitevő [latex]p-1=210[/latex]-zel és [latex]q-1=138[/latex]-cal való osztási maradékait, és [latex]d[/latex] helyett ezeket az osztási maradékokat használja kitevőként. Jelöljük az így kapott új kitevőket [latex]d_p[/latex]-vel és [latex]d_q[/latex]-val. Jelen esetben ezek az alábbiak lesznek:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}d_p&amp;=\bmod_{210}(11623)=73 \\ d_q&amp;=\bmod_{138}(11623)=31\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>A moduláris hatványozásokat ezekkel az eredeti [latex]d[/latex]-nél jóval kisebb kitevőkkel elvégezve valóban ugyanazt az eredményt kapjuk:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[latex display="true"]\begin{aligned}\Z_{211} &amp;\text{: } 5^{73}=125 \\ \Z_{139} &amp;\text{: } 28^{31}=29\end{aligned}[/latex]
+<!-- /wp:shortcode -->
+
+<!-- wp:paragraph -->
+<p>Ráadásul a [latex]d_p[/latex] és [latex]d_q[/latex] kitevők csak a választott [latex]p[/latex] és [latex]q[/latex] prímszámoktól függenek, azaz Alice és Bob megteheti, hogy már a kulcsgenerálás során előállítják ezeket.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Ebben a részben tehát megismerkedtünk a kis Fermat-tétellel és a több kongruenciából álló kongruenciarendszerek egyértelmű megoldhatóságát biztosító kínai maradéktétellel. Ezek segítségével igazoltuk, hogy az RSA-algoritmus valóban mindig helyesen működik. Ezután megismerkedtünk egy olyan konstrukcióval, amelynek a segítségével kettő vagy több gyűrűből egy újabb gyűrűt tudunk létrehozni azok direkt szorzataként. A kínai maradéktétel következményeként megmutattuk, hogy ezen a módon bármely összetett modulusú maradékosztálygyűrű felbontható egymáshoz relatív prím modulusú maradékosztálygyűrűk direkt szorzatára, amely ráadásul izomorf lesz az eredeti gyűrűvel. Ezt és a kis Fermat-tétel egy következményét kihasználva Alice és Bob jelentősen gyorsítani tudja az RSA dekódolási eljárást.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>Történetünk hátralévő néhány részében megtudjuk, hogy hogyan lehet az RSA kulcsokhoz szükséges óriási prímszámokat találni anélkül, hogy az idők végezetéig osztáspróbákat kelljen végezni. Ezenkívül megismerkedünk néhány olyan módszerrel, amellyel a gonosz Eve képes feltörni az RSA-algoritmust, amennyiben Alice és Bob nem kellő körültekintéssel jár el a kulcsgenerálás során. Végezetül elkalandozunk egy kicsit a – talán nem is olyan távoli – jövőbe, amikor a kvantumszámítógépek korában az RSA már fabatkát sem fog érni.</em></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong><em>A következő részt <a href="https://youproof.hu/kriptografia/23-primteszteles-fermat-primteszt-miller-rabin-primteszt-carmichael-szam-univerzalis-alprim-fermat-faktorizacio/">itt</a> találod...</em></strong></p>
+<!-- /wp:paragraph -->
