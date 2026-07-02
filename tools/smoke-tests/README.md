@@ -38,11 +38,13 @@ pnpm --filter @youproof.org/smoke-tests crawl
   proxy/410, HTTP→HTTPS, www→apex (production only, due to the `www.staging` Universal-SSL
   cert gap), guard-header enforcement, and migrated-path 301s from the Worker manifest.
   Cases self-skip when not applicable.
-- **`scripts/crawl.mjs`** (non-blocking in CI) — recursively walks same-origin links,
-  flags broken links (internal = fatal, external = warning) and any 3xx `Location` that
-  leaks `LEGACY_PROXY_HOST`, and probes the trailing-slash-stripped variant of every
-  `/`-terminated URL to exercise the canonical-redirect Location rewrite site-wide.
-  Crawl caps (pages/depth/concurrency) are script constants.
+- **`scripts/crawl.mjs`** (non-blocking in CI) — recursively walks same-origin links
+  **and checks each page's assets** (images, stylesheets, scripts, media, `srcset`,
+  `<object>`), flagging anything broken (internal = fatal, external = warning). It also
+  flags `LEGACY_PROXY_HOST` leaking in **any response header** (`Location`, `Link`,
+  `Content-Location`, `Set-Cookie` domain, ...), and probes the trailing-slash-stripped
+  variant of every `/`-terminated URL to exercise the canonical-redirect Location rewrite
+  site-wide. Crawl caps (pages/depth/concurrency) are script constants.
 
 In CI both run post-apply in the `worker` job — on `stable/staging` always, and on
 `stable/production` only after cut-over (`PRODUCTION_CUTOVER=true`), never against the

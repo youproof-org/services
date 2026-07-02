@@ -1,30 +1,31 @@
-// Recursive full-site link crawler for the migration Worker.
+// Recursive full-site link + asset crawler for the migration Worker.
 //
 // Starts at https://<WORKER_DOMAIN> and walks same-origin links breadth-first.
-// It reports two classes of problem:
-//   - broken links   — any response >= 400 (internal ones are fatal; external
-//                       third-party links are reported as warnings only).
-//   - legacy leaks    — any 3xx whose Location host is LEGACY_PROXY_HOST, i.e.
-//                       the internal origin leaking to the browser.
+// For every page it also checks the page's own assets (images, stylesheets,
+// scripts, media, ...). It reports two classes of problem:
+//   - broken links/assets — any response >= 400 (internal ones are fatal;
+//                       external third-party URLs are reported as warnings only).
+//   - legacy leaks    — the internal LEGACY_PROXY_HOST leaking to the browser in
+//                       ANY response header (Location, Link, Content-Location,
+//                       Set-Cookie domain, ...).
 //
 // It also actively exercises the Part A canonical-redirect fix: for every
 // discovered internal URL that ends in "/", it probes the trailing-slash-stripped
 // variant, generating WordPress's canonical 301 and verifying its Location does
 // NOT point at the legacy host.
 //
-// Exit code 1 on any internal broken link or leak. Run:
+// Exit code 1 on any internal broken URL or leak. Run:
 //   WORKER_DOMAIN=staging.youproof.hu LEGACY_PROXY_HOST=legacy.staging.youproof.hu \
 //   node scripts/crawl.mjs
 
 import { baseUrl, config, request } from "../lib/config.mjs";
+import { extractRefs, findHeaderLeaks } from "../lib/extract.mjs";
 
 const MAX_PAGES = 500;
 const MAX_DEPTH = 5;
 const CONCURRENCY = 5;
 
 const { workerDomain, legacyProxyHost } = config;
-
-const HREF_RE = /<a\b[^>]*\shref\s*=\s*["']([^"']+)["']/gi;
 
 const enqueued = new Set(); // internal pages queued for crawl (deduped)
 const checked = new Set(); // every URL we've done a status/leak check on
@@ -40,27 +41,6 @@ const normalize = (url) => {
 };
 const isInternal = (url) => url.hostname === workerDomain;
 
-function extractLinks(html, base) {
-  const links = [];
-  let m;
-  while ((m = HREF_RE.exec(html)) !== null) {
-    const raw = m[1].trim();
-    if (!raw || raw.startsWith("#") || /^(mailto:|tel:|javascript:)/i.test(raw)) continue;
-    try {
-      const url = new URL(raw, base);
-      url.hash = "";
-      // Skip Cloudflare's injected internal endpoints (e.g. the email-protection
-      // decoder at /cdn-cgi/l/email-protection), which 404 on a direct GET and are
-      // not real site links.
-      if (url.pathname.startsWith("/cdn-cgi/")) continue;
-      if (url.protocol === "http:" || url.protocol === "https:") links.push(url);
-    } catch {
-      /* ignore unparseable href */
-    }
-  }
-  return links;
-}
-
 // Status + legacy-leak check for a single URL. Does NOT crawl or read the body.
 async function check(url, via) {
   const key = normalize(url);
@@ -69,8 +49,9 @@ async function check(url, via) {
 
   let res;
   try {
-    // Fail fast on dead/hanging links (no retry) so the crawl stays bounded.
-    res = await request(url.toString(), { retries: 0, timeoutMs: 10000 });
+    // A couple of retries to ride out transient blips / cold-cache slowness, with
+    // a hard per-attempt timeout so a dead/hanging URL still can't stall the crawl.
+    res = await request(url.toString(), { retries: 2, timeoutMs: 20000 });
   } catch (err) {
     const reason = err?.cause?.code ?? err?.cause?.message ?? err?.message ?? String(err);
     (isInternal(url) ? brokenInternal : brokenExternal).push({ url: key, status: `ERR ${reason}`, via });
@@ -80,15 +61,8 @@ async function check(url, via) {
   if (res.status >= 400) {
     (isInternal(url) ? brokenInternal : brokenExternal).push({ url: key, status: res.status, via });
   }
-  if (res.status >= 300 && res.status < 400) {
-    const loc = res.headers.get("location");
-    if (loc && legacyProxyHost) {
-      try {
-        if (new URL(loc, url).hostname === legacyProxyHost) leaks.push({ url: key, location: loc, via });
-      } catch {
-        /* ignore unparseable Location */
-      }
-    }
+  for (const detail of findHeaderLeaks(res.headers, legacyProxyHost, url)) {
+    leaks.push({ url: key, detail, via });
   }
   return res;
 }
@@ -118,17 +92,25 @@ async function crawlWorker() {
     if (item.depth >= MAX_DEPTH) continue;
 
     const html = await res.text();
-    for (const link of extractLinks(html, item.url)) {
+    const via = normalize(item.url);
+    const { links, assets } = extractRefs(html, item.url);
+
+    for (const link of links) {
       if (isInternal(link)) {
         const key = normalize(link);
         if (!enqueued.has(key)) {
           enqueued.add(key);
-          queue.push({ url: link, depth: item.depth + 1, via: normalize(item.url) });
+          queue.push({ url: link, depth: item.depth + 1, via });
         }
       } else {
         // External (incl. .org, legacy.*, third parties): status/leak check only.
-        await check(link, normalize(item.url));
+        await check(link, via);
       }
+    }
+    // Assets are fetch-checked (own site's images/CSS/JS must download) but never
+    // crawled for further links.
+    for (const asset of assets) {
+      await check(asset, `${via} (asset)`);
     }
   }
 }
@@ -141,16 +123,16 @@ if (pageCount >= MAX_PAGES) console.log(`(stopped at MAX_PAGES=${MAX_PAGES} cap)
 const report = (title, items) => {
   console.log(`\n${title}: ${items.length}`);
   for (const it of items) {
-    console.log(`  - [${it.status ?? it.location}] ${it.url}  (via ${it.via})`);
+    console.log(`  - [${it.status ?? it.detail}] ${it.url}  (via ${it.via})`);
   }
 };
 
 if (leaks.length) report("LEGACY-HOST LEAKS (fatal)", leaks);
-if (brokenInternal.length) report("Broken internal links (fatal)", brokenInternal);
-if (brokenExternal.length) report("Broken external links (warning)", brokenExternal);
+if (brokenInternal.length) report("Broken internal links/assets (fatal)", brokenInternal);
+if (brokenExternal.length) report("Broken external links/assets (warning)", brokenExternal);
 
 if (!leaks.length && !brokenInternal.length && !brokenExternal.length) {
-  console.log("\nNo broken links or legacy-host leaks found.");
+  console.log("\nNo broken links/assets or legacy-host leaks found.");
 }
 
 if (leaks.length > 0 || brokenInternal.length > 0) process.exit(1);

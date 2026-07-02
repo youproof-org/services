@@ -234,8 +234,12 @@ rule; the `www.*` A records above just make it reachable.
   stays dormant for `www.*` hosts that have no record. The `www.<domain>` A record
   itself lives in the worker root and is created unconditionally per environment
   (it always redirects to its apex — harmless before cut-over, correct after).
-- **Intentionally dropped:** `www.legacy.*`, MX, SPF, and DMARC records —
-  `youproof.hu` is not an email domain and nothing links to `www.legacy.*`.
+- **Intentionally dropped:** `www.legacy.*` records — nothing links to them.
+- **No-mail declaration (both environments):** `youproof.hu` is not an email domain,
+  so instead of leaving SPF/DMARC/MX unset (which invites spoofing) the worker root
+  publishes explicit records per environment ([`dns_hu.tf`](terraform/worker/dns_hu.tf)):
+  SPF `v=spf1 -all` (no authorized senders), DMARC `p=reject; sp=reject` with strict
+  alignment, and a **null MX** (`.`, RFC 7505) so the domain accepts no mail.
 - **HTTP → HTTPS** is forced zone-wide by the **Always Use HTTPS** setting
   ([`zone/settings.tf`](terraform/zone/settings.tf)): any `http://` request to a
   proxied host gets a 301 to `https://` at the edge, before the Worker or the www
@@ -474,9 +478,10 @@ just-deployed environment:
 - **Smoke tests (blocking)** — `node --test` redirect checks (admin-block, proxy/410,
   HTTP→HTTPS, www→apex, guard enforcement, migrated 301s). A failure fails the deploy.
 - **Full-site link crawl (non-blocking, `continue-on-error`)** — recursively walks
-  same-origin links, reporting broken links and any 3xx `Location` that leaks the
-  `legacy.*` host; it also probes the trailing-slash-stripped variant of every URL to
-  exercise the canonical-redirect `Location` rewrite site-wide.
+  same-origin links **and checks each page's assets** (images, CSS, scripts, media),
+  reporting broken links/assets and the `legacy.*` host leaking in **any response
+  header**; it also probes the trailing-slash-stripped variant of every URL to exercise
+  the canonical-redirect `Location` rewrite site-wide.
 
 Both **reuse the existing environment variables** (`WORKER_DOMAIN`,
 `REDIRECT_TARGET_HOST`, `LEGACY_PROXY_HOST`, and the job-level `ENVIRONMENT`) — **no new
