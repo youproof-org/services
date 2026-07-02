@@ -19,10 +19,12 @@ on:
       - stable/production
     paths:
       - "infra/cloudflare/**"
+      - "tools/smoke-tests/**"
       - ".github/workflows/deploy-to-cloudflare.yml"
   pull_request:
     paths:
       - "infra/cloudflare/**"
+      - "tools/smoke-tests/**"
       - ".github/workflows/deploy-to-cloudflare.yml"
 
 concurrency:
@@ -55,6 +57,7 @@ jobs:
             worker:
               - 'infra/cloudflare/terraform/worker/**'
               - 'infra/cloudflare/worker/**'
+              - 'tools/smoke-tests/**'
 
   # Zone PRs must be "pure": a PR touching the zone root may touch NOTHING else,
   # so a zone change is never batched with worker/other changes. Runs on every PR;
@@ -245,3 +248,33 @@ jobs:
         if: github.event_name == 'push'
         working-directory: ${{ env.TF_WORKDIR }}
         run: terraform apply -input=false -auto-approve tfplan
+
+      # Post-deploy verification. Runs on stable/staging always (staging is always
+      # Worker-fronted), but on stable/production ONLY after cut-over
+      # (PRODUCTION_CUTOVER == 'true') — pre-cut-over youproof.hu still resolves to
+      # legacy WordPress on Rackhost, so smoke-testing/crawling it is meaningless.
+      # The suite reuses the existing environment vars (no new variables) and reads
+      # ENVIRONMENT from the job-level env. Zero deps -> run node directly.
+      - name: Smoke tests (post-deploy)
+        if: >-
+          github.event_name == 'push' &&
+          (github.ref == 'refs/heads/stable/staging' ||
+            (github.ref == 'refs/heads/stable/production' && vars.PRODUCTION_CUTOVER == 'true'))
+        env:
+          WORKER_DOMAIN: ${{ vars.WORKER_DOMAIN }}
+          REDIRECT_TARGET_HOST: ${{ vars.REDIRECT_TARGET_HOST }}
+          LEGACY_PROXY_HOST: ${{ vars.LEGACY_PROXY_HOST }}
+        run: node --test "tools/smoke-tests/tests/*.test.mjs"
+
+      # Full-site link crawl. Non-blocking (continue-on-error): surfaces broken
+      # links and any legacy-host leaks without gating the deploy. Same run gate.
+      - name: Full-site link crawl (non-blocking)
+        if: >-
+          github.event_name == 'push' &&
+          (github.ref == 'refs/heads/stable/staging' ||
+            (github.ref == 'refs/heads/stable/production' && vars.PRODUCTION_CUTOVER == 'true'))
+        continue-on-error: true
+        env:
+          WORKER_DOMAIN: ${{ vars.WORKER_DOMAIN }}
+          LEGACY_PROXY_HOST: ${{ vars.LEGACY_PROXY_HOST }}
+        run: node tools/smoke-tests/scripts/crawl.mjs
