@@ -465,6 +465,28 @@ is a generic Cloudflare-infra pipeline, structured to grow. A `changes` job
 Apply happens only on push; PRs are plan-only. Branch → environment mapping means
 a staging push can never apply production, and vice versa.
 
+### Post-deploy smoke tests
+
+After `terraform apply`, the `worker` job runs the dependency-free
+[`@youproof.org/smoke-tests`](../../tools/smoke-tests/) suite against the
+just-deployed environment:
+
+- **Smoke tests (blocking)** — `node --test` redirect checks (admin-block, proxy/410,
+  HTTP→HTTPS, www→apex, guard enforcement, migrated 301s). A failure fails the deploy.
+- **Full-site link crawl (non-blocking, `continue-on-error`)** — recursively walks
+  same-origin links, reporting broken links and any 3xx `Location` that leaks the
+  `legacy.*` host; it also probes the trailing-slash-stripped variant of every URL to
+  exercise the canonical-redirect `Location` rewrite site-wide.
+
+Both **reuse the existing environment variables** (`WORKER_DOMAIN`,
+`REDIRECT_TARGET_HOST`, `LEGACY_PROXY_HOST`, and the job-level `ENVIRONMENT`) — **no new
+GitHub variables**. They run on **`stable/staging` always**, but on
+**`stable/production` only after cut-over** (`PRODUCTION_CUTOVER == 'true'`): pre-cut-over
+`youproof.hu` still serves legacy WordPress on Rackhost, so it must not be smoke-tested.
+The www→apex case self-skips outside production (the `www.staging.youproof.hu`
+Universal-SSL cert gap), and the proxy-vs-`410` expectation self-selects on
+`LEGACY_PROXY_HOST` presence.
+
 ### Zone changes are production-applied — keep zone PRs pure
 
 Zone settings are **global to the single shared `youproof.hu` zone** (`staging.*`
@@ -495,7 +517,7 @@ per-environment is committed. Configure these on each GitHub Environment
 | `CLOUDFLARE_ACCOUNT_ID` | var | Cloudflare account ID (also used in the R2 endpoint URL). |
 | `WORKER_DOMAIN` | var | e.g. `youproof.hu` / `staging.youproof.hu`. |
 | `REDIRECT_TARGET_HOST` | var | e.g. `youproof.org` / `staging.youproof.org`. |
-| `LEGACY_PROXY_HOST` | var | e.g. `legacy.youproof.hu` / `legacy.staging.youproof.hu`. |
+| `LEGACY_PROXY_HOST` | var | e.g. `legacy.youproof.hu` / `legacy.staging.youproof.hu`. **Clear it (empty) post-migration** → removes the `legacy.*` record and the Worker returns `410 Gone` for unmigrated paths (see below). |
 | `RACKHOST_SERVER_IP` | var | Rackhost host IP for the `legacy.*` A records (e.g. `91.227.138.40`). |
 | `LEGACY_GUARD_VALUE` | var | `X-Legacy-Guard` access token (a **var**, not a secret — see below). |
 | `PRODUCTION_CUTOVER` | var | **Production env only.** `true` to cut `youproof.hu` over to the Worker; defaults to `false` (stays on legacy). |
@@ -525,9 +547,24 @@ search indexes. It is a stable, long-lived access token, so:
 - Because GitHub only log-masks values registered as *Secrets*, this value is
   **not** masked — no CI step or Worker code path may ever print it.
 
+### Post-migration `410 Gone` mode
+
+While `LEGACY_PROXY_HOST` is set, unmigrated (non-admin, non-migrated) paths are
+reverse-proxied to legacy WordPress. Once the legacy site is **decommissioned**, clear
+the environment's `LEGACY_PROXY_HOST` variable and redeploy: the absence of a legacy
+host is the post-migration signal, so the Worker returns **`410 Gone`** for those paths
+and Terraform drops the now-pointless `legacy.*` A record (its `count` is gated on the
+var). Migrated paths keep 301-ing from the manifest. This is per-environment, so staging
+can be switched to 410 for verification independently of production. No zone ruleset is
+used for canonical redirects — pre-migration they are handled by the proxy `Location`
+rewrite, and post-migration there is no origin left to redirect.
+
 ## Manual verification checklist (run against BOTH environments after deploy)
 
-No automated test suite is in scope.
+Automated coverage of the redirect-facing checks lives in
+[`@youproof.org/smoke-tests`](../../tools/smoke-tests/) (run post-deploy in CI, see
+[Post-deploy smoke tests](#post-deploy-smoke-tests)). This checklist remains the
+authoritative superset for manual verification, especially around cut-over.
 
 **DNS & TLS baseline — run FIRST, right after the nameserver switch, before
 relying on the Worker:**
@@ -549,6 +586,11 @@ relying on the Worker:**
    `301` to the correct `.org` URL, query string preserved.
 5. **Unmigrated proxy** — request a known unmigrated, non-admin slug → legacy
    WordPress content renders and the address bar still shows `.hu` (no redirect).
+   (Post-migration, once `LEGACY_PROXY_HOST` is cleared, the same request returns
+   `410 Gone` instead.)
+5b. **Canonical redirect host** — request an unmigrated page **without** its trailing
+   slash → the `301` `Location` points at the public `.hu` host (e.g.
+   `https://staging.youproof.hu/<page>/`), **never** the internal `legacy.*` host.
 6. **Admin blocking** — request `/wp-admin` and `/wp-login.php` (+ any other
    identified admin paths) on the `.hu` domain → `404`, never proxied. Confirm
    the same paths *do* work directly against `legacy.*` with the correct

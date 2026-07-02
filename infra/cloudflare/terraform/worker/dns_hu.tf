@@ -47,7 +47,12 @@ resource "cloudflare_dns_record" "worker_host" {
 # Legacy origin for this environment. Gray-cloud (NOT proxied) so it resolves
 # directly to Rackhost — this is the host the Worker's outbound fetch() uses, and
 # the only way to reach legacy WordPress directly.
+#
+# Gated on legacy_proxy_host: post-migration the var is cleared (the Worker then
+# returns 410 for unmigrated paths), so there is nothing to point at and the
+# record is removed. This also avoids an invalid empty-name record.
 resource "cloudflare_dns_record" "legacy_host" {
+  count   = var.legacy_proxy_host != "" ? 1 : 0
   zone_id = local.zone_id
   name    = var.legacy_proxy_host
   type    = "A"

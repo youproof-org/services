@@ -40,7 +40,15 @@ export default {
       return redirectToOrg(newPath, url.search, env);
     }
 
-    // 3. Unmigrated, non-admin: transparent reverse proxy to the legacy origin.
+    // 3. Unmigrated, non-admin. Proxy to the legacy origin while one is
+    //    configured; once LEGACY_PROXY_HOST is cleared (legacy decommissioned)
+    //    there is nothing to proxy to, so the resource is permanently Gone.
+    if (!env.LEGACY_PROXY_HOST) {
+      return new Response("Gone", {
+        status: 410,
+        headers: { "Content-Type": "text/plain; charset=utf-8" },
+      });
+    }
     return proxyToLegacy(request, env);
   },
 } satisfies ExportedHandler<Env>;

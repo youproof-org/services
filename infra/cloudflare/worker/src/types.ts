@@ -7,7 +7,12 @@
 export interface Env {
   /** Host to 301-redirect migrated paths to, e.g. "youproof.org". */
   REDIRECT_TARGET_HOST: string;
-  /** Legacy origin host to transparently proxy unmigrated paths to, e.g. "legacy.youproof.hu". */
+  /**
+   * Legacy origin host to transparently proxy unmigrated paths to, e.g.
+   * "legacy.youproof.hu". An EMPTY value is the post-migration signal: once the
+   * legacy site is decommissioned there is nothing to proxy to, so unmigrated
+   * (non-admin, non-migrated) paths return 410 Gone instead of proxying.
+   */
   LEGACY_PROXY_HOST: string;
   /**
    * Long-lived access token injected as the `X-Legacy-Guard` header on proxied
