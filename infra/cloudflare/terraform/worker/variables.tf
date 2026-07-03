@@ -71,7 +71,16 @@ variable "redirect_target_host" {
 
 variable "legacy_proxy_host" {
   type        = string
-  description = "Legacy origin host unmigrated paths are proxied to, e.g. \"legacy.youproof.hu\" or \"legacy.staging.youproof.hu\". Bound to the Worker as LEGACY_PROXY_HOST."
+  default     = ""
+  description = <<-EOT
+    Legacy origin host unmigrated paths are proxied to, e.g. "legacy.youproof.hu"
+    or "legacy.staging.youproof.hu". Bound to the Worker as LEGACY_PROXY_HOST.
+
+    Clearing it (empty string) switches the environment to POST-MIGRATION mode:
+    the `legacy.*` A record is not created (see dns_hu.tf) and the Worker returns
+    410 Gone for unmigrated paths instead of proxying. Set this to empty once the
+    legacy WordPress site is decommissioned.
+  EOT
 }
 
 variable "rackhost_server_ip" {

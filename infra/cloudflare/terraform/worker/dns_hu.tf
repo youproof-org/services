@@ -7,12 +7,14 @@
 # (derived from that environment's `worker_domain` / `legacy_proxy_host`), so the
 # two worker states never manage the same record, and neither touches the zone
 # root:
-#   production apply -> youproof.hu, www.youproof.hu, legacy.youproof.hu
-#   staging apply    -> staging.youproof.hu, www.staging.youproof.hu, legacy.staging.youproof.hu
+#   production apply -> youproof.hu, www.youproof.hu, legacy.youproof.hu (+ no-mail SPF/DMARC/MX)
+#   staging apply    -> staging.youproof.hu, www.staging.youproof.hu, legacy.staging.youproof.hu (+ no-mail SPF/DMARC/MX)
 # The www -> apex redirect RULE for both lives in the zone root (zone/redirects.tf).
 #
-# Intentionally NOT recreated from the old Rackhost zone: www.legacy.*, MX, SPF,
-# and DMARC records — youproof.hu is not used as an email domain.
+# Intentionally NOT recreated from the old Rackhost zone: www.legacy.* records.
+# youproof.hu is not an email domain; rather than leaving SPF/DMARC/MX unset (which
+# lets spoofers forge mail as @<domain>), we publish explicit "sends/receives no
+# mail" records — see the email section at the bottom of this file.
 
 locals {
   zone_id = data.terraform_remote_state.zone.outputs.zone_id
@@ -47,7 +49,12 @@ resource "cloudflare_dns_record" "worker_host" {
 # Legacy origin for this environment. Gray-cloud (NOT proxied) so it resolves
 # directly to Rackhost — this is the host the Worker's outbound fetch() uses, and
 # the only way to reach legacy WordPress directly.
+#
+# Gated on legacy_proxy_host: post-migration the var is cleared (the Worker then
+# returns 410 for unmigrated paths), so there is nothing to point at and the
+# record is removed. This also avoids an invalid empty-name record.
 resource "cloudflare_dns_record" "legacy_host" {
+  count   = var.legacy_proxy_host != "" ? 1 : 0
   zone_id = local.zone_id
   name    = var.legacy_proxy_host
   type    = "A"
@@ -76,4 +83,50 @@ resource "cloudflare_dns_record" "www" {
   proxied = true
   ttl     = 1
   comment = "www -> apex redirect target (${var.environment}); redirect rule is in the zone root"
+}
+
+# --- Explicit "this domain sends and receives no email" declaration ---
+#
+# youproof.hu is not an email domain. Cloudflare flags the missing SPF/DMARC/MX
+# records, and leaving them unset lets spoofers forge mail as @<domain>. We instead
+# publish records that state unambiguously that the domain neither sends nor
+# receives mail. One set per environment's public domain (var.worker_domain), so
+# production owns youproof.hu's and staging owns staging.youproof.hu's — disjoint,
+# matching the per-environment record ownership above. All are DNS-only (a TXT/MX
+# record cannot be proxied).
+
+# SPF: authorize no senders at all (hard fail everything).
+resource "cloudflare_dns_record" "spf" {
+  zone_id = local.zone_id
+  name    = var.worker_domain
+  type    = "TXT"
+  # Quoted per Cloudflare's zone-file convention (the quotes are string delimiters,
+  # not data) — clears the dashboard "content must be in quotation marks" warning.
+  content = "\"v=spf1 -all\""
+  ttl     = 1 # 1 = automatic
+  comment = "SPF (${var.environment}): domain sends no mail (reject all)"
+}
+
+# DMARC: reject any mail claiming to be from this domain (there is none), with
+# strict alignment so nothing slips through, and the same policy for subdomains.
+resource "cloudflare_dns_record" "dmarc" {
+  zone_id = local.zone_id
+  name    = "_dmarc.${var.worker_domain}"
+  type    = "TXT"
+  # Quoted per Cloudflare's zone-file convention (see the SPF record above).
+  content = "\"v=DMARC1; p=reject; sp=reject; adkim=s; aspf=s;\""
+  ttl     = 1 # 1 = automatic
+  comment = "DMARC (${var.environment}): reject all unaligned mail"
+}
+
+# Null MX (RFC 7505): the single "." target advertises that the domain accepts no
+# mail, so senders fail fast instead of queueing.
+resource "cloudflare_dns_record" "null_mx" {
+  zone_id  = local.zone_id
+  name     = var.worker_domain
+  type     = "MX"
+  content  = "."
+  priority = 0
+  ttl      = 1 # 1 = automatic
+  comment  = "Null MX (RFC 7505) (${var.environment}): domain receives no mail"
 }

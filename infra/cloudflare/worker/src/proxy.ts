@@ -20,11 +20,14 @@ import type { Env } from "./types";
  *    proxied request. Direct (non-Worker) access without this header is 404'd by
  *    the legacy host itself. The value is a long-lived access token, not a true
  *    secret (see types.ts / README), but must still never be logged.
- *  - No response rewriting: per confirmed assumption, legacy WordPress has
- *    WP_HOME/WP_SITEURL set to the public `.hu` domain, so it does not emit
- *    Location headers pointing at the internal `legacy.*` host. We therefore do
- *    NOT rewrite response headers. Revisit this assumption if redirects ever
- *    leak the internal hostname.
+ *  - Location rewriting only: legacy WordPress keeps WP_HOME/WP_SITEURL on the
+ *    public `.hu` domain, but WordPress still emits *same-host* canonical 301s
+ *    built from the request host (e.g. the trailing-slash normalization
+ *    /path -> /path/). Behind the proxy that request host is the internal
+ *    `legacy.*` origin, so those redirects would leak the internal hostname to
+ *    the browser. We therefore rewrite redirect `Location` headers pointing at
+ *    the legacy host back to the public host (see `rewriteLegacyLocation`). No
+ *    other response header — and no body — is rewritten.
  *  - No Worker-layer caching: caching is handled by Cloudflare's CDN config per
  *    the architecture doc, not here.
  */
@@ -40,7 +43,8 @@ export async function proxyToLegacy(request: Request, env: Env): Promise<Respons
   proxiedRequest.headers.set("Host", env.LEGACY_PROXY_HOST);
 
   try {
-    return await fetch(proxiedRequest);
+    const response = await fetch(proxiedRequest);
+    return rewriteLegacyLocation(response, legacyUrl, new URL(request.url), env.LEGACY_PROXY_HOST);
   } catch (err) {
     // DNS failure, timeout, connection refused, etc. Return a safe, generic
     // 502 rather than letting the exception surface a Cloudflare error page
@@ -51,4 +55,46 @@ export async function proxyToLegacy(request: Request, env: Env): Promise<Respons
       headers: { "Content-Type": "text/plain; charset=utf-8" },
     });
   }
+}
+
+/**
+ * Rewrite a redirect `Location` that points at the internal legacy host back to
+ * the public host the visitor used. WordPress emits same-host canonical 301s
+ * (most visibly the trailing-slash normalization /path -> /path/); behind the
+ * proxy that host is the internal legacy origin, which must never leak to the
+ * browser.
+ *
+ * The raw Location is resolved against the outbound (legacy) URL, so a relative
+ * value ("/path/") resolves to the legacy host and is rewritten to the same
+ * absolute public URL a browser would have computed anyway — equivalent and
+ * safe. Only redirects whose resolved host is the legacy host are touched; any
+ * other host (a rare genuine external redirect) is passed through untouched.
+ */
+function rewriteLegacyLocation(
+  response: Response,
+  legacyUrl: URL,
+  publicUrl: URL,
+  legacyHost: string,
+): Response {
+  if (response.status < 300 || response.status >= 400) return response;
+
+  const raw = response.headers.get("Location");
+  if (!raw) return response;
+
+  let target: URL;
+  try {
+    target = new URL(raw, legacyUrl);
+  } catch {
+    return response; // malformed Location — leave as-is
+  }
+  if (target.hostname !== legacyHost) return response;
+
+  target.protocol = "https:";
+  target.hostname = publicUrl.hostname;
+  target.port = "";
+
+  // A Response from fetch() has immutable headers; copy it to get a mutable set.
+  const rewritten = new Response(response.body, response);
+  rewritten.headers.set("Location", target.toString());
+  return rewritten;
 }
