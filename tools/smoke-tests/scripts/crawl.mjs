@@ -4,7 +4,9 @@
 // For every page it also checks the page's own assets (images, stylesheets,
 // scripts, media, ...). It reports two classes of problem:
 //   - broken links/assets — any response >= 400 (internal ones are fatal;
-//                       external third-party URLs are reported as warnings only).
+//                       external third-party URLs are reported as warnings only;
+//                       external 403/429 are treated as bot-block/rate-limit and
+//                       ignored, since datacenter IPs get throttled).
 //   - legacy leaks    — the internal LEGACY_PROXY_HOST leaking to the browser in
 //                       ANY response header (Location, Link, Content-Location,
 //                       Set-Cookie domain, ...).
@@ -31,8 +33,14 @@ const enqueued = new Set(); // internal pages queued for crawl (deduped)
 const checked = new Set(); // every URL we've done a status/leak check on
 const brokenInternal = [];
 const brokenExternal = [];
+const blockedExternal = []; // external 403/429 — datacenter bot-block / rate-limit, not dead
 const leaks = [];
 let pageCount = 0;
+
+// External hosts commonly return these to datacenter IPs (e.g. Wikipedia 429s the
+// CI runner) — a block/throttle, not a broken link. Ignored for external URLs
+// only; our own host returning them would still be flagged.
+const BLOCKED_STATUSES = new Set([403, 429]);
 
 const normalize = (url) => {
   const u = new URL(url);
@@ -59,7 +67,11 @@ async function check(url, via) {
   }
 
   if (res.status >= 400) {
-    (isInternal(url) ? brokenInternal : brokenExternal).push({ url: key, status: res.status, via });
+    if (!isInternal(url) && BLOCKED_STATUSES.has(res.status)) {
+      blockedExternal.push({ url: key, status: res.status, via });
+    } else {
+      (isInternal(url) ? brokenInternal : brokenExternal).push({ url: key, status: res.status, via });
+    }
   }
   for (const detail of findHeaderLeaks(res.headers, legacyProxyHost, url)) {
     leaks.push({ url: key, detail, via });
@@ -130,8 +142,9 @@ const report = (title, items) => {
 if (leaks.length) report("LEGACY-HOST LEAKS (fatal)", leaks);
 if (brokenInternal.length) report("Broken internal links/assets (fatal)", brokenInternal);
 if (brokenExternal.length) report("Broken external links/assets (warning)", brokenExternal);
+if (blockedExternal.length) report("External rate-limited/blocked — ignored (403/429)", blockedExternal);
 
-if (!leaks.length && !brokenInternal.length && !brokenExternal.length) {
+if (!leaks.length && !brokenInternal.length && !brokenExternal.length && !blockedExternal.length) {
   console.log("\nNo broken links/assets or legacy-host leaks found.");
 }
 

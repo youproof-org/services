@@ -40,7 +40,9 @@ pnpm --filter @youproof.org/smoke-tests crawl
   Cases self-skip when not applicable.
 - **`scripts/crawl.mjs`** (non-blocking in CI) — recursively walks same-origin links
   **and checks each page's assets** (images, stylesheets, scripts, media, `srcset`,
-  `<object>`), flagging anything broken (internal = fatal, external = warning). It also
+  `<object>`), flagging anything broken (internal = fatal, external = warning; external
+  `403`/`429` are treated as bot-block/rate-limit and ignored, since datacenter IPs get
+  throttled). It also
   flags `LEGACY_PROXY_HOST` leaking in **any response header** (`Location`, `Link`,
   `Content-Location`, `Set-Cookie` domain, ...), and probes the trailing-slash-stripped
   variant of every `/`-terminated URL to exercise the canonical-redirect Location rewrite
