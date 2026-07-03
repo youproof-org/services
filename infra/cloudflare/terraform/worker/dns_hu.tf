@@ -100,7 +100,9 @@ resource "cloudflare_dns_record" "spf" {
   zone_id = local.zone_id
   name    = var.worker_domain
   type    = "TXT"
-  content = "v=spf1 -all"
+  # Quoted per Cloudflare's zone-file convention (the quotes are string delimiters,
+  # not data) — clears the dashboard "content must be in quotation marks" warning.
+  content = "\"v=spf1 -all\""
   ttl     = 1 # 1 = automatic
   comment = "SPF (${var.environment}): domain sends no mail (reject all)"
 }
@@ -111,7 +113,8 @@ resource "cloudflare_dns_record" "dmarc" {
   zone_id = local.zone_id
   name    = "_dmarc.${var.worker_domain}"
   type    = "TXT"
-  content = "v=DMARC1; p=reject; sp=reject; adkim=s; aspf=s;"
+  # Quoted per Cloudflare's zone-file convention (see the SPF record above).
+  content = "\"v=DMARC1; p=reject; sp=reject; adkim=s; aspf=s;\""
   ttl     = 1 # 1 = automatic
   comment = "DMARC (${var.environment}): reject all unaligned mail"
 }
