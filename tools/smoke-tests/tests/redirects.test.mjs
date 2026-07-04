@@ -1,7 +1,7 @@
 // Post-deploy redirect smoke tests for the migration Worker.
 //
 // Deterministic HTTP checks that automate the redirect-facing subset of the
-// manual verification checklist in infra/cloudflare/README.md. Run against a
+// manual verification checklist in docs/migration-worker.md. Run against a
 // live, just-deployed environment:
 //
 //   WORKER_DOMAIN=staging.youproof.hu \

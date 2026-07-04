@@ -12,9 +12,15 @@ const mulish = Mulish({
   display: 'swap',
 })
 
+// Only staging emits noindex. The gate defaults to the indexable (production)
+// behavior: a missing or non-'staging' SITE_ENV can never accidentally
+// noindex production.
+const isStaging = process.env.SITE_ENV === 'staging'
+
 export const metadata: Metadata = {
   title: 'YOUPROOF',
   description: 'Alice és Bob matematikai kalandjai',
+  ...(isStaging ? { robots: { index: false, follow: false } } : {}),
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

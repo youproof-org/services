@@ -260,6 +260,8 @@ export function loadSection(
 export interface RawChapter {
   name: string
   title: string
+  published: boolean
+  legacyPath?: string
   sectionNames: string[]
   abstract: ContentBlock[]
   prerequisiteWarning?: ContentBlock[]
@@ -274,6 +276,9 @@ export function loadChapter(filePath: string): RawChapter {
   return {
     name: raw.name as string,
     title: raw.title as string,
+    // Default to unpublished when the field is absent or not strictly `true`.
+    published: raw.published === true,
+    legacyPath: typeof raw['legacy-path'] === 'string' ? (raw['legacy-path'] as string) : undefined,
     sectionNames: toStringArray(raw.sections),
     abstract: toBlocks(raw.abstract),
     prerequisiteWarning: raw['prerequisite-warning']

@@ -16,7 +16,7 @@ import type { Env } from "./types";
  *   2. 301-redirects migrated paths to the environment's `.org` host.
  *   3. Transparently proxies everything else to the environment's legacy origin.
  *
- * See `infra/cloudflare/README.md` for the full architecture and the manual
+ * See `docs/migration-worker.md` for the full architecture and the manual
  * verification checklist.
  */
 export default {

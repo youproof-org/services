@@ -1,9 +1,11 @@
 import SiteFooter from '@/components/layout/SiteFooter'
 import BookCard from '@/components/book/BookCard'
-import { getContentGraph } from '@/lib/content'
+import { getContentGraph, initContentGraph } from '@/lib/content'
 import styles from './root-page.module.scss'
 
-export default function RootPage() {
+export default async function RootPage() {
+  // Ensure the graph is built in export prerender workers (idempotent).
+  await initContentGraph()
   const graph = getContentGraph()
   const books = Array.from(graph.books.values())
 

@@ -85,6 +85,51 @@ export function extractRefs(html, base) {
   return { links, assets };
 }
 
+// KaTeX renders un-parseable TeX as <span class="katex-error" ...>. Match the
+// class token in either attribute-quote style, tolerating extra classes.
+const KATEX_ERROR_RE = /class\s*=\s*["'][^"']*\bkatex-error\b[^"']*["']/gi;
+
+/**
+ * Count KaTeX render failures in a page's HTML and return a short snippet of the
+ * first occurrence for triage. count === 0 means the page rendered its math
+ * cleanly (or contained none).
+ *
+ * @param html  raw response body (text/html)
+ * @returns {{ count: number, snippet: string }}
+ */
+export function extractMathErrors(html) {
+  let count = 0;
+  let firstIndex = -1;
+  let m;
+  KATEX_ERROR_RE.lastIndex = 0;
+  while ((m = KATEX_ERROR_RE.exec(html)) !== null) {
+    if (firstIndex === -1) firstIndex = m.index;
+    count++;
+  }
+  const snippet =
+    firstIndex === -1 ? "" : html.slice(Math.max(0, firstIndex - 20), firstIndex + 100).replace(/\s+/g, " ").trim();
+  return { count, snippet };
+}
+
+const LOC_RE = /<loc>\s*([^<\s][^<]*?)\s*<\/loc>/gi;
+
+/**
+ * Extract page URLs from a sitemap.xml body. Handles a plain <urlset> and, since
+ * a <sitemapindex> uses the same <loc> element, returns nested-sitemap URLs too
+ * (callers cross-reference by path, so index entries simply won't match a page
+ * and are harmless). Returns an array of raw URL strings (deduped).
+ */
+export function parseSitemapLocs(xml) {
+  const out = new Set();
+  let m;
+  LOC_RE.lastIndex = 0;
+  while ((m = LOC_RE.exec(xml)) !== null) {
+    const raw = m[1].trim().replace(/&amp;/gi, "&");
+    if (/^https?:\/\//i.test(raw)) out.add(raw);
+  }
+  return [...out];
+}
+
 /**
  * Detect the internal legacy host leaking in response headers. Scans every
  * header value for the host substring (Link, Content-Location, Set-Cookie

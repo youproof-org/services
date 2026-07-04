@@ -1,0 +1,461 @@
+# Reusable full-site deploy for one (environment, services_sha, content_sha).
+#
+# This is the single source of truth for an APPLY-time deploy. It is called by:
+#   - deploy-to-cloudflare.yml  (push to a stable branch OR a content dispatch)
+#   - rollback.yml              (redeploy the last known-good pair)
+#
+# A deployable version is the pair (services_sha, content_sha). The caller passes
+# git refs (branch names for a normal deploy — so we always build the LATEST of
+# both sides — or exact SHAs for a rollback). `resolve` pins them to concrete
+# SHAs once, and every downstream job checks out those exact SHAs so the whole
+# run is deterministic even if a branch tip moves mid-run.
+#
+# Job graph (see `needs:`):
+#   resolve
+#     -> org-zone (production only; shared youproof.org zone, mirrors the .hu zone job)
+#          -> cdn (per-env R2 buckets + custom domain)
+#               -> worker (regenerate manifest from content, redeploy the .hu worker)
+#                    -> website (Next.js static export -> R2 content bucket -> CDN purge)
+#                         -> quality-gate (crawler-based gate against the .org host)
+#                              -> rollback-dispatch (production, on gate failure)
+#
+# Env is derived from `inputs.environment`; secrets are scoped via GitHub
+# Environments exactly like the existing worker job, so a staging run can never
+# see production values and vice versa.
+name: deploy
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: "Target environment: staging | production."
+        required: true
+        type: string
+      services_ref:
+        description: "services git ref (branch for a normal deploy, SHA for rollback)."
+        required: true
+        type: string
+      content_ref:
+        description: "content git ref (branch for a normal deploy, SHA for rollback)."
+        required: true
+        type: string
+      is_rollback:
+        description: >-
+          True when this deploy IS a rollback redeploy. Suppresses the
+          auto-rollback-on-failure dispatch (so a failed rollback can't loop) and
+          emits a distinct ::error:: if the gate fails again.
+        required: false
+        type: boolean
+        default: false
+    # secrets: inherit is used by callers, so every `secrets.*` below resolves.
+
+concurrency:
+  # One deploy per environment at a time (a rollback of the same env queues
+  # behind the deploy that triggered it — cancel-in-progress would abandon a
+  # half-applied deploy).
+  group: deploy-${{ inputs.environment }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  # Pin the (services, content) refs to concrete SHAs, once, for the whole run.
+  resolve:
+    runs-on: ubuntu-latest
+    outputs:
+      services_sha: ${{ steps.svc.outputs.sha }}
+      content_sha: ${{ steps.content.outputs.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.services_ref }}
+      - name: Resolve services SHA
+        id: svc
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Resolve content SHA (private content repo)
+        id: content
+        env:
+          CONTENT_REPO_TOKEN: ${{ secrets.CONTENT_REPO_TOKEN }}
+          CONTENT_REF: ${{ inputs.content_ref }}
+        run: |
+          git clone --quiet \
+            "https://x-access-token:${CONTENT_REPO_TOKEN}@github.com/youproof-org/content.git" \
+            "$RUNNER_TEMP/content"
+          git -C "$RUNNER_TEMP/content" checkout --quiet "$CONTENT_REF"
+          echo "sha=$(git -C "$RUNNER_TEMP/content" rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  # Shared youproof.org zone (settings + www redirect + .html transform + cache
+  # rules). Mirrors the existing .hu `zone` job: applied only for PRODUCTION,
+  # because it owns account-level infra shared by both environments (staging
+  # deploys never touch it). Idempotent apply.
+  org-zone:
+    needs: resolve
+    if: inputs.environment == 'production'
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      TF_WORKDIR: infra/cloudflare/terraform/org-zone
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      TF_VAR_cloudflare_account_id: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_STATE_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_STATE_SECRET_ACCESS_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.resolve.outputs.services_sha }}
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.11.4"
+      - name: Terraform init (R2 backend, org-zone state key)
+        working-directory: ${{ env.TF_WORKDIR }}
+        run: |
+          terraform init -input=false \
+            -backend-config="bucket=${{ vars.R2_STATE_BUCKET }}" \
+            -backend-config="key=cloudflare/org-zone.tfstate" \
+            -backend-config="endpoints={s3=\"https://${{ vars.CLOUDFLARE_ACCOUNT_ID }}.eu.r2.cloudflarestorage.com\"}" \
+            -backend-config="access_key=${AWS_ACCESS_KEY_ID}" \
+            -backend-config="secret_key=${AWS_SECRET_ACCESS_KEY}"
+      - name: Terraform format check
+        working-directory: ${{ env.TF_WORKDIR }}
+        run: terraform fmt -check -recursive
+      - name: Terraform plan
+        working-directory: ${{ env.TF_WORKDIR }}
+        run: terraform plan -input=false -out=tfplan
+      - name: Terraform apply
+        working-directory: ${{ env.TF_WORKDIR }}
+        run: terraform apply -input=false -auto-approve tfplan
+
+  # Per-environment CDN infra: R2 content + test-artifacts buckets and the R2
+  # custom domain fronting the content bucket. Reads the org-zone root's remote
+  # state for the zone ID (cdn/data.tf), so org-zone must exist first. A skipped
+  # org-zone (staging path) still satisfies `needs` — the state was applied by an
+  # earlier production run / the bootstrap apply.
+  cdn:
+    needs: [resolve, org-zone]
+    # org-zone is SKIPPED on staging (it only applies for production). A skipped
+    # dependency would skip this job by default, so gate explicitly: run when
+    # resolve succeeded and org-zone either succeeded (production) or was skipped
+    # (staging) — but not when org-zone failed.
+    if: >-
+      !cancelled() && needs.resolve.result == 'success' &&
+      (needs.org-zone.result == 'success' || needs.org-zone.result == 'skipped')
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    env:
+      ENVIRONMENT: ${{ inputs.environment }}
+      TF_WORKDIR: infra/cloudflare/terraform/cdn
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      TF_VAR_environment: ${{ inputs.environment }}
+      TF_VAR_cloudflare_account_id: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      TF_VAR_tfstate_bucket: ${{ vars.R2_STATE_BUCKET }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_STATE_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_STATE_SECRET_ACCESS_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.resolve.outputs.services_sha }}
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.11.4"
+      - name: Terraform init (R2 backend, per-environment cdn state key)
+        working-directory: ${{ env.TF_WORKDIR }}
+        run: |
+          terraform init -input=false \
+            -backend-config="bucket=${{ vars.R2_STATE_BUCKET }}" \
+            -backend-config="key=cloudflare/cdn/${ENVIRONMENT}.tfstate" \
+            -backend-config="endpoints={s3=\"https://${{ vars.CLOUDFLARE_ACCOUNT_ID }}.eu.r2.cloudflarestorage.com\"}" \
+            -backend-config="access_key=${AWS_ACCESS_KEY_ID}" \
+            -backend-config="secret_key=${AWS_SECRET_ACCESS_KEY}"
+      - name: Terraform format check
+        working-directory: ${{ env.TF_WORKDIR }}
+        run: terraform fmt -check -recursive
+      - name: Terraform plan
+        working-directory: ${{ env.TF_WORKDIR }}
+        run: terraform plan -input=false -out=tfplan
+      - name: Terraform apply
+        working-directory: ${{ env.TF_WORKDIR }}
+        run: terraform apply -input=false -auto-approve tfplan
+
+  # .hu migration worker: regenerate its redirect manifest from the CURRENT
+  # content YAML, then redeploy (terraform/worker/). This is the content-aware
+  # evolution of the old standalone `worker` job — the manifest is no longer the
+  # committed empty stub, it is generated from content at deploy time. The
+  # existing .hu redirect smoke tests still run here (post-migration validation
+  # of the .hu side), unchanged.
+  worker:
+    needs: [resolve, cdn]
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    env:
+      ENVIRONMENT: ${{ inputs.environment }}
+      TF_WORKDIR: infra/cloudflare/terraform/worker
+      CONTENT_DIR: ${{ github.workspace }}/content-repo/content
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      TF_VAR_environment: ${{ inputs.environment }}
+      TF_VAR_cloudflare_account_id: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      TF_VAR_tfstate_bucket: ${{ vars.R2_STATE_BUCKET }}
+      TF_VAR_worker_domain: ${{ vars.WORKER_DOMAIN }}
+      TF_VAR_redirect_target_host: ${{ vars.REDIRECT_TARGET_HOST }}
+      TF_VAR_legacy_proxy_host: ${{ vars.LEGACY_PROXY_HOST }}
+      TF_VAR_rackhost_server_ip: ${{ vars.RACKHOST_SERVER_IP }}
+      TF_VAR_production_cutover: ${{ vars.PRODUCTION_CUTOVER || 'false' }}
+      TF_VAR_legacy_guard_value: ${{ vars.LEGACY_GUARD_VALUE }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_STATE_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_STATE_SECRET_ACCESS_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.resolve.outputs.services_sha }}
+
+      - name: Clone content @ pinned SHA
+        env:
+          CONTENT_REPO_TOKEN: ${{ secrets.CONTENT_REPO_TOKEN }}
+          CONTENT_SHA: ${{ needs.resolve.outputs.content_sha }}
+        run: |
+          git clone --quiet \
+            "https://x-access-token:${CONTENT_REPO_TOKEN}@github.com/youproof-org/content.git" \
+            "${{ github.workspace }}/content-repo"
+          git -C "${{ github.workspace }}/content-repo" checkout --quiet "$CONTENT_SHA"
+
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: pnpm
+
+      - name: Install dependencies (worker subtree only)
+        # Worker subtree only — a full-workspace install runs apps/website's
+        # check-latex postinstall, which fails on runners without TeX. js-yaml
+        # (needed by gen-manifest) is a worker devDep, so it resolves here.
+        run: pnpm install --frozen-lockfile --filter @youproof.org/migration-worker...
+
+      - name: Generate manifest from content
+        run: pnpm --filter @youproof.org/migration-worker run generate-manifest
+
+      - name: Validate manifest
+        run: pnpm --filter @youproof.org/migration-worker run validate-manifest
+
+      - name: Typecheck worker
+        run: pnpm --filter @youproof.org/migration-worker run typecheck
+
+      - name: Build worker bundle
+        run: pnpm --filter @youproof.org/migration-worker run build
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.11.4"
+
+      - name: Terraform init (R2 backend, per-environment worker state key)
+        working-directory: ${{ env.TF_WORKDIR }}
+        run: |
+          terraform init -input=false \
+            -backend-config="bucket=${{ vars.R2_STATE_BUCKET }}" \
+            -backend-config="key=cloudflare/worker/${ENVIRONMENT}.tfstate" \
+            -backend-config="endpoints={s3=\"https://${{ vars.CLOUDFLARE_ACCOUNT_ID }}.eu.r2.cloudflarestorage.com\"}" \
+            -backend-config="access_key=${AWS_ACCESS_KEY_ID}" \
+            -backend-config="secret_key=${AWS_SECRET_ACCESS_KEY}"
+
+      - name: Terraform format check
+        working-directory: ${{ env.TF_WORKDIR }}
+        run: terraform fmt -check -recursive
+
+      - name: Terraform plan
+        working-directory: ${{ env.TF_WORKDIR }}
+        run: terraform plan -input=false -out=tfplan
+
+      - name: Terraform apply
+        working-directory: ${{ env.TF_WORKDIR }}
+        run: terraform apply -input=false -auto-approve tfplan
+
+      # Existing .hu redirect smoke tests. Staging is always Worker-fronted; on
+      # production only after cut-over (pre-cut-over youproof.hu still resolves to
+      # legacy WordPress, so smoke-testing it is meaningless).
+      - name: Smoke tests (.hu worker, post-deploy)
+        if: >-
+          inputs.environment == 'staging' ||
+          (inputs.environment == 'production' && vars.PRODUCTION_CUTOVER == 'true')
+        env:
+          WORKER_DOMAIN: ${{ vars.WORKER_DOMAIN }}
+          REDIRECT_TARGET_HOST: ${{ vars.REDIRECT_TARGET_HOST }}
+          LEGACY_PROXY_HOST: ${{ vars.LEGACY_PROXY_HOST }}
+        run: node --test "tools/smoke-tests/tests/*.test.mjs"
+
+  # Next.js static export -> upload to the env content bucket -> purge the CDN.
+  website:
+    needs: [resolve, worker]
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    env:
+      ENVIRONMENT: ${{ inputs.environment }}
+      SITE_ENV: ${{ inputs.environment }}
+      CONTENT_DIR: ${{ github.workspace }}/content-repo/content
+      SITE_HOST: ${{ inputs.environment == 'production' && 'youproof.org' || 'staging.youproof.org' }}
+      CONTENT_BUCKET: youproof-${{ inputs.environment }}-content
+      R2_ENDPOINT: https://${{ vars.CLOUDFLARE_ACCOUNT_ID }}.eu.r2.cloudflarestorage.com
+      # R2 S3 credentials for the content bucket upload. Reuses the account-scoped
+      # state creds; the runbook notes a dedicated content credential is preferable.
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_STATE_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_STATE_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: auto
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      ORG_ZONE_ID: ${{ vars.ORG_ZONE_ID }}
+    steps:
+      # TeX Live BEFORE pnpm install: apps/website's check-latex postinstall (and
+      # the sync-figures prebuild that compiles figures with pdflatex + dvisvgm)
+      # need the toolchain present, or the install/build fails.
+      - name: Install TeX Live (pdflatex + dvisvgm)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            texlive-latex-base texlive-latex-extra texlive-fonts-recommended \
+            texlive-binaries dvisvgm
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.resolve.outputs.services_sha }}
+
+      - name: Clone content @ pinned SHA
+        env:
+          CONTENT_REPO_TOKEN: ${{ secrets.CONTENT_REPO_TOKEN }}
+          CONTENT_SHA: ${{ needs.resolve.outputs.content_sha }}
+        run: |
+          git clone --quiet \
+            "https://x-access-token:${CONTENT_REPO_TOKEN}@github.com/youproof-org/content.git" \
+            "${{ github.workspace }}/content-repo"
+          git -C "${{ github.workspace }}/content-repo" checkout --quiet "$CONTENT_SHA"
+
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: pnpm
+
+      - name: Install dependencies (website subtree)
+        run: pnpm install --frozen-lockfile --filter @youproof.org/website...
+
+      - name: Build static export
+        run: pnpm --filter @youproof.org/website build
+
+      # Upload the export to R2 via the S3 API. --delete removes stale objects so
+      # the bucket exactly mirrors out/. aws-cli (preinstalled on the runner)
+      # infers content types from file extensions (.html -> text/html), which is
+      # what the CDN serves.
+      - name: Upload to R2 content bucket
+        run: |
+          aws s3 sync apps/website/out/ "s3://${CONTENT_BUCKET}/" \
+            --delete \
+            --endpoint-url "${R2_ENDPOINT}"
+
+      # Cache-bust via full zone purge (simplest correct option; targeted
+      # per-path purge is a future optimization). Zone ID comes from the
+      # ORG_ZONE_ID GitHub variable (see runbook; alternatively read from the
+      # org-zone root's `zone_id` remote-state output).
+      - name: Purge CDN cache
+        run: |
+          if [ -z "${ORG_ZONE_ID}" ]; then
+            echo "::error title=Missing ORG_ZONE_ID::Set the ORG_ZONE_ID repository/environment variable to the youproof.org zone ID (see infra/github/branch-protection.md)."
+            exit 1
+          fi
+          curl -sfS -X POST \
+            "https://api.cloudflare.com/client/v4/zones/${ORG_ZONE_ID}/purge_cache" \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            --data '{"purge_everything":true}'
+
+  # Post-deploy quality gate against the LIVE .org host. Crawler-based: the smoke
+  # suite is skipped here (SKIP_SMOKE=1) because it asserts the .hu migration
+  # worker's 301/410 redirect semantics, which don't apply to the .org static
+  # site — see the "smoke-suite-on-.org decision" note below and in the report.
+  # The .hu smoke tests still run in the `worker` job. The gate writes the
+  # contract JSON artifact keyed by the (services_sha, content_sha) pair.
+  quality-gate:
+    needs: [resolve, website]
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    env:
+      ENVIRONMENT: ${{ inputs.environment }}
+      SERVICES_SHA: ${{ needs.resolve.outputs.services_sha }}
+      CONTENT_SHA: ${{ needs.resolve.outputs.content_sha }}
+      # WORKER_DOMAIN is the smoke config's "host under test" — here the .org host.
+      WORKER_DOMAIN: ${{ inputs.environment == 'production' && 'youproof.org' || 'staging.youproof.org' }}
+      # Empty legacy/redirect hosts => post-migration mode (no .hu redirect checks).
+      LEGACY_PROXY_HOST: ""
+      REDIRECT_TARGET_HOST: ""
+      SKIP_SMOKE: "1"
+      # Absolute path: the gate step runs with cwd = the smoke-tests package dir
+      # (pnpm --filter), but the upload step runs from the repo root. An absolute
+      # path makes both agree on where the report lives.
+      REPORT_OUT: ${{ github.workspace }}/quality-gate-report.json
+      ARTIFACTS_BUCKET: youproof-${{ inputs.environment }}-test-artifacts
+      R2_ENDPOINT: https://${{ vars.CLOUDFLARE_ACCOUNT_ID }}.eu.r2.cloudflarestorage.com
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_STATE_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_STATE_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: auto
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.resolve.outputs.services_sha }}
+
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: pnpm
+
+      - name: Install dependencies (smoke-tests subtree)
+        run: pnpm install --frozen-lockfile --filter @youproof.org/smoke-tests...
+
+      - name: Run quality gate
+        id: gate
+        continue-on-error: true
+        run: pnpm --filter @youproof.org/smoke-tests quality-gate
+
+      # Upload the report even when the gate failed (if: always()) — the PR gate
+      # reads overall === "pass" from it, and a failing prod report is what the
+      # rollback lookup skips over.
+      - name: Upload report to test-artifacts bucket
+        if: always()
+        run: |
+          KEY="reports/${SERVICES_SHA}__${CONTENT_SHA}.json"
+          aws s3 cp "${REPORT_OUT}" "s3://${ARTIFACTS_BUCKET}/${KEY}" \
+            --content-type application/json --endpoint-url "${R2_ENDPOINT}"
+          aws s3 cp "${REPORT_OUT}" "s3://${ARTIFACTS_BUCKET}/reports/latest.json" \
+            --content-type application/json --endpoint-url "${R2_ENDPOINT}"
+          echo "Uploaded ${KEY} (+ reports/latest.json) to ${ARTIFACTS_BUCKET}."
+
+      - name: Distinct error when a ROLLBACK's own gate fails
+        if: steps.gate.outcome == 'failure' && inputs.is_rollback == true
+        run: |
+          echo "::error title=Rollback quality gate FAILED::The rollback redeploy at the last known-good pair ALSO failed its production quality gate. No further automatic rollback will run — manual intervention required."
+
+      - name: Fail the job if the gate failed
+        if: steps.gate.outcome == 'failure'
+        run: exit 1
+
+  # Fully-automatic, forward-only rollback trigger. Only on a PRODUCTION deploy
+  # whose gate failed, and never during a rollback (is_rollback == true) so a
+  # failing rollback can't loop. Dispatches rollback.yml at runtime (dynamic
+  # `gh workflow run`, not a static `uses:` — avoids a reusable-workflow cycle).
+  rollback-dispatch:
+    needs: [resolve, quality-gate]
+    if: >-
+      always() && inputs.environment == 'production' && inputs.is_rollback == false &&
+      needs.quality-gate.result == 'failure'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Trigger rollback to last known-good pair
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FAILED_SERVICES_SHA: ${{ needs.resolve.outputs.services_sha }}
+          FAILED_CONTENT_SHA: ${{ needs.resolve.outputs.content_sha }}
+        run: |
+          echo "::warning title=Production gate failed::Dispatching automatic rollback (excluding failed pair ${FAILED_SERVICES_SHA}__${FAILED_CONTENT_SHA})."
+          gh workflow run rollback.yml \
+            --ref stable/production \
+            -f failed_services_sha="${FAILED_SERVICES_SHA}" \
+            -f failed_content_sha="${FAILED_CONTENT_SHA}"
