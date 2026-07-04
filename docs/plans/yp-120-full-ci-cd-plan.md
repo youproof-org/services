@@ -438,6 +438,29 @@ Claude Code, starting from the open points below.
 
 ---
 
+## 7. Cleanup: `infra/cloudflare/README.md`
+
+This document has grown large and now contains a lot of detail specific to
+the production cutover performed as part of the previous backlog item —
+much of which is no longer relevant now that that cutover is done.
+
+> **For Claude Code:** you already know the details of this document and the
+> cutover it documents, so use that context directly. At a high level:
+> - Move the document out of `infra/cloudflare/` and into the `docs` folder.
+> - Split it into several smaller Markdown files, each covering one distinct
+>   topic, rather than one monolithic file.
+> - Drop content that's explicitly tied to the one-time production cutover
+>   and is no longer relevant now that it's complete.
+> - Keep only what's long-term relevant (ongoing architecture/operational
+>   reference), reorganized sensibly across the new files.
+> - Beyond reorganizing the existing content, **extend this new documentation
+>   structure with design topics from this CI/CD pipeline implementation**
+>   (branching strategy, deploy flow, quality gates, rollback strategy, etc.)
+>   so the `docs` folder becomes the durable, long-term reference for this
+>   pipeline going forward — not just a home for the old cutover content.
+
+---
+
 ## Open questions / things to confirm as we go
 
 - ~~Does "deploy" under GitHub workflows duplicate or supersede the "Deploy"
