@@ -196,6 +196,18 @@ from the content buckets above):
 > are kept, and whether older ones can be pruned once superseded by a newer
 > validated pair).
 
+### Search engine indexing
+
+Search engine indexing must be **prevented on staging**
+(`staging.youproof.org`) — production should be the only indexable
+environment.
+
+> **For Claude Code:** decide the concrete mechanism (e.g. a build-time
+> `noindex` meta tag / `robots.txt` disallow-all generated only for the
+> staging build, vs. an `X-Robots-Tag: noindex` response header set at the
+> CDN level for the staging environment) and make sure whichever approach is
+> chosen can't accidentally leak into the production build/config.
+
 ---
 
 ## 3. Quality gates — CONFIRMED (with notes for Claude Code)
