@@ -74,8 +74,19 @@ zones). The **Token** column shows which environment's token needs each row:
 | Zone | Zone | Edit | Prod only | create/manage the zones (`cloudflare_zone`) |
 | Zone Settings | Zone | Edit | Prod only | HSTS / `security_header` (`cloudflare_zone_setting`) |
 | SSL and Certificates | Zone | Edit | Prod only | Always Use HTTPS / `always_use_https` (an SSL/edge setting) |
-| Dynamic Redirect | Zone | Edit | Prod only | www→apex rulesets, and the `.org` transform/cache rulesets (`cloudflare_ruleset`) |
-| Account Rulesets | Account | Edit | Prod only | required *with* Dynamic Redirect to deploy the rulesets |
+| Dynamic Redirect | Zone | Edit | Prod only | www→apex 301 rulesets (`cloudflare_ruleset`, `http_request_dynamic_redirect`) |
+| Transform Rules | Zone | Edit | Prod only | `.org` `.html`-stripping rewrite ruleset (`cloudflare_ruleset`, `http_request_transform`) |
+| Cache Settings | Zone | Edit | Prod only | `.org` cache ruleset (`cloudflare_ruleset`, `http_request_cache_settings`) |
+| Account Rulesets | Account | Edit | Prod only | required *with* the per-phase ruleset permissions above to deploy `cloudflare_ruleset` resources |
+
+> **Per-phase ruleset permissions (learned the hard way).** Each
+> `cloudflare_ruleset` *phase* is gated by its OWN token permission — Dynamic
+> Redirect does **not** cover Transform or Cache rulesets. A token missing
+> Transform Rules / Cache Settings will `plan` fine but the `apply` fails with
+> `403 … "request is not authorized"` on `POST /zones/{id}/rulesets`. Grant all
+> three (Dynamic Redirect, Transform Rules, Cache Settings). Note the Cloudflare
+> UI labels the cache permission **"Cache Settings"** (there is no "Cache Rules"
+> entry).
 | DNS | Zone | Edit | Both | DNS records (`cloudflare_dns_record`) |
 | Workers Routes | Zone | Edit | Both | `.hu` route binding (`cloudflare_workers_route`) |
 | Workers Scripts | Account | Edit | Both | the `.hu` Worker script (`cloudflare_workers_script`) |
