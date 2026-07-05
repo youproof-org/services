@@ -2,8 +2,8 @@
 #
 # The R2 content bucket stores every page as a `.html` object
 # (`/` -> `index.html`, `/books/x/chapters/y` -> `books/x/chapters/y.html`; see
-# the implementation contract "R2 object keys"). Public URLs must NOT expose the
-# `.html` extension, so this rule rewrites the request path at the edge to the
+# docs/cdn-and-r2.md "R2 object keys"). Public URLs must NOT expose the `.html`
+# extension, so this rule rewrites the request path at the edge to the
 # corresponding object key before the request reaches R2.
 #
 # A Transform ruleset (phase http_request_transform) is a ZONE-LEVEL SINGLETON

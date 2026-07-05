@@ -40,11 +40,10 @@ for both:
    `stable/released` HEAD. Record `content_sha`. Export `CONTENT_DIR`.
 2. **Regenerate the worker manifest** from the content YAML
    (`gen-manifest.mjs` — see [migration worker](migration-worker.md#the-migration-manifest-generated-from-content)).
-3. **Terraform apply** for the environment — the `cdn/` module (R2 buckets + R2
+3. **Terraform apply** for the environment — the `website/` root (R2 buckets + R2
    custom domain) — and **redeploy the `.hu` migration worker** with the
-   regenerated manifest. The `.org` zone root (`org-zone/`) and the `.hu` zone
-   root (`zone/`) are applied **separately** (shared, single-state roots; not
-   part of the per-deploy apply).
+   regenerated manifest. The shared `zone/` root (which owns **both** zones) is
+   applied **separately** (single-state root; not part of the per-deploy apply).
 4. **Build the Next.js static export** (`out/`) with `CONTENT_DIR` set. The
    runner needs TeX Live (`pdflatex` + `dvisvgm`) for figure compilation.
 5. **Upload `out/`** to the environment's content bucket (R2 S3 API), keys
@@ -59,19 +58,21 @@ for both:
 The existing generic Cloudflare-infra pipeline handles the Terraform applies. A
 `changes` (path-filter) job decides which run:
 
-- **zone roots** (`zone/`, `org-zone/`) — apply on a **push to
-  `stable/production`** (they own account-level shared infra); on PRs touching
-  their files they run **plan-only**. Bound to the `production` GitHub
-  Environment.
-- **per-env roots** (`worker/`, `cdn/`) — the target environment is derived from
-  the branch (`stable/production` push → production; otherwise staging — a
-  `stable/staging` push or a PR plan-only review). Steps: install →
-  generate/validate manifest → typecheck → build → `terraform init` (per-env
-  state key) → fmt check → plan → apply. Bound to the matching GitHub
-  Environment.
-- **guard** — runs on every PR and **fails if a PR touches a shared zone root
-  (`terraform/zone/**` or `terraform/org-zone/**`) together with anything
-  else**. Make it a required status check on the protected branches.
+- **shared zone root** (`zone/`, apply job `zone`) — applies on a **push to
+  `stable/production`** and covers **both zones** (it owns account-level shared
+  infra); on PRs touching its files the `zone-plan` gate runs **plan-only**.
+  Bound to the `production` GitHub Environment.
+- **per-env roots** (`worker/`, `website/`; apply jobs `worker` and
+  `website-infra`) — the target environment is derived from the branch
+  (`stable/production` push → production; otherwise staging — a `stable/staging`
+  push or a PR plan-only review). Steps: install → generate/validate manifest →
+  typecheck → build → `terraform init` (per-env state key) → fmt check → plan →
+  apply. Their PR plan gates are `worker-plan` and `website-plan`. Bound to the
+  matching GitHub Environment. (The Next.js static-build job is separately named
+  `website`.)
+- **guard** — runs on every PR and **fails if a PR touches the shared zone root
+  (`terraform/zone/**`) together with anything else**. Make it a required status
+  check on the protected branches.
 
 > **Push deploys are gated by branch, not by the path filter.** On a promotion
 > merge the promoted branch becomes an ancestor of the stable branch, so the
@@ -87,9 +88,9 @@ transform + cache rulesets) apply to staging and production together and can't
 be isolated to staging. A zone change is therefore a **no-op at the
 `stable/staging` merge** and only **applies at the `stable/production` merge**;
 its pre-apply gate is the PR `plan` diff. To keep that production apply clean and
-reviewable, a **zone PR must contain only that zone root's changes — nothing
-else** (worker, cdn, website, docs go in separate PRs). The `guard` job enforces
-this.
+reviewable, a **zone PR must contain only the `zone/` root's changes — nothing
+else** (worker, website, and app/docs changes go in separate PRs). The `guard`
+job enforces this.
 
 CI is driven entirely by **GitHub Environment**-scoped vars/secrets (no
 `-var-file`), so production and staging values never cross over — see

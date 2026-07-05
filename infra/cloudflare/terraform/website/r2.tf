@@ -1,19 +1,19 @@
-# Per-environment CDN resources in the shared `youproof.org` zone.
+# Per-environment website (CDN) resources in the shared `youproof.org` zone.
 #
-# The zone itself (and its zone-level rulesets) is owned by the separate
-# `org-zone/` root; here we only create this environment's R2 buckets and the R2
-# custom domain that fronts the content bucket. The zone ID is read from that
-# root's remote state (see data.tf). No Worker resources exist on this zone.
+# The zone itself (and its zone-level rulesets) is owned by the shared `zone/`
+# root; here we only create this environment's R2 buckets and the R2 custom
+# domain that fronts the content bucket. The zone ID is read from that root's
+# remote state (see data.tf). No Worker resources exist on this zone.
 #
 # State-sharing note: each environment's apply manages a DISJOINT set of
 # resources (bucket names + custom-domain host are derived from var.environment),
-# so the two cdn states never manage the same object, and neither touches the
-# org-zone root:
+# so the two website states never manage the same object, and neither touches
+# the shared zone root:
 #   production apply -> youproof-production-content, youproof-production-test-artifacts, youproof.org custom domain
 #   staging apply    -> youproof-staging-content,    youproof-staging-test-artifacts,    staging.youproof.org custom domain
 
 locals {
-  zone_id   = data.terraform_remote_state.org_zone.outputs.zone_id
+  zone_id   = data.terraform_remote_state.zone.outputs.org_zone_id
   zone_apex = "youproof.org"
 
   # Public host served by the CDN for this environment. Mirrors how the worker

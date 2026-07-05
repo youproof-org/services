@@ -5,8 +5,9 @@ through the CDN — there is **no Worker on this zone**. The generated static
 export ([content site & static generation](content-site-and-static-generation.md))
 is uploaded to the environment's content bucket at deploy time, and Cloudflare's
 edge serves it via an R2 custom domain, applying zone-level transform and cache
-rules. All resources live in the `.org` Terraform roots
-([`org-zone/` + `cdn/`](terraform-roots-and-layout.md)).
+rules. The zone-level rules live in the shared
+[`zone/`](terraform-roots-and-layout.md#zone) root; the per-environment R2
+resources live in the [`website/`](terraform-roots-and-layout.md#website) root.
 
 ## R2 buckets
 
@@ -15,18 +16,18 @@ matching the state bucket's `.eu.` endpoint):
 
 | Bucket | Owner root | Purpose |
 | --- | --- | --- |
-| `youproof-staging-content` / `youproof-production-content` | `cdn/` (per env) | Generated `.html` pages + static assets, served publicly via the R2 custom domain. |
-| `youproof-staging-test-artifacts` / `youproof-production-test-artifacts` | `cdn/` (per env) | Quality-gate JSON reports; not served publicly. See [quality gates](quality-gates-and-artifacts.md). |
+| `youproof-staging-content` / `youproof-production-content` | `website/` (per env) | Generated `.html` pages + static assets, served publicly via the R2 custom domain. |
+| `youproof-staging-test-artifacts` / `youproof-production-test-artifacts` | `website/` (per env) | Quality-gate JSON reports; not served publicly. See [quality gates](quality-gates-and-artifacts.md). |
 
 ## R2 custom domain (serving the content bucket)
 
-The `cdn/` root binds the content bucket to the environment's public host with a
-`cloudflare_r2_custom_domain` resource:
+The `website/` root binds the content bucket to the environment's public host
+with a `cloudflare_r2_custom_domain` resource:
 
 - production → `youproof.org`, staging → `staging.youproof.org`.
 - Creating the resource makes Cloudflare **automatically provision the proxied
-  CNAME DNS record** for that host (and the edge cert) — so the `cdn/` root does
-  **not** create a separate `cloudflare_dns_record` for the site host (it would
+  CNAME DNS record** for that host (and the edge cert) — so the `website/` root
+  does **not** create a separate `cloudflare_dns_record` for the site host (it would
   collide). See [DNS & TLS](dns-and-tls.md#youproof-org-zone).
 - `min_tls = "1.2"`, `jurisdiction = "eu"` (matching the bound bucket).
 
@@ -43,10 +44,10 @@ The bucket's object keys mirror the public URL path, with a `.html` suffix:
 ## `.html` stripping (Transform Rule)
 
 Public URLs must **not** expose the `.html` extension, so a zone-level
-**Transform Rule** (`http_request_transform` phase, in `org-zone/transform.tf`)
+**Transform Rule** (`http_request_transform` phase, in `zone/transform.tf`)
 rewrites the request path at the edge to the corresponding object key before the
 request reaches R2. A transform ruleset is a per-zone singleton, so it lives in
-the shared `org-zone/` root and covers both hostnames automatically. Two
+the shared `zone/` root and covers both hostnames automatically. Two
 mutually-exclusive rules:
 
 1. `path == "/"` → rewrite to `/index.html`.
@@ -68,7 +69,7 @@ R2. Detecting a dotted last segment cleanly uses the regex `matches` operator
 ## Cache rules
 
 A zone-level **cache ruleset** (`http_request_cache_settings` phase, in
-`org-zone/cache.tf`; also a per-zone singleton) runs **after** the transform
+`zone/cache.tf`; also a per-zone singleton) runs **after** the transform
 phase, so by the time it evaluates, extensionless page paths have already been
 rewritten to `<path>.html`. Two mutually-exclusive rules:
 
@@ -107,7 +108,7 @@ options for intercepting a bucket miss are limited:
   404 for the missing key. A `404.html` object is uploaded to the bucket, but
   **R2 custom domains do not let you designate a custom error/fallback object
   without a Worker**, so that object is not automatically served for arbitrary
-  misses on this setup. This is the accepted behavior; `org-zone/notfound.tf`
+  misses on this setup. This is the accepted behavior; `zone/notfound.tf`
   documents where a Cloudflare **Custom Errors** ruleset (`serve_error`) would
   go if the account's plan tier exposes custom error responses for a proxied R2
   origin. Not blocking.

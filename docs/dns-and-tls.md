@@ -35,7 +35,7 @@ disjoint record sets, so the two worker states never fight over a record.
   `fetch()` uses. They are dropped automatically when `LEGACY_PROXY_HOST` is
   cleared (see [410 mode](migration-worker.md#post-migration-410-gone-mode)).
 - **`www.<domain>` → apex 301** is a single generic dynamic-redirect rule in the
-  `zone/` root ([`zone/redirects.tf`](terraform-roots-and-layout.md#zone-hu))
+  `zone/` root ([`zone/redirects.tf`](terraform-roots-and-layout.md#zone))
   that matches any host starting with `www.` and redirects to the same host
   without the prefix, over https, preserving path & query
   (`concat("https://", substring(http.host, 4), http.request.uri.path)` — no
@@ -57,28 +57,28 @@ disjoint record sets, so the two worker states never fight over a record.
 There is **no Worker** on this zone; DNS points directly at the CDN. The site
 host record is **not** a hand-written `cloudflare_dns_record` — it is created
 **automatically by the `cloudflare_r2_custom_domain` resource** in the
-[`cdn/`](terraform-roots-and-layout.md#cdn) root: attaching the content bucket
-to a custom domain provisions the proxied CNAME and the edge certificate.
+[`website/`](terraform-roots-and-layout.md#website) root: attaching the content
+bucket to a custom domain provisions the proxied CNAME and the edge certificate.
 Creating our own record for the same host would collide with it (see
-`cdn/dns.tf` for the commented reference record).
+`website/dns.tf` for the commented reference record).
 
 | Name | Managed by | Notes |
 | --- | --- | --- |
-| `youproof.org` | R2 custom domain (production `cdn/`) | proxied CNAME → content bucket |
-| `staging.youproof.org` | R2 custom domain (staging `cdn/`) | proxied CNAME → content bucket |
+| `youproof.org` | R2 custom domain (production `website/`) | proxied CNAME → content bucket |
+| `staging.youproof.org` | R2 custom domain (staging `website/`) | proxied CNAME → content bucket |
 | `www.youproof.org` / `www.staging.youproof.org` | (only if added) | would redirect to apex via the zone www rule |
 
-The www→apex 301 rule in `org-zone/redirects.tf` is the same generic rule as on
-the `.hu` zone; it is dormant unless a `www.*` record exists. The R2 custom
-domain does not create a `www.*` record.
+The www→apex 301 rule for the `.org` zone (in `zone/redirects.tf`, alongside the
+`.hu` rule) is the same generic rule as on the `.hu` zone; it is dormant unless a
+`www.*` record exists. The R2 custom domain does not create a `www.*` record.
 
 See [CDN & R2](cdn-and-r2.md) for how the R2 custom domain, the
 `.html`-stripping transform rule, and cache behave on this zone.
 
 ## HTTPS & HSTS (both zones)
 
-Both zones apply the same posture in their shared zone root
-(`settings.tf`):
+Both zones apply the same posture in the shared `zone/` root (both zones'
+settings live in `settings.tf`):
 
 - **HTTP → HTTPS** is forced zone-wide by the **Always Use HTTPS** setting
   (`always_use_https`): any `http://` request to a proxied host gets a 301 to

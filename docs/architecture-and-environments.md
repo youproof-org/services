@@ -21,7 +21,7 @@ two workloads are deployed and operated independently.
 | Workload | Migration Worker (redirect/proxy/block) | Static content site |
 | Origin | Legacy WordPress (`legacy.*`) via proxy | R2 content bucket |
 | Edge compute | Worker on the route | None (R2 custom domain + rulesets) |
-| Terraform roots | [`zone/`](terraform-roots-and-layout.md#zone-hu) + [`worker/`](terraform-roots-and-layout.md#worker-hu) | [`org-zone/`](terraform-roots-and-layout.md#org-zone) + [`cdn/`](terraform-roots-and-layout.md#cdn) |
+| Terraform roots | shared [`zone/`](terraform-roots-and-layout.md#zone) + [`worker/`](terraform-roots-and-layout.md#worker-hu) | shared [`zone/`](terraform-roots-and-layout.md#zone) + [`website/`](terraform-roots-and-layout.md#website) |
 | Lifecycle | Redeployed on every content change (manifest regen) | Redeployed on every content/services change (static rebuild) |
 
 ## Environments

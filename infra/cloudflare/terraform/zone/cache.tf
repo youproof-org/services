@@ -11,7 +11,7 @@
 #      effectively immutable per deploy; a longer TTL keeps them at the edge.
 #   2. HTML documents -> cached at the edge but revalidated by the browser, and
 #      busted at deploy time via an explicit CDN purge (no content hashing, per
-#      the implementation contract). Short/zero browser TTL so a visitor always
+#      docs/cdn-and-r2.md). Short/zero browser TTL so a visitor always
 #      revalidates while the edge serves the cached copy until the deploy purge.
 #
 # Cache-busting mechanism: deploy-time purge (see the deploy workflow), NOT

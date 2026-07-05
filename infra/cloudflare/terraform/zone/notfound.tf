@@ -1,9 +1,10 @@
-# Custom 404 ("Sorry" page) — decision & limitation note (no resources here).
+# Custom 404 ("Sorry" page) for youproof.org — decision & limitation note (no
+# resources here).
 #
 # The plan wants a generic "Sorry" object served for paths that have no object in
-# the R2 content bucket. On THIS zone there is deliberately no Worker (the CDN
-# serves the R2 bucket directly via an R2 custom domain, created in cdn/), which
-# limits the options for intercepting a bucket miss:
+# the R2 content bucket. On the youproof.org zone there is deliberately no Worker
+# (the CDN serves the R2 bucket directly via an R2 custom domain, created in
+# website/), which limits the options for intercepting a bucket miss:
 #
 #   * Primary mechanism (implemented elsewhere, no TF here): every referenced
 #     chapter/article has a YAML file, so Next.js's static export emits a real
@@ -14,10 +15,9 @@
 #
 #   * Genuinely non-existent paths (no YAML, no object) fall through to R2's own
 #     404 for the missing key. A `404.html` object is uploaded to the bucket at
-#     deploy time (see the implementation contract "R2 object keys"), but R2
-#     custom domains do NOT let you designate a custom error/fallback object
-#     without a Worker, so that object is not automatically served for arbitrary
-#     misses on this setup.
+#     deploy time (see docs/cdn-and-r2.md "R2 object keys"), but R2 custom domains
+#     do NOT let you designate a custom error/fallback object without a Worker, so
+#     that object is not automatically served for arbitrary misses on this setup.
 #
 # Where a custom-error rule WOULD go if the plan tier allows it:
 #   Cloudflare "Custom Errors" (a Ruleset in the `http_response_headers_transform`

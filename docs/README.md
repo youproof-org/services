@@ -17,7 +17,7 @@ Historical planfiles for the work that produced this system live under
 | Doc | Topic |
 | --- | --- |
 | [Architecture & environments](architecture-and-environments.md) | Both zones, the two workloads, and the `(services, content)` version-pair model. |
-| [Terraform roots & directory layout](terraform-roots-and-layout.md) | The four roots (`zone`/`worker` for `.hu`, `org-zone`/`cdn` for `.org`) and the shared-vs-per-env state split. |
+| [Terraform roots & directory layout](terraform-roots-and-layout.md) | The three roots (shared `zone` for both zones, `worker` for `.hu`, `website` for `.org`) and the shared-vs-per-env state split. |
 | [State backend & credentials](state-backend-and-credentials.md) | R2 state-bucket bootstrap, the Cloudflare API token, and the GitHub Environment config. |
 | [DNS & TLS reference](dns-and-tls.md) | DNS records, redirects, HTTPS/HSTS, and TLS coverage for both zones. |
 | [Migration worker](migration-worker.md) | The `youproof.hu` Worker: generated manifest, admin blocking, build, `410` mode. |

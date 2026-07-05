@@ -1,25 +1,41 @@
 # Terraform roots & directory layout
 
 All Cloudflare infra is Terraform-managed under `infra/cloudflare/terraform/`,
-split into **four independent roots** across the two zones. Each root has its
-own state (or per-environment states); no two states ever manage the same
-object. The split follows a consistent pattern: a **shared, single-state root**
-owns each zone and its zone-level singletons, and a **per-environment root**
-owns the disjoint per-env resources (DNS records, Worker/CDN bindings).
+split into **three independent roots**. Each root has its own state (or
+per-environment states); no two states ever manage the same object. The split
+follows a consistent pattern: a single **shared, single-state root** (`zone/`)
+owns **both zones** and their zone-level singletons, and a **per-environment
+root** owns the disjoint per-env resources for each zone (DNS records,
+Worker/R2 bindings).
 
 State lives in a single R2 bucket with distinct state **keys** — see
 [state backend & credentials](state-backend-and-credentials.md).
 
-## The four roots
+## The three roots
 
-<a id="zone-hu"></a>
-### `zone/` — `youproof.hu` zone (shared, single state)
+<a id="zone"></a>
+### `zone/` — both zones (shared, single state)
 
-State key `cloudflare/zone.tfstate`. Owns the `cloudflare_zone` for
-`youproof.hu`, its zone-wide settings (Always Use HTTPS + HSTS), and the
-www→apex dynamic-redirect ruleset. A dynamic-redirect ruleset is a per-zone
-singleton, so it can only be owned by this single-state root. Applied once;
-rarely changes. Outputs the assigned Cloudflare nameservers and the `zone_id`.
+State key `cloudflare/zone.tfstate`. A single shared root that owns **both**
+`cloudflare_zone` resources — `youproof.hu` and `youproof.org` — and every
+zone-level singleton on each:
+
+- **`youproof.hu`:** zone settings (Always Use HTTPS + HSTS) and the www→apex
+  dynamic-redirect ruleset.
+- **`youproof.org`:** zone settings, its www→apex redirect ruleset, the
+  [`.html`-stripping Transform Rule](cdn-and-r2.md#html-stripping) (`transform.tf`),
+  and the [cache ruleset](cdn-and-r2.md#cache-rules) (`cache.tf`).
+
+Both zones' definitions and their shared-shape singletons live together per file
+by kind — `zone.tf` (both `cloudflare_zone` resources), `settings.tf` (both
+zones' settings), `redirects.tf` (both zones' www→apex rulesets) — rather than
+split by domain.
+
+Zone settings and redirect/transform/cache rulesets are all per-zone singletons,
+so they can only be owned by this single-state root. Applied once; rarely
+changes. No Worker exists on the `.org` zone. Outputs the assigned Cloudflare
+nameservers for each zone plus **two zone-id outputs**: `zone_id` (`youproof.hu`,
+read by `worker/`) and `org_zone_id` (`youproof.org`, read by `website/`).
 
 <a id="worker-hu"></a>
 ### `worker/` — `youproof.hu` per-environment (state per env)
@@ -27,47 +43,39 @@ rarely changes. Outputs the assigned Cloudflare nameservers and the `zone_id`.
 State keys `cloudflare/worker/{staging,production}.tfstate`. Each apply manages
 that environment's `cloudflare_workers_script`, its route, and **its DNS
 records** (`dns_hu.tf`, including its own `www.<domain>` record). It does **not**
-own the zone — it reads the zone ID straight from the `zone/` root's state via a
-`terraform_remote_state` data source (`worker/data.tf`), so there is no
-hand-copied ID to keep in sync, and the worker plan fails if `zone/` hasn't been
-applied yet.
+own the zone — it reads the `youproof.hu` zone ID straight from the `zone/`
+root's `zone_id` output via a `terraform_remote_state` data source
+(`worker/data.tf`), so there is no hand-copied ID to keep in sync, and the
+worker plan fails if `zone/` hasn't been applied yet.
 
-<a id="org-zone"></a>
-### `org-zone/` — `youproof.org` zone (shared, single state)
+<a id="website"></a>
+### `website/` — `youproof.org` per-environment (state per env)
 
-State key `cloudflare/org-zone.tfstate`. Owns the `cloudflare_zone` for
-`youproof.org` and all of its zone-level singletons: zone settings (Always Use
-HTTPS + HSTS), the www→apex redirect ruleset, the [`.html`-stripping Transform
-Rule](cdn-and-r2.md#html-stripping), and the [cache
-ruleset](cdn-and-r2.md#cache-rules). No Worker exists on this zone. Outputs
-`zone_id` and `name_servers`.
-
-<a id="cdn"></a>
-### `cdn/` — `youproof.org` per-environment (state per env)
-
-State keys `cloudflare/cdn/{staging,production}.tfstate`. Reads the org-zone via
-remote state (`cdn/data.tf`), and owns the environment's **R2 buckets** (content
+State keys `cloudflare/website/{staging,production}.tfstate`. Reads the
+`youproof.org` zone ID from the `zone/` root's `org_zone_id` output via remote
+state (`website/data.tf`), and owns the environment's **R2 buckets** (content
 + test-artifacts), the **R2 custom-domain** binding that fronts the content
-bucket, and the environment's DNS. No Worker resources. See
+bucket, and the environment's `.org` DNS. No Worker resources. See
 [CDN & R2](cdn-and-r2.md).
 
 ## Shared-vs-per-env state split
 
-Zone ownership and per-environment resources have different lifecycles, so each
-zone is split the same way:
+Zone ownership and per-environment resources have different lifecycles, so the
+roots are split along that line:
 
-| Concern | `.hu` | `.org` | Why |
-| --- | --- | --- | --- |
-| Zone + zone-level singletons | `zone/` | `org-zone/` | Zone, settings, redirect/transform/cache rulesets are per-zone singletons — one shared state. |
-| Per-env records & bindings | `worker/` | `cdn/` | DNS records and Worker/CDN bindings are a disjoint set per environment — separate state per env. |
+| Concern | Root | Why |
+| --- | --- | --- |
+| Zone + zone-level singletons (both zones) | `zone/` | Zones, settings, redirect/transform/cache rulesets are per-zone singletons — one shared state owns both zones. |
+| Per-env records & bindings (`.hu`) | `worker/` | DNS records and Worker bindings are a disjoint set per environment — separate state per env. |
+| Per-env records & bindings (`.org`) | `website/` | R2 buckets and the custom-domain binding are a disjoint set per environment — separate state per env. |
 
 Consequences of the split:
 
-- **Apply order is enforced by remote state.** `worker/` reads `zone/`'s state;
-  `cdn/` reads `org-zone/`'s state. If the shared root hasn't been applied, the
-  per-env plan fails — so `zone/` before `worker/`, and `org-zone/` before
-  `cdn/`.
-- **No two states manage the same object.** Each shared root owns only
+- **Apply order is enforced by remote state.** `worker/` reads the `zone/` root's
+  `zone_id` output; `website/` reads its `org_zone_id` output. If the shared
+  `zone/` root hasn't been applied, the per-env plan fails — so `zone/` before
+  both `worker/` and `website/`.
+- **No two states manage the same object.** The shared root owns only
   zone-level singletons; each per-env state owns a non-overlapping record/binding
   set (a production apply and a staging apply touch disjoint names).
 - **Zone changes land at the production apply.** Because zone settings are
@@ -83,14 +91,17 @@ Consequences of the split:
 infra/cloudflare/
   terraform/
     .terraform-version          # pins Terraform 1.11.4 (tfenv)
-    zone/                       # youproof.hu zone — applied ONCE, shared state
+    zone/                       # BOTH zones — applied ONCE, shared state
       provider.tf               # cloudflare provider (~> 5.21)
       backend.tf                # R2 state key: cloudflare/zone.tfstate
       variables.tf
-      zone.tf                   # cloudflare_zone for youproof.hu
-      redirects.tf              # generic www->apex dynamic-redirect rule
-      settings.tf               # Always Use HTTPS + HSTS (apex-only)
-      outputs.tf                # zone_id + name_servers
+      zone.tf                   # cloudflare_zone for BOTH youproof.hu and youproof.org
+      settings.tf               # both zones' Always Use HTTPS + HSTS (apex-only)
+      redirects.tf              # both zones' generic www->apex dynamic-redirect rule
+      transform.tf              # .org .html-stripping URL-rewrite Transform Rule
+      cache.tf                  # .org cache ruleset (assets long TTL; HTML revalidated)
+      notfound.tf               # .org custom-404 decision/limitation note (no resources)
+      outputs.tf                # zone_id (.hu) + org_zone_id (.org) + name_servers
     worker/                     # youproof.hu — applied PER ENVIRONMENT
       provider.tf
       backend.tf                # R2 state key: cloudflare/worker/{env}.tfstate
@@ -103,22 +114,11 @@ infra/cloudflare/
       environments/
         production.tfvars.example
         staging.tfvars.example
-    org-zone/                   # youproof.org zone — applied ONCE, shared state
+    website/                    # youproof.org — applied PER ENVIRONMENT
       provider.tf
-      backend.tf                # R2 state key: cloudflare/org-zone.tfstate
+      backend.tf                # R2 state key: cloudflare/website/{env}.tfstate
       variables.tf
-      zone.tf                   # cloudflare_zone for youproof.org
-      settings.tf               # Always Use HTTPS + HSTS (apex-only)
-      redirects.tf              # generic www->apex dynamic-redirect rule
-      transform.tf              # .html-stripping URL-rewrite Transform Rule
-      cache.tf                  # cache ruleset (assets long TTL; HTML revalidated)
-      notfound.tf               # custom-404 decision/limitation note (no resources)
-      outputs.tf                # zone_id + name_servers
-    cdn/                        # youproof.org — applied PER ENVIRONMENT
-      provider.tf
-      backend.tf                # R2 state key: cloudflare/cdn/{env}.tfstate
-      variables.tf
-      data.tf                   # terraform_remote_state -> zone_id from org-zone/
+      data.tf                   # terraform_remote_state -> org_zone_id from zone/
       r2.tf                     # R2 buckets (content + test-artifacts) + custom domain
       dns.tf                    # note: site host DNS is managed by the R2 custom domain
       outputs.tf
@@ -155,8 +155,9 @@ PutObject, no DynamoDB — which requires **Terraform ≥ 1.11** (roots declare
 `required_version >= 1.11.0`; CI pins 1.11.4; `terraform/.terraform-version`
 pins 1.11.4 for tfenv).
 
-The shared root must be applied before its per-env root. For the `.hu` worker,
-**build the Worker bundle first** — `worker.tf` reads `../../worker/dist/worker.js`.
+The shared `zone/` root must be applied before either per-env root (`worker/`,
+`website/`). For the `.hu` worker, **build the Worker bundle first** —
+`worker.tf` reads `../../worker/dist/worker.js`.
 
 ```bash
 # --- youproof.hu zone root (owns the cloudflare_zone; run once) ---
@@ -187,10 +188,11 @@ terraform plan  -var-file=environments/staging.tfvars
 terraform apply -var-file=environments/staging.tfvars
 ```
 
-The `youproof.org` roots follow the same pattern (`org-zone/` once, then `cdn/`
-per env) with keys `cloudflare/org-zone.tfstate` and
-`cloudflare/cdn/{env}.tfstate`. For production, swap `staging` → `production` in
-the state key and var-file and re-run `terraform init -reconfigure` (the backend
+The `youproof.org` per-environment root follows the same pattern as `worker/`:
+the shared `zone/` root is applied first (it owns both zones), then `website/`
+per env with key `cloudflare/website/{env}.tfstate` (its `data.tf` reads
+`org_zone_id` from `zone/`). For production, swap `staging` → `production` in the
+state key and var-file and re-run `terraform init -reconfigure` (the backend
 `key` differs per environment).
 
 **Always confirm the `environment` output and the resource names/IDs in the plan

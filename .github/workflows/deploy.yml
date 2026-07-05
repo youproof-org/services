@@ -12,8 +12,8 @@
 #
 # Job graph (see `needs:`):
 #   resolve
-#     -> org-zone (production only; shared youproof.org zone, mirrors the .hu zone job)
-#          -> cdn (per-env R2 buckets + custom domain)
+#     -> zone (production only; shared root owning BOTH the youproof.hu and youproof.org zones)
+#          -> website-infra (per-env R2 buckets + custom domain in the youproof.org zone)
 #               -> worker (regenerate manifest from content, redeploy the .hu worker)
 #                    -> website (Next.js static export -> R2 content bucket -> CDN purge)
 #                         -> quality-gate (crawler-based gate against the .org host)
@@ -85,17 +85,18 @@ jobs:
           git -C "$RUNNER_TEMP/content" checkout --quiet "$CONTENT_REF"
           echo "sha=$(git -C "$RUNNER_TEMP/content" rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
-  # Shared youproof.org zone (settings + www redirect + .html transform + cache
-  # rules). Mirrors the existing .hu `zone` job: applied only for PRODUCTION,
-  # because it owns account-level infra shared by both environments (staging
-  # deploys never touch it). Idempotent apply.
-  org-zone:
+  # Shared zone root: owns BOTH the youproof.hu and youproof.org zones and their
+  # zone-level singletons (settings, www redirects, and the youproof.org .html
+  # transform + cache rules). Applied only for PRODUCTION, because it owns
+  # account-level infra shared by both environments (staging deploys never touch
+  # it). Idempotent apply.
+  zone:
     needs: resolve
     if: inputs.environment == 'production'
     runs-on: ubuntu-latest
     environment: production
     env:
-      TF_WORKDIR: infra/cloudflare/terraform/org-zone
+      TF_WORKDIR: infra/cloudflare/terraform/zone
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       TF_VAR_cloudflare_account_id: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
       AWS_ACCESS_KEY_ID: ${{ secrets.R2_STATE_ACCESS_KEY_ID }}
@@ -107,12 +108,12 @@ jobs:
       - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: "1.11.4"
-      - name: Terraform init (R2 backend, org-zone state key)
+      - name: Terraform init (R2 backend, zone state key)
         working-directory: ${{ env.TF_WORKDIR }}
         run: |
           terraform init -input=false \
             -backend-config="bucket=${{ vars.R2_STATE_BUCKET }}" \
-            -backend-config="key=cloudflare/org-zone.tfstate" \
+            -backend-config="key=cloudflare/zone.tfstate" \
             -backend-config="endpoints={s3=\"https://${{ vars.CLOUDFLARE_ACCOUNT_ID }}.eu.r2.cloudflarestorage.com\"}" \
             -backend-config="access_key=${AWS_ACCESS_KEY_ID}" \
             -backend-config="secret_key=${AWS_SECRET_ACCESS_KEY}"
@@ -126,25 +127,26 @@ jobs:
         working-directory: ${{ env.TF_WORKDIR }}
         run: terraform apply -input=false -auto-approve tfplan
 
-  # Per-environment CDN infra: R2 content + test-artifacts buckets and the R2
-  # custom domain fronting the content bucket. Reads the org-zone root's remote
-  # state for the zone ID (cdn/data.tf), so org-zone must exist first. A skipped
-  # org-zone (staging path) still satisfies `needs` — the state was applied by an
-  # earlier production run / the bootstrap apply.
-  cdn:
-    needs: [resolve, org-zone]
-    # org-zone is SKIPPED on staging (it only applies for production). A skipped
+  # Per-environment website (CDN) infra: R2 content + test-artifacts buckets and
+  # the R2 custom domain fronting the content bucket, in the youproof.org zone.
+  # Reads the shared zone root's remote state for the org zone ID
+  # (website/data.tf), so the zone root must exist first. A skipped zone job
+  # (staging path) still satisfies `needs` — the state was applied by an earlier
+  # production run / the bootstrap apply.
+  website-infra:
+    needs: [resolve, zone]
+    # zone is SKIPPED on staging (it only applies for production). A skipped
     # dependency would skip this job by default, so gate explicitly: run when
-    # resolve succeeded and org-zone either succeeded (production) or was skipped
-    # (staging) — but not when org-zone failed.
+    # resolve succeeded and zone either succeeded (production) or was skipped
+    # (staging) — but not when zone failed.
     if: >-
       !cancelled() && needs.resolve.result == 'success' &&
-      (needs.org-zone.result == 'success' || needs.org-zone.result == 'skipped')
+      (needs.zone.result == 'success' || needs.zone.result == 'skipped')
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     env:
       ENVIRONMENT: ${{ inputs.environment }}
-      TF_WORKDIR: infra/cloudflare/terraform/cdn
+      TF_WORKDIR: infra/cloudflare/terraform/website
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       TF_VAR_environment: ${{ inputs.environment }}
       TF_VAR_cloudflare_account_id: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
@@ -158,12 +160,12 @@ jobs:
       - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: "1.11.4"
-      - name: Terraform init (R2 backend, per-environment cdn state key)
+      - name: Terraform init (R2 backend, per-environment website state key)
         working-directory: ${{ env.TF_WORKDIR }}
         run: |
           terraform init -input=false \
             -backend-config="bucket=${{ vars.R2_STATE_BUCKET }}" \
-            -backend-config="key=cloudflare/cdn/${ENVIRONMENT}.tfstate" \
+            -backend-config="key=cloudflare/website/${ENVIRONMENT}.tfstate" \
             -backend-config="endpoints={s3=\"https://${{ vars.CLOUDFLARE_ACCOUNT_ID }}.eu.r2.cloudflarestorage.com\"}" \
             -backend-config="access_key=${AWS_ACCESS_KEY_ID}" \
             -backend-config="secret_key=${AWS_SECRET_ACCESS_KEY}"
@@ -184,7 +186,7 @@ jobs:
   # existing .hu redirect smoke tests still run here (post-migration validation
   # of the .hu side), unchanged.
   worker:
-    needs: [resolve, cdn]
+    needs: [resolve, website-infra]
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     env:
@@ -350,7 +352,7 @@ jobs:
       # Cache-bust via full zone purge (simplest correct option; targeted
       # per-path purge is a future optimization). Zone ID comes from the
       # ORG_ZONE_ID GitHub variable (see runbook; alternatively read from the
-      # org-zone root's `zone_id` remote-state output).
+      # shared zone root's `org_zone_id` remote-state output).
       - name: Purge CDN cache
         run: |
           if [ -z "${ORG_ZONE_ID}" ]; then

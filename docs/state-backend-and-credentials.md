@@ -49,8 +49,8 @@ one-time manual step, deliberately **not** managed by Terraform.
 
 Once the bucket and credentials exist, the first `terraform init` per root
 creates that root's state object (`cloudflare/zone.tfstate`,
-`cloudflare/worker/{env}.tfstate`, `cloudflare/org-zone.tfstate`,
-`cloudflare/cdn/{env}.tfstate`) inside this one bucket. See
+`cloudflare/worker/{env}.tfstate`,
+`cloudflare/website/{env}.tfstate`) inside this one bucket. See
 [Running Terraform](terraform-roots-and-layout.md#running-terraform).
 
 ## Cloudflare API token (provider auth)
@@ -117,7 +117,7 @@ per-environment is committed. Configure these on each GitHub Environment
 | `RACKHOST_SERVER_IP` | var | Legacy host IP for the `legacy.*` A records. |
 | `LEGACY_GUARD_VALUE` | var | `X-Legacy-Guard` access token — a **var, not a secret** (see [migration worker](migration-worker.md#the-x-legacy-guard-value)). |
 
-The shared zone roots (`zone/`, `org-zone/`) only need `CLOUDFLARE_API_TOKEN`,
+The shared zone root (`zone/`) only needs `CLOUDFLARE_API_TOKEN`,
 `CLOUDFLARE_ACCOUNT_ID`, `R2_STATE_ACCESS_KEY_ID`/`R2_STATE_SECRET_ACCESS_KEY`,
 and `R2_STATE_BUCKET` (read from the `production` environment). The rest are
 used by the per-environment deploy jobs.

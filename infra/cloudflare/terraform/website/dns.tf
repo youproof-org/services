@@ -21,7 +21,7 @@
 #     comment = "CDN site host (${var.environment}) -> R2 content bucket"
 #   }
 #
-# The www.<site_host> -> apex 301 redirect RULE lives in the org-zone root
-# (org-zone/redirects.tf) and is generic; if a `www.` host record is ever wanted
+# The www.<site_host> -> apex 301 redirect RULE lives in the shared zone root
+# (zone/redirects.tf) and is generic; if a `www.` host record is ever wanted
 # for this environment it would be added here as a proxied record (mirroring the
 # worker root's `www` record), but the R2 custom domain does not create one.

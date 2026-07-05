@@ -3,7 +3,7 @@
 # Two responsibilities:
 #   1. PULL REQUESTS -> plan-only review gates (Terraform fmt/plan for each root,
 #      worker build). No apply, no site build. Preserves the pre-YP-120 behaviour
-#      of the zone/worker plan gates and adds org-zone + cdn plans.
+#      of the zone/worker plan gates and adds a website plan.
 #   2. PUSH to a stable branch, OR a content repository_dispatch -> a full deploy
 #      by calling the reusable ./.github/workflows/deploy.yml.
 #
@@ -100,8 +100,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       zone: ${{ steps.filter.outputs.zone }}
-      orgzone: ${{ steps.filter.outputs.orgzone }}
-      cdn: ${{ steps.filter.outputs.cdn }}
+      website: ${{ steps.filter.outputs.website }}
       worker: ${{ steps.filter.outputs.worker }}
     steps:
       - uses: actions/checkout@v4
@@ -111,19 +110,18 @@ jobs:
           filters: |
             zone:
               - 'infra/cloudflare/terraform/zone/**'
-            orgzone:
-              - 'infra/cloudflare/terraform/org-zone/**'
-            cdn:
-              - 'infra/cloudflare/terraform/cdn/**'
+            website:
+              - 'infra/cloudflare/terraform/website/**'
             worker:
               - 'infra/cloudflare/terraform/worker/**'
               - 'infra/cloudflare/worker/**'
               - 'tools/smoke-tests/**'
 
-  # Zone/org-zone PRs must be "pure": a PR touching a shared-zone root may touch
-  # NOTHING else, so a zone change is never batched with worker/cdn/other changes.
-  # Lists the PR's files via the REST API (authoritative) and fails only when both
-  # a shared-zone path and a non-zone path are present.
+  # Zone PRs must be "pure": a PR touching the shared zone root (which owns BOTH
+  # the youproof.hu and youproof.org zones) may touch NOTHING else, so a zone
+  # change is never batched with worker/website/other changes. Lists the PR's
+  # files via the REST API (authoritative) and fails only when both a zone path
+  # and a non-zone path are present.
   guard:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
@@ -131,19 +129,19 @@ jobs:
       contents: read
       pull-requests: read
     steps:
-      - name: Shared-zone PRs must contain only that root's changes
+      - name: Zone PRs must contain only terraform/zone/ changes
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           files=$(gh api --paginate "repos/${{ github.repository }}/pulls/${{ github.event.number }}/files" --jq '.[].filename')
-          zone=$(printf '%s\n' "$files" | grep -E '^infra/cloudflare/terraform/(zone|org-zone)/' || true)
-          other=$(printf '%s\n' "$files" | grep -vE '^infra/cloudflare/terraform/(zone|org-zone)/' || true)
+          zone=$(printf '%s\n' "$files" | grep -E '^infra/cloudflare/terraform/zone/' || true)
+          other=$(printf '%s\n' "$files" | grep -vE '^infra/cloudflare/terraform/zone/' || true)
           if [ -n "$zone" ] && [ -n "$other" ]; then
-            echo "::error title=Mixed zone PR::A shared-zone PR (zone/ or org-zone/) must contain ONLY that root — move these out of the PR:"
+            echo "::error title=Mixed zone PR::A zone PR (terraform/zone/) must contain ONLY that root — move these out of the PR:"
             printf '%s\n' "$other"
             exit 1
           fi
-          echo "Zone-only or no shared-zone changes — OK."
+          echo "Zone-only or no zone changes — OK."
 
   zone-plan:
     needs: changes
@@ -177,47 +175,15 @@ jobs:
         working-directory: ${{ env.TF_WORKDIR }}
         run: terraform plan -input=false
 
-  org-zone-plan:
+  website-plan:
     needs: changes
-    if: github.event_name == 'pull_request' && needs.changes.outputs.orgzone == 'true'
-    runs-on: ubuntu-latest
-    environment: production
-    env:
-      TF_WORKDIR: infra/cloudflare/terraform/org-zone
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      TF_VAR_cloudflare_account_id: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.R2_STATE_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_STATE_SECRET_ACCESS_KEY }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: "1.11.4"
-      - name: Terraform init (R2 backend, org-zone state key)
-        working-directory: ${{ env.TF_WORKDIR }}
-        run: |
-          terraform init -input=false \
-            -backend-config="bucket=${{ vars.R2_STATE_BUCKET }}" \
-            -backend-config="key=cloudflare/org-zone.tfstate" \
-            -backend-config="endpoints={s3=\"https://${{ vars.CLOUDFLARE_ACCOUNT_ID }}.eu.r2.cloudflarestorage.com\"}" \
-            -backend-config="access_key=${AWS_ACCESS_KEY_ID}" \
-            -backend-config="secret_key=${AWS_SECRET_ACCESS_KEY}"
-      - name: Terraform format check
-        working-directory: ${{ env.TF_WORKDIR }}
-        run: terraform fmt -check -recursive
-      - name: Terraform plan
-        working-directory: ${{ env.TF_WORKDIR }}
-        run: terraform plan -input=false
-
-  cdn-plan:
-    needs: changes
-    if: github.event_name == 'pull_request' && needs.changes.outputs.cdn == 'true'
+    if: github.event_name == 'pull_request' && needs.changes.outputs.website == 'true'
     runs-on: ubuntu-latest
     # Plan against staging on a PR (mirrors the worker plan's default env).
     environment: staging
     env:
       ENVIRONMENT: staging
-      TF_WORKDIR: infra/cloudflare/terraform/cdn
+      TF_WORKDIR: infra/cloudflare/terraform/website
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       TF_VAR_environment: staging
       TF_VAR_cloudflare_account_id: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
@@ -229,12 +195,12 @@ jobs:
       - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: "1.11.4"
-      - name: Terraform init (R2 backend, cdn staging state key)
+      - name: Terraform init (R2 backend, website staging state key)
         working-directory: ${{ env.TF_WORKDIR }}
         run: |
           terraform init -input=false \
             -backend-config="bucket=${{ vars.R2_STATE_BUCKET }}" \
-            -backend-config="key=cloudflare/cdn/staging.tfstate" \
+            -backend-config="key=cloudflare/website/staging.tfstate" \
             -backend-config="endpoints={s3=\"https://${{ vars.CLOUDFLARE_ACCOUNT_ID }}.eu.r2.cloudflarestorage.com\"}" \
             -backend-config="access_key=${AWS_ACCESS_KEY_ID}" \
             -backend-config="secret_key=${AWS_SECRET_ACCESS_KEY}"

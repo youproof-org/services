@@ -22,10 +22,13 @@ content hierarchy and emits the redirect manifest from every published chapter's
 `legacy-path`, replacing the hand-edited file. Validated end-to-end against the
 real content.
 
-**Terraform → two new roots**: `org-zone/` (the `youproof.org` zone + settings +
-www-redirect + `.html`-stripping transform rule + cache rules) and per-env
-`cdn/` (R2 buckets + R2 custom domain). Both `terraform validate`-clean against
-the real Cloudflare v5.21 provider; existing `.hu` roots untouched.
+**Terraform → single shared `zone/` root + per-env `website/`**: the shared
+`zone/` root owns BOTH zones (`youproof.hu` and `youproof.org` + the latter's
+settings, www-redirect, `.html`-stripping transform rule, and cache rules); the
+per-env `website/` root owns the R2 buckets + R2 custom domain. So the layout is
+one shared `zone/` root plus two per-env roots (`worker/` for `.hu`, `website/`
+for `.org`) — no separate `org-zone`/`cdn` roots. `terraform validate`-clean
+against the real Cloudflare v5.21 provider.
 
 **Quality gate**: `tools/smoke-tests` now emits the JSON test artifact and adds
 math-render-error, redirect-loop, orphan-page, and slow-page checks.
@@ -78,8 +81,8 @@ All documented in [`../../../infra/github/branch-protection.md`](../../../infra/
 
 - Create the secrets/vars (`CONTENT_REPO_TOKEN`, `SERVICES_REPO_TOKEN`,
   `SERVICES_DISPATCH_TOKEN`, R2 creds, `ORG_ZONE_ID`).
-- Apply `org-zone/` + `cdn/` Terraform and delegate the `youproof.org`
-  nameservers.
+- Apply the `zone/` root (both zones) + per-env `website/` Terraform and
+  delegate the `youproof.org` nameservers.
 - Run the branch-protection script.
 - Push the content branch.
 - Backfill the real `legacy-path` values (the two committed ones are
