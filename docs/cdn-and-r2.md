@@ -108,7 +108,7 @@ options for intercepting a bucket miss are limited:
   404 for the missing key. A `404.html` object is uploaded to the bucket, but
   **R2 custom domains do not let you designate a custom error/fallback object
   without a Worker**, so that object is not automatically served for arbitrary
-  misses on this setup. This is the accepted behavior; `zone/notfound.tf`
-  documents where a Cloudflare **Custom Errors** ruleset (`serve_error`) would
-  go if the account's plan tier exposes custom error responses for a proxied R2
-  origin. Not blocking.
+  misses on this setup. This is the accepted behavior. If the account's plan tier
+  ever exposes custom error responses for a proxied R2 origin, a Cloudflare
+  **Custom Errors** ruleset (`serve_error`) added to the `zone/` root could serve
+  the bucket's `404.html` on an origin 404. Not blocking.
