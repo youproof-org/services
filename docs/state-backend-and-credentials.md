@@ -77,16 +77,7 @@ zones). The **Token** column shows which environment's token needs each row:
 | Dynamic Redirect | Zone | Edit | Prod only | www→apex 301 rulesets (`cloudflare_ruleset`, `http_request_dynamic_redirect`) |
 | Transform Rules | Zone | Edit | Prod only | `.org` `.html`-stripping rewrite ruleset (`cloudflare_ruleset`, `http_request_transform`) |
 | Cache Settings | Zone | Edit | Prod only | `.org` cache ruleset (`cloudflare_ruleset`, `http_request_cache_settings`) |
-| Account Rulesets | Account | Edit | Prod only | required *with* the per-phase ruleset permissions above to deploy `cloudflare_ruleset` resources |
-
-> **Per-phase ruleset permissions (learned the hard way).** Each
-> `cloudflare_ruleset` *phase* is gated by its OWN token permission — Dynamic
-> Redirect does **not** cover Transform or Cache rulesets. A token missing
-> Transform Rules / Cache Settings will `plan` fine but the `apply` fails with
-> `403 … "request is not authorized"` on `POST /zones/{id}/rulesets`. Grant all
-> three (Dynamic Redirect, Transform Rules, Cache Settings). Note the Cloudflare
-> UI labels the cache permission **"Cache Settings"** (there is no "Cache Rules"
-> entry).
+| Account Rulesets | Account | Edit | Prod only | required *together with* Dynamic Redirect / Transform Rules / Cache Settings to deploy `cloudflare_ruleset` resources |
 | DNS | Zone | Edit | Both | DNS records (`cloudflare_dns_record`) |
 | Workers Routes | Zone | Edit | Both | `.hu` route binding (`cloudflare_workers_route`) |
 | Workers Scripts | Account | Edit | Both | the `.hu` Worker script (`cloudflare_workers_script`) |
@@ -95,6 +86,11 @@ zones). The **Token** column shows which environment's token needs each row:
 - **Zone resources:** scope to **All zones from your account** — the zones are
   created by Terraform, so the token can't be limited to a pre-existing zone.
   **Account resources:** your account.
+- **The three rule permissions are independent:** Dynamic Redirect, Transform
+  Rules, and Cache Settings each gate only their own rule type — granting one
+  does not grant the others, so grant all three. Cloudflare checks them at apply
+  time, not plan time: a token missing one still passes `terraform plan` but
+  fails `apply` with `403 "request is not authorized"`.
 - **Finding the exact group names:** in the account-owned token editor the
   Permissions field is a **searchable** list grouped by Account/Zone; edit
   access is usually the `… Write` variant. Names drift and vary by account; for
