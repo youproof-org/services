@@ -51,20 +51,21 @@ the shared `zone/` root and covers both hostnames automatically. Two
 mutually-exclusive rules:
 
 1. `path == "/"` → rewrite to `/index.html`.
-2. `path != "/"`, not ending in `/`, and **no file extension** → rewrite to
+2. `path != "/"`, not ending in `/`, and **not ending in a known extension**
+   (any of `zone/locals.tf`'s `asset_extensions`, or `.html`) → rewrite to
    `path + ".html"`.
 
-"No file extension" means the last path segment contains no `.`, so real assets
-(`/styles/app.css`, `/img/logo.svg`) are left untouched and served directly from
-R2. Detecting a dotted last segment cleanly uses the regex `matches` operator
-(`\.[^/.]+$`).
+So real assets (`/styles/app.css`, `/img/logo.svg`) and directly-requested
+`.html` are left untouched and served directly from R2, while extensionless page
+paths get `.html` appended.
 
-> **Plan-tier note:** the `matches` (regex) operator requires a Cloudflare plan
-> with regex support (Pro/Business+; not Free). On a regex-free plan, replace
-> the extension check with an explicit `not (ends_with(path, ".css") or …)`
-> chain over the known asset extensions (the regex-free style used in the
-> www-redirect rule). The regex form is kept as the correct general form; see
-> the `TODO verify plan tier` note in `transform.tf`.
+> **Free-plan / no-regex note:** the extension check is written with
+> `ends_with()` over an **enumerated** set of extensions (`zone/locals.tf`),
+> **not** a regex. Cloudflare's regex `matches` operator is Business/Enterprise
+> only (not available on Free or Pro), and this account is on the **Free** plan.
+> Trade-off: it recognizes only the listed extensions, not "any extension" — fine
+> for a Next.js static export (finite, known file types; pages are extensionless),
+> but `local.asset_extensions` must be kept in sync with what the export emits.
 
 ## Cache rules
 
@@ -80,7 +81,9 @@ rewritten to `<path>.html`. Two mutually-exclusive rules:
    HTML is **busted at deploy time by an explicit CDN purge** — not content
    hashing.
 
-> The same regex plan-tier caveat applies to the asset-extension match in rule 1.
+> Rule 1's asset-extension match uses the same regex-free `ends_with()` set from
+> `zone/locals.tf` (`local.asset_ext_match`) as the transform rule — see the
+> Free-plan note above. Rule 2's `.html` match is a plain `ends_with` (any plan).
 
 ## Deploy-time cache purge (cache busting)
 

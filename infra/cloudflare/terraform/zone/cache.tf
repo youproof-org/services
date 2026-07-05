@@ -17,10 +17,10 @@
 # Cache-busting mechanism: deploy-time purge (see the deploy workflow), NOT
 # content-hashed filenames — so HTML must not be pinned in browsers for long.
 #
-# TODO verify plan tier: the `matches` (regex) operator used for the asset
-# extension match requires a Cloudflare plan with regex support (Pro/Business+).
-# On a regex-free plan, replace the rule-1 expression with an
-# `ends_with(...) or ends_with(...)` chain over the same extensions.
+# The static-asset match (rule 1) uses `ends_with()` over local.asset_extensions
+# (locals.tf) rather than a regex, because the Cloudflare Rules `matches` (regex)
+# operator is Business/Enterprise-only and this account is on the Free plan. The
+# `.html` match (rule 2) is a plain `ends_with` and works on any plan.
 resource "cloudflare_ruleset" "cache" {
   zone_id     = cloudflare_zone.youproof_org.id
   name        = "youproof.org cache policy"
@@ -31,8 +31,10 @@ resource "cloudflare_ruleset" "cache" {
   rules = [
     {
       description = "static assets -> long edge + browser TTL"
-      expression  = "http.request.uri.path matches \"\\\\.(css|js|mjs|jpg|jpeg|png|gif|svg|webp|avif|ico|woff|woff2|ttf|otf|eot|map)$\""
-      action      = "set_cache_settings"
+      # Regex-free (Free-plan compatible): path ends with a known asset
+      # extension. Enumerated in local.asset_extensions (locals.tf).
+      expression = local.asset_ext_match
+      action     = "set_cache_settings"
       action_parameters = {
         cache = true
         edge_ttl = {

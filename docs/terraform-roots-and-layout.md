@@ -100,6 +100,7 @@ infra/cloudflare/
       redirects.tf              # both zones' generic www->apex dynamic-redirect rule
       transform.tf              # .org .html-stripping URL-rewrite Transform Rule
       cache.tf                  # .org cache ruleset (assets long TTL; HTML revalidated)
+      locals.tf                 # shared asset-extension list for transform/cache (regex-free, Free-plan)
       outputs.tf                # zone_id (.hu) + org_zone_id (.org) + name_servers
     worker/                     # youproof.hu — applied PER ENVIRONMENT
       provider.tf
