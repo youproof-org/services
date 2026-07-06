@@ -7,6 +7,10 @@
 //                       external third-party URLs are reported as warnings only;
 //                       external 403/429 are treated as bot-block/rate-limit and
 //                       ignored, since datacenter IPs get throttled).
+//   - dead migration targets — a .org path a migrated legacy redirect points at
+//                       (from `migrationTargets`) that does not return 200 on the
+//                       live site (fatal; recorded under brokenInternal, tagged
+//                       via "migration manifest target").
 //   - legacy leaks    — the internal LEGACY_PROXY_HOST leaking to the browser in
 //                       ANY response header (Location, Link, Content-Location,
 //                       Set-Cookie domain, ...).
@@ -78,6 +82,9 @@ export async function runCrawl({
   concurrency = CONCURRENCY,
   slowPageMs = SLOW_PAGE_MS,
   maxRedirectHops = MAX_REDIRECT_HOPS,
+  // .org paths that migrated redirects point at (the manifest's values). Each is
+  // verified to exist (return 200) on the live site — see the end of the crawl.
+  migrationTargets = [],
 } = {}) {
   const enqueued = new Set(); // internal pages queued for crawl (deduped)
   const checked = new Set(); // every URL we've done a status/leak check on
@@ -235,6 +242,36 @@ export async function runCrawl({
   }
 
   await Promise.all(Array.from({ length: concurrency }, () => crawlWorker()));
+
+  // Migrated-redirect target verification (end-to-end): every .org path a
+  // migrated legacy path 301s to (the manifest's values) must be a real, live
+  // page. Confirm each returns 200 — this catches a manifest entry pointing at a
+  // path that doesn't resolve (e.g. generate-manifest drifting from the site's
+  // routes), which neither the .hu redirect smoke test (checks only that the 301
+  // points there) nor a link-following crawl (never visits an unlinked/wrong
+  // path) would catch. A non-200 target is a broken .org page, so it's recorded
+  // as a fatal brokenInternal finding, tagged via "migration manifest target".
+  for (const target of migrationTargets) {
+    let url;
+    try {
+      url = new URL(target, start);
+    } catch {
+      continue; // malformed manifest value — skip (validate-manifest guards shape)
+    }
+    const key = normalize(url);
+    discoveredPaths.add(pathKey(url)); // it's a real target, never an "orphan"
+    let res;
+    try {
+      res = await request(url.toString(), { retries: 2, timeoutMs: 20000 });
+    } catch (err) {
+      const reason = err?.cause?.code ?? err?.cause?.message ?? err?.message ?? String(err);
+      brokenInternal.push({ url: key, status: `ERR ${reason}`, via: "migration manifest target" });
+      continue;
+    }
+    if (res.status !== 200) {
+      brokenInternal.push({ url: key, status: res.status, via: "migration manifest target" });
+    }
+  }
 
   // Orphan detection: URLs advertised in /sitemap.xml but reached by no link.
   try {

@@ -14,7 +14,7 @@
 //   SERVICES_SHA=<40hex> CONTENT_SHA=<40hex> REPORT_OUT=./quality-gate-report.json \
 //   node scripts/quality-gate.mjs
 
-import { writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 
 import { config } from "../lib/config.mjs";
 import { buildReport } from "../lib/report.mjs";
@@ -22,6 +22,25 @@ import { runSmoke } from "../lib/smoke-runner.mjs";
 import { runCrawl } from "./crawl.mjs";
 
 const reportOut = process.env.REPORT_OUT ?? "./quality-gate-report.json";
+
+// Migrated-redirect targets to verify exist (200) on the live .org site. The
+// worker job generates the manifest from content and hands it to this job via a
+// workflow artifact (MANIFEST_PATH). The manifest's VALUES are the .org paths
+// each legacy path 301s to; we confirm each resolves to a real page (catching
+// manifest/route drift). No MANIFEST_PATH (older runs / the .hu gate) => none.
+let migrationTargets = [];
+const manifestPath = process.env.MANIFEST_PATH;
+if (manifestPath) {
+  try {
+    const m = JSON.parse(readFileSync(manifestPath, "utf8"));
+    migrationTargets = Object.values(m.entries ?? {});
+    console.log(
+      `quality-gate: will verify ${migrationTargets.length} migrated .org target(s) from ${manifestPath}`,
+    );
+  } catch (err) {
+    console.log(`quality-gate: could not read manifest at ${manifestPath} (${err.message}) — skipping target check`);
+  }
+}
 
 // SKIP_SMOKE=1|true|yes => crawler-only gate. The smoke suites assert the .hu
 // migration Worker's 301/410 redirect semantics, which do not apply to the
@@ -44,7 +63,7 @@ if (skipSmoke) {
 }
 
 console.log(`quality-gate: crawling https://${config.workerDomain} ...`);
-const crawler = await runCrawl();
+const crawler = await runCrawl({ migrationTargets });
 console.log(
   `quality-gate: crawler -> ${crawler.pageCount} page(s); ` +
     `internal=${crawler.brokenInternal.length} leaks=${crawler.leaks.length} ` +
