@@ -1,7 +1,7 @@
 // Post-deploy redirect smoke tests for the migration Worker.
 //
 // Deterministic HTTP checks that automate the redirect-facing subset of the
-// manual verification checklist in infra/cloudflare/README.md. Run against a
+// manual verification checklist in docs/migration-worker.md. Run against a
 // live, just-deployed environment:
 //
 //   WORKER_DOMAIN=staging.youproof.hu \
@@ -11,8 +11,7 @@
 //   node --test tests/
 //
 // Cases self-skip when their config isn't applicable (post-migration mode, or
-// the www case outside production). The canonical trailing-slash Location
-// regression is covered live by scripts/crawl.mjs (it needs real content paths).
+// the www case outside production).
 
 import { readFileSync } from "node:fs";
 import assert from "node:assert/strict";

@@ -5,6 +5,8 @@
   "type": "module",
   "description": "Cloudflare Worker proxying/redirecting legacy youproof.hu traffic to youproof.org during migration.",
   "scripts": {
+    "//deploy-order": "On a real deploy (CONTENT_DIR available) run generate-manifest BEFORE build; prebuild only validates the committed manifest so build/typecheck work without a content checkout.",
+    "generate-manifest": "node scripts/gen-manifest.mjs",
     "validate-manifest": "node scripts/validate-manifest.mjs",
     "typecheck": "tsc --noEmit",
     "build": "node build.mjs",
@@ -14,6 +16,7 @@
     "@cloudflare/workers-types": "catalog:",
     "ajv": "catalog:",
     "esbuild": "catalog:",
+    "js-yaml": "catalog:",
     "typescript": "catalog:"
   }
 }

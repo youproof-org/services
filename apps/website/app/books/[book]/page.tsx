@@ -15,6 +15,8 @@ interface BookPageProps {
 
 export default async function BookPage({ params }: BookPageProps) {
   const { book: bookName } = await params
+  // See chapter route: ensure the graph is built in export prerender workers.
+  await initContentGraph()
   const graph = getContentGraph()
   const book = graph.books.get(`/books/${bookName}`)
   if (!book) notFound()

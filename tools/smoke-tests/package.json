@@ -6,6 +6,7 @@
   "description": "Post-deploy HTTP smoke tests and a recursive link crawler for the youproof.hu migration Worker.",
   "scripts": {
     "test": "node --test \"tests/*.test.mjs\"",
-    "crawl": "node scripts/crawl.mjs"
+    "crawl": "node scripts/crawl.mjs",
+    "quality-gate": "node scripts/quality-gate.mjs"
   }
 }

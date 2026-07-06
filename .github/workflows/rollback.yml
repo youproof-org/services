@@ -1,0 +1,124 @@
+# Fully-automatic, forward-only production rollback.
+#
+# Dispatched by deploy.yml's `rollback-dispatch` job when a PRODUCTION post-deploy
+# quality gate reports overall != pass. It:
+#   1. Finds the last KNOWN-GOOD (services_sha, content_sha) pair — the newest
+#      report in youproof-production-test-artifacts with overall == "pass",
+#      EXCLUDING the pair that just failed.
+#   2. Re-runs the PRODUCTION deploy at that pair via the reusable deploy.yml
+#      (is_rollback: true — so a failing rollback does NOT dispatch another one;
+#      it emits a distinct ::error:: instead).
+#
+# Git history stays forward-only: this never rewrites/reverts stable/production
+# or stable/released — it only redeploys old build artifacts + worker manifest +
+# CDN purge for a previously-validated pair.
+#
+# NOTE: deploy.yml -> rollback.yml is a RUNTIME dispatch (gh workflow run), and
+# rollback.yml -> deploy.yml is a static `uses:`. Only the static edge is visible
+# to GitHub's reusable-workflow cycle detection, so there is no cycle.
+name: rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      failed_services_sha:
+        description: "services SHA of the pair that just failed (excluded from the search)."
+        required: true
+        type: string
+      failed_content_sha:
+        description: "content SHA of the pair that just failed (excluded from the search)."
+        required: true
+        type: string
+
+concurrency:
+  group: rollback-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  # Find the newest passing pair (by report generatedAt), excluding the failed one.
+  resolve-good:
+    runs-on: ubuntu-latest
+    environment: production
+    outputs:
+      services_sha: ${{ steps.pick.outputs.services_sha }}
+      content_sha: ${{ steps.pick.outputs.content_sha }}
+    env:
+      ARTIFACTS_BUCKET: youproof-production-test-artifacts
+      R2_ENDPOINT: https://${{ vars.CLOUDFLARE_ACCOUNT_ID }}.eu.r2.cloudflarestorage.com
+      # Production R2 key (this job binds environment: production, so the
+      # R2_CONTENT_* environment secret resolves to the production-bucket key) —
+      # scoped to the production content + test-artifacts buckets, not the state creds.
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_CONTENT_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_CONTENT_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: auto
+      FAILED_KEY: reports/${{ inputs.failed_services_sha }}__${{ inputs.failed_content_sha }}.json
+    steps:
+      - name: Resolve last known-good pair
+        id: pick
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/reports"
+          mkdir -p "$work"
+
+          # List every pair report (skip the convenience latest.json copy).
+          keys=$(aws s3api list-objects-v2 \
+            --bucket "${ARTIFACTS_BUCKET}" \
+            --prefix "reports/" \
+            --endpoint-url "${R2_ENDPOINT}" \
+            --query 'Contents[].Key' --output text 2>/dev/null | tr '\t' '\n' || true)
+
+          best_gen=""
+          best_svc=""
+          best_content=""
+          for key in $keys; do
+            [ -n "$key" ] || continue
+            case "$key" in
+              reports/latest.json) continue ;;
+              "$FAILED_KEY") echo "skip just-failed pair: $key"; continue ;;
+              reports/*.json) ;;
+              *) continue ;;
+            esac
+            local_file="$work/$(basename "$key")"
+            aws s3 cp "s3://${ARTIFACTS_BUCKET}/${key}" "$local_file" \
+              --endpoint-url "${R2_ENDPOINT}" >/dev/null 2>&1 || continue
+            overall=$(jq -r '.overall // ""' "$local_file")
+            [ "$overall" = "pass" ] || continue
+            gen=$(jq -r '.generatedAt // ""' "$local_file")
+            svc=$(jq -r '.servicesSha // ""' "$local_file")
+            content=$(jq -r '.contentSha // ""' "$local_file")
+            [ -n "$svc" ] && [ -n "$content" ] || continue
+            # Lexicographic compare works for ISO-8601 timestamps.
+            if [ -z "$best_gen" ] || [ "$gen" \> "$best_gen" ]; then
+              best_gen="$gen"; best_svc="$svc"; best_content="$content"
+            fi
+          done
+
+          if [ -z "$best_svc" ]; then
+            echo "::error title=No rollback target::No passing production report found (excluding the failed pair). Manual intervention required."
+            exit 1
+          fi
+          echo "Rolling back to services=${best_svc} content=${best_content} (report ${best_gen})."
+          {
+            echo "services_sha=${best_svc}"
+            echo "content_sha=${best_content}"
+          } >> "$GITHUB_OUTPUT"
+
+  redeploy:
+    needs: resolve-good
+    # Same reason as the router's deploy job: this calls deploy.yml, whose
+    # `rollback-dispatch` job declares `actions: write`, so the caller must grant
+    # it (validated at call time even though rollback-dispatch is `if`-gated off
+    # here — is_rollback == true).
+    permissions:
+      contents: read
+      actions: write
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: production
+      services_ref: ${{ needs.resolve-good.outputs.services_sha }}
+      content_ref: ${{ needs.resolve-good.outputs.content_sha }}
+      is_rollback: true
+    secrets: inherit

@@ -1,0 +1,15 @@
+# Production environment variables for the youproof.org CDN (R2 buckets + custom
+# domain). Copy to production.tfvars (gitignored) and fill in real values, OR
+# rely on the CI workflow which sets these via TF_VAR_* environment variables.
+
+cloudflare_account_id = "REPLACE_WITH_ACCOUNT_ID"
+tfstate_bucket        = "REPLACE_WITH_R2_STATE_BUCKET" # used to read the zone root's org_zone_id output
+
+environment = "production"
+
+# NOTE: the youproof.org zone ID is NOT set here — this root reads it from the
+# shared zone root's remote state (see data.tf), using tfstate_bucket above.
+#
+# The site host (youproof.org) and bucket names (youproof-production-content,
+# youproof-production-test-artifacts) are DERIVED from `environment` (see r2.tf),
+# so they are not set here.

@@ -36,8 +36,16 @@ function patchCssModules(rules: any[]): number {
   return patched
 }
 
+// `next build` runs with NODE_ENV=production and must emit a fully static
+// export to `out/` (uploaded to R2 behind the CDN). `next dev` runs with
+// NODE_ENV=development and stays a normal dev server so request-time features
+// (the app/api/dev SSE reload endpoint, chokidar content watching) keep
+// working — the static-export restrictions only apply to the prod/export path.
+const isProductionBuild = process.env.NODE_ENV === 'production'
+
 const nextConfig: NextConfig = {
-  output: 'standalone',
+  output: isProductionBuild ? 'export' : undefined,
+  images: { unoptimized: true },
   serverExternalPackages: ['js-yaml', 'chokidar'],
   sassOptions: {
     includePaths: ['./styles'],
