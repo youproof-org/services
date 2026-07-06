@@ -53,6 +53,14 @@ creates that root's state object (`cloudflare/zone.tfstate`,
 `cloudflare/website/{env}.tfstate`) inside this one bucket. See
 [Running Terraform](terraform-roots-and-layout.md#running-terraform).
 
+> **`R2_STATE_*` is scoped to the `youproof-tfstate` bucket only.** It is used
+> solely for the Terraform state backend. The deploy's content upload and
+> test-artifact upload/prune use **separate, per-environment** R2 S3 keys
+> (`R2_CONTENT_*`, environment-scoped) restricted to that environment's
+> `youproof-<env>-content` + `youproof-<env>-test-artifacts` buckets — see the
+> secrets inventory in `infra/github/branch-protection.md` (§1) and its
+> bootstrap-ordering note.
+
 ## Cloudflare API token (provider auth)
 
 `CLOUDFLARE_API_TOKEN` is the credential the Terraform provider authenticates

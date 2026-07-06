@@ -48,8 +48,11 @@ jobs:
     env:
       ARTIFACTS_BUCKET: youproof-production-test-artifacts
       R2_ENDPOINT: https://${{ vars.CLOUDFLARE_ACCOUNT_ID }}.eu.r2.cloudflarestorage.com
-      AWS_ACCESS_KEY_ID: ${{ secrets.R2_STATE_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_STATE_SECRET_ACCESS_KEY }}
+      # Production R2 key (this job binds environment: production, so the
+      # R2_CONTENT_* environment secret resolves to the production-bucket key) —
+      # scoped to the production content + test-artifacts buckets, not the state creds.
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_CONTENT_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_CONTENT_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: auto
       FAILED_KEY: reports/${{ inputs.failed_services_sha }}__${{ inputs.failed_content_sha }}.json
     steps:

@@ -306,10 +306,13 @@ jobs:
       SITE_HOST: ${{ inputs.environment == 'production' && 'youproof.org' || 'staging.youproof.org' }}
       CONTENT_BUCKET: youproof-${{ inputs.environment }}-content
       R2_ENDPOINT: https://${{ vars.CLOUDFLARE_ACCOUNT_ID }}.eu.r2.cloudflarestorage.com
-      # R2 S3 credentials for the content bucket upload. Reuses the account-scoped
-      # state creds; the runbook notes a dedicated content credential is preferable.
-      AWS_ACCESS_KEY_ID: ${{ secrets.R2_STATE_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_STATE_SECRET_ACCESS_KEY }}
+      # R2 S3 credentials for the content-bucket upload. Dedicated per-environment
+      # key scoped to THIS env's content + test-artifacts buckets (an environment
+      # secret: the staging Environment holds the staging-bucket key, production
+      # holds the production-bucket key). NOT the state creds, which are scoped
+      # only to the youproof-tfstate bucket.
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_CONTENT_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_CONTENT_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: auto
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       # Zone id from the website-infra job's output (which reads the zone root's
@@ -401,8 +404,10 @@ jobs:
       REPORT_OUT: ${{ github.workspace }}/quality-gate-report.json
       ARTIFACTS_BUCKET: youproof-${{ inputs.environment }}-test-artifacts
       R2_ENDPOINT: https://${{ vars.CLOUDFLARE_ACCOUNT_ID }}.eu.r2.cloudflarestorage.com
-      AWS_ACCESS_KEY_ID: ${{ secrets.R2_STATE_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_STATE_SECRET_ACCESS_KEY }}
+      # Dedicated per-environment R2 key (environment secret), scoped to this
+      # env's content + test-artifacts buckets — not the state-bucket creds.
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_CONTENT_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_CONTENT_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: auto
     steps:
       - uses: actions/checkout@v4
