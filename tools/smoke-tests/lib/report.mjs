@@ -2,11 +2,14 @@
 // in docs/plans/yp-120-implementation-contract.md ("Test artifact schema &
 // bucket layout"), and computes per-suite + overall pass/fail.
 //
-// Status policy (from the contract, mirroring the crawler's existing policy):
+// Status policy:
 //   - A suite is "pass" iff its FATAL categories are all empty.
-//   - Crawler fatal categories: brokenInternal, legacyLeaks, mathErrors,
-//     redirectLoops. Warnings (do NOT fail): brokenExternal, orphanPages,
-//     slowPages, and external 403/429 rate-limited hosts (dropped, not emitted).
+//   - Crawler fatal categories: brokenInternal, brokenExternal, legacyLeaks,
+//     mathErrors, redirectLoops. brokenExternal is fatal because this is a
+//     mathematical portal: every outbound link must resolve, or the content is
+//     stale (SEO / consistency risk). Warnings (do NOT fail): orphanPages,
+//     slowPages, and external 403/429 rate-limited hosts (dropped, not emitted —
+//     bot-block/rate-limit is not a broken link).
 //   - Smoke fatal: any failed case.
 //   - overall === "pass" iff every suite status === "pass".
 //
@@ -36,18 +39,23 @@ export function buildSmokeSuite(smoke = {}) {
 /** Classify a runCrawl() result → crawler suite object matching the schema. */
 export function buildCrawlerSuite(crawl = {}) {
   const brokenInternal = crawl.brokenInternal ?? [];
+  const brokenExternal = crawl.brokenExternal ?? [];
   const legacyLeaks = crawl.leaks ?? [];
   const mathErrors = crawl.mathErrors ?? [];
   const redirectLoops = crawl.redirectLoops ?? [];
 
   const fatal =
-    brokenInternal.length + legacyLeaks.length + mathErrors.length + redirectLoops.length;
+    brokenInternal.length +
+    brokenExternal.length +
+    legacyLeaks.length +
+    mathErrors.length +
+    redirectLoops.length;
 
   return {
     status: fatal > 0 ? "fail" : "pass",
     pagesCrawled: crawl.pageCount ?? 0,
     brokenInternal,
-    brokenExternal: crawl.brokenExternal ?? [],
+    brokenExternal,
     legacyLeaks,
     mathErrors,
     orphanPages: crawl.orphanPages ?? [],

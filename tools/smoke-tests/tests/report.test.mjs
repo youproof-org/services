@@ -35,6 +35,7 @@ test("buildReport: clean crawl + all-green smoke => overall pass, schema shape",
 test("buildCrawlerSuite: each fatal category fails the suite; warnings do not", () => {
   const fatalCases = [
     { brokenInternal: [{ url: "/x" }] },
+    { brokenExternal: [{ url: "https://x" }] },
     { leaks: [{ url: "/x", detail: "d" }] },
     { mathErrors: [{ url: "/x", count: 1 }] },
     { redirectLoops: [{ url: "/x", detail: "cycle" }] },
@@ -44,7 +45,6 @@ test("buildCrawlerSuite: each fatal category fails the suite; warnings do not", 
   }
 
   const warningsOnly = buildCrawlerSuite({
-    brokenExternal: [{ url: "https://x" }],
     orphanPages: [{ url: "/y" }],
     slowPages: [{ url: "/z", ms: 9000 }],
   });

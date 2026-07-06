@@ -144,6 +144,11 @@ jobs:
       (needs.zone.result == 'success' || needs.zone.result == 'skipped')
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
+    # Expose the youproof.org zone id (read from the shared zone root's
+    # remote-state `org_zone_id` output via website/data.tf) so the `website` job
+    # can scope its CDN cache purge without a separate GitHub variable.
+    outputs:
+      org_zone_id: ${{ steps.tfout.outputs.org_zone_id }}
     env:
       ENVIRONMENT: ${{ inputs.environment }}
       TF_WORKDIR: infra/cloudflare/terraform/website
@@ -178,6 +183,10 @@ jobs:
       - name: Terraform apply
         working-directory: ${{ env.TF_WORKDIR }}
         run: terraform apply -input=false -auto-approve tfplan
+      - name: Export org zone id (from the zone root's remote-state output)
+        id: tfout
+        working-directory: ${{ env.TF_WORKDIR }}
+        run: echo "org_zone_id=$(terraform output -raw org_zone_id)" >> "$GITHUB_OUTPUT"
 
   # .hu migration worker: regenerate its redirect manifest from the CURRENT
   # content YAML, then redeploy (terraform/worker/). This is the content-aware
@@ -285,7 +294,9 @@ jobs:
 
   # Next.js static export -> upload to the env content bucket -> purge the CDN.
   website:
-    needs: [resolve, worker]
+    # website-infra is listed so its org_zone_id output is readable here (it is
+    # already a transitive ancestor via worker, so this adds no ordering).
+    needs: [resolve, website-infra, worker]
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     env:
@@ -301,7 +312,9 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_STATE_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: auto
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      ORG_ZONE_ID: ${{ vars.ORG_ZONE_ID }}
+      # Zone id from the website-infra job's output (which reads the zone root's
+      # remote-state org_zone_id) — no GitHub variable needed.
+      ORG_ZONE_ID: ${{ needs.website-infra.outputs.org_zone_id }}
     steps:
       # TeX Live BEFORE pnpm install: apps/website's check-latex postinstall (and
       # the sync-figures prebuild that compiles figures with pdflatex + dvisvgm)
@@ -349,21 +362,18 @@ jobs:
             --delete \
             --endpoint-url "${R2_ENDPOINT}"
 
-      # Cache-bust via full zone purge (simplest correct option; targeted
-      # per-path purge is a future optimization). Zone ID comes from the
-      # ORG_ZONE_ID GitHub variable (see runbook; alternatively read from the
-      # shared zone root's `org_zone_id` remote-state output).
-      - name: Purge CDN cache
+      # Cache-bust scoped to THIS environment's hostname. staging and production
+      # share one zone (youproof.org), so `purge_everything` would wipe the other
+      # environment's cache too; purge-by-hostname (available on all plans since
+      # 2025-04) invalidates only this env's host. Zone id comes from the
+      # website-infra job output (the zone root's org_zone_id remote-state value).
+      - name: Purge CDN cache (this environment's host only)
         run: |
-          if [ -z "${ORG_ZONE_ID}" ]; then
-            echo "::error title=Missing ORG_ZONE_ID::Set the ORG_ZONE_ID repository/environment variable to the youproof.org zone ID (see infra/github/branch-protection.md)."
-            exit 1
-          fi
           curl -sfS -X POST \
             "https://api.cloudflare.com/client/v4/zones/${ORG_ZONE_ID}/purge_cache" \
             -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
             -H "Content-Type: application/json" \
-            --data '{"purge_everything":true}'
+            --data "$(jq -nc --arg h "$SITE_HOST" '{hosts: [$h]}')"
 
   # Post-deploy quality gate against the LIVE .org host. Crawler-based: the smoke
   # suite is skipped here (SKIP_SMOKE=1) because it asserts the .hu migration
@@ -425,6 +435,34 @@ jobs:
           aws s3 cp "${REPORT_OUT}" "s3://${ARTIFACTS_BUCKET}/reports/latest.json" \
             --content-type application/json --endpoint-url "${R2_ENDPOINT}"
           echo "Uploaded ${KEY} (+ reports/latest.json) to ${ARTIFACTS_BUCKET}."
+
+      # Retention: keep the newest 30 pair-reports per environment; delete older
+      # ones (never reports/latest.json). Best-effort — a prune failure must not
+      # fail the deploy (continue-on-error), and it also bounds how far back the
+      # rollback lookup can find a last-known-good pair.
+      - name: Prune old test artifacts (keep newest 30)
+        if: always()
+        continue-on-error: true
+        env:
+          KEEP: "30"
+        run: |
+          # Report object keys, oldest first, excluding the latest.json pointer.
+          mapfile -t keys < <(
+            aws s3api list-objects-v2 --bucket "$ARTIFACTS_BUCKET" --prefix "reports/" \
+              --endpoint-url "$R2_ENDPOINT" \
+              --query "sort_by(Contents,&LastModified)[].Key" --output text 2>/dev/null \
+              | tr '\t' '\n' | grep -v '^reports/latest\.json$' || true
+          )
+          total=${#keys[@]}
+          if [ "$total" -le "$KEEP" ]; then
+            echo "Retention: $total report(s) ≤ $KEEP — nothing to prune."
+            exit 0
+          fi
+          prune=$(( total - KEEP ))
+          echo "Retention: pruning oldest $prune of $total report(s) (keeping newest $KEEP)."
+          for key in "${keys[@]:0:$prune}"; do
+            aws s3 rm "s3://${ARTIFACTS_BUCKET}/${key}" --endpoint-url "$R2_ENDPOINT"
+          done
 
       - name: Distinct error when a ROLLBACK's own gate fails
         if: steps.gate.outcome == 'failure' && inputs.is_rollback == true

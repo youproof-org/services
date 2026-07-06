@@ -80,7 +80,7 @@ documents.
 All documented in [`../../../infra/github/branch-protection.md`](../../../infra/github/branch-protection.md):
 
 - Create the secrets/vars (`CONTENT_REPO_TOKEN`, `SERVICES_REPO_TOKEN`,
-  `SERVICES_DISPATCH_TOKEN`, R2 creds, `ORG_ZONE_ID`).
+  `SERVICES_DISPATCH_TOKEN`, R2 creds).
 - Apply the `zone/` root (both zones) + per-env `website/` Terraform and
   delegate the `youproof.org` nameservers.
 - Run the branch-protection script.

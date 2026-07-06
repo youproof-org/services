@@ -25,7 +25,10 @@ them. Existing (services repo), reused as-is:
 | Kind | Name | Scope | Minimal permission | Purpose |
 |---|---|---|---|---|
 | secret | `CONTENT_REPO_TOKEN` | **repo-level** (also usable env-scoped) | fine-grained PAT, `Contents: Read` on `youproof-org/content` | Clone the private content repo at the right ref in the deploy jobs; read the `stable/released` merge parent in `pr-gate.yml` (runs on `pull_request`, so it must be repo-level, not environment-only) |
-| var | `ORG_ZONE_ID` | repo-level (or env) | — | The `youproof.org` zone id, used by the CDN cache-purge step. Read it after applying `terraform/zone/` with `terraform output org_zone_id`. (Alternative: the workflow could read it from the zone root's remote-state `org_zone_id` output instead of this var — chosen the var for a single, simple curl step.) |
+
+(No `ORG_ZONE_ID` variable is needed: the CDN cache-purge step reads the
+`youproof.org` zone id from the `website` job's `org_zone_id` output, which comes
+from the shared zone root's remote-state `org_zone_id` output.)
 
 > **Caveat — `pr-gate.yml` R2 creds.** `pr-gate.yml` runs on `pull_request`
 > WITHOUT a GitHub Environment, so it can only read **repo-level** secrets. It

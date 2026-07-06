@@ -90,9 +90,16 @@ rewritten to `<path>.html`. Two mutually-exclusive rules:
 The chosen cache-busting mechanism is an **automatic CDN cache invalidation at
 deploy time**, not content-hashed filenames. After uploading `out/` to the
 content bucket, the [deploy pipeline](deploy-pipeline.md) calls the Cloudflare
-cache-purge API for the environment so the just-deployed content is visible
-immediately. Because HTML has browser TTL `0`, returning visitors pick up the
-purge on their next request.
+cache-purge API so the just-deployed content is visible immediately. Because HTML
+has browser TTL `0`, returning visitors pick up the purge on their next request.
+
+The purge is **scoped to the environment's hostname** (`hosts: ["youproof.org"]`
+or `["staging.youproof.org"]`), not `purge_everything` — staging and production
+share one zone, so a full purge would needlessly wipe the other environment's
+edge cache. Purge-by-hostname is available on all Cloudflare plans (since
+2025-04). The zone id for the purge call comes from the `website` root's
+`org_zone_id` output (sourced from the shared zone root's remote state), so no
+separate GitHub variable is needed.
 
 <a id="custom-404-limitation"></a>
 ## Custom-404 limitation
