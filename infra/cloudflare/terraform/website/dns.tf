@@ -25,3 +25,25 @@
 # (zone/redirects.tf) and is generic; if a `www.` host record is ever wanted
 # for this environment it would be added here as a proxied record (mirroring the
 # worker root's `www` record), but the R2 custom domain does not create one.
+
+# --- Email hardening for staging.youproof.org (staging apply only) ---
+#
+# staging.youproof.org is served by the R2 custom domain (a PROXIED CNAME), and
+# Cloudflare does not allow MX or TXT records on the same name as a proxied CNAME
+# — so a null-MX and an SPF `-all` cannot live on staging.youproof.org while it
+# serves the site. Spoofed mail as @staging.youproof.org is already rejected by
+# the apex DMARC's subdomain policy (`_dmarc.youproof.org` has sp=reject, which
+# covers all subdomains lacking their own DMARC). This explicit subdomain DMARC
+# is the one hardening record that CAN coexist (it's a different name,
+# `_dmarc.staging.youproof.org`, with no CNAME) — belt-and-suspenders over the
+# apex sp=reject. Gated to the staging apply; production never manages it.
+resource "cloudflare_dns_record" "staging_dmarc" {
+  count   = var.environment == "staging" ? 1 : 0
+  zone_id = local.zone_id
+  name    = "_dmarc.staging.youproof.org"
+  type    = "TXT"
+  # Quoted per Cloudflare's zone-file convention (matches worker/dns_hu.tf).
+  content = "\"v=DMARC1; p=reject; sp=reject; adkim=s; aspf=s;\""
+  ttl     = 1 # 1 = automatic
+  comment = "DMARC (staging): reject all mail claiming to be @staging.youproof.org"
+}
