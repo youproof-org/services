@@ -79,10 +79,13 @@ The deploy pipeline runs these steps automatically — the Worker is redeployed 
 **every content change**, not only on services changes, because a content merge
 can change the manifest. See the [deploy pipeline](deploy-pipeline.md).
 
-> **Shared manifest assumption:** production and staging currently share the
-> generation logic against whatever content ref each environment builds. If
-> staging ever needs to diverge from production's mapping, select a per-env
-> manifest at build time — flag it when it comes up.
+> **One generator, per-env content ref:** both environments use the same
+> manifest generator; their manifests differ **only** because each builds
+> against its own content ref (staging → `draft`, production → `stable/released`).
+> There is no environment-specific mapping logic. Introduce per-env manifests
+> (`manifest.production.json` / `manifest.staging.json`, selected at build time)
+> only if staging ever needs a mapping that isn't derivable from its content —
+> e.g. staging-only test redirects. Not wired up today; revisit if it comes up.
 
 ## Admin/login blocking
 
