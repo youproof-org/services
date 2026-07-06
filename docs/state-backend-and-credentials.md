@@ -85,6 +85,7 @@ zones). The **Token** column shows which environment's token needs each row:
 | Dynamic Redirect | Zone | Edit | Prod only | www→apex 301 rulesets (`cloudflare_ruleset`, `http_request_dynamic_redirect`) |
 | Transform Rules | Zone | Edit | Prod only | `.org` `.html`-stripping rewrite ruleset (`cloudflare_ruleset`, `http_request_transform`) |
 | Cache Settings | Zone | Edit | Prod only | `.org` cache ruleset (`cloudflare_ruleset`, `http_request_cache_settings`) |
+| Cache Purge | Zone | Purge | Both | the deploy's CDN cache-purge step (`POST /zones/{id}/purge_cache`). A **distinct** permission from Cache Settings — without it the purge step returns `401`. |
 | Account Rulesets | Account | Edit | Prod only | required *together with* Dynamic Redirect / Transform Rules / Cache Settings to deploy `cloudflare_ruleset` resources |
 | DNS | Zone | Edit | Both | DNS records (`cloudflare_dns_record`) |
 | Workers Routes | Zone | Edit | Both | `.hu` route binding (`cloudflare_workers_route`) |
