@@ -1,7 +1,11 @@
-# www -> apex 301 redirect for both zones (youproof.hu and youproof.org).
+# Dynamic-redirect rulesets for both zones (youproof.hu and youproof.org).
+#
+# youproof.hu: a single www->apex rule.
+# youproof.org: the www->apex rule PLUS a `.html`->extensionless canonicalization
+# rule (pages are only served at extensionless URLs; see the org ruleset below).
 #
 # A dynamic-redirect ruleset is a ZONE-LEVEL SINGLETON (one entrypoint per phase
-# per zone), so each zone gets its own ruleset here in the single-state zone root
+# per zone), so each zone gets ONE ruleset here in the single-state zone root
 # rather than per environment.
 #
 # A SINGLE generic rule per zone covers every environment: it matches any host
@@ -44,10 +48,16 @@ resource "cloudflare_ruleset" "www_redirect" {
 }
 
 # --- youproof.org ---
+# Two rules in the single dynamic-redirect ruleset (this phase is a per-zone
+# singleton, so both rules live in one resource): the www->apex rule, plus a
+# `.html`->extensionless canonicalization rule so pages are only served at their
+# extensionless URL. This phase runs BEFORE http_request_transform, so the
+# `.html` rule sees the client's ORIGINAL path (not the transform's internal
+# `/foo` -> `/foo.html` rewrite) — no redirect/rewrite loop.
 resource "cloudflare_ruleset" "www_redirect_org" {
   zone_id     = cloudflare_zone.youproof_org.id
-  name        = "www to apex redirect"
-  description = "301 any www.<host> to its https://<host> equivalent, preserving path and query"
+  name        = "canonical URL redirects"
+  description = "301 www.<host> to apex, and strip .html so pages serve only at extensionless URLs"
   kind        = "zone"
   phase       = "http_request_dynamic_redirect"
 
@@ -64,6 +74,24 @@ resource "cloudflare_ruleset" "www_redirect_org" {
             # substring(http.host, 4) drops the leading "www." (4 bytes); prepend
             # https:// and append the original path.
             expression = "concat(\"https://\", substring(http.host, 4), http.request.uri.path)"
+          }
+        }
+      }
+    },
+    {
+      description = "strip .html -> extensionless canonical URL"
+      # A directly-requested .html page URL (e.g. /books/x/chapters/y.html) is not
+      # canonical; 301 it to the extensionless path. Regex-free (Free plan).
+      expression = "ends_with(http.request.uri.path, \".html\")"
+      action     = "redirect"
+      action_parameters = {
+        from_value = {
+          status_code           = 301
+          preserve_query_string = true
+          target_url = {
+            # substring(path, 0, -5) drops the trailing ".html" (5 bytes); keep the
+            # same host over https.
+            expression = "concat(\"https://\", http.host, substring(http.request.uri.path, 0, -5))"
           }
         }
       }
