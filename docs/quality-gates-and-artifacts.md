@@ -32,8 +32,16 @@ Building on the existing legacy-site crawler, the suite covers a static math
 knowledge base:
 
 - Broken **internal** links and missing images/assets (fatal).
-- Broken **external** links (warning — external breakage/rate-limiting is not
-  fatal).
+- Broken **external** links (fatal — every outbound link on a math portal must
+  resolve; only `403`/`429` rate-limit/bot-block responses are ignored).
+- **Dead migration targets** (fatal) — every `.org` path a migrated legacy
+  redirect points at (the worker manifest's values, passed to the gate as a
+  workflow artifact) must return `200` on the live site. Catches a manifest entry
+  that 301s to a `.org` URL which doesn't resolve — e.g. `generate-manifest`
+  drifting from the site's routes — which neither the `.hu` redirect smoke test
+  (only checks the 301 *points* there) nor a link-following crawl (never visits a
+  wrong/unlinked path) would catch. Recorded under `brokenInternal`, tagged
+  `via "migration manifest target"`.
 - `legacy.*` host leaking in any response header (the `.hu` origin must never be
   exposed).
 - **Math-render errors** (malformed math output).

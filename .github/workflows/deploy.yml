@@ -244,6 +244,17 @@ jobs:
       - name: Generate manifest from content
         run: pnpm --filter @youproof.org/migration-worker run generate-manifest
 
+      # Hand the content-derived manifest to the quality-gate job so it can verify
+      # each migrated redirect's .org target is live (the quality-gate job checks
+      # out services, which only has the empty committed stub). Per-run artifact.
+      - name: Upload generated manifest (for the quality gate)
+        uses: actions/upload-artifact@v4
+        with:
+          name: worker-manifest-${{ inputs.environment }}
+          path: infra/cloudflare/worker/src/manifest.json
+          if-no-files-found: error
+          retention-days: 1
+
       - name: Validate manifest
         run: pnpm --filter @youproof.org/migration-worker run validate-manifest
 
@@ -402,6 +413,9 @@ jobs:
       # (pnpm --filter), but the upload step runs from the repo root. An absolute
       # path makes both agree on where the report lives.
       REPORT_OUT: ${{ github.workspace }}/quality-gate-report.json
+      # The content-derived manifest from the worker job (downloaded below). The
+      # gate verifies each migrated redirect's .org target returns 200.
+      MANIFEST_PATH: ${{ github.workspace }}/worker-manifest/manifest.json
       ARTIFACTS_BUCKET: youproof-${{ inputs.environment }}-test-artifacts
       R2_ENDPOINT: https://${{ vars.CLOUDFLARE_ACCOUNT_ID }}.eu.r2.cloudflarestorage.com
       # Dedicated per-environment R2 key (environment secret), scoped to this
@@ -422,6 +436,14 @@ jobs:
 
       - name: Install dependencies (smoke-tests subtree)
         run: pnpm install --frozen-lockfile --filter @youproof.org/smoke-tests...
+
+      # The manifest the worker job generated from content — its values are the
+      # .org targets the gate verifies are live. Lands at MANIFEST_PATH.
+      - name: Download generated manifest (migrated-target check)
+        uses: actions/download-artifact@v4
+        with:
+          name: worker-manifest-${{ inputs.environment }}
+          path: ${{ github.workspace }}/worker-manifest
 
       - name: Run quality gate
         id: gate
