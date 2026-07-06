@@ -105,6 +105,13 @@ jobs:
 
   redeploy:
     needs: resolve-good
+    # Same reason as the router's deploy job: this calls deploy.yml, whose
+    # `rollback-dispatch` job declares `actions: write`, so the caller must grant
+    # it (validated at call time even though rollback-dispatch is `if`-gated off
+    # here — is_rollback == true).
+    permissions:
+      contents: read
+      actions: write
     uses: ./.github/workflows/deploy.yml
     with:
       environment: production

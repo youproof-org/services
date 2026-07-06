@@ -85,6 +85,14 @@ jobs:
 
   deploy:
     needs: route
+    # A job that calls a reusable workflow must grant at least the permissions
+    # every nested job requests. deploy.yml's `rollback-dispatch` needs
+    # `actions: write` (it runs `gh workflow run rollback.yml`), so grant it here
+    # — GitHub validates this at call time even when rollback-dispatch is gated
+    # off by its `if`. contents: read covers the checkouts.
+    permissions:
+      contents: read
+      actions: write
     uses: ./.github/workflows/deploy.yml
     with:
       environment: ${{ needs.route.outputs.environment }}
