@@ -55,9 +55,24 @@ mutually-exclusive rules:
    (any of `zone/locals.tf`'s `asset_extensions`, or `.html`) → rewrite to
    `path + ".html"`.
 
-So real assets (`/styles/app.css`, `/img/logo.svg`) and directly-requested
-`.html` are left untouched and served directly from R2, while extensionless page
-paths get `.html` appended.
+So real assets (`/styles/app.css`, `/img/logo.svg`) are left untouched and served
+directly from R2, while extensionless page paths get `.html` appended for the
+origin fetch.
+
+### Pages serve only at extensionless URLs (`.html` → 301)
+
+Pages must be reachable at exactly one canonical URL — the extensionless one. A
+directly-requested `.html` page URL (e.g. `/books/x/chapters/y.html`) is **301
+redirected** to its extensionless path by a rule in the zone's dynamic-redirect
+ruleset (`zone/redirects.tf`). That phase (`http_request_dynamic_redirect`) runs
+**before** `http_request_transform`, so the rule matches the client's original
+path and doesn't loop with the extensionless→`.html` rewrite above.
+
+> A *true 404* for `.html` isn't cleanly achievable on the Free plan without a
+> Worker (custom error status codes are Enterprise-only). A 301 to the canonical
+> URL is the Free-compatible choice and is SEO-friendly (consolidates any stray
+> `.html` link) — chosen over uploading pages under extensionless R2 keys (which
+> would break `aws s3 sync`'s extension-based content-type inference).
 
 > **Free-plan / no-regex note:** the extension check is written with
 > `ends_with()` over an **enumerated** set of extensions (`zone/locals.tf`),
