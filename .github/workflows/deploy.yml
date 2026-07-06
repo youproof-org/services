@@ -196,6 +196,15 @@ jobs:
   # of the .hu side), unchanged.
   worker:
     needs: [resolve, website-infra]
+    # Explicit skip-tolerant gate: on staging the `zone` job is skipped, and the
+    # default `if: success()` treats a skipped TRANSITIVE ancestor (zone, via
+    # website-infra) as non-success — which would wrongly skip this whole chain.
+    # `!cancelled()` + explicit result checks run it whenever its real
+    # dependencies succeeded, regardless of the skipped zone (mirrors
+    # website-infra's guard). Same pattern on website/quality-gate below.
+    if: >-
+      !cancelled() && needs.resolve.result == 'success' &&
+      needs.website-infra.result == 'success'
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     env:
@@ -308,6 +317,12 @@ jobs:
     # website-infra is listed so its org_zone_id output is readable here (it is
     # already a transitive ancestor via worker, so this adds no ordering).
     needs: [resolve, website-infra, worker]
+    # Skip-tolerant gate (see worker): run when the chain up to worker succeeded,
+    # regardless of the staging-skipped zone. worker success implies website-infra
+    # ran, so its org_zone_id output is available.
+    if: >-
+      !cancelled() && needs.resolve.result == 'success' &&
+      needs.website-infra.result == 'success' && needs.worker.result == 'success'
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     env:
@@ -397,6 +412,11 @@ jobs:
   # contract JSON artifact keyed by the (services_sha, content_sha) pair.
   quality-gate:
     needs: [resolve, website]
+    # Skip-tolerant gate (see worker): run when website succeeded, regardless of
+    # the staging-skipped zone.
+    if: >-
+      !cancelled() && needs.resolve.result == 'success' &&
+      needs.website.result == 'success'
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     env:
