@@ -1,4 +1,9 @@
-// Recursive full-site link + asset crawler for the migration Worker.
+// Recursive full-site link + asset crawler for the site at WORKER_DOMAIN.
+//
+// Primary use: the quality gate points it at the youproof.org static site
+// (staging.youproof.org / youproof.org) to verify the deployed content. It is
+// host-agnostic, so the CLI can also crawl the .hu migration worker (the
+// legacy-leak check below is meaningful there and inert on .org — see it).
 //
 // Starts at https://<WORKER_DOMAIN> and walks same-origin links breadth-first.
 // For every page it also checks the page's own assets (images, stylesheets,
@@ -11,25 +16,24 @@
 //                       (from `migrationTargets`) that does not return 200 on the
 //                       live site (fatal; recorded under brokenInternal, tagged
 //                       via "migration manifest target").
-//   - legacy leaks    — the internal LEGACY_PROXY_HOST leaking to the browser in
-//                       ANY response header (Location, Link, Content-Location,
-//                       Set-Cookie domain, ...).
 //   - math errors     — KaTeX render failures (class="katex-error") in page HTML
 //                       (fatal — a math content site must render its math).
 //   - redirect loops  — cyclic or excessively long (> MAX_REDIRECT_HOPS) redirect
-//                       chains, e.g. between the .hu worker and youproof.org (fatal).
+//                       chains (fatal).
 //   - orphan pages    — URLs present in /sitemap.xml but linked from nowhere in the
 //                       crawl (warning; best-effort, skipped when no sitemap).
 //   - slow pages      — internal 200s slower than SLOW_PAGE_MS (warning).
-//
-// It also actively exercises the Part A canonical-redirect fix: for every
-// discovered internal URL that ends in "/", it probes the trailing-slash-stripped
-// variant, generating WordPress's canonical 301 and verifying its Location does
-// NOT point at the legacy host.
+//   - legacy leaks    — ONLY when LEGACY_PROXY_HOST is set (i.e. crawling the .hu
+//                       worker): the legacy origin host leaking to the browser in
+//                       ANY response header (Location, Link, Content-Location, ...).
+//                       Inert on the .org gate, where LEGACY_PROXY_HOST is empty.
 //
 // This module exports runCrawl() so the quality-gate entrypoint can consume the
 // findings programmatically. Run directly as a CLI (prints a report, exits 1 on
 // any fatal finding):
+//   # crawl the .org site
+//   WORKER_DOMAIN=staging.youproof.org node scripts/crawl.mjs
+//   # or crawl the .hu worker with legacy-leak detection
 //   WORKER_DOMAIN=staging.youproof.hu LEGACY_PROXY_HOST=legacy.staging.youproof.hu \
 //   node scripts/crawl.mjs
 
@@ -178,7 +182,9 @@ export async function runCrawl({
       leaks.push({ url: key, detail, via });
     }
 
-    // Loop detection only for internal redirects (covers the .hu -> .org path).
+    // Loop detection for internal redirects — e.g. a misconfigured .org rule
+    // (www/apex or .html rewrite) or, when crawling the .hu worker, a .hu <-> .org
+    // cycle.
     if (isInternal(url) && res.status >= 300 && res.status < 400 && res.headers.get("location")) {
       await detectRedirectLoop(url, via);
     }
@@ -195,15 +201,6 @@ export async function runCrawl({
       pageCount++;
 
       const res = await check(item.url, item.via);
-
-      // Canonical trailing-slash probe (Part A regression): force the WordPress
-      // /path/ -> /path canonical redirect and confirm it doesn't leak legacy.*.
-      const path = item.url.pathname;
-      if (path.length > 1 && path.endsWith("/")) {
-        const stripped = new URL(item.url);
-        stripped.pathname = path.replace(/\/+$/, "");
-        await check(stripped, `${normalize(item.url)} (trailing-slash probe)`);
-      }
 
       if (!res || res.status !== 200) continue;
       if (!/text\/html/i.test(res.headers.get("content-type") ?? "")) continue;

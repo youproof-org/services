@@ -63,11 +63,11 @@ pnpm --filter @youproof.org/smoke-tests quality-gate
   **and checks each page's assets** (images, stylesheets, scripts, media, `srcset`,
   `<object>`), flagging anything broken (internal = fatal, external = warning; external
   `403`/`429` are treated as bot-block/rate-limit and ignored, since datacenter IPs get
-  throttled). It also
-  flags `LEGACY_PROXY_HOST` leaking in **any response header** (`Location`, `Link`,
-  `Content-Location`, `Set-Cookie` domain, ...), and probes the trailing-slash-stripped
-  variant of every `/`-terminated URL to exercise the canonical-redirect Location rewrite
-  site-wide. Crawl caps (pages/depth/concurrency) are script constants.
+  throttled). When `LEGACY_PROXY_HOST` is set (i.e. crawling the `.hu` worker) it
+  also flags that legacy origin leaking in **any response header** (`Location`,
+  `Link`, `Content-Location`, `Set-Cookie` domain, ...); on the `.org` gate
+  (`LEGACY_PROXY_HOST` empty) that check is inert. Crawl caps
+  (pages/depth/concurrency) are script constants.
 
 In CI both run post-apply in the `worker` job — on `stable/staging` always, and on
 `stable/production` only after cut-over (`PRODUCTION_CUTOVER=true`), never against the
@@ -91,23 +91,26 @@ writes it to `REPORT_OUT` and exits non-zero iff `overall !== "pass"`.
 
 - A suite is `pass` iff its **fatal** categories are all empty; `overall` is
   `pass` iff every suite is `pass`.
-- **Fatal:** broken **internal** links/assets, legacy-host leaks, **math render
-  errors** (KaTeX `katex-error`), **redirect loops**, and any failed smoke case.
-- **Warnings (never fail the gate):** broken **external** links, **orphan pages**,
-  **slow pages**, and external `403`/`429` rate-limited hosts (the last are tracked
-  by the crawler but not emitted — the schema has no field for them).
+- **Fatal:** broken **internal** links/assets, broken **external** links, **dead
+  migration targets** (a migrated redirect's `.org` target not returning `200`),
+  legacy-host leaks (only when crawling the `.hu` worker), **math render errors**
+  (KaTeX `katex-error`), **redirect loops**, and any failed smoke case.
+- **Warnings (never fail the gate):** **orphan pages**, **slow pages**, and external
+  `403`/`429` rate-limited hosts (the last are tracked by the crawler but not
+  emitted — the schema has no field for them).
 
 ### Crawler checks & thresholds
 
-Beyond the pre-existing broken-link / asset / legacy-leak / trailing-slash checks:
+Beyond the broken-link / asset / legacy-leak checks:
 
 | Check           | Field           | Fatal? | Notes                                                        |
 | --------------- | --------------- | ------ | ------------------------------------------------------------ |
+| Migrated targets | `brokenInternal` (via `migration manifest target`) | yes | Each `.org` path the worker manifest redirects to must return `200`; passed in via `migrationTargets` (the manifest artifact). Catches manifest/route drift. |
 | Math render     | `mathErrors`    | yes    | Scans page HTML for `class="katex-error"`; page URL + count + snippet. |
 | Redirect loops  | `redirectLoops` | yes    | Follows internal 3xx chains; flags a cycle or `> 5` hops (`MAX_REDIRECT_HOPS`). |
 | Orphan pages    | `orphanPages`   | no     | `/sitemap.xml` `<loc>`s not reached by any crawled link (path-keyed, host-agnostic). Skipped with a console note if there is no usable sitemap. |
 | Slow pages      | `slowPages`     | no     | Internal `200`s slower than `3000ms` (`SLOW_PAGE_MS`).       |
-| Broken images   | `brokenInternal` / `brokenExternal` | internal only | Covered by the existing asset check (`img`/`srcset`/…). |
+| Broken images   | `brokenInternal` / `brokenExternal` | yes | Covered by the existing asset check (`img`/`srcset`/…); both internal and external are fatal. |
 
 ### Artifact schema (`schemaVersion: 1`)
 
