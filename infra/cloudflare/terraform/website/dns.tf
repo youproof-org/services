@@ -22,9 +22,34 @@
 #   }
 #
 # The www.<site_host> -> apex 301 redirect RULE lives in the shared zone root
-# (zone/redirects.tf) and is generic; if a `www.` host record is ever wanted
-# for this environment it would be added here as a proxied record (mirroring the
-# worker root's `www` record), but the R2 custom domain does not create one.
+# (zone/redirects.tf) and is generic; the R2 custom domain does not create a
+# `www` record, so we create the proxied record below to make that rule reachable.
+
+locals {
+  # Placeholder origin for the proxied www record. Cloudflare runs the www->apex
+  # redirect rule (zone/redirects.tf) at the edge before the origin is contacted,
+  # so this IP is never reached. 192.0.2.1 is RFC 5737 TEST-NET-1 (unroutable) —
+  # same convention as worker/dns_hu.tf.
+  placeholder_origin_ip = "192.0.2.1"
+}
+
+# --- www.<site_host> -> apex 301 redirect target ---
+#
+# A proxied record so `www.<site_host>` resolves to Cloudflare's edge, where the
+# generic www->apex dynamic-redirect rule (zone/redirects.tf) 301s it to the
+# apex. The rule is dormant until this record exists. Mirrors the worker root's
+# `www` record. Its own name with only an A record — no MX/TXT — so no
+# CNAME-coexistence issue. Created per environment: production -> www.youproof.org,
+# staging -> www.staging.youproof.org.
+resource "cloudflare_dns_record" "www" {
+  zone_id = local.zone_id
+  name    = "www.${local.site_host}"
+  type    = "A"
+  content = local.placeholder_origin_ip
+  proxied = true
+  ttl     = 1 # 1 = automatic (required for proxied records)
+  comment = "www -> apex redirect target (${var.environment}); redirect rule is in the zone root"
+}
 
 # --- Email hardening for staging.youproof.org (staging apply only) ---
 #
