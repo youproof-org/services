@@ -223,12 +223,20 @@ jobs:
     needs: changes
     if: github.event_name == 'pull_request' && needs.changes.outputs.worker == 'true'
     runs-on: ubuntu-latest
-    # Plan against staging on a PR. Uses the COMMITTED manifest (no content
-    # checkout on a PR) — manifest generation happens only in the real deploy.
+    # Plan against staging on a PR, as a faithful DRY-RUN of the real worker
+    # deploy: clone the content repo (draft — the ref staging pairs with) and
+    # regenerate the manifest from it BEFORE build/plan, exactly as the deploy's
+    # `worker` job does. This (a) catches manifest-generation errors — duplicate
+    # legacy-path, bad YAML, path-derivation issues — at PR time instead of at
+    # deploy time, and (b) makes the plan realistic: it shows the worker script
+    # will update when the content-derived manifest differs from what's deployed
+    # (the committed manifest.json is the empty stub, so a plan against it would
+    # wrongly say "no changes").
     environment: staging
     env:
       ENVIRONMENT: staging
       TF_WORKDIR: infra/cloudflare/terraform/worker
+      CONTENT_DIR: ${{ github.workspace }}/content-repo/content
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       TF_VAR_environment: staging
       TF_VAR_cloudflare_account_id: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
@@ -243,6 +251,19 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_STATE_SECRET_ACCESS_KEY }}
     steps:
       - uses: actions/checkout@v4
+
+      # Clone content @ draft so generate-manifest runs against real content —
+      # staging always pairs with the latest draft. CONTENT_REPO_TOKEN is a
+      # repo-level secret, so it's available on PRs (including this plan gate).
+      - name: Clone content @ draft (for a realistic manifest)
+        env:
+          CONTENT_REPO_TOKEN: ${{ secrets.CONTENT_REPO_TOKEN }}
+        run: |
+          git clone --quiet \
+            "https://x-access-token:${CONTENT_REPO_TOKEN}@github.com/youproof-org/content.git" \
+            "${{ github.workspace }}/content-repo"
+          git -C "${{ github.workspace }}/content-repo" checkout --quiet draft
+
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
@@ -250,6 +271,11 @@ jobs:
           cache: pnpm
       - name: Install dependencies (worker subtree only)
         run: pnpm install --frozen-lockfile --filter @youproof.org/migration-worker...
+      # Regenerate from content first — same step the deploy's worker job runs —
+      # so validate/build/plan all reflect the real content-derived manifest and
+      # a bad manifest fails the PR here.
+      - name: Generate manifest from content
+        run: pnpm --filter @youproof.org/migration-worker run generate-manifest
       - name: Validate manifest
         run: pnpm --filter @youproof.org/migration-worker run validate-manifest
       - name: Typecheck worker
