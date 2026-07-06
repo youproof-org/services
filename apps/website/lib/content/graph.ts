@@ -144,6 +144,8 @@ export interface RawSectionEntry {
 export interface RawChapterEntry {
   name: string
   title: string
+  published: boolean
+  legacyPath?: string
   abstract: ContentBlock[]
   prerequisiteWarning?: ContentBlock[]
   prologue: ContentBlock[]
@@ -342,6 +344,8 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
         const chapterEntry: RawChapterEntry = {
           name: rawChapter.name,
           title: rawChapter.title,
+          published: rawChapter.published,
+          legacyPath: rawChapter.legacyPath,
           abstract: resolveFigurePaths(rawChapter.abstract, figureUrlPrefix, figuresDir),
           prerequisiteWarning: rawChapter.prerequisiteWarning
             ? resolveFigurePaths(rawChapter.prerequisiteWarning, figureUrlPrefix, figuresDir)
@@ -526,6 +530,8 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
           name: chapterEntry.name,
           title: chapterEntry.title,
           part,
+          published: chapterEntry.published,
+          legacyPath: chapterEntry.legacyPath,
           abstract: chapterEntry.abstract,
           prerequisiteWarning: chapterEntry.prerequisiteWarning,
           prologue: chapterEntry.prologue,

@@ -258,6 +258,8 @@ export interface ChapterNode {
   name: string
   title: string
   part: PartNode                  // parent reference
+  published: boolean              // false when absent; gates real vs. stub page
+  legacyPath?: string             // old youproof.hu path, if any (kebab: legacy-path)
   abstract: ContentBlock[]
   prerequisiteWarning?: ContentBlock[]
   prologue: ContentBlock[]

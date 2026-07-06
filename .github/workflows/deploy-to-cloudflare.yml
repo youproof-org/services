@@ -1,45 +1,114 @@
-# Generic Cloudflare infrastructure pipeline.
+# Cloudflare pipeline entrypoint (router + PR review gates).
 #
-# Covers the two Terraform roots under infra/cloudflare/terraform/, which are
-# three independent applies:
-#   - zone/            single shared state (cloudflare/zone.tfstate) — the zone
-#   - worker/ (staging)   per-env state (cloudflare/worker/staging.tfstate)
-#   - worker/ (production) per-env state (cloudflare/worker/production.tfstate)
+# Two responsibilities:
+#   1. PULL REQUESTS -> plan-only review gates (Terraform fmt/plan for each root,
+#      worker build). No apply, no site build. Preserves the pre-YP-120 behaviour
+#      of the zone/worker plan gates and adds a website plan.
+#   2. PUSH to a stable branch, OR a content repository_dispatch -> a full deploy
+#      by calling the reusable ./.github/workflows/deploy.yml.
 #
-# Environment is derived from the branch (never chosen manually) and secrets are
-# scoped via GitHub Environments, so a staging push can never apply production
-# and vice versa. Structured to grow (e.g. a future `website` job) without
-# renaming anything.
+# IMPORTANT CHANGE (YP-120): apply now lives entirely in deploy.yml. The old
+# in-place push-apply of the zone/worker roots is superseded — a push routes to
+# the reusable deploy, which also regenerates the worker manifest from content,
+# deploys the .org CDN + site, and runs the post-deploy quality gate. The
+# zone/worker jobs here are therefore plan-only, PR-only review gates.
+#
+# Deploy version mapping (always the LATEST of both sides — the reusable workflow
+# checks out branch tips):
+#   push stable/staging     | dispatch content-draft-updated -> STAGING    (stable/staging + draft)
+#   push stable/production   | dispatch content-released       -> PRODUCTION (stable/production + stable/released)
 name: deploy-to-cloudflare
 
 on:
   push:
+    # No paths filter on push: a promotion merge to a stable branch must ALWAYS
+    # deploy (the "automatic on promotion" invariant), even if its diff only
+    # touches unlisted paths (e.g. pnpm-lock.yaml, packages/**, a dependency
+    # bump) that can still change the built site. Applies are idempotent, so a
+    # redundant deploy is a safe no-op. PRs keep a paths filter (below) to scope
+    # the plan-only review gates.
     branches:
       - stable/staging
       - stable/production
-    paths:
-      - "infra/cloudflare/**"
-      - "tools/smoke-tests/**"
-      - ".github/workflows/deploy-to-cloudflare.yml"
+  repository_dispatch:
+    types: [content-draft-updated, content-released]
   pull_request:
     paths:
       - "infra/cloudflare/**"
+      - "apps/website/**"
       - "tools/smoke-tests/**"
       - ".github/workflows/deploy-to-cloudflare.yml"
+      - ".github/workflows/deploy.yml"
 
 concurrency:
-  group: deploy-to-cloudflare-${{ github.ref }}
+  # ${{ github.event.action }} disambiguates the two dispatch types (which share
+  # github.ref); pushes/PRs key on the ref.
+  group: deploy-to-cloudflare-${{ github.ref }}-${{ github.event.action }}
   cancel-in-progress: false
 
 permissions:
   contents: read
 
 jobs:
-  # Detect which root changed so we only plan/apply what's relevant.
+  # ------------------------------------------------------------------ DEPLOY --
+  # Map trigger -> (environment, services_ref, content_ref), then call the
+  # reusable full-site deploy. Only for push (to a stable branch) or a content
+  # dispatch; PRs skip this and hit the plan gates below.
+  route:
+    if: github.event_name == 'push' || github.event_name == 'repository_dispatch'
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.r.outputs.environment }}
+      services_ref: ${{ steps.r.outputs.services_ref }}
+      content_ref: ${{ steps.r.outputs.content_ref }}
+    steps:
+      - id: r
+        env:
+          EVENT: ${{ github.event_name }}
+          REF: ${{ github.ref }}
+          ACTION: ${{ github.event.action }}
+        run: |
+          if { [ "$EVENT" = "push" ] && [ "$REF" = "refs/heads/stable/production" ]; } || \
+             { [ "$EVENT" = "repository_dispatch" ] && [ "$ACTION" = "content-released" ]; }; then
+            {
+              echo "environment=production"
+              echo "services_ref=stable/production"
+              echo "content_ref=stable/released"
+            } >> "$GITHUB_OUTPUT"
+          else
+            {
+              echo "environment=staging"
+              echo "services_ref=stable/staging"
+              echo "content_ref=draft"
+            } >> "$GITHUB_OUTPUT"
+          fi
+
+  deploy:
+    needs: route
+    # A job that calls a reusable workflow must grant at least the permissions
+    # every nested job requests. deploy.yml's `rollback-dispatch` needs
+    # `actions: write` (it runs `gh workflow run rollback.yml`), so grant it here
+    # — GitHub validates this at call time even when rollback-dispatch is gated
+    # off by its `if`. contents: read covers the checkouts.
+    permissions:
+      contents: read
+      actions: write
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: ${{ needs.route.outputs.environment }}
+      services_ref: ${{ needs.route.outputs.services_ref }}
+      content_ref: ${{ needs.route.outputs.content_ref }}
+      is_rollback: false
+    secrets: inherit
+
+  # --------------------------------------------------------------- PR GATES ---
+  # Detect which Terraform root a PR touched, so we only plan what's relevant.
   changes:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     outputs:
       zone: ${{ steps.filter.outputs.zone }}
+      website: ${{ steps.filter.outputs.website }}
       worker: ${{ steps.filter.outputs.worker }}
     steps:
       - uses: actions/checkout@v4
@@ -47,23 +116,20 @@ jobs:
         id: filter
         with:
           filters: |
-            # Gate the PR plan jobs only (pushes deploy by branch). The workflow
-            # file is intentionally NOT listed, so a workflow-only change doesn't
-            # cross-trigger a zone/worker plan (which would fail if that root isn't
-            # present on the base branch). The `guard` job checks PR purity on its
-            # own (via the REST files API), so no negation-based filter here.
             zone:
               - 'infra/cloudflare/terraform/zone/**'
+            website:
+              - 'infra/cloudflare/terraform/website/**'
             worker:
               - 'infra/cloudflare/terraform/worker/**'
               - 'infra/cloudflare/worker/**'
               - 'tools/smoke-tests/**'
 
-  # Zone PRs must be "pure": a PR touching the zone root may touch NOTHING else,
-  # so a zone change is never batched with worker/other changes. Runs on every PR;
-  # lists the PR's files via the REST API (authoritative — a negation path filter
-  # doesn't work reliably under dorny's `some` quantifier) and fails only when both
-  # zone and non-zone paths are present.
+  # Zone PRs must be "pure": a PR touching the shared zone root (which owns BOTH
+  # the youproof.hu and youproof.org zones) may touch NOTHING else, so a zone
+  # change is never batched with worker/website/other changes. Lists the PR's
+  # files via the REST API (authoritative) and fails only when both a zone path
+  # and a non-zone path are present.
   guard:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
@@ -71,33 +137,23 @@ jobs:
       contents: read
       pull-requests: read
     steps:
-      - name: Zone PRs must contain only zone changes
+      - name: Zone PRs must contain only terraform/zone/ changes
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           files=$(gh api --paginate "repos/${{ github.repository }}/pulls/${{ github.event.number }}/files" --jq '.[].filename')
-          zone=$(printf '%s\n' "$files" | grep '^infra/cloudflare/terraform/zone/' || true)
-          other=$(printf '%s\n' "$files" | grep -v '^infra/cloudflare/terraform/zone/' || true)
+          zone=$(printf '%s\n' "$files" | grep -E '^infra/cloudflare/terraform/zone/' || true)
+          other=$(printf '%s\n' "$files" | grep -vE '^infra/cloudflare/terraform/zone/' || true)
           if [ -n "$zone" ] && [ -n "$other" ]; then
-            echo "::error title=Mixed zone PR::A zone PR must contain ONLY terraform/zone/** — move these out of the PR:"
+            echo "::error title=Mixed zone PR::A zone PR (terraform/zone/) must contain ONLY that root — move these out of the PR:"
             printf '%s\n' "$other"
             exit 1
           fi
           echo "Zone-only or no zone changes — OK."
 
-  # Shared zone + nothing else. Applies on a push to the production branch (it
-  # owns account-level infra shared by both environments); plan-only on PRs that
-  # touch the zone root.
-  #
-  # Push deploys are gated by BRANCH, not by the path filter: on a promotion merge
-  # `development` becomes an ancestor of the stable branch, so dorny's diff is
-  # empty and would wrongly skip the deploy. The apply is idempotent, so running
-  # it when nothing changed is a safe no-op. dorny is only used for the PR case.
-  zone:
+  zone-plan:
     needs: changes
-    if: >-
-      (github.event_name == 'push' && github.ref == 'refs/heads/stable/production') ||
-      (github.event_name == 'pull_request' && needs.changes.outputs.zone == 'true')
+    if: github.event_name == 'pull_request' && needs.changes.outputs.zone == 'true'
     runs-on: ubuntu-latest
     environment: production
     env:
@@ -108,28 +164,10 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_STATE_SECRET_ACCESS_KEY }}
     steps:
       - uses: actions/checkout@v4
-
-      # The zone root reaches stable/production only after the zone promotion wave;
-      # earlier production pushes (e.g. the worker cut-over) still run this job but
-      # have no terraform/zone/ yet. Treat an absent root as a clean no-op so the
-      # run stays green.
-      - name: Check zone root present
-        id: check
-        run: |
-          if [ -d "$TF_WORKDIR" ]; then
-            echo "present=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "present=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::$TF_WORKDIR not present on this ref — nothing to apply, skipping."
-          fi
-
       - uses: hashicorp/setup-terraform@v3
-        if: steps.check.outputs.present == 'true'
         with:
           terraform_version: "1.11.4"
-
       - name: Terraform init (R2 backend, zone state key)
-        if: steps.check.outputs.present == 'true'
         working-directory: ${{ env.TF_WORKDIR }}
         run: |
           terraform init -input=false \
@@ -138,143 +176,101 @@ jobs:
             -backend-config="endpoints={s3=\"https://${{ vars.CLOUDFLARE_ACCOUNT_ID }}.eu.r2.cloudflarestorage.com\"}" \
             -backend-config="access_key=${AWS_ACCESS_KEY_ID}" \
             -backend-config="secret_key=${AWS_SECRET_ACCESS_KEY}"
-
       - name: Terraform format check
-        if: steps.check.outputs.present == 'true'
         working-directory: ${{ env.TF_WORKDIR }}
         run: terraform fmt -check -recursive
-
       - name: Terraform plan
-        if: steps.check.outputs.present == 'true'
         working-directory: ${{ env.TF_WORKDIR }}
-        run: terraform plan -input=false -out=tfplan
+        run: terraform plan -input=false
 
-      - name: Terraform apply
-        if: steps.check.outputs.present == 'true' && github.event_name == 'push'
-        working-directory: ${{ env.TF_WORKDIR }}
-        run: terraform apply -input=false -auto-approve tfplan
-
-  # Worker deploy. The target environment is derived from the branch: production
-  # only on a push to stable/production, staging otherwise (a staging push, or a
-  # PR as a plan-only review gate). No matrix — each trigger maps to exactly one
-  # environment, and `matrix` isn't an available context in a job-level `if`.
-  worker:
+  website-plan:
     needs: changes
-    # Push deploys gated by BRANCH (idempotent apply), not the path filter — see
-    # the note on the `zone` job for why dorny's diff is empty on promotion merges.
-    # dorny still gates the PR plan (and the `guard`).
-    if: >-
-      (github.event_name == 'push' &&
-        (github.ref == 'refs/heads/stable/staging' || github.ref == 'refs/heads/stable/production')) ||
-      (github.event_name == 'pull_request' && needs.changes.outputs.worker == 'true')
+    if: github.event_name == 'pull_request' && needs.changes.outputs.website == 'true'
     runs-on: ubuntu-latest
-    # Binds to the GitHub Environment so only that environment's secrets/vars are
-    # visible — production values are never available to the staging run.
-    environment: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/stable/production') && 'production' || 'staging' }}
+    # Plan against staging on a PR (mirrors the worker plan's default env).
+    environment: staging
     env:
-      ENVIRONMENT: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/stable/production') && 'production' || 'staging' }}
+      ENVIRONMENT: staging
+      TF_WORKDIR: infra/cloudflare/terraform/website
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      TF_VAR_environment: staging
+      TF_VAR_cloudflare_account_id: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      TF_VAR_tfstate_bucket: ${{ vars.R2_STATE_BUCKET }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_STATE_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_STATE_SECRET_ACCESS_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.11.4"
+      - name: Terraform init (R2 backend, website staging state key)
+        working-directory: ${{ env.TF_WORKDIR }}
+        run: |
+          terraform init -input=false \
+            -backend-config="bucket=${{ vars.R2_STATE_BUCKET }}" \
+            -backend-config="key=cloudflare/website/staging.tfstate" \
+            -backend-config="endpoints={s3=\"https://${{ vars.CLOUDFLARE_ACCOUNT_ID }}.eu.r2.cloudflarestorage.com\"}" \
+            -backend-config="access_key=${AWS_ACCESS_KEY_ID}" \
+            -backend-config="secret_key=${AWS_SECRET_ACCESS_KEY}"
+      - name: Terraform format check
+        working-directory: ${{ env.TF_WORKDIR }}
+        run: terraform fmt -check -recursive
+      - name: Terraform plan
+        working-directory: ${{ env.TF_WORKDIR }}
+        run: terraform plan -input=false
+
+  worker-plan:
+    needs: changes
+    if: github.event_name == 'pull_request' && needs.changes.outputs.worker == 'true'
+    runs-on: ubuntu-latest
+    # Plan against staging on a PR. Uses the COMMITTED manifest (no content
+    # checkout on a PR) — manifest generation happens only in the real deploy.
+    environment: staging
+    env:
+      ENVIRONMENT: staging
       TF_WORKDIR: infra/cloudflare/terraform/worker
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      # Terraform variables from environment-scoped GitHub vars/secrets (no
-      # -var-file in CI, so nothing per-environment is committed and values never
-      # cross over). The committed environments/*.tfvars.example are local-only.
-      TF_VAR_environment: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/stable/production') && 'production' || 'staging' }}
+      TF_VAR_environment: staging
       TF_VAR_cloudflare_account_id: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
-      # The zone ID is read from the zone root's remote state (data.tf), not
-      # passed in — the worker job only needs the state bucket name to find it.
       TF_VAR_tfstate_bucket: ${{ vars.R2_STATE_BUCKET }}
       TF_VAR_worker_domain: ${{ vars.WORKER_DOMAIN }}
       TF_VAR_redirect_target_host: ${{ vars.REDIRECT_TARGET_HOST }}
       TF_VAR_legacy_proxy_host: ${{ vars.LEGACY_PROXY_HOST }}
       TF_VAR_rackhost_server_ip: ${{ vars.RACKHOST_SERVER_IP }}
-      # Production cut-over switch. Ignored for staging. Set the PRODUCTION_CUTOVER
-      # variable on the production GitHub Environment to 'true' at cut-over;
-      # defaults to false everywhere else.
       TF_VAR_production_cutover: ${{ vars.PRODUCTION_CUTOVER || 'false' }}
-      # Long-lived access token, not a true secret: a GitHub Environment
-      # *variable*, so it is NOT log-masked — no step may echo it.
       TF_VAR_legacy_guard_value: ${{ vars.LEGACY_GUARD_VALUE }}
       AWS_ACCESS_KEY_ID: ${{ secrets.R2_STATE_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_STATE_SECRET_ACCESS_KEY }}
     steps:
       - uses: actions/checkout@v4
-
       - uses: pnpm/action-setup@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
           cache: pnpm
-
-      - name: Install dependencies
-        # Install only the worker package's subtree — a full-workspace install runs
-        # apps/website's postinstall (check-latex), which fails on runners without
-        # TeX. The worker is self-contained here.
+      - name: Install dependencies (worker subtree only)
         run: pnpm install --frozen-lockfile --filter @youproof.org/migration-worker...
-
       - name: Validate manifest
         run: pnpm --filter @youproof.org/migration-worker run validate-manifest
-
       - name: Typecheck worker
         run: pnpm --filter @youproof.org/migration-worker run typecheck
-
       - name: Build worker bundle
         run: pnpm --filter @youproof.org/migration-worker run build
-
       - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: "1.11.4"
-
-      - name: Terraform init (R2 backend, per-environment state key)
+      - name: Terraform init (R2 backend, worker staging state key)
         working-directory: ${{ env.TF_WORKDIR }}
         run: |
           terraform init -input=false \
             -backend-config="bucket=${{ vars.R2_STATE_BUCKET }}" \
-            -backend-config="key=cloudflare/worker/${ENVIRONMENT}.tfstate" \
+            -backend-config="key=cloudflare/worker/staging.tfstate" \
             -backend-config="endpoints={s3=\"https://${{ vars.CLOUDFLARE_ACCOUNT_ID }}.eu.r2.cloudflarestorage.com\"}" \
             -backend-config="access_key=${AWS_ACCESS_KEY_ID}" \
             -backend-config="secret_key=${AWS_SECRET_ACCESS_KEY}"
-
       - name: Terraform format check
         working-directory: ${{ env.TF_WORKDIR }}
         run: terraform fmt -check -recursive
-
       - name: Terraform plan
         working-directory: ${{ env.TF_WORKDIR }}
-        # All variables come from TF_VAR_* env vars above; no -var-file in CI.
-        run: terraform plan -input=false -out=tfplan
-
-      - name: Terraform apply
-        if: github.event_name == 'push'
-        working-directory: ${{ env.TF_WORKDIR }}
-        run: terraform apply -input=false -auto-approve tfplan
-
-      # Post-deploy verification. Runs on stable/staging always (staging is always
-      # Worker-fronted), but on stable/production ONLY after cut-over
-      # (PRODUCTION_CUTOVER == 'true') — pre-cut-over youproof.hu still resolves to
-      # legacy WordPress on Rackhost, so smoke-testing/crawling it is meaningless.
-      # The suite reuses the existing environment vars (no new variables) and reads
-      # ENVIRONMENT from the job-level env. Zero deps -> run node directly.
-      - name: Smoke tests (post-deploy)
-        if: >-
-          github.event_name == 'push' &&
-          (github.ref == 'refs/heads/stable/staging' ||
-            (github.ref == 'refs/heads/stable/production' && vars.PRODUCTION_CUTOVER == 'true'))
-        env:
-          WORKER_DOMAIN: ${{ vars.WORKER_DOMAIN }}
-          REDIRECT_TARGET_HOST: ${{ vars.REDIRECT_TARGET_HOST }}
-          LEGACY_PROXY_HOST: ${{ vars.LEGACY_PROXY_HOST }}
-        run: node --test "tools/smoke-tests/tests/*.test.mjs"
-
-      # Full-site link crawl. Non-blocking (continue-on-error): surfaces broken
-      # links and any legacy-host leaks without gating the deploy. Same run gate.
-      - name: Full-site link crawl (non-blocking)
-        if: >-
-          github.event_name == 'push' &&
-          (github.ref == 'refs/heads/stable/staging' ||
-            (github.ref == 'refs/heads/stable/production' && vars.PRODUCTION_CUTOVER == 'true'))
-        continue-on-error: true
-        env:
-          WORKER_DOMAIN: ${{ vars.WORKER_DOMAIN }}
-          LEGACY_PROXY_HOST: ${{ vars.LEGACY_PROXY_HOST }}
-        run: node tools/smoke-tests/scripts/crawl.mjs
+        run: terraform plan -input=false
