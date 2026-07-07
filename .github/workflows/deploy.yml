@@ -330,6 +330,9 @@ jobs:
       SITE_ENV: ${{ inputs.environment }}
       CONTENT_DIR: ${{ github.workspace }}/content-repo/content
       SITE_HOST: ${{ inputs.environment == 'production' && 'youproof.org' || 'staging.youproof.org' }}
+      # Legacy (.hu) host the not-yet-migrated chapter stubs link back to
+      # (staging.youproof.hu on staging, youproof.hu on production).
+      WORKER_DOMAIN: ${{ vars.WORKER_DOMAIN }}
       CONTENT_BUCKET: youproof-${{ inputs.environment }}-content
       R2_ENDPOINT: https://${{ vars.CLOUDFLARE_ACCOUNT_ID }}.eu.r2.cloudflarestorage.com
       # R2 S3 credentials for the content-bucket upload. Dedicated per-environment
