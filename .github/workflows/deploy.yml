@@ -349,17 +349,24 @@ jobs:
       # generated SVGs are byte-identical. Ubuntu's apt subset ships TL2023, which
       # both crops figures differently (e.g. 220x275 vs 220x178) AND lacks packages
       # such as fontawesome5 — pinning the version + a curated scheme fixes both.
-      # scheme-medium already covers pdflatex, dvisvgm, standalone, pgf/tikz and
-      # amsmath/amssymb; fontawesome5 (collection-fontsextra) is added on top.
-      # Runs BEFORE pnpm install so apps/website's check-latex postinstall and the
-      # sync-figures prebuild find pdflatex + dvisvgm on PATH. The action caches the
-      # TeX Live install, so only the first run pays the download cost.
+      # scheme-medium is the base (pdflatex, dvisvgm, amsmath/amssymb, CM/LM fonts,
+      # inputenc/fontenc/textcomp), but it does NOT include standalone (the figures'
+      # documentclass), pgf/tikz, pgfplots, or fontawesome5 — the exact set every
+      # figure needs, derived by scanning the content repo's .tex sources. `pgf`
+      # covers all the tikz libraries in use (arrows.meta, calc, decorations.*,
+      # positioning, shapes.*). Runs BEFORE pnpm install so apps/website's
+      # check-latex postinstall and the sync-figures prebuild find pdflatex +
+      # dvisvgm on PATH. The action caches the install, so only the first run pays
+      # the download cost.
       - name: Set up TeX Live 2026
         uses: TeX-Live/setup-texlive-action@v4
         with:
           version: 2026
           packages: |
             scheme-medium
+            standalone
+            pgf
+            pgfplots
             fontawesome5
 
       - uses: actions/checkout@v4
