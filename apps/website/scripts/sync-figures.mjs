@@ -118,6 +118,11 @@ for await (const src of walkAll(contentDir)) {
       compiled++
     } catch (err) {
       console.error(`[sync-figures] FAILED to compile ${path.relative(contentDir, src)}: ${err.message}`)
+      // pdflatex writes its LaTeX errors (missing package/class, syntax, etc.) to
+      // stdout, not stderr — surface the tail so CI logs show the real cause
+      // instead of just "Command failed".
+      const detail = (err.stdout || err.stderr || '').toString().trim()
+      if (detail) console.error(detail.split('\n').slice(-15).join('\n'))
       failed++
     }
   } else {
