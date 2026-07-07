@@ -8,7 +8,17 @@ interface NotMigratedStubProps {
 // Stub for a chapter that exists in the content model but is not yet migrated
 // (`published: false`) and has a `legacy-path`. Links to the legacy site.
 export default function NotMigratedStub({ legacyPath }: NotMigratedStubProps) {
-  const legacyHref = `https://youproof.hu${legacyPath}`
+  // WORKER_DOMAIN is the per-environment .hu host (staging.youproof.hu on
+  // staging, youproof.hu on production), set by the deploy workflow. This stub
+  // only renders on the deployed environments, so it must always be present.
+  const legacyHost = process.env.WORKER_DOMAIN
+  if (!legacyHost) {
+    throw new Error(
+      'WORKER_DOMAIN is not set; cannot build the legacy link for an unmigrated chapter.',
+    )
+  }
+
+  const legacyHref = `https://${legacyHost}${legacyPath}`
   return (
     <div className={styles.stub}>
       <h1 className={styles.title}>Ez a fejezet még nem költözött át</h1>
