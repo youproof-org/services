@@ -355,7 +355,7 @@ jobs:
       # sync-figures prebuild find pdflatex + dvisvgm on PATH. The action caches the
       # TeX Live install, so only the first run pays the download cost.
       - name: Set up TeX Live 2026
-        uses: teatimeguest/setup-texlive-action@v3
+        uses: TeX-Live/setup-texlive-action@v4
         with:
           version: 2026
           packages: |
