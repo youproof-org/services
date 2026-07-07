@@ -152,8 +152,10 @@ resolves after nameserver delegation + R2 custom-domain cert issuance.
 
 **Pre-flight (once):**
 1. `CLOUDFLARE_API_TOKEN` has all needed permissions, including **Workers R2
-   Storage → Edit** (to create the R2 buckets + custom domain) and the ruleset
-   permissions (Dynamic Redirect, Transform Rules, Cache Settings).
+   Storage → Edit** (to create the R2 buckets + custom domain), the ruleset
+   permissions (Dynamic Redirect, Transform Rules, Cache Settings), and
+   **Cache Purge** (the deploy's cache-purge step 401s without it — it's separate
+   from Cache Settings).
 2. `CONTENT_REPO_TOKEN` exists on the services `staging` + `production`
    Environments.
 3. Delegate the `youproof.org` nameservers at the registrar (`terraform output

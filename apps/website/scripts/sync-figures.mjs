@@ -132,3 +132,11 @@ for await (const src of walkAll(contentDir)) {
 }
 
 console.log(`[sync-figures] ${copied} copied, ${compiled} compiled, ${failed} failed, ${upToDate} up-to-date`)
+
+// Fail the build on ANY figure compile failure — a missing figure would otherwise
+// ship as a broken <img> (a 404 the quality gate only catches post-deploy). Exit
+// non-zero so `next build`'s prebuild aborts loudly at build time instead.
+if (failed > 0) {
+  console.error(`[sync-figures] ${failed} figure(s) failed to compile — aborting build`)
+  process.exit(1)
+}
