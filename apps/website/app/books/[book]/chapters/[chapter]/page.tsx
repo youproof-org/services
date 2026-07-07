@@ -28,6 +28,13 @@ interface ChapterPageRouteProps {
   params: Promise<{ book: string; chapter: string }>
 }
 
+// Unpublished chapters render a stub only on the deployed environments
+// (`SITE_ENV` is 'staging' or 'production', set by the deploy workflow).
+// Anywhere else — local development, where SITE_ENV is unset — they render
+// their real content normally so authors can preview work in progress.
+const isDeployedEnv =
+  process.env.SITE_ENV === 'staging' || process.env.SITE_ENV === 'production'
+
 export default async function ChapterPageRoute({ params }: ChapterPageRouteProps) {
   const { book: bookName, chapter: chapterName } = await params
   // Static-export prerender workers don't share the instrumentation-initialised
@@ -57,8 +64,9 @@ export default async function ChapterPageRoute({ params }: ChapterPageRouteProps
   ]
 
   // Unpublished chapters still get a static page (so internal links resolve),
-  // but show a stub instead of the real content.
-  if (!chapter.published) {
+  // but on the deployed environments they show a stub instead of the real
+  // content. Locally they render normally (see `isDeployedEnv`).
+  if (!chapter.published && isDeployedEnv) {
     return (
       <>
         <SiteHeader breadcrumbs={breadcrumbs} />
