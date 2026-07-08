@@ -10,7 +10,7 @@
   z-index: 100;
 }
 
-.top-row {
+.topRow {
   position: relative; // anchor for the mobile nav dropdown
   width: 100%;
   display: flex;
@@ -32,10 +32,10 @@
 
 .lockup {
   // Scale the shared lockup down to header size.
-  font-size: 0.72rem;
+  font-size: 0.85rem;
 }
 
-.breadcrumb-row {
+.breadcrumbRow {
   display: flex;
   overflow-x: auto;
   overflow-y: hidden;

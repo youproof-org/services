@@ -8,7 +8,14 @@ const H = (R * Math.sqrt(3)) / 2 // ≈ 22.5
 // right (B) vertically centered between them — matches the youproof.org mark.
 const A = { cx: 30, cy: 27 }
 const C = { cx: 30, cy: 84 }
-const B = { cx: 66, cy: (A.cy + C.cy) / 2 }
+
+// B is the diagonal honeycomb neighbour of A and C, pushed outward so its gap to
+// each equals the vertical edge-gap between A and C. Touching flat-top neighbours
+// sit at offset (1.5R, ±H) (center distance 2H); scaling that offset to the
+// actual A↔C center distance reproduces the same gap in the diagonal direction.
+const AC_CENTER_DIST = C.cy - A.cy
+const SCALE = AC_CENTER_DIST / (2 * H)
+const B = { cx: A.cx + 1.5 * R * SCALE, cy: (A.cy + C.cy) / 2 }
 const CENTERS = [A, B, C]
 
 // Flat-top hexagon: points at left/right, flat top/bottom edges.
@@ -43,7 +50,7 @@ export default function HexMark({
   const filled = variant === 'filled'
   return (
     <svg
-      viewBox="0 0 96 111"
+      viewBox="0 0 110 111"
       className={`${styles.mark} ${className ?? ''}`}
       role={title ? 'img' : 'presentation'}
       aria-hidden={title ? undefined : true}

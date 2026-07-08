@@ -34,7 +34,7 @@
   }
 }
 
-.hero-bg {
+.heroBg {
   // Placeholder for the future "map" background art (see TODO in page.tsx).
   position: absolute;
   inset: 0;
@@ -42,7 +42,7 @@
   pointer-events: none;
 }
 
-.hero-lockup {
+.heroLockup {
   position: relative;
   z-index: 1;
   font-size: 1.1rem;
@@ -52,7 +52,7 @@
   }
 }
 
-.hero-tagline {
+.heroTagline {
   position: relative;
   z-index: 1;
   margin: 2rem 0 0;
@@ -77,7 +77,7 @@
 }
 
 /* Könyvek grid → horizontal scroll on mobile */
-.book-grid {
+.bookGrid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.25rem;
@@ -88,7 +88,7 @@
 }
 
 @media (max-width: $bp-tablet) {
-  .book-grid {
+  .bookGrid {
     display: flex;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
@@ -115,13 +115,13 @@
 }
 
 /* Hírek list */
-.news-list {
+.newsList {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-.news-item {
+.newsItem {
   border-bottom: 1px solid $gray-200;
 
   &:first-child {
@@ -129,7 +129,7 @@
   }
 }
 
-.news-link {
+.newsLink {
   display: flex;
   gap: 1rem;
   align-items: baseline;
@@ -137,13 +137,13 @@
   text-decoration: none;
   color: inherit;
 
-  &:hover .news-title {
+  &:hover .newsTitle {
     text-decoration: underline;
     text-underline-offset: 3px;
   }
 }
 
-.news-date {
+.newsDate {
   flex: 0 0 auto;
   font-size: 0.8rem;
   font-variant-numeric: tabular-nums;
@@ -151,6 +151,6 @@
   min-width: 7rem;
 }
 
-.news-title {
+.newsTitle {
   font-size: 1.05rem;
 }

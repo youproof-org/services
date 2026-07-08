@@ -3,17 +3,16 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faMagnifyingGlass, faBars, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faBars, faXmark } from '@fortawesome/free-solid-svg-icons'
 import styles from './site-nav.module.scss'
 
 export const NAV_LINKS = [
   { label: 'Cikkek', href: '/articles' },
-  { label: 'Könyvek', href: '/#konyvek' },
   { label: 'Hírek', href: '/newsletter' },
 ]
 
-// Primary nav + search. Nav collapses behind a hamburger < 640px; the search
-// icon stays visible at all widths (§2.1). Client component for the toggle.
+// Primary nav. Collapses behind a hamburger < 640px. Client component for the
+// toggle.
 export default function SiteNav() {
   const [open, setOpen] = useState(false)
 
@@ -28,10 +27,6 @@ export default function SiteNav() {
           </li>
         ))}
       </ul>
-
-      <button className={styles.iconBtn} aria-label="Keresés" type="button">
-        <FontAwesomeIcon icon={faMagnifyingGlass} width={18} />
-      </button>
 
       <button
         className={`${styles.iconBtn} ${styles.hamburger}`}

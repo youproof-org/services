@@ -14,19 +14,25 @@
 
 .wordmark {
   font-family: var(--font-wordmark), var(--font-mulish), sans-serif;
-  font-weight: 700;
+  font-weight: 500;
   text-transform: lowercase;
-  letter-spacing: -0.02em;
+  letter-spacing: 0.06em;
   line-height: 1;
   font-size: 2em;
+  // Centre the wordmark within the text block (the tagline can be wider once
+  // tracked out), so wordmark and tagline share a common centre line.
+  text-align: center;
 }
 
 .tagline {
   text-transform: uppercase;
   letter-spacing: 0.28em;
-  font-size: 0.62em;
-  font-weight: $font-normal;
-  // Optically align the tracked caps under the wordmark's left edge.
+  font-size: 0.6em;
+  font-weight: $font-bold;
+  // Centre the tracked caps under the wordmark. The padding-left offsets the
+  // trailing letter-spacing after the last glyph so it reads optically centred.
+  text-align: center;
+  padding-left: 0.28em;
   margin-top: 0.5em;
   color: $gray-600;
 }
@@ -38,7 +44,7 @@
   gap: 0.6em;
 
   .mark {
-    height: 2.4em;
+    height: 3.2em;
   }
 }
 

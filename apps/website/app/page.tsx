@@ -32,7 +32,7 @@ export default async function RootPage() {
         <section className={styles.hero}>
           {/* TODO(YP-hero-art): subtle "map" background art — placeholder for now. */}
           <div className={styles.heroBg} aria-hidden="true" />
-          <BrandLockup variant="stacked" showTagline={false} className={styles.heroLockup} />
+          <BrandLockup variant="stacked" showTagline className={styles.heroLockup} />
           <p className={styles.heroTagline}>
             There is no royal road, just better maps…
           </p>
