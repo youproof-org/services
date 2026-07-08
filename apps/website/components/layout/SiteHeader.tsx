@@ -2,6 +2,7 @@ import Link from 'next/link'
 import Breadcrumb, { type BreadcrumbItem } from './Breadcrumb'
 import BrandLockup from './BrandLockup'
 import SiteNav from './SiteNav'
+import HeaderHeightProbe from './HeaderHeightProbe'
 import styles from './site-header.module.scss'
 
 export type HeaderMode = 'root' | 'inner' | 'minimal'
@@ -15,14 +16,14 @@ interface SiteHeaderProps {
 }
 
 export default function SiteHeader({ mode = 'inner', breadcrumbs }: SiteHeaderProps) {
-  const showTagline = mode !== 'inner' // keep inner headers compact
   return (
     <header className={styles.header}>
+      <HeaderHeightProbe />
       <div className={styles.topRow}>
         <Link href="/" className={styles.brand} aria-label="youproof.org">
           <BrandLockup
             variant="horizontal"
-            showTagline={showTagline}
+            showTagline
             className={styles.lockup}
           />
         </Link>

@@ -3,7 +3,11 @@
 
 :root {
   color-scheme: light;
-  scroll-padding-top: 120px;
+  scroll-behavior: smooth;
+  // Offset anchored scrolls by the sticky header's actual height (published by
+  // HeaderHeightProbe), so targets land just below the header. 120px fallback
+  // (~a header with breadcrumb) until hydration sets the real value.
+  scroll-padding-top: var(--header-height, 120px);
   // Wordmark / hero-tagline font (see app/layout.tsx <head> embed). Falls back
   // to Mulish then a generic sans if Google Sans fails to load.
   --font-wordmark: 'Google Sans', var(--font-mulish), system-ui, sans-serif;
@@ -86,9 +90,17 @@ body {
   }
 }
 
-/* Book shell — min-h-screen */
+/* Book shell — full-height flex column so the footer sticks to the bottom of
+   the viewport when the page content is shorter than the viewport. The page
+   body (always a direct <main>) grows to fill the remaining space. */
 .book-shell {
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
+}
+
+.book-shell > main {
+  flex: 1;
 }
 
 /* Hero placeholder — stands in for a missing thumbnail hero so the

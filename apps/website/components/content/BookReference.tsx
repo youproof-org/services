@@ -10,12 +10,12 @@ interface BookReferenceProps {
 export default function BookReference({ book, bookRomanIndex }: BookReferenceProps) {
   return (
     <Link href={`/books/${book.name}`} className={styles['book-ref']}>
-      {book.logo && (
+      {book.thumbnail && (
         <div className={styles['book-ref__logo']}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={book.logo.src}
-            alt={book.logo.alt}
+            src={book.thumbnail.src}
+            alt={book.thumbnail.alt}
             style={{ objectFit: 'contain' }}
             loading="lazy"
             width='100%'

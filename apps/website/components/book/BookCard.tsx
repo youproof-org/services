@@ -9,22 +9,25 @@ interface BookCardProps {
   meta?: string
 }
 
+// A book box (not a link itself): thumbnail + title/meta + an "Elolvasom" CTA
+// that is the only link, pointing to the book's index page.
 export default function BookCard({ title, href, thumbnail, meta }: BookCardProps) {
   return (
-    <Link href={href} className={styles.link}>
-      <div className={styles.card}>
-        <div className={styles.thumb} aria-hidden={!thumbnail}>
-          {thumbnail && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={thumbnail.src} alt={thumbnail.alt} loading="lazy" />
-          )}
-        </div>
-        <div className={styles.body}>
-          <p className={styles.label}>Könyv</p>
-          <h3 className={styles.title}>{title}</h3>
-          {meta && <p className={styles.meta}>{meta}</p>}
-        </div>
+    <div className={styles.card}>
+      <div className={styles.thumb} aria-hidden={!thumbnail}>
+        {thumbnail && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={thumbnail.src} alt={thumbnail.alt} loading="lazy" />
+        )}
       </div>
-    </Link>
+      <div className={styles.body}>
+        <p className={styles.label}>Könyv</p>
+        <h3 className={styles.title}>{title}</h3>
+        {meta && <p className={styles.meta}>{meta}</p>}
+        <Link href={href} className={styles.readButton}>
+          Elolvasom
+        </Link>
+      </div>
+    </div>
   )
 }

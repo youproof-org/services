@@ -11,28 +11,29 @@
   flex: 1;
   box-sizing: border-box;
   width: 100%;
-  max-width: $max-width;
-  margin: 0 auto;
-  padding: 0 $pad-x 4rem;
-
-  @include wide {
-    max-width: 75rem;
-  }
+  // Full width (no max-width + auto-margin) so the hero's background can span
+  // edge-to-edge — a narrow, centred main would clip it at the side margins.
+  // The readable-width cap lives on the content sections instead (see .section),
+  // which have no background, so centring them is harmless. The hero stays
+  // full-bleed.
+  padding-bottom: 4rem;
 }
 
-/* Hero */
+/* Hero — full viewport height, content vertically centered. No vertical padding
+   (centering handles it); horizontal padding keeps a gutter on narrow screens. */
 .hero {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   text-align: center;
-  padding: 4rem 1rem 4.5rem;
+  // Fill the viewport below the in-flow sticky header. --header-height is
+  // published by HeaderHeightProbe; the 4.5rem fallback matches the typical
+  // header height to avoid a load-time flash before hydration.
+  min-height: calc(100vh - var(--header-height, 4.5rem));
+  padding-inline: 1rem;
   overflow: hidden;
-
-  @include tablet {
-    padding: 5.5rem 1rem 6rem;
-  }
 }
 
 .heroBg {
@@ -68,51 +69,94 @@
   }
 }
 
-/* Sections */
+/* Scroll-down affordance (label above a bouncing chevron), pinned near the
+   bottom of a full-height section. */
+.scrollDown {
+  position: absolute;
+  z-index: 1;
+  bottom: 2.5rem;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 1.4rem;
+  color: $gray-500;
+  text-decoration: none;
+  animation: scrollBounce 1.8s ease-in-out infinite;
+
+  &:hover {
+    color: $black;
+  }
+}
+
+.scrollLabel {
+  font-size: 0.72rem;
+  font-weight: $font-bold;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+@keyframes scrollBounce {
+  0%, 100% { transform: translate(-50%, 0); }
+  50% { transform: translate(-50%, 6px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scrollDown {
+    animation: none;
+    transform: translateX(-50%);
+  }
+}
+
+/* Könyvek — full viewport height (below the sticky header), content centered. */
+.booksSection {
+  position: relative; // anchor for the scroll cue
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - var(--header-height, 4.5rem));
+  padding-inline: 2.5rem;
+}
+
+/* Sections — capped to the readable column width (matching the book-index /
+   standalone-index content), centred, with a horizontal gutter from padding. */
 .section {
-  margin-top: 3.5rem;
+  max-width: $max-width-narrow;
+  margin: 5rem auto 0;
+  padding-inline: 2.5rem;
 
   @include tablet {
-    margin-top: 4.5rem;
+    margin-top: 6rem;
+  }
+
+  @include wide {
+    max-width: 52rem;
   }
 }
 
-/* Könyvek grid → horizontal scroll on mobile */
+/* The first section directly under the full-height hero needs no top margin. */
+.hero + .section {
+  margin-top: 0;
+}
+
+/* Könyvek — centered, wrapping row of book items (card + CTA). */
 .bookGrid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.25rem;
-
-  @include tablet {
-    grid-template-columns: repeat(3, 1fr);
-  }
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2.5rem;
+  width: 100%;
+  max-width: 52rem;
 }
 
-@media (max-width: $bp-tablet) {
-  .bookGrid {
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-    margin: 0 (-$pad-x);
-    padding: 0 $pad-x 0.5rem;
-
-    &::-webkit-scrollbar {
-      display: none;
-    }
-
-    > * {
-      flex: 0 0 78%;
-      scroll-snap-align: start;
-    }
-  }
-}
 
 /* Article rows */
 .rows {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 2rem;
 }
 
 /* Hírek list */

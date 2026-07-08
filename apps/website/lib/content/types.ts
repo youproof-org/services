@@ -289,7 +289,7 @@ export interface BookNode {
   name: string
   title: string
   parts: PartNode[]
-  logo?: ThumbnailImage
+  thumbnail?: ThumbnailImage      // series cover shown on book cards
   publishedAt?: string            // kebab: published-at; ISO datetime, if published
   published: boolean              // derived: publishedAt != null
   legacyPath?: string             // old youproof.hu series path, if any (kebab: legacy-path)

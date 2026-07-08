@@ -1,7 +1,10 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faQuestion } from '@fortawesome/free-solid-svg-icons'
 import type { BookNode } from '@/lib/content/types'
 import ContentBlocks from '@/components/content/ContentBlocks'
 import ContentRow from '@/components/content/ContentRow'
 import { getChapterIndex } from '@/lib/utils/index-helpers'
+import { toRoman } from '@/lib/utils/roman'
 import styles from './book-index.module.scss'
 
 interface BookIndexProps {
@@ -17,10 +20,10 @@ export default function BookIndex({ book, episode }: BookIndexProps) {
     <div className={styles.index}>
       {/* 1. Headline — book mark + episode label + title */}
       <header className={styles.headline}>
-        {book.logo && (
+        {book.thumbnail && (
           <div className={styles.logo}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={book.logo.src} alt={book.logo.alt} loading="lazy" />
+            <img src={book.thumbnail.src} alt={book.thumbnail.alt} loading="lazy" />
           </div>
         )}
         <div>
@@ -36,7 +39,10 @@ export default function BookIndex({ book, episode }: BookIndexProps) {
         <div className={styles.teaser}>
           <ul>
             {book.teaser.items.map((q, i) => (
-              <li key={i}>{q}</li>
+              <li key={i}>
+                <FontAwesomeIcon icon={faQuestion} className={styles.teaserIcon} />
+                <span>{q}</span>
+              </li>
             ))}
           </ul>
         </div>
@@ -47,7 +53,7 @@ export default function BookIndex({ book, episode }: BookIndexProps) {
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>Kivonat</h2>
           <div className={styles.prose}>
-            <ContentBlocks blocks={book.abstract} context="web" />
+            <ContentBlocks blocks={book.abstract} context="web" dropCapFirst />
           </div>
         </section>
       )}
@@ -55,9 +61,11 @@ export default function BookIndex({ book, episode }: BookIndexProps) {
       {/* 4. Tartalom (table of contents), grouped by part */}
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>Tartalom</h2>
-        {book.parts.map((part) => (
+        {book.parts.map((part, i) => (
           <div key={part.name} className={styles.part}>
-            <h3 className={styles.partTitle}>{part.title}</h3>
+            <h3 className={styles.partTitle}>
+              <span className={styles.partNumber}>{toRoman(i + 1)}.</span> {part.title}
+            </h3>
             <div className={styles.rows}>
               {part.chapters.map((ch) => (
                 <ContentRow

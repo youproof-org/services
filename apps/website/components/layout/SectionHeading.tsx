@@ -3,7 +3,7 @@ import styles from './section-heading.module.scss'
 
 interface SectionHeadingProps {
   label: string
-  // Optional anchor id (e.g. "konyvek") so nav links can scroll here.
+  // Optional anchor id (e.g. "articles") so scroll cues / links can target it.
   id?: string
   // Optional "Összes" link target. Unused on the homepage at launch (item
   // counts are low) — kept for when a section needs an all-items link.

@@ -49,22 +49,35 @@
 
 /* 2. Questions box */
 .teaser {
-  margin-top: 2rem;
-  border: 1px solid $black;
-  padding: 1.25rem 1.5rem;
+  @include card-frame;
+  max-width: 42rem;
+  margin: 4.5rem auto;
+  padding: 1.75rem 2rem;
 
   ul {
+    list-style: none;
     margin: 0;
-    padding-left: 1.2rem;
+    padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
+    gap: 1.1rem;
   }
 
   li {
-    font-size: 1.05rem;
-    line-height: 1.5;
+    display: flex;
+    align-items: baseline;
+    gap: 0.9rem;
+    font-size: 1.1rem;
+    line-height: 1.4;
+    font-weight: $font-bold;
+    text-transform: uppercase;
   }
+}
+
+.teaserIcon {
+  flex: 0 0 auto;
+  font-size: 1.4em;
+  color: $gray-400;
 }
 
 /* Sections */
@@ -72,12 +85,15 @@
   margin-top: 3rem;
 }
 
+// Match the section titles inside chapters (section-view.module.scss).
 .sectionTitle {
-  font-size: 1.4rem;
-  font-weight: $font-bold;
-  padding-bottom: 0.6rem;
-  margin: 0 0 1.5rem;
-  border-bottom: 1px solid $black;
+  font-size: 1.3rem;
+  font-weight: $font-x-bold;
+  margin: 0 0 1rem;
+
+  @include tablet {
+    font-size: 1.5rem;
+  }
 }
 
 .prose {
@@ -87,7 +103,7 @@
 
 /* 4. Tartalom */
 .part {
-  margin-bottom: 2rem;
+  margin-bottom: 3.5rem;
 
   &:last-child {
     margin-bottom: 0;
@@ -95,17 +111,21 @@
 }
 
 .partTitle {
-  font-size: 1.05rem;
+  font-size: 1.3rem;
   font-weight: $font-bold;
   letter-spacing: 0.01em;
   margin: 0 0 1rem;
   color: $gray-800;
 }
 
+.partNumber {
+  color: $gray-400;
+}
+
 .rows {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 2rem;
 }
 
 /* 5. Bibliography */
@@ -114,7 +134,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: $font-light;
   color: $gray-800;
 }

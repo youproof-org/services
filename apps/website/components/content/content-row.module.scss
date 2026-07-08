@@ -2,24 +2,32 @@
 @use '../../styles/mixins' as *;
 
 .row {
-  display: flex;
-  gap: 1.25rem;
-  align-items: stretch;
-  padding: 1rem;
-  border: 1px solid $gray-200;
+  @include card-frame;
+  display: block;
+  padding: 1.25rem;
   text-decoration: none;
   color: inherit;
-  transition: border-color 0.15s ease;
+  transition: box-shadow 0.15s ease;
 
   &:hover {
-    border-color: $black;
+    box-shadow: 0 0 20px 0 #666;
+  }
+
+  // Contain the floated thumbnail so the box wraps its full height.
+  &::after {
+    content: '';
+    display: block;
+    clear: both;
   }
 }
 
+// Floated so the title + excerpt flow around it (and wrap beneath once the text
+// is taller than the image).
 .thumb {
-  flex: 0 0 auto;
-  width: 5.5rem;
-  height: 5.5rem;
+  float: left;
+  width: 9rem;
+  height: 9rem;
+  margin: 0.2rem 1.25rem 0.5rem 0;
   background: $gray-100;
   overflow: hidden;
 
@@ -31,21 +39,15 @@
   }
 
   @include tablet {
-    width: 7rem;
-    height: 7rem;
+    width: 11rem;
+    height: 11rem;
   }
 }
 
-.body {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  min-width: 0;
-}
-
 .meta {
-  margin: 0 0 0.35rem;
-  font-size: 0.75rem;
+  margin: 0 0 0.4rem;
+  font-size: 0.85rem;
+  font-weight: $font-bold;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: $gray-500;
@@ -53,19 +55,14 @@
 
 .title {
   margin: 0;
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   font-weight: $font-bold;
   line-height: 1.3;
 }
 
 .excerpt {
-  margin: 0.4rem 0 0;
+  margin: 0.5rem 0 0;
   font-size: 0.95rem;
-  line-height: 1.5;
+  line-height: 1.55;
   color: $gray-600;
-  // Clamp to two lines so rows stay uniform.
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 }

@@ -1,4 +1,6 @@
 import Link from 'next/link'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faAngleDown } from '@fortawesome/free-solid-svg-icons'
 import SiteHeader from '@/components/layout/SiteHeader'
 import SiteFooter from '@/components/layout/SiteFooter'
 import BrandLockup from '@/components/layout/BrandLockup'
@@ -13,6 +15,17 @@ function huDate(iso?: string): string {
   if (!iso) return ''
   const parts = iso.slice(0, 10).split('-')
   return parts.length === 3 ? `${parts[0]}. ${parts[1]}. ${parts[2]}.` : ''
+}
+
+// A labelled scroll-down affordance (label above a bouncing chevron) that jumps
+// to the next full-height section.
+function ScrollCue({ href, label }: { href: string; label: string }) {
+  return (
+    <a href={href} className={styles.scrollDown} aria-label={label}>
+      <span className={styles.scrollLabel}>{label}</span>
+      <FontAwesomeIcon icon={faAngleDown} />
+    </a>
+  )
 }
 
 export default async function RootPage() {
@@ -36,12 +49,12 @@ export default async function RootPage() {
           <p className={styles.heroTagline}>
             There is no royal road, just better maps…
           </p>
+          <ScrollCue href="#books" label="Tovább" />
         </section>
 
-        {/* Könyvek */}
+        {/* Könyvek — full-height, centered, no title */}
         {books.length > 0 && (
-          <section className={styles.section}>
-            <SectionHeading label="Könyvek" id="konyvek" />
+          <section id="books" className={styles.booksSection}>
             <div className={styles.bookGrid}>
               {books.map((book) => {
                 const chapterCount = book.parts.reduce((n, p) => n + p.chapters.length, 0)
@@ -50,19 +63,20 @@ export default async function RootPage() {
                     key={book.name}
                     title={book.title}
                     href={`/books/${book.name}`}
-                    thumbnail={book.logo}
+                    thumbnail={book.thumbnail}
                     meta={`${chapterCount} fejezet`}
                   />
                 )
               })}
             </div>
+            {articles.length > 0 && <ScrollCue href="#articles" label="Tovább" />}
           </section>
         )}
 
         {/* Legutóbbi cikkek */}
         {articles.length > 0 && (
           <section className={styles.section}>
-            <SectionHeading label="Legutóbbi cikkek" id="cikkek" />
+            <SectionHeading label="Legutóbbi cikkek" id="articles" />
             <div className={styles.rows}>
               {articles.map((a) => (
                 <ContentRow
@@ -81,7 +95,7 @@ export default async function RootPage() {
         {/* Hírek */}
         {newsletters.length > 0 && (
           <section className={styles.section}>
-            <SectionHeading label="Hírek" id="hirek" />
+            <SectionHeading label="Hírek" id="news" />
             <ul className={styles.newsList}>
               {newsletters.map((n) => (
                 <li key={n.name} className={styles.newsItem}>

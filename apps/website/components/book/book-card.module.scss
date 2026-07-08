@@ -1,22 +1,12 @@
 @use '../../styles/variables' as *;
-
-.link {
-  display: block;
-  text-decoration: none;
-  color: inherit;
-  height: 100%;
-}
+@use '../../styles/mixins' as *;
 
 .card {
+  @include card-frame;
   display: flex;
   flex-direction: column;
-  height: 100%;
-  border: 1px solid $gray-200;
-  transition: border-color 0.15s ease;
-
-  &:hover {
-    border-color: $black;
-  }
+  width: 24rem;
+  max-width: 100%;
 }
 
 .thumb {
@@ -33,7 +23,10 @@
 }
 
 .body {
-  padding: 1rem 1.1rem 1.25rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 1.1rem 1.5rem;
 }
 
 .label {
@@ -57,4 +50,25 @@
   font-weight: $font-light;
   margin: 0.5rem 0 0;
   color: $gray-600;
+}
+
+/* CTA lives inside the box, pushed to the bottom (enlarges the box). Bordered
+   like the box but without the drop shadow. */
+.readButton {
+  align-self: center;
+  margin-top: 2.25rem;
+  padding: 0.65rem 1.75rem;
+  border: 1px solid $black;
+  background: $black;
+  color: $white;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: $font-bold;
+  letter-spacing: 0.02em;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: $white;
+    color: $black;
+  }
 }

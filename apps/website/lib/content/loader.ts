@@ -326,7 +326,7 @@ export interface RawBook {
   name: string
   title: string
   partNames: string[]
-  logo?: ThumbnailImage
+  thumbnail?: ThumbnailImage
   publishedAt?: string
   legacyPath?: string
   abstract: ContentBlock[]
@@ -355,7 +355,7 @@ export function loadBook(filePath: string): RawBook {
     name: raw.name as string,
     title: raw.title as string,
     partNames: toStringArray(raw.parts),
-    logo: toThumbnail(raw.logo),
+    thumbnail: toThumbnail(raw.thumbnail),
     publishedAt: toPublishedAt(raw['published-at']),
     legacyPath: typeof raw['legacy-path'] === 'string' ? (raw['legacy-path'] as string) : undefined,
     abstract: toBlocks(raw.abstract),

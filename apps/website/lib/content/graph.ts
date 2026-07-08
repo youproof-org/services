@@ -177,7 +177,7 @@ export interface RawBookEntry {
   name: string
   title: string
   parts: RawPartEntry[]
-  logo?: ThumbnailImage
+  thumbnail?: ThumbnailImage
   publishedAt?: string
   legacyPath?: string
   abstract: ContentBlock[]
@@ -332,10 +332,10 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
     const bookEntry: RawBookEntry = {
       name: rawBook.name,
       title: rawBook.title,
-      logo: rawBook.logo
+      thumbnail: rawBook.thumbnail
         ? {
-            src: resolveImageSrc(rawBook.logo.src, bookDir, bookUrlPrefix),
-            alt: rawBook.logo.alt,
+            src: resolveImageSrc(rawBook.thumbnail.src, bookDir, bookUrlPrefix),
+            alt: rawBook.thumbnail.alt,
           }
         : undefined,
       publishedAt: rawBook.publishedAt,
@@ -614,7 +614,7 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
     const book: BookNode = {
       name: bookEntry.name,
       title: bookEntry.title,
-      logo: bookEntry.logo,
+      thumbnail: bookEntry.thumbnail,
       publishedAt: bookEntry.publishedAt,
       published: bookEntry.publishedAt != null,
       legacyPath: bookEntry.legacyPath,
