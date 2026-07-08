@@ -1,7 +1,7 @@
 import 'server-only'
 import { loadRawGraphData, buildGraphFromRaw } from './graph'
 import { readRawCache, writeRawCache, deleteRawCache } from './graph-cache'
-import type { ContentGraph } from './types'
+import type { ContentGraph, StandaloneNode } from './types'
 
 // Use a Node.js global so the singleton survives across module re-evaluations
 // within the same webpack context (e.g. the (instrument) context).
@@ -67,6 +67,14 @@ export function getContentGraph(): ContentGraph {
   return g.__contentGraph
 }
 
+// Published standalone items (article/newsletter/page/landing) sorted by
+// publish datetime, most-recent first — for homepage/index listings.
+export function listPublished(map: Map<string, StandaloneNode>): StandaloneNode[] {
+  return Array.from(map.values())
+    .filter((n) => n.published)
+    .sort((a, b) => (b.publishedAt ?? '').localeCompare(a.publishedAt ?? ''))
+}
+
 export type { ContentGraph }
 export type {
   ThumbnailImage,
@@ -74,6 +82,10 @@ export type {
   PartNode,
   ChapterNode,
   SectionNode,
+  StandaloneNode,
+  StandaloneKind,
+  StandaloneSection,
+  ItemList,
   DefinitionNode,
   TheoremNode,
   ProofNode,

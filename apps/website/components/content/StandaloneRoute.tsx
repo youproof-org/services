@@ -1,0 +1,43 @@
+import SiteHeader, { type HeaderMode } from '@/components/layout/SiteHeader'
+import SiteFooter from '@/components/layout/SiteFooter'
+import StandalonePage from './StandalonePage'
+import NotMigratedStub from './NotMigratedStub'
+import UnavailableStub from './UnavailableStub'
+import type { BreadcrumbItem } from '@/components/layout/Breadcrumb'
+import type { StandaloneNode } from '@/lib/content/types'
+
+// Unpublished standalone items render a stub only on the deployed environments
+// (mirrors the chapter route). Locally (SITE_ENV unset) they render normally so
+// authors can preview drafts.
+const isDeployedEnv =
+  process.env.SITE_ENV === 'staging' || process.env.SITE_ENV === 'production'
+
+interface StandaloneRouteProps {
+  node: StandaloneNode
+  breadcrumbs?: BreadcrumbItem[]
+  mode?: HeaderMode
+}
+
+// Shared shell for the article/newsletter/page/landing detail routes: header
+// (mode-specific) + content-or-stub + footer.
+export default function StandaloneRoute({ node, breadcrumbs, mode = 'inner' }: StandaloneRouteProps) {
+  const showStub = !node.published && isDeployedEnv
+
+  return (
+    <div className="book-shell">
+      <SiteHeader mode={mode} breadcrumbs={breadcrumbs} />
+      <main>
+        {showStub ? (
+          node.legacyPath ? (
+            <NotMigratedStub legacyPath={node.legacyPath} />
+          ) : (
+            <UnavailableStub />
+          )
+        ) : (
+          <StandalonePage node={node} />
+        )}
+      </main>
+      <SiteFooter />
+    </div>
+  )
+}

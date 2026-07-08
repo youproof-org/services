@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next'
-import { getContentGraph, initContentGraph } from '@/lib/content'
+import { getContentGraph, initContentGraph, listPublished } from '@/lib/content'
 
 // Enumerated from the content graph at build time and emitted as a static file.
 export const dynamic = 'force-static'
@@ -28,6 +28,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }
     }
   }
+
+  // Standalone content. Articles/newsletter also expose their index pages.
+  // Landing pages are intentionally excluded (unlisted ad entry points).
+  if (listPublished(graph.articles).length > 0) entries.push({ url: `${SITE_URL}/articles` })
+  for (const a of listPublished(graph.articles)) entries.push({ url: `${SITE_URL}/articles/${a.name}` })
+
+  if (listPublished(graph.newsletters).length > 0) entries.push({ url: `${SITE_URL}/newsletter` })
+  for (const n of listPublished(graph.newsletters)) entries.push({ url: `${SITE_URL}/newsletter/${n.name}` })
+
+  for (const p of listPublished(graph.pages)) entries.push({ url: `${SITE_URL}/${p.name}` })
 
   return entries
 }

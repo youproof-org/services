@@ -1,4 +1,5 @@
 @use 'variables' as *;
+@use 'mixins' as *;
 
 .shell {
   display: flex;
@@ -8,29 +9,148 @@
 
 .main {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 4rem $pad-x;
-  gap: 3rem;
+  width: 100%;
+  max-width: $max-width;
+  margin: 0 auto;
+  padding: 0 $pad-x 4rem;
+
+  @include wide {
+    max-width: 75rem;
+  }
 }
 
-.brand {
+/* Hero */
+.hero {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
+  text-align: center;
+  padding: 4rem 1rem 4.5rem;
+  overflow: hidden;
+
+  @include tablet {
+    padding: 5.5rem 1rem 6rem;
+  }
+}
+
+.hero-bg {
+  // Placeholder for the future "map" background art (see TODO in page.tsx).
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hero-lockup {
+  position: relative;
+  z-index: 1;
+  font-size: 1.1rem;
+
+  @include tablet {
+    font-size: 1.5rem;
+  }
+}
+
+.hero-tagline {
+  position: relative;
+  z-index: 1;
+  margin: 2rem 0 0;
+  max-width: 34rem;
+  font-size: 1.15rem;
+  font-weight: $font-light;
+  font-style: italic;
+  color: $gray-600;
+
+  @include tablet {
+    font-size: 1.4rem;
+  }
+}
+
+/* Sections */
+.section {
+  margin-top: 3.5rem;
+
+  @include tablet {
+    margin-top: 4.5rem;
+  }
+}
+
+/* Könyvek grid → horizontal scroll on mobile */
+.book-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+
+  @include tablet {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: $bp-tablet) {
+  .book-grid {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    margin: 0 (-$pad-x);
+    padding: 0 $pad-x 0.5rem;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    > * {
+      flex: 0 0 78%;
+      scroll-snap-align: start;
+    }
+  }
+}
+
+/* Article rows */
+.rows {
+  display: flex;
+  flex-direction: column;
   gap: 1rem;
 }
 
-.brand-name {
-  font-size: 1.875rem;
-  letter-spacing: 0.2em;
+/* Hírek list */
+.news-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
-.books {
+.news-item {
+  border-bottom: 1px solid $gray-200;
+
+  &:first-child {
+    border-top: 1px solid $gray-200;
+  }
+}
+
+.news-link {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  justify-content: center;
+  gap: 1rem;
+  align-items: baseline;
+  padding: 0.9rem 0.25rem;
+  text-decoration: none;
+  color: inherit;
+
+  &:hover .news-title {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+
+.news-date {
+  flex: 0 0 auto;
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  color: $gray-500;
+  min-width: 7rem;
+}
+
+.news-title {
+  font-size: 1.05rem;
 }

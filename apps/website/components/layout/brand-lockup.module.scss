@@ -1,0 +1,63 @@
+@use '../../styles/variables' as *;
+
+.lockup {
+  display: flex;
+  color: $black;
+  // Drives every internal size; callers scale the whole lockup via font-size.
+  font-size: 1rem;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+}
+
+.wordmark {
+  font-family: var(--font-wordmark), var(--font-mulish), sans-serif;
+  font-weight: 700;
+  text-transform: lowercase;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  font-size: 2em;
+}
+
+.tagline {
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  font-size: 0.62em;
+  font-weight: $font-normal;
+  // Optically align the tracked caps under the wordmark's left edge.
+  margin-top: 0.5em;
+  color: $gray-600;
+}
+
+/* Horizontal: mark to the left of the wordmark/tagline stack. */
+.horizontal {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.6em;
+
+  .mark {
+    height: 2.4em;
+  }
+}
+
+/* Stacked: mark centered above the wordmark. */
+.stacked {
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6em;
+  text-align: center;
+
+  .text {
+    align-items: center;
+  }
+
+  .mark {
+    height: 5.5em;
+  }
+
+  .tagline {
+    letter-spacing: 0.3em;
+  }
+}

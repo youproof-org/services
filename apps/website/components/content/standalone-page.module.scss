@@ -1,0 +1,35 @@
+@use '../../styles/variables' as *;
+
+.article {
+  width: 100%;
+  max-width: $max-width-narrow;
+  margin: 0 auto;
+  padding: 2.5rem $pad-x 4rem;
+  font-weight: $font-light;
+  line-height: 1.8;
+}
+
+.header {
+  margin-bottom: 2rem;
+}
+
+.date {
+  margin: 0 0 0.5rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $gray-500;
+}
+
+.title {
+  margin: 0;
+  font-size: 2.1rem;
+  font-weight: $font-bold;
+  line-height: 1.15;
+}
+
+.abstract {
+  font-style: italic;
+  color: $gray-800;
+  margin-bottom: 2rem;
+}

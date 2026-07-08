@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 111" fill="none">
+  <!-- youproof.org mark: three flat-top hexagons, filled white (with stroke) so
+       they stay visible against dark browser-tab backgrounds. -->
+  <g fill="#fff" stroke="#000" stroke-width="3" stroke-linejoin="round">
+    <polygon points="56,27 43,49.52 17,49.52 4,27 17,4.48 43,4.48" />
+    <polygon points="92,55.5 79,78.02 53,78.02 40,55.5 53,32.98 79,32.98" />
+    <polygon points="56,84 43,106.52 17,106.52 4,84 17,61.48 43,61.48" />
+  </g>
+</svg>

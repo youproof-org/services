@@ -1,0 +1,47 @@
+'use client'
+
+import { useState } from 'react'
+import Link from 'next/link'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faMagnifyingGlass, faBars, faXmark } from '@fortawesome/free-solid-svg-icons'
+import styles from './site-nav.module.scss'
+
+export const NAV_LINKS = [
+  { label: 'Cikkek', href: '/articles' },
+  { label: 'Könyvek', href: '/#konyvek' },
+  { label: 'Hírek', href: '/newsletter' },
+]
+
+// Primary nav + search. Nav collapses behind a hamburger < 640px; the search
+// icon stays visible at all widths (§2.1). Client component for the toggle.
+export default function SiteNav() {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <div className={styles.nav}>
+      <ul className={`${styles.links} ${open ? styles.open : ''}`}>
+        {NAV_LINKS.map((link) => (
+          <li key={link.href}>
+            <Link href={link.href} className={styles.link} onClick={() => setOpen(false)}>
+              {link.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+
+      <button className={styles.iconBtn} aria-label="Keresés" type="button">
+        <FontAwesomeIcon icon={faMagnifyingGlass} width={18} />
+      </button>
+
+      <button
+        className={`${styles.iconBtn} ${styles.hamburger}`}
+        aria-label={open ? 'Menü bezárása' : 'Menü'}
+        aria-expanded={open}
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+      >
+        <FontAwesomeIcon icon={open ? faXmark : faBars} width={18} />
+      </button>
+    </div>
+  )
+}

@@ -4,6 +4,9 @@
 :root {
   color-scheme: light;
   scroll-padding-top: 120px;
+  // Wordmark / hero-tagline font (see app/layout.tsx <head> embed). Falls back
+  // to Mulish then a generic sans if Google Sans fails to load.
+  --font-wordmark: 'Google Sans', var(--font-mulish), system-ui, sans-serif;
 }
 
 body {

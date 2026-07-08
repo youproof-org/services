@@ -1,0 +1,33 @@
+@use '../../styles/variables' as *;
+
+.heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.75rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid $black;
+  // Offset for the sticky header when scrolled to via an anchor.
+  scroll-margin-top: 120px;
+}
+
+.label {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: $font-bold;
+  letter-spacing: -0.01em;
+}
+
+.all {
+  flex: 0 0 auto;
+  font-size: 0.85rem;
+  text-decoration: none;
+  color: $gray-600;
+
+  &:hover {
+    color: $black;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}

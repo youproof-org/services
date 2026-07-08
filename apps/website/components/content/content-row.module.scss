@@ -1,0 +1,71 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.row {
+  display: flex;
+  gap: 1.25rem;
+  align-items: stretch;
+  padding: 1rem;
+  border: 1px solid $gray-200;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s ease;
+
+  &:hover {
+    border-color: $black;
+  }
+}
+
+.thumb {
+  flex: 0 0 auto;
+  width: 5.5rem;
+  height: 5.5rem;
+  background: $gray-100;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  @include tablet {
+    width: 7rem;
+    height: 7rem;
+  }
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+}
+
+.meta {
+  margin: 0 0 0.35rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $gray-500;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: $font-bold;
+  line-height: 1.3;
+}
+
+.excerpt {
+  margin: 0.4rem 0 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: $gray-600;
+  // Clamp to two lines so rows stay uniform.
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

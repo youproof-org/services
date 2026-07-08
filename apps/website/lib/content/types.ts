@@ -258,8 +258,10 @@ export interface ChapterNode {
   name: string
   title: string
   part: PartNode                  // parent reference
-  published: boolean              // false when absent; gates real vs. stub page
+  publishedAt?: string            // kebab: published-at; ISO datetime, if published
+  published: boolean              // derived: publishedAt != null; gates real vs. stub page
   legacyPath?: string             // old youproof.hu path, if any (kebab: legacy-path)
+  excerpt?: string                // short card copy for ContentRow listings (not derived from abstract)
   abstract: ContentBlock[]
   prerequisiteWarning?: ContentBlock[]
   prologue: ContentBlock[]
@@ -276,11 +278,54 @@ export interface PartNode {
   chapters: ChapterNode[]
 }
 
+// A simple `{ items: string[] }` wrapper — object-wrapped (not a bare string[])
+// so it can grow future sub-fields without a breaking rename. Display-only:
+// inline cross-references in these items are intentionally out of scope for now.
+export interface ItemList {
+  items: string[]
+}
+
 export interface BookNode {
   name: string
   title: string
   parts: PartNode[]
   logo?: ThumbnailImage
+  publishedAt?: string            // kebab: published-at; ISO datetime, if published
+  published: boolean              // derived: publishedAt != null
+  legacyPath?: string             // old youproof.hu series path, if any (kebab: legacy-path)
+  abstract: ContentBlock[]        // "Kivonat" prose
+  teaser?: ItemList               // curiosity-sparking hook questions (questions box)
+  bibliography?: ItemList         // "Felhasznált irodalom" — display-only list of cited works
+}
+
+// ---------------------------------------------------------------------------
+// Standalone content nodes (article, newsletter, page, landing)
+// "Same structure as a chapter minus the book relationship." Inline
+// cross-references + entity embeds are out of scope for now, so no RefMap is
+// carried and these render with refs undefined.
+// ---------------------------------------------------------------------------
+
+export type StandaloneKind = 'article' | 'newsletter' | 'page' | 'landing'
+
+export interface StandaloneSection {
+  name: string
+  title: string
+  body: ContentBlock[]
+}
+
+export interface StandaloneNode {
+  kind: StandaloneKind
+  name: string                    // slug (kebab)
+  title: string
+  publishedAt?: string            // kebab: published-at; ISO datetime, if published
+  published: boolean              // derived: publishedAt != null
+  legacyPath?: string             // old youproof.hu path, if any (kebab: legacy-path)
+  excerpt?: string                // short card copy for ContentRow listings (article/newsletter)
+  abstract: ContentBlock[]
+  prologue: ContentBlock[]
+  sections: StandaloneSection[]
+  epilogue: ContentBlock[]
+  thumbnail?: ThumbnailImage
 }
 
 // ---------------------------------------------------------------------------
@@ -303,4 +348,9 @@ export interface ContentGraph {
   theorems:    Map<string, TheoremNode>
   proofs:      Map<string, ProofNode>
   remarks:     Map<string, RemarkNode>
+  // Standalone content, keyed by "/{kind}s/{slug}" (e.g. "/articles/foo").
+  articles:    Map<string, StandaloneNode>
+  newsletters: Map<string, StandaloneNode>
+  pages:       Map<string, StandaloneNode>
+  landings:    Map<string, StandaloneNode>
 }

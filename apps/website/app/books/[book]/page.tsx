@@ -1,7 +1,8 @@
 import { notFound } from 'next/navigation'
 import SiteHeader from '@/components/layout/SiteHeader'
-import BookToc from '@/components/book/BookToc'
+import BookIndex from '@/components/book/BookIndex'
 import { getContentGraph, initContentGraph } from '@/lib/content'
+import { getBookRomanIndex } from '@/lib/utils/index-helpers'
 
 export async function generateStaticParams() {
   await initContentGraph()
@@ -21,6 +22,8 @@ export default async function BookPage({ params }: BookPageProps) {
   const book = graph.books.get(`/books/${bookName}`)
   if (!book) notFound()
 
+  const episode = getBookRomanIndex(book, graph)
+
   return (
     <>
       <SiteHeader
@@ -29,16 +32,8 @@ export default async function BookPage({ params }: BookPageProps) {
           { label: book.title, href: `/books/${bookName}` },
         ]}
       />
-      <main className="page-content">
-        <BookToc
-          bookName={book.name}
-          bookTitle={book.title}
-          parts={book.parts.map(part => ({
-            name: part.name,
-            title: part.title,
-            chapters: part.chapters.map(ch => ({ name: ch.name, title: ch.title })),
-          }))}
-        />
+      <main>
+        <BookIndex book={book} episode={episode} />
       </main>
     </>
   )
