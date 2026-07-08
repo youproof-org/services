@@ -70,6 +70,7 @@ export default async function ChapterPageRoute({ params }: ChapterPageRouteProps
     return (
       <>
         <SiteHeader breadcrumbs={breadcrumbs} />
+        <div className="hero-placeholder" aria-hidden="true" />
         <main className="page-content">
           {chapter.legacyPath
             ? <NotMigratedStub legacyPath={chapter.legacyPath} />

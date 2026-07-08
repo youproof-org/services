@@ -9,6 +9,7 @@ export default function BooksIndex() {
   return (
     <div className="book-shell">
       <SiteHeader breadcrumbs={[{ label: 'Főoldal', href: '/' }]} />
+      <div className="hero-placeholder" aria-hidden="true" />
       <main className="page-content">
         <UnavailableStub />
       </main>

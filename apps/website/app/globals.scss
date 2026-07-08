@@ -90,3 +90,12 @@ body {
 .book-shell {
   min-height: 100vh;
 }
+
+/* Hero placeholder — stands in for a missing thumbnail hero so the
+   `.page-content` -200px tablet/desktop overlap pulls over this instead of
+   sliding under the sticky header. Zero-height on mobile (no overlap there). */
+.hero-placeholder {
+  @include tablet {
+    height: 200px;
+  }
+}

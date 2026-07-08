@@ -12,7 +12,7 @@
 
 .topRow {
   position: relative; // anchor for the mobile nav dropdown
-  width: 100%;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: space-between;
