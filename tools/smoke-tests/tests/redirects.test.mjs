@@ -90,11 +90,19 @@ test(
   async (t) => {
     for (const [oldPath, newPath] of manifestEntries) {
       await t.test(`${oldPath} -> ${newPath}`, async () => {
-        const res = await request(`${baseUrl}${oldPath}?q=1`);
+        // Cache-busting query: the top-level legacy URLs ("/" and the series
+        // landing "/kriptografia") are cacheable, so right after a deploy the
+        // edge can still serve the pre-migration proxied response (a 200, or a
+        // WordPress trailing-slash redirect) under the stable "?q=1" cache key.
+        // A unique query forces a cache miss so we test the just-deployed Worker,
+        // not a stale entry. The query is preserved into the redirect, so we
+        // also assert it round-trips verbatim.
+        const query = `q=1&_cb=${Date.now().toString(36)}${Math.floor(Math.random() * 1e9).toString(36)}`;
+        const res = await request(`${baseUrl}${oldPath}?${query}`);
         assert.equal(res.status, 301, `expected 301 for ${oldPath}, got ${res.status}`);
         assert.equal(
           res.headers.get("location"),
-          `https://${config.redirectTargetHost}${newPath}?q=1`,
+          `https://${config.redirectTargetHost}${newPath}?${query}`,
         );
       });
     }
