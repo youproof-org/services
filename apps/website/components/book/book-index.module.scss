@@ -12,40 +12,7 @@
   }
 }
 
-/* 1. Headline */
-.headline {
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-}
-
-.logo {
-  flex: 0 0 auto;
-  width: 4.5rem;
-  height: 4.5rem;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    display: block;
-  }
-}
-
-.episode {
-  margin: 0;
-  font-size: 0.85rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: $gray-500;
-}
-
-.title {
-  margin: 0.25rem 0 0;
-  font-size: 2rem;
-  font-weight: $font-bold;
-  line-height: 1.15;
-}
+/* 1. Headline is rendered by <BookReference linked={false} />. */
 
 /* 2. Questions box */
 .teaser {

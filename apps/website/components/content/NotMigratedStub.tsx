@@ -21,7 +21,7 @@ export default function NotMigratedStub({ legacyPath }: NotMigratedStubProps) {
   const legacyHref = `https://${legacyHost}${legacyPath}`
   return (
     <div className={styles.stub}>
-      <h1 className={styles.title}>Ez a fejezet még nem költözött át</h1>
+      <h1 className={styles.title}>Ez a tartalom még nem költözött át</h1>
       <p className={styles.message}>
         Ez a tartalom még nem érhető el az új oldalon. Addig is elolvashatod
         a régi oldalunkon.

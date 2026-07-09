@@ -68,10 +68,20 @@ export function getContentGraph(): ContentGraph {
 }
 
 // Published standalone items (article/newsletter/page/landing) sorted by
-// publish datetime, most-recent first — for homepage/index listings.
+// publish datetime, most-recent first. Use for anything that must NOT surface
+// unmigrated content (e.g. the sitemap).
 export function listPublished(map: Map<string, StandaloneNode>): StandaloneNode[] {
   return Array.from(map.values())
     .filter((n) => n.published)
+    .sort((a, b) => (b.publishedAt ?? '').localeCompare(a.publishedAt ?? ''))
+}
+
+// All standalone items, published first (most-recent), then the unmigrated ones
+// (no publishedAt) last. Use for listings that should still show unmigrated
+// items — they link to a not-migrated stub, mirroring how the book table of
+// contents lists unmigrated chapters.
+export function listAll(map: Map<string, StandaloneNode>): StandaloneNode[] {
+  return Array.from(map.values())
     .sort((a, b) => (b.publishedAt ?? '').localeCompare(a.publishedAt ?? ''))
 }
 

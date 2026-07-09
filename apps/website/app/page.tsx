@@ -7,7 +7,7 @@ import BrandLockup from '@/components/layout/BrandLockup'
 import SectionHeading from '@/components/layout/SectionHeading'
 import BookCard from '@/components/book/BookCard'
 import ContentRow from '@/components/content/ContentRow'
-import { getContentGraph, initContentGraph, listPublished } from '@/lib/content'
+import { getContentGraph, initContentGraph, listAll, listPublished } from '@/lib/content'
 import styles from './root-page.module.scss'
 
 // ISO datetime → "YYYY. MM. DD." (deterministic; no locale dependency).
@@ -33,7 +33,9 @@ export default async function RootPage() {
   const graph = getContentGraph()
 
   const books = Array.from(graph.books.values()).filter((b) => b.published)
-  const articles = listPublished(graph.articles)
+  // Articles include unmigrated items (no published-at): they still list here
+  // and link to a not-migrated stub, like unmigrated chapters in a book's TOC.
+  const articles = listAll(graph.articles)
   const newsletters = listPublished(graph.newsletters)
 
   return (

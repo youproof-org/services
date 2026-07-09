@@ -24,40 +24,47 @@ interface StandaloneRouteProps {
 export default function StandaloneRoute({ node, breadcrumbs, mode = 'inner' }: StandaloneRouteProps) {
   const showStub = !node.published && isDeployedEnv
 
-  // Always render a hero: the thumbnail when present (real content only), else a
-  // fixed-height placeholder. Both give the `.page-content` `-200px` overlap
-  // something to pull over so the content never slides under the sticky header.
-  const hero =
-    !showStub && node.thumbnail ? (
-      <div className={styles.thumbnail}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={node.thumbnail.src}
-          alt={node.thumbnail.alt}
-          style={{ objectFit: 'cover' }}
-          loading="lazy"
-          width="100%"
-          height="100%"
-        />
-      </div>
-    ) : (
-      <div className="hero-placeholder" aria-hidden="true" />
-    )
-
-  return (
-    <div className="book-shell">
-      <SiteHeader mode={mode} breadcrumbs={breadcrumbs} />
-      {hero}
-      <main className="page-content">
-        {showStub ? (
-          node.legacyPath ? (
+  // Stub: no hero; the message is vertically centered in the space between
+  // header and footer (`.stub-main`).
+  if (showStub) {
+    return (
+      <div className="book-shell">
+        <SiteHeader mode={mode} breadcrumbs={breadcrumbs} />
+        <main className="stub-main">
+          {node.legacyPath ? (
             <NotMigratedStub legacyPath={node.legacyPath} />
           ) : (
             <UnavailableStub />
-          )
-        ) : (
-          <StandalonePage node={node} />
-        )}
+          )}
+        </main>
+        <SiteFooter />
+      </div>
+    )
+  }
+
+  // Real content: a hero (thumbnail when present, else a fixed-height
+  // placeholder so the `.page-content` `-200px` overlap has something to pull
+  // over instead of sliding under the sticky header).
+  return (
+    <div className="book-shell">
+      <SiteHeader mode={mode} breadcrumbs={breadcrumbs} />
+      {node.thumbnail ? (
+        <div className={styles.thumbnail}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={node.thumbnail.src}
+            alt={node.thumbnail.alt}
+            style={{ objectFit: 'cover' }}
+            loading="lazy"
+            width="100%"
+            height="100%"
+          />
+        </div>
+      ) : (
+        <div className="hero-placeholder" aria-hidden="true" />
+      )}
+      <main className="page-content">
+        <StandalonePage node={node} />
       </main>
       <SiteFooter />
     </div>

@@ -3,6 +3,7 @@ import SiteHeader from '@/components/layout/SiteHeader'
 import BookIndex from '@/components/book/BookIndex'
 import { getContentGraph, initContentGraph } from '@/lib/content'
 import { getBookRomanIndex } from '@/lib/utils/index-helpers'
+import styles from './page.module.scss'
 
 export async function generateStaticParams() {
   await initContentGraph()
@@ -32,7 +33,22 @@ export default async function BookPage({ params }: BookPageProps) {
           { label: book.title, href: `/books/${bookName}` },
         ]}
       />
-      <main>
+      {book.thumbnail ? (
+        <div className={styles.thumbnail}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={book.thumbnail.src}
+            alt={book.thumbnail.alt}
+            style={{ objectFit: 'cover' }}
+            loading="lazy"
+            width="100%"
+            height="100%"
+          />
+        </div>
+      ) : (
+        <div className="hero-placeholder" aria-hidden="true" />
+      )}
+      <main className="page-content">
         <BookIndex book={book} episode={episode} />
       </main>
     </>

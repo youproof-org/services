@@ -3,6 +3,7 @@ import { faQuestion } from '@fortawesome/free-solid-svg-icons'
 import type { BookNode } from '@/lib/content/types'
 import ContentBlocks from '@/components/content/ContentBlocks'
 import ContentRow from '@/components/content/ContentRow'
+import BookReference from '@/components/content/BookReference'
 import { getChapterIndex } from '@/lib/utils/index-helpers'
 import { toRoman } from '@/lib/utils/roman'
 import styles from './book-index.module.scss'
@@ -18,21 +19,10 @@ interface BookIndexProps {
 export default function BookIndex({ book, episode }: BookIndexProps) {
   return (
     <div className={styles.index}>
-      {/* 1. Headline — book mark + episode label + title */}
-      <header className={styles.headline}>
-        {book.thumbnail && (
-          <div className={styles.logo}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={book.thumbnail.src} alt={book.thumbnail.alt} loading="lazy" />
-          </div>
-        )}
-        <div>
-          <p className={styles.episode}>
-            Episode <strong>{episode}</strong>
-          </p>
-          <h1 className={styles.title}>{book.title}</h1>
-        </div>
-      </header>
+      {/* 1. Headline — same lockup as the chapter-page book reference, but not
+          a link (this is the book's own page). */}
+      <BookReference book={book} bookRomanIndex={episode} linked={false} />
+
 
       {/* 2. Questions box — curiosity-sparking teasers */}
       {book.teaser && book.teaser.items.length > 0 && (

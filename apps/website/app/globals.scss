@@ -111,3 +111,13 @@ body {
     height: 200px;
   }
 }
+
+/* Stub pages (not-found / unavailable / not-migrated): fill the space between
+   the header and footer and center the message vertically + horizontally.
+   (Grows via `.book-shell > main { flex: 1 }`.) */
+.stub-main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
