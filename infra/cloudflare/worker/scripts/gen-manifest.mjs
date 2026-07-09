@@ -45,6 +45,13 @@ function fail(message) {
   process.exit(1);
 }
 
+// A content object is published iff it has a non-empty `published-at`
+// (js-yaml may parse an ISO timestamp into a Date, so stringify defensively).
+function isPublished(obj) {
+  const v = obj["published-at"];
+  return v != null && String(v).trim() !== "";
+}
+
 const contentDir = process.env.CONTENT_DIR;
 if (!contentDir) {
   fail(
@@ -97,9 +104,30 @@ function resolveChildDir(parentDir, childName) {
 }
 
 const entries = {};
-// Track which chapter each legacy-path came from, for a clear duplicate error.
+// Track which content object each legacy-path came from, for a clear duplicate
+// error.
 const legacyPathOwners = new Map();
 let chaptersScanned = 0;
+
+// Register one legacy-path -> canonical-path redirect, guarding against
+// self-redirects and duplicate legacy-paths across all content types.
+function addEntry(from, to, ownerFile) {
+  if (from === to) {
+    fail(
+      `${ownerFile}: legacy-path '${from}' equals its canonical path — that ` +
+        `would be a self-redirect.`,
+    );
+  }
+  const existing = legacyPathOwners.get(from);
+  if (existing) {
+    fail(
+      `duplicate legacy-path '${from}' used by two content objects:\n` +
+        `  - ${existing}\n  - ${ownerFile}`,
+    );
+  }
+  legacyPathOwners.set(from, ownerFile);
+  entries[from] = to;
+}
 
 // A book directory is any immediate subdir of books/ that has a book.yaml.
 const bookDirs = subdirs(booksDir).filter((d) =>
@@ -108,9 +136,15 @@ const bookDirs = subdirs(booksDir).filter((d) =>
 
 for (const bookDirName of bookDirs) {
   const bookDir = join(booksDir, bookDirName);
-  const book = loadYaml(join(bookDir, "book.yaml"));
+  const bookYaml = join(bookDir, "book.yaml");
+  const book = loadYaml(bookYaml);
   const bookName = typeof book.name === "string" ? book.name : stripPrefix(bookDirName);
   const partNames = Array.isArray(book.parts) ? book.parts : [];
+
+  // Book (series) index redirect: legacy series URL -> /books/{book}.
+  if (isPublished(book) && typeof book["legacy-path"] === "string" && book["legacy-path"].trim() !== "") {
+    addEntry(normalizePath(book["legacy-path"]), normalizePath(`/books/${bookName}`), bookYaml);
+  }
 
   for (const partName of partNames) {
     const partDir = resolveChildDir(bookDir, partName);
@@ -136,35 +170,55 @@ for (const bookDirName of bookDirs) {
       const chapter = loadYaml(chapterYaml);
       chaptersScanned += 1;
 
-      const published = chapter.published === true;
       const legacyPathRaw = chapter["legacy-path"];
-      if (!published || typeof legacyPathRaw !== "string" || legacyPathRaw.trim() === "") {
+      if (!isPublished(chapter) || typeof legacyPathRaw !== "string" || legacyPathRaw.trim() === "") {
         continue;
       }
 
       const name = typeof chapter.name === "string" ? chapter.name : chapterName;
-      const from = normalizePath(legacyPathRaw);
-      const to = normalizePath(`/books/${bookName}/chapters/${name}`);
-
-      if (from === to) {
-        fail(
-          `chapter '${name}' (${chapterYaml}): legacy-path '${from}' equals its ` +
-            `canonical path — that would be a self-redirect.`,
-        );
-      }
-
-      const existing = legacyPathOwners.get(from);
-      if (existing) {
-        fail(
-          `duplicate legacy-path '${from}' used by two chapters:\n` +
-            `  - ${existing}\n  - ${chapterYaml}`,
-        );
-      }
-      legacyPathOwners.set(from, chapterYaml);
-      entries[from] = to;
+      addEntry(
+        normalizePath(legacyPathRaw),
+        normalizePath(`/books/${bookName}/chapters/${name}`),
+        chapterYaml,
+      );
     }
   }
 }
+
+// ---- Standalone content: articles, newsletter, custom pages ----
+// Each kind lives under `{contentDir}/{dir}/{slug}/{file}`. Emit a redirect for
+// every item that is BOTH published (has published-at) AND has a legacy-path.
+// Landing pages are intentionally excluded (unlisted ad entry points).
+const STANDALONE = [
+  { dir: "articles", file: "article.yaml", to: (name) => `/articles/${name}` },
+  { dir: "newsletter", file: "newsletter.yaml", to: (name) => `/newsletter/${name}` },
+  { dir: "pages", file: "page.yaml", to: (name) => `/${name}` }, // pages live at the root
+];
+
+for (const { dir, file, to } of STANDALONE) {
+  const kindDir = resolve(contentDir, dir);
+  if (!existsSync(kindDir)) continue;
+
+  for (const slug of subdirs(kindDir)) {
+    const itemYaml = join(kindDir, slug, file);
+    if (!existsSync(itemYaml)) continue;
+    const item = loadYaml(itemYaml);
+    const legacyPathRaw = item["legacy-path"];
+    if (!isPublished(item) || typeof legacyPathRaw !== "string" || legacyPathRaw.trim() === "") {
+      continue;
+    }
+    const name = typeof item.name === "string" ? item.name : stripPrefix(slug);
+    addEntry(normalizePath(legacyPathRaw), normalizePath(to(name)), itemYaml);
+  }
+}
+
+// ---- Root redirect: youproof.hu/ -> youproof.org/ (§2.2) ----
+// Path-to-path is "/" -> "/"; the worker redirects to REDIRECT_TARGET_HOST, so
+// this crosses domains (.hu -> .org), not a real self-redirect. Reserve "/".
+if (legacyPathOwners.has("/")) {
+  fail(`legacy-path '/' is reserved for the root redirect but is already used by ${legacyPathOwners.get("/")}.`);
+}
+entries["/"] = "/";
 
 const updatedAt = process.env.MANIFEST_UPDATED_AT || new Date().toISOString().slice(0, 10);
 if (!/^\d{4}-\d{2}-\d{2}$/.test(updatedAt)) {

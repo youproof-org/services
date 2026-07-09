@@ -12,20 +12,35 @@ const mulish = Mulish({
   display: 'swap',
 })
 
+// Wordmark / hero-tagline font (brand lockup only — body/UI stays Mulish).
+// Google Sans isn't in this next version's next/font/google metadata, so it's
+// loaded via the Google Fonts <link> embed in <head> below and consumed through
+// the --font-wordmark CSS var (defined in globals.scss) — swappable in one place.
+
 // Only production is indexable. Anything else — staging, previews, or a missing
 // SITE_ENV — emits noindex, so only an explicit SITE_ENV === 'production' can
 // ever expose the site to search engines.
 const isProduction = process.env.SITE_ENV === 'production'
 
 export const metadata: Metadata = {
-  title: 'YOUPROOF',
-  description: 'Alice és Bob matematikai kalandjai',
+  title: 'youproof.org — Deep math. Human access.',
+  description: 'Deep math. Human access. — Alice és Bob matematikai kalandjai.',
   ...(isProduction ? {} : { robots: { index: false, follow: false } }),
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="hu" className={mulish.variable}>
+      <head>
+        {/* Google Sans (wordmark). Not available via next/font/google in this
+            next version, so embedded directly; React hoists these into <head>. */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body className={mulish.className}>
         {children}
         {process.env.NODE_ENV === 'development' && <DevContentReloader />}

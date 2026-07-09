@@ -10,7 +10,7 @@ export default function NotFound() {
   return (
     <div className="book-shell">
       <SiteHeader breadcrumbs={[{ label: 'Főoldal', href: '/' }]} />
-      <main className="page-content">
+      <main className="stub-main">
         <UnavailableStub />
       </main>
       <SiteFooter />

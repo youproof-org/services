@@ -16,6 +16,8 @@ import type {
   PartNode,
   ChapterNode,
   SectionNode,
+  StandaloneKind,
+  StandaloneNode,
 } from './types'
 import {
   getContentDir,
@@ -29,8 +31,17 @@ import {
   loadPart,
   loadChapter,
   loadSection,
+  loadStandalone,
   resolveFigurePaths,
 } from './loader'
+
+// Standalone content kind → content-repo directory name.
+const STANDALONE_DIRS: Record<StandaloneKind, string> = {
+  article: 'articles',
+  newsletter: 'newsletter',
+  page: 'pages',
+  landing: 'landing',
+}
 import { buildContext, resolveTemplate } from './display-template'
 import { claimId } from '@/lib/utils/claim-id'
 import { termId } from '@/lib/utils/term-id'
@@ -144,8 +155,9 @@ export interface RawSectionEntry {
 export interface RawChapterEntry {
   name: string
   title: string
-  published: boolean
+  publishedAt?: string
   legacyPath?: string
+  excerpt?: string
   abstract: ContentBlock[]
   prerequisiteWarning?: ContentBlock[]
   prologue: ContentBlock[]
@@ -165,7 +177,26 @@ export interface RawBookEntry {
   name: string
   title: string
   parts: RawPartEntry[]
-  logo?: ThumbnailImage
+  thumbnail?: ThumbnailImage
+  publishedAt?: string
+  legacyPath?: string
+  abstract: ContentBlock[]
+  teaser?: { items: string[] }
+  bibliography?: { items: string[] }
+}
+
+export interface RawStandaloneEntry {
+  kind: StandaloneKind
+  name: string
+  title: string
+  publishedAt?: string
+  legacyPath?: string
+  excerpt?: string
+  abstract: ContentBlock[]
+  prologue: ContentBlock[]
+  sections: { name: string; title: string; body: ContentBlock[] }[]
+  epilogue: ContentBlock[]
+  thumbnail?: ThumbnailImage
 }
 
 export interface RawGraphData {
@@ -175,6 +206,7 @@ export interface RawGraphData {
   proofs: RawProofEntry[]
   remarks: RawRemarkEntry[]
   books: RawBookEntry[]
+  standalones: RawStandaloneEntry[]
 }
 
 // ---------------------------------------------------------------------------
@@ -193,6 +225,7 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
     proofs: [],
     remarks: [],
     books: [],
+    standalones: [],
   }
 
   function scanNamespaceDir(dir: string) {
@@ -293,15 +326,23 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
     if (!book) { console.warn(`No book.yaml found with name "${bookName}" under ${booksDir}`); continue }
     const { dir: bookDir, raw: rawBook } = book
     const bookUrlPrefix = `/content/books/${path.basename(bookDir)}`
+    // Book-level figures (for abstract) live under the book dir's figures/.
+    const bookFigureUrlPrefix = `${bookUrlPrefix}/figures`
+    const bookFiguresDir = path.join(process.cwd(), 'public', bookFigureUrlPrefix)
     const bookEntry: RawBookEntry = {
       name: rawBook.name,
       title: rawBook.title,
-      logo: rawBook.logo
+      thumbnail: rawBook.thumbnail
         ? {
-            src: resolveImageSrc(rawBook.logo.src, bookDir, bookUrlPrefix),
-            alt: rawBook.logo.alt,
+            src: resolveImageSrc(rawBook.thumbnail.src, bookDir, bookUrlPrefix),
+            alt: rawBook.thumbnail.alt,
           }
         : undefined,
+      publishedAt: rawBook.publishedAt,
+      legacyPath: rawBook.legacyPath,
+      abstract: resolveFigurePaths(rawBook.abstract, bookFigureUrlPrefix, bookFiguresDir),
+      teaser: rawBook.teaser,
+      bibliography: rawBook.bibliography,
       parts: [],
     }
 
@@ -344,8 +385,9 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
         const chapterEntry: RawChapterEntry = {
           name: rawChapter.name,
           title: rawChapter.title,
-          published: rawChapter.published,
+          publishedAt: rawChapter.publishedAt,
           legacyPath: rawChapter.legacyPath,
+          excerpt: rawChapter.excerpt,
           abstract: resolveFigurePaths(rawChapter.abstract, figureUrlPrefix, figuresDir),
           prerequisiteWarning: rawChapter.prerequisiteWarning
             ? resolveFigurePaths(rawChapter.prerequisiteWarning, figureUrlPrefix, figuresDir)
@@ -392,6 +434,59 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
     raw.books.push(bookEntry)
   }
 
+  // ---- Standalone content: articles, newsletter, pages, landing ----
+  // Each kind lives under `{contentDir}/{dir}/{slug}/{kind}.yaml` (+ optional
+  // section YAMLs + figures/). Discovered by directory scan (no ordering file).
+  for (const kind of Object.keys(STANDALONE_DIRS) as StandaloneKind[]) {
+    const kindDir = path.join(contentDir, STANDALONE_DIRS[kind])
+    if (!fs.existsSync(kindDir)) continue
+
+    for (const entry of fs.readdirSync(kindDir, { withFileTypes: true })) {
+      if (!entry.isDirectory()) continue
+      const itemDir = path.join(kindDir, entry.name)
+      const itemYaml = path.join(itemDir, `${kind}.yaml`)
+      if (!fs.existsSync(itemYaml)) continue
+
+      const urlPrefix = `/content/${STANDALONE_DIRS[kind]}/${entry.name}`
+      const figureUrlPrefix = `${urlPrefix}/figures`
+      const figuresDir = path.join(process.cwd(), 'public', figureUrlPrefix)
+
+      try {
+        const rawItem = loadStandalone(itemYaml)
+
+        // Build name → section map by scanning the item dir (mirrors chapters).
+        const sectionByName = new Map<string, ReturnType<typeof loadSection>>()
+        for (const file of fs.readdirSync(itemDir)) {
+          if (!file.endsWith('.yaml') || file === `${kind}.yaml`) continue
+          const s = loadSection(path.join(itemDir, file), figureUrlPrefix, figuresDir)
+          sectionByName.set(s.name, s)
+        }
+        const sections = rawItem.sectionNames
+          .map((n) => sectionByName.get(n))
+          .filter((s): s is ReturnType<typeof loadSection> => s !== undefined)
+          .map((s) => ({ name: s.name, title: s.title, body: s.body }))
+
+        raw.standalones.push({
+          kind,
+          name: rawItem.name ?? entry.name,
+          title: rawItem.title,
+          publishedAt: rawItem.publishedAt,
+          legacyPath: rawItem.legacyPath,
+          excerpt: rawItem.excerpt,
+          abstract: resolveFigurePaths(rawItem.abstract, figureUrlPrefix, figuresDir),
+          prologue: resolveFigurePaths(rawItem.prologue, figureUrlPrefix, figuresDir),
+          sections,
+          epilogue: resolveFigurePaths(rawItem.epilogue, figureUrlPrefix, figuresDir),
+          thumbnail: rawItem.thumbnail
+            ? { src: resolveImageSrc(rawItem.thumbnail.src, itemDir, urlPrefix), alt: rawItem.thumbnail.alt }
+            : undefined,
+        })
+      } catch (err) {
+        console.warn(`Failed to load ${kind} ${itemYaml}:`, err)
+      }
+    }
+  }
+
   return raw
 }
 
@@ -410,6 +505,10 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
     theorems:    new Map(),
     proofs:      new Map(),
     remarks:     new Map(),
+    articles:    new Map(),
+    newsletters: new Map(),
+    pages:       new Map(),
+    landings:    new Map(),
   }
 
   // Pass 1: Populate Maps
@@ -515,7 +614,13 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
     const book: BookNode = {
       name: bookEntry.name,
       title: bookEntry.title,
-      logo: bookEntry.logo,
+      thumbnail: bookEntry.thumbnail,
+      publishedAt: bookEntry.publishedAt,
+      published: bookEntry.publishedAt != null,
+      legacyPath: bookEntry.legacyPath,
+      abstract: bookEntry.abstract,
+      teaser: bookEntry.teaser,
+      bibliography: bookEntry.bibliography,
       parts: [],
     }
     graph.books.set(bookKey(book.name), book)
@@ -530,8 +635,10 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
           name: chapterEntry.name,
           title: chapterEntry.title,
           part,
-          published: chapterEntry.published,
+          publishedAt: chapterEntry.publishedAt,
+          published: chapterEntry.publishedAt != null,
           legacyPath: chapterEntry.legacyPath,
+          excerpt: chapterEntry.excerpt,
           abstract: chapterEntry.abstract,
           prerequisiteWarning: chapterEntry.prerequisiteWarning,
           prologue: chapterEntry.prologue,
@@ -556,6 +663,32 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
         }
       }
     }
+  }
+
+  // Pass 3b: Standalone content (article/newsletter/page/landing). No parent
+  // wiring and no ref resolution (inline references are out of scope for now).
+  const standaloneMap: Record<StandaloneKind, Map<string, StandaloneNode>> = {
+    article: graph.articles,
+    newsletter: graph.newsletters,
+    page: graph.pages,
+    landing: graph.landings,
+  }
+  for (const e of raw.standalones) {
+    const node: StandaloneNode = {
+      kind: e.kind,
+      name: e.name,
+      title: e.title,
+      publishedAt: e.publishedAt,
+      published: e.publishedAt != null,
+      legacyPath: e.legacyPath,
+      excerpt: e.excerpt,
+      abstract: e.abstract,
+      prologue: e.prologue,
+      sections: e.sections,
+      epilogue: e.epilogue,
+      thumbnail: e.thumbnail,
+    }
+    standaloneMap[e.kind].set(`/${STANDALONE_DIRS[e.kind]}/${e.name}`, node)
   }
 
   const entityChapterInfo = buildEntityChapterInfo(graph)

@@ -257,11 +257,27 @@ export function loadSection(
   }
 }
 
+// Normalize a `published-at` YAML value to an ISO datetime string (or undefined
+// when absent). js-yaml parses unquoted ISO timestamps into `Date` objects, so
+// accept both a Date and a string. Absence ⇒ unpublished.
+function toPublishedAt(raw: unknown): string | undefined {
+  if (raw instanceof Date) return raw.toISOString()
+  if (typeof raw === 'string' && raw.trim() !== '') return raw.trim()
+  return undefined
+}
+
+function toThumbnail(raw: unknown): ThumbnailImage | undefined {
+  if (!raw || typeof raw !== 'object') return undefined
+  const t = raw as Record<string, unknown>
+  return { src: t.src as string, alt: t.alt as string }
+}
+
 export interface RawChapter {
   name: string
   title: string
-  published: boolean
+  publishedAt?: string
   legacyPath?: string
+  excerpt?: string
   sectionNames: string[]
   abstract: ContentBlock[]
   prerequisiteWarning?: ContentBlock[]
@@ -276,9 +292,9 @@ export function loadChapter(filePath: string): RawChapter {
   return {
     name: raw.name as string,
     title: raw.title as string,
-    // Default to unpublished when the field is absent or not strictly `true`.
-    published: raw.published === true,
+    publishedAt: toPublishedAt(raw['published-at']),
     legacyPath: typeof raw['legacy-path'] === 'string' ? (raw['legacy-path'] as string) : undefined,
+    excerpt: typeof raw.excerpt === 'string' ? (raw.excerpt as string) : undefined,
     sectionNames: toStringArray(raw.sections),
     abstract: toBlocks(raw.abstract),
     prerequisiteWarning: raw['prerequisite-warning']
@@ -287,9 +303,7 @@ export function loadChapter(filePath: string): RawChapter {
     prologue: toBlocks(raw.prologue),
     epilogue: toBlocks(raw.epilogue),
     references: toRefMap(raw.references),
-    thumbnail: raw.thumbnail
-      ? { src: (raw.thumbnail as Record<string, unknown>).src as string, alt: (raw.thumbnail as Record<string, unknown>).alt as string }
-      : undefined,
+    thumbnail: toThumbnail(raw.thumbnail),
   }
 }
 
@@ -312,12 +326,27 @@ export interface RawBook {
   name: string
   title: string
   partNames: string[]
-  logo?: ThumbnailImage
+  thumbnail?: ThumbnailImage
+  publishedAt?: string
+  legacyPath?: string
+  abstract: ContentBlock[]
+  teaser?: { items: string[] }
+  bibliography?: { items: string[] }
 }
 
 export function loadEpisodes(filePath: string): string[] {
   const raw = readYaml(filePath)
   return toStringArray(raw as unknown as unknown[])
+}
+
+// A `{ items: [...] }` object field, tolerant of a bare list for convenience.
+function toItemList(raw: unknown): { items: string[] } | undefined {
+  if (Array.isArray(raw)) return { items: toStringArray(raw) }
+  if (raw && typeof raw === 'object') {
+    const items = toStringArray((raw as Record<string, unknown>).items)
+    if (items.length > 0) return { items }
+  }
+  return undefined
 }
 
 export function loadBook(filePath: string): RawBook {
@@ -326,8 +355,47 @@ export function loadBook(filePath: string): RawBook {
     name: raw.name as string,
     title: raw.title as string,
     partNames: toStringArray(raw.parts),
-    logo: raw.logo
-      ? { src: (raw.logo as Record<string, unknown>).src as string, alt: (raw.logo as Record<string, unknown>).alt as string }
-      : undefined,
+    thumbnail: toThumbnail(raw.thumbnail),
+    publishedAt: toPublishedAt(raw['published-at']),
+    legacyPath: typeof raw['legacy-path'] === 'string' ? (raw['legacy-path'] as string) : undefined,
+    abstract: toBlocks(raw.abstract),
+    teaser: toItemList(raw.teaser),
+    bibliography: toItemList(raw.bibliography),
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Standalone content loader (article, newsletter, page, landing)
+// ---------------------------------------------------------------------------
+
+export interface RawStandalone {
+  name: string
+  title: string
+  publishedAt?: string
+  legacyPath?: string
+  excerpt?: string
+  sectionNames: string[]
+  abstract: ContentBlock[]
+  prologue: ContentBlock[]
+  epilogue: ContentBlock[]
+  thumbnail?: ThumbnailImage
+}
+
+// Structure mirrors a chapter (minus book relationship / prerequisite-warning).
+// Inline cross-references are out of scope, so `references` is intentionally
+// not read here.
+export function loadStandalone(filePath: string): RawStandalone {
+  const raw = readYaml(filePath)
+  return {
+    name: raw.name as string,
+    title: raw.title as string,
+    publishedAt: toPublishedAt(raw['published-at']),
+    legacyPath: typeof raw['legacy-path'] === 'string' ? (raw['legacy-path'] as string) : undefined,
+    excerpt: typeof raw.excerpt === 'string' ? (raw.excerpt as string) : undefined,
+    sectionNames: toStringArray(raw.sections),
+    abstract: toBlocks(raw.abstract),
+    prologue: toBlocks(raw.prologue),
+    epilogue: toBlocks(raw.epilogue),
+    thumbnail: toThumbnail(raw.thumbnail),
   }
 }

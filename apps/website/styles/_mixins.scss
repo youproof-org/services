@@ -29,3 +29,11 @@
 @mixin content-inner {
   max-width: $max-width-narrow;
 }
+
+// Framed-card look matching the legacy article boxes (.postbox): black hairline
+// border with a soft grey drop shadow. Shared by book cards, the read CTA, and
+// content rows.
+@mixin card-frame {
+  border: 1px solid $black;
+  box-shadow: 0 0 15px 0 #888;
+}
