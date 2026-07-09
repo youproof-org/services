@@ -16,6 +16,9 @@
 
 .book-ref__logo {
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 5rem;
   height: 5rem;
   flex-shrink: 0;
@@ -24,6 +27,11 @@
     width: 7rem;
     height: 7rem;
   }
+}
+
+.book-ref__mark {
+  height: 100%;
+  width: auto;
 }
 
 .book-ref__info {

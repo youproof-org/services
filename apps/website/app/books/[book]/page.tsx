@@ -1,7 +1,9 @@
 import { notFound } from 'next/navigation'
 import SiteHeader from '@/components/layout/SiteHeader'
-import BookToc from '@/components/book/BookToc'
+import BookIndex from '@/components/book/BookIndex'
 import { getContentGraph, initContentGraph } from '@/lib/content'
+import { getBookRomanIndex } from '@/lib/utils/index-helpers'
+import styles from './page.module.scss'
 
 export async function generateStaticParams() {
   await initContentGraph()
@@ -21,6 +23,8 @@ export default async function BookPage({ params }: BookPageProps) {
   const book = graph.books.get(`/books/${bookName}`)
   if (!book) notFound()
 
+  const episode = getBookRomanIndex(book, graph)
+
   return (
     <>
       <SiteHeader
@@ -29,16 +33,23 @@ export default async function BookPage({ params }: BookPageProps) {
           { label: book.title, href: `/books/${bookName}` },
         ]}
       />
+      {book.thumbnail ? (
+        <div className={styles.thumbnail}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={book.thumbnail.src}
+            alt={book.thumbnail.alt}
+            style={{ objectFit: 'cover' }}
+            loading="lazy"
+            width="100%"
+            height="100%"
+          />
+        </div>
+      ) : (
+        <div className="hero-placeholder" aria-hidden="true" />
+      )}
       <main className="page-content">
-        <BookToc
-          bookName={book.name}
-          bookTitle={book.title}
-          parts={book.parts.map(part => ({
-            name: part.name,
-            title: part.title,
-            chapters: part.chapters.map(ch => ({ name: ch.name, title: ch.title })),
-          }))}
-        />
+        <BookIndex book={book} episode={episode} />
       </main>
     </>
   )

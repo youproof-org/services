@@ -1,0 +1,9 @@
+.mark {
+  display: block;
+  height: 1em;
+  width: auto;
+  // Preserve the mark's aspect ratio; callers size it via font-size / height.
+  aspect-ratio: 110 / 111;
+  color: inherit;
+  overflow: visible;
+}

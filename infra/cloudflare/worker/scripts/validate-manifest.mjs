@@ -38,7 +38,10 @@ if (!validate(manifest)) {
 // Extra semantic checks the JSON Schema can't express cleanly.
 const errors = [];
 for (const [from, to] of Object.entries(manifest.entries)) {
-  if (from === to) {
+  // The root entry "/" -> "/" is the youproof.hu -> youproof.org redirect: the
+  // Worker sends it to REDIRECT_TARGET_HOST, so it crosses domains and is NOT a
+  // real self-redirect. Every other from === to is a genuine mistake.
+  if (from === to && from !== "/") {
     errors.push(`entry '${from}' redirects to itself`);
   }
 }

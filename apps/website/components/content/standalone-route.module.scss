@@ -1,0 +1,18 @@
+@use 'mixins' as *;
+
+// Full-width thumbnail hero, matching the chapter route's hero so standalone
+// content (article/newsletter/landing) reads the same. The main content
+// (.page-content) overlaps its lower edge via its own negative tablet margin.
+.thumbnail {
+  position: relative;
+  width: 100%;
+  height: 200px;
+
+  @include tablet {
+    height: 350px;
+  }
+
+  @include desktop {
+    height: 500px;
+  }
+}

@@ -1,0 +1,79 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.links {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.link {
+  text-decoration: none;
+  color: $black;
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
+
+  &:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+}
+
+.iconBtn {
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: $black;
+}
+
+.hamburger {
+  display: none;
+}
+
+/* Mobile: collapse links behind the hamburger. */
+@media (max-width: $bp-tablet) {
+  .hamburger {
+    display: flex;
+  }
+
+  .links {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    background: $white;
+    border-top: 1px solid $gray-200;
+    box-shadow: 0 12px 18px rgba(0, 0, 0, 0.08);
+    padding: 0.5rem 1rem;
+
+    &.open {
+      display: flex;
+    }
+
+    li {
+      width: 100%;
+    }
+
+    .link {
+      display: block;
+      padding: 0.75rem 0;
+      width: 100%;
+    }
+  }
+}

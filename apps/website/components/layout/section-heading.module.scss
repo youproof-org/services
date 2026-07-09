@@ -1,0 +1,37 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  // No scroll-margin here — the sticky-header offset is handled globally by
+  // :root { scroll-padding-top: var(--header-height) }. Adding it here would
+  // double the offset.
+}
+
+// Match the section titles inside chapters (section-view.module.scss).
+.label {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: $font-x-bold;
+
+  @include tablet {
+    font-size: 1.5rem;
+  }
+}
+
+.all {
+  flex: 0 0 auto;
+  font-size: 0.85rem;
+  text-decoration: none;
+  color: $gray-600;
+
+  &:hover {
+    color: $black;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}

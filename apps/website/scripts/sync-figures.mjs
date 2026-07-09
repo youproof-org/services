@@ -30,6 +30,36 @@ const contentDir = process.env.CONTENT_DIR
 const publicContentDir = path.join(websiteRoot, 'public', 'content')
 const latexTmpDir = path.join(websiteRoot, '.tmp', 'latex')
 
+// Fail loudly instead of silently copying nothing when CONTENT_DIR is unset or
+// wrong (the default fallback `../content` does not exist in this layout).
+if (!existsSync(contentDir)) {
+  console.error(
+    `[sync-figures] content directory not found: ${contentDir}\n` +
+      `  Set CONTENT_DIR to the content repo's "content" dir, e.g.\n` +
+      `  CONTENT_DIR=../../../content/content node scripts/sync-figures.mjs`,
+  )
+  process.exit(1)
+}
+
+// CONTENT_DIR must be the content repo's `content/` subdir (the one containing
+// books/ + knowledge-base/), NOT the repo root — otherwise figure paths mirror a
+// stray `content/` segment into public/content/content/… . Validate the shape
+// (mirrors gen-manifest.mjs's books/ check).
+if (
+  !existsSync(path.join(contentDir, 'books')) &&
+  !existsSync(path.join(contentDir, 'knowledge-base'))
+) {
+  const nested = existsSync(path.join(contentDir, 'content', 'books'))
+  console.error(
+    `[sync-figures] ${contentDir} is not the content directory ` +
+      `(no books/ or knowledge-base/ inside it).` +
+      (nested
+        ? `\n  It looks like the content-repo root — point CONTENT_DIR at its "content" subdir instead:\n  ${path.join(contentDir, 'content')}`
+        : `\n  CONTENT_DIR must point to the content repo's "content" subdir.`),
+  )
+  process.exit(1)
+}
+
 const PRIORITY = ['.tex', '.svg', '.png', '.jpg', '.jpeg']
 
 async function* walkAll(dir) {

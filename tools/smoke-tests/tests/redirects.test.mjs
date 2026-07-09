@@ -33,16 +33,22 @@ test("admin/login paths are blocked with 404", async () => {
   }
 });
 
-test("unmigrated path: proxy (pre-migration) or 410 (post-migration)", async () => {
-  const res = await request(`${baseUrl}/`);
+test("unmigrated non-admin path: proxied (pre-migration) or 410 (post-migration)", async () => {
+  // NOTE: the root "/" is now a migrated entry ("/" -> "/", the youproof.hu ->
+  // youproof.org redirect), so it is covered by the "migrated paths" test below.
+  // Here we probe a path guaranteed NOT to be in the manifest.
+  const res = await request(`${baseUrl}/nem-letezo-oldal-smoke-teszt`);
   if (isPostMigration) {
     assert.equal(res.status, 410, "post-migration: unmigrated path should be 410 Gone");
   } else {
-    assert.equal(res.status, 200, "pre-migration: unmigrated path should proxy 200");
-    assert.match(
-      res.headers.get("content-type") ?? "",
-      /text\/html/i,
-      "proxied home page should be HTML",
+    // Pre-migration it must be proxied to legacy, not handled by the Worker:
+    // legacy may answer 200 or its own 404, but it must NOT be a Worker 410 nor
+    // a migration redirect to the .org target.
+    assert.notEqual(res.status, 410, "pre-migration: unmigrated path must be proxied, not 410");
+    const loc = res.headers.get("location") ?? "";
+    assert.ok(
+      !loc.startsWith(`https://${config.redirectTargetHost}`),
+      "unmigrated path must not be redirected to the .org target",
     );
   }
 });

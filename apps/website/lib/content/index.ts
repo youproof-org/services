@@ -1,7 +1,7 @@
 import 'server-only'
 import { loadRawGraphData, buildGraphFromRaw } from './graph'
 import { readRawCache, writeRawCache, deleteRawCache } from './graph-cache'
-import type { ContentGraph } from './types'
+import type { ContentGraph, StandaloneNode } from './types'
 
 // Use a Node.js global so the singleton survives across module re-evaluations
 // within the same webpack context (e.g. the (instrument) context).
@@ -67,6 +67,24 @@ export function getContentGraph(): ContentGraph {
   return g.__contentGraph
 }
 
+// Published standalone items (article/newsletter/page/landing) sorted by
+// publish datetime, most-recent first. Use for anything that must NOT surface
+// unmigrated content (e.g. the sitemap).
+export function listPublished(map: Map<string, StandaloneNode>): StandaloneNode[] {
+  return Array.from(map.values())
+    .filter((n) => n.published)
+    .sort((a, b) => (b.publishedAt ?? '').localeCompare(a.publishedAt ?? ''))
+}
+
+// All standalone items, published first (most-recent), then the unmigrated ones
+// (no publishedAt) last. Use for listings that should still show unmigrated
+// items — they link to a not-migrated stub, mirroring how the book table of
+// contents lists unmigrated chapters.
+export function listAll(map: Map<string, StandaloneNode>): StandaloneNode[] {
+  return Array.from(map.values())
+    .sort((a, b) => (b.publishedAt ?? '').localeCompare(a.publishedAt ?? ''))
+}
+
 export type { ContentGraph }
 export type {
   ThumbnailImage,
@@ -74,6 +92,10 @@ export type {
   PartNode,
   ChapterNode,
   SectionNode,
+  StandaloneNode,
+  StandaloneKind,
+  StandaloneSection,
+  ItemList,
   DefinitionNode,
   TheoremNode,
   ProofNode,
