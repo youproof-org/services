@@ -1,18 +1,16 @@
 import Link from 'next/link'
-import { getContentGraph, initContentGraph } from '@/lib/content'
+import { getContentGraph, initContentGraph, listAll } from '@/lib/content'
 import styles from './site-footer.module.scss'
 
-// Footer legal/custom links are the published `page` items (§2.1 / §7). Fetched
-// from the content graph so new published pages appear automatically. Ordered
-// by publish date (oldest first) for a stable, deterministic order.
+// Footer legal/custom links are the `page` items (§2.1 / §7), fetched from the
+// content graph so new pages appear automatically. Includes unmigrated pages
+// (no published-at) — they link to a not-migrated stub, like unmigrated
+// articles/chapters — so the legal links are always present.
 export default async function SiteFooter() {
   await initContentGraph()
   const graph = getContentGraph()
 
-  const pages = Array.from(graph.pages.values())
-    .filter((p) => p.published)
-    .sort((a, b) => (a.publishedAt ?? '').localeCompare(b.publishedAt ?? ''))
-    .map((p) => ({ label: p.title, href: `/${p.name}` }))
+  const pages = listAll(graph.pages).map((p) => ({ label: p.title, href: `/${p.name}` }))
 
   const version = process.env.YOUPROOF_VERSION ?? 'UNDEFINED'
 

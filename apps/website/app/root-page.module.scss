@@ -37,11 +37,15 @@
 }
 
 .heroBg {
-  // Placeholder for the future "map" background art (see TODO in page.tsx).
+  // "Map"-like hero background art. Sits behind the branding (content is z-index 1).
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
+  background-image: url('/assets/hero-background-light.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .heroLockup {
@@ -60,7 +64,7 @@
   margin: 2rem 0 0;
   max-width: 34rem;
   font-size: 1.15rem;
-  font-weight: $font-light;
+  font-weight: $font-normal;
   font-style: italic;
   color: $gray-600;
 
@@ -69,13 +73,10 @@
   }
 }
 
-/* Scroll-down affordance (label above a bouncing chevron), pinned near the
-   bottom of a full-height section. */
+/* Scroll-down affordance (label above a bouncing chevron). In normal flow by
+   default (e.g. below the book grid); the hero pins it to its bottom. */
 .scrollDown {
-  position: absolute;
   z-index: 1;
-  bottom: 2.5rem;
-  left: 50%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -90,6 +91,15 @@
   }
 }
 
+/* In the full-height hero, pin the cue to the bottom. Full-width so its own
+   align-items:center keeps it centered (no translate hack needed). */
+.hero .scrollDown {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 2.5rem;
+}
+
 .scrollLabel {
   font-size: 0.72rem;
   font-weight: $font-bold;
@@ -98,26 +108,30 @@
 }
 
 @keyframes scrollBounce {
-  0%, 100% { transform: translate(-50%, 0); }
-  50% { transform: translate(-50%, 6px); }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .scrollDown {
     animation: none;
-    transform: translateX(-50%);
   }
 }
 
-/* Könyvek — full viewport height (below the sticky header), content centered. */
+/* Könyvek — a normal (not full-height) centered section, with more spacing
+   above than below. */
 .booksSection {
-  position: relative; // anchor for the scroll cue
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  min-height: calc(100vh - var(--header-height, 4.5rem));
+  margin: 6rem auto 5rem;
   padding-inline: 2.5rem;
+}
+
+/* The section right after the books block keeps the tighter gap (its 6rem top
+   margin would otherwise win the margin-collapse). */
+.booksSection + .section {
+  margin-top: 5rem;
 }
 
 /* Sections — capped to the readable column width (matching the book-index /

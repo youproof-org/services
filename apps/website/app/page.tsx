@@ -45,7 +45,7 @@ export default async function RootPage() {
       <main className={styles.main}>
         {/* Hero */}
         <section className={styles.hero}>
-          {/* TODO(YP-hero-art): subtle "map" background art — placeholder for now. */}
+          {/* "Map"-like hero background art (see .heroBg in root-page.module.scss). */}
           <div className={styles.heroBg} aria-hidden="true" />
           <BrandLockup variant="stacked" showTagline className={styles.heroLockup} />
           <p className={styles.heroTagline}>
@@ -71,7 +71,6 @@ export default async function RootPage() {
                 )
               })}
             </div>
-            {articles.length > 0 && <ScrollCue href="#articles" label="Tovább" />}
           </section>
         )}
 
