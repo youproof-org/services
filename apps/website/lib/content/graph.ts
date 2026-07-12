@@ -43,6 +43,7 @@ const STANDALONE_DIRS: Record<StandaloneKind, string> = {
   landing: 'landing',
 }
 import { buildContext, resolveTemplate } from './display-template'
+import { buildLocalizedUrl } from '@/lib/i18n/url'
 import { claimId } from '@/lib/utils/claim-id'
 import { termId } from '@/lib/utils/term-id'
 import { entityId } from '@/lib/utils/entity-id'
@@ -147,6 +148,8 @@ export interface RawRemarkEntry {
 
 export interface RawSectionEntry {
   name: string
+  slug: string
+  locale: string
   title: string
   body: ContentBlock[]
   references: RefMap
@@ -154,6 +157,8 @@ export interface RawSectionEntry {
 
 export interface RawChapterEntry {
   name: string
+  slug: string
+  locale: string
   title: string
   publishedAt?: string
   legacyPath?: string
@@ -175,6 +180,8 @@ export interface RawPartEntry {
 
 export interface RawBookEntry {
   name: string
+  slug: string
+  locale: string
   title: string
   parts: RawPartEntry[]
   thumbnail?: ThumbnailImage
@@ -188,13 +195,15 @@ export interface RawBookEntry {
 export interface RawStandaloneEntry {
   kind: StandaloneKind
   name: string
+  slug: string
+  locale: string
   title: string
   publishedAt?: string
   legacyPath?: string
   excerpt?: string
   abstract: ContentBlock[]
   prologue: ContentBlock[]
-  sections: { name: string; title: string; body: ContentBlock[] }[]
+  sections: { name: string; slug: string; title: string; body: ContentBlock[] }[]
   epilogue: ContentBlock[]
   thumbnail?: ThumbnailImage
 }
@@ -331,6 +340,8 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
     const bookFiguresDir = path.join(process.cwd(), 'public', bookFigureUrlPrefix)
     const bookEntry: RawBookEntry = {
       name: rawBook.name,
+      slug: rawBook.slug,
+      locale: rawBook.locale,
       title: rawBook.title,
       thumbnail: rawBook.thumbnail
         ? {
@@ -384,6 +395,8 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
 
         const chapterEntry: RawChapterEntry = {
           name: rawChapter.name,
+          slug: rawChapter.slug,
+          locale: rawChapter.locale,
           title: rawChapter.title,
           publishedAt: rawChapter.publishedAt,
           legacyPath: rawChapter.legacyPath,
@@ -419,6 +432,8 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
           const { raw: rawSection } = section
           chapterEntry.sections.push({
             name: rawSection.name,
+            slug: rawSection.slug,
+            locale: rawSection.locale,
             title: rawSection.title,
             body: rawSection.body,
             references: rawSection.references,
@@ -464,11 +479,13 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
         const sections = rawItem.sectionNames
           .map((n) => sectionByName.get(n))
           .filter((s): s is ReturnType<typeof loadSection> => s !== undefined)
-          .map((s) => ({ name: s.name, title: s.title, body: s.body }))
+          .map((s) => ({ name: s.name, slug: s.slug, title: s.title, body: s.body }))
 
         raw.standalones.push({
           kind,
           name: rawItem.name ?? entry.name,
+          slug: rawItem.slug || (rawItem.name ?? entry.name).toLowerCase(),
+          locale: rawItem.locale,
           title: rawItem.title,
           publishedAt: rawItem.publishedAt,
           legacyPath: rawItem.legacyPath,
@@ -613,6 +630,8 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
   for (const bookEntry of raw.books) {
     const book: BookNode = {
       name: bookEntry.name,
+      slug: bookEntry.slug,
+      locale: bookEntry.locale,
       title: bookEntry.title,
       thumbnail: bookEntry.thumbnail,
       publishedAt: bookEntry.publishedAt,
@@ -633,6 +652,8 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
       for (const chapterEntry of partEntry.chapters) {
         const chapter: ChapterNode = {
           name: chapterEntry.name,
+          slug: chapterEntry.slug,
+          locale: chapterEntry.locale,
           title: chapterEntry.title,
           part,
           publishedAt: chapterEntry.publishedAt,
@@ -653,6 +674,8 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
         for (const sectionEntry of chapterEntry.sections) {
           const section: SectionNode = {
             name: sectionEntry.name,
+            slug: sectionEntry.slug,
+            locale: sectionEntry.locale,
             title: sectionEntry.title,
             chapter,
             body: sectionEntry.body,
@@ -677,6 +700,8 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
     const node: StandaloneNode = {
       kind: e.kind,
       name: e.name,
+      slug: e.slug,
+      locale: e.locale,
       title: e.title,
       publishedAt: e.publishedAt,
       published: e.publishedAt != null,
@@ -715,9 +740,8 @@ function buildEntityChapterInfo(graph: ContentGraph): EntityChapterInfo {
       if (block.type === 'subsection') scanForUrl(block.blocks, chapterUrl)
     }
   }
-  for (const [chKey, chapter] of graph.chapters) {
-    const parts = chKey.split('/')  // ['', 'books', book, part, chapter]
-    const chapterUrl = `/books/${parts[2]}/chapters/${parts[4]}`
+  for (const [, chapter] of graph.chapters) {
+    const chapterUrl = buildLocalizedUrl(chapter.locale, 'chapter', chapter.part.book.slug, chapter.slug)
     scanForUrl(chapter.prologue, chapterUrl)
     scanForUrl(chapter.epilogue, chapterUrl)
     for (const section of chapter.sections) scanForUrl(section.body, chapterUrl)
@@ -795,6 +819,23 @@ function resolveClaimRefHrefs(graph: ContentGraph, entityChapterInfo: EntityChap
           throw new Error(`Cannot resolve chapter URL for entity reference to ${target.type} "${target.name}" in ${target.namespace}`)
         }
         entry.href = `${chapterUrl}#${entityId(target.type, target.namespace, target.name)}`
+      } else if (entry.target.type === 'chapter') {
+        const target = entry.target
+        const chapter = graph.chapters.get(chapterKey(target.book, target.part, target.name))
+        if (!chapter) {
+          throw new Error(`Cannot resolve chapter reference to "${target.name}" in ${target.book}/${target.part}`)
+        }
+        entry.href = buildLocalizedUrl(chapter.locale, 'chapter', chapter.part.book.slug, chapter.slug)
+      } else if (entry.target.type === 'section') {
+        const target = entry.target
+        const section = graph.sections.get(sectionKey(target.book, target.part, target.chapter, target.name))
+        if (!section) {
+          throw new Error(`Cannot resolve section reference to "${target.name}" in ${target.book}/${target.part}/${target.chapter}`)
+        }
+        const chapter = section.chapter
+        const chapterUrl = buildLocalizedUrl(chapter.locale, 'chapter', chapter.part.book.slug, chapter.slug)
+        // Section slug is the localized in-page anchor id (see SectionView).
+        entry.href = `${chapterUrl}#${section.slug}`
       }
     }
   }

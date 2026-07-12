@@ -2,6 +2,7 @@ import 'server-only'
 import fs from 'fs'
 import path from 'path'
 import yaml from 'js-yaml'
+import { DEFAULT_LOCALE } from '@/lib/i18n/config'
 import type {
   ContentBlock,
   RefMap,
@@ -110,6 +111,16 @@ function toTermMap(raw: unknown): TermMap | undefined {
 function toStringArray(raw: unknown): string[] {
   if (!Array.isArray(raw)) return []
   return raw.filter((x) => typeof x === 'string') as string[]
+}
+
+// Localization fields. `locale` defaults to the default locale if a file predates
+// the migration; `slug` falls back to a lowercased `name` (its pre-split value).
+function readLocale(raw: Record<string, unknown>): string {
+  return typeof raw.locale === 'string' && raw.locale.trim() !== '' ? raw.locale.trim() : DEFAULT_LOCALE
+}
+
+function readSlug(raw: Record<string, unknown>, name: string): string {
+  return typeof raw.slug === 'string' && raw.slug.trim() !== '' ? raw.slug.trim() : name.toLowerCase()
 }
 
 // ---------------------------------------------------------------------------
@@ -247,10 +258,13 @@ export function loadSection(
   filePath: string,
   figureUrlPrefix: string,
   figuresDir?: string
-): { name: string; title: string; body: ContentBlock[]; references: RefMap } {
+): { name: string; slug: string; locale: string; title: string; body: ContentBlock[]; references: RefMap } {
   const raw = readYaml(filePath)
+  const name = raw.name as string
   return {
-    name: raw.name as string,
+    name,
+    slug: readSlug(raw, name),
+    locale: readLocale(raw),
     title: raw.title as string,
     body: resolveBlocksFigures(toBlocks(raw.body), figureUrlPrefix, figuresDir),
     references: toRefMap(raw.references),
@@ -274,6 +288,8 @@ function toThumbnail(raw: unknown): ThumbnailImage | undefined {
 
 export interface RawChapter {
   name: string
+  slug: string
+  locale: string
   title: string
   publishedAt?: string
   legacyPath?: string
@@ -289,8 +305,11 @@ export interface RawChapter {
 
 export function loadChapter(filePath: string): RawChapter {
   const raw = readYaml(filePath)
+  const name = raw.name as string
   return {
-    name: raw.name as string,
+    name,
+    slug: readSlug(raw, name),
+    locale: readLocale(raw),
     title: raw.title as string,
     publishedAt: toPublishedAt(raw['published-at']),
     legacyPath: typeof raw['legacy-path'] === 'string' ? (raw['legacy-path'] as string) : undefined,
@@ -324,6 +343,8 @@ export function loadPart(filePath: string): RawPart {
 
 export interface RawBook {
   name: string
+  slug: string
+  locale: string
   title: string
   partNames: string[]
   thumbnail?: ThumbnailImage
@@ -351,8 +372,11 @@ function toItemList(raw: unknown): { items: string[] } | undefined {
 
 export function loadBook(filePath: string): RawBook {
   const raw = readYaml(filePath)
+  const name = raw.name as string
   return {
-    name: raw.name as string,
+    name,
+    slug: readSlug(raw, name),
+    locale: readLocale(raw),
     title: raw.title as string,
     partNames: toStringArray(raw.parts),
     thumbnail: toThumbnail(raw.thumbnail),
@@ -370,6 +394,8 @@ export function loadBook(filePath: string): RawBook {
 
 export interface RawStandalone {
   name: string
+  slug: string
+  locale: string
   title: string
   publishedAt?: string
   legacyPath?: string
@@ -386,8 +412,11 @@ export interface RawStandalone {
 // not read here.
 export function loadStandalone(filePath: string): RawStandalone {
   const raw = readYaml(filePath)
+  const name = raw.name as string
   return {
-    name: raw.name as string,
+    name,
+    slug: readSlug(raw, name),
+    locale: readLocale(raw),
     title: raw.title as string,
     publishedAt: toPublishedAt(raw['published-at']),
     legacyPath: typeof raw['legacy-path'] === 'string' ? (raw['legacy-path'] as string) : undefined,

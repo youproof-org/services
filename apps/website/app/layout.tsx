@@ -3,6 +3,7 @@ import { Mulish } from 'next/font/google'
 import 'katex/dist/katex.min.css'
 import './globals.scss'
 import DevContentReloader from '@/components/DevContentReloader'
+import { DEFAULT_LOCALE } from '@/lib/i18n/config'
 
 const mulish = Mulish({
   subsets: ['latin', 'latin-ext'],
@@ -30,7 +31,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="hu" className={mulish.variable}>
+    <html lang={DEFAULT_LOCALE} className={mulish.variable}>
       <head>
         {/* Google Sans (wordmark). Not available via next/font/google in this
             next version, so embedded directly; React hoists these into <head>. */}

@@ -1,0 +1,15 @@
+{
+  "locales": {
+    "hu": {
+      "displayName": "Magyar",
+      "htmlLang": "hu",
+      "containers": {
+        "book": "konyvek",
+        "chapter": "fejezetek",
+        "article": "cikkek",
+        "newsletter": "hirek",
+        "landing": "landing"
+      }
+    }
+  }
+}

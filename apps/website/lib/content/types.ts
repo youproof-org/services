@@ -247,7 +247,9 @@ export interface ThumbnailImage {
 }
 
 export interface SectionNode {
-  name: string
+  name: string                    // language-independent internal id (cross-refs)
+  slug: string                    // localized in-page anchor id (not a URL segment)
+  locale: string
   title: string
   chapter: ChapterNode            // parent reference
   body: ContentBlock[]
@@ -255,7 +257,9 @@ export interface SectionNode {
 }
 
 export interface ChapterNode {
-  name: string
+  name: string                    // language-independent internal id (cross-refs)
+  slug: string                    // localized URL segment
+  locale: string
   title: string
   part: PartNode                  // parent reference
   publishedAt?: string            // kebab: published-at; ISO datetime, if published
@@ -286,7 +290,9 @@ export interface ItemList {
 }
 
 export interface BookNode {
-  name: string
+  name: string                    // language-independent internal id (cross-refs)
+  slug: string                    // localized URL segment
+  locale: string
   title: string
   parts: PartNode[]
   thumbnail?: ThumbnailImage      // series cover shown on book cards
@@ -309,13 +315,16 @@ export type StandaloneKind = 'article' | 'newsletter' | 'page' | 'landing'
 
 export interface StandaloneSection {
   name: string
+  slug: string                    // localized in-page anchor id
   title: string
   body: ContentBlock[]
 }
 
 export interface StandaloneNode {
   kind: StandaloneKind
-  name: string                    // slug (kebab)
+  name: string                    // language-independent internal id (kebab)
+  slug: string                    // localized URL segment
+  locale: string
   title: string
   publishedAt?: string            // kebab: published-at; ISO datetime, if published
   published: boolean              // derived: publishedAt != null

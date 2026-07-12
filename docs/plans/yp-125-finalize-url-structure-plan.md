@@ -103,6 +103,26 @@ Context: this is the VS Code extension used to author/edit the content YAML file
 
 ---
 
+## Deployment / promotion note (zone PR purity)
+
+The root `/` → `/{default_locale}` edge redirect is a **302** rule added to the
+shared zone Terraform root (`infra/cloudflare/terraform/zone/redirects.tf`, plus
+a `default_locale` variable in `variables.tf`). Per
+[deploy-pipeline.md](../deploy-pipeline.md#keep-zone-prs-pure), the `guard` CI job
+**fails any PR that touches `terraform/zone/**` together with anything else**, and
+zone changes only **apply on the `stable/production` merge** (a no-op at
+`stable/staging`). Therefore:
+
+- **Promote the `zone/` changes in their own dedicated PR**, containing *only*
+  the `terraform/zone/**` files — separate from the app/worker/docs PR(s) for
+  this ticket.
+- The rest of YP-125 (content, `apps/website`, `.github/workflows/deploy.yml`,
+  docs) goes in separate PR(s); `deploy.yml` is not under `terraform/zone/**`, so
+  it may travel with the app changes.
+- Set the `DEFAULT_LOCALE` GitHub Environment variable (production) to match
+  `apps/website/lib/i18n/locales.json`'s configured default before/with the zone
+  promotion.
+
 ## Explicit non-goals (do not build these now)
 
 - Automatic browser-language or geo-IP based redirects
