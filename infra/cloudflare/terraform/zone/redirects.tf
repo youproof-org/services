@@ -79,6 +79,31 @@ resource "cloudflare_ruleset" "www_redirect_org" {
       }
     },
     {
+      description = "apex root '/' -> '/<default_locale>' (locale prefix entrypoint)"
+      # The site serves every page under a locale prefix; the bare root has no
+      # page. Redirect it to the default locale's homepage. This edge rule is the
+      # seam to later swap for a geo/preference-cookie aware worker; for now it is
+      # a single default-locale redirect (no Accept-Language / geo-IP logic). The
+      # statically-exported out/index.html is the fallback for non-edge serving.
+      #
+      # 302 (TEMPORARY), unlike the 301 canonicalization rules above: the root's
+      # target is a *current default*, not permanent. A 301 here would be cached
+      # indefinitely by browsers and would prevent a future locale-negotiation
+      # worker from ever running for return visitors. Per-page canonical + hreflang
+      # + x-default already point search engines at /<locale>, so SEO is unaffected.
+      expression = "http.request.uri.path eq \"/\""
+      action     = "redirect"
+      action_parameters = {
+        from_value = {
+          status_code           = 302
+          preserve_query_string = true
+          target_url = {
+            expression = "concat(\"https://\", http.host, \"/${var.default_locale}\")"
+          }
+        }
+      }
+    },
+    {
       description = "strip .html -> extensionless canonical URL"
       # A directly-requested .html page URL (e.g. /books/x/chapters/y.html) is not
       # canonical; 301 it to the extensionless path. Regex-free (Free plan).
