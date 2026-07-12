@@ -184,12 +184,17 @@ regression test asserts this.
 Two complementary layers, both a plain `DEFAULT_LOCALE`-based 301 with **no
 Accept-Language / geo-IP logic** (explicit non-goal):
 
-1. **Deployed environments (edge):** a Cloudflare zone `single_redirect` rule
+1. **Deployed environments (edge):** a Cloudflare zone dynamic-redirect rule
    (in `infra/cloudflare/terraform/zone/redirects.tf`, alongside the existing
-   www→apex ruleset) matching `path eq "/"` on the `youproof.org` zone → 301
+   www→apex ruleset) matching `path eq "/"` on the `youproof.org` zone → **302**
    `/hu`. Fires at the edge before R2, so it wins in staging/production. This is
    the intended seam to **later** be replaced by a geo/preference-cookie aware
-   auto-redirect worker — out of scope here.
+   auto-redirect worker — out of scope here. It is a **302 (temporary)**, not a
+   301: the root's target is a *current default*, not permanent, so it must not
+   be cached indefinitely (a 301 would stop a future locale-negotiation worker
+   from running for return visitors). The www→apex and `.html`-strip rules stay
+   301 (true canonicalizations). SEO is unaffected — per-page canonical +
+   hreflang + `x-default` already point search engines at `/{locale}`.
 2. **Local dev / non-Cloudflare serving of `out/`:** a build-time static fallback
    — a minimal root `app/page.tsx` emitting `<meta http-equiv="refresh">` +
    `<link rel="canonical" href="/hu">`, producing `out/index.html`.

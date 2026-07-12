@@ -22,6 +22,7 @@ Historical planfiles for the work that produced this system live under
 | [DNS & TLS reference](dns-and-tls.md) | DNS records, redirects, HTTPS/HSTS, and TLS coverage for both zones. |
 | [Migration worker](migration-worker.md) | The `youproof.hu` Worker: generated manifest, admin blocking, build, `410` mode. |
 | [Content site & static generation](content-site-and-static-generation.md) | The `youproof.org` static export: `published`/`legacy-path`, stubs, canonical paths, staging noindex. |
+| [Multi-language content & URL model](i18n-design.md) | Locale model, the `/{locale}/{container}/{slug}` URL shape, the container dictionary, canonical/hreflang, and the root redirect. |
 | [CDN & R2](cdn-and-r2.md) | Serving the `.org` site from R2: custom domain, `.html` stripping, cache rules, deploy-time purge, custom-404 limitation. |
 | [Branching & branch protection](branching-and-branch-protection.md) | The branch model across both repos, the promotion rules, and merge-commit-only. |
 | [Deploy pipeline & cross-repo triggers](deploy-pipeline.md) | The ordered deploy steps and the `content` → `services` `repository_dispatch` mechanism. |
