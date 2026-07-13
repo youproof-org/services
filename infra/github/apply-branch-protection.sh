@@ -2,8 +2,8 @@
 #
 # YP-120 branch-protection applier (REFERENCE — review before running).
 #
-# NOT executed by any workflow. Run locally with a token that has admin on BOTH
-# youproof-org/services and youproof-org/content:
+# NOT executed by any workflow. Run locally with a token that has admin on all
+# three repos: youproof-org/services, youproof-org/content, youproof-org/editor:
 #
 #   GH_TOKEN=<admin PAT> ./apply-branch-protection.sh
 #
@@ -22,6 +22,7 @@ set -euo pipefail
 
 SERVICES="youproof-org/services"
 CONTENT="youproof-org/content"
+EDITOR="youproof-org/editor"
 
 require_gh() {
   command -v gh >/dev/null || { echo "gh CLI required"; exit 1; }
@@ -86,8 +87,16 @@ protect_branch "$SERVICES" "stable/production" "artifact-gate" "source-branch" "
 # --- content ------------------------------------------------------------------
 set_merge_policy "$CONTENT"
 protect_branch "$CONTENT" "draft"
-# artifact-gate is the RULE 3 required check (job name in the content repo's pr-gate.yml).
-protect_branch "$CONTENT" "stable/released" "artifact-gate"
+# artifact-gate = RULE 3 pairing check; source-branch (content's branch-source-guard.yml)
+# enforces RULE 3's source restriction: stable/released only FROM draft.
+protect_branch "$CONTENT" "stable/released" "artifact-gate" "source-branch"
+
+# --- editor -------------------------------------------------------------------
+# The editor is NOT part of the (services, content) artifact/ancestor model, so
+# no merge-commit-only requirement. It only enforces its promotion source via its
+# own branch-source-guard.yml: stable/released only FROM development.
+protect_branch "$EDITOR" "development"
+protect_branch "$EDITOR" "stable/released" "source-branch"
 
 echo "Done. NOTE: required_linear_history stays FALSE on purpose — merge commits"
 echo "are required (their second parent is the ancestor-tracking anchor)."
