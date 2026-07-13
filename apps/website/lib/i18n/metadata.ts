@@ -2,8 +2,14 @@ import { DEFAULT_LOCALE } from './config'
 import { buildLocalizedUrl, type UrlKey } from './url'
 
 // Absolute-URL base for canonical/hreflang/sitemap. Kept here so the whole app
-// derives absolute URLs from one place.
-export const SITE_URL = 'https://youproof.org'
+// derives absolute URLs from one place. Derived from SITE_HOST so each
+// environment self-references its own host — production emits
+// https://youproof.org, staging emits https://staging.youproof.org — instead of
+// every env canonicalizing to production. The deploy workflow's website job sets
+// SITE_HOST per environment; falls back to the production host when unset (local
+// builds), which is harmless since non-production is noindex (see robots.ts).
+const SITE_HOST = process.env.SITE_HOST?.trim() || 'youproof.org'
+export const SITE_URL = `https://${SITE_HOST}`
 
 export function absoluteUrl(pathname: string): string {
   return `${SITE_URL}${pathname}`

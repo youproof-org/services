@@ -243,7 +243,7 @@ export default async function LocalizedRoute({ params }: RouteProps) {
           <main className="stub-main">
             <UnavailableStub />
           </main>
-          <SiteFooter />
+          <SiteFooter locale={locale} />
         </div>
       )
 

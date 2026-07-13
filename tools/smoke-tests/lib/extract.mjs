@@ -11,11 +11,20 @@ const LINK_TAG_RE = /<link\b[^>]*>/gi;
 const ATTR = (name) => new RegExp(`\\s${name}\\s*=\\s*["']([^"']+)["']`, "i");
 const REL_RE = ATTR("rel");
 const HREF_RE = ATTR("href");
+const HREFLANG_RE = ATTR("hreflang");
 
 // <link rel> values that are connection/loading HINTS, not fetchable assets — the
 // href is a bare origin or a preconnect target, so a direct GET is meaningless
 // (e.g. <link rel="dns-prefetch" href="//fonts.googleapis.com">).
 const HINT_RELS = new Set(["dns-prefetch", "preconnect", "prefetch", "preload", "prerender", "modulepreload"]);
+
+// <link rel> values that are SEO METADATA, not fetchable assets: canonical and
+// hreflang alternates DECLARE a page's canonical/localized counterparts — they
+// are indexing hints, not resources the page loads. GETting them is pointless (a
+// self-canonical just re-fetches the page) and, for cross-locale/x-default
+// hreflangs pointing at not-yet-built locales, produces spurious "broken"
+// hits. `alternate` WITHOUT hreflang (an RSS/Atom feed) stays fetchable.
+const META_RELS = new Set(["canonical"]);
 
 /** Parse a raw attribute value into an absolute, crawlable http(s) URL, or null. */
 export function toUrl(raw, base) {
@@ -52,7 +61,11 @@ function extractLinkAssets(html, base) {
   while ((m = LINK_TAG_RE.exec(html)) !== null) {
     const tag = m[0];
     const rel = (tag.match(REL_RE)?.[1] ?? "").toLowerCase().trim();
-    if (rel.split(/\s+/).some((r) => HINT_RELS.has(r))) continue;
+    const relTokens = rel.split(/\s+/);
+    if (relTokens.some((r) => HINT_RELS.has(r))) continue;
+    if (relTokens.some((r) => META_RELS.has(r))) continue;
+    // hreflang alternate = i18n canonical counterpart (metadata, not an asset).
+    if (relTokens.includes("alternate") && tag.match(HREFLANG_RE)) continue;
     const u = toUrl(tag.match(HREF_RE)?.[1], base);
     if (u) out.push(u);
   }

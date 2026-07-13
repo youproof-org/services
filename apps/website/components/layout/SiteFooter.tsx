@@ -1,16 +1,26 @@
 import Link from 'next/link'
 import { getContentGraph, initContentGraph, listAll } from '@/lib/content'
+import { urlForStandalone } from '@/lib/content/urls'
+import { DEFAULT_LOCALE } from '@/lib/i18n/config'
 import styles from './site-footer.module.scss'
 
+interface SiteFooterProps {
+  locale?: string
+}
+
 // Footer legal/custom links are the `page` items (§2.1 / §7), fetched from the
-// content graph so new pages appear automatically. Includes unmigrated pages
-// (no published-at) — they link to a not-migrated stub, like unmigrated
-// articles/chapters — so the legal links are always present.
-export default async function SiteFooter() {
+// content graph so new pages appear automatically. Scoped to the current
+// `locale` and routed through buildLocalizedUrl (via urlForStandalone) so the
+// hrefs are locale-prefixed (`/hu/impresszum`, not `/impresszum`). Includes
+// unmigrated pages (no published-at) — they link to a not-migrated stub, like
+// unmigrated articles/chapters — so the legal links are always present.
+export default async function SiteFooter({ locale = DEFAULT_LOCALE }: SiteFooterProps) {
   await initContentGraph()
   const graph = getContentGraph()
 
-  const pages = listAll(graph.pages).map((p) => ({ label: p.title, href: `/${p.name}` }))
+  const pages = listAll(graph.pages)
+    .filter((p) => p.locale === locale)
+    .map((p) => ({ label: p.title, href: urlForStandalone(p) }))
 
   const version = process.env.YOUPROOF_VERSION ?? 'UNDEFINED'
 
