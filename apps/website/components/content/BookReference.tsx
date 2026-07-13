@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import type { BookNode } from '@/lib/content/types'
 import HexMark from '@/components/layout/HexMark'
+import { urlForBook } from '@/lib/content/urls'
 import styles from './book-reference.module.scss'
 
 interface BookReferenceProps {
@@ -29,7 +30,7 @@ export default function BookReference({ book, bookRomanIndex, linked = true }: B
   )
 
   return linked ? (
-    <Link href={`/books/${book.name}`} className={styles['book-ref']}>
+    <Link href={urlForBook(book)} className={styles['book-ref']}>
       {inner}
     </Link>
   ) : (

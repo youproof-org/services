@@ -12,12 +12,20 @@ import { dirname, resolve, join, basename } from "node:path";
  * BOTH `published: true` AND has a `legacy-path`:
  *
  *   key   = the chapter's normalized `legacy-path` (the old youproof.hu path)
- *   value = the chapter's canonical .org path `/books/{book}/chapters/{chapter}`
- *           where {book}/{chapter} are the respective `name` fields.
+ *   value = the chapter's canonical .org path
+ *           `/{locale}/{book-container}/{book-slug}/{chapter-container}/{chapter-slug}`
+ *
+ * The target LOCALE (the .org language this legacy domain maps to; youproof.hu ->
+ * hu) is supplied explicitly per Worker environment via `--locale <code>` or the
+ * `LOCALE` env var — never hardcoded. The locale prefix and the localized
+ * container segments (konyvek/fejezetek/cikkek/hirek) come from the SAME
+ * source of truth the website uses: `apps/website/lib/i18n/locales.json`. The
+ * `{...-slug}` segments are each content object's `slug` (falling back to a
+ * lowercased `name`), matching how the site builds URLs via buildLocalizedUrl.
  *
  * (Parts/sections are NOT part of the public URL — the chapter page is the
  * deepest routed page — so `legacy-path` maps a legacy path straight to the
- * chapter's canonical path. See the canonical URL rule in the YP-120 contract.)
+ * chapter's canonical path.)
  *
  * Un-published or missing-`legacy-path` chapters simply produce no entry. A
  * `legacy-path` reused by two chapters is a hard error (fails the build).
@@ -63,6 +71,54 @@ if (!contentDir) {
 const booksDir = resolve(contentDir, "books");
 if (!existsSync(booksDir)) {
   fail(`no 'books/' directory found under CONTENT_DIR (${booksDir}).`);
+}
+
+// Target locale for this legacy domain's .org counterparts (youproof.hu -> hu).
+// Supplied per Worker environment via `--locale <code>` or the LOCALE env var;
+// never hardcoded here.
+const localeArgIdx = process.argv.indexOf("--locale");
+const LOCALE =
+  localeArgIdx !== -1 ? process.argv[localeArgIdx + 1] : process.env.LOCALE;
+if (!LOCALE) {
+  fail(
+    "target locale not set. Pass `--locale <code>` or set LOCALE (e.g. hu). It " +
+      "selects the .org locale prefix + localized container dictionary this " +
+      "legacy domain maps to.",
+  );
+}
+
+// Shared locale/container dictionary — the SAME source of truth the website uses
+// (apps/website/lib/i18n/locales.json), so localized container segments
+// (konyvek/fejezetek/...) and the locale set live in exactly one place. This
+// script cannot import the website's TypeScript config, so it reads the raw JSON
+// by relative path; keep the two in sync via that shared file.
+const localesPath = resolve(
+  __dirname, "..", "..", "..", "..", "apps", "website", "lib", "i18n", "locales.json",
+);
+if (!existsSync(localesPath)) {
+  fail(`shared locale dictionary not found at ${localesPath}.`);
+}
+const localesData = JSON.parse(readFileSync(localesPath, "utf8"));
+const localeCfg = localesData?.locales?.[LOCALE];
+if (!localeCfg) {
+  fail(
+    `locale '${LOCALE}' is not configured in ${localesPath} ` +
+      `(known: ${Object.keys(localesData?.locales ?? {}).join(", ") || "none"}).`,
+  );
+}
+
+/** Localized URL segment for a canonical container key (e.g. book -> konyvek). */
+function containerSeg(key) {
+  const seg = localeCfg.containers?.[key];
+  if (!seg) fail(`locale '${LOCALE}' has no container segment for '${key}'.`);
+  return seg;
+}
+
+/** A content object's URL slug: its `slug` field, else a lowercased `name`. */
+function slugOf(obj, fallbackName) {
+  const s = obj.slug;
+  if (typeof s === "string" && s.trim() !== "") return s.trim();
+  return String(fallbackName).toLowerCase();
 }
 
 /** Directory basename with a leading `NN-` numeric prefix stripped, if present. */
@@ -141,9 +197,13 @@ for (const bookDirName of bookDirs) {
   const bookName = typeof book.name === "string" ? book.name : stripPrefix(bookDirName);
   const partNames = Array.isArray(book.parts) ? book.parts : [];
 
-  // Book (series) index redirect: legacy series URL -> /books/{book}.
+  // Book (series) index redirect: legacy series URL -> /{locale}/{book}/{slug}.
   if (isPublished(book) && typeof book["legacy-path"] === "string" && book["legacy-path"].trim() !== "") {
-    addEntry(normalizePath(book["legacy-path"]), normalizePath(`/books/${bookName}`), bookYaml);
+    addEntry(
+      normalizePath(book["legacy-path"]),
+      normalizePath(`/${LOCALE}/${containerSeg("book")}/${slugOf(book, bookName)}`),
+      bookYaml,
+    );
   }
 
   for (const partName of partNames) {
@@ -175,10 +235,13 @@ for (const bookDirName of bookDirs) {
         continue;
       }
 
-      const name = typeof chapter.name === "string" ? chapter.name : chapterName;
+      const bookSlug = slugOf(book, bookName);
+      const chapterSlug = slugOf(chapter, chapterName);
       addEntry(
         normalizePath(legacyPathRaw),
-        normalizePath(`/books/${bookName}/chapters/${name}`),
+        normalizePath(
+          `/${LOCALE}/${containerSeg("book")}/${bookSlug}/${containerSeg("chapter")}/${chapterSlug}`,
+        ),
         chapterYaml,
       );
     }
@@ -186,39 +249,47 @@ for (const bookDirName of bookDirs) {
 }
 
 // ---- Standalone content: articles, newsletter, custom pages ----
-// Each kind lives under `{contentDir}/{dir}/{slug}/{file}`. Emit a redirect for
-// every item that is BOTH published (has published-at) AND has a legacy-path.
+// Each kind lives under `{contentDir}/{dir}/{itemDir}/{file}`. Emit a redirect
+// for every item that is BOTH published (has published-at) AND has a legacy-path.
+// `containerKey` is the canonical container key (localized via the dictionary);
+// `null` means the kind has no container segment (custom pages -> /{locale}/{slug}).
 // Landing pages are intentionally excluded (unlisted ad entry points).
 const STANDALONE = [
-  { dir: "articles", file: "article.yaml", to: (name) => `/articles/${name}` },
-  { dir: "newsletter", file: "newsletter.yaml", to: (name) => `/newsletter/${name}` },
-  { dir: "pages", file: "page.yaml", to: (name) => `/${name}` }, // pages live at the root
+  { dir: "articles", file: "article.yaml", containerKey: "article" },
+  { dir: "newsletter", file: "newsletter.yaml", containerKey: "newsletter" },
+  { dir: "pages", file: "page.yaml", containerKey: null },
 ];
 
-for (const { dir, file, to } of STANDALONE) {
+for (const { dir, file, containerKey } of STANDALONE) {
   const kindDir = resolve(contentDir, dir);
   if (!existsSync(kindDir)) continue;
 
-  for (const slug of subdirs(kindDir)) {
-    const itemYaml = join(kindDir, slug, file);
+  for (const itemDir of subdirs(kindDir)) {
+    const itemYaml = join(kindDir, itemDir, file);
     if (!existsSync(itemYaml)) continue;
     const item = loadYaml(itemYaml);
     const legacyPathRaw = item["legacy-path"];
     if (!isPublished(item) || typeof legacyPathRaw !== "string" || legacyPathRaw.trim() === "") {
       continue;
     }
-    const name = typeof item.name === "string" ? item.name : stripPrefix(slug);
-    addEntry(normalizePath(legacyPathRaw), normalizePath(to(name)), itemYaml);
+    const name = typeof item.name === "string" ? item.name : stripPrefix(itemDir);
+    const itemSlug = slugOf(item, name);
+    const to = containerKey === null
+      ? `/${LOCALE}/${itemSlug}`
+      : `/${LOCALE}/${containerSeg(containerKey)}/${itemSlug}`;
+    addEntry(normalizePath(legacyPathRaw), normalizePath(to), itemYaml);
   }
 }
 
-// ---- Root redirect: youproof.hu/ -> youproof.org/ (§2.2) ----
-// Path-to-path is "/" -> "/"; the worker redirects to REDIRECT_TARGET_HOST, so
-// this crosses domains (.hu -> .org), not a real self-redirect. Reserve "/".
+// ---- Root redirect: youproof.hu/ -> youproof.org/{locale} ----
+// Path-to-path is "/" -> "/{locale}"; the worker redirects to
+// REDIRECT_TARGET_HOST, so this crosses domains (.hu -> .org). The bare .org root
+// has no page (every page is locale-prefixed), so land on the locale homepage.
+// Reserve "/".
 if (legacyPathOwners.has("/")) {
   fail(`legacy-path '/' is reserved for the root redirect but is already used by ${legacyPathOwners.get("/")}.`);
 }
-entries["/"] = "/";
+entries["/"] = normalizePath(`/${LOCALE}`);
 
 const updatedAt = process.env.MANIFEST_UPDATED_AT || new Date().toISOString().slice(0, 10);
 if (!/^\d{4}-\d{2}-\d{2}$/.test(updatedAt)) {

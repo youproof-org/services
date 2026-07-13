@@ -29,7 +29,7 @@ export default function StandaloneRoute({ node, breadcrumbs, mode = 'inner' }: S
   if (showStub) {
     return (
       <div className="book-shell">
-        <SiteHeader mode={mode} breadcrumbs={breadcrumbs} />
+        <SiteHeader mode={mode} breadcrumbs={breadcrumbs} locale={node.locale} />
         <main className="stub-main">
           {node.legacyPath ? (
             <NotMigratedStub legacyPath={node.legacyPath} />
@@ -47,7 +47,7 @@ export default function StandaloneRoute({ node, breadcrumbs, mode = 'inner' }: S
   // over instead of sliding under the sticky header).
   return (
     <div className="book-shell">
-      <SiteHeader mode={mode} breadcrumbs={breadcrumbs} />
+      <SiteHeader mode={mode} breadcrumbs={breadcrumbs} locale={node.locale} />
       {node.thumbnail ? (
         <div className={styles.thumbnail}>
           {/* eslint-disable-next-line @next/next/no-img-element */}

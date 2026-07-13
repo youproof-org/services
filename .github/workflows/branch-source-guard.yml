@@ -1,0 +1,45 @@
+# Promotion source-branch guard (services) — enforces branch-protection rules 1 & 2.
+#
+# GitHub branch protection CANNOT natively restrict which branch a PR is merged
+# FROM (it only governs the target). This required status check closes that gap:
+#
+#   - PRs into stable/production may come ONLY from stable/staging.
+#   - PRs into stable/staging   may come ONLY from development.
+#
+# Together with merge-commit-only + the artifact-gate, this keeps the single
+# promotion lane development -> stable/staging -> stable/production intact (no
+# skipping a stage, no promoting from an arbitrary branch).
+#
+# No paths filter: it must run on EVERY PR to those branches so it can be a
+# reliable REQUIRED status check (see infra/github/branch-protection.md).
+name: branch-source-guard
+
+on:
+  pull_request:
+    branches:
+      - stable/staging
+      - stable/production
+
+permissions:
+  contents: read
+
+jobs:
+  source-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enforce the allowed promotion source branch
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          set -euo pipefail
+          case "$BASE_REF" in
+            stable/production) want="stable/staging" ;;
+            stable/staging)    want="development" ;;
+            *) echo "::error::Unexpected base branch '$BASE_REF'"; exit 1 ;;
+          esac
+          if [ "$HEAD_REF" != "$want" ]; then
+            echo "::error title=Illegal promotion source::PRs into '$BASE_REF' may only be opened from '$want' (got '$HEAD_REF'). Promotions must follow development -> stable/staging -> stable/production."
+            exit 1
+          fi
+          echo "OK: '$HEAD_REF' -> '$BASE_REF' is an allowed promotion."

@@ -27,7 +27,7 @@ test("buildReport: clean crawl + all-green smoke => overall pass, schema shape",
   assert.equal(report.suites.crawler.status, "pass");
   assert.equal(report.suites.crawler.pagesCrawled, 12);
   // Every crawler finding key present, defaulted to [].
-  for (const k of ["brokenInternal", "brokenExternal", "legacyLeaks", "mathErrors", "orphanPages", "redirectLoops", "slowPages"]) {
+  for (const k of ["brokenInternal", "brokenExternal", "legacyLeaks", "mathErrors", "orphanPages", "redirectLoops", "slowPages", "langErrors"]) {
     assert.deepEqual(report.suites.crawler[k], [], `crawler.${k}`);
   }
 });
@@ -39,6 +39,7 @@ test("buildCrawlerSuite: each fatal category fails the suite; warnings do not", 
     { leaks: [{ url: "/x", detail: "d" }] },
     { mathErrors: [{ url: "/x", count: 1 }] },
     { redirectLoops: [{ url: "/x", detail: "cycle" }] },
+    { langErrors: [{ url: "/en/x", found: "hu", expected: "en" }] },
   ];
   for (const c of fatalCases) {
     assert.equal(buildCrawlerSuite(c).status, "fail", JSON.stringify(c));

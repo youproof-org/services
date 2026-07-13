@@ -99,6 +99,10 @@ jobs:
       TF_WORKDIR: infra/cloudflare/terraform/zone
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       TF_VAR_cloudflare_account_id: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      # Default locale for the youproof.org apex root redirect ('/' -> '/<locale>').
+      # Sourced from the GitHub Environment var; must match DEFAULT_LOCALE in
+      # apps/website/lib/i18n/locales.json. Falls back to 'hu' if the var is unset.
+      TF_VAR_default_locale: ${{ vars.DEFAULT_LOCALE || 'hu' }}
       AWS_ACCESS_KEY_ID: ${{ secrets.R2_STATE_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_STATE_SECRET_ACCESS_KEY }}
     steps:
@@ -211,6 +215,10 @@ jobs:
       ENVIRONMENT: ${{ inputs.environment }}
       TF_WORKDIR: infra/cloudflare/terraform/worker
       CONTENT_DIR: ${{ github.workspace }}/content-repo/content
+      # Target .org locale this legacy domain's paths map to (youproof.hu -> hu).
+      # Consumed by gen-manifest.mjs to build /{locale}/{container}/{slug} targets
+      # from the shared apps/website/lib/i18n/locales.json dictionary.
+      LOCALE: ${{ vars.WORKER_LOCALE || 'hu' }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       TF_VAR_environment: ${{ inputs.environment }}
       TF_VAR_cloudflare_account_id: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
@@ -329,6 +337,10 @@ jobs:
       ENVIRONMENT: ${{ inputs.environment }}
       SITE_ENV: ${{ inputs.environment }}
       CONTENT_DIR: ${{ github.workspace }}/content-repo/content
+      # Default locale baked into the static export (root redirect target, <html
+      # lang>, x-default hreflang). Same GitHub Environment var the zone root's
+      # apex redirect uses; falls back to the first configured locale if unset.
+      DEFAULT_LOCALE: ${{ vars.DEFAULT_LOCALE || 'hu' }}
       SITE_HOST: ${{ inputs.environment == 'production' && 'youproof.org' || 'staging.youproof.org' }}
       # Legacy (.hu) host the not-yet-migrated chapter stubs link back to
       # (staging.youproof.hu on staging, youproof.hu on production).

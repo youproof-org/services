@@ -19,6 +19,8 @@ them. Existing (services repo), reused as-is:
 | var | `CLOUDFLARE_ACCOUNT_ID` | services | Account id; R2 endpoint host |
 | var | `R2_STATE_BUCKET` | services | TF state bucket name |
 | var | `WORKER_DOMAIN` / `REDIRECT_TARGET_HOST` / `LEGACY_PROXY_HOST` / `RACKHOST_SERVER_IP` / `LEGACY_GUARD_VALUE` / `PRODUCTION_CUTOVER` | services (env-scoped) | Existing .hu worker deploy inputs |
+| var | `WORKER_LOCALE` | services | Target `.org` locale for the manifest generator (`youproof.hu` → `hu`); builds `/<locale>/<container>/<slug>` redirect targets. Defaults to `hu`. |
+| var | `DEFAULT_LOCALE` | services | Default locale for the `.org` apex root redirect (`/` → `/<locale>`) — zone root + website build. Defaults to `hu`. |
 
 ### NEW — services repo
 
@@ -90,47 +92,71 @@ commits.
 `apply-branch-protection.sh` sets these via `PATCH /repos/{owner}/{repo}`
 (`allow_squash_merge=false`, `allow_rebase_merge=false`, `allow_merge_commit=true`).
 
+> **Editor repo (`youproof-org/editor`).** The editor is **not** part of the
+> `(services, content)` artifact/ancestor-tracking model, so merge-commit-only is
+> **not required** for its correctness (leave its merge settings as preferred).
+> It participates only via its own `branch-source-guard` — its promotion lane is
+> `development → stable/released`, protected exactly like the others (§3, §4).
+
 ---
 
 ## 3. Required status checks
 
-Add the artifact-lookup gate as a **required** check:
+Add these as **required** checks:
 
-- Services `stable/production`: require the `artifact-gate` job from `pr-gate.yml`
-  (check name: **`artifact-gate`**).
-- Content `stable/released`: require the `artifact-gate` job from that repo's
-  `pr-gate.yml` (check name: **`artifact-gate`**).
+- Services `development`: require **`zone-purity`** (from `zone-purity-guard.yml`).
+- Services `stable/staging`: require **`zone-purity`** **and** **`source-branch`**
+  (from `branch-source-guard.yml`).
+- Services `stable/production`: require **`artifact-gate`** (from `pr-gate.yml`),
+  **`source-branch`**, and **`zone-purity`**.
+- Content `stable/released`: require **`artifact-gate`** (from that repo's
+  `pr-gate.yml`) **and** **`source-branch`** (from that repo's
+  `branch-source-guard.yml`).
+- Editor `stable/released`: require **`source-branch`** (from that repo's
+  `branch-source-guard.yml`).
+
+`zone-purity-guard.yml` and the three repos' `branch-source-guard.yml` all have
+**no paths filter**, so their checks run on every PR to the listed branches and
+are reliable required checks. `zone-purity` is required even on `development` so
+a mix is blocked at the earliest point — the feature→`development` PR (see §4 and
+[deploy-pipeline.md](../docs/deploy-pipeline.md#keep-zone-changes-isolated-through-the-promotion-lane)).
 
 Also require PRs (no direct pushes) on every protected branch:
 `development`, `stable/staging`, `stable/production` (services); `draft`,
-`stable/released` (content).
+`stable/released` (content); `development`, `stable/released` (editor).
 
 ---
 
 ## 4. Branch-source restrictions — honest capabilities
 
-Rules 1–3 also constrain WHICH branch may be merged into a target:
+Rules 1–3 also constrain WHICH branch may be merged into a target, across all
+three repos:
 
-- `stable/staging` only from `development`
-- `stable/production` only from `stable/staging`
-- `stable/released` only from `draft`
+- services: `stable/staging` only from `development`; `stable/production` only
+  from `stable/staging`
+- content: `stable/released` only from `draft`
+- editor: `stable/released` only from `development`
 
 **GitHub branch protection cannot natively restrict the SOURCE branch of a PR.**
 Native protection controls the *target* branch (required reviews, required
 checks, no direct push, linear-history toggle, etc.) but has no "only mergeable
-from branch X" rule. Two-part enforcement:
+from branch X" rule. Enforcement:
 
-1. **Pairing correctness is enforced by the required `artifact-gate` check.**
-   The gate resolves the required pair from the *promoted* commit (the merge
-   second parent) and the PR head, and only a validated pair passes — so a merge
-   from the wrong source branch will not have a matching passing artifact and is
-   blocked. This is the substantive protection and it is implemented.
-2. **Source-branch label** (optional belt-and-braces): a lightweight CI check on
-   the promotion PRs asserting `github.head_ref` equals the allowed source
-   (`development` / `stable/staging` / `draft`). Not implemented as a separate
-   workflow here to avoid check sprawl; if wanted, add a one-step job to each
-   `pr-gate.yml` guarded by target branch. `apply-branch-protection.sh` documents
-   this as a commented option.
+1. **Hard source-branch assertion — the required `source-branch` check.** Each
+   repo has a `.github/workflows/branch-source-guard.yml` with a `source-branch`
+   job that runs on every PR into its promotion target(s) (no paths filter) and
+   fails unless `github.head_ref` is the allowed source:
+   - services: `development` → `stable/staging`, `stable/staging` →
+     `stable/production`
+   - content: `draft` → `stable/released`
+   - editor: `development` → `stable/released`
+   Marked required by `apply-branch-protection.sh`. This is the primary, direct
+   enforcement of the source restriction.
+2. **Pairing correctness — the required `artifact-gate` check** (services
+   `stable/production` and content `stable/released`). The gate resolves the
+   required pair from the *promoted* commit (the merge second parent) and the PR
+   head; only a validated pair passes, so a wrong-source promotion also lacks a
+   matching passing artifact. Defence-in-depth alongside (1).
 
 Everything else (merge-commit-only, required checks, PR-only) IS natively
 enforceable and is what the script configures.
@@ -140,7 +166,29 @@ enforceable and is what the script configures.
 ## 5. Applying
 
 Review `apply-branch-protection.sh`, then run it locally with a token that has
-admin on both repos. It is intentionally **not** wired into any workflow.
+admin on all three repos (`services`, `content`, `editor`). It is intentionally
+**not** wired into any workflow.
+
+**What it does:** `PATCH /repos/{repo}` to set merge-commit-only (services +
+content only), then an authoritative `PUT …/branches/{branch}/protection` on the
+seven protected branches (§3 table) — each with `enforce_admins=true`,
+`required_pull_request_reviews=1`, `required_status_checks.strict=true` + the
+listed contexts, no direct pushes, no force-push/deletion. The `PUT` **replaces**
+the whole protection object for a branch (idempotent; wipes any settings not
+listed), so review the object before running.
+
+> **⚠️ Ordering — apply protection only AFTER the guard workflows are merged into
+> the protected branches.** A required check blocks merges until its context
+> *reports success*, and a context only reports if its workflow actually runs on
+> the branch under test. The `zone-purity` / `source-branch` guard workflows must
+> already be present on the relevant branches (`development`/`draft`/`stable/*`)
+> when the script runs. If you require them **first**, every PR hangs forever
+> "waiting for status to be reported" and nothing is mergeable. Correct order per
+> repo: (1) land the guard workflow(s) on the integration branch via a normal PR
+> (services: they arrive with the feature branch → `development`; content: merge
+> `feat/branch-source-guard` → `draft`; editor: merge `feat/branch-source-guard`
+> → `development`), let them propagate toward the promotion targets, **then**
+> (2) run `apply-branch-protection.sh` to mark the checks required.
 
 ## 6. First production rollout
 

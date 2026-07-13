@@ -8,6 +8,7 @@
     "dev": "next dev",
     "prebuild": "node scripts/sync-figures.mjs",
     "build": "next build",
+    "postbuild": "node scripts/set-html-lang.mjs",
     "start": "next start",
     "lint": "next lint"
   },
