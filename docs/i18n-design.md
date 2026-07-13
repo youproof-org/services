@@ -241,6 +241,36 @@ is unchanged.
 
 ---
 
+## 7a. Per-locale `<html lang>` — post-build rewrite + live guard
+
+In the App Router the root `<html>` (in `app/layout.tsx`) sits **above** the
+`[locale]` segment and cannot read the locale param, and static export has no
+middleware — so the root layout can only emit a single static `lang`
+(`DEFAULT_LOCALE`). That is correct for the root redirect page and all
+default-locale pages, but a `/{other-locale}/…` page would wrongly inherit the
+default `lang`. This is handled in two parts (both data-driven — a new locale
+needs no code change):
+
+1. **Fix — post-build rewrite** (`apps/website/scripts/set-html-lang.mjs`, wired as
+   `postbuild`). After the export, it rewrites `<html lang>` in every `out/**.html`
+   to the `htmlLang` of the locale in that file's path (first path segment ∈
+   configured locales, else the default). A no-op for the current hu-only output;
+   correct-by-construction the moment other-locale content exists.
+2. **Guard — live verification in the quality gate.** The post-deploy crawler
+   (`tools/smoke-tests`) fetches each live page and asserts its `<html lang>`
+   matches the locale in its URL path; a mismatch is a **fatal** `langErrors`
+   finding → the crawler suite fails → `overall: fail` in the report artifact →
+   the production `pr-gate` finds no passing artifact and **blocks the production
+   promotion**. So a wrong `lang` cannot reach production. (Verifying on the live
+   staging site — not a local build artifact — is deliberate: it exercises the
+   actually-served HTML through R2 + the CDN.)
+
+The crawler also **starts at `/{DEFAULT_LOCALE}`** (not `/`), since every page is
+locale-prefixed and the bare root only redirects (static stub now; edge 302 once
+the zone rule ships) — starting at `/` would traverse nothing.
+
+---
+
 ## 8. Non-goals (this phase)
 
 - No language switcher UI beyond an optional disabled placeholder.

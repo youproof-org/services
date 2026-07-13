@@ -5,7 +5,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { extractRefs, findHeaderLeaks, toUrl } from "../lib/extract.mjs";
+import { extractRefs, findHeaderLeaks, toUrl, extractHtmlLang } from "../lib/extract.mjs";
 
 const BASE = "https://staging.youproof.hu/page/";
 
@@ -98,4 +98,12 @@ test("findHeaderLeaks flags the legacy host in any header, incl. relative Locati
 
   // No legacy host configured (post-migration) -> never flags.
   assert.deepEqual(findHeaderLeaks(absLoc, "", BASE), []);
+});
+
+test("extractHtmlLang reads the <html> lang attribute (or '' when absent)", () => {
+  assert.equal(extractHtmlLang('<!doctype html><html lang="hu" class="x">'), "hu");
+  assert.equal(extractHtmlLang('<html class="x" lang="en">'), "en");
+  assert.equal(extractHtmlLang("<html lang='pt-BR'>"), "pt-BR");
+  assert.equal(extractHtmlLang("<html class=\"x\">"), "");
+  assert.equal(extractHtmlLang("<div lang=\"hu\">not the html tag</div>"), "");
 });

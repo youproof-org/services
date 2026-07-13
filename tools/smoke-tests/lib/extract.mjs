@@ -111,6 +111,14 @@ export function extractMathErrors(html) {
   return { count, snippet };
 }
 
+// The `lang` attribute of the document's <html> element, or "" if absent. Used
+// by the quality gate to verify each live page declares its correct per-locale
+// language (see the postbuild rewrite apps/website/scripts/set-html-lang.mjs).
+export function extractHtmlLang(html) {
+  const m = html.match(/<html[^>]*\blang\s*=\s*["']([^"']*)["']/i);
+  return m ? m[1] : "";
+}
+
 const LOC_RE = /<loc>\s*([^<\s][^<]*?)\s*<\/loc>/gi;
 
 /**

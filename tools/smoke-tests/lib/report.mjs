@@ -5,7 +5,7 @@
 // Status policy:
 //   - A suite is "pass" iff its FATAL categories are all empty.
 //   - Crawler fatal categories: brokenInternal, brokenExternal, legacyLeaks,
-//     mathErrors, redirectLoops. brokenExternal is fatal because this is a
+//     mathErrors, redirectLoops, langErrors. brokenExternal is fatal because this is a
 //     mathematical portal: every outbound link must resolve, or the content is
 //     stale (SEO / consistency risk). Warnings (do NOT fail): orphanPages,
 //     slowPages, and external 403/429 rate-limited hosts (dropped, not emitted —
@@ -43,13 +43,15 @@ export function buildCrawlerSuite(crawl = {}) {
   const legacyLeaks = crawl.leaks ?? [];
   const mathErrors = crawl.mathErrors ?? [];
   const redirectLoops = crawl.redirectLoops ?? [];
+  const langErrors = crawl.langErrors ?? [];
 
   const fatal =
     brokenInternal.length +
     brokenExternal.length +
     legacyLeaks.length +
     mathErrors.length +
-    redirectLoops.length;
+    redirectLoops.length +
+    langErrors.length;
 
   return {
     status: fatal > 0 ? "fail" : "pass",
@@ -61,6 +63,7 @@ export function buildCrawlerSuite(crawl = {}) {
     orphanPages: crawl.orphanPages ?? [],
     redirectLoops,
     slowPages: crawl.slowPages ?? [],
+    langErrors,
   };
 }
 
