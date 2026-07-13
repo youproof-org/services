@@ -125,31 +125,9 @@ jobs:
               - 'infra/cloudflare/worker/**'
               - 'tools/smoke-tests/**'
 
-  # Zone PRs must be "pure": a PR touching the shared zone root (which owns BOTH
-  # the youproof.hu and youproof.org zones) may touch NOTHING else, so a zone
-  # change is never batched with worker/website/other changes. Lists the PR's
-  # files via the REST API (authoritative) and fails only when both a zone path
-  # and a non-zone path are present.
-  guard:
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: read
-    steps:
-      - name: Zone PRs must contain only terraform/zone/ changes
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          files=$(gh api --paginate "repos/${{ github.repository }}/pulls/${{ github.event.number }}/files" --jq '.[].filename')
-          zone=$(printf '%s\n' "$files" | grep -E '^infra/cloudflare/terraform/zone/' || true)
-          other=$(printf '%s\n' "$files" | grep -vE '^infra/cloudflare/terraform/zone/' || true)
-          if [ -n "$zone" ] && [ -n "$other" ]; then
-            echo "::error title=Mixed zone PR::A zone PR (terraform/zone/) must contain ONLY that root — move these out of the PR:"
-            printf '%s\n' "$other"
-            exit 1
-          fi
-          echo "Zone-only or no zone changes — OK."
+  # NOTE: zone-purity enforcement lives in the dedicated, always-run
+  # `zone-purity-guard.yml` (no paths filter, so it can't be bypassed and is a
+  # reliable required check). It replaces the old paths-filtered `guard` job here.
 
   zone-plan:
     needs: changes

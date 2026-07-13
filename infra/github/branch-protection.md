@@ -94,12 +94,21 @@ commits.
 
 ## 3. Required status checks
 
-Add the artifact-lookup gate as a **required** check:
+Add these as **required** checks:
 
-- Services `stable/production`: require the `artifact-gate` job from `pr-gate.yml`
-  (check name: **`artifact-gate`**).
+- Services `development`: require **`zone-purity`** (from `zone-purity-guard.yml`).
+- Services `stable/staging`: require **`zone-purity`** **and** **`source-branch`**
+  (from `branch-source-guard.yml`).
+- Services `stable/production`: require **`artifact-gate`** (from `pr-gate.yml`),
+  **`source-branch`**, and **`zone-purity`**.
 - Content `stable/released`: require the `artifact-gate` job from that repo's
   `pr-gate.yml` (check name: **`artifact-gate`**).
+
+Both `zone-purity-guard.yml` and `branch-source-guard.yml` have **no paths
+filter**, so their checks run on every PR to the listed branches and are reliable
+required checks. `zone-purity` is required even on `development` so a mix is
+blocked at the earliest point — the feature→`development` PR (see §4 and
+[deploy-pipeline.md](../docs/deploy-pipeline.md#keep-zone-changes-isolated-through-the-promotion-lane)).
 
 Also require PRs (no direct pushes) on every protected branch:
 `development`, `stable/staging`, `stable/production` (services); `draft`,
@@ -118,19 +127,25 @@ Rules 1–3 also constrain WHICH branch may be merged into a target:
 **GitHub branch protection cannot natively restrict the SOURCE branch of a PR.**
 Native protection controls the *target* branch (required reviews, required
 checks, no direct push, linear-history toggle, etc.) but has no "only mergeable
-from branch X" rule. Two-part enforcement:
+from branch X" rule. Enforcement (services):
 
-1. **Pairing correctness is enforced by the required `artifact-gate` check.**
+1. **Hard source-branch assertion — the required `source-branch` check**
+   (`.github/workflows/branch-source-guard.yml`). It runs on every PR into
+   `stable/staging` and `stable/production` (no paths filter) and fails unless
+   `github.head_ref` is the allowed source (`development` → `stable/staging`,
+   `stable/staging` → `stable/production`). Marked required by
+   `apply-branch-protection.sh`. This is the primary, direct enforcement of
+   rules 1 & 2's source restriction.
+2. **Pairing correctness — the required `artifact-gate` check** (production only).
    The gate resolves the required pair from the *promoted* commit (the merge
-   second parent) and the PR head, and only a validated pair passes — so a merge
-   from the wrong source branch will not have a matching passing artifact and is
-   blocked. This is the substantive protection and it is implemented.
-2. **Source-branch label** (optional belt-and-braces): a lightweight CI check on
-   the promotion PRs asserting `github.head_ref` equals the allowed source
-   (`development` / `stable/staging` / `draft`). Not implemented as a separate
-   workflow here to avoid check sprawl; if wanted, add a one-step job to each
-   `pr-gate.yml` guarded by target branch. `apply-branch-protection.sh` documents
-   this as a commented option.
+   second parent) and the PR head; only a validated pair passes, so a
+   wrong-source promotion also lacks a matching passing artifact. This remains as
+   defence-in-depth alongside (1).
+
+> The content repo's `draft` → `stable/released` source restriction is currently
+> covered only by its `artifact-gate` pairing check (no dedicated `source-branch`
+> guard there yet); add an analogous no-paths-filter workflow if a hard assertion
+> is wanted.
 
 Everything else (merge-commit-only, required checks, PR-only) IS natively
 enforceable and is what the script configures.

@@ -1,0 +1,58 @@
+# Zone-purity guard — protects the single development -> stable/staging ->
+# stable/production promotion lane (the ONLY promotion path, zone changes
+# included).
+#
+# The shared zone Terraform root (which owns BOTH the youproof.hu and
+# youproof.org zones) applies ONLY at the stable/production merge, and promotions
+# are WHOLESALE (a branch merges in full). So a zone change and unrelated
+# non-zone work can end up batched into the same production promotion even if no
+# single PR mixed them. The invariant we protect:
+#
+#   the projected `stable/production <-> <this PR merged>` delta must NEVER mix a
+#   terraform/zone/ change with any non-zone change.
+#
+# We compare EVERY PR (into development, stable/staging, or stable/production)
+# against stable/production, because merging any PR into any lane branch changes
+# what the eventual production promotion will carry. Checking at development-merge
+# time is the earliest possible point: a feature PR is blocked the moment it would
+# (together with whatever is already pending on the target) make the eventual
+# stable/production promotion mixed. To ship a zone change you therefore drain
+# non-zone work to production first, then send the zone change through alone.
+#
+# No paths filter: it must run on EVERY PR so it can't be bypassed by a PR that
+# touches only unfiltered paths, and so it is a reliable REQUIRED status check
+# (see infra/github/branch-protection.md).
+name: zone-purity-guard
+
+on:
+  pull_request:
+    branches:
+      - development
+      - stable/staging
+      - stable/production
+
+permissions:
+  contents: read
+
+jobs:
+  zone-purity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Zone changes must never mix with non-zone changes in a promotion
+        run: |
+          set -euo pipefail
+          # Compare the PR's merge result against stable/production — the set of
+          # files the eventual production promotion would carry if this PR lands.
+          git fetch --no-tags --quiet origin stable/production
+          files=$(git diff --name-only "FETCH_HEAD...HEAD")
+          zone=$(printf '%s\n' "$files" | grep -E '^infra/cloudflare/terraform/zone/' || true)
+          other=$(printf '%s\n' "$files" | grep -vE '^infra/cloudflare/terraform/zone/' || true)
+          if [ -n "$zone" ] && [ -n "$other" ]; then
+            echo "::error title=Mixed zone change::Merging this PR would make the eventual stable/production promotion carry BOTH a terraform/zone/ change and non-zone changes (the projected stable/production delta mixes them). The zone root applies wholesale at the production merge, so zone changes must be serialized: drain the non-zone work to stable/production first, then promote the zone change through development -> stable/staging -> stable/production ALONE. Non-zone files in the projected delta:"
+            printf '%s\n' "$other"
+            exit 1
+          fi
+          echo "No zone/non-zone mixture in the projected stable/production delta — OK."

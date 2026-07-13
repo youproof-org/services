@@ -103,25 +103,36 @@ Context: this is the VS Code extension used to author/edit the content YAML file
 
 ---
 
-## Deployment / promotion note (zone PR purity)
+## Deployment / promotion note (zone changes are serialized)
 
 The root `/` → `/{default_locale}` edge redirect is a **302** rule added to the
 shared zone Terraform root (`infra/cloudflare/terraform/zone/redirects.tf`, plus
-a `default_locale` variable in `variables.tf`). Per
-[deploy-pipeline.md](../deploy-pipeline.md#keep-zone-prs-pure), the `guard` CI job
-**fails any PR that touches `terraform/zone/**` together with anything else**, and
-zone changes only **apply on the `stable/production` merge** (a no-op at
-`stable/staging`). Therefore:
+a `default_locale` variable in `variables.tf`). There is **one promotion lane for
+everything** — `development → stable/staging → stable/production` (no
+`zone/*`→production shortcut). Per
+[deploy-pipeline.md](../deploy-pipeline.md#keep-zone-changes-isolated-through-the-promotion-lane),
+the required `zone-purity` check (`zone-purity-guard.yml`) fails **any** PR —
+into `development`, `stable/staging`, or `stable/production` — whose **projected
+`stable/production` delta** (the PR merged, compared to production) mixes a
+`terraform/zone/**` change with non-zone changes. It runs from feature-PR time
+onward, so a zone change and non-zone work can never accumulate together on
+`development`. Zone changes only **apply on the `stable/production` merge** (a
+no-op at `stable/staging`). Therefore:
 
-- **Promote the `zone/` changes in their own dedicated PR**, containing *only*
-  the `terraform/zone/**` files — separate from the app/worker/docs PR(s) for
-  this ticket.
-- The rest of YP-125 (content, `apps/website`, `.github/workflows/deploy.yml`,
-  docs) goes in separate PR(s); `deploy.yml` is not under `terraform/zone/**`, so
-  it may travel with the app changes.
+- **Land the `zone/` change as its own isolated PR into `development`** (already
+  a separate commit, `db997d1`); the rest of the ticket (content, `apps/website`,
+  `.github/workflows/deploy.yml`, docs) goes in separate PR(s).
+- **Serialize the zone promotion:** first drain the non-zone work to
+  `stable/production` (staging and production matching), then promote the zone
+  change through `development → stable/staging → stable/production` **alone**.
+  This mirrors the "park + drain" approach and is now CI-enforced (a mixed
+  promotion delta fails the guard). The static `out/index.html` redirect already
+  covers `/`→`/hu`, so the edge rule is non-urgent and can wait for a drained
+  window.
 - Set the `DEFAULT_LOCALE` GitHub Environment variable (production) to match
   `apps/website/lib/i18n/locales.json`'s configured default before/with the zone
-  promotion.
+  promotion. (Terraform's `hu` fallback keeps the zone root self-contained if the
+  var isn't set yet.)
 
 ## Explicit non-goals (do not build these now)
 
