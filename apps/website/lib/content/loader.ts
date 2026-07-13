@@ -271,13 +271,36 @@ export function loadSection(
   }
 }
 
-// Normalize a `published-at` YAML value to an ISO datetime string (or undefined
-// when absent). js-yaml parses unquoted ISO timestamps into `Date` objects, so
-// accept both a Date and a string. Absence ⇒ unpublished.
-function toPublishedAt(raw: unknown): string | undefined {
-  if (raw instanceof Date) return raw.toISOString()
-  if (typeof raw === 'string' && raw.trim() !== '') return raw.trim()
-  return undefined
+// `published-at` in the model: the canonical string `'YYYY-MM-DD HH:MM:SS'`,
+// always interpreted as **UTC**. Every content YAML MUST store it as a QUOTED
+// string in exactly this form. The loader is STRICT with no fallback: a present
+// value that isn't a canonical string throws — in particular an UNQUOTED
+// timestamp, which js-yaml parses into a `Date`, is rejected (not silently
+// accepted), forcing the file to be fixed. A missing value ⇒ unpublished (not an
+// error). Treat the string as UTC anywhere it becomes a Date — never
+// `new Date(publishedAt)`, since a timezone-less string is parsed as LOCAL time.
+// A content file that violates a required format. Thrown by the strict field
+// validators; the graph builder re-throws it past its per-item resilience
+// try/catch (which otherwise skips a broken file), so a format violation is a
+// hard, fatal build error rather than a silently-skipped item.
+export class ContentFormatError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'ContentFormatError'
+  }
+}
+
+const PUBLISHED_AT_RE = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/
+
+function toPublishedAt(raw: unknown, filePath: string): string | undefined {
+  if (raw === undefined || raw === null) return undefined // legitimately unpublished
+  if (typeof raw !== 'string' || !PUBLISHED_AT_RE.test(raw.trim())) {
+    throw new ContentFormatError(
+      `${filePath}: 'published-at' must be a quoted 'YYYY-MM-DD HH:MM:SS' (UTC) string; ` +
+        `got ${JSON.stringify(raw)}. Quote the value in the YAML.`,
+    )
+  }
+  return raw.trim()
 }
 
 function toThumbnail(raw: unknown): ThumbnailImage | undefined {
@@ -311,7 +334,7 @@ export function loadChapter(filePath: string): RawChapter {
     slug: readSlug(raw, name),
     locale: readLocale(raw),
     title: raw.title as string,
-    publishedAt: toPublishedAt(raw['published-at']),
+    publishedAt: toPublishedAt(raw['published-at'], filePath),
     legacyPath: typeof raw['legacy-path'] === 'string' ? (raw['legacy-path'] as string) : undefined,
     excerpt: typeof raw.excerpt === 'string' ? (raw.excerpt as string) : undefined,
     sectionNames: toStringArray(raw.sections),
@@ -380,7 +403,7 @@ export function loadBook(filePath: string): RawBook {
     title: raw.title as string,
     partNames: toStringArray(raw.parts),
     thumbnail: toThumbnail(raw.thumbnail),
-    publishedAt: toPublishedAt(raw['published-at']),
+    publishedAt: toPublishedAt(raw['published-at'], filePath),
     legacyPath: typeof raw['legacy-path'] === 'string' ? (raw['legacy-path'] as string) : undefined,
     abstract: toBlocks(raw.abstract),
     teaser: toItemList(raw.teaser),
@@ -418,7 +441,7 @@ export function loadStandalone(filePath: string): RawStandalone {
     slug: readSlug(raw, name),
     locale: readLocale(raw),
     title: raw.title as string,
-    publishedAt: toPublishedAt(raw['published-at']),
+    publishedAt: toPublishedAt(raw['published-at'], filePath),
     legacyPath: typeof raw['legacy-path'] === 'string' ? (raw['legacy-path'] as string) : undefined,
     excerpt: typeof raw.excerpt === 'string' ? (raw.excerpt as string) : undefined,
     sectionNames: toStringArray(raw.sections),

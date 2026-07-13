@@ -33,6 +33,7 @@ import {
   loadSection,
   loadStandalone,
   resolveFigurePaths,
+  ContentFormatError,
 } from './loader'
 
 // Standalone content kind → content-repo directory name.
@@ -304,6 +305,7 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
               })
             }
           } catch (err) {
+            if (err instanceof ContentFormatError) throw err // format violations are fatal
             console.warn(`Failed to load entity ${file}:`, err)
           }
         }
@@ -499,6 +501,7 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
             : undefined,
         })
       } catch (err) {
+        if (err instanceof ContentFormatError) throw err // format violations are fatal
         console.warn(`Failed to load ${kind} ${itemYaml}:`, err)
       }
     }

@@ -262,7 +262,7 @@ export interface ChapterNode {
   locale: string
   title: string
   part: PartNode                  // parent reference
-  publishedAt?: string            // kebab: published-at; ISO datetime, if published
+  publishedAt?: string            // kebab: published-at; canonical 'YYYY-MM-DD HH:MM:SS' UTC, if published
   published: boolean              // derived: publishedAt != null; gates real vs. stub page
   legacyPath?: string             // old youproof.hu path, if any (kebab: legacy-path)
   excerpt?: string                // short card copy for ContentRow listings (not derived from abstract)
@@ -296,7 +296,7 @@ export interface BookNode {
   title: string
   parts: PartNode[]
   thumbnail?: ThumbnailImage      // series cover shown on book cards
-  publishedAt?: string            // kebab: published-at; ISO datetime, if published
+  publishedAt?: string            // kebab: published-at; canonical 'YYYY-MM-DD HH:MM:SS' UTC, if published
   published: boolean              // derived: publishedAt != null
   legacyPath?: string             // old youproof.hu series path, if any (kebab: legacy-path)
   abstract: ContentBlock[]        // "Kivonat" prose
@@ -326,7 +326,7 @@ export interface StandaloneNode {
   slug: string                    // localized URL segment
   locale: string
   title: string
-  publishedAt?: string            // kebab: published-at; ISO datetime, if published
+  publishedAt?: string            // kebab: published-at; canonical 'YYYY-MM-DD HH:MM:SS' UTC, if published
   published: boolean              // derived: publishedAt != null
   legacyPath?: string             // old youproof.hu path, if any (kebab: legacy-path)
   excerpt?: string                // short card copy for ContentRow listings (article/newsletter)
