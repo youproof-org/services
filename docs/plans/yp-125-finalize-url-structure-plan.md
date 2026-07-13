@@ -119,9 +119,11 @@ onward, so a zone change and non-zone work can never accumulate together on
 `development`. Zone changes only **apply on the `stable/production` merge** (a
 no-op at `stable/staging`). Therefore:
 
-- **Land the `zone/` change as its own isolated PR into `development`** (already
-  a separate commit, `db997d1`); the rest of the ticket (content, `apps/website`,
-  `.github/workflows/deploy.yml`, docs) goes in separate PR(s).
+- **The `zone/` change is parked on its own branch, `feat/yp-125-zone-root-redirect`**
+  (off `development`, zone-only) — split out of `feat/yp-125-finalize-url-structure`
+  so the rest of the ticket (content, `apps/website`, `.github/workflows/deploy.yml`,
+  docs) ships without it. Promote it via its own PR into `development` **after the
+  first production release**.
 - **Serialize the zone promotion:** first drain the non-zone work to
   `stable/production` (staging and production matching), then promote the zone
   change through `development → stable/staging → stable/production` **alone**.
