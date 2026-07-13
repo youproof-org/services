@@ -7,6 +7,7 @@ import { getChapterIndex, buildChapterEmbedIndices, buildChapterFigureIndices, g
 import ContentBlocks from './ContentBlocks'
 import SectionView from './SectionView'
 import BookReference from './BookReference'
+import { urlForChapter } from '@/lib/content/urls'
 import styles from './chapter-page.module.scss'
 
 interface ChapterPageProps {
@@ -71,7 +72,7 @@ export default function ChapterPage({ bookName, chapterName }: ChapterPageProps)
       {chapter.sections.map((section, i) => (
         <SectionView
           key={section.name}
-          name={section.name}
+          slug={section.slug}
           title={section.title}
           body={section.body}
           label={`${chapterIndex}.${i + 1}`}
@@ -89,7 +90,7 @@ export default function ChapterPage({ bookName, chapterName }: ChapterPageProps)
       <nav className={styles['chapter-nav']}>
         {prevChapter ? (
           <Link
-            href={`/books/${bookName}/chapters/${prevChapter.name}`}
+            href={urlForChapter(prevChapter)}
             className={styles['chapter-nav-btn']}
           >
             <FontAwesomeIcon icon={faAngleLeft} width={8} /> Előző
@@ -99,7 +100,7 @@ export default function ChapterPage({ bookName, chapterName }: ChapterPageProps)
         )}
         {nextChapter && (
           <Link
-            href={`/books/${bookName}/chapters/${nextChapter.name}`}
+            href={urlForChapter(nextChapter)}
             className={`${styles['chapter-nav-btn']} ${styles['chapter-nav-btn--next']}`}
           >
             Következő <FontAwesomeIcon icon={faAngleRight} width={8} />

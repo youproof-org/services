@@ -34,9 +34,10 @@ test("admin/login paths are blocked with 404", async () => {
 });
 
 test("unmigrated non-admin path: proxied (pre-migration) or 410 (post-migration)", async () => {
-  // NOTE: the root "/" is now a migrated entry ("/" -> "/", the youproof.hu ->
-  // youproof.org redirect), so it is covered by the "migrated paths" test below.
-  // Here we probe a path guaranteed NOT to be in the manifest.
+  // NOTE: the root "/" is now a migrated entry ("/" -> "/{locale}", e.g. "/hu",
+  // the youproof.hu -> youproof.org locale-homepage redirect), so it is covered
+  // by the "migrated paths" test below. Here we probe a path guaranteed NOT to be
+  // in the manifest.
   const res = await request(`${baseUrl}/nem-letezo-oldal-smoke-teszt`);
   if (isPostMigration) {
     assert.equal(res.status, 410, "post-migration: unmigrated path should be 410 Gone");

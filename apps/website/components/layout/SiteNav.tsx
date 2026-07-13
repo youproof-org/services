@@ -6,20 +6,20 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBars, faXmark } from '@fortawesome/free-solid-svg-icons'
 import styles from './site-nav.module.scss'
 
-export const NAV_LINKS = [
-  { label: 'Cikkek', href: '/articles' },
-  { label: 'Hírek', href: '/newsletter' },
-]
+export interface NavLink {
+  label: string
+  href: string
+}
 
 // Primary nav. Collapses behind a hamburger < 640px. Client component for the
-// toggle.
-export default function SiteNav() {
+// toggle. Links are locale-resolved by SiteHeader and passed in.
+export default function SiteNav({ links }: { links: NavLink[] }) {
   const [open, setOpen] = useState(false)
 
   return (
     <div className={styles.nav}>
       <ul className={`${styles.links} ${open ? styles.open : ''}`}>
-        {NAV_LINKS.map((link) => (
+        {links.map((link) => (
           <li key={link.href}>
             <Link href={link.href} className={styles.link} onClick={() => setOpen(false)}>
               {link.label}

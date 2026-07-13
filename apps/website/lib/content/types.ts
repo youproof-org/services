@@ -247,7 +247,9 @@ export interface ThumbnailImage {
 }
 
 export interface SectionNode {
-  name: string
+  name: string                    // language-independent internal id (cross-refs)
+  slug: string                    // localized in-page anchor id (not a URL segment)
+  locale: string
   title: string
   chapter: ChapterNode            // parent reference
   body: ContentBlock[]
@@ -255,10 +257,12 @@ export interface SectionNode {
 }
 
 export interface ChapterNode {
-  name: string
+  name: string                    // language-independent internal id (cross-refs)
+  slug: string                    // localized URL segment
+  locale: string
   title: string
   part: PartNode                  // parent reference
-  publishedAt?: string            // kebab: published-at; ISO datetime, if published
+  publishedAt?: string            // kebab: published-at; canonical 'YYYY-MM-DD HH:MM:SS' UTC, if published
   published: boolean              // derived: publishedAt != null; gates real vs. stub page
   legacyPath?: string             // old youproof.hu path, if any (kebab: legacy-path)
   excerpt?: string                // short card copy for ContentRow listings (not derived from abstract)
@@ -286,11 +290,13 @@ export interface ItemList {
 }
 
 export interface BookNode {
-  name: string
+  name: string                    // language-independent internal id (cross-refs)
+  slug: string                    // localized URL segment
+  locale: string
   title: string
   parts: PartNode[]
   thumbnail?: ThumbnailImage      // series cover shown on book cards
-  publishedAt?: string            // kebab: published-at; ISO datetime, if published
+  publishedAt?: string            // kebab: published-at; canonical 'YYYY-MM-DD HH:MM:SS' UTC, if published
   published: boolean              // derived: publishedAt != null
   legacyPath?: string             // old youproof.hu series path, if any (kebab: legacy-path)
   abstract: ContentBlock[]        // "Kivonat" prose
@@ -309,15 +315,18 @@ export type StandaloneKind = 'article' | 'newsletter' | 'page' | 'landing'
 
 export interface StandaloneSection {
   name: string
+  slug: string                    // localized in-page anchor id
   title: string
   body: ContentBlock[]
 }
 
 export interface StandaloneNode {
   kind: StandaloneKind
-  name: string                    // slug (kebab)
+  name: string                    // language-independent internal id (kebab)
+  slug: string                    // localized URL segment
+  locale: string
   title: string
-  publishedAt?: string            // kebab: published-at; ISO datetime, if published
+  publishedAt?: string            // kebab: published-at; canonical 'YYYY-MM-DD HH:MM:SS' UTC, if published
   published: boolean              // derived: publishedAt != null
   legacyPath?: string             // old youproof.hu path, if any (kebab: legacy-path)
   excerpt?: string                // short card copy for ContentRow listings (article/newsletter)

@@ -6,6 +6,7 @@ import ContentRow from '@/components/content/ContentRow'
 import BookReference from '@/components/content/BookReference'
 import { getChapterIndex } from '@/lib/utils/index-helpers'
 import { toRoman } from '@/lib/utils/roman'
+import { urlForChapter } from '@/lib/content/urls'
 import styles from './book-index.module.scss'
 
 interface BookIndexProps {
@@ -60,7 +61,7 @@ export default function BookIndex({ book, episode }: BookIndexProps) {
               {part.chapters.map((ch) => (
                 <ContentRow
                   key={ch.name}
-                  href={`/books/${book.name}/chapters/${ch.name}`}
+                  href={urlForChapter(ch)}
                   title={ch.title}
                   excerpt={ch.excerpt}
                   thumbnail={ch.thumbnail}

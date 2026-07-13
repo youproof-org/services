@@ -34,8 +34,8 @@ paths:
   "version": 1,
   "updatedAt": "2026-07-01",
   "entries": {
-    "/old-slug-one": "/books/algebra/chapters/vectors",
-    "/some/nested/old-path": "/books/geometry/chapters/triangles"
+    "/old-slug-one": "/hu/konyvek/algebra/fejezetek/vektorok",
+    "/some/nested/old-path": "/hu/konyvek/geometria/fejezetek/haromszogek"
   }
 }
 ```
@@ -49,12 +49,24 @@ content move" workflow is obsolete.) The generator
   content repo's `content/` subdir containing `books/`), walks every book →
   part → chapter, and emits one entry per chapter that is **both**
   `published: true` **and** has a `legacy-path`.
+- Takes the target **locale** explicitly via `--locale <code>` or the `LOCALE`
+  env var (`youproof.hu` → `hu`; wired from the `WORKER_LOCALE` GitHub var, never
+  hardcoded). The locale prefix and the localized container segments
+  (`konyvek`/`fejezetek`/`cikkek`/`hirek`) come from the **same** dictionary the
+  website uses, `apps/website/lib/i18n/locales.json`, read by relative path
+  (keep the two in sync via that shared file).
 - **Key** = the chapter's `legacy-path` (its old `.hu` path). **Value** = the
-  chapter's canonical `.org` path, `/books/{book}/chapters/{chapter}`, where
-  `{book}`/`{chapter}` are the respective `name` fields (folder/file basename
-  with the leading `NN-` numeric prefix stripped). This is the same
-  [canonical URL rule](content-site-and-static-generation.md#canonical-url-rule)
-  the static export uses, so redirect targets always resolve to a real page.
+  chapter's canonical `.org` path,
+  `/{locale}/{book-container}/{book-slug}/{chapter-container}/{chapter-slug}`,
+  where the `-slug` segments are each object's `slug` (falling back to a
+  lowercased `name`). Standalone kinds map to `/{locale}/{container}/{slug}`
+  (articles → `cikkek`, newsletter → `hirek`) and custom pages to
+  `/{locale}/{slug}`. This matches how the static export builds URLs via
+  `buildLocalizedUrl`, so redirect targets always resolve to a real page — a
+  build-artifact cross-check (`tools/smoke-tests/tests/manifest-targets.test.mjs`)
+  asserts every target exists in the export.
+- **Root** `/` → `/{locale}` (the bare `.org` root has no page; every page is
+  locale-prefixed).
 - **Un-published or missing-`legacy-path` chapters produce no entry.** An entry
   therefore disappears when a chapter is un-published — the `.hu` Worker then
   proxies/410s that path per its normal logic; it does **not** 301 to a stub.
@@ -71,7 +83,7 @@ entries) must stay buildable/typecheckable without a content checkout, so
 available) runs generation explicitly **before** the build:
 
 ```bash
-pnpm --filter @youproof.org/migration-worker run generate-manifest
+LOCALE=hu pnpm --filter @youproof.org/migration-worker run generate-manifest
 pnpm --filter @youproof.org/migration-worker run build   # prebuild validates, esbuild inlines
 ```
 

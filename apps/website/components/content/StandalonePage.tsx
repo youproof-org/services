@@ -39,7 +39,7 @@ export default function StandalonePage({ node }: StandalonePageProps) {
       {node.sections.map((section, i) => (
         <SectionView
           key={section.name}
-          name={section.name}
+          slug={section.slug}
           title={section.title}
           body={section.body}
           label={`${i + 1}.`}

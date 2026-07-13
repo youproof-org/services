@@ -2,6 +2,7 @@ import 'server-only'
 import fs from 'fs'
 import path from 'path'
 import yaml from 'js-yaml'
+import { DEFAULT_LOCALE } from '@/lib/i18n/config'
 import type {
   ContentBlock,
   RefMap,
@@ -110,6 +111,16 @@ function toTermMap(raw: unknown): TermMap | undefined {
 function toStringArray(raw: unknown): string[] {
   if (!Array.isArray(raw)) return []
   return raw.filter((x) => typeof x === 'string') as string[]
+}
+
+// Localization fields. `locale` defaults to the default locale if a file predates
+// the migration; `slug` falls back to a lowercased `name` (its pre-split value).
+function readLocale(raw: Record<string, unknown>): string {
+  return typeof raw.locale === 'string' && raw.locale.trim() !== '' ? raw.locale.trim() : DEFAULT_LOCALE
+}
+
+function readSlug(raw: Record<string, unknown>, name: string): string {
+  return typeof raw.slug === 'string' && raw.slug.trim() !== '' ? raw.slug.trim() : name.toLowerCase()
 }
 
 // ---------------------------------------------------------------------------
@@ -247,23 +258,49 @@ export function loadSection(
   filePath: string,
   figureUrlPrefix: string,
   figuresDir?: string
-): { name: string; title: string; body: ContentBlock[]; references: RefMap } {
+): { name: string; slug: string; locale: string; title: string; body: ContentBlock[]; references: RefMap } {
   const raw = readYaml(filePath)
+  const name = raw.name as string
   return {
-    name: raw.name as string,
+    name,
+    slug: readSlug(raw, name),
+    locale: readLocale(raw),
     title: raw.title as string,
     body: resolveBlocksFigures(toBlocks(raw.body), figureUrlPrefix, figuresDir),
     references: toRefMap(raw.references),
   }
 }
 
-// Normalize a `published-at` YAML value to an ISO datetime string (or undefined
-// when absent). js-yaml parses unquoted ISO timestamps into `Date` objects, so
-// accept both a Date and a string. Absence ⇒ unpublished.
-function toPublishedAt(raw: unknown): string | undefined {
-  if (raw instanceof Date) return raw.toISOString()
-  if (typeof raw === 'string' && raw.trim() !== '') return raw.trim()
-  return undefined
+// `published-at` in the model: the canonical string `'YYYY-MM-DD HH:MM:SS'`,
+// always interpreted as **UTC**. Every content YAML MUST store it as a QUOTED
+// string in exactly this form. The loader is STRICT with no fallback: a present
+// value that isn't a canonical string throws — in particular an UNQUOTED
+// timestamp, which js-yaml parses into a `Date`, is rejected (not silently
+// accepted), forcing the file to be fixed. A missing value ⇒ unpublished (not an
+// error). Treat the string as UTC anywhere it becomes a Date — never
+// `new Date(publishedAt)`, since a timezone-less string is parsed as LOCAL time.
+// A content file that violates a required format. Thrown by the strict field
+// validators; the graph builder re-throws it past its per-item resilience
+// try/catch (which otherwise skips a broken file), so a format violation is a
+// hard, fatal build error rather than a silently-skipped item.
+export class ContentFormatError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'ContentFormatError'
+  }
+}
+
+const PUBLISHED_AT_RE = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/
+
+function toPublishedAt(raw: unknown, filePath: string): string | undefined {
+  if (raw === undefined || raw === null) return undefined // legitimately unpublished
+  if (typeof raw !== 'string' || !PUBLISHED_AT_RE.test(raw.trim())) {
+    throw new ContentFormatError(
+      `${filePath}: 'published-at' must be a quoted 'YYYY-MM-DD HH:MM:SS' (UTC) string; ` +
+        `got ${JSON.stringify(raw)}. Quote the value in the YAML.`,
+    )
+  }
+  return raw.trim()
 }
 
 function toThumbnail(raw: unknown): ThumbnailImage | undefined {
@@ -274,6 +311,8 @@ function toThumbnail(raw: unknown): ThumbnailImage | undefined {
 
 export interface RawChapter {
   name: string
+  slug: string
+  locale: string
   title: string
   publishedAt?: string
   legacyPath?: string
@@ -289,10 +328,13 @@ export interface RawChapter {
 
 export function loadChapter(filePath: string): RawChapter {
   const raw = readYaml(filePath)
+  const name = raw.name as string
   return {
-    name: raw.name as string,
+    name,
+    slug: readSlug(raw, name),
+    locale: readLocale(raw),
     title: raw.title as string,
-    publishedAt: toPublishedAt(raw['published-at']),
+    publishedAt: toPublishedAt(raw['published-at'], filePath),
     legacyPath: typeof raw['legacy-path'] === 'string' ? (raw['legacy-path'] as string) : undefined,
     excerpt: typeof raw.excerpt === 'string' ? (raw.excerpt as string) : undefined,
     sectionNames: toStringArray(raw.sections),
@@ -324,6 +366,8 @@ export function loadPart(filePath: string): RawPart {
 
 export interface RawBook {
   name: string
+  slug: string
+  locale: string
   title: string
   partNames: string[]
   thumbnail?: ThumbnailImage
@@ -351,12 +395,15 @@ function toItemList(raw: unknown): { items: string[] } | undefined {
 
 export function loadBook(filePath: string): RawBook {
   const raw = readYaml(filePath)
+  const name = raw.name as string
   return {
-    name: raw.name as string,
+    name,
+    slug: readSlug(raw, name),
+    locale: readLocale(raw),
     title: raw.title as string,
     partNames: toStringArray(raw.parts),
     thumbnail: toThumbnail(raw.thumbnail),
-    publishedAt: toPublishedAt(raw['published-at']),
+    publishedAt: toPublishedAt(raw['published-at'], filePath),
     legacyPath: typeof raw['legacy-path'] === 'string' ? (raw['legacy-path'] as string) : undefined,
     abstract: toBlocks(raw.abstract),
     teaser: toItemList(raw.teaser),
@@ -370,6 +417,8 @@ export function loadBook(filePath: string): RawBook {
 
 export interface RawStandalone {
   name: string
+  slug: string
+  locale: string
   title: string
   publishedAt?: string
   legacyPath?: string
@@ -386,10 +435,13 @@ export interface RawStandalone {
 // not read here.
 export function loadStandalone(filePath: string): RawStandalone {
   const raw = readYaml(filePath)
+  const name = raw.name as string
   return {
-    name: raw.name as string,
+    name,
+    slug: readSlug(raw, name),
+    locale: readLocale(raw),
     title: raw.title as string,
-    publishedAt: toPublishedAt(raw['published-at']),
+    publishedAt: toPublishedAt(raw['published-at'], filePath),
     legacyPath: typeof raw['legacy-path'] === 'string' ? (raw['legacy-path'] as string) : undefined,
     excerpt: typeof raw.excerpt === 'string' ? (raw.excerpt as string) : undefined,
     sectionNames: toStringArray(raw.sections),

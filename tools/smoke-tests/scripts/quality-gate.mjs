@@ -16,12 +16,38 @@
 
 import { readFileSync, writeFileSync } from "node:fs";
 
-import { config } from "../lib/config.mjs";
+import { config, baseUrl } from "../lib/config.mjs";
 import { buildReport } from "../lib/report.mjs";
 import { runSmoke } from "../lib/smoke-runner.mjs";
 import { runCrawl } from "./crawl.mjs";
 
 const reportOut = process.env.REPORT_OUT ?? "./quality-gate-report.json";
+
+// Locale dictionary (shared source of truth). Drives two things:
+//   1. The crawl START: every public page is locale-prefixed and the bare root
+//      is a redirect to the locale home — a static index.html stub (HTTP 200 +
+//      client-side redirect) today, plus an edge 302 once the parked zone rule
+//      ships. Neither is followed by a link-crawler, so we start the crawl at the
+//      default locale's homepage directly (independent of how `/` redirects), or
+//      the crawler would traverse nothing.
+//   2. The per-page <html lang> check (crawler `langErrors`): each live page must
+//      declare the language of the locale in its URL path.
+// Unreadable dictionary => crawl from root with no lang check (degrades safely).
+let locales = null;
+let defaultLocale = null;
+let crawlStart = baseUrl;
+try {
+  const ld = JSON.parse(
+    readFileSync(new URL("../../../apps/website/lib/i18n/locales.json", import.meta.url), "utf8"),
+  );
+  locales = ld.locales;
+  const keys = Object.keys(locales);
+  const envDefault = process.env.DEFAULT_LOCALE?.trim();
+  defaultLocale = envDefault && locales[envDefault] ? envDefault : keys[0];
+  crawlStart = `${baseUrl}/${defaultLocale}`;
+} catch (err) {
+  console.log(`quality-gate: could not read locales dictionary (${err.message}) — crawling from root, no lang check`);
+}
 
 // Migrated-redirect targets to verify exist (200) on the live .org site. The
 // worker job generates the manifest from content and hands it to this job via a
@@ -62,12 +88,17 @@ if (skipSmoke) {
   );
 }
 
-console.log(`quality-gate: crawling https://${config.workerDomain} ...`);
-const crawler = await runCrawl({ migrationTargets });
+// Seed the crawl with EVERY locale's homepage (locales are separate link-islands
+// with no switcher between them), so all locales are crawled and lang-checked —
+// not just the default. Falls back to the single default-locale home.
+const crawlStarts = locales ? Object.keys(locales).map((loc) => `${baseUrl}/${loc}`) : [crawlStart];
+console.log(`quality-gate: crawling ${crawlStarts.join(", ")} ...`);
+const crawler = await runCrawl({ migrationTargets, starts: crawlStarts, locales, defaultLocale });
 console.log(
   `quality-gate: crawler -> ${crawler.pageCount} page(s); ` +
     `internal=${crawler.brokenInternal.length} leaks=${crawler.leaks.length} ` +
     `math=${crawler.mathErrors.length} loops=${crawler.redirectLoops.length} ` +
+    `lang=${crawler.langErrors.length} ` +
     `external=${crawler.brokenExternal.length} orphans=${crawler.orphanPages.length} slow=${crawler.slowPages.length}`,
 );
 if (crawler.sitemapNote) console.log(`quality-gate: orphan check note: ${crawler.sitemapNote}`);

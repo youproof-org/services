@@ -5,7 +5,8 @@
 // host-agnostic, so the CLI can also crawl the .hu migration worker (the
 // legacy-leak check below is meaningful there and inert on .org — see it).
 //
-// Starts at https://<WORKER_DOMAIN> and walks same-origin links breadth-first.
+// Starts at the given seed URL(s) — one homepage per locale for the .org site,
+// since locales don't link to each other — and walks same-origin links BFS.
 // For every page it also checks the page's own assets (images, stylesheets,
 // scripts, media, ...). It reports these classes of problem:
 //   - broken links/assets — any response >= 400 (internal ones are fatal;
@@ -40,7 +41,7 @@
 import { pathToFileURL } from "node:url";
 
 import { baseUrl, config, request } from "../lib/config.mjs";
-import { extractRefs, findHeaderLeaks, extractMathErrors, parseSitemapLocs } from "../lib/extract.mjs";
+import { extractRefs, findHeaderLeaks, extractMathErrors, parseSitemapLocs, extractHtmlLang } from "../lib/extract.mjs";
 
 const MAX_PAGES = 500;
 const MAX_DEPTH = 5;
@@ -81,6 +82,11 @@ export async function runCrawl({
   domain = config.workerDomain,
   legacyHost = config.legacyProxyHost,
   start = baseUrl,
+  // Seed URLs to begin crawling from. Every locale is a separate link-island
+  // (no language switcher links between them), so to cover a multi-locale site
+  // we seed one homepage per locale; the caller passes `starts`. Defaults to the
+  // single `start` (used for resolving relative sitemap/target URLs regardless).
+  starts = null,
   maxPages = MAX_PAGES,
   maxDepth = MAX_DEPTH,
   concurrency = CONCURRENCY,
@@ -89,6 +95,12 @@ export async function runCrawl({
   // .org paths that migrated redirects point at (the manifest's values). Each is
   // verified to exist (return 200) on the live site — see the end of the crawl.
   migrationTargets = [],
+  // Locale dictionary (code → { htmlLang, ... }) + default locale. When provided,
+  // every crawled page's <html lang> is verified against the locale in its URL
+  // path (first segment); mismatches are collected in `langErrors` (fatal). Null
+  // => no lang checking (e.g. crawling the .hu worker).
+  locales = null,
+  defaultLocale = null,
 } = {}) {
   const enqueued = new Set(); // internal pages queued for crawl (deduped)
   const checked = new Set(); // every URL we've done a status/leak check on
@@ -101,11 +113,23 @@ export async function runCrawl({
   const mathErrors = [];
   const redirectLoops = [];
   const slowPages = [];
+  const langErrors = [];
   let orphanPages = [];
   let sitemapNote = "";
   let pageCount = 0;
 
   const isInternal = (url) => url.hostname === domain;
+
+  // The <html lang> a page should declare, from the locale in its URL path (first
+  // segment = a configured locale key, else the default locale). Null when locale
+  // checking is disabled (no `locales` passed).
+  const expectedLang = (urlObj) => {
+    if (!locales) return null;
+    const seg = urlObj.pathname.split("/").filter(Boolean)[0] ?? "";
+    const key = locales[seg] ? seg : defaultLocale;
+    const cfg = key ? locales[key] : null;
+    return cfg ? cfg.htmlLang : null;
+  };
 
   // Follow a redirect chain from a URL that already returned a 3xx, detecting
   // cycles (A->B->A) and excessively long chains (> maxRedirectHops).
@@ -191,8 +215,12 @@ export async function runCrawl({
     return res;
   }
 
-  const queue = [{ url: new URL(start), depth: 0, via: "(root)" }];
-  enqueued.add(normalize(start));
+  // Seed from every locale homepage (or the single `start` when no `starts`
+  // given). Each locale's pages are then reached via that locale's own internal
+  // links; without seeding each, non-default locales would never be visited.
+  const seedUrls = starts && starts.length ? starts : [start];
+  const queue = seedUrls.map((s) => ({ url: new URL(s), depth: 0, via: "(seed)" }));
+  for (const s of seedUrls) enqueued.add(normalize(s));
 
   async function crawlWorker() {
     while (queue.length > 0 && pageCount < maxPages) {
@@ -213,6 +241,17 @@ export async function runCrawl({
       const mathCount = extractMathErrors(html);
       if (mathCount.count > 0) {
         mathErrors.push({ url: via, count: mathCount.count, snippet: mathCount.snippet });
+      }
+
+      // Per-locale <html lang>: the served page must declare the language of the
+      // locale in its URL path (see the postbuild rewrite). Catches a wrong/stale
+      // lang on the LIVE site, gating production via the report artifact.
+      const wantLang = expectedLang(item.url);
+      if (wantLang) {
+        const gotLang = extractHtmlLang(html);
+        if (gotLang !== wantLang) {
+          langErrors.push({ url: via, found: gotLang || "(none)", expected: wantLang });
+        }
       }
 
       const { links, assets } = extractRefs(html, item.url);
@@ -308,6 +347,7 @@ export async function runCrawl({
     orphanPages,
     redirectLoops,
     slowPages,
+    langErrors,
     sitemapNote,
     cappedAtMaxPages: pageCount >= maxPages,
   };
@@ -336,12 +376,16 @@ async function cli() {
     report("Math render errors — katex-error (fatal)", r.mathErrors, (it) => `[${it.count}x] ${it.url}`);
   }
   if (r.redirectLoops.length) report("Redirect loops (fatal)", r.redirectLoops, linkFmt);
+  if (r.langErrors.length) {
+    report("Wrong <html lang> (fatal)", r.langErrors, (it) => `[found "${it.found}", expected "${it.expected}"] ${it.url}`);
+  }
   if (r.brokenExternal.length) report("Broken external links/assets (warning)", r.brokenExternal, linkFmt);
   if (r.blockedExternal.length) report("External rate-limited/blocked — ignored (403/429)", r.blockedExternal, linkFmt);
   if (r.orphanPages.length) report("Orphan pages — in sitemap, linked from nowhere (warning)", r.orphanPages, (it) => it.url);
   if (r.slowPages.length) report(`Slow pages > ${SLOW_PAGE_MS}ms (warning)`, r.slowPages, (it) => `[${it.ms}ms] ${it.url}`);
 
-  const fatal = r.leaks.length + r.brokenInternal.length + r.mathErrors.length + r.redirectLoops.length;
+  const fatal =
+    r.leaks.length + r.brokenInternal.length + r.mathErrors.length + r.redirectLoops.length + r.langErrors.length;
   const warnings =
     r.brokenExternal.length + r.blockedExternal.length + r.orphanPages.length + r.slowPages.length;
   if (fatal === 0 && warnings === 0) {

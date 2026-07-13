@@ -1,5 +1,7 @@
 @use 'mixins' as *;
 
+// Full-width thumbnail hero shared by the book and chapter pages. The main
+// content (.page-content) overlaps its lower edge via its own -200px margin.
 .thumbnail {
   position: relative;
   width: 100%;
