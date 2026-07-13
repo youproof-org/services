@@ -40,7 +40,7 @@ export default function StandaloneIndex({ title, items, breadcrumbs, locale }: S
           <p className={styles.empty}>Egyelőre nincs tartalom.</p>
         )}
       </main>
-      <SiteFooter />
+      <SiteFooter locale={locale} />
     </div>
   )
 }

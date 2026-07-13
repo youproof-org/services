@@ -113,7 +113,7 @@ export default function RootHome({ locale }: { locale: string }) {
         )}
       </main>
 
-      <SiteFooter />
+      <SiteFooter locale={locale} />
     </div>
   )
 }

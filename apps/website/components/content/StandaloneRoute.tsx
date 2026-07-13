@@ -37,7 +37,7 @@ export default function StandaloneRoute({ node, breadcrumbs, mode = 'inner' }: S
             <UnavailableStub />
           )}
         </main>
-        <SiteFooter />
+        <SiteFooter locale={node.locale} />
       </div>
     )
   }
@@ -66,7 +66,7 @@ export default function StandaloneRoute({ node, breadcrumbs, mode = 'inner' }: S
       <main className="page-content">
         <StandalonePage node={node} />
       </main>
-      <SiteFooter />
+      <SiteFooter locale={node.locale} />
     </div>
   )
 }

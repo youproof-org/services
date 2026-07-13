@@ -1,9 +1,8 @@
 import type { MetadataRoute } from 'next'
+import { SITE_URL } from '@/lib/i18n/metadata'
 
 // Reads SITE_ENV at build time and bakes the result into the static export.
 export const dynamic = 'force-static'
-
-const SITE_URL = 'https://youproof.org'
 
 // Generated into the static export as `out/robots.txt`.
 //
