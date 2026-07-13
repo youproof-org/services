@@ -215,6 +215,8 @@ jobs:
       ENVIRONMENT: staging
       TF_WORKDIR: infra/cloudflare/terraform/worker
       CONTENT_DIR: ${{ github.workspace }}/content-repo/content
+      # Target .org locale for gen-manifest.mjs (matches the deploy worker job).
+      LOCALE: ${{ vars.WORKER_LOCALE || 'hu' }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       TF_VAR_environment: staging
       TF_VAR_cloudflare_account_id: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}

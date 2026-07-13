@@ -19,6 +19,8 @@ them. Existing (services repo), reused as-is:
 | var | `CLOUDFLARE_ACCOUNT_ID` | services | Account id; R2 endpoint host |
 | var | `R2_STATE_BUCKET` | services | TF state bucket name |
 | var | `WORKER_DOMAIN` / `REDIRECT_TARGET_HOST` / `LEGACY_PROXY_HOST` / `RACKHOST_SERVER_IP` / `LEGACY_GUARD_VALUE` / `PRODUCTION_CUTOVER` | services (env-scoped) | Existing .hu worker deploy inputs |
+| var | `WORKER_LOCALE` | services | Target `.org` locale for the manifest generator (`youproof.hu` → `hu`); builds `/<locale>/<container>/<slug>` redirect targets. Defaults to `hu`. |
+| var | `DEFAULT_LOCALE` | services | Default locale for the `.org` apex root redirect (`/` → `/<locale>`) — zone root + website build. Defaults to `hu`. |
 
 ### NEW — services repo
 

@@ -215,6 +215,10 @@ jobs:
       ENVIRONMENT: ${{ inputs.environment }}
       TF_WORKDIR: infra/cloudflare/terraform/worker
       CONTENT_DIR: ${{ github.workspace }}/content-repo/content
+      # Target .org locale this legacy domain's paths map to (youproof.hu -> hu).
+      # Consumed by gen-manifest.mjs to build /{locale}/{container}/{slug} targets
+      # from the shared apps/website/lib/i18n/locales.json dictionary.
+      LOCALE: ${{ vars.WORKER_LOCALE || 'hu' }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       TF_VAR_environment: ${{ inputs.environment }}
       TF_VAR_cloudflare_account_id: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}

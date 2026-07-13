@@ -133,6 +133,7 @@ per-environment is committed. Configure these on each GitHub Environment
 | `RACKHOST_SERVER_IP` | var | Legacy host IP for the `legacy.*` A records. |
 | `LEGACY_GUARD_VALUE` | var | `X-Legacy-Guard` access token — a **var, not a secret** (see [migration worker](migration-worker.md#the-x-legacy-guard-value)). |
 | `DEFAULT_LOCALE` | var | Default locale for the `youproof.org` apex root redirect (`/` → `/<locale>`). Defaults to `hu` if unset. Must match `DEFAULT_LOCALE` in `apps/website/lib/i18n/locales.json`. |
+| `WORKER_LOCALE` | var | The `.org` locale this legacy domain's paths map to (`youproof.hu` → `hu`), consumed by `gen-manifest.mjs` to build `/<locale>/<container>/<slug>` redirect targets from the shared `locales.json` dictionary. Defaults to `hu` if unset. |
 
 The shared zone root (`zone/`) only needs `CLOUDFLARE_API_TOKEN`,
 `CLOUDFLARE_ACCOUNT_ID`, `R2_STATE_ACCESS_KEY_ID`/`R2_STATE_SECRET_ACCESS_KEY`,
