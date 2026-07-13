@@ -75,6 +75,32 @@ test("<link> extraction is rel-aware: keeps stylesheet/shortlink, drops hints & 
   assert.deepEqual(hrefs, ["/?p=42", "/css/site.css"]);
 });
 
+test("<link> extraction skips SEO metadata: canonical + hreflang alternates, keeps feed alternates", () => {
+  const html = `
+    <link rel="canonical" href="https://staging.youproof.org/hu">
+    <link rel="alternate" hreflang="hu" href="https://staging.youproof.org/hu">
+    <link rel="alternate" hreflang="x-default" href="https://staging.youproof.org/hu">
+    <link rel="alternate" type="application/rss+xml" href="/feed.xml">
+    <link rel="stylesheet" href="/css/site.css">
+  `;
+  const { assets } = extractRefs(html, BASE);
+  const hrefs = assets.map((u) => u.pathname).sort();
+  assert.deepEqual(hrefs, ["/css/site.css", "/feed.xml"]);
+});
+
+test("<link> extraction skips SEO metadata: canonical + hreflang alternates, keeps feed alternates", () => {
+  const html = `
+    <link rel="canonical" href="https://youproof.org/hu">
+    <link rel="alternate" hreflang="hu" href="https://youproof.org/hu">
+    <link rel="alternate" hreflang="x-default" href="https://youproof.org/hu">
+    <link rel="alternate" type="application/rss+xml" href="/feed.xml">
+    <link rel="stylesheet" href="/css/site.css">
+  `;
+  const { assets } = extractRefs(html, BASE);
+  const hrefs = assets.map((u) => u.pathname).sort();
+  assert.deepEqual(hrefs, ["/css/site.css", "/feed.xml"]);
+});
+
 test("findHeaderLeaks flags the legacy host in any header, incl. relative Location", () => {
   const legacy = "legacy.staging.youproof.hu";
 

@@ -341,7 +341,11 @@ jobs:
       # lang>, x-default hreflang). Same GitHub Environment var the zone root's
       # apex redirect uses; falls back to the first configured locale if unset.
       DEFAULT_LOCALE: ${{ vars.DEFAULT_LOCALE || 'hu' }}
-      SITE_HOST: ${{ inputs.environment == 'production' && 'youproof.org' || 'staging.youproof.org' }}
+      # The .org host this environment serves (youproof.org on production,
+      # staging.youproof.org on staging). Reuses REDIRECT_TARGET_HOST — the same
+      # per-env .org host the migration worker 301s to — so canonical/hreflang/
+      # sitemap self-reference this env's host instead of always production.
+      SITE_HOST: ${{ vars.REDIRECT_TARGET_HOST }}
       # Legacy (.hu) host the not-yet-migrated chapter stubs link back to
       # (staging.youproof.hu on staging, youproof.hu on production).
       WORKER_DOMAIN: ${{ vars.WORKER_DOMAIN }}
