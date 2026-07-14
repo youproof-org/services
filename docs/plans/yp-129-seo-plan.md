@@ -86,14 +86,18 @@ Claude Code should **stop and ask** rather than guess on these — don't proceed
 
 **Goal:** build-time generation of Facebook-optimized share images from content thumbnails, integrated into the existing `sync-figures` pre-build step (which already compiles `.tex` figures to `.svg` and copies images into the output folder at the right point in the pipeline).
 
-1. Extend `sync-figures` (or add a step invoked alongside it, at the same point in the build) so that, for each content item with a `thumbnail`:
+   Both regular thumbnails and the generic fallback go through the **same** OG-processing step (same code path, same output). The only difference is the input image and the logo/motto overlay applied:
+1. Regular thumbnails — for each content item with a `thumbnail`:
    - Loads the thumbnail.
-   - Composites the YouProof logo mark onto it (position/size per brand guidelines from the launch plan — reuse the hexagon-cluster mark asset).
    - Resizes/crops to Facebook's recommended OG image dimensions (1200×630 by default — confirmed in Phase 0 Q4).
-   - Outputs to a predictable path (e.g. `R2` alongside other generated assets, or bundled the same way the manifest is bundled into the Worker — confirm storage approach, consistent with the "no Workers KV, full redeploy" decision already made for the manifest).
-2. Create the generic fallback OG image (doesn't exist yet): take the homepage hero section's background image, burn in the horizontal-layout logo lockup and the "There is no royal road, just better maps…" motto (matching the existing hero treatment from the launch-plan branding work), then run it through the same dimension/processing step as regular thumbnails above. Use this for content with **no thumbnail**, and for pages with **no backing content file** (homepage, `/hu/cikkek` index, `/hu/hirek` index).
-3. Only regenerate OG images for content that changed (thumbnail or logo-overlay logic) — avoid full regeneration on every build if it's a meaningful cost/time factor; confirm whether this matters at current content volume before over-engineering it.
-4. Emit the resulting OG image URL into the `og:image` field from Phase 3.
+   - Composites a **small** horizontal-layout `youproof.org` logo into the **top-right corner**.
+   - Outputs to a predictable path (e.g. `R2` alongside other generated assets).
+2. Generic fallback OG image (doesn't exist yet) — same processing, different input and overlay:
+   - Uses the homepage hero section's background image as the input (its central area is intentionally left relatively empty, so the overlay fits cleanly there).
+   - Resizes/crops to the same OG dimensions.
+   - Composites the **big** horizontal-layout logo **and** the "There is no royal road, just better maps…" motto into the **middle** of the image (matching the existing hero treatment from the launch-plan branding work).
+   - Use this for content with **no thumbnail**, and for pages with **no backing content file** (homepage, `/hu/cikkek` index, `/hu/hirek` index).
+3. Emit the resulting OG image URL into the `og:image` field from Phase 3.
 
 ---
 
@@ -115,7 +119,7 @@ Claude Code should **stop and ask** rather than guess on these — don't proceed
 **Goal:** verify (and fix if needed) the existing generation/enforcement, per the ticket's explicit ask to "double-check."
 
 1. **`robots.txt`:**
-   - Confirm it's generated per-environment (not a static file checked into the repo) — production allows indexing; staging and legacy disallow.
+   - Confirm it's generated per-environment (not a static file checked into the repo) — production allows indexing; staging disallows. (The legacy site is a proxied upstream origin, not an environment we generate `robots.txt` for — its unmigrated paths are handled via `X-Robots-Tag` below.)
    - Confirm it references the correct `Sitemap:` URL.
 2. **`sitemap.xml`:**
    - Confirm it's generated at build time from the actual current content set (not stale/hand-maintained).
@@ -133,7 +137,7 @@ Claude Code should **stop and ask** rather than guess on these — don't proceed
 **Goal:** the ticket asks for a comprehensive SEO analysis *after* production release — sequence this as a follow-up task, not blocking initial launch, but plan it now.
 
 1. Verify `robots.txt` and `sitemap.xml` are live and correct on production (not staging values leaking through).
-2. Verify `X-Robots-Tag` headers are correctly absent/present per environment (spot-check staging, legacy, and production).
+2. Verify `X-Robots-Tag` headers are correctly absent/present per environment (spot-check staging and production, plus the legacy-proxy path — legacy being a proxied upstream origin, not a separate environment).
 3. Verify OG tags with an actual link-preview/debug tool (e.g. Facebook's Sharing Debugger) on a sample of each content type — book, chapter, article, newsletter, page, homepage.
 4. Verify meta title/description render correctly and within reasonable length limits (title ~50–60 chars, description ~150–160 chars) across a sample of pages — flag content whose fallback-derived title/description is too long, rather than silently truncating.
 5. **Double-check the already-implemented hreflang/canonical tags** on a sample of each content type — confirm the tags are present/absent exactly as intended (no canonical, per the documented ticket decision) and that hreflang markup (if self-referential per prior implementation) validates against Google's guidelines (e.g. via Search Console's URL Inspection tool or a third-party hreflang validator). This is a verification pass only — the tags themselves were implemented under a separate ticket.
