@@ -22,6 +22,15 @@ export interface Env {
    * blocking" and the plan's Section 7.
    */
   LEGACY_GUARD_VALUE: string;
+  /**
+   * Whether reverse-proxied legacy content is served with
+   * `X-Robots-Tag: noindex, nofollow` (see proxy.ts). Arrives as the string
+   * "true"/"false" (bindings are string-only). Treated as noindex UNLESS exactly
+   * "false" — the safe default, so a missing/misconfigured value can never
+   * accidentally index staging/legacy. Production sets it to "false" (keep
+   * indexing unmigrated legacy content); staging leaves it "true".
+   */
+  SEO_NOINDEX: string;
 }
 
 /**

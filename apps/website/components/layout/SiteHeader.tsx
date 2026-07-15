@@ -31,6 +31,7 @@ export default function SiteHeader({ mode = 'inner', breadcrumbs, locale = DEFAU
           <BrandLockup
             variant="horizontal"
             showTagline
+            locale={locale}
             className={styles.lockup}
           />
         </Link>

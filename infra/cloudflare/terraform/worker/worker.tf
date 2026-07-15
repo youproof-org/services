@@ -42,5 +42,13 @@ resource "cloudflare_workers_script" "migration" {
       type = "plain_text"
       text = var.legacy_guard_value
     },
+    {
+      # Whether proxied legacy content is served noindex. Bindings are string-only,
+      # so the bool is stringified; src/proxy.ts treats anything but "false" as
+      # noindex (safe default). staging = "true", production = "false".
+      name = "SEO_NOINDEX"
+      type = "plain_text"
+      text = tostring(var.seo_noindex)
+    },
   ]
 }

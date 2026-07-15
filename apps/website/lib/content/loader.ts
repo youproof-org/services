@@ -8,6 +8,7 @@ import type {
   RefMap,
   TermMap,
   ThumbnailImage,
+  MetaInfo,
   EntityLabels,
   DefinitionNode,
   TheoremNode,
@@ -309,6 +310,29 @@ function toThumbnail(raw: unknown): ThumbnailImage | undefined {
   return { src: t.src as string, alt: t.alt as string }
 }
 
+// Optional `meta:` block → MetaInfo. `open-graph` (kebab) nests into `openGraph`.
+// Every field is optional; returns undefined when absent so the fallback chain
+// (buildPageMeta) applies. A string helper keeps empty/non-string values out.
+function toMeta(raw: unknown): MetaInfo | undefined {
+  if (!raw || typeof raw !== 'object') return undefined
+  const m = raw as Record<string, unknown>
+  const s = (v: unknown): string | undefined =>
+    typeof v === 'string' && v.trim() !== '' ? v.trim() : undefined
+  const og = (m['open-graph'] && typeof m['open-graph'] === 'object')
+    ? (m['open-graph'] as Record<string, unknown>)
+    : undefined
+  const openGraph = og
+    ? { title: s(og.title), description: s(og.description) }
+    : undefined
+  const meta: MetaInfo = {
+    title: s(m.title),
+    description: s(m.description),
+    ...(openGraph && (openGraph.title || openGraph.description) ? { openGraph } : {}),
+  }
+  // Drop the block entirely if nothing usable was set.
+  return meta.title || meta.description || meta.openGraph ? meta : undefined
+}
+
 export interface RawChapter {
   name: string
   slug: string
@@ -324,6 +348,7 @@ export interface RawChapter {
   epilogue: ContentBlock[]
   references: RefMap
   thumbnail?: ThumbnailImage
+  meta?: MetaInfo
 }
 
 export function loadChapter(filePath: string): RawChapter {
@@ -346,6 +371,7 @@ export function loadChapter(filePath: string): RawChapter {
     epilogue: toBlocks(raw.epilogue),
     references: toRefMap(raw.references),
     thumbnail: toThumbnail(raw.thumbnail),
+    meta: toMeta(raw.meta),
   }
 }
 
@@ -373,9 +399,11 @@ export interface RawBook {
   thumbnail?: ThumbnailImage
   publishedAt?: string
   legacyPath?: string
+  excerpt?: string
   abstract: ContentBlock[]
   teaser?: { items: string[] }
   bibliography?: { items: string[] }
+  meta?: MetaInfo
 }
 
 export function loadEpisodes(filePath: string): string[] {
@@ -405,9 +433,11 @@ export function loadBook(filePath: string): RawBook {
     thumbnail: toThumbnail(raw.thumbnail),
     publishedAt: toPublishedAt(raw['published-at'], filePath),
     legacyPath: typeof raw['legacy-path'] === 'string' ? (raw['legacy-path'] as string) : undefined,
+    excerpt: typeof raw.excerpt === 'string' ? (raw.excerpt as string) : undefined,
     abstract: toBlocks(raw.abstract),
     teaser: toItemList(raw.teaser),
     bibliography: toItemList(raw.bibliography),
+    meta: toMeta(raw.meta),
   }
 }
 
@@ -428,6 +458,7 @@ export interface RawStandalone {
   prologue: ContentBlock[]
   epilogue: ContentBlock[]
   thumbnail?: ThumbnailImage
+  meta?: MetaInfo
 }
 
 // Structure mirrors a chapter (minus book relationship / prerequisite-warning).
@@ -449,5 +480,6 @@ export function loadStandalone(filePath: string): RawStandalone {
     prologue: toBlocks(raw.prologue),
     epilogue: toBlocks(raw.epilogue),
     thumbnail: toThumbnail(raw.thumbnail),
+    meta: toMeta(raw.meta),
   }
 }

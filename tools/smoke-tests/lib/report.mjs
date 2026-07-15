@@ -5,11 +5,14 @@
 // Status policy:
 //   - A suite is "pass" iff its FATAL categories are all empty.
 //   - Crawler fatal categories: brokenInternal, brokenExternal, legacyLeaks,
-//     mathErrors, redirectLoops, langErrors. brokenExternal is fatal because this is a
-//     mathematical portal: every outbound link must resolve, or the content is
-//     stale (SEO / consistency risk). Warnings (do NOT fail): orphanPages,
-//     slowPages, and external 403/429 rate-limited hosts (dropped, not emitted —
-//     bot-block/rate-limit is not a broken link).
+//     mathErrors, redirectLoops, langErrors, seoErrors (a content page missing a
+//     required meta/OG/canonical/hreflang tag, or the pipeline emitting none) and
+//     robotsErrors (robots.txt wrong for the environment). brokenExternal is fatal
+//     because this is a mathematical portal: every outbound link must resolve, or
+//     the content is stale (SEO / consistency risk). Warnings (do NOT fail):
+//     orphanPages, slowPages, seoWarnings (over-long title/description,
+//     non-self-referential canonical), and external 403/429 rate-limited hosts
+//     (dropped, not emitted — bot-block/rate-limit is not a broken link).
 //   - Smoke fatal: any failed case.
 //   - overall === "pass" iff every suite status === "pass".
 //
@@ -44,6 +47,8 @@ export function buildCrawlerSuite(crawl = {}) {
   const mathErrors = crawl.mathErrors ?? [];
   const redirectLoops = crawl.redirectLoops ?? [];
   const langErrors = crawl.langErrors ?? [];
+  const seoErrors = crawl.seoErrors ?? [];
+  const robotsErrors = crawl.robotsErrors ?? [];
 
   const fatal =
     brokenInternal.length +
@@ -51,7 +56,9 @@ export function buildCrawlerSuite(crawl = {}) {
     legacyLeaks.length +
     mathErrors.length +
     redirectLoops.length +
-    langErrors.length;
+    langErrors.length +
+    seoErrors.length +
+    robotsErrors.length;
 
   return {
     status: fatal > 0 ? "fail" : "pass",
@@ -64,6 +71,9 @@ export function buildCrawlerSuite(crawl = {}) {
     redirectLoops,
     slowPages: crawl.slowPages ?? [],
     langErrors,
+    seoErrors,
+    robotsErrors,
+    seoWarnings: crawl.seoWarnings ?? [],
   };
 }
 

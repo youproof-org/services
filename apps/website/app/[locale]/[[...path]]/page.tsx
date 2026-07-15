@@ -6,9 +6,10 @@ import {
   LOCALES,
   isLocale,
   getContainerSegment,
+  getLocaleLabel,
   resolveContainerKey,
 } from '@/lib/i18n/config'
-import { buildAlternates } from '@/lib/i18n/metadata'
+import { buildPageMeta, type OgType, type PageMetaNode } from '@/lib/i18n/metadata'
 import type { UrlKey } from '@/lib/i18n/url'
 import { homeUrl, urlForBook, urlForChapter } from '@/lib/content/urls'
 import { getBookRomanIndex, getChapterIndex } from '@/lib/utils/index-helpers'
@@ -199,22 +200,34 @@ export async function generateMetadata({ params }: RouteProps): Promise<Metadata
 
   let key: UrlKey
   let slugPath: string[] = []
-  let title: string | undefined
+  let node: PageMetaNode | null = null
+  let ogType: OgType = 'website'
+  let fallbackTitle: string | undefined
   switch (resolved.kind) {
-    case 'home': key = 'home'; break
-    case 'book': key = 'book'; slugPath = [resolved.book.slug]; title = resolved.book.title; break
+    case 'home':
+      key = 'home'; fallbackTitle = getLocaleLabel(locale, 'home'); ogType = 'website'; break
+    case 'book':
+      key = 'book'; slugPath = [resolved.book.slug]; node = resolved.book; ogType = 'book'; break
     case 'chapter':
-      key = 'chapter'; slugPath = [resolved.book.slug, resolved.chapter.slug]; title = resolved.chapter.title; break
-    case 'articles-index': key = 'articles-index'; title = 'Cikkek'; break
-    case 'newsletter-index': key = 'newsletter-index'; title = 'Hírek'; break
+      key = 'chapter'; slugPath = [resolved.book.slug, resolved.chapter.slug]
+      node = resolved.chapter; ogType = 'article'; break
+    case 'articles-index':
+      key = 'articles-index'; fallbackTitle = getLocaleLabel(locale, 'articlesIndex'); ogType = 'website'; break
+    case 'newsletter-index':
+      key = 'newsletter-index'; fallbackTitle = getLocaleLabel(locale, 'newsletterIndex'); ogType = 'website'; break
     default: // article | newsletter | landing | page
-      key = resolved.node.kind; slugPath = [resolved.node.slug]; title = resolved.node.title
+      key = resolved.node.kind
+      slugPath = [resolved.node.slug]
+      node = resolved.node
+      // Articles & newsletters are article-typed; pages & landings are websites.
+      ogType = resolved.node.kind === 'article' || resolved.node.kind === 'newsletter'
+        ? 'article'
+        : 'website'
   }
 
-  return {
-    ...(title ? { title } : {}),
-    alternates: buildAlternates(locale, key, slugPath),
-  }
+  // og:image (per-item generated share image) is wired in Phase 4; until then
+  // buildPageMeta falls back to the generic OG image.
+  return buildPageMeta({ locale, key, slugPath, ogType, node, fallbackTitle })
 }
 
 // ---------------------------------------------------------------------------
