@@ -132,6 +132,50 @@ export function extractHtmlLang(html) {
   return m ? m[1] : "";
 }
 
+// --- SEO / OpenGraph head extraction --------------------------------------
+
+// `content` of the <meta> tag whose `attr` equals `val` (e.g. name=description,
+// property=og:title), or null. Order-agnostic: finds the tag by its attr, then
+// reads content from anywhere in that tag.
+function metaContent(html, attr, val) {
+  const re = new RegExp(`<meta\\b[^>]*\\b${attr}\\s*=\\s*["']${val.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}["'][^>]*>`, "i");
+  const tag = html.match(re)?.[0];
+  if (!tag) return null;
+  return tag.match(/\bcontent\s*=\s*["']([^"']*)["']/i)?.[1] ?? null;
+}
+
+/**
+ * Extract the SEO/social head of a page: <title>, meta description, canonical,
+ * hreflang alternates, robots directive, and the OpenGraph block. Values are the
+ * raw strings (or null / []). Used by the crawler to assert every content page
+ * emits a well-formed meta + OG block (buildPageMeta) on the live site.
+ */
+export function extractSeo(html) {
+  const linkTags = [...html.matchAll(LINK_TAG_RE)].map((m) => m[0]);
+  const canonicalTag = linkTags.find((t) => /\brel\s*=\s*["']canonical["']/i.test(t));
+  const canonical = canonicalTag ? (canonicalTag.match(HREF_RE)?.[1] ?? null) : null;
+  const hreflangs = linkTags
+    .filter((t) => /\brel\s*=\s*["']alternate["']/i.test(t) && HREFLANG_RE.test(t))
+    .map((t) => t.match(HREFLANG_RE)?.[1])
+    .filter(Boolean);
+  return {
+    title: html.match(/<title[^>]*>([^<]*)<\/title>/i)?.[1]?.trim() ?? null,
+    description: metaContent(html, "name", "description"),
+    robots: metaContent(html, "name", "robots"),
+    canonical,
+    hreflangs,
+    og: {
+      title: metaContent(html, "property", "og:title"),
+      description: metaContent(html, "property", "og:description"),
+      type: metaContent(html, "property", "og:type"),
+      url: metaContent(html, "property", "og:url"),
+      siteName: metaContent(html, "property", "og:site_name"),
+      locale: metaContent(html, "property", "og:locale"),
+      image: metaContent(html, "property", "og:image"),
+    },
+  };
+}
+
 const LOC_RE = /<loc>\s*([^<\s][^<]*?)\s*<\/loc>/gi;
 
 /**

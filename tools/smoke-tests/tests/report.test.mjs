@@ -27,7 +27,7 @@ test("buildReport: clean crawl + all-green smoke => overall pass, schema shape",
   assert.equal(report.suites.crawler.status, "pass");
   assert.equal(report.suites.crawler.pagesCrawled, 12);
   // Every crawler finding key present, defaulted to [].
-  for (const k of ["brokenInternal", "brokenExternal", "legacyLeaks", "mathErrors", "orphanPages", "redirectLoops", "slowPages", "langErrors"]) {
+  for (const k of ["brokenInternal", "brokenExternal", "legacyLeaks", "mathErrors", "orphanPages", "redirectLoops", "slowPages", "langErrors", "seoErrors", "robotsErrors", "seoWarnings"]) {
     assert.deepEqual(report.suites.crawler[k], [], `crawler.${k}`);
   }
 });
@@ -40,6 +40,8 @@ test("buildCrawlerSuite: each fatal category fails the suite; warnings do not", 
     { mathErrors: [{ url: "/x", count: 1 }] },
     { redirectLoops: [{ url: "/x", detail: "cycle" }] },
     { langErrors: [{ url: "/en/x", found: "hu", expected: "en" }] },
+    { seoErrors: [{ url: "/x", missing: ["og:image"] }] },
+    { robotsErrors: [{ detail: "production robots.txt Disallow: /" }] },
   ];
   for (const c of fatalCases) {
     assert.equal(buildCrawlerSuite(c).status, "fail", JSON.stringify(c));
@@ -48,6 +50,7 @@ test("buildCrawlerSuite: each fatal category fails the suite; warnings do not", 
   const warningsOnly = buildCrawlerSuite({
     orphanPages: [{ url: "/y" }],
     slowPages: [{ url: "/z", ms: 9000 }],
+    seoWarnings: [{ url: "/z", warnings: ["meta description 180 chars (> 160)"] }],
   });
   assert.equal(warningsOnly.status, "pass");
   // legacyLeaks maps from the crawler's `leaks` array.

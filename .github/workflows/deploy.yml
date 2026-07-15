@@ -311,18 +311,12 @@ jobs:
         working-directory: ${{ env.TF_WORKDIR }}
         run: terraform apply -input=false -auto-approve tfplan
 
-      # Existing .hu redirect smoke tests. Staging is always Worker-fronted; on
-      # production only after cut-over (pre-cut-over youproof.hu still resolves to
-      # legacy WordPress, so smoke-testing it is meaningless).
-      - name: Smoke tests (.hu worker, post-deploy)
-        if: >-
-          inputs.environment == 'staging' ||
-          (inputs.environment == 'production' && vars.PRODUCTION_CUTOVER == 'true')
-        env:
-          WORKER_DOMAIN: ${{ vars.WORKER_DOMAIN }}
-          REDIRECT_TARGET_HOST: ${{ vars.REDIRECT_TARGET_HOST }}
-          LEGACY_PROXY_HOST: ${{ vars.LEGACY_PROXY_HOST }}
-        run: node --test "tools/smoke-tests/tests/*.test.mjs"
+      # NOTE: the .hu redirect/X-Robots smoke tests used to run HERE, immediately
+      # after apply — which flaked on stale Worker state (the edge could still
+      # serve the pre-apply script for a few seconds). They now run at the START
+      # of the quality-gate job instead, which is several minutes later (after the
+      # website build + upload + purge), by which point the Worker script has
+      # propagated. See the "Smoke tests (.hu worker)" step there.
 
   # Next.js static export -> upload to the env content bucket -> purge the CDN.
   website:
@@ -501,6 +495,22 @@ jobs:
         with:
           name: worker-manifest-${{ inputs.environment }}
           path: ${{ github.workspace }}/worker-manifest
+
+      # .hu migration-Worker smoke tests (moved here from the worker job to avoid
+      # stale-Worker-state flakiness — by now the script has propagated). Runs
+      # against the .hu host, so the .hu env vars OVERRIDE the job-level .org ones.
+      # Uses the just-downloaded generated manifest (MANIFEST_PATH) so the
+      # migrated-path 301 assertions run against real entries. Staging is always
+      # Worker-fronted; production only after cut-over.
+      - name: Smoke tests (.hu worker)
+        if: >-
+          inputs.environment == 'staging' ||
+          (inputs.environment == 'production' && vars.PRODUCTION_CUTOVER == 'true')
+        env:
+          WORKER_DOMAIN: ${{ vars.WORKER_DOMAIN }}
+          REDIRECT_TARGET_HOST: ${{ vars.REDIRECT_TARGET_HOST }}
+          LEGACY_PROXY_HOST: ${{ vars.LEGACY_PROXY_HOST }}
+        run: node --test "tools/smoke-tests/tests/*.test.mjs"
 
       - name: Run quality gate
         id: gate

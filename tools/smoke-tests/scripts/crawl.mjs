@@ -28,6 +28,15 @@
 //                       worker): the legacy origin host leaking to the browser in
 //                       ANY response header (Location, Link, Content-Location, ...).
 //                       Inert on the .org gate, where LEGACY_PROXY_HOST is empty.
+//   - SEO/OG errors   — ONLY when `checkSeo` is set (the .org content gate): a
+//                       content page (one emitting a canonical) missing a required
+//                       meta/OpenGraph/canonical/hreflang tag, its og:image not
+//                       resolving (broken share image), or the pipeline emitting no
+//                       canonical anywhere (fatal). Over-long title/description and
+//                       a non-self-referential canonical are warnings.
+//   - robots.txt      — ONLY when `checkSeo` is set: robots.txt must match the
+//                       environment (production allows indexing + has a Sitemap:
+//                       line; any non-production env must Disallow: /) (fatal).
 //
 // This module exports runCrawl() so the quality-gate entrypoint can consume the
 // findings programmatically. Run directly as a CLI (prints a report, exits 1 on
@@ -41,7 +50,14 @@
 import { pathToFileURL } from "node:url";
 
 import { baseUrl, config, request } from "../lib/config.mjs";
-import { extractRefs, findHeaderLeaks, extractMathErrors, parseSitemapLocs, extractHtmlLang } from "../lib/extract.mjs";
+import {
+  extractRefs,
+  findHeaderLeaks,
+  extractMathErrors,
+  parseSitemapLocs,
+  extractHtmlLang,
+  extractSeo,
+} from "../lib/extract.mjs";
 
 const MAX_PAGES = 500;
 const MAX_DEPTH = 5;
@@ -101,6 +117,13 @@ export async function runCrawl({
   // => no lang checking (e.g. crawling the .hu worker).
   locales = null,
   defaultLocale = null,
+  // When true (the .org content gate), assert every content page emits a
+  // well-formed meta + OpenGraph block (buildPageMeta) and check robots.txt for
+  // the environment. Off for the .hu worker crawl.
+  checkSeo = false,
+  // "production" | "staging" | ... — drives the robots.txt expectation when
+  // checkSeo is on (production allows indexing; anything else disallows all).
+  environment = null,
 } = {}) {
   const enqueued = new Set(); // internal pages queued for crawl (deduped)
   const checked = new Set(); // every URL we've done a status/leak check on
@@ -114,6 +137,10 @@ export async function runCrawl({
   const redirectLoops = [];
   const slowPages = [];
   const langErrors = [];
+  const seoErrors = []; // content pages missing required meta/OG/canonical (fatal)
+  const seoWarnings = []; // over-long title/description, non-self-canonical (warning)
+  const robotsErrors = []; // robots.txt wrong for the environment (fatal)
+  let seoChecked = 0; // content pages (with a canonical) that got SEO-checked
   let orphanPages = [];
   let sitemapNote = "";
   let pageCount = 0;
@@ -254,6 +281,56 @@ export async function runCrawl({
         }
       }
 
+      // Per-page SEO/OG assertions (the .org content gate). A "content page" is
+      // identified by emitting a canonical link (every buildPageMeta page does;
+      // the noindex container-root stubs — /konyvek, /landing — do not, so they
+      // are skipped). Works on staging too: pages there are site-wide noindex but
+      // still emit canonical + the full OG block.
+      if (checkSeo) {
+        const seo = extractSeo(html);
+        if (seo.canonical) {
+          seoChecked++;
+          const missing = [];
+          if (!seo.title) missing.push("<title>");
+          if (!seo.description) missing.push("meta description");
+          if (!seo.hreflangs.length) missing.push("hreflang");
+          if (!seo.hreflangs.includes("x-default")) missing.push('hreflang="x-default"');
+          for (const [k, label] of [
+            ["title", "og:title"], ["description", "og:description"], ["type", "og:type"],
+            ["url", "og:url"], ["siteName", "og:site_name"], ["locale", "og:locale"], ["image", "og:image"],
+          ]) {
+            if (!seo.og[k]) missing.push(label);
+          }
+          if (missing.length) seoErrors.push({ url: via, missing });
+
+          const warns = [];
+          if (seo.title && seo.title.length > 70) warns.push(`title ${seo.title.length} chars (> 70)`);
+          if (seo.description) {
+            const d = seo.description.length;
+            if (d > 160) warns.push(`meta description ${d} chars (> 160)`);
+            else if (d < 50) warns.push(`meta description ${d} chars (< 50)`);
+          }
+          try {
+            const canonPath = new URL(seo.canonical).pathname.replace(/\/+$/, "") || "/";
+            const pagePath = item.url.pathname.replace(/\/+$/, "") || "/";
+            if (canonPath !== pagePath) warns.push(`canonical not self-referential (${seo.canonical})`);
+          } catch {
+            warns.push(`canonical is not a valid URL (${seo.canonical})`);
+          }
+          if (warns.length) seoWarnings.push({ url: via, warnings: warns });
+
+          // og:image must resolve (a broken share image fails the FB scrape).
+          // Fetched via the shared asset check → a non-200 lands in brokenInternal.
+          if (seo.og.image) {
+            try {
+              await check(new URL(seo.og.image, item.url), `${via} (og:image)`);
+            } catch {
+              /* malformed og:image URL is already reported via missing/other */
+            }
+          }
+        }
+      }
+
       const { links, assets } = extractRefs(html, item.url);
 
       for (const link of links) {
@@ -309,6 +386,31 @@ export async function runCrawl({
     }
   }
 
+  // SEO gate (.org): robots.txt must match the environment, and at least one
+  // page must have emitted a canonical (else the meta/OG pipeline is broken and
+  // every page was silently skipped above).
+  if (checkSeo) {
+    if (seoChecked === 0 && pageCount > 0) {
+      seoErrors.push({ url: "(site)", missing: ["no page emitted a canonical link — meta/OG pipeline appears broken"] });
+    }
+    try {
+      const res = await request(new URL("/robots.txt", start).toString(), { retries: 1, timeoutMs: 15000 });
+      const body = res.status === 200 ? await res.text() : "";
+      const disallowAll = /^\s*Disallow:\s*\/\s*$/im.test(body);
+      const hasSitemap = /^\s*Sitemap:\s*\S+/im.test(body);
+      if (environment === "production") {
+        if (res.status !== 200) robotsErrors.push({ detail: `production robots.txt not served (status ${res.status})` });
+        else if (disallowAll) robotsErrors.push({ detail: "production robots.txt Disallow: / — production must be indexable" });
+        else if (!hasSitemap) robotsErrors.push({ detail: "production robots.txt has no Sitemap: line" });
+      } else {
+        // staging / any non-production env must block all crawling.
+        if (!disallowAll) robotsErrors.push({ detail: `non-production robots.txt is not Disallow: / (status ${res.status})` });
+      }
+    } catch (err) {
+      robotsErrors.push({ detail: `robots.txt unreachable: ${err?.message ?? err}` });
+    }
+  }
+
   // Orphan detection: URLs advertised in /sitemap.xml but reached by no link.
   try {
     const sitemapUrl = new URL("/sitemap.xml", start).toString();
@@ -348,6 +450,10 @@ export async function runCrawl({
     redirectLoops,
     slowPages,
     langErrors,
+    seoErrors,
+    seoWarnings,
+    robotsErrors,
+    seoChecked,
     sitemapNote,
     cappedAtMaxPages: pageCount >= maxPages,
   };
@@ -379,15 +485,24 @@ async function cli() {
   if (r.langErrors.length) {
     report("Wrong <html lang> (fatal)", r.langErrors, (it) => `[found "${it.found}", expected "${it.expected}"] ${it.url}`);
   }
+  if (r.seoErrors?.length) {
+    report("Missing SEO/OG tags (fatal)", r.seoErrors, (it) => `[missing: ${it.missing.join(", ")}] ${it.url}`);
+  }
+  if (r.robotsErrors?.length) report("robots.txt problems (fatal)", r.robotsErrors, (it) => it.detail);
+  if (r.seoWarnings?.length) {
+    report("SEO warnings (warning)", r.seoWarnings, (it) => `[${it.warnings.join("; ")}] ${it.url}`);
+  }
   if (r.brokenExternal.length) report("Broken external links/assets (warning)", r.brokenExternal, linkFmt);
   if (r.blockedExternal.length) report("External rate-limited/blocked — ignored (403/429)", r.blockedExternal, linkFmt);
   if (r.orphanPages.length) report("Orphan pages — in sitemap, linked from nowhere (warning)", r.orphanPages, (it) => it.url);
   if (r.slowPages.length) report(`Slow pages > ${SLOW_PAGE_MS}ms (warning)`, r.slowPages, (it) => `[${it.ms}ms] ${it.url}`);
 
   const fatal =
-    r.leaks.length + r.brokenInternal.length + r.mathErrors.length + r.redirectLoops.length + r.langErrors.length;
+    r.leaks.length + r.brokenInternal.length + r.mathErrors.length + r.redirectLoops.length + r.langErrors.length +
+    (r.seoErrors?.length ?? 0) + (r.robotsErrors?.length ?? 0);
   const warnings =
-    r.brokenExternal.length + r.blockedExternal.length + r.orphanPages.length + r.slowPages.length;
+    r.brokenExternal.length + r.blockedExternal.length + r.orphanPages.length + r.slowPages.length +
+    (r.seoWarnings?.length ?? 0);
   if (fatal === 0 && warnings === 0) {
     console.log("\nNo broken links/assets, leaks, math errors, redirect loops, orphans or slow pages found.");
   }

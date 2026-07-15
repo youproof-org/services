@@ -92,14 +92,19 @@ if (skipSmoke) {
 // with no switcher between them), so all locales are crawled and lang-checked —
 // not just the default. Falls back to the single default-locale home.
 const crawlStarts = locales ? Object.keys(locales).map((loc) => `${baseUrl}/${loc}`) : [crawlStart];
-console.log(`quality-gate: crawling ${crawlStarts.join(", ")} ...`);
-const crawler = await runCrawl({ migrationTargets, starts: crawlStarts, locales, defaultLocale });
+// The .org content gate (post-migration mode: empty LEGACY_PROXY_HOST) also runs
+// the SEO/OG + robots.txt assertions; the .hu worker crawl does not.
+const checkSeo = config.legacyProxyHost === "";
+const environment = process.env.ENVIRONMENT ?? config.environment ?? "";
+console.log(`quality-gate: crawling ${crawlStarts.join(", ")} (SEO checks ${checkSeo ? "on" : "off"}) ...`);
+const crawler = await runCrawl({ migrationTargets, starts: crawlStarts, locales, defaultLocale, checkSeo, environment });
 console.log(
   `quality-gate: crawler -> ${crawler.pageCount} page(s); ` +
     `internal=${crawler.brokenInternal.length} leaks=${crawler.leaks.length} ` +
     `math=${crawler.mathErrors.length} loops=${crawler.redirectLoops.length} ` +
-    `lang=${crawler.langErrors.length} ` +
-    `external=${crawler.brokenExternal.length} orphans=${crawler.orphanPages.length} slow=${crawler.slowPages.length}`,
+    `lang=${crawler.langErrors.length} seo=${crawler.seoErrors?.length ?? 0} robots=${crawler.robotsErrors?.length ?? 0} ` +
+    `external=${crawler.brokenExternal.length} orphans=${crawler.orphanPages.length} slow=${crawler.slowPages.length} ` +
+    `(seoChecked=${crawler.seoChecked ?? 0}, seoWarn=${crawler.seoWarnings?.length ?? 0})`,
 );
 if (crawler.sitemapNote) console.log(`quality-gate: orphan check note: ${crawler.sitemapNote}`);
 
