@@ -44,7 +44,8 @@ export async function proxyToLegacy(request: Request, env: Env): Promise<Respons
 
   try {
     const response = await fetch(proxiedRequest);
-    return rewriteLegacyLocation(response, legacyUrl, new URL(request.url), env.LEGACY_PROXY_HOST);
+    const located = rewriteLegacyLocation(response, legacyUrl, new URL(request.url), env.LEGACY_PROXY_HOST);
+    return applyNoindex(located, env);
   } catch (err) {
     // DNS failure, timeout, connection refused, etc. Return a safe, generic
     // 502 rather than letting the exception surface a Cloudflare error page
@@ -55,6 +56,24 @@ export async function proxyToLegacy(request: Request, env: Env): Promise<Respons
       headers: { "Content-Type": "text/plain; charset=utf-8" },
     });
   }
+}
+
+/**
+ * Add `X-Robots-Tag: noindex, nofollow` to a proxied legacy response so the
+ * unmigrated legacy content (incl. non-HTML assets, which a <meta> tag can't
+ * cover) stays out of search indexes on this environment.
+ *
+ * Environment-gated via the SEO_NOINDEX binding: noindex UNLESS the value is
+ * exactly "false". Default = noindex, so a missing/misconfigured value can never
+ * accidentally index staging/legacy. Production sets SEO_NOINDEX="false" because
+ * we deliberately keep indexing the still-unmigrated legacy content it proxies.
+ */
+function applyNoindex(response: Response, env: Env): Response {
+  if (env.SEO_NOINDEX === "false") return response;
+  // fetch()/copied responses have immutable headers — copy to get a mutable set.
+  const r = new Response(response.body, response);
+  r.headers.set("X-Robots-Tag", "noindex, nofollow");
+  return r;
 }
 
 /**

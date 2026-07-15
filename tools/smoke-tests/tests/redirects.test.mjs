@@ -19,11 +19,14 @@ import { test } from "node:test";
 
 import { baseUrl, config, isPostMigration, isProduction, request, wwwHost } from "../lib/config.mjs";
 
-const manifestUrl = new URL(
-  "../../../infra/cloudflare/worker/src/manifest.json",
-  import.meta.url,
-);
-const manifest = JSON.parse(readFileSync(manifestUrl, "utf8"));
+// Prefer the freshly generated manifest (MANIFEST_PATH — set by the quality-gate
+// job, which is where these smoke tests now run so the deployed Worker state has
+// settled). Fall back to the committed src/manifest.json (the empty stub, or a
+// worker-job run that regenerated it in place).
+const manifestPath = process.env.MANIFEST_PATH
+  ? process.env.MANIFEST_PATH
+  : new URL("../../../infra/cloudflare/worker/src/manifest.json", import.meta.url);
+const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
 const manifestEntries = Object.entries(manifest.entries ?? {});
 
 test("admin/login paths are blocked with 404", async () => {
@@ -53,6 +56,23 @@ test("unmigrated non-admin path: proxied (pre-migration) or 410 (post-migration)
     );
   }
 });
+
+test(
+  "proxied legacy content: X-Robots-Tag noindex on staging, indexable on production",
+  { skip: isPostMigration ? "post-migration: no legacy proxy to noindex" : false },
+  async () => {
+    // Any unmigrated path is reverse-proxied to legacy; the Worker adds
+    // X-Robots-Tag per its SEO_NOINDEX binding (proxy.ts applyNoindex).
+    const res = await request(`${baseUrl}/nem-letezo-oldal-smoke-teszt`);
+    const xr = res.headers.get("x-robots-tag");
+    if (isProduction) {
+      // Production keeps the still-unmigrated legacy content indexable (SEO_NOINDEX=false).
+      assert.ok(!xr || !/noindex/i.test(xr), `production legacy proxy must stay indexable; got X-Robots-Tag: ${xr}`);
+    } else {
+      assert.equal(xr, "noindex, nofollow", `staging legacy proxy must send X-Robots-Tag noindex; got ${xr}`);
+    }
+  },
+);
 
 test("http is redirected to https", async () => {
   const res = await request(`http://${config.workerDomain}/`);

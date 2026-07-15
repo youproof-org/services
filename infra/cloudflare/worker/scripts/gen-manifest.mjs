@@ -153,10 +153,21 @@ function normalizePath(raw) {
   return p === "" ? "/" : p;
 }
 
-/** Resolve an ordered child `name` to its actual directory (basename minus NN-). */
-function resolveChildDir(parentDir, childName) {
-  const match = subdirs(parentDir).find((d) => stripPrefix(d) === childName);
-  return match ? join(parentDir, match) : null;
+/**
+ * Resolve an ordered child `name` to its actual directory by reading each
+ * candidate's structural YAML `name` field — NOT the folder basename. Folder
+ * names on disk are arbitrary (they may carry an NN- ordering prefix); only the
+ * YAML `name` is authoritative. `childYaml` is the structural file to read
+ * (`part.yaml` / `chapter.yaml`).
+ */
+function resolveChildDir(parentDir, childName, childYaml) {
+  for (const d of subdirs(parentDir)) {
+    const yamlPath = join(parentDir, d, childYaml);
+    if (!existsSync(yamlPath)) continue;
+    const obj = loadYaml(yamlPath);
+    if (obj && obj.name === childName) return join(parentDir, d);
+  }
+  return null;
 }
 
 const entries = {};
@@ -207,26 +218,20 @@ for (const bookDirName of bookDirs) {
   }
 
   for (const partName of partNames) {
-    const partDir = resolveChildDir(bookDir, partName);
+    const partDir = resolveChildDir(bookDir, partName, "part.yaml");
     if (!partDir) {
-      fail(`book '${bookName}': part '${partName}' has no matching directory under ${bookDir}.`);
+      fail(`book '${bookName}': no part.yaml with name '${partName}' found under ${bookDir}.`);
     }
     const partYaml = join(partDir, "part.yaml");
-    if (!existsSync(partYaml)) {
-      fail(`part '${partName}': missing part.yaml at ${partYaml}.`);
-    }
     const part = loadYaml(partYaml);
     const chapterNames = Array.isArray(part.chapters) ? part.chapters : [];
 
     for (const chapterName of chapterNames) {
-      const chapterDir = resolveChildDir(partDir, chapterName);
+      const chapterDir = resolveChildDir(partDir, chapterName, "chapter.yaml");
       if (!chapterDir) {
-        fail(`part '${partName}': chapter '${chapterName}' has no matching directory under ${partDir}.`);
+        fail(`part '${partName}': no chapter.yaml with name '${chapterName}' found under ${partDir}.`);
       }
       const chapterYaml = join(chapterDir, "chapter.yaml");
-      if (!existsSync(chapterYaml)) {
-        fail(`chapter '${chapterName}': missing chapter.yaml at ${chapterYaml}.`);
-      }
       const chapter = loadYaml(chapterYaml);
       chaptersScanned += 1;
 

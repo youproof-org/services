@@ -16,7 +16,8 @@ import { execFile } from 'child_process'
 import { promisify } from 'util'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { existsSync } from 'fs'
+import { existsSync, readFileSync } from 'fs'
+import yaml from 'js-yaml'
 
 const execFileAsync = promisify(execFile)
 
@@ -60,6 +61,63 @@ if (
   process.exit(1)
 }
 
+// ---------------------------------------------------------------------------
+// Name-based output paths (YAML `name` is the sole source of truth)
+//
+// The served asset path under public/content is built from each content object's
+// YAML `name`, NEVER the on-disk folder basename (which carries an NN- ordering
+// prefix). Folder names on disk are therefore arbitrary. This must stay in
+// lockstep with lib/content/graph.ts's urlPrefix builders — a mismatch 404s the
+// asset. Structural container dirs (books/, figures/, definitions/, …) have no
+// `name` and keep their literal folder name.
+// ---------------------------------------------------------------------------
+const STRUCTURAL_YAMLS = [
+  'book.yaml', 'part.yaml', 'chapter.yaml',
+  'article.yaml', 'newsletter.yaml', 'page.yaml', 'landing.yaml',
+  'namespace.yaml',
+]
+
+const dirNameCache = new Map()
+
+/** The content `name` of a directory (from its structural YAML), else its basename. */
+function dirName(absDir) {
+  if (dirNameCache.has(absDir)) return dirNameCache.get(absDir)
+  let name = path.basename(absDir)
+  for (const y of STRUCTURAL_YAMLS) {
+    const f = path.join(absDir, y)
+    if (!existsSync(f)) continue
+    try {
+      const raw = yaml.load(readFileSync(f, 'utf-8'))
+      if (raw && typeof raw === 'object' && typeof raw.name === 'string' && raw.name.trim() !== '') {
+        name = raw.name.trim()
+      }
+    } catch {
+      // Malformed YAML → fall back to the folder basename.
+    }
+    break // one structural YAML per directory
+  }
+  dirNameCache.set(absDir, name)
+  return name
+}
+
+/**
+ * Map a source file path to its name-based served relative path: every ancestor
+ * directory segment is replaced by that dir's content `name` (container dirs
+ * without a structural YAML keep their literal name); the filename is unchanged.
+ */
+function toServedRel(src) {
+  const segs = path.relative(contentDir, src).split(path.sep)
+  const fileName = segs.pop()
+  let abs = contentDir
+  const out = []
+  for (const seg of segs) {
+    abs = path.join(abs, seg)
+    out.push(dirName(abs))
+  }
+  out.push(fileName)
+  return out.join(path.sep)
+}
+
 const PRIORITY = ['.tex', '.svg', '.png', '.jpg', '.jpeg']
 
 async function* walkAll(dir) {
@@ -94,10 +152,11 @@ async function* walkAll(dir) {
 async function compileTex(src) {
   const rel = path.relative(contentDir, src)                      // e.g. "books/foo/fig.tex"
   const relNoExt = rel.slice(0, -4)                               // "books/foo/fig"
-  const tmpSubDir = path.join(latexTmpDir, path.dirname(rel))     // ".tmp/latex/books/foo"
+  const tmpSubDir = path.join(latexTmpDir, path.dirname(rel))     // ".tmp/latex/books/foo" (raw: internal)
   const baseName = path.basename(relNoExt)                        // "fig"
   const dviPath = path.join(tmpSubDir, baseName + '.dvi')
-  const svgDst = path.join(publicContentDir, relNoExt + '.svg')
+  // Output goes to the name-based served path (not the raw folder path).
+  const svgDst = path.join(publicContentDir, toServedRel(src).slice(0, -4) + '.svg')
 
   await mkdir(tmpSubDir, { recursive: true })
   await mkdir(path.dirname(svgDst), { recursive: true })
@@ -140,7 +199,7 @@ let failed = 0
 for await (const src of walkAll(contentDir)) {
   const ext = path.extname(src).toLowerCase()
   if (ext === '.tex') {
-    const svgDst = path.join(publicContentDir, path.relative(contentDir, src).slice(0, -4) + '.svg')
+    const svgDst = path.join(publicContentDir, toServedRel(src).slice(0, -4) + '.svg')
     if (!await isNewer(src, svgDst)) { upToDate++; continue }
     try {
       await compileTex(src)
@@ -156,8 +215,7 @@ for await (const src of walkAll(contentDir)) {
       failed++
     }
   } else {
-    const rel = path.relative(contentDir, src)
-    const dst = path.join(publicContentDir, rel)
+    const dst = path.join(publicContentDir, toServedRel(src))
     if (!await isNewer(src, dst)) { upToDate++; continue }
     await mkdir(path.dirname(dst), { recursive: true })
     await copyFile(src, dst)

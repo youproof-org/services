@@ -246,6 +246,23 @@ export interface ThumbnailImage {
   alt: string
 }
 
+// Optional crawler/social metadata, independent of on-page display text. All
+// fields optional with a fallback chain (see lib/i18n/metadata.ts buildPageMeta):
+//   title       → meta.title,             else display title
+//   description → meta.description,        else display excerpt
+//   og:title    → meta.openGraph.title,    else resolved title
+//   og:desc     → meta.openGraph.description, else resolved description
+// The root field is `meta` (generic) rather than `seo`; `open-graph` is nested
+// so future channels (e.g. `meta.twitter`) slot in as siblings.
+export interface MetaInfo {
+  title?: string
+  description?: string
+  openGraph?: {
+    title?: string
+    description?: string
+  }
+}
+
 export interface SectionNode {
   name: string                    // language-independent internal id (cross-refs)
   slug: string                    // localized in-page anchor id (not a URL segment)
@@ -273,6 +290,7 @@ export interface ChapterNode {
   epilogue: ContentBlock[]
   references: RefMap
   thumbnail?: ThumbnailImage
+  meta?: MetaInfo                  // optional crawler/social metadata (kebab: meta)
 }
 
 export interface PartNode {
@@ -299,9 +317,11 @@ export interface BookNode {
   publishedAt?: string            // kebab: published-at; canonical 'YYYY-MM-DD HH:MM:SS' UTC, if published
   published: boolean              // derived: publishedAt != null
   legacyPath?: string             // old youproof.hu series path, if any (kebab: legacy-path)
+  excerpt?: string                // short card copy / meta-description fallback (books have no abstract-derived excerpt)
   abstract: ContentBlock[]        // "Kivonat" prose
   teaser?: ItemList               // curiosity-sparking hook questions (questions box)
   bibliography?: ItemList         // "Felhasznált irodalom" — display-only list of cited works
+  meta?: MetaInfo                 // optional crawler/social metadata (kebab: meta)
 }
 
 // ---------------------------------------------------------------------------
@@ -335,6 +355,7 @@ export interface StandaloneNode {
   sections: StandaloneSection[]
   epilogue: ContentBlock[]
   thumbnail?: ThumbnailImage
+  meta?: MetaInfo                 // optional crawler/social metadata (kebab: meta)
 }
 
 // ---------------------------------------------------------------------------
