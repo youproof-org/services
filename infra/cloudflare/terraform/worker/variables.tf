@@ -83,6 +83,23 @@ variable "legacy_proxy_host" {
   EOT
 }
 
+variable "seo_noindex" {
+  type    = bool
+  default = true
+  description = <<-EOT
+    Whether this environment's reverse-proxied legacy content is served with an
+    `X-Robots-Tag: noindex, nofollow` response header (bound to the Worker as the
+    plain-text SEO_NOINDEX = "true"/"false", read in src/proxy.ts).
+
+    Defaults to TRUE (noindex) so a missing/misconfigured value can never
+    accidentally expose staging/legacy to search engines. PRODUCTION must set it
+    to FALSE explicitly: we deliberately want search engines to keep indexing the
+    still-unmigrated legacy content proxied through youproof.hu until it is
+    migrated to .org. Staging leaves it true. Only affects the proxied response;
+    301 redirects, 410 Gone and admin 404s are unaffected.
+  EOT
+}
+
 variable "rackhost_server_ip" {
   type        = string
   description = <<-EOT

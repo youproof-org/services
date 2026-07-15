@@ -19,6 +19,9 @@ public/content/
 # Generated OG share images (gen-og-images.mjs, build time)
 public/assets/generated/
 
+# Generated sitemap lastmod map (gen-content-lastmod.mjs, build time)
+.generated/
+
 # Environment
 .env.local
 .env*.local

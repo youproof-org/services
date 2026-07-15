@@ -229,6 +229,10 @@ jobs:
       TF_VAR_rackhost_server_ip: ${{ vars.RACKHOST_SERVER_IP }}
       TF_VAR_production_cutover: ${{ vars.PRODUCTION_CUTOVER || 'false' }}
       TF_VAR_legacy_guard_value: ${{ vars.LEGACY_GUARD_VALUE }}
+      # Derived from the environment: noindex the legacy proxy everywhere EXCEPT
+      # production (only production keeps its still-unmigrated legacy content
+      # indexable). No GitHub var needed.
+      TF_VAR_seo_noindex: ${{ inputs.environment == 'production' && 'false' || 'true' }}
       AWS_ACCESS_KEY_ID: ${{ secrets.R2_STATE_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_STATE_SECRET_ACCESS_KEY }}
     steps:

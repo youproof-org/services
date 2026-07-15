@@ -227,6 +227,9 @@ jobs:
       TF_VAR_rackhost_server_ip: ${{ vars.RACKHOST_SERVER_IP }}
       TF_VAR_production_cutover: ${{ vars.PRODUCTION_CUTOVER || 'false' }}
       TF_VAR_legacy_guard_value: ${{ vars.LEGACY_GUARD_VALUE }}
+      # noindex the legacy proxy on staging (this job is staging-only). Only
+      # production is indexable (see the deploy workflow's env-derived value).
+      TF_VAR_seo_noindex: "true"
       AWS_ACCESS_KEY_ID: ${{ secrets.R2_STATE_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_STATE_SECRET_ACCESS_KEY }}
     steps:

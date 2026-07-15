@@ -19,5 +19,9 @@ rackhost_server_ip   = "91.227.138.40"
 
 # staging is always served via the Worker; production_cutover is ignored here.
 
+# true (default): proxied legacy content on staging.youproof.hu is served
+# X-Robots-Tag: noindex, nofollow — keep staging out of search indexes.
+seo_noindex = true
+
 # NOTE: the youproof.hu zone ID is NOT set here — the worker root reads it from
 # the zone root's remote state (see data.tf), using tfstate_bucket above.
