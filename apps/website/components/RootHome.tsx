@@ -9,6 +9,7 @@ import BookCard from '@/components/book/BookCard'
 import ContentRow from '@/components/content/ContentRow'
 import { getContentGraph, listAll, listPublished } from '@/lib/content'
 import { urlForBook, urlForStandalone } from '@/lib/content/urls'
+import { getLocaleConfig } from '@/lib/i18n/config'
 import styles from '@/app/root-page.module.scss'
 
 // ISO datetime → "YYYY. MM. DD." (deterministic; no locale dependency).
@@ -49,9 +50,9 @@ export default function RootHome({ locale }: { locale: string }) {
         <section className={styles.hero}>
           {/* "Map"-like hero background art (see .heroBg in root-page.module.scss). */}
           <div className={styles.heroBg} aria-hidden="true" />
-          <BrandLockup variant="stacked" showTagline className={styles.heroLockup} />
+          <BrandLockup variant="stacked" showTagline locale={locale} className={styles.heroLockup} />
           <p className={styles.heroTagline}>
-            There is no royal road, just better maps…
+            {getLocaleConfig(locale).motto}
           </p>
           <ScrollCue href="#books" label="Tovább" />
         </section>

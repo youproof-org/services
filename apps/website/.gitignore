@@ -16,6 +16,9 @@ node_modules/
 # Synced figures (generated from content/ at build time)
 public/content/
 
+# Generated OG share images (gen-og-images.mjs, build time)
+public/assets/generated/
+
 # Environment
 .env.local
 .env*.local

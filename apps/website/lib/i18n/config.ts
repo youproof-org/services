@@ -22,7 +22,9 @@ export interface LocaleConfig {
   displayName: string
   htmlLang: string
   ogLocale: string                // OpenGraph locale, e.g. 'hu_HU' (og:locale)
-  siteName: string                // og:site_name, e.g. 'youproof.org'
+  siteName: string                // og:site_name + brand wordmark, e.g. 'youproof.org'
+  tagline: string                 // brand-lockup tagline, e.g. 'Deep math. Human access.'
+  motto: string                   // hero / OG-image motto, e.g. 'There is no royal road…'
   brand: string                   // <title> brand suffix, e.g. 'youproof.org - Deep Math. Human Access.'
   defaultDescription: string      // meta-description fallback for this locale
   labels: Record<LabelKey, string>

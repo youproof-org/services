@@ -5,8 +5,10 @@
       "htmlLang": "hu",
       "ogLocale": "hu_HU",
       "siteName": "youproof.org",
+      "tagline": "Deep Math. Human Access.",
+      "motto": "There is no royal road, just better maps...",
       "brand": "youproof.org - Deep Math. Human Access.",
-      "defaultDescription": "Deep math. Human access. — Alice és Bob matematikai kalandjai.",
+      "defaultDescription": "Deep Math. Human Access. — Matematikai portál érdeklődő laikusok számára.",
       "labels": {
         "home": "Főoldal",
         "articlesIndex": "Cikkek",

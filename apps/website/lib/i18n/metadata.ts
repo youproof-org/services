@@ -46,6 +46,7 @@ export interface PageMetaNode {
   excerpt?: string
   publishedAt?: string
   meta?: MetaInfo
+  thumbnail?: { src: string }     // presence → per-item og-thumbnail.jpg sibling exists
 }
 
 /** Convert a stored 'YYYY-MM-DD HH:MM:SS' (UTC) timestamp to ISO 8601 for OG. */
@@ -74,11 +75,16 @@ export function buildPageMeta(args: {
   ogType: OgType
   node?: PageMetaNode | null
   fallbackTitle?: string
-  /** Served path of the item's OG image; omit to use the generic fallback. */
-  ogImagePath?: string
 }): Metadata {
-  const { locale, key, slugPath, ogType, node, fallbackTitle, ogImagePath } = args
+  const { locale, key, slugPath, ogType, node, fallbackTitle } = args
   const cfg = getLocaleConfig(locale)
+
+  // Per-item OG image: the `og-thumbnail.jpg` sibling of the item's thumbnail
+  // (both generated into the same name-based dir by gen-og-images.mjs). Nodes
+  // without a thumbnail fall back to the generic OG image.
+  const ogImagePath = node?.thumbnail?.src
+    ? node.thumbnail.src.replace(/[^/]+$/, 'og-thumbnail.jpg')
+    : undefined
 
   // Page-specific title, then the document <title> = `{pageTitle} | {brand}`
   // (brand is per-locale). og:title stays clean (no brand suffix — the brand is
