@@ -6,6 +6,7 @@ import type {
   RefMap,
   TermMap,
   ThumbnailImage,
+  MetaInfo,
   ContentGraph,
   EntityLabels,
   EmbedBlock,
@@ -171,6 +172,7 @@ export interface RawChapterEntry {
   epilogue: ContentBlock[]
   references: RefMap
   thumbnail?: ThumbnailImage
+  meta?: MetaInfo
 }
 
 export interface RawPartEntry {
@@ -188,9 +190,11 @@ export interface RawBookEntry {
   thumbnail?: ThumbnailImage
   publishedAt?: string
   legacyPath?: string
+  excerpt?: string
   abstract: ContentBlock[]
   teaser?: { items: string[] }
   bibliography?: { items: string[] }
+  meta?: MetaInfo
 }
 
 export interface RawStandaloneEntry {
@@ -207,6 +211,7 @@ export interface RawStandaloneEntry {
   sections: { name: string; slug: string; title: string; body: ContentBlock[] }[]
   epilogue: ContentBlock[]
   thumbnail?: ThumbnailImage
+  meta?: MetaInfo
 }
 
 export interface RawGraphData {
@@ -356,9 +361,11 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
         : undefined,
       publishedAt: rawBook.publishedAt,
       legacyPath: rawBook.legacyPath,
+      excerpt: rawBook.excerpt,
       abstract: resolveFigurePaths(rawBook.abstract, bookFigureUrlPrefix, bookFiguresDir),
       teaser: rawBook.teaser,
       bibliography: rawBook.bibliography,
+      meta: rawBook.meta,
       parts: [],
     }
 
@@ -422,6 +429,7 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
                 alt: rawChapter.thumbnail.alt,
               }
             : undefined,
+          meta: rawChapter.meta,
           sections: [],
         }
 
@@ -506,6 +514,7 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
           thumbnail: rawItem.thumbnail
             ? { src: resolveImageSrc(rawItem.thumbnail.src, itemDir, urlPrefix), alt: rawItem.thumbnail.alt }
             : undefined,
+          meta: rawItem.meta,
         })
       } catch (err) {
         if (err instanceof ContentFormatError) throw err // format violations are fatal
@@ -647,9 +656,11 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
       publishedAt: bookEntry.publishedAt,
       published: bookEntry.publishedAt != null,
       legacyPath: bookEntry.legacyPath,
+      excerpt: bookEntry.excerpt,
       abstract: bookEntry.abstract,
       teaser: bookEntry.teaser,
       bibliography: bookEntry.bibliography,
+      meta: bookEntry.meta,
       parts: [],
     }
     graph.books.set(bookKey(book.name), book)
@@ -677,6 +688,7 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
           sections: [],
           references: chapterEntry.references,
           thumbnail: chapterEntry.thumbnail,
+          meta: chapterEntry.meta,
         }
         part.chapters.push(chapter)
         graph.chapters.set(chapterKey(book.name, part.name, chapter.name), chapter)
@@ -722,6 +734,7 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
       sections: e.sections,
       epilogue: e.epilogue,
       thumbnail: e.thumbnail,
+      meta: e.meta,
     }
     standaloneMap[e.kind].set(`/${STANDALONE_DIRS[e.kind]}/${e.name}`, node)
   }
