@@ -13,9 +13,19 @@ import localesData from './locales.json'
 // each is looked up per locale from the dictionary below.
 export type ContainerKey = 'book' | 'chapter' | 'article' | 'newsletter' | 'landing'
 
+// Localized UI/title labels for pages that have no backing content object
+// (homepage + the article/newsletter index pages). Data-driven so a new locale
+// needs no code change — only a `labels` block in locales.json.
+export type LabelKey = 'home' | 'articlesIndex' | 'newsletterIndex'
+
 export interface LocaleConfig {
   displayName: string
   htmlLang: string
+  ogLocale: string                // OpenGraph locale, e.g. 'hu_HU' (og:locale)
+  siteName: string                // og:site_name, e.g. 'youproof.org'
+  brand: string                   // <title> brand suffix, e.g. 'youproof.org - Deep Math. Human Access.'
+  defaultDescription: string      // meta-description fallback for this locale
+  labels: Record<LabelKey, string>
   containers: Record<ContainerKey, string>
 }
 
@@ -55,6 +65,13 @@ export function getLocaleConfig(locale: string): LocaleConfig {
   const cfg = DATA.locales[locale]
   if (!cfg) throw new Error(`Unknown locale '${locale}'. Known: ${LOCALES.join(', ')}`)
   return cfg
+}
+
+/** Localized label for a content-less page (home / article / newsletter index). */
+export function getLocaleLabel(locale: string, key: LabelKey): string {
+  const label = getLocaleConfig(locale).labels[key]
+  if (!label) throw new Error(`Locale '${locale}' has no label for '${key}'`)
+  return label
 }
 
 /** Localized URL segment for a canonical container key in a locale. */

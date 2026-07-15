@@ -3,6 +3,15 @@
     "hu": {
       "displayName": "Magyar",
       "htmlLang": "hu",
+      "ogLocale": "hu_HU",
+      "siteName": "youproof.org",
+      "brand": "youproof.org - Deep Math. Human Access.",
+      "defaultDescription": "Deep math. Human access. — Alice és Bob matematikai kalandjai.",
+      "labels": {
+        "home": "Főoldal",
+        "articlesIndex": "Cikkek",
+        "newsletterIndex": "Hírek"
+      },
       "containers": {
         "book": "konyvek",
         "chapter": "fejezetek",

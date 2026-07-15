@@ -3,7 +3,13 @@ import { Mulish } from 'next/font/google'
 import 'katex/dist/katex.min.css'
 import './globals.scss'
 import DevContentReloader from '@/components/DevContentReloader'
-import { DEFAULT_LOCALE } from '@/lib/i18n/config'
+import { DEFAULT_LOCALE, getLocaleConfig } from '@/lib/i18n/config'
+import {
+  SITE_URL,
+  OG_IMAGE_DEFAULT,
+  OG_IMAGE_WIDTH,
+  OG_IMAGE_HEIGHT,
+} from '@/lib/i18n/metadata'
 
 const mulish = Mulish({
   subsets: ['latin', 'latin-ext'],
@@ -23,9 +29,27 @@ const mulish = Mulish({
 // ever expose the site to search engines.
 const isProduction = process.env.SITE_ENV === 'production'
 
+// Site-wide metadata. Per-page routes override title/description/openGraph via
+// generateMetadata (buildPageMeta, per-locale); this is the baseline for pages
+// that don't (root redirect, not-found). The root layout is above the [locale]
+// segment and can't read the locale, so it uses the DEFAULT_LOCALE's brand —
+// correct for the default-locale root/404. metadataBase makes relative OG/image
+// URLs absolute.
+const defaultCfg = getLocaleConfig(DEFAULT_LOCALE)
+
 export const metadata: Metadata = {
-  title: 'youproof.org — Deep math. Human access.',
-  description: 'Deep math. Human access. — Alice és Bob matematikai kalandjai.',
+  metadataBase: new URL(SITE_URL),
+  title: defaultCfg.brand,
+  description: defaultCfg.defaultDescription,
+  openGraph: {
+    type: 'website',
+    siteName: defaultCfg.siteName,
+    locale: defaultCfg.ogLocale,
+    url: SITE_URL,
+    title: defaultCfg.brand,
+    description: defaultCfg.defaultDescription,
+    images: [{ url: OG_IMAGE_DEFAULT, width: OG_IMAGE_WIDTH, height: OG_IMAGE_HEIGHT }],
+  },
   ...(isProduction ? {} : { robots: { index: false, follow: false } }),
 }
 
