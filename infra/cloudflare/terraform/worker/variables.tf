@@ -84,8 +84,8 @@ variable "legacy_proxy_host" {
 }
 
 variable "seo_noindex" {
-  type    = bool
-  default = true
+  type        = bool
+  default     = true
   description = <<-EOT
     Whether this environment's reverse-proxied legacy content is served with an
     `X-Robots-Tag: noindex, nofollow` response header (bound to the Worker as the
