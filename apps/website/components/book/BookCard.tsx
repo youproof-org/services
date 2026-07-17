@@ -14,6 +14,9 @@ interface BookCardProps {
 export default function BookCard({ title, href, thumbnail, meta }: BookCardProps) {
   return (
     <div className={styles.card}>
+      {/* Print-availability strip across the top of the card. Shown on every
+          book for now; a per-book print-edition flag is deferred (item 6). */}
+      <p className={styles.printBadge}>Hamarosan nyomtatott formában is!</p>
       <div className={styles.thumb} aria-hidden={!thumbnail}>
         {thumbnail && (
           // eslint-disable-next-line @next/next/no-img-element

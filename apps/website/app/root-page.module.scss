@@ -91,13 +91,10 @@
   }
 }
 
-/* In the full-height hero, pin the cue to the bottom. Full-width so its own
-   align-items:center keeps it centered (no translate hack needed). */
+/* In the hero, the cue sits directly below the motto in normal flow (the hero
+   is a centered flex column), with a gap above it. Not pinned to the bottom. */
 .hero .scrollDown {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 2.5rem;
+  margin-top: 2.5rem;
 }
 
 .scrollLabel {

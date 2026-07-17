@@ -18,6 +18,17 @@ is uploaded to an R2 bucket and served through the CDN (see
 - The build runner needs **TeX Live** (`pdflatex` + `dvisvgm`) for figure
   compilation.
 
+### `__next_f` script tags are expected (not a bug)
+
+Generated pages contain many `<script>(self.__next_f=…).push(…)</script>` tags —
+~10–14 on light pages, ~70 on a math-dense chapter. These are the App Router's
+**RSC (Flight) hydration payload**, chunked into small `push()` calls; the count
+scales with the serialized React tree, and math chapters serialize the
+server-rendered KaTeX HTML (hundreds of spans) into that payload. It's inherent to
+App Router static export — nothing in `next.config.ts` inflates it, hydration
+needs it, and removing it isn't possible without leaving App Router. Investigated
+under YP-122 item 9: **expected boilerplate, no action.**
+
 ## Content model fields
 
 Chapter YAML files in the content repo carry two fields the pipeline depends on

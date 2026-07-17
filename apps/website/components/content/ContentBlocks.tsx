@@ -80,6 +80,8 @@ export default function ContentBlocks({ blocks, embedIndices, figureIndices, ref
                 figureIndex={figureIndices?.get(block)}
                 selfRefDisplay={block.selfReference?.display}
                 size={block.size}
+                width={block.width}
+                height={block.height}
                 refs={refs}
                 terms={terms}
                 termParent={termParent}
