@@ -23,8 +23,14 @@ import { promisify } from 'util'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { existsSync, readFileSync } from 'fs'
+import { createRequire } from 'module'
 import yaml from 'js-yaml'
-import sharp from 'sharp'
+
+// sharp's ESM entry pulls in a JSON module, which makes Node emit a noisy
+// "Importing JSON modules is an experimental feature" warning on every
+// dev/build startup. Loading it via CJS require avoids that code path.
+const require = createRequire(import.meta.url)
+const sharp = require('sharp')
 
 const execFileAsync = promisify(execFile)
 
