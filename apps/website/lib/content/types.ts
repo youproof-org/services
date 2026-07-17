@@ -22,6 +22,12 @@ export interface FigureBlock {
   alt?: string
   caption?: string
   size?: 'small' | 'medium' | 'large'
+  // Intrinsic pixel dimensions, resolved from the synced asset at build time
+  // (see resolveFigurePaths + the .generated/figure-dimensions.json sidecar).
+  // Rendered as <img width/height> so the browser reserves layout space and
+  // lazy-loaded figures can't shift the page after an anchor jump.
+  width?: number
+  height?: number
 }
 
 export interface EmbedTarget {

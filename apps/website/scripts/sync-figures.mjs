@@ -10,14 +10,21 @@
  *   .jpg / .jpeg
  *
  * Skips files whose target is already newer than the source (incremental).
+ *
+ * After syncing, writes .generated/figure-dimensions.json mapping each served
+ * figure path ("/content/.../foo.svg") to its intrinsic [width, height]. The
+ * content loader stamps these onto <img width/height> so the browser reserves
+ * layout space — otherwise a lazy figure above a cross-reference target loads
+ * late and shifts the target out of view after the anchor jump (YP-122 item 1).
  */
-import { readdir, copyFile, mkdir, stat } from 'fs/promises'
+import { readdir, copyFile, mkdir, stat, writeFile } from 'fs/promises'
 import { execFile } from 'child_process'
 import { promisify } from 'util'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { existsSync, readFileSync } from 'fs'
 import yaml from 'js-yaml'
+import sharp from 'sharp'
 
 const execFileAsync = promisify(execFile)
 
@@ -233,3 +240,51 @@ if (failed > 0) {
   console.error(`[sync-figures] ${failed} figure(s) failed to compile — aborting build`)
   process.exit(1)
 }
+
+// ---------------------------------------------------------------------------
+// Figure dimensions sidecar (CLS / cross-reference scroll accuracy)
+//
+// Walk the freshly-synced public/content tree and record each image's intrinsic
+// dimensions. Runs over ALL served files (not just the ones copied this run) so
+// incremental syncs still produce a complete map. Written even when empty so a
+// content-free build produces a valid (empty) sidecar.
+// ---------------------------------------------------------------------------
+const IMAGE_EXT = new Set(['.svg', '.png', '.jpg', '.jpeg'])
+
+async function* walkImages(dir) {
+  if (!existsSync(dir)) return
+  for (const entry of await readdir(dir, { withFileTypes: true })) {
+    const abs = path.join(dir, entry.name)
+    if (entry.isDirectory()) {
+      yield* walkImages(abs)
+    } else if (IMAGE_EXT.has(path.extname(entry.name).toLowerCase())) {
+      yield abs
+    }
+  }
+}
+
+const dimensions = {}
+let dimsOk = 0
+let dimsFailed = 0
+for await (const img of walkImages(publicContentDir)) {
+  // Served path the content loader keys on: "/content/<posix-rel>".
+  const servedPath = '/content/' + path.relative(publicContentDir, img).split(path.sep).join('/')
+  try {
+    const { width, height } = await sharp(img).metadata()
+    if (width && height) {
+      dimensions[servedPath] = [width, height]
+      dimsOk++
+    } else {
+      dimsFailed++
+    }
+  } catch {
+    // Unreadable/corrupt image → skip (figure renders without reserved space,
+    // as before). A truly broken asset is caught by the post-deploy crawler.
+    dimsFailed++
+  }
+}
+
+const dimsOutFile = path.join(websiteRoot, '.generated', 'figure-dimensions.json')
+await mkdir(path.dirname(dimsOutFile), { recursive: true })
+await writeFile(dimsOutFile, JSON.stringify(dimensions))
+console.log(`[sync-figures] figure dimensions: ${dimsOk} recorded${dimsFailed ? `, ${dimsFailed} skipped` : ''}`)
