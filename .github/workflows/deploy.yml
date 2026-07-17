@@ -593,3 +593,74 @@ jobs:
             --ref stable/production \
             -f failed_services_sha="${FAILED_SERVICES_SHA}" \
             -f failed_content_sha="${FAILED_CONTENT_SHA}"
+
+  # Tag a new production release. After a SUCCESSFUL production gate, if
+  # apps/website/package.json's version changed vs the previous production commit
+  # (HEAD^1 — the first parent of the release merge commit, i.e. the last
+  # release), create an annotated vX.Y.Z tag on the RELEASED commit
+  # (resolve.services_sha = the stable/production tip, NOT the stable/staging
+  # source, which is the merge's second parent). Never runs on rollbacks.
+  #
+  # Independent of rollback-dispatch, which keys ONLY on a FAILED gate — so a tag
+  # failure can never trigger a rollback. But a warranted tag that fails to create
+  # DOES fail this job (red run) + emits an ::error::, so a missing release tag is
+  # loudly surfaced for manual intervention rather than a silent annotation.
+  tag-release:
+    needs: [resolve, quality-gate]
+    if: >-
+      always() && inputs.environment == 'production' && inputs.is_rollback == false &&
+      needs.quality-gate.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.resolve.outputs.services_sha }}
+          # Full history so we can diff package.json at HEAD vs HEAD^1 (last release).
+          fetch-depth: 0
+      - name: Tag release when the website version changed
+        env:
+          RELEASE_SHA: ${{ needs.resolve.outputs.services_sha }}
+        run: |
+          set -uo pipefail
+          PKG="apps/website/package.json"
+
+          current="$(node -p "require('./${PKG}').version" 2>/dev/null || true)"
+          if [ -z "$current" ]; then
+            echo "::error title=Release tag failed — manual intervention required::Could not read a version from ${PKG} at the released commit."
+            exit 1
+          fi
+
+          # Previous production release = first parent of the release merge commit.
+          # Empty when unreadable (e.g. the first-ever release) -> treated as changed.
+          previous=""
+          if git show "HEAD^1:${PKG}" > /tmp/prev-pkg.json 2>/dev/null; then
+            previous="$(node -p "require('/tmp/prev-pkg.json').version" 2>/dev/null || true)"
+          fi
+
+          echo "website version: previous='${previous:-<none>}' current='${current}'"
+          if [ "$current" = "$previous" ]; then
+            echo "Version unchanged (${current}) — no release tag created."
+            exit 0
+          fi
+
+          tag="v${current}"
+          echo "Version changed '${previous:-<none>}' -> '${current}'; tagging released commit ${RELEASE_SHA} as ${tag}."
+
+          if git rev-parse -q --verify "refs/tags/${tag}" >/dev/null; then
+            echo "::error title=Release tag failed — manual intervention required::Tag ${tag} already exists. No rollback dispatched; resolve the tag manually."
+            exit 1
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if ! git tag -a "${tag}" "${RELEASE_SHA}" -m "Release ${tag}"; then
+            echo "::error title=Release tag failed — manual intervention required::Could not create annotated tag ${tag}. No rollback dispatched."
+            exit 1
+          fi
+          if ! git push origin "refs/tags/${tag}"; then
+            echo "::error title=Release tag failed — manual intervention required::Could not push tag ${tag} (tag protection or network?). No rollback dispatched."
+            exit 1
+          fi
+          echo "Created and pushed release tag ${tag}."
