@@ -1,8 +1,25 @@
+import { readFileSync } from 'node:fs'
+import path from 'node:path'
 import Link from 'next/link'
 import { getContentGraph, initContentGraph, listAll } from '@/lib/content'
 import { urlForStandalone } from '@/lib/content/urls'
 import { DEFAULT_LOCALE } from '@/lib/i18n/config'
 import styles from './site-footer.module.scss'
+
+// Displayed version. Prefer an explicit build-time override (YOUPROOF_VERSION,
+// e.g. .env.local for local dev); otherwise use the committed package.json
+// version so a build without the override — notably CI — never ships
+// "vUNDEFINED". Read via fs at build (this is a server component, like the
+// content loader) rather than a bundled JSON import. A postbuild guard
+// (scripts/check-build-version.mjs) fails the build if this ever regresses.
+function resolveVersion(): string {
+  if (process.env.YOUPROOF_VERSION) return process.env.YOUPROOF_VERSION
+  try {
+    return JSON.parse(readFileSync(path.join(process.cwd(), 'package.json'), 'utf8')).version
+  } catch {
+    return 'UNDEFINED'
+  }
+}
 
 interface SiteFooterProps {
   locale?: string
@@ -22,7 +39,7 @@ export default async function SiteFooter({ locale = DEFAULT_LOCALE }: SiteFooter
     .filter((p) => p.locale === locale)
     .map((p) => ({ label: p.title, href: urlForStandalone(p) }))
 
-  const version = process.env.YOUPROOF_VERSION ?? 'UNDEFINED'
+  const version = resolveVersion()
 
   return (
     <footer className={styles.footer}>
