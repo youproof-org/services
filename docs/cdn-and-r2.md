@@ -116,6 +116,58 @@ edge cache. Purge-by-hostname is available on all Cloudflare plans (since
 `org_zone_id` output (sourced from the shared zone root's remote state), so no
 separate GitHub variable is needed.
 
+<a id="cache-pruning-validation"></a>
+## Cache-pruning validation
+
+When content is **removed, renamed, or updated in place**, the old bytes must stop
+being served. There is no Workers KV and no content hashing except Next's own
+`_next/static/*` bundles; everything else relies on two fail-closed deploy steps —
+`aws s3 sync out/ … --delete` (reconciles the bucket to `out/`) and a
+hostname-scoped `purge_cache` (clears the edge) — plus the HTML browser-TTL of `0`.
+
+### Behaviour by change type
+
+| Change | Origin (bucket) | Edge | Browser |
+| --- | --- | --- | --- |
+| **Removed / renamed path** | object deleted by `--delete` | evicted by purge | HTML TTL 0 → gone next request (bare [404](#custom-404-limitation), or 301 if a redirect rule exists) |
+| **Updated HTML page** (same URL) | overwritten | evicted by purge | TTL 0 → fresh next request |
+| **Updated hashed asset** (`_next/static/*` js/css) | new filename; old orphan removed by `--delete` | new URL, never stale | new URL → always fresh |
+| **Updated stable-named asset** (images/figures/fonts under `/content`, `/assets`) | overwritten (same filename) | evicted by purge → fresh at edge | **1-day browser TTL** → a returning visitor may see the old copy for up to 24h |
+
+The last row is the one staleness window: non-hashed assets keep their URL across
+updates, and their 1-day browser cache ([Cache rules](#cache-rules)) is not cleared
+by the edge purge. New visitors and the edge get the update immediately; only
+returning visitors within 24h keep the old copy. To force an instant update for
+everyone, change the filename (or add a `?v=` query) so it becomes a new URL — the
+same effect Next's hashing gives its bundles.
+
+### Automated vs. manual validation
+
+- **Automated (already in place):** `--delete` and the purge are both fail-closed
+  (either erroring fails the deploy), and the post-deploy
+  [quality gate](quality-gates-and-artifacts.md) crawls the live host and fails on
+  dead links / missing assets / unresolved manifest targets — so unreachable stale
+  content is caught. No new check is needed for these.
+- **Manual only (timing-sensitive — a CI assertion would be flaky):** confirming a
+  *specific* pruned URL is gone from the edge, and the 24h stale-asset window above.
+
+### Manual check (after a deploy that removes / renames / updates content)
+
+The `--delete` step's log lists exactly which object keys were pruned. Use
+`staging.youproof.org` for staging.
+
+```sh
+# Removed/renamed path — expect non-200 (or 301):
+curl -sS -o /dev/null -w '%{http_code}\n' https://youproof.org/<old-path>
+# Updated page/asset — edge served the new deploy (MISS/EXPIRED + small age), new body:
+curl -sSI https://youproof.org/<changed-url> | grep -iE 'cf-cache-status|^age|cache-control'
+```
+
+> **Optional (proposal, not implemented):** capture the `--delete` output to log
+> pruned keys per deploy for auditability. Deferred — it touches the deploy
+> workflow on the eve of the first production release, and the fail-closed steps +
+> crawler already cover the load-bearing cases.
+
 <a id="custom-404-limitation"></a>
 ## Custom-404 limitation
 
