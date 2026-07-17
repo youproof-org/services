@@ -87,11 +87,12 @@ jobs:
     needs: route
     # A job that calls a reusable workflow must grant at least the permissions
     # every nested job requests. deploy.yml's `rollback-dispatch` needs
-    # `actions: write` (it runs `gh workflow run rollback.yml`), so grant it here
-    # — GitHub validates this at call time even when rollback-dispatch is gated
-    # off by its `if`. contents: read covers the checkouts.
+    # `actions: write` (it runs `gh workflow run rollback.yml`) and `tag-release`
+    # needs `contents: write` (it pushes a vX.Y.Z release tag), so grant both here
+    # — GitHub validates this at call time even when those jobs are gated off by
+    # their `if`. contents: write also covers the checkouts.
     permissions:
-      contents: read
+      contents: write
       actions: write
     uses: ./.github/workflows/deploy.yml
     with:
