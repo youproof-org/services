@@ -52,6 +52,20 @@
   color: $gray-600;
 }
 
+/* "Coming soon in print" — a full-width strip across the top of the card
+   (above the thumbnail), so it reads as a card-level announcement without
+   crowding the title or cover art. */
+.printBadge {
+  margin: 0;
+  padding: 0.45rem 0.75rem;
+  background: $gray-500;
+  color: $white;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: $font-normal;
+  letter-spacing: 0.02em;
+}
+
 /* CTA lives inside the box, pushed to the bottom (enlarges the box). Bordered
    like the box but without the drop shadow. */
 .readButton {
