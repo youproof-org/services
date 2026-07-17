@@ -109,11 +109,11 @@ jobs:
   redeploy:
     needs: resolve-good
     # Same reason as the router's deploy job: this calls deploy.yml, whose
-    # `rollback-dispatch` job declares `actions: write`, so the caller must grant
-    # it (validated at call time even though rollback-dispatch is `if`-gated off
-    # here — is_rollback == true).
+    # `rollback-dispatch` job declares `actions: write` and `tag-release` declares
+    # `contents: write`, so the caller must grant both (validated at call time even
+    # though both are `if`-gated off here — is_rollback == true).
     permissions:
-      contents: read
+      contents: write
       actions: write
     uses: ./.github/workflows/deploy.yml
     with:
