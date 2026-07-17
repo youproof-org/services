@@ -53,6 +53,10 @@ function fail(message) {
   process.exit(1);
 }
 
+function warn(message) {
+  console.warn(`gen-manifest: ${message}`);
+}
+
 // A content object is published iff it has a non-empty `published-at`
 // (js-yaml may parse an ISO timestamp into a Date, so stringify defensively).
 function isPublished(obj) {
@@ -60,17 +64,24 @@ function isPublished(obj) {
   return v != null && String(v).trim() !== "";
 }
 
+// CONTENT_DIR / books/ are intentionally NOT hard failures: the first production
+// release runs against a `stable/released` content tree that is still empty (no
+// `books/` yet), which is a valid state. An empty content tree yields a fully
+// empty manifest (`entries: {}` — not even the root redirect; see below), which
+// matches the committed placeholder. LOCALE and the locale dictionary stay
+// required — they are per-Worker-environment config, not content.
 const contentDir = process.env.CONTENT_DIR;
 if (!contentDir) {
-  fail(
-    "CONTENT_DIR environment variable is not set. It must point at the content " +
-      "repo's `content/` subdir (the one containing `books/`).",
+  warn(
+    "CONTENT_DIR is not set — generating an empty manifest (no entries). " +
+      "This is valid for a release with no content yet; point CONTENT_DIR at the " +
+      "content repo's `content/` subdir (the one containing `books/`) to emit redirects.",
   );
 }
 
-const booksDir = resolve(contentDir, "books");
-if (!existsSync(booksDir)) {
-  fail(`no 'books/' directory found under CONTENT_DIR (${booksDir}).`);
+const booksDir = contentDir ? resolve(contentDir, "books") : null;
+if (contentDir && !existsSync(booksDir)) {
+  warn(`no 'books/' directory found under CONTENT_DIR (${booksDir}) — no book redirects emitted.`);
 }
 
 // Target locale for this legacy domain's .org counterparts (youproof.hu -> hu).
@@ -175,6 +186,9 @@ const entries = {};
 // error.
 const legacyPathOwners = new Map();
 let chaptersScanned = 0;
+// Whether any content object exists at all (book dirs or standalone items),
+// regardless of published/legacy-path — gates the root redirect below.
+let standaloneItemsSeen = 0;
 
 // Register one legacy-path -> canonical-path redirect, guarding against
 // self-redirects and duplicate legacy-paths across all content types.
@@ -197,9 +211,11 @@ function addEntry(from, to, ownerFile) {
 }
 
 // A book directory is any immediate subdir of books/ that has a book.yaml.
-const bookDirs = subdirs(booksDir).filter((d) =>
-  existsSync(join(booksDir, d, "book.yaml")),
-);
+// Empty when there is no content tree / no books/ (handled above) — the loop
+// simply doesn't run and only the root redirect is emitted.
+const bookDirs = booksDir && existsSync(booksDir)
+  ? subdirs(booksDir).filter((d) => existsSync(join(booksDir, d, "book.yaml")))
+  : [];
 
 for (const bookDirName of bookDirs) {
   const bookDir = join(booksDir, bookDirName);
@@ -253,25 +269,36 @@ for (const bookDirName of bookDirs) {
   }
 }
 
-// ---- Standalone content: articles, newsletter, custom pages ----
+// ---- Standalone content: articles, newsletter, pages, landing ----
 // Each kind lives under `{contentDir}/{dir}/{itemDir}/{file}`. Emit a redirect
 // for every item that is BOTH published (has published-at) AND has a legacy-path.
 // `containerKey` is the canonical container key (localized via the dictionary);
 // `null` means the kind has no container segment (custom pages -> /{locale}/{slug}).
-// Landing pages are intentionally excluded (unlisted ad entry points).
+//
+// Covers every standalone kind the website routes — the full StandaloneKind set
+// (article | newsletter | page | landing) — so ANY of them can carry a legacy
+// youproof.hu path and get a redirect, matching how the site builds their URLs
+// (see apps/website/lib/i18n/url.ts). Only articles and pages have legacy paths
+// today, but the list is generic so newsletter/landing work the moment one does.
+// knowledge-base is NOT here: it is embedded reference content (definitions/
+// theorems under namespaces), not a standalone routable page, so it has no
+// legacy-path redirect.
 const STANDALONE = [
   { dir: "articles", file: "article.yaml", containerKey: "article" },
   { dir: "newsletter", file: "newsletter.yaml", containerKey: "newsletter" },
   { dir: "pages", file: "page.yaml", containerKey: null },
+  { dir: "landing", file: "landing.yaml", containerKey: "landing" },
 ];
 
 for (const { dir, file, containerKey } of STANDALONE) {
+  if (!contentDir) break; // no content tree → nothing to scan (manifest stays empty)
   const kindDir = resolve(contentDir, dir);
-  if (!existsSync(kindDir)) continue;
+  if (!existsSync(kindDir)) continue; // this kind's dir absent → no entries for it
 
   for (const itemDir of subdirs(kindDir)) {
     const itemYaml = join(kindDir, itemDir, file);
     if (!existsSync(itemYaml)) continue;
+    standaloneItemsSeen += 1;
     const item = loadYaml(itemYaml);
     const legacyPathRaw = item["legacy-path"];
     if (!isPublished(item) || typeof legacyPathRaw !== "string" || legacyPathRaw.trim() === "") {
@@ -290,11 +317,16 @@ for (const { dir, file, containerKey } of STANDALONE) {
 // Path-to-path is "/" -> "/{locale}"; the worker redirects to
 // REDIRECT_TARGET_HOST, so this crosses domains (.hu -> .org). The bare .org root
 // has no page (every page is locale-prefixed), so land on the locale homepage.
-// Reserve "/".
-if (legacyPathOwners.has("/")) {
-  fail(`legacy-path '/' is reserved for the root redirect but is already used by ${legacyPathOwners.get("/")}.`);
+// Emitted ONLY when content actually exists — an empty content tree produces a
+// fully empty manifest (no point redirecting to a contentless site, and it keeps
+// the empty manifest identical to the committed placeholder). Reserve "/".
+const contentFound = bookDirs.length > 0 || standaloneItemsSeen > 0;
+if (contentFound) {
+  if (legacyPathOwners.has("/")) {
+    fail(`legacy-path '/' is reserved for the root redirect but is already used by ${legacyPathOwners.get("/")}.`);
+  }
+  entries["/"] = normalizePath(`/${LOCALE}`);
 }
-entries["/"] = normalizePath(`/${LOCALE}`);
 
 const updatedAt = process.env.MANIFEST_UPDATED_AT || new Date().toISOString().slice(0, 10);
 if (!/^\d{4}-\d{2}-\d{2}$/.test(updatedAt)) {
@@ -302,7 +334,11 @@ if (!/^\d{4}-\d{2}-\d{2}$/.test(updatedAt)) {
 }
 
 const manifest = { version: 1, updatedAt, entries };
-const outPath = resolve(root, "src/manifest.json");
+// Defaults to the committed manifest; MANIFEST_OUT lets tests write elsewhere
+// without clobbering src/manifest.json.
+const outPath = process.env.MANIFEST_OUT
+  ? resolve(process.env.MANIFEST_OUT)
+  : resolve(root, "src/manifest.json");
 writeFileSync(outPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
 
 const entryCount = Object.keys(entries).length;

@@ -10,7 +10,8 @@
     "validate-manifest": "node scripts/validate-manifest.mjs",
     "typecheck": "tsc --noEmit",
     "build": "node build.mjs",
-    "prebuild": "pnpm run validate-manifest"
+    "prebuild": "pnpm run validate-manifest",
+    "test": "node --test test/*.test.mjs"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "catalog:",

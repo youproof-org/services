@@ -14,7 +14,12 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, "..");
 
 const schema = JSON.parse(readFileSync(resolve(root, "src/manifest.schema.json"), "utf8"));
-const manifestRaw = readFileSync(resolve(root, "src/manifest.json"), "utf8");
+// Defaults to the committed manifest; MANIFEST_IN lets tests validate a manifest
+// written elsewhere (mirrors gen-manifest's MANIFEST_OUT).
+const manifestPath = process.env.MANIFEST_IN
+  ? resolve(process.env.MANIFEST_IN)
+  : resolve(root, "src/manifest.json");
+const manifestRaw = readFileSync(manifestPath, "utf8");
 
 let manifest;
 try {
