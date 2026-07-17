@@ -1,7 +1,15 @@
 import type { Metadata } from 'next'
 import { Mulish } from 'next/font/google'
+import { config } from '@fortawesome/fontawesome-svg-core'
+import '@fortawesome/fontawesome-svg-core/styles.css'
 import 'katex/dist/katex.min.css'
 import './globals.scss'
+
+// FontAwesome injects its sizing CSS at runtime (client-side) by default, so
+// icons paint at their native (huge) size for a frame before hydration — the
+// hero scroll-cue "flash of oversized arrow" (YP-122 item 5b). Import the core
+// CSS statically instead and disable the runtime injection.
+config.autoAddCss = false
 import DevContentReloader from '@/components/DevContentReloader'
 import { DEFAULT_LOCALE, getLocaleConfig } from '@/lib/i18n/config'
 import {

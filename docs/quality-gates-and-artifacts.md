@@ -11,6 +11,37 @@ The suite lives in [`tools/smoke-tests`](../tools/smoke-tests) and runs via
 blocking **smoke** suite (`node --test` redirect/behavior checks) and a
 **crawler** that recursively walks the site.
 
+## Pipeline gate catalogue
+
+Every gate currently enforced, verified against the workflows (not just the plan).
+All are blocking unless noted.
+
+| Gate | Where it runs | Checks |
+| --- | --- | --- |
+| Worker typecheck | `deploy.yml` (worker job) + `deploy-to-cloudflare.yml` (PR plan) | `tsc --noEmit` on the migration worker |
+| Manifest validation | worker `prebuild` → `validate-manifest.mjs` | manifest.json vs `manifest.schema.json` (AJV) + no self-redirects |
+| Worker build | `deploy.yml` | esbuild bundles worker + inlined manifest |
+| Website build | `deploy.yml` (website job) | `next build` — **also runs ESLint + `tsc`** on the site (no `ignoreDuringBuilds`/`ignoreBuildErrors`) |
+| Figure compile | website `prebuild` → `sync-figures.mjs` | aborts the build on any `.tex`→SVG failure (no broken `<img>` ships) |
+| `.hu` smoke tests | `deploy.yml` (quality-gate job, `node --test`) | worker 301/404/410 redirect semantics |
+| Post-deploy crawler | `deploy.yml` (quality-gate) | live-site links/assets/manifest-targets/SEO; writes the artifact (see below) |
+| Promotion PR gate | `pr-gate.yml` (required on PRs → `stable/production`/`released`) | staging artifact exists **and** `overall == "pass"` |
+| branch-source-guard | `branch-source-guard.yml` | promotion PRs come from the allowed source branch |
+| zone-purity-guard | `zone-purity-guard.yml` | a promotion delta doesn't mix `terraform/zone/` with non-zone changes |
+| Terraform fmt/plan | `deploy-to-cloudflare.yml` (PR, plan-only) | zone/worker/website roots format + plan cleanly |
+
+### Gaps & proposals
+
+- **No website build/lint/typecheck on PRs to `development`.** The website is
+  linted + typechecked, but only inside `next build` in the **deploy** path — so a
+  type/lint error surfaces at deploy time, not at PR review. *Proposal:* a fast
+  PR CI running `next build` + worker `typecheck` before merge.
+- **Worker has no ESLint** (only `tsc`). Low risk given its size; add a lint step
+  if it grows.
+- **No pre-commit hooks** — all enforcement is CI-side. Acceptable for this team;
+  noted so it's a deliberate choice, not an oversight.
+- **gen-manifest empty-content** is now covered by a unit test (YP-122 item 10b).
+
 ## When the checks run
 
 - **Staging quality checks** — run automatically after every successful staging

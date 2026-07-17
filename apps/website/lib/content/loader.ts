@@ -128,6 +128,24 @@ function readSlug(raw: Record<string, unknown>, name: string): string {
 // Resolve figure src paths in content blocks
 // ---------------------------------------------------------------------------
 
+// Intrinsic figure dimensions ({ "/content/.../foo.svg": [width, height] }),
+// produced by the prebuild `sync-figures.mjs` step. Loaded once, lazily. Missing
+// (e.g. figures weren't synced) → no dimensions, same as before. Mirrors the
+// sitemap's lastmod-map pattern (app/sitemap.ts).
+let figureDimsCache: Record<string, [number, number]> | undefined
+function figureDims(): Record<string, [number, number]> {
+  if (figureDimsCache === undefined) {
+    try {
+      figureDimsCache = JSON.parse(
+        fs.readFileSync(path.join(process.cwd(), '.generated', 'figure-dimensions.json'), 'utf8')
+      ) as Record<string, [number, number]>
+    } catch {
+      figureDimsCache = {}
+    }
+  }
+  return figureDimsCache ?? {}
+}
+
 export function resolveFigurePaths(
   blocks: ContentBlock[],
   figureUrlPrefix: string,
@@ -142,7 +160,11 @@ export function resolveFigurePaths(
         )
         if (match) src = match
       }
-      return { ...block, src: `${figureUrlPrefix}/${src}` }
+      const resolvedSrc = `${figureUrlPrefix}/${src}`
+      const dims = figureDims()[resolvedSrc]
+      return dims
+        ? { ...block, src: resolvedSrc, width: dims[0], height: dims[1] }
+        : { ...block, src: resolvedSrc }
     }
     if (block.type === 'subsection') {
       return { ...block, blocks: resolveFigurePaths(block.blocks, figureUrlPrefix, figuresDir) }
