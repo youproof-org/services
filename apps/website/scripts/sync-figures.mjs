@@ -44,34 +44,38 @@ const contentDir = process.env.CONTENT_DIR
 const publicContentDir = path.join(websiteRoot, 'public', 'content')
 const latexTmpDir = path.join(websiteRoot, '.tmp', 'latex')
 
-// Fail loudly instead of silently copying nothing when CONTENT_DIR is unset or
-// wrong (the default fallback `../content` does not exist in this layout).
-if (!existsSync(contentDir)) {
+// Resolve CONTENT_DIR into one of three cases:
+//
+//   1. Repo-root misconfiguration — CONTENT_DIR points at the content-repo ROOT
+//      instead of its `content/` subdir (a nested `content/books/` exists one
+//      level down). Figure paths would mirror a stray `content/` segment into
+//      public/content/content/… . This is a real mistake → fail loudly.
+//   2. Empty content — the dir is missing, or exists but contains neither books/
+//      nor knowledge-base/. This is VALID for the first production release, whose
+//      `stable/released` content tree is still empty (mirrors gen-manifest.mjs's
+//      tolerance — see its "CONTENT_DIR / books/ are intentionally NOT hard
+//      failures" note). Skip figure syncing; the empty figure-dimensions.json
+//      sidecar written below keeps the build + content loader valid.
+//   3. Real content — sync normally.
+const hasBooks = existsSync(path.join(contentDir, 'books'))
+const hasKnowledgeBase = existsSync(path.join(contentDir, 'knowledge-base'))
+
+if (!hasBooks && !hasKnowledgeBase && existsSync(path.join(contentDir, 'content', 'books'))) {
   console.error(
-    `[sync-figures] content directory not found: ${contentDir}\n` +
-      `  Set CONTENT_DIR to the content repo's "content" dir, e.g.\n` +
-      `  CONTENT_DIR=../../../content/content node scripts/sync-figures.mjs`,
+    `[sync-figures] ${contentDir} looks like the content-repo root ` +
+      `(no books/ or knowledge-base/ inside it, but a nested content/books/ exists).\n` +
+      `  Point CONTENT_DIR at its "content" subdir instead:\n  ${path.join(contentDir, 'content')}`,
   )
   process.exit(1)
 }
 
-// CONTENT_DIR must be the content repo's `content/` subdir (the one containing
-// books/ + knowledge-base/), NOT the repo root — otherwise figure paths mirror a
-// stray `content/` segment into public/content/content/… . Validate the shape
-// (mirrors gen-manifest.mjs's books/ check).
-if (
-  !existsSync(path.join(contentDir, 'books')) &&
-  !existsSync(path.join(contentDir, 'knowledge-base'))
-) {
-  const nested = existsSync(path.join(contentDir, 'content', 'books'))
-  console.error(
-    `[sync-figures] ${contentDir} is not the content directory ` +
-      `(no books/ or knowledge-base/ inside it).` +
-      (nested
-        ? `\n  It looks like the content-repo root — point CONTENT_DIR at its "content" subdir instead:\n  ${path.join(contentDir, 'content')}`
-        : `\n  CONTENT_DIR must point to the content repo's "content" subdir.`),
+const contentEmpty = !existsSync(contentDir) || (!hasBooks && !hasKnowledgeBase)
+if (contentEmpty) {
+  console.warn(
+    `[sync-figures] no content found at ${contentDir} (no books/ or knowledge-base/) — ` +
+      `skipping figure sync. This is valid for a release with no content yet; ` +
+      `an empty figure-dimensions.json sidecar is still written below.`,
   )
-  process.exit(1)
 }
 
 // ---------------------------------------------------------------------------
