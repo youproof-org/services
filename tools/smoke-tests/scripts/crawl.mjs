@@ -1,41 +1,74 @@
-// Recursive full-site link + asset crawler for the migration Worker.
+// Recursive full-site link + asset crawler for the site at WORKER_DOMAIN.
 //
-// Starts at https://<WORKER_DOMAIN> and walks same-origin links breadth-first.
+// Primary use: the quality gate points it at the youproof.org static site
+// (staging.youproof.org / youproof.org) to verify the deployed content. It is
+// host-agnostic, so the CLI can also crawl the .hu migration worker (the
+// legacy-leak check below is meaningful there and inert on .org — see it).
+//
+// Starts at the given seed URL(s) — one homepage per locale for the .org site,
+// since locales don't link to each other — and walks same-origin links BFS.
 // For every page it also checks the page's own assets (images, stylesheets,
-// scripts, media, ...). It reports two classes of problem:
+// scripts, media, ...). It reports these classes of problem:
 //   - broken links/assets — any response >= 400 (internal ones are fatal;
 //                       external third-party URLs are reported as warnings only;
 //                       external 403/429 are treated as bot-block/rate-limit and
 //                       ignored, since datacenter IPs get throttled).
-//   - legacy leaks    — the internal LEGACY_PROXY_HOST leaking to the browser in
-//                       ANY response header (Location, Link, Content-Location,
-//                       Set-Cookie domain, ...).
+//   - dead migration targets — a .org path a migrated legacy redirect points at
+//                       (from `migrationTargets`) that does not return 200 on the
+//                       live site (fatal; recorded under brokenInternal, tagged
+//                       via "migration manifest target").
+//   - math errors     — KaTeX render failures (class="katex-error") in page HTML
+//                       (fatal — a math content site must render its math).
+//   - redirect loops  — cyclic or excessively long (> MAX_REDIRECT_HOPS) redirect
+//                       chains (fatal).
+//   - orphan pages    — URLs present in /sitemap.xml but linked from nowhere in the
+//                       crawl (warning; best-effort, skipped when no sitemap).
+//   - slow pages      — internal 200s slower than SLOW_PAGE_MS (warning).
+//   - legacy leaks    — ONLY when LEGACY_PROXY_HOST is set (i.e. crawling the .hu
+//                       worker): the legacy origin host leaking to the browser in
+//                       ANY response header (Location, Link, Content-Location, ...).
+//                       Inert on the .org gate, where LEGACY_PROXY_HOST is empty.
+//   - SEO/OG errors   — ONLY when `checkSeo` is set (the .org content gate): a
+//                       content page (one emitting a canonical) missing a required
+//                       meta/OpenGraph/canonical/hreflang tag, its og:image not
+//                       resolving (broken share image), or the pipeline emitting no
+//                       canonical anywhere (fatal). Over-long title/description and
+//                       a non-self-referential canonical are warnings.
+//   - robots.txt      — ONLY when `checkSeo` is set: robots.txt must match the
+//                       environment (production allows indexing + has a Sitemap:
+//                       line; any non-production env must Disallow: /) (fatal).
 //
-// It also actively exercises the Part A canonical-redirect fix: for every
-// discovered internal URL that ends in "/", it probes the trailing-slash-stripped
-// variant, generating WordPress's canonical 301 and verifying its Location does
-// NOT point at the legacy host.
-//
-// Exit code 1 on any internal broken URL or leak. Run:
+// This module exports runCrawl() so the quality-gate entrypoint can consume the
+// findings programmatically. Run directly as a CLI (prints a report, exits 1 on
+// any fatal finding):
+//   # crawl the .org site
+//   WORKER_DOMAIN=staging.youproof.org node scripts/crawl.mjs
+//   # or crawl the .hu worker with legacy-leak detection
 //   WORKER_DOMAIN=staging.youproof.hu LEGACY_PROXY_HOST=legacy.staging.youproof.hu \
 //   node scripts/crawl.mjs
 
+import { pathToFileURL } from "node:url";
+
 import { baseUrl, config, request } from "../lib/config.mjs";
-import { extractRefs, findHeaderLeaks } from "../lib/extract.mjs";
+import {
+  extractRefs,
+  findHeaderLeaks,
+  extractMathErrors,
+  parseSitemapLocs,
+  extractHtmlLang,
+  extractSeo,
+} from "../lib/extract.mjs";
 
 const MAX_PAGES = 500;
 const MAX_DEPTH = 5;
 const CONCURRENCY = 5;
-
-const { workerDomain, legacyProxyHost } = config;
-
-const enqueued = new Set(); // internal pages queued for crawl (deduped)
-const checked = new Set(); // every URL we've done a status/leak check on
-const brokenInternal = [];
-const brokenExternal = [];
-const blockedExternal = []; // external 403/429 — datacenter bot-block / rate-limit, not dead
-const leaks = [];
-let pageCount = 0;
+// A same-origin 200 slower than this is flagged (warning). CI runners + a
+// cold CDN edge make sub-second thresholds flaky; 3s is a generous "something
+// is wrong" bar for a static site.
+const SLOW_PAGE_MS = 3000;
+// A redirect chain longer than this many hops is treated as broken (fatal),
+// alongside any detected cycle. The worker never needs more than 1-2 hops.
+const MAX_REDIRECT_HOPS = 5;
 
 // External hosts commonly return these to datacenter IPs (e.g. Wikipedia 429s the
 // CI runner) — a block/throttle, not a broken link. Ignored for external URLs
@@ -47,105 +80,436 @@ const normalize = (url) => {
   u.hash = "";
   return u.toString();
 };
-const isInternal = (url) => url.hostname === workerDomain;
-
-// Status + legacy-leak check for a single URL. Does NOT crawl or read the body.
-async function check(url, via) {
-  const key = normalize(url);
-  if (checked.has(key)) return null;
-  checked.add(key);
-
-  let res;
-  try {
-    // A couple of retries to ride out transient blips / cold-cache slowness, with
-    // a hard per-attempt timeout so a dead/hanging URL still can't stall the crawl.
-    res = await request(url.toString(), { retries: 2, timeoutMs: 20000 });
-  } catch (err) {
-    const reason = err?.cause?.code ?? err?.cause?.message ?? err?.message ?? String(err);
-    (isInternal(url) ? brokenInternal : brokenExternal).push({ url: key, status: `ERR ${reason}`, via });
-    return null;
-  }
-
-  if (res.status >= 400) {
-    if (!isInternal(url) && BLOCKED_STATUSES.has(res.status)) {
-      blockedExternal.push({ url: key, status: res.status, via });
-    } else {
-      (isInternal(url) ? brokenInternal : brokenExternal).push({ url: key, status: res.status, via });
-    }
-  }
-  for (const detail of findHeaderLeaks(res.headers, legacyProxyHost, url)) {
-    leaks.push({ url: key, detail, via });
-  }
-  return res;
-}
-
-const queue = [{ url: new URL(baseUrl), depth: 0, via: "(root)" }];
-enqueued.add(normalize(baseUrl));
-
-async function crawlWorker() {
-  while (queue.length > 0 && pageCount < MAX_PAGES) {
-    const item = queue.shift();
-    if (!item) break;
-    pageCount++;
-
-    const res = await check(item.url, item.via);
-
-    // Canonical trailing-slash probe (Part A regression): force the WordPress
-    // /path/ -> /path canonical redirect and confirm it doesn't leak legacy.*.
-    const path = item.url.pathname;
-    if (path.length > 1 && path.endsWith("/")) {
-      const stripped = new URL(item.url);
-      stripped.pathname = path.replace(/\/+$/, "");
-      await check(stripped, `${normalize(item.url)} (trailing-slash probe)`);
-    }
-
-    if (!res || res.status !== 200) continue;
-    if (!/text\/html/i.test(res.headers.get("content-type") ?? "")) continue;
-    if (item.depth >= MAX_DEPTH) continue;
-
-    const html = await res.text();
-    const via = normalize(item.url);
-    const { links, assets } = extractRefs(html, item.url);
-
-    for (const link of links) {
-      if (isInternal(link)) {
-        const key = normalize(link);
-        if (!enqueued.has(key)) {
-          enqueued.add(key);
-          queue.push({ url: link, depth: item.depth + 1, via });
-        }
-      } else {
-        // External (incl. .org, legacy.*, third parties): status/leak check only.
-        await check(link, via);
-      }
-    }
-    // Assets are fetch-checked (own site's images/CSS/JS must download) but never
-    // crawled for further links.
-    for (const asset of assets) {
-      await check(asset, `${via} (asset)`);
-    }
-  }
-}
-
-await Promise.all(Array.from({ length: CONCURRENCY }, () => crawlWorker()));
-
-console.log(`\nCrawled ${pageCount} page(s); checked ${checked.size} URL(s) from ${baseUrl}`);
-if (pageCount >= MAX_PAGES) console.log(`(stopped at MAX_PAGES=${MAX_PAGES} cap)`);
-
-const report = (title, items) => {
-  console.log(`\n${title}: ${items.length}`);
-  for (const it of items) {
-    console.log(`  - [${it.status ?? it.detail}] ${it.url}  (via ${it.via})`);
-  }
+// Path-only key used to cross-reference sitemap entries against discovered URLs
+// (host-agnostic: the sitemap may advertise the canonical host while we crawl a
+// per-env hostname). Trailing slash normalized so "/x" and "/x/" match.
+const pathKey = (url) => {
+  const u = new URL(url);
+  const p = u.pathname.replace(/\/+$/, "") || "/";
+  return p + u.search;
 };
 
-if (leaks.length) report("LEGACY-HOST LEAKS (fatal)", leaks);
-if (brokenInternal.length) report("Broken internal links/assets (fatal)", brokenInternal);
-if (brokenExternal.length) report("Broken external links/assets (warning)", brokenExternal);
-if (blockedExternal.length) report("External rate-limited/blocked — ignored (403/429)", blockedExternal);
+/**
+ * Crawl the site under test and collect all findings. Pure of console output and
+ * process control so it can be driven by the quality gate. Returns the raw
+ * finding arrays + counters; status classification lives in lib/report.mjs.
+ */
+export async function runCrawl({
+  domain = config.workerDomain,
+  legacyHost = config.legacyProxyHost,
+  start = baseUrl,
+  // Seed URLs to begin crawling from. Every locale is a separate link-island
+  // (no language switcher links between them), so to cover a multi-locale site
+  // we seed one homepage per locale; the caller passes `starts`. Defaults to the
+  // single `start` (used for resolving relative sitemap/target URLs regardless).
+  starts = null,
+  maxPages = MAX_PAGES,
+  maxDepth = MAX_DEPTH,
+  concurrency = CONCURRENCY,
+  slowPageMs = SLOW_PAGE_MS,
+  maxRedirectHops = MAX_REDIRECT_HOPS,
+  // .org paths that migrated redirects point at (the manifest's values). Each is
+  // verified to exist (return 200) on the live site — see the end of the crawl.
+  migrationTargets = [],
+  // Locale dictionary (code → { htmlLang, ... }) + default locale. When provided,
+  // every crawled page's <html lang> is verified against the locale in its URL
+  // path (first segment); mismatches are collected in `langErrors` (fatal). Null
+  // => no lang checking (e.g. crawling the .hu worker).
+  locales = null,
+  defaultLocale = null,
+  // When true (the .org content gate), assert every content page emits a
+  // well-formed meta + OpenGraph block (buildPageMeta) and check robots.txt for
+  // the environment. Off for the .hu worker crawl.
+  checkSeo = false,
+  // "production" | "staging" | ... — drives the robots.txt expectation when
+  // checkSeo is on (production allows indexing; anything else disallows all).
+  environment = null,
+} = {}) {
+  const enqueued = new Set(); // internal pages queued for crawl (deduped)
+  const checked = new Set(); // every URL we've done a status/leak check on
+  const discoveredPaths = new Set(); // path-keys of every internal URL we saw
+  const redirectChecked = new Set(); // internal redirecting URLs already loop-checked
+  const brokenInternal = [];
+  const brokenExternal = [];
+  const blockedExternal = []; // external 403/429 — datacenter bot-block / rate-limit, not dead
+  const leaks = [];
+  const mathErrors = [];
+  const redirectLoops = [];
+  const slowPages = [];
+  const langErrors = [];
+  const seoErrors = []; // content pages missing required meta/OG/canonical (fatal)
+  const seoWarnings = []; // over-long title/description, non-self-canonical (warning)
+  const robotsErrors = []; // robots.txt wrong for the environment (fatal)
+  let seoChecked = 0; // content pages (with a canonical) that got SEO-checked
+  let orphanPages = [];
+  let sitemapNote = "";
+  let pageCount = 0;
 
-if (!leaks.length && !brokenInternal.length && !brokenExternal.length && !blockedExternal.length) {
-  console.log("\nNo broken links/assets or legacy-host leaks found.");
+  const isInternal = (url) => url.hostname === domain;
+
+  // The <html lang> a page should declare, from the locale in its URL path (first
+  // segment = a configured locale key, else the default locale). Null when locale
+  // checking is disabled (no `locales` passed).
+  const expectedLang = (urlObj) => {
+    if (!locales) return null;
+    const seg = urlObj.pathname.split("/").filter(Boolean)[0] ?? "";
+    const key = locales[seg] ? seg : defaultLocale;
+    const cfg = key ? locales[key] : null;
+    return cfg ? cfg.htmlLang : null;
+  };
+
+  // Follow a redirect chain from a URL that already returned a 3xx, detecting
+  // cycles (A->B->A) and excessively long chains (> maxRedirectHops).
+  async function detectRedirectLoop(startUrl, via) {
+    const key = normalize(startUrl);
+    if (redirectChecked.has(key)) return;
+    redirectChecked.add(key);
+
+    const chain = [];
+    const seen = new Set();
+    let current = startUrl.toString();
+    for (let hop = 0; hop <= maxRedirectHops + 1; hop++) {
+      let res;
+      try {
+        res = await request(current, { retries: 0, timeoutMs: 15000 });
+      } catch {
+        return; // network error terminates the chain — not a loop
+      }
+      chain.push({ url: current, status: res.status });
+      if (res.status < 300 || res.status >= 400) return; // reached a terminal response
+      const loc = res.headers.get("location");
+      if (!loc) return;
+      let next;
+      try {
+        next = new URL(loc, current).toString();
+      } catch {
+        return;
+      }
+      if (seen.has(next)) {
+        redirectLoops.push({ url: key, detail: `cycle back to ${next}`, chain, via });
+        return;
+      }
+      seen.add(current);
+      current = next;
+      if (hop >= maxRedirectHops) {
+        redirectLoops.push({ url: key, detail: `exceeded ${maxRedirectHops} hops`, chain, via });
+        return;
+      }
+    }
+  }
+
+  // Status + legacy-leak + timing check for a single URL. Does NOT crawl or read
+  // the body. Returns the response (for the caller to inspect/read) or null.
+  async function check(url, via) {
+    const key = normalize(url);
+    if (checked.has(key)) return null;
+    checked.add(key);
+    if (isInternal(url)) discoveredPaths.add(pathKey(url));
+
+    let res;
+    const startedAt = Date.now();
+    try {
+      // A couple of retries to ride out transient blips / cold-cache slowness, with
+      // a hard per-attempt timeout so a dead/hanging URL still can't stall the crawl.
+      res = await request(url.toString(), { retries: 2, timeoutMs: 20000 });
+    } catch (err) {
+      const reason = err?.cause?.code ?? err?.cause?.message ?? err?.message ?? String(err);
+      (isInternal(url) ? brokenInternal : brokenExternal).push({ url: key, status: `ERR ${reason}`, via });
+      return null;
+    }
+    const elapsedMs = Date.now() - startedAt;
+
+    if (res.status >= 400) {
+      if (!isInternal(url) && BLOCKED_STATUSES.has(res.status)) {
+        blockedExternal.push({ url: key, status: res.status, via });
+      } else {
+        (isInternal(url) ? brokenInternal : brokenExternal).push({ url: key, status: res.status, via });
+      }
+    } else if (isInternal(url) && res.status === 200 && elapsedMs > slowPageMs) {
+      slowPages.push({ url: key, ms: elapsedMs, via });
+    }
+
+    for (const detail of findHeaderLeaks(res.headers, legacyHost, url)) {
+      leaks.push({ url: key, detail, via });
+    }
+
+    // Loop detection for internal redirects — e.g. a misconfigured .org rule
+    // (www/apex or .html rewrite) or, when crawling the .hu worker, a .hu <-> .org
+    // cycle.
+    if (isInternal(url) && res.status >= 300 && res.status < 400 && res.headers.get("location")) {
+      await detectRedirectLoop(url, via);
+    }
+    return res;
+  }
+
+  // Seed from every locale homepage (or the single `start` when no `starts`
+  // given). Each locale's pages are then reached via that locale's own internal
+  // links; without seeding each, non-default locales would never be visited.
+  const seedUrls = starts && starts.length ? starts : [start];
+  const queue = seedUrls.map((s) => ({ url: new URL(s), depth: 0, via: "(seed)" }));
+  for (const s of seedUrls) enqueued.add(normalize(s));
+
+  async function crawlWorker() {
+    while (queue.length > 0 && pageCount < maxPages) {
+      const item = queue.shift();
+      if (!item) break;
+      pageCount++;
+
+      const res = await check(item.url, item.via);
+
+      if (!res || res.status !== 200) continue;
+      if (!/text\/html/i.test(res.headers.get("content-type") ?? "")) continue;
+      if (item.depth >= maxDepth) continue;
+
+      const html = await res.text();
+      const via = normalize(item.url);
+
+      // Math render failures: KaTeX emits class="katex-error" for un-parseable TeX.
+      const mathCount = extractMathErrors(html);
+      if (mathCount.count > 0) {
+        mathErrors.push({ url: via, count: mathCount.count, snippet: mathCount.snippet });
+      }
+
+      // Per-locale <html lang>: the served page must declare the language of the
+      // locale in its URL path (see the postbuild rewrite). Catches a wrong/stale
+      // lang on the LIVE site, gating production via the report artifact.
+      const wantLang = expectedLang(item.url);
+      if (wantLang) {
+        const gotLang = extractHtmlLang(html);
+        if (gotLang !== wantLang) {
+          langErrors.push({ url: via, found: gotLang || "(none)", expected: wantLang });
+        }
+      }
+
+      // Per-page SEO/OG assertions (the .org content gate). A "content page" is
+      // identified by emitting a canonical link (every buildPageMeta page does;
+      // the noindex container-root stubs — /konyvek, /landing — do not, so they
+      // are skipped). Works on staging too: pages there are site-wide noindex but
+      // still emit canonical + the full OG block.
+      if (checkSeo) {
+        const seo = extractSeo(html);
+        if (seo.canonical) {
+          seoChecked++;
+          const missing = [];
+          if (!seo.title) missing.push("<title>");
+          if (!seo.description) missing.push("meta description");
+          if (!seo.hreflangs.length) missing.push("hreflang");
+          if (!seo.hreflangs.includes("x-default")) missing.push('hreflang="x-default"');
+          for (const [k, label] of [
+            ["title", "og:title"], ["description", "og:description"], ["type", "og:type"],
+            ["url", "og:url"], ["siteName", "og:site_name"], ["locale", "og:locale"], ["image", "og:image"],
+          ]) {
+            if (!seo.og[k]) missing.push(label);
+          }
+          if (missing.length) seoErrors.push({ url: via, missing });
+
+          const warns = [];
+          if (seo.title && seo.title.length > 70) warns.push(`title ${seo.title.length} chars (> 70)`);
+          if (seo.description) {
+            const d = seo.description.length;
+            if (d > 160) warns.push(`meta description ${d} chars (> 160)`);
+            else if (d < 50) warns.push(`meta description ${d} chars (< 50)`);
+          }
+          try {
+            const canonPath = new URL(seo.canonical).pathname.replace(/\/+$/, "") || "/";
+            const pagePath = item.url.pathname.replace(/\/+$/, "") || "/";
+            if (canonPath !== pagePath) warns.push(`canonical not self-referential (${seo.canonical})`);
+          } catch {
+            warns.push(`canonical is not a valid URL (${seo.canonical})`);
+          }
+          if (warns.length) seoWarnings.push({ url: via, warnings: warns });
+
+          // og:image must resolve (a broken share image fails the FB scrape).
+          // Fetched via the shared asset check → a non-200 lands in brokenInternal.
+          if (seo.og.image) {
+            try {
+              await check(new URL(seo.og.image, item.url), `${via} (og:image)`);
+            } catch {
+              /* malformed og:image URL is already reported via missing/other */
+            }
+          }
+        }
+      }
+
+      const { links, assets } = extractRefs(html, item.url);
+
+      for (const link of links) {
+        if (isInternal(link)) {
+          const key = normalize(link);
+          discoveredPaths.add(pathKey(link));
+          if (!enqueued.has(key)) {
+            enqueued.add(key);
+            queue.push({ url: link, depth: item.depth + 1, via });
+          }
+        } else {
+          // External (incl. .org, legacy.*, third parties): status/leak check only.
+          await check(link, via);
+        }
+      }
+      // Assets are fetch-checked (own site's images/CSS/JS must download) but never
+      // crawled for further links.
+      for (const asset of assets) {
+        await check(asset, `${via} (asset)`);
+      }
+    }
+  }
+
+  await Promise.all(Array.from({ length: concurrency }, () => crawlWorker()));
+
+  // Migrated-redirect target verification (end-to-end): every .org path a
+  // migrated legacy path 301s to (the manifest's values) must be a real, live
+  // page. Confirm each returns 200 — this catches a manifest entry pointing at a
+  // path that doesn't resolve (e.g. generate-manifest drifting from the site's
+  // routes), which neither the .hu redirect smoke test (checks only that the 301
+  // points there) nor a link-following crawl (never visits an unlinked/wrong
+  // path) would catch. A non-200 target is a broken .org page, so it's recorded
+  // as a fatal brokenInternal finding, tagged via "migration manifest target".
+  for (const target of migrationTargets) {
+    let url;
+    try {
+      url = new URL(target, start);
+    } catch {
+      continue; // malformed manifest value — skip (validate-manifest guards shape)
+    }
+    const key = normalize(url);
+    discoveredPaths.add(pathKey(url)); // it's a real target, never an "orphan"
+    let res;
+    try {
+      res = await request(url.toString(), { retries: 2, timeoutMs: 20000 });
+    } catch (err) {
+      const reason = err?.cause?.code ?? err?.cause?.message ?? err?.message ?? String(err);
+      brokenInternal.push({ url: key, status: `ERR ${reason}`, via: "migration manifest target" });
+      continue;
+    }
+    if (res.status !== 200) {
+      brokenInternal.push({ url: key, status: res.status, via: "migration manifest target" });
+    }
+  }
+
+  // SEO gate (.org): robots.txt must match the environment, and at least one
+  // page must have emitted a canonical (else the meta/OG pipeline is broken and
+  // every page was silently skipped above).
+  if (checkSeo) {
+    if (seoChecked === 0 && pageCount > 0) {
+      seoErrors.push({ url: "(site)", missing: ["no page emitted a canonical link — meta/OG pipeline appears broken"] });
+    }
+    try {
+      const res = await request(new URL("/robots.txt", start).toString(), { retries: 1, timeoutMs: 15000 });
+      const body = res.status === 200 ? await res.text() : "";
+      const disallowAll = /^\s*Disallow:\s*\/\s*$/im.test(body);
+      const hasSitemap = /^\s*Sitemap:\s*\S+/im.test(body);
+      if (environment === "production") {
+        if (res.status !== 200) robotsErrors.push({ detail: `production robots.txt not served (status ${res.status})` });
+        else if (disallowAll) robotsErrors.push({ detail: "production robots.txt Disallow: / — production must be indexable" });
+        else if (!hasSitemap) robotsErrors.push({ detail: "production robots.txt has no Sitemap: line" });
+      } else {
+        // staging / any non-production env must block all crawling.
+        if (!disallowAll) robotsErrors.push({ detail: `non-production robots.txt is not Disallow: / (status ${res.status})` });
+      }
+    } catch (err) {
+      robotsErrors.push({ detail: `robots.txt unreachable: ${err?.message ?? err}` });
+    }
+  }
+
+  // Orphan detection: URLs advertised in /sitemap.xml but reached by no link.
+  try {
+    const sitemapUrl = new URL("/sitemap.xml", start).toString();
+    const res = await request(sitemapUrl, { retries: 1, timeoutMs: 15000 });
+    if (res.status === 200) {
+      const xml = await res.text();
+      const locs = parseSitemapLocs(xml);
+      if (locs.length === 0) {
+        sitemapNote = "sitemap.xml found but contained no <loc> page entries";
+      } else {
+        orphanPages = locs
+          .filter((loc) => {
+            try {
+              return !discoveredPaths.has(pathKey(loc));
+            } catch {
+              return false;
+            }
+          })
+          .map((loc) => ({ url: loc }));
+      }
+    } else {
+      sitemapNote = `no usable sitemap.xml (status ${res.status}) — orphan detection skipped`;
+    }
+  } catch {
+    sitemapNote = "sitemap.xml unreachable — orphan detection skipped";
+  }
+
+  return {
+    pageCount,
+    checked,
+    brokenInternal,
+    brokenExternal,
+    blockedExternal,
+    leaks,
+    mathErrors,
+    orphanPages,
+    redirectLoops,
+    slowPages,
+    langErrors,
+    seoErrors,
+    seoWarnings,
+    robotsErrors,
+    seoChecked,
+    sitemapNote,
+    cappedAtMaxPages: pageCount >= maxPages,
+  };
 }
 
-if (leaks.length > 0 || brokenInternal.length > 0) process.exit(1);
+// ---------------------------------------------------------------------------
+// Thin CLI wrapper — console report + exit code, unchanged behaviour.
+// ---------------------------------------------------------------------------
+
+async function cli() {
+  const r = await runCrawl();
+
+  console.log(`\nCrawled ${r.pageCount} page(s); checked ${r.checked.size} URL(s) from ${baseUrl}`);
+  if (r.cappedAtMaxPages) console.log(`(stopped at MAX_PAGES=${MAX_PAGES} cap)`);
+  if (r.sitemapNote) console.log(`(orphan check: ${r.sitemapNote})`);
+
+  const report = (title, items, fmt) => {
+    console.log(`\n${title}: ${items.length}`);
+    for (const it of items) console.log(`  - ${fmt(it)}`);
+  };
+  const linkFmt = (it) => `[${it.status ?? it.detail}] ${it.url}  (via ${it.via})`;
+
+  if (r.leaks.length) report("LEGACY-HOST LEAKS (fatal)", r.leaks, linkFmt);
+  if (r.brokenInternal.length) report("Broken internal links/assets (fatal)", r.brokenInternal, linkFmt);
+  if (r.mathErrors.length) {
+    report("Math render errors — katex-error (fatal)", r.mathErrors, (it) => `[${it.count}x] ${it.url}`);
+  }
+  if (r.redirectLoops.length) report("Redirect loops (fatal)", r.redirectLoops, linkFmt);
+  if (r.langErrors.length) {
+    report("Wrong <html lang> (fatal)", r.langErrors, (it) => `[found "${it.found}", expected "${it.expected}"] ${it.url}`);
+  }
+  if (r.seoErrors?.length) {
+    report("Missing SEO/OG tags (fatal)", r.seoErrors, (it) => `[missing: ${it.missing.join(", ")}] ${it.url}`);
+  }
+  if (r.robotsErrors?.length) report("robots.txt problems (fatal)", r.robotsErrors, (it) => it.detail);
+  if (r.seoWarnings?.length) {
+    report("SEO warnings (warning)", r.seoWarnings, (it) => `[${it.warnings.join("; ")}] ${it.url}`);
+  }
+  if (r.brokenExternal.length) report("Broken external links/assets (warning)", r.brokenExternal, linkFmt);
+  if (r.blockedExternal.length) report("External rate-limited/blocked — ignored (403/429)", r.blockedExternal, linkFmt);
+  if (r.orphanPages.length) report("Orphan pages — in sitemap, linked from nowhere (warning)", r.orphanPages, (it) => it.url);
+  if (r.slowPages.length) report(`Slow pages > ${SLOW_PAGE_MS}ms (warning)`, r.slowPages, (it) => `[${it.ms}ms] ${it.url}`);
+
+  const fatal =
+    r.leaks.length + r.brokenInternal.length + r.mathErrors.length + r.redirectLoops.length + r.langErrors.length +
+    (r.seoErrors?.length ?? 0) + (r.robotsErrors?.length ?? 0);
+  const warnings =
+    r.brokenExternal.length + r.blockedExternal.length + r.orphanPages.length + r.slowPages.length +
+    (r.seoWarnings?.length ?? 0);
+  if (fatal === 0 && warnings === 0) {
+    console.log("\nNo broken links/assets, leaks, math errors, redirect loops, orphans or slow pages found.");
+  }
+
+  if (fatal > 0) process.exit(1);
+}
+
+if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {
+  await cli();
+}

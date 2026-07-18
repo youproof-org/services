@@ -5,7 +5,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { extractRefs, findHeaderLeaks, toUrl } from "../lib/extract.mjs";
+import { extractRefs, findHeaderLeaks, toUrl, extractHtmlLang, extractSeo } from "../lib/extract.mjs";
 
 const BASE = "https://staging.youproof.hu/page/";
 
@@ -75,6 +75,32 @@ test("<link> extraction is rel-aware: keeps stylesheet/shortlink, drops hints & 
   assert.deepEqual(hrefs, ["/?p=42", "/css/site.css"]);
 });
 
+test("<link> extraction skips SEO metadata: canonical + hreflang alternates, keeps feed alternates", () => {
+  const html = `
+    <link rel="canonical" href="https://staging.youproof.org/hu">
+    <link rel="alternate" hreflang="hu" href="https://staging.youproof.org/hu">
+    <link rel="alternate" hreflang="x-default" href="https://staging.youproof.org/hu">
+    <link rel="alternate" type="application/rss+xml" href="/feed.xml">
+    <link rel="stylesheet" href="/css/site.css">
+  `;
+  const { assets } = extractRefs(html, BASE);
+  const hrefs = assets.map((u) => u.pathname).sort();
+  assert.deepEqual(hrefs, ["/css/site.css", "/feed.xml"]);
+});
+
+test("<link> extraction skips SEO metadata: canonical + hreflang alternates, keeps feed alternates", () => {
+  const html = `
+    <link rel="canonical" href="https://youproof.org/hu">
+    <link rel="alternate" hreflang="hu" href="https://youproof.org/hu">
+    <link rel="alternate" hreflang="x-default" href="https://youproof.org/hu">
+    <link rel="alternate" type="application/rss+xml" href="/feed.xml">
+    <link rel="stylesheet" href="/css/site.css">
+  `;
+  const { assets } = extractRefs(html, BASE);
+  const hrefs = assets.map((u) => u.pathname).sort();
+  assert.deepEqual(hrefs, ["/css/site.css", "/feed.xml"]);
+});
+
 test("findHeaderLeaks flags the legacy host in any header, incl. relative Location", () => {
   const legacy = "legacy.staging.youproof.hu";
 
@@ -98,4 +124,54 @@ test("findHeaderLeaks flags the legacy host in any header, incl. relative Locati
 
   // No legacy host configured (post-migration) -> never flags.
   assert.deepEqual(findHeaderLeaks(absLoc, "", BASE), []);
+});
+
+test("extractHtmlLang reads the <html> lang attribute (or '' when absent)", () => {
+  assert.equal(extractHtmlLang('<!doctype html><html lang="hu" class="x">'), "hu");
+  assert.equal(extractHtmlLang('<html class="x" lang="en">'), "en");
+  assert.equal(extractHtmlLang("<html lang='pt-BR'>"), "pt-BR");
+  assert.equal(extractHtmlLang("<html class=\"x\">"), "");
+  assert.equal(extractHtmlLang("<div lang=\"hu\">not the html tag</div>"), "");
+});
+
+test("extractSeo pulls title/description/canonical/hreflang + the OG block (order-agnostic)", () => {
+  const html = `
+    <title>Alice és Bob színrelép | youproof.org - Deep Math. Human Access.</title>
+    <meta name="description" content="Bevezetés a kriptográfiába.">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="canonical" href="https://staging.youproof.org/hu/konyvek/alice-es-bob"/>
+    <link rel="alternate" hreflang="hu" href="https://staging.youproof.org/hu/konyvek/alice-es-bob"/>
+    <link rel="alternate" hreflang="x-default" href="https://staging.youproof.org/hu/konyvek/alice-es-bob"/>
+    <meta property="og:title" content="Alice és Bob színrelép"/>
+    <meta content="1. rész" property="og:description"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:url" content="https://staging.youproof.org/hu/konyvek/alice-es-bob"/>
+    <meta property="og:site_name" content="youproof.org"/>
+    <meta property="og:locale" content="hu_HU"/>
+    <meta property="og:image" content="https://staging.youproof.org/content/books/alice-es-bob/og-thumbnail.jpg"/>
+    <meta property="og:image:width" content="1200"/>
+  `;
+  const seo = extractSeo(html);
+  assert.match(seo.title, /^Alice és Bob színrelép \| /);
+  assert.equal(seo.description, "Bevezetés a kriptográfiába.");
+  assert.equal(seo.robots, "noindex, nofollow");
+  assert.equal(seo.canonical, "https://staging.youproof.org/hu/konyvek/alice-es-bob");
+  assert.deepEqual(seo.hreflangs.sort(), ["hu", "x-default"]);
+  assert.equal(seo.og.title, "Alice és Bob színrelép");
+  assert.equal(seo.og.description, "1. rész"); // content-before-property order handled
+  assert.equal(seo.og.type, "article");
+  assert.equal(seo.og.siteName, "youproof.org");
+  assert.equal(seo.og.locale, "hu_HU");
+  assert.equal(seo.og.image, "https://staging.youproof.org/content/books/alice-es-bob/og-thumbnail.jpg");
+  // og:image (not og:image:width) is matched exactly.
+  assert.ok(!seo.og.image.endsWith("1200"));
+});
+
+test("extractSeo returns nulls / empty for a page with no SEO head (a stub)", () => {
+  const seo = extractSeo("<!doctype html><html><body>Sorry</body></html>");
+  assert.equal(seo.title, null);
+  assert.equal(seo.description, null);
+  assert.equal(seo.canonical, null);
+  assert.deepEqual(seo.hreflangs, []);
+  assert.equal(seo.og.title, null);
 });

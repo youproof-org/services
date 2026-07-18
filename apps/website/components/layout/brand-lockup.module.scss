@@ -1,0 +1,69 @@
+@use '../../styles/variables' as *;
+
+.lockup {
+  display: flex;
+  color: $black;
+  // Drives every internal size; callers scale the whole lockup via font-size.
+  font-size: 1rem;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+}
+
+.wordmark {
+  font-family: var(--font-wordmark), var(--font-mulish), sans-serif;
+  font-weight: 500;
+  text-transform: lowercase;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  font-size: 2em;
+  // Centre the wordmark within the text block (the tagline can be wider once
+  // tracked out), so wordmark and tagline share a common centre line.
+  text-align: center;
+}
+
+.tagline {
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  font-size: 0.6em;
+  font-weight: $font-bold;
+  // Centre the tracked caps under the wordmark. The padding-left offsets the
+  // trailing letter-spacing after the last glyph so it reads optically centred.
+  text-align: center;
+  padding-left: 0.28em;
+  margin-top: 0.5em;
+  color: $gray-600;
+}
+
+/* Horizontal: mark to the left of the wordmark/tagline stack. */
+.horizontal {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.6em;
+
+  .mark {
+    height: 3.2em;
+  }
+}
+
+/* Stacked: mark centered above the wordmark. */
+.stacked {
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6em;
+  text-align: center;
+
+  .text {
+    align-items: center;
+  }
+
+  .mark {
+    height: 5.5em;
+  }
+
+  .tagline {
+    letter-spacing: 0.3em;
+  }
+}

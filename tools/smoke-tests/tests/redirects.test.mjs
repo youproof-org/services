@@ -1,7 +1,7 @@
 // Post-deploy redirect smoke tests for the migration Worker.
 //
 // Deterministic HTTP checks that automate the redirect-facing subset of the
-// manual verification checklist in infra/cloudflare/README.md. Run against a
+// manual verification checklist in docs/migration-worker.md. Run against a
 // live, just-deployed environment:
 //
 //   WORKER_DOMAIN=staging.youproof.hu \
@@ -11,8 +11,7 @@
 //   node --test tests/
 //
 // Cases self-skip when their config isn't applicable (post-migration mode, or
-// the www case outside production). The canonical trailing-slash Location
-// regression is covered live by scripts/crawl.mjs (it needs real content paths).
+// the www case outside production).
 
 import { readFileSync } from "node:fs";
 import assert from "node:assert/strict";
@@ -20,11 +19,14 @@ import { test } from "node:test";
 
 import { baseUrl, config, isPostMigration, isProduction, request, wwwHost } from "../lib/config.mjs";
 
-const manifestUrl = new URL(
-  "../../../infra/cloudflare/worker/src/manifest.json",
-  import.meta.url,
-);
-const manifest = JSON.parse(readFileSync(manifestUrl, "utf8"));
+// Prefer the freshly generated manifest (MANIFEST_PATH — set by the quality-gate
+// job, which is where these smoke tests now run so the deployed Worker state has
+// settled). Fall back to the committed src/manifest.json (the empty stub, or a
+// worker-job run that regenerated it in place).
+const manifestPath = process.env.MANIFEST_PATH
+  ? process.env.MANIFEST_PATH
+  : new URL("../../../infra/cloudflare/worker/src/manifest.json", import.meta.url);
+const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
 const manifestEntries = Object.entries(manifest.entries ?? {});
 
 test("admin/login paths are blocked with 404", async () => {
@@ -34,19 +36,43 @@ test("admin/login paths are blocked with 404", async () => {
   }
 });
 
-test("unmigrated path: proxy (pre-migration) or 410 (post-migration)", async () => {
-  const res = await request(`${baseUrl}/`);
+test("unmigrated non-admin path: proxied (pre-migration) or 410 (post-migration)", async () => {
+  // NOTE: the root "/" is now a migrated entry ("/" -> "/{locale}", e.g. "/hu",
+  // the youproof.hu -> youproof.org locale-homepage redirect), so it is covered
+  // by the "migrated paths" test below. Here we probe a path guaranteed NOT to be
+  // in the manifest.
+  const res = await request(`${baseUrl}/nem-letezo-oldal-smoke-teszt`);
   if (isPostMigration) {
     assert.equal(res.status, 410, "post-migration: unmigrated path should be 410 Gone");
   } else {
-    assert.equal(res.status, 200, "pre-migration: unmigrated path should proxy 200");
-    assert.match(
-      res.headers.get("content-type") ?? "",
-      /text\/html/i,
-      "proxied home page should be HTML",
+    // Pre-migration it must be proxied to legacy, not handled by the Worker:
+    // legacy may answer 200 or its own 404, but it must NOT be a Worker 410 nor
+    // a migration redirect to the .org target.
+    assert.notEqual(res.status, 410, "pre-migration: unmigrated path must be proxied, not 410");
+    const loc = res.headers.get("location") ?? "";
+    assert.ok(
+      !loc.startsWith(`https://${config.redirectTargetHost}`),
+      "unmigrated path must not be redirected to the .org target",
     );
   }
 });
+
+test(
+  "proxied legacy content: X-Robots-Tag noindex on staging, indexable on production",
+  { skip: isPostMigration ? "post-migration: no legacy proxy to noindex" : false },
+  async () => {
+    // Any unmigrated path is reverse-proxied to legacy; the Worker adds
+    // X-Robots-Tag per its SEO_NOINDEX binding (proxy.ts applyNoindex).
+    const res = await request(`${baseUrl}/nem-letezo-oldal-smoke-teszt`);
+    const xr = res.headers.get("x-robots-tag");
+    if (isProduction) {
+      // Production keeps the still-unmigrated legacy content indexable (SEO_NOINDEX=false).
+      assert.ok(!xr || !/noindex/i.test(xr), `production legacy proxy must stay indexable; got X-Robots-Tag: ${xr}`);
+    } else {
+      assert.equal(xr, "noindex, nofollow", `staging legacy proxy must send X-Robots-Tag noindex; got ${xr}`);
+    }
+  },
+);
 
 test("http is redirected to https", async () => {
   const res = await request(`http://${config.workerDomain}/`);
@@ -85,11 +111,19 @@ test(
   async (t) => {
     for (const [oldPath, newPath] of manifestEntries) {
       await t.test(`${oldPath} -> ${newPath}`, async () => {
-        const res = await request(`${baseUrl}${oldPath}?q=1`);
+        // Cache-busting query: the top-level legacy URLs ("/" and the series
+        // landing "/kriptografia") are cacheable, so right after a deploy the
+        // edge can still serve the pre-migration proxied response (a 200, or a
+        // WordPress trailing-slash redirect) under the stable "?q=1" cache key.
+        // A unique query forces a cache miss so we test the just-deployed Worker,
+        // not a stale entry. The query is preserved into the redirect, so we
+        // also assert it round-trips verbatim.
+        const query = `q=1&_cb=${Date.now().toString(36)}${Math.floor(Math.random() * 1e9).toString(36)}`;
+        const res = await request(`${baseUrl}${oldPath}?${query}`);
         assert.equal(res.status, 301, `expected 301 for ${oldPath}, got ${res.status}`);
         assert.equal(
           res.headers.get("location"),
-          `https://${config.redirectTargetHost}${newPath}?q=1`,
+          `https://${config.redirectTargetHost}${newPath}?${query}`,
         );
       });
     }

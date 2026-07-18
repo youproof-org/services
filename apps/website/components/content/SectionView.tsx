@@ -4,7 +4,7 @@ import ContentBlocks from './ContentBlocks'
 import styles from './section-view.module.scss'
 
 interface SectionViewProps {
-  name: string
+  slug: string               // localized in-page anchor id
   title: string
   body: ContentBlock[]
   label: string              // "n.k" e.g. "11.3"
@@ -13,9 +13,9 @@ interface SectionViewProps {
   refs?: RefMap
 }
 
-export default function SectionView({ name, title, body, label, embedIndices, figureIndices, refs }: SectionViewProps) {
+export default function SectionView({ slug, title, body, label, embedIndices, figureIndices, refs }: SectionViewProps) {
   return (
-    <section id={name} className={styles.section}>
+    <section id={slug} className={styles.section}>
       <h3 className={styles.heading}>
         <span className={styles['section-label']}>{label}</span>
         <InlineText text={title} />

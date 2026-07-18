@@ -1,43 +1,23 @@
-import SiteFooter from '@/components/layout/SiteFooter'
-import BookCard from '@/components/book/BookCard'
-import { getContentGraph } from '@/lib/content'
-import styles from './root-page.module.scss'
+import { DEFAULT_LOCALE } from '@/lib/i18n/config'
+import { buildLocalizedUrl } from '@/lib/i18n/url'
 
-export default function RootPage() {
-  const graph = getContentGraph()
-  const books = Array.from(graph.books.values())
+// Static root redirect `/` → `/{DEFAULT_LOCALE}`. In deployed environments a
+// Cloudflare zone redirect rule handles `/` at the edge (and is the seam for a
+// future geo/preference-aware worker); this statically-exported page is the
+// fallback for local dev and any non-Cloudflare serving of `out/`. No
+// Accept-Language / geo-IP logic — a single hardcoded default-locale redirect.
+export const dynamic = 'force-static'
 
+export default function RootRedirect() {
+  const target = buildLocalizedUrl(DEFAULT_LOCALE, 'home')
   return (
-    <div className={styles.shell}>
-      <main className={styles.main}>
-        <div className={styles.brand}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/youproof-logo.png"
-            alt="YouProof logo"
-            style={{ objectFit: 'contain' }}
-            loading="lazy"
-            width={80}
-            height={80}
-          />
-          <span className={styles['brand-name']}>
-            <span style={{ fontWeight: 300 }}>YOU</span>
-            <span style={{ fontWeight: 700 }}>PROOF</span>
-          </span>
-        </div>
-
-        <div className={styles.books}>
-          {books.map((book) => (
-            <BookCard
-              key={book.name}
-              name={book.name}
-              title={book.title}
-              href={`/books/${book.name}`}
-            />
-          ))}
-        </div>
-      </main>
-      <SiteFooter />
-    </div>
+    <>
+      <meta httpEquiv="refresh" content={`0; url=${target}`} />
+      <link rel="canonical" href={target} />
+      <script dangerouslySetInnerHTML={{ __html: `location.replace(${JSON.stringify(target)})` }} />
+      <p style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
+        Redirecting to <a href={target}>{target}</a>…
+      </p>
+    </>
   )
 }

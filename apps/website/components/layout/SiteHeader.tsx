@@ -1,53 +1,47 @@
 import Link from 'next/link'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
-import { faFacebookF } from '@fortawesome/free-brands-svg-icons'
 import Breadcrumb, { type BreadcrumbItem } from './Breadcrumb'
+import BrandLockup from './BrandLockup'
+import SiteNav from './SiteNav'
+import HeaderHeightProbe from './HeaderHeightProbe'
+import { DEFAULT_LOCALE } from '@/lib/i18n/config'
+import { buildLocalizedUrl } from '@/lib/i18n/url'
 import styles from './site-header.module.scss'
 
+export type HeaderMode = 'root' | 'inner' | 'minimal'
+
 interface SiteHeaderProps {
-  breadcrumbs: BreadcrumbItem[]
+  // 'root'    — homepage: lockup + nav + search, no breadcrumb row.
+  // 'inner'   — content pages: lockup + nav + search + breadcrumb row.
+  // 'minimal' — landing pages: brand lockup only (no nav/search/breadcrumb).
+  mode?: HeaderMode
+  breadcrumbs?: BreadcrumbItem[]
+  locale?: string
 }
 
-export default function SiteHeader({ breadcrumbs }: SiteHeaderProps) {
+export default function SiteHeader({ mode = 'inner', breadcrumbs, locale = DEFAULT_LOCALE }: SiteHeaderProps) {
+  const navLinks = [
+    { label: 'Cikkek', href: buildLocalizedUrl(locale, 'articles-index') },
+    { label: 'Hírek', href: buildLocalizedUrl(locale, 'newsletter-index') },
+  ]
   return (
     <header className={styles.header}>
-      <div className={styles.inner}>
-        <div className={styles['top-row']}>
-          <Link href="/" className={styles.brand}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/youproof-logo.png"
-              alt="YouProof logo"
-              style={{ objectFit: 'contain' }}
-              loading="lazy"
-              width={36}
-              height={36}
-            />
-            <span className={styles['brand-name']}>
-              <span style={{ fontWeight: 300 }}>YOU</span>
-              <span style={{ fontWeight: 700 }}>PROOF</span>
-            </span>
-          </Link>
-          <nav className={styles.menu}>
-            <button className={styles['menu-btn']} aria-label="Search">
-              <FontAwesomeIcon icon={faMagnifyingGlass} width={18} />
-            </button>
-            <a
-              href="https://www.facebook.com/youproof.hu"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles['menu-btn']}
-              aria-label="Facebook"
-            >
-              <FontAwesomeIcon icon={faFacebookF} width={12} />
-            </a>
-          </nav>
+      <HeaderHeightProbe />
+      <div className={styles.topRow}>
+        <Link href={buildLocalizedUrl(locale, 'home')} className={styles.brand} aria-label="youproof.org">
+          <BrandLockup
+            variant="horizontal"
+            showTagline
+            locale={locale}
+            className={styles.lockup}
+          />
+        </Link>
+        {mode !== 'minimal' && <SiteNav links={navLinks} />}
+      </div>
+      {mode === 'inner' && breadcrumbs && breadcrumbs.length > 0 && (
+        <div className={styles.breadcrumbRow}>
+          <Breadcrumb items={breadcrumbs} />
         </div>
-      </div>
-      <div className={styles['breadcrumb-row']}>
-        <Breadcrumb items={breadcrumbs} />
-      </div>
+      )}
     </header>
   )
 }

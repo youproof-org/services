@@ -22,6 +22,12 @@ export interface FigureBlock {
   alt?: string
   caption?: string
   size?: 'small' | 'medium' | 'large'
+  // Intrinsic pixel dimensions, resolved from the synced asset at build time
+  // (see resolveFigurePaths + the .generated/figure-dimensions.json sidecar).
+  // Rendered as <img width/height> so the browser reserves layout space and
+  // lazy-loaded figures can't shift the page after an anchor jump.
+  width?: number
+  height?: number
 }
 
 export interface EmbedTarget {
@@ -246,8 +252,27 @@ export interface ThumbnailImage {
   alt: string
 }
 
+// Optional crawler/social metadata, independent of on-page display text. All
+// fields optional with a fallback chain (see lib/i18n/metadata.ts buildPageMeta):
+//   title       → meta.title,             else display title
+//   description → meta.description,        else display excerpt
+//   og:title    → meta.openGraph.title,    else resolved title
+//   og:desc     → meta.openGraph.description, else resolved description
+// The root field is `meta` (generic) rather than `seo`; `open-graph` is nested
+// so future channels (e.g. `meta.twitter`) slot in as siblings.
+export interface MetaInfo {
+  title?: string
+  description?: string
+  openGraph?: {
+    title?: string
+    description?: string
+  }
+}
+
 export interface SectionNode {
-  name: string
+  name: string                    // language-independent internal id (cross-refs)
+  slug: string                    // localized in-page anchor id (not a URL segment)
+  locale: string
   title: string
   chapter: ChapterNode            // parent reference
   body: ContentBlock[]
@@ -255,9 +280,15 @@ export interface SectionNode {
 }
 
 export interface ChapterNode {
-  name: string
+  name: string                    // language-independent internal id (cross-refs)
+  slug: string                    // localized URL segment
+  locale: string
   title: string
   part: PartNode                  // parent reference
+  publishedAt?: string            // kebab: published-at; canonical 'YYYY-MM-DD HH:MM:SS' UTC, if published
+  published: boolean              // derived: publishedAt != null; gates real vs. stub page
+  legacyPath?: string             // old youproof.hu path, if any (kebab: legacy-path)
+  excerpt?: string                // short card copy for ContentRow listings (not derived from abstract)
   abstract: ContentBlock[]
   prerequisiteWarning?: ContentBlock[]
   prologue: ContentBlock[]
@@ -265,6 +296,7 @@ export interface ChapterNode {
   epilogue: ContentBlock[]
   references: RefMap
   thumbnail?: ThumbnailImage
+  meta?: MetaInfo                  // optional crawler/social metadata (kebab: meta)
 }
 
 export interface PartNode {
@@ -274,11 +306,62 @@ export interface PartNode {
   chapters: ChapterNode[]
 }
 
+// A simple `{ items: string[] }` wrapper — object-wrapped (not a bare string[])
+// so it can grow future sub-fields without a breaking rename. Display-only:
+// inline cross-references in these items are intentionally out of scope for now.
+export interface ItemList {
+  items: string[]
+}
+
 export interface BookNode {
-  name: string
+  name: string                    // language-independent internal id (cross-refs)
+  slug: string                    // localized URL segment
+  locale: string
   title: string
   parts: PartNode[]
-  logo?: ThumbnailImage
+  thumbnail?: ThumbnailImage      // series cover shown on book cards
+  publishedAt?: string            // kebab: published-at; canonical 'YYYY-MM-DD HH:MM:SS' UTC, if published
+  published: boolean              // derived: publishedAt != null
+  legacyPath?: string             // old youproof.hu series path, if any (kebab: legacy-path)
+  excerpt?: string                // short card copy / meta-description fallback (books have no abstract-derived excerpt)
+  abstract: ContentBlock[]        // "Kivonat" prose
+  teaser?: ItemList               // curiosity-sparking hook questions (questions box)
+  bibliography?: ItemList         // "Felhasznált irodalom" — display-only list of cited works
+  meta?: MetaInfo                 // optional crawler/social metadata (kebab: meta)
+}
+
+// ---------------------------------------------------------------------------
+// Standalone content nodes (article, newsletter, page, landing)
+// "Same structure as a chapter minus the book relationship." Inline
+// cross-references + entity embeds are out of scope for now, so no RefMap is
+// carried and these render with refs undefined.
+// ---------------------------------------------------------------------------
+
+export type StandaloneKind = 'article' | 'newsletter' | 'page' | 'landing'
+
+export interface StandaloneSection {
+  name: string
+  slug: string                    // localized in-page anchor id
+  title: string
+  body: ContentBlock[]
+}
+
+export interface StandaloneNode {
+  kind: StandaloneKind
+  name: string                    // language-independent internal id (kebab)
+  slug: string                    // localized URL segment
+  locale: string
+  title: string
+  publishedAt?: string            // kebab: published-at; canonical 'YYYY-MM-DD HH:MM:SS' UTC, if published
+  published: boolean              // derived: publishedAt != null
+  legacyPath?: string             // old youproof.hu path, if any (kebab: legacy-path)
+  excerpt?: string                // short card copy for ContentRow listings (article/newsletter)
+  abstract: ContentBlock[]
+  prologue: ContentBlock[]
+  sections: StandaloneSection[]
+  epilogue: ContentBlock[]
+  thumbnail?: ThumbnailImage
+  meta?: MetaInfo                 // optional crawler/social metadata (kebab: meta)
 }
 
 // ---------------------------------------------------------------------------
@@ -301,4 +384,9 @@ export interface ContentGraph {
   theorems:    Map<string, TheoremNode>
   proofs:      Map<string, ProofNode>
   remarks:     Map<string, RemarkNode>
+  // Standalone content, keyed by "/{kind}s/{slug}" (e.g. "/articles/foo").
+  articles:    Map<string, StandaloneNode>
+  newsletters: Map<string, StandaloneNode>
+  pages:       Map<string, StandaloneNode>
+  landings:    Map<string, StandaloneNode>
 }

@@ -1,0 +1,78 @@
+# Production-promotion PR gate (services) — branch-protection RULE 2.
+#
+# Runs on PRs targeting stable/production. A merge to stable/production is only
+# allowed if a PASSING staging test artifact exists for the pair:
+#   services_sha = the stable/staging tip being promoted (this PR's head)
+#   content_sha  = the exact `draft` commit that stable/released was last
+#                  promoted FROM.
+#
+# How we get content_sha WITHOUT any metadata file: promotions use merge commits
+# only (see infra/github/branch-protection.md), so the content repo's
+# stable/released tip is a merge commit whose SECOND parent (parents[1]) is the
+# draft commit that was promoted. That is exactly "the draft commit stable/released
+# was last promoted from". We read it via the GitHub API.
+#
+# The gate passes iff reports/{services_sha}__{content_sha}.json exists in
+# youproof-staging-test-artifacts AND its overall == "pass". Otherwise it FAILS
+# (conservative: a missing artifact is the intended block).
+#
+# Make this a REQUIRED status check on stable/production (see the runbook).
+name: pr-gate
+
+on:
+  pull_request:
+    branches:
+      - stable/production
+
+permissions:
+  contents: read
+
+jobs:
+  artifact-gate:
+    runs-on: ubuntu-latest
+    env:
+      ARTIFACTS_BUCKET: youproof-staging-test-artifacts
+      R2_ENDPOINT: https://${{ vars.CLOUDFLARE_ACCOUNT_ID }}.eu.r2.cloudflarestorage.com
+      # Read-only R2 creds for the staging test-artifacts bucket. Reuses the
+      # existing state creds (repo-scoped); a dedicated read-only key is fine too.
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_STATE_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_STATE_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: auto
+      # Fine-grained PAT, Contents:read on youproof-org/content — reads the
+      # stable/released merge commit's second parent.
+      GH_TOKEN: ${{ secrets.CONTENT_REPO_TOKEN }}
+      SERVICES_SHA: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - name: Resolve required (services_sha, content_sha) pair
+        id: pair
+        run: |
+          set -euo pipefail
+          # content_sha = SECOND parent of the content repo's stable/released tip
+          # merge commit (the promoted draft commit).
+          content_sha=$(gh api repos/youproof-org/content/commits/stable/released \
+            --jq '.parents[1].sha // ""')
+          if [ -z "$content_sha" ]; then
+            echo "::error title=No promoted draft commit::content stable/released tip has no second parent — it must be a merge commit (merge-commit-only invariant). Cannot resolve the required pair."
+            exit 1
+          fi
+          echo "Required pair: services=${SERVICES_SHA} content=${content_sha}"
+          echo "content_sha=${content_sha}" >> "$GITHUB_OUTPUT"
+
+      - name: Look up passing staging artifact for the pair
+        env:
+          CONTENT_SHA: ${{ steps.pair.outputs.content_sha }}
+        run: |
+          set -euo pipefail
+          KEY="reports/${SERVICES_SHA}__${CONTENT_SHA}.json"
+          out="$RUNNER_TEMP/report.json"
+          if ! aws s3 cp "s3://${ARTIFACTS_BUCKET}/${KEY}" "$out" \
+                --endpoint-url "${R2_ENDPOINT}" >/dev/null 2>&1; then
+            echo "::error title=No staging artifact::No test artifact at ${ARTIFACTS_BUCKET}/${KEY}. This (services, content) pair was never validated on staging — blocking the production promotion."
+            exit 1
+          fi
+          overall=$(jq -r '.overall // ""' "$out")
+          if [ "$overall" != "pass" ]; then
+            echo "::error title=Staging gate not passing::${KEY} has overall='${overall}' (expected 'pass'). Blocking the production promotion."
+            exit 1
+          fi
+          echo "OK: ${KEY} exists and overall='pass' — production promotion allowed."

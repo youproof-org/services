@@ -1,4 +1,5 @@
 @use 'variables' as *;
+@use 'mixins' as *;
 
 .shell {
   display: flex;
@@ -8,29 +9,204 @@
 
 .main {
   flex: 1;
+  box-sizing: border-box;
+  width: 100%;
+  // Full width (no max-width + auto-margin) so the hero's background can span
+  // edge-to-edge — a narrow, centred main would clip it at the side margins.
+  // The readable-width cap lives on the content sections instead (see .section),
+  // which have no background, so centring them is harmless. The hero stays
+  // full-bleed.
+  padding-bottom: 4rem;
+}
+
+/* Hero — full viewport height, content vertically centered. No vertical padding
+   (centering handles it); horizontal padding keeps a gutter on narrow screens. */
+.hero {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 4rem $pad-x;
-  gap: 3rem;
+  text-align: center;
+  // Fill the viewport below the in-flow sticky header. --header-height is
+  // published by HeaderHeightProbe; the 4.5rem fallback matches the typical
+  // header height to avoid a load-time flash before hydration.
+  min-height: calc(100vh - var(--header-height, 4.5rem));
+  padding-inline: 1rem;
+  overflow: hidden;
 }
 
-.brand {
+.heroBg {
+  // "Map"-like hero background art. Sits behind the branding (content is z-index 1).
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: url('/assets/hero-background-light.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.heroLockup {
+  position: relative;
+  z-index: 1;
+  font-size: 1.1rem;
+
+  @include tablet {
+    font-size: 1.5rem;
+  }
+}
+
+.heroTagline {
+  position: relative;
+  z-index: 1;
+  margin: 2rem 0 0;
+  max-width: 34rem;
+  font-size: 1.15rem;
+  font-weight: $font-normal;
+  font-style: italic;
+  color: $gray-600;
+
+  @include tablet {
+    font-size: 1.4rem;
+  }
+}
+
+/* Scroll-down affordance (label above a bouncing chevron). In normal flow by
+   default (e.g. below the book grid); the hero pins it to its bottom. */
+.scrollDown {
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: 0.4rem;
+  font-size: 1.4rem;
+  color: $gray-500;
+  text-decoration: none;
+  animation: scrollBounce 1.8s ease-in-out infinite;
+
+  &:hover {
+    color: $black;
+  }
 }
 
-.brand-name {
-  font-size: 1.875rem;
-  letter-spacing: 0.2em;
+/* In the hero, the cue sits directly below the motto in normal flow (the hero
+   is a centered flex column), with a gap above it. Not pinned to the bottom. */
+.hero .scrollDown {
+  margin-top: 2.5rem;
 }
 
-.books {
+.scrollLabel {
+  font-size: 0.72rem;
+  font-weight: $font-bold;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+@keyframes scrollBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scrollDown {
+    animation: none;
+  }
+}
+
+/* Könyvek — a normal (not full-height) centered section, with more spacing
+   above than below. */
+.booksSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 6rem auto 5rem;
+  padding-inline: 2.5rem;
+}
+
+/* The section right after the books block keeps the tighter gap (its 6rem top
+   margin would otherwise win the margin-collapse). */
+.booksSection + .section {
+  margin-top: 5rem;
+}
+
+/* Sections — capped to the readable column width (matching the book-index /
+   standalone-index content), centred, with a horizontal gutter from padding. */
+.section {
+  max-width: $max-width-narrow;
+  margin: 5rem auto 0;
+  padding-inline: 2.5rem;
+
+  @include tablet {
+    margin-top: 6rem;
+  }
+
+  @include wide {
+    max-width: 52rem;
+  }
+}
+
+/* The first section directly under the full-height hero needs no top margin. */
+.hero + .section {
+  margin-top: 0;
+}
+
+/* Könyvek — centered, wrapping row of book items (card + CTA). */
+.bookGrid {
   display: flex;
   flex-wrap: wrap;
-  gap: 1.5rem;
   justify-content: center;
+  gap: 2.5rem;
+  width: 100%;
+  max-width: 52rem;
+}
+
+
+/* Article rows */
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Hírek list */
+.newsList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.newsItem {
+  border-bottom: 1px solid $gray-200;
+
+  &:first-child {
+    border-top: 1px solid $gray-200;
+  }
+}
+
+.newsLink {
+  display: flex;
+  gap: 1rem;
+  align-items: baseline;
+  padding: 0.9rem 0.25rem;
+  text-decoration: none;
+  color: inherit;
+
+  &:hover .newsTitle {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+
+.newsDate {
+  flex: 0 0 auto;
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  color: $gray-500;
+  min-width: 7rem;
+}
+
+.newsTitle {
+  font-size: 1.05rem;
 }

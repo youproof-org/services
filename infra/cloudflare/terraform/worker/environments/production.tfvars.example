@@ -17,6 +17,10 @@ legacy_proxy_host    = "legacy.youproof.hu"
 legacy_guard_value   = "REPLACE_WITH_GUARD_VALUE"
 rackhost_server_ip   = "91.227.138.40"
 
+# false: keep letting search engines index the still-unmigrated legacy content
+#        proxied through youproof.hu (no X-Robots-Tag). MUST be explicit on prod.
+seo_noindex = false
+
 # false: youproof.hu stays on legacy WordPress (gray-cloud to Rackhost) even
 #        after the NS switch — apply this first to keep production live.
 # true:  cut youproof.hu over to the Worker (+ route + www redirect).

@@ -186,12 +186,15 @@ function parseNormalized(
             <a href={url} target="_blank" rel="noopener noreferrer" className="ref-link">{text}</a>
           ))
         } else if (ref.target.type === 'chapter') {
-          const href = `/books/${ref.target.book}/chapters/${ref.target.name}`
+          // href is resolved at graph-build time via buildLocalizedUrl.
+          const href = ref.href ?? '#'
           nodes.push(formatSegmentedDisplay(display, counter, (text: React.ReactNode[]) =>
             <a href={href} target="_blank" className="ref-link">{text}</a>
           ))
         } else if (ref.target.type === 'section') {
-          const href = `/books/${ref.target.book}/chapters/${ref.target.chapter}#${ref.target.name}`
+          // href (localized chapter URL + section-slug anchor) is resolved at
+          // graph-build time via buildLocalizedUrl.
+          const href = ref.href ?? '#'
           nodes.push(formatSegmentedDisplay(display, counter, (text: React.ReactNode[]) =>
             <a href={href} target="_blank" className="ref-link">{text}</a>
           ))

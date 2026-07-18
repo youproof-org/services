@@ -1,13 +1,14 @@
 {
   "name": "@youproof.org/website",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "scripts": {
     "postinstall": "node scripts/check-latex.mjs",
-    "predev": "node scripts/sync-figures.mjs",
+    "predev": "node scripts/sync-figures.mjs && node scripts/gen-og-images.mjs && node scripts/gen-content-lastmod.mjs",
     "dev": "next dev",
-    "prebuild": "node scripts/sync-figures.mjs",
+    "prebuild": "node scripts/sync-figures.mjs && node scripts/gen-og-images.mjs && node scripts/gen-content-lastmod.mjs",
     "build": "next build",
+    "postbuild": "node scripts/set-html-lang.mjs && node scripts/check-build-version.mjs",
     "start": "next start",
     "lint": "next lint"
   },
@@ -19,8 +20,10 @@
     "js-yaml": "catalog:",
     "katex": "catalog:",
     "next": "catalog:",
+    "opentype.js": "catalog:",
     "react": "catalog:",
-    "react-dom": "catalog:"
+    "react-dom": "catalog:",
+    "sharp": "catalog:"
   },
   "devDependencies": {
     "@types/js-yaml": "catalog:",

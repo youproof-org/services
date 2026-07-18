@@ -1,38 +1,88 @@
-@use 'variables' as *;
-
-.link {
-  display: block;
-  text-decoration: none;
-  color: inherit;
-}
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
 
 .card {
-  border: 1px solid $black;
-  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  padding: 2rem;
-  max-width: $max-width-card;
-  transition: box-shadow 0.2s;
+  @include card-frame;
+  display: flex;
+  flex-direction: column;
+  width: 24rem;
+  max-width: 100%;
+}
 
-  &:hover {
-    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+.thumb {
+  aspect-ratio: 4 / 3;
+  background: $gray-100;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 }
 
+.body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 1.1rem 1.5rem;
+}
+
 .label {
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   font-weight: $font-light;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  margin-bottom: 0.5rem;
+  color: $gray-500;
+  margin: 0 0 0.5rem;
 }
 
 .title {
-  font-size: 1.25rem;
+  font-size: 1.5rem;
+  font-weight: $font-bold;
+  margin: 0;
+  line-height: 1.3;
 }
 
-.subtitle {
-  font-size: 0.875rem;
+.meta {
+  font-size: 1rem;
   font-weight: $font-light;
-  margin-top: 0.5rem;
-  color: $gray-500;
+  margin: 0.6rem 0 0;
+  color: $gray-600;
+}
+
+/* "Coming soon in print" — a full-width strip across the top of the card
+   (above the thumbnail), so it reads as a card-level announcement without
+   crowding the title or cover art. */
+.printBadge {
+  margin: 0;
+  padding: 0.45rem 0.75rem;
+  background: $gray-500;
+  color: $white;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: $font-normal;
+  letter-spacing: 0.02em;
+}
+
+/* CTA lives inside the box, pushed to the bottom (enlarges the box). Bordered
+   like the box but without the drop shadow. */
+.readButton {
+  align-self: center;
+  margin-top: 2.25rem;
+  padding: 0.75rem 2rem;
+  border: 1px solid $black;
+  background: $black;
+  color: $white;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: $font-bold;
+  letter-spacing: 0.02em;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: $white;
+    color: $black;
+  }
 }

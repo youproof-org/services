@@ -2,11 +2,13 @@ import 'server-only'
 import fs from 'fs'
 import path from 'path'
 import yaml from 'js-yaml'
+import { DEFAULT_LOCALE } from '@/lib/i18n/config'
 import type {
   ContentBlock,
   RefMap,
   TermMap,
   ThumbnailImage,
+  MetaInfo,
   EntityLabels,
   DefinitionNode,
   TheoremNode,
@@ -112,9 +114,37 @@ function toStringArray(raw: unknown): string[] {
   return raw.filter((x) => typeof x === 'string') as string[]
 }
 
+// Localization fields. `locale` defaults to the default locale if a file predates
+// the migration; `slug` falls back to a lowercased `name` (its pre-split value).
+function readLocale(raw: Record<string, unknown>): string {
+  return typeof raw.locale === 'string' && raw.locale.trim() !== '' ? raw.locale.trim() : DEFAULT_LOCALE
+}
+
+function readSlug(raw: Record<string, unknown>, name: string): string {
+  return typeof raw.slug === 'string' && raw.slug.trim() !== '' ? raw.slug.trim() : name.toLowerCase()
+}
+
 // ---------------------------------------------------------------------------
 // Resolve figure src paths in content blocks
 // ---------------------------------------------------------------------------
+
+// Intrinsic figure dimensions ({ "/content/.../foo.svg": [width, height] }),
+// produced by the prebuild `sync-figures.mjs` step. Loaded once, lazily. Missing
+// (e.g. figures weren't synced) → no dimensions, same as before. Mirrors the
+// sitemap's lastmod-map pattern (app/sitemap.ts).
+let figureDimsCache: Record<string, [number, number]> | undefined
+function figureDims(): Record<string, [number, number]> {
+  if (figureDimsCache === undefined) {
+    try {
+      figureDimsCache = JSON.parse(
+        fs.readFileSync(path.join(process.cwd(), '.generated', 'figure-dimensions.json'), 'utf8')
+      ) as Record<string, [number, number]>
+    } catch {
+      figureDimsCache = {}
+    }
+  }
+  return figureDimsCache ?? {}
+}
 
 export function resolveFigurePaths(
   blocks: ContentBlock[],
@@ -130,7 +160,11 @@ export function resolveFigurePaths(
         )
         if (match) src = match
       }
-      return { ...block, src: `${figureUrlPrefix}/${src}` }
+      const resolvedSrc = `${figureUrlPrefix}/${src}`
+      const dims = figureDims()[resolvedSrc]
+      return dims
+        ? { ...block, src: resolvedSrc, width: dims[0], height: dims[1] }
+        : { ...block, src: resolvedSrc }
     }
     if (block.type === 'subsection') {
       return { ...block, blocks: resolveFigurePaths(block.blocks, figureUrlPrefix, figuresDir) }
@@ -247,19 +281,88 @@ export function loadSection(
   filePath: string,
   figureUrlPrefix: string,
   figuresDir?: string
-): { name: string; title: string; body: ContentBlock[]; references: RefMap } {
+): { name: string; slug: string; locale: string; title: string; body: ContentBlock[]; references: RefMap } {
   const raw = readYaml(filePath)
+  const name = raw.name as string
   return {
-    name: raw.name as string,
+    name,
+    slug: readSlug(raw, name),
+    locale: readLocale(raw),
     title: raw.title as string,
     body: resolveBlocksFigures(toBlocks(raw.body), figureUrlPrefix, figuresDir),
     references: toRefMap(raw.references),
   }
 }
 
+// `published-at` in the model: the canonical string `'YYYY-MM-DD HH:MM:SS'`,
+// always interpreted as **UTC**. Every content YAML MUST store it as a QUOTED
+// string in exactly this form. The loader is STRICT with no fallback: a present
+// value that isn't a canonical string throws — in particular an UNQUOTED
+// timestamp, which js-yaml parses into a `Date`, is rejected (not silently
+// accepted), forcing the file to be fixed. A missing value ⇒ unpublished (not an
+// error). Treat the string as UTC anywhere it becomes a Date — never
+// `new Date(publishedAt)`, since a timezone-less string is parsed as LOCAL time.
+// A content file that violates a required format. Thrown by the strict field
+// validators; the graph builder re-throws it past its per-item resilience
+// try/catch (which otherwise skips a broken file), so a format violation is a
+// hard, fatal build error rather than a silently-skipped item.
+export class ContentFormatError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'ContentFormatError'
+  }
+}
+
+const PUBLISHED_AT_RE = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/
+
+function toPublishedAt(raw: unknown, filePath: string): string | undefined {
+  if (raw === undefined || raw === null) return undefined // legitimately unpublished
+  if (typeof raw !== 'string' || !PUBLISHED_AT_RE.test(raw.trim())) {
+    throw new ContentFormatError(
+      `${filePath}: 'published-at' must be a quoted 'YYYY-MM-DD HH:MM:SS' (UTC) string; ` +
+        `got ${JSON.stringify(raw)}. Quote the value in the YAML.`,
+    )
+  }
+  return raw.trim()
+}
+
+function toThumbnail(raw: unknown): ThumbnailImage | undefined {
+  if (!raw || typeof raw !== 'object') return undefined
+  const t = raw as Record<string, unknown>
+  return { src: t.src as string, alt: t.alt as string }
+}
+
+// Optional `meta:` block → MetaInfo. `open-graph` (kebab) nests into `openGraph`.
+// Every field is optional; returns undefined when absent so the fallback chain
+// (buildPageMeta) applies. A string helper keeps empty/non-string values out.
+function toMeta(raw: unknown): MetaInfo | undefined {
+  if (!raw || typeof raw !== 'object') return undefined
+  const m = raw as Record<string, unknown>
+  const s = (v: unknown): string | undefined =>
+    typeof v === 'string' && v.trim() !== '' ? v.trim() : undefined
+  const og = (m['open-graph'] && typeof m['open-graph'] === 'object')
+    ? (m['open-graph'] as Record<string, unknown>)
+    : undefined
+  const openGraph = og
+    ? { title: s(og.title), description: s(og.description) }
+    : undefined
+  const meta: MetaInfo = {
+    title: s(m.title),
+    description: s(m.description),
+    ...(openGraph && (openGraph.title || openGraph.description) ? { openGraph } : {}),
+  }
+  // Drop the block entirely if nothing usable was set.
+  return meta.title || meta.description || meta.openGraph ? meta : undefined
+}
+
 export interface RawChapter {
   name: string
+  slug: string
+  locale: string
   title: string
+  publishedAt?: string
+  legacyPath?: string
+  excerpt?: string
   sectionNames: string[]
   abstract: ContentBlock[]
   prerequisiteWarning?: ContentBlock[]
@@ -267,13 +370,20 @@ export interface RawChapter {
   epilogue: ContentBlock[]
   references: RefMap
   thumbnail?: ThumbnailImage
+  meta?: MetaInfo
 }
 
 export function loadChapter(filePath: string): RawChapter {
   const raw = readYaml(filePath)
+  const name = raw.name as string
   return {
-    name: raw.name as string,
+    name,
+    slug: readSlug(raw, name),
+    locale: readLocale(raw),
     title: raw.title as string,
+    publishedAt: toPublishedAt(raw['published-at'], filePath),
+    legacyPath: typeof raw['legacy-path'] === 'string' ? (raw['legacy-path'] as string) : undefined,
+    excerpt: typeof raw.excerpt === 'string' ? (raw.excerpt as string) : undefined,
     sectionNames: toStringArray(raw.sections),
     abstract: toBlocks(raw.abstract),
     prerequisiteWarning: raw['prerequisite-warning']
@@ -282,9 +392,8 @@ export function loadChapter(filePath: string): RawChapter {
     prologue: toBlocks(raw.prologue),
     epilogue: toBlocks(raw.epilogue),
     references: toRefMap(raw.references),
-    thumbnail: raw.thumbnail
-      ? { src: (raw.thumbnail as Record<string, unknown>).src as string, alt: (raw.thumbnail as Record<string, unknown>).alt as string }
-      : undefined,
+    thumbnail: toThumbnail(raw.thumbnail),
+    meta: toMeta(raw.meta),
   }
 }
 
@@ -305,9 +414,18 @@ export function loadPart(filePath: string): RawPart {
 
 export interface RawBook {
   name: string
+  slug: string
+  locale: string
   title: string
   partNames: string[]
-  logo?: ThumbnailImage
+  thumbnail?: ThumbnailImage
+  publishedAt?: string
+  legacyPath?: string
+  excerpt?: string
+  abstract: ContentBlock[]
+  teaser?: { items: string[] }
+  bibliography?: { items: string[] }
+  meta?: MetaInfo
 }
 
 export function loadEpisodes(filePath: string): string[] {
@@ -315,14 +433,75 @@ export function loadEpisodes(filePath: string): string[] {
   return toStringArray(raw as unknown as unknown[])
 }
 
+// A `{ items: [...] }` object field, tolerant of a bare list for convenience.
+function toItemList(raw: unknown): { items: string[] } | undefined {
+  if (Array.isArray(raw)) return { items: toStringArray(raw) }
+  if (raw && typeof raw === 'object') {
+    const items = toStringArray((raw as Record<string, unknown>).items)
+    if (items.length > 0) return { items }
+  }
+  return undefined
+}
+
 export function loadBook(filePath: string): RawBook {
   const raw = readYaml(filePath)
+  const name = raw.name as string
   return {
-    name: raw.name as string,
+    name,
+    slug: readSlug(raw, name),
+    locale: readLocale(raw),
     title: raw.title as string,
     partNames: toStringArray(raw.parts),
-    logo: raw.logo
-      ? { src: (raw.logo as Record<string, unknown>).src as string, alt: (raw.logo as Record<string, unknown>).alt as string }
-      : undefined,
+    thumbnail: toThumbnail(raw.thumbnail),
+    publishedAt: toPublishedAt(raw['published-at'], filePath),
+    legacyPath: typeof raw['legacy-path'] === 'string' ? (raw['legacy-path'] as string) : undefined,
+    excerpt: typeof raw.excerpt === 'string' ? (raw.excerpt as string) : undefined,
+    abstract: toBlocks(raw.abstract),
+    teaser: toItemList(raw.teaser),
+    bibliography: toItemList(raw.bibliography),
+    meta: toMeta(raw.meta),
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Standalone content loader (article, newsletter, page, landing)
+// ---------------------------------------------------------------------------
+
+export interface RawStandalone {
+  name: string
+  slug: string
+  locale: string
+  title: string
+  publishedAt?: string
+  legacyPath?: string
+  excerpt?: string
+  sectionNames: string[]
+  abstract: ContentBlock[]
+  prologue: ContentBlock[]
+  epilogue: ContentBlock[]
+  thumbnail?: ThumbnailImage
+  meta?: MetaInfo
+}
+
+// Structure mirrors a chapter (minus book relationship / prerequisite-warning).
+// Inline cross-references are out of scope, so `references` is intentionally
+// not read here.
+export function loadStandalone(filePath: string): RawStandalone {
+  const raw = readYaml(filePath)
+  const name = raw.name as string
+  return {
+    name,
+    slug: readSlug(raw, name),
+    locale: readLocale(raw),
+    title: raw.title as string,
+    publishedAt: toPublishedAt(raw['published-at'], filePath),
+    legacyPath: typeof raw['legacy-path'] === 'string' ? (raw['legacy-path'] as string) : undefined,
+    excerpt: typeof raw.excerpt === 'string' ? (raw.excerpt as string) : undefined,
+    sectionNames: toStringArray(raw.sections),
+    abstract: toBlocks(raw.abstract),
+    prologue: toBlocks(raw.prologue),
+    epilogue: toBlocks(raw.epilogue),
+    thumbnail: toThumbnail(raw.thumbnail),
+    meta: toMeta(raw.meta),
   }
 }
