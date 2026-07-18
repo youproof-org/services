@@ -33,10 +33,15 @@ jobs:
     env:
       ARTIFACTS_BUCKET: youproof-staging-test-artifacts
       R2_ENDPOINT: https://${{ vars.CLOUDFLARE_ACCOUNT_ID }}.eu.r2.cloudflarestorage.com
-      # Read-only R2 creds for the staging test-artifacts bucket. Reuses the
-      # existing state creds (repo-scoped); a dedicated read-only key is fine too.
-      AWS_ACCESS_KEY_ID: ${{ secrets.R2_STATE_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_STATE_SECRET_ACCESS_KEY }}
+      # Read-only R2 creds for the staging test-artifacts bucket. This gate runs
+      # on `pull_request` WITHOUT an `environment:` binding, so it can only see
+      # repo-level (or org-level) secrets — NOT environment-scoped ones; these
+      # must be REPO-LEVEL secrets in the services repo. The old R2_STATE_* creds
+      # are scoped to the youproof-tfstate bucket ONLY and cannot read the
+      # test-artifacts bucket, so use the dedicated read-only key (mirrors the
+      # content repo's pr-gate.yml).
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_TEST_ARTIFACTS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_TEST_ARTIFACTS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: auto
       # Fine-grained PAT, Contents:read on youproof-org/content — reads the
       # stable/released merge commit's second parent.
