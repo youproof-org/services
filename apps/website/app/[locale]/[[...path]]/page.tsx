@@ -290,7 +290,7 @@ export default async function LocalizedRoute({ params }: RouteProps) {
       const { book } = resolved
       const episode = getBookRomanIndex(book, graph)
       return (
-        <>
+        <div className="book-shell">
           <SiteHeader
             locale={locale}
             breadcrumbs={[
@@ -309,7 +309,8 @@ export default async function LocalizedRoute({ params }: RouteProps) {
           <main className="page-content">
             <BookIndex book={book} episode={episode} />
           </main>
-        </>
+          <SiteFooter locale={locale} />
+        </div>
       )
     }
 
@@ -324,28 +325,32 @@ export default async function LocalizedRoute({ params }: RouteProps) {
 
       if (!chapter.published && isDeployedEnv) {
         return (
-          <>
+          <div className="book-shell">
             <SiteHeader breadcrumbs={breadcrumbs} locale={locale} />
             <main className="stub-main">
               {chapter.legacyPath ? <NotMigratedStub legacyPath={chapter.legacyPath} /> : <UnavailableStub />}
             </main>
-          </>
+            <SiteFooter locale={locale} />
+          </div>
         )
       }
 
       return (
-        <>
+        <div className="book-shell">
           <SiteHeader breadcrumbs={breadcrumbs} locale={locale} />
-          {chapter.thumbnail && (
+          {chapter.thumbnail ? (
             <div className={styles.thumbnail}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={chapter.thumbnail.src} alt={chapter.thumbnail.alt} style={{ objectFit: 'cover' }} loading="lazy" width="100%" height="100%" />
             </div>
+          ) : (
+            <div className="hero-placeholder" aria-hidden="true" />
           )}
           <main className="page-content">
             <ChapterPage bookName={book.name} chapterName={chapter.name} />
           </main>
-        </>
+          <SiteFooter locale={locale} />
+        </div>
       )
     }
 
