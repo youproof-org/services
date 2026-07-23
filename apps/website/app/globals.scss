@@ -23,6 +23,14 @@ body {
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
   margin: 0;
+  // Promote <body> to its own GPU compositing layer. Without this, Chromium
+  // rasterizes the scrolling contents on the root scroller and reuses stale
+  // cached tiles across soft (client-side) navigations — leaving the previous
+  // page's pixels painted as "ghost text" (most visible between two long
+  // chapters) until a resize/zoom forces a global re-raster. Giving <body> its
+  // own layer makes content changes invalidate it correctly on every
+  // navigation, so the stale-tile reuse can't occur. Static, no per-nav JS.
+  transform: translateZ(0);
 }
 
 /* KaTeX inline math: prevent extra vertical spacing */
