@@ -9,7 +9,7 @@
     "generate-buildinfo": "node scripts/gen-buildinfo.mjs",
     "typecheck": "tsc --noEmit",
     "build": "node build.mjs",
-    "test": "node --test test/*.test.mjs",
+    "test": "node --import tsx --test test/*.test.mjs",
     "//db": "D1 schema is applied with wrangler (see docs/newsletter.md). Terraform creates the database; wrangler only applies migrations and runs local dev.",
     "migrate:local": "wrangler d1 migrations apply youproof-newsletter --local",
     "dev": "wrangler dev"
@@ -17,6 +17,7 @@
   "devDependencies": {
     "@cloudflare/workers-types": "catalog:",
     "esbuild": "catalog:",
+    "tsx": "catalog:",
     "typescript": "catalog:",
     "wrangler": "catalog:"
   }

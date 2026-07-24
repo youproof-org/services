@@ -1,18 +1,47 @@
-import { json } from "../lib/http";
+import { confirmSubscription, getSubscriptionById } from "../lib/db";
+import { redirect } from "../lib/http";
+import { homePath, siteUrl } from "../lib/urls";
+import { verifyToken } from "../lib/tokens";
 import type { Env } from "../types";
 
 /**
  * GET /api/v1/newsletter/subscriptions/{id}/confirm?token=…
  *
- * Phase 2 will: verify the confirm token, mark the subscription confirmed, sync
- * the contact into the Brevo list, then 302-redirect back to the originating
- * page with `?newsletter_confirmed=<formInstanceId>&sid=<id>`.
+ * Verify the confirm token, mark the subscription confirmed (idempotent), then
+ * 302 back to the originating page so the frontend can scroll to the exact form
+ * instance and show the confirmed state in place. Invalid/unknown → redirect to
+ * the homepage with an error marker (we can't know the originating page).
  */
 export async function handleConfirm(
   _request: Request,
-  _env: Env,
-  _url: URL,
-  _id: string,
+  env: Env,
+  url: URL,
+  id: string,
 ): Promise<Response> {
-  return json({ code: "not_implemented" }, 501);
+  const token = url.searchParams.get("token");
+  const sub = await getSubscriptionById(env.DB, id);
+
+  if (!sub || !verifyToken(token, sub.confirm_token)) {
+    return redirect(siteUrl(env, homePath(env), { newsletter_confirmed: "invalid" }));
+  }
+
+  if (sub.status === "pending") {
+    const now = new Date().toISOString();
+    await confirmSubscription(env.DB, id, now);
+    // TODO(phase 3): upsert the contact into the Brevo list (updateEnabled,
+    // ext_id=id, listIds) so it's eligible for future campaign sends.
+  }
+
+  // Blocked/unsubscribed rows should not resurrect via a stale confirm link.
+  if (sub.status === "blocked" || sub.status === "unsubscribed") {
+    return redirect(siteUrl(env, homePath(env, sub.locale), { newsletter_confirmed: "invalid" }));
+  }
+
+  const landing = sub.source_page ?? homePath(env, sub.locale);
+  return redirect(
+    siteUrl(env, landing, {
+      newsletter_confirmed: sub.source_form_instance ?? "1",
+      sid: sub.id,
+    }),
+  );
 }
