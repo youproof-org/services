@@ -1,0 +1,25 @@
+{
+  // Wrangler config scoped to the newsletter worker. It is used ONLY for:
+  //   - applying D1 migrations (`wrangler d1 migrations apply`), locally and in CI
+  //   - local development (`wrangler dev`) against a local D1
+  //
+  // It is NEVER used to deploy the worker script — deployment is owned by
+  // Terraform (infra/cloudflare/terraform/newsletter/worker.tf), consistent with
+  // the migration worker. The `database_id` below is a placeholder: Terraform
+  // creates the real D1 database and outputs its id, and the CI migration step
+  // injects that id per environment before running `d1 migrations apply --remote`
+  // (see docs/newsletter.md / .github/workflows/deploy.yml). For `--local` dev
+  // the id is irrelevant (local storage is keyed by database_name).
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "newsletter-worker",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-06-23",
+  "migrations_dir": "migrations",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "youproof-newsletter",
+      "database_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ]
+}

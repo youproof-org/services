@@ -1,0 +1,23 @@
+{
+  "name": "@youproof.org/newsletter-worker",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Cloudflare Worker backing the youproof.org newsletter subscription API (double opt-in, Brevo integration, D1-backed state) served at youproof.org/api/v1/newsletter/*.",
+  "scripts": {
+    "//deploy-order": "On a real deploy (CONTENT_DIR available) run generate-buildinfo BEFORE build so the accepted privacy-policy content SHA is inlined; prebuild is a no-op so build/typecheck work without a content checkout (the committed buildinfo.json stub is valid).",
+    "generate-buildinfo": "node scripts/gen-buildinfo.mjs",
+    "typecheck": "tsc --noEmit",
+    "build": "node build.mjs",
+    "test": "node --test test/*.test.mjs",
+    "//db": "D1 schema is applied with wrangler (see docs/newsletter.md). Terraform creates the database; wrangler only applies migrations and runs local dev.",
+    "migrate:local": "wrangler d1 migrations apply youproof-newsletter --local",
+    "dev": "wrangler dev"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "catalog:",
+    "esbuild": "catalog:",
+    "typescript": "catalog:",
+    "wrangler": "catalog:"
+  }
+}

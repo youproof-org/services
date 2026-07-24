@@ -1,0 +1,29 @@
+# Production variables for the newsletter Worker + D1 (youproof.org).
+# Copy to production.tfvars (gitignored) and fill in real values, OR rely on the
+# CI workflow which sets these via TF_VAR_* environment variables.
+#
+# The three brevo/turnstile secrets are Terraform-sensitive and come from GitHub
+# Environment *secrets* in CI. Keep the real tfvars file out of git (only
+# *.example is committed).
+
+cloudflare_account_id = "REPLACE_WITH_ACCOUNT_ID"
+tfstate_bucket        = "REPLACE_WITH_R2_STATE_BUCKET" # used to read the zone root's org_zone_id output
+
+environment     = "production"
+site_host       = "youproof.org"
+default_locale  = "hu"
+allowed_origins = "https://youproof.org,https://www.youproof.org"
+
+# Pinned by CI from the deploy pipeline's content_sha.
+content_sha = ""
+
+brevo_sender_email = "REPLACE_WITH_VERIFIED_SENDER"
+brevo_list_id      = "REPLACE_WITH_LIST_ID"
+
+# Secrets — leave as placeholders locally; CI injects the real values.
+brevo_api_key       = "REPLACE_WITH_BREVO_API_KEY"
+brevo_webhook_token = "REPLACE_WITH_WEBHOOK_TOKEN"
+turnstile_secret    = "REPLACE_WITH_TURNSTILE_SECRET"
+
+# NOTE: the youproof.org zone ID is NOT set here — this root reads it from the
+# zone root's remote state (see data.tf), using tfstate_bucket above.
