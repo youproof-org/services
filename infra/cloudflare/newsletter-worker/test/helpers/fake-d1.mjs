@@ -69,7 +69,12 @@ class Stmt {
       const limit = args[0];
       const rows = [...db.rows.values()]
         .filter((r) => r.status === "confirmed" && r.brevo_synced_at == null)
-        .sort((a, b) => String(a.subscribed_at).localeCompare(String(b.subscribed_at)))
+        // Mirror the query's ORDER BY brevo_sync_attempts ASC, subscribed_at ASC.
+        .sort(
+          (a, b) =>
+            (a.brevo_sync_attempts ?? 0) - (b.brevo_sync_attempts ?? 0) ||
+            String(a.subscribed_at).localeCompare(String(b.subscribed_at)),
+        )
         .slice(0, limit)
         .map((r) => ({ ...r }));
       return { results: rows };
@@ -92,9 +97,14 @@ class Stmt {
     }
     if (sql.startsWith("INSERT OR IGNORE INTO email_events")) {
       const [id, email, messageId, event, reason, raw, occurredAt, receivedAt] = args;
-      const key = `${messageId}||${event}`;
-      if (db._eventKeys.has(key)) return; // idempotent
-      db._eventKeys.add(key);
+      // Real SQLite treats NULL as DISTINCT in a UNIQUE index, so INSERT OR
+      // IGNORE only dedups rows with a non-null message_id — null-message events
+      // (e.g. some list-level unsubscribes) are always inserted. Model that.
+      if (messageId != null) {
+        const key = `${messageId}||${event}`;
+        if (db._eventKeys.has(key)) return;
+        db._eventKeys.add(key);
+      }
       db.events.push({ id, email, message_id: messageId, event, reason, raw, occurred_at: occurredAt, received_at: receivedAt });
       return;
     }

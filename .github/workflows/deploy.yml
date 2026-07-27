@@ -421,7 +421,11 @@ jobs:
       - name: Read D1 database id
         id: d1
         working-directory: ${{ env.TF_WORKDIR }}
-        run: echo "id=$(terraform output -raw d1_database_id)" >> "$GITHUB_OUTPUT"
+        # Assign first so a failed read aborts the step (echo would mask the
+        # command-substitution exit code and leave an empty id for the sed below).
+        run: |
+          id="$(terraform output -raw d1_database_id)"
+          echo "id=$id" >> "$GITHUB_OUTPUT"
 
       # Phase 2: apply versioned SQL migrations to the now-existing DB. wrangler
       # targets by database_id, so inject the TF-created id into the config
@@ -473,6 +477,12 @@ jobs:
       # Legacy (.hu) host the not-yet-migrated chapter stubs link back to
       # (staging.youproof.hu on staging, youproof.hu on production).
       WORKER_DOMAIN: ${{ vars.WORKER_DOMAIN }}
+      # Public Cloudflare Turnstile sitekey for the newsletter form. NEXT_PUBLIC_*
+      # is inlined into the static export at build time, so it must be present
+      # here or the widget never renders. Non-secret (a var); empty just means the
+      # form renders without the widget. The newsletter API base is intentionally
+      # unset (same-origin relative fetch in production).
+      NEXT_PUBLIC_TURNSTILE_SITEKEY: ${{ vars.TURNSTILE_SITEKEY }}
       CONTENT_BUCKET: youproof-${{ inputs.environment }}-content
       R2_ENDPOINT: https://${{ vars.CLOUDFLARE_ACCOUNT_ID }}.eu.r2.cloudflarestorage.com
       # R2 S3 credentials for the content-bucket upload. Dedicated per-environment

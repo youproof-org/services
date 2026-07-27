@@ -332,6 +332,13 @@ jobs:
         run: pnpm --filter @youproof.org/newsletter-worker run test
       - name: Build worker bundle
         run: pnpm --filter @youproof.org/newsletter-worker run build
+      # Apply the migrations to a throwaway LOCAL D1 so malformed SQL fails the PR
+      # here rather than at deploy (phase 2, after the real D1 is created).
+      - name: Validate D1 migrations (local)
+        working-directory: infra/cloudflare/newsletter-worker
+        env:
+          WRANGLER_SEND_METRICS: "false"
+        run: pnpm exec wrangler d1 migrations apply DB --local
       - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: "1.11.4"

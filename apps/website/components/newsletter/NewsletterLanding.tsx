@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import styles from './newsletter-landing.module.scss'
 
 // Mounted once globally (root layout). Handles the two newsletter "landing"
@@ -17,6 +17,8 @@ interface DialogContent {
 
 export default function NewsletterLanding() {
   const [dialog, setDialog] = useState<DialogContent | null>(null)
+  const okButtonRef = useRef<HTMLButtonElement | null>(null)
+  const lastFocused = useRef<Element | null>(null)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -74,11 +76,18 @@ export default function NewsletterLanding() {
 
   useEffect(() => {
     if (!dialog) return
+    // Move focus into the dialog (it opens on a full-page load, so focus is on
+    // <body>); restore it to wherever it was on close.
+    lastFocused.current = document.activeElement
+    okButtonRef.current?.focus()
     function onKey(e: KeyboardEvent) {
       if (e.key === 'Escape') setDialog(null)
     }
     document.addEventListener('keydown', onKey)
-    return () => document.removeEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      if (lastFocused.current instanceof HTMLElement) lastFocused.current.focus()
+    }
   }, [dialog])
 
   if (!dialog) return null
@@ -96,7 +105,7 @@ export default function NewsletterLanding() {
           {dialog.title}
         </h2>
         <p className={styles.message}>{dialog.message}</p>
-        <button className={styles.button} type="button" onClick={() => setDialog(null)}>
+        <button ref={okButtonRef} className={styles.button} type="button" onClick={() => setDialog(null)}>
           Rendben
         </button>
       </div>

@@ -270,9 +270,11 @@ export async function listConfirmedUnsynced(
 ): Promise<DbSubscription[]> {
   const { results } = await db
     .prepare(
+      // Fewest-attempts first so a handful of permanently-failing rows can't
+      // starve freshly-confirmed subscribers out of the LIMIT-bounded batch.
       `SELECT * FROM subscriptions
         WHERE status = 'confirmed' AND brevo_synced_at IS NULL
-        ORDER BY subscribed_at ASC
+        ORDER BY brevo_sync_attempts ASC, subscribed_at ASC
         LIMIT ?`,
     )
     .bind(limit)

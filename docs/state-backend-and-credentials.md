@@ -91,7 +91,7 @@ zones). The **Token** column shows which environment's token needs each row:
 | Workers Routes | Zone | Edit | Both | `.hu` route binding + the `.org` `/api/v1/newsletter/*` route (`cloudflare_workers_route`) |
 | Workers Scripts | Account | Edit | Both | the `.hu` Worker script + the newsletter Worker script (`cloudflare_workers_script`) |
 | Workers R2 Storage | Account | Edit | Both | `.org` R2 buckets + custom domain (`cloudflare_r2_bucket`, `cloudflare_r2_custom_domain`) |
-| D1 | Account | Edit | Both | the newsletter Worker's D1 database (`cloudflare_d1_database`) + `wrangler d1 migrations apply`. Cloudflare has no per-database token scoping — the token can reach all D1 in the account; staging/production isolation comes from separate state keys + DB names (see docs/newsletter — [Brevo setup](brevo-setup.md)). |
+| D1 | Account | Edit | Both | the newsletter Worker's D1 database (`cloudflare_d1_database`) + `wrangler d1 migrations apply`. Cloudflare has no per-database token scoping — the token can reach all D1 in the account; staging/production isolation comes from separate state keys + DB names (see the [newsletter worker doc](newsletter.md)). |
 
 - **Zone resources:** scope to **All zones from your account** — the zones are
   created by Terraform, so the token can't be limited to a pre-existing zone.

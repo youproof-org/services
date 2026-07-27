@@ -12,7 +12,9 @@ tfstate_bucket        = "REPLACE_WITH_R2_STATE_BUCKET" # used to read the zone r
 environment     = "production"
 site_host       = "youproof.org"
 default_locale  = "hu"
-allowed_origins = "https://youproof.org,https://www.youproof.org"
+# Apex only: the zone root 301s www -> apex, so a form POST's Origin is always
+# the apex. Matches what CI sets (TF_VAR_allowed_origins = https://REDIRECT_TARGET_HOST).
+allowed_origins = "https://youproof.org"
 
 # Pinned by CI from the deploy pipeline's content_sha.
 content_sha = ""

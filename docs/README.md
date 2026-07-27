@@ -21,6 +21,7 @@ Historical planfiles for the work that produced this system live under
 | [State backend & credentials](state-backend-and-credentials.md) | R2 state-bucket bootstrap, the Cloudflare API token, and the GitHub Environment config. |
 | [DNS & TLS reference](dns-and-tls.md) | DNS records, redirects, HTTPS/HSTS, and TLS coverage for both zones. |
 | [Migration worker](migration-worker.md) | The `youproof.hu` Worker: generated manifest, admin blocking, build, `410` mode. |
+| [Newsletter worker](newsletter.md) | The `youproof.org/api/v1/newsletter/*` Worker: architecture, D1, two-phase deploy, and the setup + end-to-end verification checklists. |
 | [Brevo setup (newsletter)](brevo-setup.md) | Provisioning Brevo for the newsletter worker — sender/domain auth, list, transactional webhook — via the setup script and the manual runbook. |
 | [Content site & static generation](content-site-and-static-generation.md) | The `youproof.org` static export: `published`/`legacy-path`, stubs, canonical paths, staging noindex. |
 | [Multi-language content & URL model](i18n-design.md) | Locale model, the `/{locale}/{container}/{slug}` URL shape, the container dictionary, canonical/hreflang, and the root redirect. |

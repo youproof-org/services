@@ -73,10 +73,14 @@ export default function NewsletterForm({ locale, placement }: NewsletterFormProp
     if (collapsible && expanded && state === 'idle') nameInputRef.current?.focus()
   }, [collapsible, expanded, state])
 
-  // Load + explicitly render the Turnstile widget once (skipped if no sitekey,
-  // e.g. local dev).
+  // Load + explicitly render the Turnstile widget. Runs whenever the form
+  // (and thus the container) becomes visible — critical for the collapsible
+  // mid-content instance, whose container only mounts on expand. Renders once
+  // (guarded by turnstileWidgetId); skipped without a sitekey (e.g. local dev).
   useEffect(() => {
     if (!TURNSTILE_SITEKEY) return
+    if (turnstileWidgetId.current !== undefined) return
+    if (!turnstileContainer.current) return
     let cancelled = false
 
     function renderWidget() {
@@ -96,24 +100,26 @@ export default function NewsletterForm({ locale, placement }: NewsletterFormProp
       })
     }
 
-    const existing = document.getElementById('cf-turnstile-script')
+    let script: HTMLScriptElement | null = null
     if (window.turnstile) {
       renderWidget()
-    } else if (existing) {
-      existing.addEventListener('load', renderWidget)
     } else {
-      const s = document.createElement('script')
-      s.id = 'cf-turnstile-script'
-      s.src = TURNSTILE_SCRIPT
-      s.async = true
-      s.defer = true
-      s.addEventListener('load', renderWidget)
-      document.head.appendChild(s)
+      script = document.getElementById('cf-turnstile-script') as HTMLScriptElement | null
+      if (!script) {
+        script = document.createElement('script')
+        script.id = 'cf-turnstile-script'
+        script.src = TURNSTILE_SCRIPT
+        script.async = true
+        script.defer = true
+        document.head.appendChild(script)
+      }
+      script.addEventListener('load', renderWidget)
     }
     return () => {
       cancelled = true
+      script?.removeEventListener('load', renderWidget)
     }
-  }, [])
+  }, [expanded, state])
 
   function resetTurnstile() {
     turnstileToken.current = ''
