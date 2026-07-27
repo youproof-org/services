@@ -318,6 +318,132 @@ jobs:
       # website build + upload + purge), by which point the Worker script has
       # propagated. See the "Smoke tests (.hu worker)" step there.
 
+  # Newsletter API worker (youproof.org/api/v1/newsletter/*): its own per-env root
+  # (terraform/newsletter/) owning a D1 database, the worker script + bindings, a
+  # .org Workers route, and a cron trigger. Independent of the content-site chain
+  # (it does NOT gate website/quality-gate) — it only needs the shared zone root
+  # applied (for org_zone_id, read via remote state), exactly like website-infra.
+  #
+  # Ordering matters within the job: the D1 database is created by a TARGETED
+  # apply FIRST, migrations run against it via wrangler, THEN the full apply puts
+  # the worker script + route live against an already-migrated schema (the worker
+  # must never serve before its schema exists). See docs/newsletter.md.
+  newsletter-worker:
+    needs: [resolve, zone]
+    # Skip-tolerant gate (see website-infra): zone is skipped on staging but its
+    # state exists, so run when resolve succeeded and zone succeeded or was skipped.
+    if: >-
+      !cancelled() && needs.resolve.result == 'success' &&
+      (needs.zone.result == 'success' || needs.zone.result == 'skipped')
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    env:
+      ENVIRONMENT: ${{ inputs.environment }}
+      TF_WORKDIR: infra/cloudflare/terraform/newsletter
+      WORKER_DIR: infra/cloudflare/newsletter-worker
+      # Embed the accepted privacy-policy content SHA into the bundle (gen-buildinfo
+      # reads CONTENT_SHA directly — no content checkout needed) AND as a readable
+      # plain_text binding. Redeploys on every content change because the pipeline
+      # re-runs with a new content_sha (repository_dispatch), rebundling the SHA.
+      CONTENT_SHA: ${{ needs.resolve.outputs.content_sha }}
+      WRANGLER_SEND_METRICS: "false"
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      TF_VAR_environment: ${{ inputs.environment }}
+      TF_VAR_cloudflare_account_id: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      TF_VAR_tfstate_bucket: ${{ vars.R2_STATE_BUCKET }}
+      # Same per-env .org host the migration worker 301s to (youproof.org /
+      # staging.youproof.org). The route binds to <site_host>/api/v1/newsletter/*.
+      TF_VAR_site_host: ${{ vars.REDIRECT_TARGET_HOST }}
+      TF_VAR_default_locale: ${{ vars.DEFAULT_LOCALE || 'hu' }}
+      TF_VAR_allowed_origins: https://${{ vars.REDIRECT_TARGET_HOST }}
+      TF_VAR_content_sha: ${{ needs.resolve.outputs.content_sha }}
+      # Brevo/Turnstile: non-secret config as vars, real secrets as env secrets.
+      TF_VAR_brevo_sender_email: ${{ vars.BREVO_SENDER_EMAIL }}
+      TF_VAR_brevo_list_id: ${{ vars.BREVO_LIST_ID }}
+      TF_VAR_alert_email: ${{ vars.ALERT_EMAIL }}
+      TF_VAR_brevo_api_key: ${{ secrets.BREVO_API_KEY }}
+      TF_VAR_brevo_webhook_token: ${{ secrets.BREVO_WEBHOOK_TOKEN }}
+      TF_VAR_turnstile_secret: ${{ secrets.TURNSTILE_SECRET }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_STATE_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_STATE_SECRET_ACCESS_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.resolve.outputs.services_sha }}
+
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: pnpm
+
+      - name: Install dependencies (newsletter-worker subtree only)
+        run: pnpm install --frozen-lockfile --filter @youproof.org/newsletter-worker...
+
+      - name: Generate buildinfo (embed content SHA)
+        run: pnpm --filter @youproof.org/newsletter-worker run generate-buildinfo
+
+      - name: Typecheck worker
+        run: pnpm --filter @youproof.org/newsletter-worker run typecheck
+
+      - name: Unit tests
+        run: pnpm --filter @youproof.org/newsletter-worker run test
+
+      - name: Build worker bundle
+        run: pnpm --filter @youproof.org/newsletter-worker run build
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.11.4"
+
+      - name: Terraform init (R2 backend, per-environment newsletter state key)
+        working-directory: ${{ env.TF_WORKDIR }}
+        run: |
+          terraform init -input=false \
+            -backend-config="bucket=${{ vars.R2_STATE_BUCKET }}" \
+            -backend-config="key=cloudflare/newsletter/${ENVIRONMENT}.tfstate" \
+            -backend-config="endpoints={s3=\"https://${{ vars.CLOUDFLARE_ACCOUNT_ID }}.eu.r2.cloudflarestorage.com\"}" \
+            -backend-config="access_key=${AWS_ACCESS_KEY_ID}" \
+            -backend-config="secret_key=${AWS_SECRET_ACCESS_KEY}"
+
+      - name: Terraform format check
+        working-directory: ${{ env.TF_WORKDIR }}
+        run: terraform fmt -check -recursive
+
+      # Phase 1 of the two-phase apply: create ONLY the D1 database so migrations
+      # can run before the worker goes live. No-op on later deploys. (-target emits
+      # an advisory warning; acceptable for this deliberate bootstrap ordering.)
+      - name: Terraform apply — D1 database only (targeted)
+        working-directory: ${{ env.TF_WORKDIR }}
+        run: terraform apply -input=false -auto-approve -target=cloudflare_d1_database.newsletter
+
+      - name: Read D1 database id
+        id: d1
+        working-directory: ${{ env.TF_WORKDIR }}
+        run: echo "id=$(terraform output -raw d1_database_id)" >> "$GITHUB_OUTPUT"
+
+      # Phase 2: apply versioned SQL migrations to the now-existing DB. wrangler
+      # targets by database_id, so inject the TF-created id into the config
+      # (placeholder -> real id) before running. Idempotent (tracked in D1).
+      - name: Apply D1 migrations (wrangler, remote)
+        working-directory: ${{ env.WORKER_DIR }}
+        env:
+          D1_ID: ${{ steps.d1.outputs.id }}
+        run: |
+          sed -i "s/00000000-0000-0000-0000-000000000000/${D1_ID}/" wrangler.jsonc
+          pnpm exec wrangler d1 migrations apply DB --remote
+
+      # Phase 3: full apply — worker script + bindings + .org route + cron trigger,
+      # now against an already-migrated schema.
+      - name: Terraform plan (full)
+        working-directory: ${{ env.TF_WORKDIR }}
+        run: terraform plan -input=false -out=tfplan
+
+      - name: Terraform apply (full)
+        working-directory: ${{ env.TF_WORKDIR }}
+        run: terraform apply -input=false -auto-approve tfplan
+
   # Next.js static export -> upload to the env content bucket -> purge the CDN.
   website:
     # website-infra is listed so its org_zone_id output is readable here (it is
