@@ -76,5 +76,10 @@ resource "cloudflare_workers_script" "newsletter" {
       type = "plain_text"
       text = var.brevo_sender_email
     },
+    {
+      name = "ALERT_EMAIL"
+      type = "plain_text"
+      text = var.alert_email
+    },
   ]
 }

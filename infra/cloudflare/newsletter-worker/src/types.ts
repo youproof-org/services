@@ -41,6 +41,11 @@ export interface Env {
   BREVO_LIST_ID: string;
   /** Verified Brevo sender email for the confirmation email. */
   BREVO_SENDER_EMAIL: string;
+  /**
+   * Admin recipient for operational alerts (e.g. a confirmed contact repeatedly
+   * failing to sync into the Brevo list). Empty disables alert emails.
+   */
+  ALERT_EMAIL: string;
 }
 
 /** Subscription lifecycle status. See docs/newsletter.md and the D1 schema. */

@@ -60,6 +60,12 @@ variable "brevo_list_id" {
   description = "Brevo list id confirmed subscribers are synced into. Bound to the Worker as BREVO_LIST_ID (string)."
 }
 
+variable "alert_email" {
+  type        = string
+  default     = ""
+  description = "Admin recipient for operational alerts (e.g. a confirmed contact repeatedly failing to sync into the Brevo list). Bound to the Worker as ALERT_EMAIL; empty disables alert emails."
+}
+
 variable "brevo_api_key" {
   type        = string
   sensitive   = true

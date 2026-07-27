@@ -23,3 +23,19 @@ export function homePath(env: Env, locale?: string | null): string {
   const l = (locale && locale.trim()) || env.DEFAULT_LOCALE || "hu";
   return `/${l}`;
 }
+
+const API_BASE = "/api/v1/newsletter";
+
+/** Absolute confirmation-link URL embedded in the double-opt-in email. */
+export function confirmUrl(env: Env, id: string, token: string): string {
+  return siteUrl(env, `${API_BASE}/subscriptions/${encodeURIComponent(id)}/confirm`, {
+    token,
+  });
+}
+
+/** Absolute unsubscribe URL (visible link + List-Unsubscribe header target). */
+export function unsubscribeUrl(env: Env, id: string, token: string): string {
+  return siteUrl(env, `${API_BASE}/subscriptions/${encodeURIComponent(id)}/unsubscribe`, {
+    token,
+  });
+}

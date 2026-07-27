@@ -1,5 +1,6 @@
 import { confirmSubscription, getSubscriptionById } from "../lib/db";
 import { redirect } from "../lib/http";
+import { syncConfirmedContact } from "../lib/sync";
 import { homePath, siteUrl } from "../lib/urls";
 import { verifyToken } from "../lib/tokens";
 import type { Env } from "../types";
@@ -28,8 +29,12 @@ export async function handleConfirm(
   if (sub.status === "pending") {
     const now = new Date().toISOString();
     await confirmSubscription(env.DB, id, now);
-    // TODO(phase 3): upsert the contact into the Brevo list (updateEnabled,
-    // ext_id=id, listIds) so it's eligible for future campaign sends.
+    // Sync the confirmed contact into the Brevo list so it's eligible for future
+    // campaign sends. Non-fatal: confirmation is already recorded in D1 (the
+    // source of truth). A failure here is marked in D1 and retried by the
+    // scheduled reconciliation (handlers/scheduled.ts) — it must not break the
+    // user's landing.
+    await syncConfirmedContact(env, sub);
   }
 
   // Blocked/unsubscribed rows should not resurrect via a stale confirm link.

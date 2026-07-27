@@ -30,10 +30,19 @@ CREATE TABLE subscriptions (
   unsubscribed_at     TEXT,
   created_at          TEXT NOT NULL,
   updated_at          TEXT NOT NULL,
+  -- Brevo list-sync reconciliation markers. Confirmation is recorded in D1 (the
+  -- source of truth) even if the Brevo list-add fails; a scheduled cron retries
+  -- confirmed-but-unsynced rows and emails an admin once a row keeps failing.
+  brevo_synced_at       TEXT,           -- null until the contact is in the Brevo list
+  brevo_sync_attempts   INTEGER NOT NULL DEFAULT 0,
+  brevo_sync_last_error TEXT,
+  brevo_alerted_at      TEXT,           -- set once alerted, so we don't re-alert
   CHECK (status IN ('pending', 'confirmed', 'unsubscribed', 'blocked'))
 );
 
 CREATE INDEX idx_subscriptions_status ON subscriptions (status);
+-- The reconciliation query: confirmed rows not yet synced to Brevo.
+CREATE INDEX idx_subscriptions_unsynced ON subscriptions (status, brevo_synced_at);
 
 -- Bounce/spam suppression, keyed by EMAIL and independent of any subscription
 -- row, so it survives soft-deletes/replacements. Presence here blocks

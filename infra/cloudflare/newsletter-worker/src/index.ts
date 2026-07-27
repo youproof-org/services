@@ -1,3 +1,4 @@
+import { handleScheduled } from "./handlers/scheduled";
 import { route } from "./router";
 import { json } from "./lib/http";
 import type { Env } from "./types";
@@ -23,5 +24,11 @@ export default {
       console.error("newsletter-worker unhandled error", err);
       return json({ code: "internal_error" }, 500);
     }
+  },
+
+  // Cron Trigger (see Terraform crons.tf / wrangler.jsonc): reconcile confirmed
+  // subscribers whose Brevo list-sync failed, retrying and alerting as needed.
+  async scheduled(_event: ScheduledController, env: Env, ctx: ExecutionContext): Promise<void> {
+    ctx.waitUntil(handleScheduled(env));
   },
 } satisfies ExportedHandler<Env>;

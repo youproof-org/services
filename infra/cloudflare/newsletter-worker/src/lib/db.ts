@@ -26,6 +26,11 @@ export interface DbSubscription {
   unsubscribed_at: string | null;
   created_at: string;
   updated_at: string;
+  // Brevo list-sync reconciliation markers (migration 0002).
+  brevo_synced_at: string | null;
+  brevo_sync_attempts: number;
+  brevo_sync_last_error: string | null;
+  brevo_alerted_at: string | null;
 }
 
 interface D1Like {
@@ -188,6 +193,10 @@ export async function subscribeUpsert(
       unsubscribed_at: null,
       created_at: now,
       updated_at: now,
+      brevo_synced_at: null,
+      brevo_sync_attempts: 0,
+      brevo_sync_last_error: null,
+      brevo_alerted_at: null,
     };
     await insertSubscription(db, s);
     return { kind: "created", subscription: s };
@@ -217,7 +226,9 @@ export async function subscribeUpsert(
              confirm_token = ?, unsubscribe_token = ?, privacy_content_sha = ?,
              brevo_message_id = NULL,
              subscribed_at = ?, confirmed_at = NULL, unsubscribed_at = NULL,
-             updated_at = ?
+             updated_at = ?,
+             brevo_synced_at = NULL, brevo_sync_attempts = 0,
+             brevo_sync_last_error = NULL, brevo_alerted_at = NULL
        WHERE id = ?`,
     )
     .bind(
@@ -242,8 +253,150 @@ export async function subscribeUpsert(
       confirmed_at: null,
       unsubscribed_at: null,
       updated_at: now,
+      brevo_synced_at: null,
+      brevo_sync_attempts: 0,
+      brevo_sync_last_error: null,
+      brevo_alerted_at: null,
     },
   };
+}
+
+// --- Brevo list-sync reconciliation ---
+
+/** Confirmed subscriptions not yet synced into the Brevo list (cron worklist). */
+export async function listConfirmedUnsynced(
+  db: D1Like,
+  limit: number,
+): Promise<DbSubscription[]> {
+  const { results } = await db
+    .prepare(
+      `SELECT * FROM subscriptions
+        WHERE status = 'confirmed' AND brevo_synced_at IS NULL
+        ORDER BY subscribed_at ASC
+        LIMIT ?`,
+    )
+    .bind(limit)
+    .all<DbSubscription>();
+  return results;
+}
+
+export async function markContactSynced(
+  db: D1Like,
+  id: string,
+  now: string,
+): Promise<void> {
+  await db
+    .prepare(
+      "UPDATE subscriptions SET brevo_synced_at = ?, brevo_sync_last_error = NULL, updated_at = ? WHERE id = ?",
+    )
+    .bind(now, now, id)
+    .run();
+}
+
+export async function recordContactSyncFailure(
+  db: D1Like,
+  id: string,
+  error: string,
+  now: string,
+): Promise<void> {
+  await db
+    .prepare(
+      "UPDATE subscriptions SET brevo_sync_attempts = brevo_sync_attempts + 1, brevo_sync_last_error = ?, updated_at = ? WHERE id = ?",
+    )
+    .bind(error.slice(0, 500), now, id)
+    .run();
+}
+
+export async function markSyncAlerted(
+  db: D1Like,
+  id: string,
+  now: string,
+): Promise<void> {
+  await db
+    .prepare("UPDATE subscriptions SET brevo_alerted_at = ?, updated_at = ? WHERE id = ?")
+    .bind(now, now, id)
+    .run();
+}
+
+// --- webhook-side writes (Brevo delivery/bounce/spam/unsubscribe events) ---
+
+/**
+ * Append a webhook event. Idempotent via the (message_id, event) unique index —
+ * a redelivered event is silently ignored, so callers can safely retry.
+ */
+export async function insertEmailEvent(
+  db: D1Like,
+  e: {
+    email: string;
+    messageId: string | null;
+    event: string;
+    reason: string | null;
+    occurredAt: string | null;
+    raw: string;
+    receivedAt: string;
+  },
+): Promise<void> {
+  await db
+    .prepare(
+      `INSERT OR IGNORE INTO email_events
+         (id, email, message_id, event, reason, raw, occurred_at, received_at)
+       VALUES (?,?,?,?,?,?,?,?)`,
+    )
+    .bind(newId(), e.email, e.messageId, e.event, e.reason, e.raw, e.occurredAt, e.receivedAt)
+    .run();
+}
+
+/**
+ * Record a bounce/spam suppression for an email, keyed by email so it survives
+ * across subscription records. Upsert: first_seen_at is preserved, last_event_at
+ * and reason are refreshed.
+ */
+export async function upsertSuppression(
+  db: D1Like,
+  email: string,
+  reason: "bounce" | "spam",
+  now: string,
+): Promise<void> {
+  await db
+    .prepare(
+      `INSERT INTO email_suppressions (email, reason, first_seen_at, last_event_at)
+       VALUES (?,?,?,?)
+       ON CONFLICT(email) DO UPDATE SET
+         reason = excluded.reason,
+         last_event_at = excluded.last_event_at`,
+    )
+    .bind(email, reason, now, now)
+    .run();
+}
+
+/** Mark every subscription for an email as blocked (terminal). */
+export async function setBlockedByEmail(
+  db: D1Like,
+  email: string,
+  now: string,
+): Promise<void> {
+  await db
+    .prepare(
+      "UPDATE subscriptions SET status = 'blocked', updated_at = ? WHERE email = ? AND status != 'blocked'",
+    )
+    .bind(now, email)
+    .run();
+}
+
+/** Soft-delete by email (Brevo-side unsubscribe). Never touches blocked rows. */
+export async function unsubscribeByEmail(
+  db: D1Like,
+  email: string,
+  now: string,
+): Promise<void> {
+  await db
+    .prepare(
+      `UPDATE subscriptions
+         SET status = 'unsubscribed', unsubscribed_at = COALESCE(unsubscribed_at, ?), updated_at = ?
+       WHERE email = ? AND status NOT IN ('blocked', 'unsubscribed')`,
+    )
+    .bind(now, now, email)
+    .run();
 }
 
 // --- rate-limit ledger (used by the subscribe handler in Phase 4) ---
