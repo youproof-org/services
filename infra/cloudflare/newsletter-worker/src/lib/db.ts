@@ -429,3 +429,14 @@ export async function countRecentAttempts(
     .first<{ n: number }>();
   return row?.n ?? 0;
 }
+
+/** Delete rate-limit ledger rows older than the cutoff (called from the cron). */
+export async function pruneSubscribeAttempts(
+  db: D1Like,
+  cutoffIso: string,
+): Promise<void> {
+  await db
+    .prepare("DELETE FROM subscribe_attempts WHERE attempted_at < ?")
+    .bind(cutoffIso)
+    .run();
+}

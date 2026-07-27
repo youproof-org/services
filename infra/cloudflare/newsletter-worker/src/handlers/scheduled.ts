@@ -1,5 +1,5 @@
 import { sendAdminAlert } from "../lib/brevo";
-import { listConfirmedUnsynced, markSyncAlerted } from "../lib/db";
+import { listConfirmedUnsynced, markSyncAlerted, pruneSubscribeAttempts } from "../lib/db";
 import { syncConfirmedContact } from "../lib/sync";
 import type { Env } from "../types";
 
@@ -7,6 +7,8 @@ import type { Env } from "../types";
 // attempts to escalate with an admin email (once per subscription).
 const BATCH = 50;
 const ALERT_THRESHOLD = 3;
+// Rate-limit ledger rows older than this are pruned each tick.
+const ATTEMPT_RETENTION_MS = 24 * 60 * 60 * 1000;
 
 /**
  * Scheduled reconciliation (Cron Trigger). Retries confirmed subscriptions whose
@@ -15,6 +17,12 @@ const ALERT_THRESHOLD = 3;
  * the admin once (brevo_alerted_at) so it can be handled manually.
  */
 export async function handleScheduled(env: Env): Promise<void> {
+  // Keep the rate-limit ledger from growing unbounded.
+  await pruneSubscribeAttempts(
+    env.DB,
+    new Date(Date.now() - ATTEMPT_RETENTION_MS).toISOString(),
+  );
+
   const pending = await listConfirmedUnsynced(env.DB, BATCH);
 
   for (const sub of pending) {

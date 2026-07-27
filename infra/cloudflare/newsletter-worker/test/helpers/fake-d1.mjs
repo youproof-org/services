@@ -46,7 +46,12 @@ class Stmt {
       return db.suppressed.has(args[0]) ? { email: args[0] } : null;
     }
     if (sql.includes("COUNT(*) AS n FROM subscribe_attempts")) {
-      return { n: db.attempts.length };
+      const [value, since] = args;
+      const field = sql.includes("WHERE email =") ? "email" : "client_ip";
+      const n = db.attempts.filter(
+        (a) => a[field] === value && a.attempted_at >= since,
+      ).length;
+      return { n };
     }
     if (sql.includes("FROM subscriptions WHERE email")) {
       const r = db._byEmail(args[0]);
@@ -106,6 +111,11 @@ class Stmt {
     }
     if (sql.includes("INSERT INTO subscribe_attempts")) {
       db.attempts.push({ id: args[0], email: args[1], client_ip: args[2], attempted_at: args[3] });
+      return;
+    }
+    if (sql.startsWith("DELETE FROM subscribe_attempts")) {
+      const [cutoff] = args;
+      db.attempts = db.attempts.filter((a) => a.attempted_at >= cutoff);
       return;
     }
     if (sql.includes("SET status = 'blocked'")) {
