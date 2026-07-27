@@ -256,7 +256,7 @@ export default async function LocalizedRoute({ params }: RouteProps) {
           <main className="stub-main">
             <UnavailableStub />
           </main>
-          <SiteFooter locale={locale} />
+          <SiteFooter locale={locale} withNewsletter={false} />
         </div>
       )
 
@@ -330,7 +330,7 @@ export default async function LocalizedRoute({ params }: RouteProps) {
             <main className="stub-main">
               {chapter.legacyPath ? <NotMigratedStub legacyPath={chapter.legacyPath} /> : <UnavailableStub />}
             </main>
-            <SiteFooter locale={locale} />
+            <SiteFooter locale={locale} withNewsletter={false} />
           </div>
         )
       }
@@ -372,7 +372,14 @@ export default async function LocalizedRoute({ params }: RouteProps) {
         ...parentCrumb,
         { label: node.title, href: `/${locale}/${path.join('/')}` },
       ]
-      return <StandaloneRoute node={node} breadcrumbs={breadcrumbs} />
+      // Legal/custom pages (kind === 'page') must not show the newsletter form.
+      return (
+        <StandaloneRoute
+          node={node}
+          breadcrumbs={breadcrumbs}
+          withNewsletter={resolved.kind !== 'page'}
+        />
+      )
     }
   }
 }

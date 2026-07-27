@@ -111,6 +111,7 @@ jobs:
       zone: ${{ steps.filter.outputs.zone }}
       website: ${{ steps.filter.outputs.website }}
       worker: ${{ steps.filter.outputs.worker }}
+      newsletter: ${{ steps.filter.outputs.newsletter }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
@@ -125,6 +126,9 @@ jobs:
               - 'infra/cloudflare/terraform/worker/**'
               - 'infra/cloudflare/worker/**'
               - 'tools/smoke-tests/**'
+            newsletter:
+              - 'infra/cloudflare/terraform/newsletter/**'
+              - 'infra/cloudflare/newsletter-worker/**'
 
   # NOTE: zone-purity enforcement lives in the dedicated, always-run
   # `zone-purity-guard.yml` (no paths filter, so it can't be bypassed and is a
@@ -275,6 +279,75 @@ jobs:
           terraform init -input=false \
             -backend-config="bucket=${{ vars.R2_STATE_BUCKET }}" \
             -backend-config="key=cloudflare/worker/staging.tfstate" \
+            -backend-config="endpoints={s3=\"https://${{ vars.CLOUDFLARE_ACCOUNT_ID }}.eu.r2.cloudflarestorage.com\"}" \
+            -backend-config="access_key=${AWS_ACCESS_KEY_ID}" \
+            -backend-config="secret_key=${AWS_SECRET_ACCESS_KEY}"
+      - name: Terraform format check
+        working-directory: ${{ env.TF_WORKDIR }}
+        run: terraform fmt -check -recursive
+      - name: Terraform plan
+        working-directory: ${{ env.TF_WORKDIR }}
+        run: terraform plan -input=false
+
+  # Newsletter worker + D1 plan gate (staging dry-run). Builds the bundle (the
+  # committed buildinfo.json stub is valid without a content checkout) and plans
+  # the terraform/newsletter root. No apply, no D1 migrations. Sensitive Brevo/
+  # Turnstile vars come from the staging Environment so `plan` doesn't prompt.
+  newsletter-plan:
+    needs: changes
+    if: github.event_name == 'pull_request' && needs.changes.outputs.newsletter == 'true'
+    runs-on: ubuntu-latest
+    environment: staging
+    env:
+      ENVIRONMENT: staging
+      TF_WORKDIR: infra/cloudflare/terraform/newsletter
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      TF_VAR_environment: staging
+      TF_VAR_cloudflare_account_id: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      TF_VAR_tfstate_bucket: ${{ vars.R2_STATE_BUCKET }}
+      TF_VAR_site_host: ${{ vars.REDIRECT_TARGET_HOST }}
+      TF_VAR_default_locale: ${{ vars.DEFAULT_LOCALE || 'hu' }}
+      TF_VAR_allowed_origins: https://${{ vars.REDIRECT_TARGET_HOST }}
+      TF_VAR_content_sha: ""
+      TF_VAR_brevo_sender_email: ${{ vars.BREVO_SENDER_EMAIL }}
+      TF_VAR_brevo_list_id: ${{ vars.BREVO_LIST_ID }}
+      TF_VAR_alert_email: ${{ vars.ALERT_EMAIL }}
+      TF_VAR_brevo_api_key: ${{ secrets.BREVO_API_KEY }}
+      TF_VAR_brevo_webhook_token: ${{ secrets.BREVO_WEBHOOK_TOKEN }}
+      TF_VAR_turnstile_secret: ${{ secrets.TURNSTILE_SECRET }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_STATE_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_STATE_SECRET_ACCESS_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: pnpm
+      - name: Install dependencies (newsletter-worker subtree only)
+        run: pnpm install --frozen-lockfile --filter @youproof.org/newsletter-worker...
+      - name: Typecheck worker
+        run: pnpm --filter @youproof.org/newsletter-worker run typecheck
+      - name: Unit tests
+        run: pnpm --filter @youproof.org/newsletter-worker run test
+      - name: Build worker bundle
+        run: pnpm --filter @youproof.org/newsletter-worker run build
+      # Apply the migrations to a throwaway LOCAL D1 so malformed SQL fails the PR
+      # here rather than at deploy (phase 2, after the real D1 is created).
+      - name: Validate D1 migrations (local)
+        working-directory: infra/cloudflare/newsletter-worker
+        env:
+          WRANGLER_SEND_METRICS: "false"
+        run: pnpm exec wrangler d1 migrations apply DB --local
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.11.4"
+      - name: Terraform init (R2 backend, newsletter staging state key)
+        working-directory: ${{ env.TF_WORKDIR }}
+        run: |
+          terraform init -input=false \
+            -backend-config="bucket=${{ vars.R2_STATE_BUCKET }}" \
+            -backend-config="key=cloudflare/newsletter/staging.tfstate" \
             -backend-config="endpoints={s3=\"https://${{ vars.CLOUDFLARE_ACCOUNT_ID }}.eu.r2.cloudflarestorage.com\"}" \
             -backend-config="access_key=${AWS_ACCESS_KEY_ID}" \
             -backend-config="secret_key=${AWS_SECRET_ACCESS_KEY}"
