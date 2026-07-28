@@ -15,6 +15,7 @@
 #   1. path == "/"                         -> rewrite to "/index.html"
 #   2. path != "/" AND not ending in "/"   -> rewrite to path + ".html"
 #      AND path has no known file extension
+#      AND path is not under "/api/"       (those are served by a Worker, not R2)
 #
 # "Has no known file extension" means the path does NOT end with `.html` or any
 # of the asset extensions in local.asset_extensions (locals.tf) — so real assets
@@ -49,10 +50,14 @@ resource "cloudflare_ruleset" "html_rewrite" {
     },
     {
       description = "extensionless path -> path + .html"
-      # not "/", not a trailing-slash "directory" path, and not already ending in
-      # a known asset extension or `.html`. Regex-free (Free-plan compatible) —
-      # see the header note and locals.tf.
-      expression = "http.request.uri.path != \"/\" and not ends_with(http.request.uri.path, \"/\") and not (${local.asset_ext_match} or ends_with(http.request.uri.path, \".html\"))"
+      # not "/", not a trailing-slash "directory" path, not already ending in a
+      # known asset extension or `.html`, and NOT under `/api/`. The `/api/`
+      # exclusion keeps the newsletter Worker's API paths
+      # (`/api/v1/newsletter/*`, served by a Worker on the route — not R2)
+      # unrewritten; without it they'd be turned into `<path>.html` before the
+      # Worker runs and match no route. Regex-free (Free-plan compatible) — see
+      # the header note and locals.tf.
+      expression = "http.request.uri.path != \"/\" and not ends_with(http.request.uri.path, \"/\") and not starts_with(http.request.uri.path, \"/api/\") and not (${local.asset_ext_match} or ends_with(http.request.uri.path, \".html\"))"
       action     = "rewrite"
       action_parameters = {
         uri = {
