@@ -1,7 +1,12 @@
 import assert from "node:assert/strict";
 import { test, beforeEach, afterEach } from "node:test";
-import { syncConfirmedContact } from "../src/lib/sync.ts";
-import { subscribeUpsert, confirmSubscription, getSubscriptionByEmail } from "../src/lib/db.ts";
+import { syncBrevoContact } from "../src/lib/sync.ts";
+import {
+  subscribeUpsert,
+  confirmSubscription,
+  unsubscribeSubscription,
+  getSubscriptionByEmail,
+} from "../src/lib/db.ts";
 import { FakeD1, makeDeps } from "./helpers/fake-d1.mjs";
 
 const input = {
@@ -24,31 +29,67 @@ afterEach(() => {
   globalThis.fetch = originalFetch;
 });
 
+const env = (db) => ({ DB: db, BREVO_API_KEY: "k", BREVO_LIST_ID: "7", BREVO_SENDER_EMAIL: "s@x" });
+
 async function seedConfirmed() {
   const db = new FakeD1();
   const c = await subscribeUpsert(db, input, "sha", makeDeps());
   await confirmSubscription(db, c.subscription.id, "2026-07-24T01:00:00.000Z");
-  return { db, sub: c.subscription };
+  const sub = await getSubscriptionByEmail(db, input.email); // status: confirmed
+  return { db, sub };
 }
 
-const env = (db) => ({ DB: db, BREVO_API_KEY: "k", BREVO_LIST_ID: "7", BREVO_SENDER_EMAIL: "s@x" });
-
-test("success marks brevo_synced_at and clears error", async () => {
+test("confirmed → upsert marks synced and clears error", async () => {
   const { db, sub } = await seedConfirmed();
-  const ok = await syncConfirmedContact(env(db), sub);
+  const ok = await syncBrevoContact(env(db), sub);
   assert.equal(ok, true);
   const row = await getSubscriptionByEmail(db, input.email);
   assert.ok(row.brevo_synced_at, "synced timestamp set");
   assert.equal(row.brevo_sync_last_error, null);
 });
 
-test("failure records attempt + error and leaves synced null", async () => {
+test("confirmed → failure records attempt + error, leaves synced null", async () => {
   const { db, sub } = await seedConfirmed();
   fetchResult = () => new Response("boom", { status: 500 });
-  const ok = await syncConfirmedContact(env(db), sub);
+  const ok = await syncBrevoContact(env(db), sub);
   assert.equal(ok, false);
   const row = await getSubscriptionByEmail(db, input.email);
   assert.equal(row.brevo_synced_at, null);
   assert.equal(row.brevo_sync_attempts, 1);
   assert.match(row.brevo_sync_last_error, /500/);
+});
+
+test("unsubscribed → blacklist marks synced", async () => {
+  const { db, sub } = await seedConfirmed();
+  await unsubscribeSubscription(db, sub.id, "2026-07-24T02:00:00.000Z"); // status: unsubscribed, markers cleared
+  const row = await getSubscriptionByEmail(db, input.email);
+  assert.equal(row.status, "unsubscribed");
+  assert.equal(row.brevo_synced_at, null, "unsubscribe enqueued a Brevo propagation");
+
+  const ok = await syncBrevoContact(env(db), row);
+  assert.equal(ok, true);
+  assert.ok((await getSubscriptionByEmail(db, input.email)).brevo_synced_at, "propagation marked synced");
+});
+
+test("unsubscribed → Brevo 404 (contact absent) is tolerated as synced", async () => {
+  const { db, sub } = await seedConfirmed();
+  await unsubscribeSubscription(db, sub.id, "2026-07-24T02:00:00.000Z");
+  const row = await getSubscriptionByEmail(db, input.email);
+  fetchResult = () => new Response("not found", { status: 404 });
+  const ok = await syncBrevoContact(env(db), row);
+  assert.equal(ok, true, "404 = nothing to blacklist = success");
+  assert.ok((await getSubscriptionByEmail(db, input.email)).brevo_synced_at);
+});
+
+test("pending/other status → no Brevo call, treated as done", async () => {
+  const db = new FakeD1();
+  const c = await subscribeUpsert(db, input, "sha", makeDeps()); // pending
+  let called = false;
+  fetchResult = () => {
+    called = true;
+    return new Response(null, { status: 201 });
+  };
+  const ok = await syncBrevoContact(env(db), c.subscription);
+  assert.equal(ok, true);
+  assert.equal(called, false, "no Brevo call for a pending row");
 });

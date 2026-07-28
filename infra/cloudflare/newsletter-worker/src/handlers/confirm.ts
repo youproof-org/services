@@ -1,6 +1,6 @@
 import { confirmSubscription, getSubscriptionById } from "../lib/db";
 import { redirect } from "../lib/http";
-import { syncConfirmedContact } from "../lib/sync";
+import { syncBrevoContact } from "../lib/sync";
 import { homePath, siteUrl } from "../lib/urls";
 import { verifyToken } from "../lib/tokens";
 import type { Env } from "../types";
@@ -34,7 +34,7 @@ export async function handleConfirm(
     // source of truth). A failure here is marked in D1 and retried by the
     // scheduled reconciliation (handlers/scheduled.ts) — it must not break the
     // user's landing.
-    await syncConfirmedContact(env, sub);
+    await syncBrevoContact(env, { ...sub, status: "confirmed" });
   }
 
   // Blocked/unsubscribed rows should not resurrect via a stale confirm link.

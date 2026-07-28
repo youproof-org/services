@@ -23,12 +23,19 @@ there is served static from R2. Brevo provisioning is covered separately in the
 - **Endpoints:** `POST /subscriptions` (validate → origin/Turnstile/rate-limit →
   suppression gate → upsert → send/resend confirmation; uniform `202 {pending}`,
   distinct `409 subscription_blocked`), `GET /subscriptions/{id}/confirm`,
-  `GET|POST|DELETE /subscriptions/{id}/unsubscribe` (token-authed soft-delete),
-  `POST /webhooks/brevo` (token-authed, idempotent; hard bounce/spam → suppress +
-  block, Brevo-side unsubscribe → soft-delete).
-- **Contact-sync reconciliation:** confirmation is recorded in D1 first, then the
-  contact is synced into the Brevo list; failures are marked and retried by a
-  15-minute **Cron Trigger**, which emails `ALERT_EMAIL` once a row keeps failing.
+  `GET|POST|DELETE /subscriptions/{id}/unsubscribe` (token-authed soft-delete +
+  propagate a blacklist to Brevo), `POST /webhooks/brevo` (token-authed,
+  idempotent; hard bounce/spam → suppress + block, Brevo-side unsubscribe →
+  soft-delete).
+- **Brevo state sync + reconciliation:** D1 is authoritative and the worker
+  pushes each row's desired state OUT to Brevo — `confirmed` → in the list +
+  `emailBlacklisted:false` (also reactivates a re-confirmed resubscriber);
+  `unsubscribed` (via our endpoint, which Brevo never sees) → `emailBlacklisted:true`.
+  Each push is best-effort inline; on failure the row is marked
+  (`brevo_synced_at IS NULL`) and retried by a 15-minute **Cron Trigger** — one
+  unified worklist covering confirm, resubscribe, and unsubscribe — which emails
+  `ALERT_EMAIL` once a row keeps failing. (Webhook-driven unsubscribes aren't
+  re-pushed: Brevo already knows.)
 
 ## Temporary `.html`-transform workaround (remove after the zone fix)
 

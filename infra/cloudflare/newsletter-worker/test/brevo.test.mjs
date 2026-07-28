@@ -3,6 +3,7 @@ import { test } from "node:test";
 import {
   sendTransactionalEmail,
   upsertContact,
+  setEmailBlacklisted,
   classifyBrevoEvent,
   BrevoError,
 } from "../src/lib/brevo.ts";
@@ -80,6 +81,7 @@ test("upsertContact sends updateEnabled + ext_id + FNAME + listIds", async () =>
       assert.equal(body.email, "a@b.co");
       assert.equal(body.ext_id, "sub-1");
       assert.equal(body.updateEnabled, true);
+      assert.equal(body.emailBlacklisted, false); // reactivate a re-confirmed resubscriber
       assert.equal(body.attributes.FNAME, "Anna");
       assert.deepEqual(body.listIds, [7]);
     },
@@ -93,6 +95,25 @@ test("upsertContact omits listIds when no numeric list id is configured", async 
       await upsertContact({ ...env, BREVO_LIST_ID: "" }, { email: "a@b.co", name: "A", extId: "s" });
       const body = JSON.parse(calls[0].init.body);
       assert.equal(body.listIds, undefined);
+    },
+  );
+});
+
+test("setEmailBlacklisted PUTs emailBlacklisted:true and tolerates 404", async () => {
+  await withFetch(
+    () => new Response(null, { status: 204 }),
+    async (calls) => {
+      await setEmailBlacklisted(env, "a@b.co");
+      assert.equal(calls[0].init.method, "PUT");
+      assert.match(calls[0].url, /\/contacts\/a%40b\.co$/);
+      assert.equal(JSON.parse(calls[0].init.body).emailBlacklisted, true);
+    },
+  );
+  // 404 (contact doesn't exist) must NOT throw — nothing to suppress.
+  await withFetch(
+    () => new Response("not found", { status: 404 }),
+    async () => {
+      await assert.doesNotReject(() => setEmailBlacklisted(env, "ghost@b.co"));
     },
   );
 });

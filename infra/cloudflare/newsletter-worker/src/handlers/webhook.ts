@@ -1,4 +1,4 @@
-import { blocklistContact, classifyBrevoEvent } from "../lib/brevo";
+import { classifyBrevoEvent, setEmailBlacklisted } from "../lib/brevo";
 import {
   insertEmailEvent,
   setBlockedByEmail,
@@ -63,7 +63,7 @@ export async function handleWebhook(
     await setBlockedByEmail(env.DB, email, now);
     // Platform-level backstop; D1 is authoritative, so failures are non-fatal.
     try {
-      await blocklistContact(env, email);
+      await setEmailBlacklisted(env, email);
     } catch (err) {
       console.error("newsletter Brevo blocklist failed", err);
     }
