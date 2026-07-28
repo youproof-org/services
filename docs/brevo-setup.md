@@ -57,14 +57,17 @@ BREVO_API_KEY=xkeysib-… \
 SITE_HOST=staging.youproof.org \
 BREVO_WEBHOOK_TOKEN="$(openssl rand -hex 32)" \
 BREVO_SENDER_EMAIL=hello@youproof.org \
-BREVO_LIST_NAME="youproof.org newsletter" \
 node scripts/setup-brevo.mjs
 ```
 
 It ensures the `FNAME` attribute, checks the sender, registers the webhook, and
 creates/finds the list — then prints the `BREVO_LIST_ID` to record. Re-running is
-safe (idempotent). The **same `BREVO_WEBHOOK_TOKEN`** must be stored as the
-worker secret for that environment; keep it out of shell history where possible.
+safe (idempotent). The list name and webhook description default to
+`<SITE_HOST> newsletter` and `<SITE_HOST> webhook`, so a **shared** Brevo account
+keeps staging and production distinct automatically; override with
+`BREVO_LIST_NAME` / `BREVO_WEBHOOK_DESCRIPTION` if you want other names. The
+**same `BREVO_WEBHOOK_TOKEN`** must be stored as the worker secret for that
+environment; keep it out of shell history where possible.
 
 ## The manual path (mirrors the script step-for-step)
 
@@ -107,7 +110,7 @@ FOLDER_ID=$(curl -s "https://api.brevo.com/v3/contacts/folders?limit=50" -H "api
 # (create a folder if none: POST /contacts/folders {"name":"Newsletter"})
 curl -s -X POST https://api.brevo.com/v3/contacts/lists \
   -H "api-key: $BREVO_API_KEY" -H 'content-type: application/json' \
-  -d "{\"name\":\"youproof.org newsletter\",\"folderId\":$FOLDER_ID}"
+  -d "{\"name\":\"$HOST newsletter\",\"folderId\":$FOLDER_ID}"
 ```
 
 Record the returned list `id` → the environment's **`BREVO_LIST_ID`** var.
@@ -124,7 +127,7 @@ curl -s "https://api.brevo.com/v3/webhooks?type=transactional" -H "api-key: $BRE
 
 curl -s -X POST https://api.brevo.com/v3/webhooks \
   -H "api-key: $BREVO_API_KEY" -H 'content-type: application/json' \
-  -d "{\"type\":\"transactional\",\"url\":\"https://$HOST/api/v1/newsletter/webhooks/brevo?token=$TOKEN\",\"events\":[\"delivered\",\"hardBounce\",\"softBounce\",\"spam\",\"unsubscribed\",\"blocked\"],\"description\":\"youproof newsletter worker\"}"
+  -d "{\"type\":\"transactional\",\"url\":\"https://$HOST/api/v1/newsletter/webhooks/brevo?token=$TOKEN\",\"events\":[\"delivered\",\"hardBounce\",\"softBounce\",\"spam\",\"unsubscribed\",\"blocked\"],\"description\":\"$HOST webhook\"}"
 ```
 
 The worker only *acts* on `hardBounce`/`spam` (→ suppress + block) and
