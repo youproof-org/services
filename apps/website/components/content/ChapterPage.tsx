@@ -1,3 +1,4 @@
+import { Fragment } from 'react'
 import Link from 'next/link'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons'
@@ -7,6 +8,8 @@ import { getChapterIndex, buildChapterEmbedIndices, buildChapterFigureIndices, g
 import ContentBlocks from './ContentBlocks'
 import SectionView from './SectionView'
 import BookReference from './BookReference'
+import NewsletterForm from '@/components/newsletter/NewsletterForm'
+import { midContentIndex } from '@/lib/newsletter/placement'
 import { urlForChapter } from '@/lib/content/urls'
 import styles from './chapter-page.module.scss'
 
@@ -69,17 +72,24 @@ export default function ChapterPage({ bookName, chapterName }: ChapterPageProps)
         </section>
       )}
 
-      {chapter.sections.map((section, i) => (
-        <SectionView
-          key={section.name}
-          slug={section.slug}
-          title={section.title}
-          body={section.body}
-          label={`${chapterIndex}.${i + 1}`}
-          embedIndices={embedIndices} figureIndices={figureIndices}
-          refs={section.references}
-        />
-      ))}
+      {(() => {
+        const midIndex = midContentIndex(chapter.sections.length)
+        return chapter.sections.map((section, i) => (
+          <Fragment key={section.name}>
+            {i === midIndex && (
+              <NewsletterForm locale={chapter.locale} placement="mid-content" />
+            )}
+            <SectionView
+              slug={section.slug}
+              title={section.title}
+              body={section.body}
+              label={`${chapterIndex}.${i + 1}`}
+              embedIndices={embedIndices} figureIndices={figureIndices}
+              refs={section.references}
+            />
+          </Fragment>
+        ))
+      })()}
 
       {chapter.epilogue.length > 0 && (
         <section className={styles.epilogue}>

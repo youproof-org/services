@@ -8,3 +8,7 @@ node_modules/
 .pnpm-store/
 *.log
 .DS_Store
+
+# D1 migrations are source, not generated dumps — track them despite the
+# blanket *.sql ignore above.
+!infra/cloudflare/newsletter-worker/migrations/*.sql

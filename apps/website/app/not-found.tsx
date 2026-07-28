@@ -13,7 +13,8 @@ export default function NotFound() {
       <main className="stub-main">
         <UnavailableStub />
       </main>
-      <SiteFooter />
+      {/* No newsletter CTA on a content-less 404, matching the other stubs. */}
+      <SiteFooter withNewsletter={false} />
     </div>
   )
 }

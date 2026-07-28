@@ -17,11 +17,19 @@ interface StandaloneRouteProps {
   node: StandaloneNode
   breadcrumbs?: BreadcrumbItem[]
   mode?: HeaderMode
+  // Show the pre-footer newsletter form. Default true; the dispatcher passes
+  // false for legal pages (kind === 'page').
+  withNewsletter?: boolean
 }
 
 // Shared shell for the article/newsletter/page/landing detail routes: header
 // (mode-specific) + content-or-stub + footer.
-export default function StandaloneRoute({ node, breadcrumbs, mode = 'inner' }: StandaloneRouteProps) {
+export default function StandaloneRoute({
+  node,
+  breadcrumbs,
+  mode = 'inner',
+  withNewsletter = true,
+}: StandaloneRouteProps) {
   const showStub = !node.published && isDeployedEnv
 
   // Stub: no hero; the message is vertically centered in the space between
@@ -37,7 +45,7 @@ export default function StandaloneRoute({ node, breadcrumbs, mode = 'inner' }: S
             <UnavailableStub />
           )}
         </main>
-        <SiteFooter locale={node.locale} />
+        <SiteFooter locale={node.locale} withNewsletter={false} />
       </div>
     )
   }
@@ -66,7 +74,7 @@ export default function StandaloneRoute({ node, breadcrumbs, mode = 'inner' }: S
       <main className="page-content">
         <StandalonePage node={node} />
       </main>
-      <SiteFooter locale={node.locale} />
+      <SiteFooter locale={node.locale} withNewsletter={withNewsletter} />
     </div>
   )
 }
