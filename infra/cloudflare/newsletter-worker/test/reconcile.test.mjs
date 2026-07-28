@@ -1,7 +1,12 @@
 import assert from "node:assert/strict";
 import { test, beforeEach, afterEach } from "node:test";
 import { handleScheduled } from "../src/handlers/scheduled.ts";
-import { subscribeUpsert, confirmSubscription, getSubscriptionByEmail } from "../src/lib/db.ts";
+import {
+  subscribeUpsert,
+  confirmSubscription,
+  unsubscribeSubscription,
+  getSubscriptionByEmail,
+} from "../src/lib/db.ts";
 import { FakeD1, makeDeps } from "./helpers/fake-d1.mjs";
 
 const input = {
@@ -84,6 +89,33 @@ test("at threshold: emails the admin once and marks alerted", async () => {
   // A second run must not re-alert (brevo_alerted_at already set).
   await handleScheduled(env(db));
   assert.equal(alertCalls().length, 1, "no duplicate alert");
+});
+
+test("reconciles a failed UNSUBSCRIBE propagation (blacklist), then succeeds", async () => {
+  const { db, id } = await seedConfirmedUnsynced();
+  await handleScheduled(env(db)); // sync the confirm first (POST /contacts)
+
+  // Our-endpoint unsubscribe enqueues a blacklist propagation.
+  await unsubscribeSubscription(db, id, "2026-07-24T03:00:00.000Z");
+  let row = await getSubscriptionByEmail(db, input.email);
+  assert.equal(row.status, "unsubscribed");
+  assert.equal(row.brevo_synced_at, null, "unsubscribe owes Brevo a blacklist");
+
+  // First reconcile fails → attempt recorded, still unsynced.
+  contactResponder = () => new Response("err", { status: 500 });
+  await handleScheduled(env(db));
+  row = await getSubscriptionByEmail(db, input.email);
+  assert.equal(row.brevo_synced_at, null);
+  assert.equal(row.brevo_sync_attempts, 1);
+  assert.ok(
+    calls.some((c) => c.init.method === "PUT" && c.url.includes("/contacts/")),
+    "attempted a blacklist PUT to /contacts/{email}",
+  );
+
+  // Retry succeeds → synced.
+  contactResponder = () => new Response(null, { status: 204 });
+  await handleScheduled(env(db));
+  assert.ok((await getSubscriptionByEmail(db, input.email)).brevo_synced_at, "propagated → synced");
 });
 
 test("synced rows are not picked up again", async () => {

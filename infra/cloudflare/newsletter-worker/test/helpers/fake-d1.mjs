@@ -68,7 +68,11 @@ class Stmt {
     if (sql.includes("brevo_synced_at IS NULL")) {
       const limit = args[0];
       const rows = [...db.rows.values()]
-        .filter((r) => r.status === "confirmed" && r.brevo_synced_at == null)
+        .filter(
+          (r) =>
+            (r.status === "confirmed" || r.status === "unsubscribed") &&
+            r.brevo_synced_at == null,
+        )
         // Mirror the query's ORDER BY brevo_sync_attempts ASC, subscribed_at ASC.
         .sort(
           (a, b) =>
@@ -160,12 +164,18 @@ class Stmt {
         }
         return;
       }
+      // our-endpoint unsubscribe (by id) also resets the Brevo-sync markers to
+      // enqueue the blacklist propagation.
       const [now, , id] = args;
       const r = db.rows.get(id);
       if (r && r.status !== "blocked") {
         r.status = "unsubscribed";
         r.unsubscribed_at = r.unsubscribed_at ?? now;
         r.updated_at = now;
+        r.brevo_synced_at = null;
+        r.brevo_sync_attempts = 0;
+        r.brevo_sync_last_error = null;
+        r.brevo_alerted_at = null;
       }
       return;
     }
