@@ -137,7 +137,8 @@ per-environment is committed. Configure these on each GitHub Environment
 | `WORKER_LOCALE` | var | The `.org` locale this legacy domain's paths map to (`youproof.hu` → `hu`), consumed by `gen-manifest.mjs` to build `/<locale>/<container>/<slug>` redirect targets from the shared `locales.json` dictionary. Defaults to `hu` if unset. |
 | `BREVO_API_KEY` | secret | Newsletter worker: Brevo REST API key (`secret_text` binding). |
 | `BREVO_WEBHOOK_TOKEN` | secret | Newsletter worker: shared secret in the Brevo webhook URL, validated on inbound webhooks (`secret_text`). |
-| `TURNSTILE_SECRET` | secret | Newsletter worker: Cloudflare Turnstile secret key for server-side siteverify (`secret_text`). |
+| `TURNSTILE_SECRET` | secret | Newsletter worker: Cloudflare Turnstile **secret** key for server-side siteverify (`secret_text` binding). |
+| `TURNSTILE_SITEKEY` | var | Newsletter form: Cloudflare Turnstile **sitekey** (public) — consumed by the website build as `NEXT_PUBLIC_TURNSTILE_SITEKEY` and inlined into the static export so the widget renders. Public by design, hence a var (not a secret). Pairs with `TURNSTILE_SECRET`. |
 | `BREVO_SENDER_EMAIL` | var | Newsletter worker: verified Brevo sender for the confirmation email. |
 | `BREVO_LIST_ID` | var | Newsletter worker: Brevo list id confirmed subscribers sync into. |
 | `ALERT_EMAIL` | var | Newsletter worker: admin recipient for contact-sync failure alerts (optional; empty disables). |

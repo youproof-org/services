@@ -7,7 +7,8 @@
 //   - sanity-checks that the sender email is a known Brevo sender.
 //
 // Required env: BREVO_API_KEY, SITE_HOST, BREVO_WEBHOOK_TOKEN, BREVO_SENDER_EMAIL
-// Optional env: BREVO_LIST_NAME (default "youproof.org newsletter")
+// Optional env: BREVO_LIST_NAME (default "<SITE_HOST> newsletter"),
+//               BREVO_WEBHOOK_DESCRIPTION (default "<SITE_HOST> webhook")
 //
 // Usage:
 //   BREVO_API_KEY=... SITE_HOST=staging.youproof.org BREVO_WEBHOOK_TOKEN=... \
@@ -20,7 +21,11 @@ const {
   SITE_HOST,
   BREVO_WEBHOOK_TOKEN,
   BREVO_SENDER_EMAIL,
-  BREVO_LIST_NAME = "youproof.org newsletter",
+  BREVO_LIST_NAME = `${SITE_HOST} newsletter`,
+  // Human-readable webhook description shown in the Brevo dashboard. Defaults to
+  // include SITE_HOST so staging and production are distinguishable even when
+  // sharing one Brevo account; override with BREVO_WEBHOOK_DESCRIPTION.
+  BREVO_WEBHOOK_DESCRIPTION = `${SITE_HOST} webhook`,
 } = process.env;
 
 for (const [k, v] of Object.entries({
@@ -106,7 +111,7 @@ async function ensureWebhook() {
     type: "transactional",
     url,
     events: WEBHOOK_EVENTS,
-    description: "youproof newsletter worker",
+    description: BREVO_WEBHOOK_DESCRIPTION,
   });
   if (!created.ok) throw new Error(`create webhook failed: ${created.status} ${JSON.stringify(created.json)}`);
   console.log(`• transactional webhook registered (id=${created.json.id})`);
