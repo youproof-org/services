@@ -30,6 +30,26 @@ there is served static from R2. Brevo provisioning is covered separately in the
   contact is synced into the Brevo list; failures are marked and retried by a
   15-minute **Cron Trigger**, which emails `ALERT_EMAIL` once a row keeps failing.
 
+## Temporary `.html`-transform workaround (remove after the zone fix)
+
+The `youproof.org` zone's `.html`-stripping **Transform Rule**
+([terraform/zone/transform.tf](../infra/cloudflare/terraform/zone/transform.tf))
+rewrites extensionless paths to `<path>.html` **before** a Worker on the zone
+runs. That rewrite also hits the newsletter API paths, so the Worker would
+receive `/api/v1/newsletter/subscriptions.html` and match no route (→ 404).
+
+As a stopgap the router strips a trailing `.html` (see `src/router.ts`). The
+**proper fix** is to exclude `/api/` from the zone transform — but the zone root
+is a shared, per-zone singleton that only applies at the production merge and is
+gated by the `zone-purity` guard, so it can't land until the feature has been
+promoted to production. Planned sequence:
+
+1. **(done, temporary)** Worker strips `.html` — unblocks staging.
+2. After the feature reaches production, land the zone-transform exclusion
+   (`and not starts_with(http.request.uri.path, "/api/")`) through the zone lane.
+3. Once that's in production, **remove** the `.replace(/\.html$/, "")` stopgap
+   from `src/router.ts`.
+
 ## Repo layout
 
 - Worker source: `infra/cloudflare/newsletter-worker/` (`@youproof.org/newsletter-worker`).
