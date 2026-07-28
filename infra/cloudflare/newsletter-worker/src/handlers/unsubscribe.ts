@@ -1,5 +1,6 @@
 import { getSubscriptionById, unsubscribeSubscription } from "../lib/db";
 import { json, redirect } from "../lib/http";
+import { syncBrevoContact } from "../lib/sync";
 import { homePath, siteUrl } from "../lib/urls";
 import { verifyToken } from "../lib/tokens";
 import type { Env } from "../types";
@@ -26,6 +27,10 @@ export async function handleUnsubscribe(
   if (valid) {
     const now = new Date().toISOString();
     await unsubscribeSubscription(env.DB, id, now);
+    // Propagate out to Brevo (blacklist the contact) so campaign sends stop.
+    // Best-effort: unsubscribeSubscription cleared the sync markers, so a failure
+    // here is retried by the scheduled reconciliation (handlers/scheduled.ts).
+    await syncBrevoContact(env, { ...sub, status: "unsubscribed" });
     if (method === "GET") {
       return redirect(siteUrl(env, homePath(env, sub.locale), { newsletter_unsubscribed: "1" }));
     }

@@ -82,6 +82,13 @@ export async function sendTransactionalEmail(
  * updateEnabled). Called on confirmation so the contact becomes eligible for
  * future campaign sends. ext_id carries our D1 id; the single "how may I
  * address you" name maps to FNAME. No-op if no list id is configured.
+ *
+ * Sets `emailBlacklisted: false` so a re-confirmed subscriber (who had
+ * previously unsubscribed, and was therefore blacklisted in Brevo) is
+ * REACTIVATED — otherwise they'd be re-added to the list but silently excluded
+ * from all sends. Safe: bounce/spam-suppressed emails are rejected at subscribe
+ * (409) long before they reach confirm, so this only reactivates voluntary
+ * resubscribers.
  */
 export async function upsertContact(
   env: Env,
@@ -93,6 +100,7 @@ export async function upsertContact(
     ext_id: args.extId,
     attributes: { FNAME: args.name },
     updateEnabled: true,
+    emailBlacklisted: false,
   };
   if (Number.isFinite(listId)) body.listIds = [listId];
 
@@ -112,19 +120,23 @@ export async function upsertContact(
 }
 
 /**
- * Best-effort blocklist of an address at the Brevo platform level, as a backstop
- * to Brevo's own auto-suppression of hard bounces / spam complaints. D1 remains
- * the authoritative suppression store; failures here are logged, not fatal.
+ * Mark an address `emailBlacklisted: true` in Brevo — i.e. unsubscribed from all
+ * campaign sends. Used for BOTH a voluntary unsubscribe (propagating our
+ * D1 soft-delete out to Brevo, since our List-Unsubscribe points at our own
+ * endpoint and bypasses Brevo) AND as a backstop to Brevo's auto-suppression on
+ * hard bounce / spam. D1 stays authoritative; callers treat failures as
+ * non-fatal. A 404 (contact doesn't exist in Brevo — e.g. unsubscribing a
+ * never-confirmed pending row) is treated as success: nothing to suppress.
  */
-export async function blocklistContact(env: Env, email: string): Promise<void> {
+export async function setEmailBlacklisted(env: Env, email: string): Promise<void> {
   const res = await fetch(`${BREVO_BASE}/contacts/${encodeURIComponent(email)}`, {
     method: "PUT",
     headers: headers(env),
     body: JSON.stringify({ emailBlacklisted: true }),
   });
-  if (!res.ok && res.status !== 204) {
+  if (!res.ok && res.status !== 204 && res.status !== 404) {
     throw new BrevoError(
-      `Brevo blocklist failed (${res.status})`,
+      `Brevo blacklist failed (${res.status})`,
       res.status,
       await safeBody(res),
     );

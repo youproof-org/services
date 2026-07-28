@@ -141,7 +141,12 @@ export async function confirmSubscription(
     .run();
 }
 
-/** Soft-delete: retain the row + history, flip to unsubscribed. Idempotent. */
+/**
+ * Soft-delete via OUR unsubscribe endpoint: retain the row + history, flip to
+ * unsubscribed, and RESET the Brevo-sync markers so the reconciliation propagates
+ * the unsubscribe out to Brevo (blacklist the contact). Our List-Unsubscribe
+ * points at this endpoint, so Brevo isn't in the loop and must be told. Idempotent.
+ */
 export async function unsubscribeSubscription(
   db: D1Like,
   id: string,
@@ -150,7 +155,9 @@ export async function unsubscribeSubscription(
   await db
     .prepare(
       `UPDATE subscriptions
-         SET status = 'unsubscribed', unsubscribed_at = COALESCE(unsubscribed_at, ?), updated_at = ?
+         SET status = 'unsubscribed', unsubscribed_at = COALESCE(unsubscribed_at, ?), updated_at = ?,
+             brevo_synced_at = NULL, brevo_sync_attempts = 0,
+             brevo_sync_last_error = NULL, brevo_alerted_at = NULL
        WHERE id = ? AND status != 'blocked'`,
     )
     .bind(now, now, id)
@@ -261,19 +268,25 @@ export async function subscribeUpsert(
   };
 }
 
-// --- Brevo list-sync reconciliation ---
+// --- Brevo-sync reconciliation ---
 
-/** Confirmed subscriptions not yet synced into the Brevo list (cron worklist). */
-export async function listConfirmedUnsynced(
+/**
+ * Rows that owe Brevo a state update (`brevo_synced_at IS NULL`). The desired
+ * Brevo state depends on status, applied by syncBrevoContact:
+ *   - confirmed   → in list + emailBlacklisted:false (covers confirm AND the
+ *                   re-confirm after a resubscribe)
+ *   - unsubscribed → emailBlacklisted:true (our-endpoint unsubscribe)
+ * Fewest-attempts first so a few permanently-failing rows can't starve fresh
+ * ones out of the LIMIT-bounded batch.
+ */
+export async function listPendingBrevoSync(
   db: D1Like,
   limit: number,
 ): Promise<DbSubscription[]> {
   const { results } = await db
     .prepare(
-      // Fewest-attempts first so a handful of permanently-failing rows can't
-      // starve freshly-confirmed subscribers out of the LIMIT-bounded batch.
       `SELECT * FROM subscriptions
-        WHERE status = 'confirmed' AND brevo_synced_at IS NULL
+        WHERE brevo_synced_at IS NULL AND status IN ('confirmed', 'unsubscribed')
         ORDER BY brevo_sync_attempts ASC, subscribed_at ASC
         LIMIT ?`,
     )
