@@ -455,3 +455,47 @@ export async function pruneSubscribeAttempts(
     .bind(cutoffIso)
     .run();
 }
+
+// --- retention (storage limitation; see the privacy policy's retention section) ---
+
+/**
+ * Delete webhook-event log rows older than the cutoff. Keyed on received_at (when
+ * we recorded it) rather than occurred_at, which is nullable when Brevo omits a
+ * timestamp — a null there must not make a row immortal.
+ */
+export async function pruneEmailEvents(db: D1Like, cutoffIso: string): Promise<void> {
+  await db
+    .prepare("DELETE FROM email_events WHERE received_at < ?")
+    .bind(cutoffIso)
+    .run();
+}
+
+/**
+ * Subscriptions whose retention window has expired: unsubscribed longer ago than
+ * the cutoff. Deliberately restricted to `status = 'unsubscribed'` — `blocked` rows
+ * are the bounce/spam suppression state and must survive, as must
+ * `email_suppressions` (kept while needed for deliverability).
+ *
+ * Batched like listPendingBrevoSync because each row costs a Brevo round-trip.
+ */
+export async function listPurgeableUnsubscribed(
+  db: D1Like,
+  cutoffIso: string,
+  limit: number,
+): Promise<DbSubscription[]> {
+  const { results } = await db
+    .prepare(
+      `SELECT * FROM subscriptions
+        WHERE status = 'unsubscribed' AND unsubscribed_at IS NOT NULL AND unsubscribed_at < ?
+        ORDER BY unsubscribed_at ASC
+        LIMIT ?`,
+    )
+    .bind(cutoffIso, limit)
+    .all<DbSubscription>();
+  return results;
+}
+
+/** Hard-delete a subscription row. Only called once Brevo has dropped the contact. */
+export async function deleteSubscription(db: D1Like, id: string): Promise<void> {
+  await db.prepare("DELETE FROM subscriptions WHERE id = ?").bind(id).run();
+}

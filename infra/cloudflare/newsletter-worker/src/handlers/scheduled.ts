@@ -1,5 +1,12 @@
-import { sendAdminAlert } from "../lib/brevo";
-import { listPendingBrevoSync, markSyncAlerted, pruneSubscribeAttempts } from "../lib/db";
+import { deleteContact, sendAdminAlert } from "../lib/brevo";
+import {
+  deleteSubscription,
+  listPendingBrevoSync,
+  listPurgeableUnsubscribed,
+  markSyncAlerted,
+  pruneEmailEvents,
+  pruneSubscribeAttempts,
+} from "../lib/db";
 import { syncBrevoContact } from "../lib/sync";
 import type { Env } from "../types";
 
@@ -7,8 +14,21 @@ import type { Env } from "../types";
 // attempts to escalate with an admin email (once per subscription).
 const BATCH = 50;
 const ALERT_THRESHOLD = 3;
-// Rate-limit ledger rows older than this are pruned each tick.
+
+// --- retention windows -------------------------------------------------------
+// These are the periods published in the privacy policy's retention section
+// (content/pages/adatkezeles) — keep the two in step.
+//
+// Rate-limit ledger: transient abuse-protection state only.
 const ATTEMPT_RETENTION_MS = 24 * 60 * 60 * 1000;
+// Webhook delivery/bounce/spam log: 24 months.
+const EVENT_RETENTION_MS = 730 * 24 * 60 * 60 * 1000;
+// Unsubscribed subscriptions: 5 years from the unsubscribe, to evidence that the
+// consent was given and later withdrawn, then erased from D1 *and* Brevo.
+const UNSUBSCRIBED_RETENTION_MS = 5 * 365 * 24 * 60 * 60 * 1000;
+// Purge batch size: each row costs a Brevo round-trip, so keep it well under the
+// reconciliation batch.
+const PURGE_BATCH = 20;
 
 /**
  * Scheduled reconciliation (Cron Trigger). Retries any subscription that owes
@@ -18,11 +38,12 @@ const ATTEMPT_RETENTION_MS = 24 * 60 * 60 * 1000;
  * attempts, email the admin once (brevo_alerted_at) for manual handling.
  */
 export async function handleScheduled(env: Env): Promise<void> {
+  const now = Date.now();
+
   // Keep the rate-limit ledger from growing unbounded.
-  await pruneSubscribeAttempts(
-    env.DB,
-    new Date(Date.now() - ATTEMPT_RETENTION_MS).toISOString(),
-  );
+  await pruneSubscribeAttempts(env.DB, new Date(now - ATTEMPT_RETENTION_MS).toISOString());
+  await pruneEmailEvents(env.DB, new Date(now - EVENT_RETENTION_MS).toISOString());
+  await purgeExpiredSubscriptions(env, new Date(now - UNSUBSCRIBED_RETENTION_MS).toISOString());
 
   const pending = await listPendingBrevoSync(env.DB, BATCH);
 
@@ -55,5 +76,31 @@ export async function handleScheduled(env: Env): Promise<void> {
         console.error("newsletter admin alert failed", sub.id, err);
       }
     }
+  }
+}
+
+/**
+ * Erase subscriptions whose retention window has expired, from Brevo first and
+ * only then from D1.
+ *
+ * The order is load-bearing: D1 is the only place that records which addresses owe
+ * Brevo a deletion, so dropping the row first and then failing the Brevo call would
+ * orphan the contact there with nothing left to retry from. On failure the row
+ * stays put and the next tick tries again — the same best-effort-plus-reconcile
+ * shape as the sync path, and safe to repeat because Brevo treats a 404 as success.
+ */
+async function purgeExpiredSubscriptions(env: Env, cutoffIso: string): Promise<void> {
+  const expired = await listPurgeableUnsubscribed(env.DB, cutoffIso, PURGE_BATCH);
+
+  for (const sub of expired) {
+    try {
+      await deleteContact(env, sub.email);
+    } catch (err) {
+      // Leave the row for the next tick rather than losing the only pointer to a
+      // contact that still needs deleting.
+      console.error("newsletter retention purge: Brevo delete failed", sub.id, err);
+      continue;
+    }
+    await deleteSubscription(env.DB, sub.id);
   }
 }

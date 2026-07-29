@@ -481,11 +481,12 @@ export interface RawStandalone {
   epilogue: ContentBlock[]
   thumbnail?: ThumbnailImage
   meta?: MetaInfo
+  references: RefMap
 }
 
-// Structure mirrors a chapter (minus book relationship / prerequisite-warning).
-// Inline cross-references are out of scope, so `references` is intentionally
-// not read here.
+// Structure mirrors a chapter (minus book relationship / prerequisite-warning),
+// `references` included — which target types a standalone item may actually point
+// at is enforced later, by validateReferences in graph.ts.
 export function loadStandalone(filePath: string): RawStandalone {
   const raw = readYaml(filePath)
   const name = raw.name as string
@@ -503,5 +504,6 @@ export function loadStandalone(filePath: string): RawStandalone {
     epilogue: toBlocks(raw.epilogue),
     thumbnail: toThumbnail(raw.thumbnail),
     meta: toMeta(raw.meta),
+    references: toRefMap(raw.references),
   }
 }

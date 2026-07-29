@@ -27,6 +27,17 @@ there is served static from R2. Brevo provisioning is covered separately in the
   propagate a blacklist to Brevo), `POST /webhooks/brevo` (token-authed,
   idempotent; hard bounce/spam → suppress + block, Brevo-side unsubscribe →
   soft-delete).
+- **Retention (GDPR storage limitation):** the same 15-minute cron enforces the
+  periods published in the [privacy policy](https://youproof.org/hu/adatkezeles) —
+  `subscribe_attempts` 24 hours, `email_events` 24 months, and `unsubscribed`
+  subscriptions 5 years from the unsubscribe (the consent-evidence window). Expired
+  subscriptions are erased from **Brevo first, then D1**: D1 is the only record of
+  which addresses still owe Brevo a deletion, so dropping the row first would orphan
+  the contact. A failed Brevo delete leaves the row for the next tick (404 counts as
+  success, so retries converge). `blocked` rows and `email_suppressions` are never
+  purged — they are the bounce/spam suppression state. Constants live next to each
+  other in [`handlers/scheduled.ts`](../infra/cloudflare/newsletter-worker/src/handlers/scheduled.ts)
+  and are pinned by `test/retention.test.mjs`.
 - **Brevo state sync + reconciliation:** D1 is authoritative and the worker
   pushes each row's desired state OUT to Brevo — `confirmed` → in the list +
   `emailBlacklisted:false` (also reactivates a re-confirmed resubscriber);

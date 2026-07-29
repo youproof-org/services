@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "postinstall": "node scripts/check-latex.mjs",
-    "predev": "node scripts/sync-figures.mjs && node scripts/gen-og-images.mjs && node scripts/gen-content-lastmod.mjs",
+    "predev": "node scripts/sync-figures.mjs && node scripts/gen-og-images.mjs && node scripts/gen-wordmark-font.mjs && node scripts/gen-content-lastmod.mjs",
     "dev": "next dev",
-    "prebuild": "node scripts/sync-figures.mjs && node scripts/gen-og-images.mjs && node scripts/gen-content-lastmod.mjs",
+    "prebuild": "node scripts/sync-figures.mjs && node scripts/gen-og-images.mjs && node scripts/gen-wordmark-font.mjs && node scripts/gen-content-lastmod.mjs",
     "build": "next build",
     "postbuild": "node scripts/set-html-lang.mjs && node scripts/check-build-version.mjs",
     "gen:logo": "node scripts/gen-logo-lockup.mjs",
