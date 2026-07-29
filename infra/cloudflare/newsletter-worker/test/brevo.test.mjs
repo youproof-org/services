@@ -72,18 +72,38 @@ test("sendTransactionalEmail throws BrevoError on non-2xx", async () => {
   );
 });
 
-test("upsertContact sends updateEnabled + ext_id + FNAME + listIds", async () => {
+test("upsertContact verifies the list, then sends updateEnabled + ext_id + FNAME + listIds", async () => {
   await withFetch(
-    () => new Response(JSON.stringify({ id: 42 }), { status: 201 }),
+    () => new Response(JSON.stringify({ id: 42 }), { status: 200 }),
     async (calls) => {
       await upsertContact(env, { email: "a@b.co", name: "Anna", extId: "sub-1" });
-      const body = JSON.parse(calls[0].init.body);
+      // list-existence GET precedes the contact POST
+      assert.ok(
+        calls.some((c) => /\/contacts\/lists\/7$/.test(c.url)),
+        "checked the configured list exists",
+      );
+      const post = calls.find((c) => c.url.endsWith("/contacts") && c.init.method === "POST");
+      const body = JSON.parse(post.init.body);
       assert.equal(body.email, "a@b.co");
       assert.equal(body.ext_id, "sub-1");
       assert.equal(body.updateEnabled, true);
       assert.equal(body.emailBlacklisted, false); // reactivate a re-confirmed resubscriber
       assert.equal(body.attributes.FNAME, "Anna");
       assert.deepEqual(body.listIds, [7]);
+    },
+  );
+});
+
+test("upsertContact throws (no silent success) when the configured list does not exist", async () => {
+  await withFetch(
+    (url) => new Response("no", { status: String(url).includes("/contacts/lists/") ? 404 : 201 }),
+    async (calls) => {
+      await assert.rejects(
+        () => upsertContact(env, { email: "a@b.co", name: "A", extId: "s" }),
+        (e) => e instanceof BrevoError && e.status === 404,
+      );
+      // failed at the list check — never POSTed the contact
+      assert.ok(!calls.some((c) => c.url.endsWith("/contacts") && c.init.method === "POST"));
     },
   );
 });
