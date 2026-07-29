@@ -14,7 +14,7 @@
  *   - logo-lockup@<n>x.png              white plaque, as seen on og-thumbnails
  *   - logo-lockup-transparent@<n>x.png  same padding, no white box (alpha)
  *
- * `scale` (default 2) is a multiple of the plaque's rendered size in
+ * `scale` (default 3) is a multiple of the plaque's rendered size in
  * og-thumbnail.jpg, so 1 = pixel-for-pixel what the share image shows.
  */
 import { mkdir } from 'fs/promises'
@@ -29,7 +29,7 @@ const sharp = require('sharp')
 const outDir = path.join(websiteRoot, 'assets', 'brand')
 
 const scaleArg = process.argv[2]
-const scale = scaleArg === undefined ? 2 : Number(scaleArg)
+const scale = scaleArg === undefined ? 3 : Number(scaleArg)
 if (!Number.isFinite(scale) || scale <= 0) {
   console.error(`[gen-logo-lockup] invalid scale '${scaleArg}' — expected a positive number`)
   process.exit(1)
