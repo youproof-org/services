@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { getContentGraph, initContentGraph, listAll } from '@/lib/content'
 import { urlForStandalone } from '@/lib/content/urls'
 import { DEFAULT_LOCALE } from '@/lib/i18n/config'
+import NewsletterForm from '@/components/newsletter/NewsletterForm'
 import styles from './site-footer.module.scss'
 
 // Displayed version. Prefer an explicit build-time override (YOUPROOF_VERSION,
@@ -23,6 +24,9 @@ function resolveVersion(): string {
 
 interface SiteFooterProps {
   locale?: string
+  // Render the pre-footer newsletter form above the footer. Default true; set
+  // false on legal pages (kind === 'page') and content-less stub/dead-end pages.
+  withNewsletter?: boolean
 }
 
 // Footer legal/custom links are the `page` items (§2.1 / §7), fetched from the
@@ -31,7 +35,10 @@ interface SiteFooterProps {
 // hrefs are locale-prefixed (`/hu/impresszum`, not `/impresszum`). Includes
 // unmigrated pages (no published-at) — they link to a not-migrated stub, like
 // unmigrated articles/chapters — so the legal links are always present.
-export default async function SiteFooter({ locale = DEFAULT_LOCALE }: SiteFooterProps) {
+export default async function SiteFooter({
+  locale = DEFAULT_LOCALE,
+  withNewsletter = true,
+}: SiteFooterProps) {
   await initContentGraph()
   const graph = getContentGraph()
 
@@ -42,7 +49,9 @@ export default async function SiteFooter({ locale = DEFAULT_LOCALE }: SiteFooter
   const version = resolveVersion()
 
   return (
-    <footer className={styles.footer}>
+    <>
+      {withNewsletter && <NewsletterForm locale={locale} placement="pre-footer" />}
+      <footer className={styles.footer}>
       <div className={styles.inner}>
         {pages.length > 0 && (
           <nav className={styles.menu}>
@@ -60,6 +69,7 @@ export default async function SiteFooter({ locale = DEFAULT_LOCALE }: SiteFooter
         <p className={styles.copyright}>© 2026 youproof.org — Minden jog fenntartva</p>
         <p className={styles.version}>v{version}</p>
       </div>
-    </footer>
+      </footer>
+    </>
   )
 }

@@ -11,6 +11,7 @@ import './globals.scss'
 // CSS statically instead and disable the runtime injection.
 config.autoAddCss = false
 import DevContentReloader from '@/components/DevContentReloader'
+import NewsletterLanding from '@/components/newsletter/NewsletterLanding'
 import { DEFAULT_LOCALE, getLocaleConfig } from '@/lib/i18n/config'
 import {
   SITE_URL,
@@ -76,6 +77,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className={mulish.className}>
         {children}
+        <NewsletterLanding />
         {process.env.NODE_ENV === 'development' && <DevContentReloader />}
       </body>
     </html>

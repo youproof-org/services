@@ -1,6 +1,9 @@
+import { Fragment } from 'react'
 import type { StandaloneNode } from '@/lib/content/types'
 import ContentBlocks from './ContentBlocks'
 import SectionView from './SectionView'
+import NewsletterForm from '@/components/newsletter/NewsletterForm'
+import { midContentIndex } from '@/lib/newsletter/placement'
 import { huDate } from '@/lib/utils/format-date'
 import styles from './chapter-page.module.scss'
 
@@ -36,16 +39,26 @@ export default function StandalonePage({ node }: StandalonePageProps) {
         </section>
       )}
 
-      {node.sections.map((section, i) => (
-        <SectionView
-          key={section.name}
-          slug={section.slug}
-          title={section.title}
-          body={section.body}
-          label={`${i + 1}.`}
-          embedIndices={{}}
-        />
-      ))}
+      {(() => {
+        // A second, mid-content form only on long articles/newsletters — not on
+        // legal pages or landings.
+        const eligible = node.kind === 'article' || node.kind === 'newsletter'
+        const midIndex = eligible ? midContentIndex(node.sections.length) : -1
+        return node.sections.map((section, i) => (
+          <Fragment key={section.name}>
+            {i === midIndex && (
+              <NewsletterForm locale={node.locale} placement="mid-content" />
+            )}
+            <SectionView
+              slug={section.slug}
+              title={section.title}
+              body={section.body}
+              label={`${i + 1}.`}
+              embedIndices={{}}
+            />
+          </Fragment>
+        ))
+      })()}
 
       {node.epilogue.length > 0 && (
         <section className={styles.epilogue}>

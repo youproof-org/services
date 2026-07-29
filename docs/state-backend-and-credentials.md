@@ -88,9 +88,10 @@ zones). The **Token** column shows which environment's token needs each row:
 | Cache Purge | Zone | Purge | Both | the deploy's CDN cache-purge step (`POST /zones/{id}/purge_cache`). A **distinct** permission from Cache Settings — without it the purge step returns `401`. |
 | Account Rulesets | Account | Edit | Prod only | required *together with* Dynamic Redirect / Transform Rules / Cache Settings to deploy `cloudflare_ruleset` resources |
 | DNS | Zone | Edit | Both | DNS records (`cloudflare_dns_record`) |
-| Workers Routes | Zone | Edit | Both | `.hu` route binding (`cloudflare_workers_route`) |
-| Workers Scripts | Account | Edit | Both | the `.hu` Worker script (`cloudflare_workers_script`) |
+| Workers Routes | Zone | Edit | Both | `.hu` route binding + the `.org` `/api/v1/newsletter/*` route (`cloudflare_workers_route`) |
+| Workers Scripts | Account | Edit | Both | the `.hu` Worker script + the newsletter Worker script (`cloudflare_workers_script`) |
 | Workers R2 Storage | Account | Edit | Both | `.org` R2 buckets + custom domain (`cloudflare_r2_bucket`, `cloudflare_r2_custom_domain`) |
+| D1 | Account | Edit | Both | the newsletter Worker's D1 database (`cloudflare_d1_database`) + `wrangler d1 migrations apply`. Cloudflare has no per-database token scoping — the token can reach all D1 in the account; staging/production isolation comes from separate state keys + DB names (see the [newsletter worker doc](newsletter.md)). |
 
 - **Zone resources:** scope to **All zones from your account** — the zones are
   created by Terraform, so the token can't be limited to a pre-existing zone.
@@ -134,6 +135,20 @@ per-environment is committed. Configure these on each GitHub Environment
 | `LEGACY_GUARD_VALUE` | var | `X-Legacy-Guard` access token — a **var, not a secret** (see [migration worker](migration-worker.md#the-x-legacy-guard-value)). |
 | `DEFAULT_LOCALE` | var | Default locale for the `youproof.org` apex root redirect (`/` → `/<locale>`). Defaults to `hu` if unset. Must match `DEFAULT_LOCALE` in `apps/website/lib/i18n/locales.json`. |
 | `WORKER_LOCALE` | var | The `.org` locale this legacy domain's paths map to (`youproof.hu` → `hu`), consumed by `gen-manifest.mjs` to build `/<locale>/<container>/<slug>` redirect targets from the shared `locales.json` dictionary. Defaults to `hu` if unset. |
+| `BREVO_API_KEY` | secret | Newsletter worker: Brevo REST API key (`secret_text` binding). |
+| `BREVO_WEBHOOK_TOKEN` | secret | Newsletter worker: shared secret in the Brevo webhook URL, validated on inbound webhooks (`secret_text`). |
+| `TURNSTILE_SECRET` | secret | Newsletter worker: Cloudflare Turnstile **secret** key for server-side siteverify (`secret_text` binding). |
+| `TURNSTILE_SITEKEY` | var | Newsletter form: Cloudflare Turnstile **sitekey** (public) — consumed by the website build as `NEXT_PUBLIC_TURNSTILE_SITEKEY` and inlined into the static export so the widget renders. Public by design, hence a var (not a secret). Pairs with `TURNSTILE_SECRET`. |
+| `BREVO_SENDER_EMAIL` | var | Newsletter worker: verified Brevo sender for the confirmation email. |
+| `BREVO_LIST_ID` | var | Newsletter worker: Brevo list id confirmed subscribers sync into. |
+| `ALERT_EMAIL` | var | Newsletter worker: admin recipient for contact-sync failure alerts (optional; empty disables). |
+
+> The newsletter worker's `.org` **site host** and **allowed origins** reuse the
+> existing `REDIRECT_TARGET_HOST` var (the same per-env `.org` host the migration
+> worker 301s to) — no separate variable. Its Brevo resources should point at a
+> **separate Brevo account** for staging vs production to fully isolate the
+> contact list + suppression state (see [Brevo setup](brevo-setup.md)); the
+> per-environment secrets above make that a config choice.
 
 The shared zone root (`zone/`) only needs `CLOUDFLARE_API_TOKEN`,
 `CLOUDFLARE_ACCOUNT_ID`, `R2_STATE_ACCESS_KEY_ID`/`R2_STATE_SECRET_ACCESS_KEY`,
