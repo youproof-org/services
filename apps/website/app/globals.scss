@@ -1,6 +1,19 @@
 @use 'variables' as *;
 @use 'mixins' as *;
 
+// Wordmark face, self-hosted. Subset to just the siteName glyphs at build time by
+// scripts/gen-wordmark-font.mjs (2.8 KB, vs 1.8 MB for the full family), so the
+// site no longer fetches this from fonts.googleapis.com — that embed sent every
+// visitor's IP to Google on every page view. `swap` keeps the wordmark readable in
+// Mulish for the one frame before the face lands.
+@font-face {
+  font-family: 'Google Sans Wordmark';
+  src: url('/assets/generated/google-sans-wordmark.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   color-scheme: light;
   scroll-behavior: smooth;
@@ -8,9 +21,9 @@
   // HeaderHeightProbe), so targets land just below the header. 120px fallback
   // (~a header with breadcrumb) until hydration sets the real value.
   scroll-padding-top: var(--header-height, 120px);
-  // Wordmark / hero-tagline font (see app/layout.tsx <head> embed). Falls back
-  // to Mulish then a generic sans if Google Sans fails to load.
-  --font-wordmark: 'Google Sans', var(--font-mulish), system-ui, sans-serif;
+  // Wordmark / hero-tagline font (see the @font-face above). Falls back to Mulish
+  // then a generic sans if the subset face fails to load.
+  --font-wordmark: 'Google Sans Wordmark', var(--font-mulish), system-ui, sans-serif;
 }
 
 body {

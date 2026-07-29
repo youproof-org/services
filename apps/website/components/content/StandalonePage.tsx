@@ -15,8 +15,8 @@ interface StandalonePageProps {
 // chapter's styling (chapter-page.module.scss) for a consistent reading
 // experience — minus the book-specific chrome (no BookReference, no chapter
 // number, no prev/next nav). The chapter-number label is replaced by the date.
-// Inline cross-references and entity embeds are out of scope, so blocks render
-// with refs undefined and empty embed indices.
+// Inline references ARE supported (the legal pages link to each other and out to
+// processors); entity embeds are not, so blocks render with empty embed indices.
 export default function StandalonePage({ node }: StandalonePageProps) {
   return (
     <article className={styles.chapter}>
@@ -29,13 +29,13 @@ export default function StandalonePage({ node }: StandalonePageProps) {
 
       {node.abstract.length > 0 && (
         <section className={styles.abstract}>
-          <ContentBlocks blocks={node.abstract} embedIndices={{}} context="web" />
+          <ContentBlocks blocks={node.abstract} embedIndices={{}} context="web" refs={node.references} />
         </section>
       )}
 
       {node.prologue.length > 0 && (
         <section className={styles.prologue}>
-          <ContentBlocks blocks={node.prologue} embedIndices={{}} context="web" dropCapFirst />
+          <ContentBlocks blocks={node.prologue} embedIndices={{}} context="web" dropCapFirst refs={node.references} />
         </section>
       )}
 
@@ -55,6 +55,7 @@ export default function StandalonePage({ node }: StandalonePageProps) {
               body={section.body}
               label={`${i + 1}.`}
               embedIndices={{}}
+              refs={section.references}
             />
           </Fragment>
         ))
@@ -62,7 +63,7 @@ export default function StandalonePage({ node }: StandalonePageProps) {
 
       {node.epilogue.length > 0 && (
         <section className={styles.epilogue}>
-          <ContentBlocks blocks={node.epilogue} embedIndices={{}} context="web" />
+          <ContentBlocks blocks={node.epilogue} embedIndices={{}} context="web" refs={node.references} />
         </section>
       )}
     </article>

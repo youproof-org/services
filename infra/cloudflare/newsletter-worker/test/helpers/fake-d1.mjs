@@ -83,6 +83,21 @@ class Stmt {
         .map((r) => ({ ...r }));
       return { results: rows };
     }
+    if (sql.includes("status = 'unsubscribed' AND unsubscribed_at IS NOT NULL")) {
+      const [cutoff, limit] = args;
+      const rows = [...db.rows.values()]
+        .filter(
+          (r) =>
+            r.status === "unsubscribed" &&
+            r.unsubscribed_at != null &&
+            r.unsubscribed_at < cutoff,
+        )
+        // Mirror the query's ORDER BY unsubscribed_at ASC.
+        .sort((a, b) => String(a.unsubscribed_at).localeCompare(String(b.unsubscribed_at)))
+        .slice(0, limit)
+        .map((r) => ({ ...r }));
+      return { results: rows };
+    }
     return { results: [] };
   }
   async run() {
@@ -130,6 +145,16 @@ class Stmt {
     if (sql.startsWith("DELETE FROM subscribe_attempts")) {
       const [cutoff] = args;
       db.attempts = db.attempts.filter((a) => a.attempted_at >= cutoff);
+      return;
+    }
+    if (sql.startsWith("DELETE FROM email_events")) {
+      const [cutoff] = args;
+      db.events = db.events.filter((e) => e.received_at >= cutoff);
+      return;
+    }
+    if (sql.startsWith("DELETE FROM subscriptions")) {
+      const [id] = args;
+      db.rows.delete(id);
       return;
     }
     if (sql.includes("SET status = 'blocked'")) {
