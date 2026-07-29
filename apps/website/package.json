@@ -9,6 +9,7 @@
     "prebuild": "node scripts/sync-figures.mjs && node scripts/gen-og-images.mjs && node scripts/gen-content-lastmod.mjs",
     "build": "next build",
     "postbuild": "node scripts/set-html-lang.mjs && node scripts/check-build-version.mjs",
+    "gen:logo": "node scripts/gen-logo-lockup.mjs",
     "start": "next start",
     "lint": "next lint"
   },
