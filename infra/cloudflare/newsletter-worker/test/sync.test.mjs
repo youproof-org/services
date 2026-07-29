@@ -59,6 +59,18 @@ test("confirmed → failure records attempt + error, leaves synced null", async 
   assert.match(row.brevo_sync_last_error, /500/);
 });
 
+test("confirmed → non-existent Brevo list (404) fails, NOT silently synced", async () => {
+  const { db, sub } = await seedConfirmed();
+  // Brevo 404s the list-existence GET; the contact POST must never mark synced.
+  fetchResult = (url) =>
+    new Response("no", { status: String(url).includes("/contacts/lists/") ? 404 : 201 });
+  const ok = await syncBrevoContact(env(db), sub);
+  assert.equal(ok, false);
+  const row = await getSubscriptionByEmail(db, input.email);
+  assert.equal(row.brevo_synced_at, null, "misconfigured list is a failure, not a silent success");
+  assert.match(row.brevo_sync_last_error, /does not exist|404/);
+});
+
 test("unsubscribed → blacklist marks synced", async () => {
   const { db, sub } = await seedConfirmed();
   await unsubscribeSubscription(db, sub.id, "2026-07-24T02:00:00.000Z"); // status: unsubscribed, markers cleared
