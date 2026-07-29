@@ -20,7 +20,7 @@ at its own site host, list, and webhook.
 | **Verified sender + domain auth** | `From:` of every send | Dashboard → **Senders, Domains & Dedicated IPs**. Authenticate the sending domain (SPF/DKIM) or deliverability suffers. **Manual only** — the script only *checks* it. |
 | **`FNAME` contact attribute** | contact sync on confirm | Usually a Brevo default; the script ensures it. |
 | **Newsletter list** | confirmed-contact sync; future campaigns | Its numeric id → worker `BREVO_LIST_ID`. |
-| **Transactional webhook** | delivery/bounce/spam/unsubscribe events | Points at the worker's `…/webhooks/brevo?token=…`. |
+| **Webhooks (transactional + marketing)** | delivery/bounce/spam/unsubscribe events | Both point at the worker's `…/webhooks/brevo?token=…`. Marketing is required so campaign footer-unsubscribes reach the worker. |
 | **Webhook token** | worker `BREVO_WEBHOOK_TOKEN` secret + webhook URL | A long random string; Brevo has no HMAC, so this shared token (in the URL) is the webhook's auth. Generate with `openssl rand -hex 32`. |
 
 Values consumed by the worker (set as GitHub Environment secrets/vars — see
@@ -62,10 +62,13 @@ node scripts/setup-brevo.mjs
 
 It ensures the `FNAME` attribute, checks the sender, registers the webhook, and
 creates/finds the list — then prints the `BREVO_LIST_ID` to record. Re-running is
-safe (idempotent). The list name and webhook description default to
-`<SITE_HOST> newsletter` and `<SITE_HOST> webhook`, so a **shared** Brevo account
-keeps staging and production distinct automatically; override with
-`BREVO_LIST_NAME` / `BREVO_WEBHOOK_DESCRIPTION` if you want other names. The
+safe (idempotent). The list defaults to `<SITE_HOST>-newsletter` and each
+webhook to `<SITE_HOST>-webhook-<type>` — both names are **sanitized** to
+alphanumerics/hyphens/underscores (the host's dots and spaces become hyphens),
+because Brevo's dashboard only allows those characters. This keeps a **shared**
+Brevo account's staging and production names distinct automatically; override
+the base with `BREVO_LIST_NAME` / `BREVO_WEBHOOK_DESCRIPTION` if you want other
+names (they're sanitized the same way). The
 **same `BREVO_WEBHOOK_TOKEN`** must be stored as the worker secret for that
 environment; keep it out of shell history where possible.
 
@@ -99,39 +102,55 @@ curl -s -X POST https://api.brevo.com/v3/contacts/attributes/normal/FNAME \
 
 ### 3. Newsletter list
 
-Find an existing list by name; if none, create one (a list needs a folder):
+Find an existing list by name; if none, create one (a list needs a folder). The
+name is sanitized to alphanumerics/hyphens/underscores (dashboard constraint):
 
 ```bash
 curl -s "https://api.brevo.com/v3/contacts/lists?limit=50" -H "api-key: $BREVO_API_KEY" \
   | jq '.lists[] | {id, name}'
 
-# If absent — pick/create a folder, then the list:
-FOLDER_ID=$(curl -s "https://api.brevo.com/v3/contacts/folders?limit=50" -H "api-key: $BREVO_API_KEY" | jq '.folders[0].id // empty')
-# (create a folder if none: POST /contacts/folders {"name":"Newsletter"})
+# If absent — find/create a per-host folder, then the list:
+FOLDER_ID=$(curl -s "https://api.brevo.com/v3/contacts/folders?limit=50" -H "api-key: $BREVO_API_KEY" | jq --arg n "${HOST//./-}" '.folders[] | select(.name==$n) | .id')
+# (create the folder if none: POST /contacts/folders {"name":"<HOST//./->"})
 curl -s -X POST https://api.brevo.com/v3/contacts/lists \
   -H "api-key: $BREVO_API_KEY" -H 'content-type: application/json' \
-  -d "{\"name\":\"$HOST newsletter\",\"folderId\":$FOLDER_ID}"
+  -d "{\"name\":\"${HOST//./-}-newsletter\",\"folderId\":$FOLDER_ID}"
 ```
 
 Record the returned list `id` → the environment's **`BREVO_LIST_ID`** var.
 
-### 4. Transactional webhook
+### 4. Webhooks (BOTH transactional and marketing)
 
 The worker receives events at
-`https://$HOST/api/v1/newsletter/webhooks/brevo?token=$TOKEN`. Check for an
-existing one, then create if missing:
+`https://$HOST/api/v1/newsletter/webhooks/brevo?token=$TOKEN`. Brevo delivers
+events to **separate webhooks per category**: transactional (SMTP/API email) vs
+marketing (campaigns). Register **both**, pointing at the same endpoint —
+otherwise campaign events (notably a subscriber clicking the **footer
+unsubscribe** of a newsletter campaign) never reach the worker and D1 goes
+stale. Event names are **camelCase for both** types (per the [create-webhook
+reference](https://developers.brevo.com/reference/create-webhook)); the
+categories differ only in which events exist — `blocked` is transactional-only,
+while `unsubscribed`/`hardBounce`/`spam`/`delivered` are valid for both.
 
 ```bash
-curl -s "https://api.brevo.com/v3/webhooks?type=transactional" -H "api-key: $BREVO_API_KEY" \
-  | jq '.webhooks[] | {id, url}'
+# see what's already there (per type)
+curl -s "https://api.brevo.com/v3/webhooks?type=transactional" -H "api-key: $BREVO_API_KEY" | jq '.webhooks[] | {id,url,events}'
+curl -s "https://api.brevo.com/v3/webhooks?type=marketing"     -H "api-key: $BREVO_API_KEY" | jq '.webhooks[] | {id,url,events}'
 
+# transactional (name: alphanumerics/hyphens/underscores only — host dots → hyphens)
 curl -s -X POST https://api.brevo.com/v3/webhooks \
   -H "api-key: $BREVO_API_KEY" -H 'content-type: application/json' \
-  -d "{\"type\":\"transactional\",\"url\":\"https://$HOST/api/v1/newsletter/webhooks/brevo?token=$TOKEN\",\"events\":[\"delivered\",\"hardBounce\",\"softBounce\",\"spam\",\"unsubscribed\",\"blocked\"],\"description\":\"$HOST webhook\"}"
+  -d "{\"type\":\"transactional\",\"url\":\"https://$HOST/api/v1/newsletter/webhooks/brevo?token=$TOKEN\",\"events\":[\"delivered\",\"hardBounce\",\"softBounce\",\"spam\",\"unsubscribed\",\"blocked\"],\"description\":\"${HOST//./-}-webhook-transactional\"}"
+
+# marketing (same camelCase names; no `blocked` — not a valid marketing event)
+curl -s -X POST https://api.brevo.com/v3/webhooks \
+  -H "api-key: $BREVO_API_KEY" -H 'content-type: application/json' \
+  -d "{\"type\":\"marketing\",\"url\":\"https://$HOST/api/v1/newsletter/webhooks/brevo?token=$TOKEN\",\"events\":[\"unsubscribed\",\"hardBounce\",\"spam\",\"delivered\"],\"description\":\"${HOST//./-}-webhook-marketing\"}"
 ```
 
-The worker only *acts* on `hardBounce`/`spam` (→ suppress + block) and
-`unsubscribed` (→ soft-delete); the rest are recorded for history.
+The worker only *acts* on hard bounce / spam (→ suppress + block) and
+unsubscribe (→ soft-delete); it normalizes the casing difference between the two
+categories (`classifyBrevoEvent`). Other events are recorded for history.
 
 ## Verify
 

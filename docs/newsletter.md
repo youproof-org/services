@@ -108,7 +108,7 @@ or follow the [runbook](brevo-setup.md))
 - [ ] Create an **API key** → `BREVO_API_KEY`.
 - [ ] Generate a random **webhook token** (`openssl rand -hex 32`) → `BREVO_WEBHOOK_TOKEN`.
 - [ ] Ensure the newsletter **list** → record its id → `BREVO_LIST_ID`.
-- [ ] Register the **transactional webhook** at `https://<host>/api/v1/newsletter/webhooks/brevo?token=<token>`.
+- [ ] Register **both** the transactional and marketing webhooks at `https://<host>/api/v1/newsletter/webhooks/brevo?token=<token>` (campaign footer-unsubscribes only reach a *marketing* webhook).
 
 **GitHub Environment** (`staging` and `production`)
 - [ ] secrets: `BREVO_API_KEY`, `BREVO_WEBHOOK_TOKEN`, `TURNSTILE_SECRET`
