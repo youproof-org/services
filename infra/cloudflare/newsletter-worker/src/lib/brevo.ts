@@ -78,6 +78,28 @@ export async function sendTransactionalEmail(
 }
 
 /**
+ * Verify a Brevo list id exists. 404 → throw (misconfigured BREVO_LIST_ID);
+ * other non-2xx → throw (transient — the caller retries via reconciliation).
+ * Not memoized: it runs only on the confirm/reconcile path (never on subscribe),
+ * so one extra GET per confirmation is negligible.
+ */
+async function ensureListExists(env: Env, listId: number): Promise<void> {
+  const res = await fetch(`${BREVO_BASE}/contacts/lists/${listId}`, {
+    headers: headers(env),
+  });
+  if (res.status === 404) {
+    throw new BrevoError(
+      `BREVO_LIST_ID ${listId} does not exist in Brevo`,
+      404,
+      await safeBody(res),
+    );
+  }
+  if (!res.ok) {
+    throw new BrevoError(`Brevo list check failed (${res.status})`, res.status, await safeBody(res));
+  }
+}
+
+/**
  * Upsert a contact and add it to the newsletter list (idempotent via
  * updateEnabled). Called on confirmation so the contact becomes eligible for
  * future campaign sends. ext_id carries our D1 id; the single "how may I
@@ -102,7 +124,15 @@ export async function upsertContact(
     updateEnabled: true,
     emailBlacklisted: false,
   };
-  if (Number.isFinite(listId)) body.listIds = [listId];
+  if (Number.isFinite(listId)) {
+    // Verify the configured list actually exists FIRST. Brevo silently accepts a
+    // contact upsert with a non-existent listId (2xx, list assignment ignored),
+    // which would otherwise mark the row "synced" while the contact never joins a
+    // list. Throwing here surfaces a misconfigured BREVO_LIST_ID as a failed sync
+    // → reconciled + alerted, instead of silently dropping subscribers.
+    await ensureListExists(env, listId);
+    body.listIds = [listId];
+  }
 
   const res = await fetch(`${BREVO_BASE}/contacts`, {
     method: "POST",

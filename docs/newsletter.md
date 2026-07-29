@@ -35,7 +35,10 @@ there is served static from R2. Brevo provisioning is covered separately in the
   (`brevo_synced_at IS NULL`) and retried by a 15-minute **Cron Trigger** — one
   unified worklist covering confirm, resubscribe, and unsubscribe — which emails
   `ALERT_EMAIL` once a row keeps failing. (Webhook-driven unsubscribes aren't
-  re-pushed: Brevo already knows.)
+  re-pushed: Brevo already knows.) A **misconfigured `BREVO_LIST_ID`** (list
+  doesn't exist) is caught up front — the worker verifies the list before adding
+  a contact — so it fails loudly via reconciliation + alert instead of silently
+  dropping subscribers (Brevo otherwise accepts a bad list assignment with a 2xx).
 
 ## Temporary `.html`-transform workaround (remove after the zone fix)
 
