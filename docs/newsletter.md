@@ -40,25 +40,20 @@ there is served static from R2. Brevo provisioning is covered separately in the
   a contact — so it fails loudly via reconciliation + alert instead of silently
   dropping subscribers (Brevo otherwise accepts a bad list assignment with a 2xx).
 
-## Temporary `.html`-transform workaround (remove after the zone fix)
+## `.html` transform and `/api/` paths
 
 The `youproof.org` zone's `.html`-stripping **Transform Rule**
 ([terraform/zone/transform.tf](../infra/cloudflare/terraform/zone/transform.tf))
 rewrites extensionless paths to `<path>.html` **before** a Worker on the zone
-runs. That rewrite also hits the newsletter API paths, so the Worker would
-receive `/api/v1/newsletter/subscriptions.html` and match no route (→ 404).
+runs. Its rule explicitly **excludes `/api/`** (`and not
+starts_with(http.request.uri.path, "/api/")`) so the newsletter API paths reach
+the Worker unrewritten — without that, `/api/v1/newsletter/subscriptions` would
+arrive as `…subscriptions.html` and match no route (→ 404).
 
-As a stopgap the router strips a trailing `.html` (see `src/router.ts`). The
-**proper fix** is to exclude `/api/` from the zone transform — but the zone root
-is a shared, per-zone singleton that only applies at the production merge and is
-gated by the `zone-purity` guard, so it can't land until the feature has been
-promoted to production. Planned sequence:
-
-1. **(done, temporary)** Worker strips `.html` — unblocks staging.
-2. After the feature reaches production, land the zone-transform exclusion
-   (`and not starts_with(http.request.uri.path, "/api/")`) through the zone lane.
-3. Once that's in production, **remove** the `.replace(/\.html$/, "")` stopgap
-   from `src/router.ts`.
+> History: a temporary router-level `.html` strip in `src/router.ts` unblocked
+> staging before the zone-transform exclusion could be landed (the zone root is a
+> shared, production-only, `zone-purity`-gated singleton). Once the exclusion
+> reached production the stopgap was removed.
 
 ## Repo layout
 
