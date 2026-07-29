@@ -19,17 +19,7 @@ export async function route(
   url: URL,
 ): Promise<Response> {
   const method = request.method.toUpperCase();
-  // TEMPORARY WORKAROUND (YP-142): the youproof.org zone's `.html`-stripping
-  // Transform Rule rewrites extensionless paths to "<path>.html" BEFORE this
-  // Worker runs, so our API paths arrive as e.g.
-  // `/api/v1/newsletter/subscriptions.html` and match no route (→ 404). Strip a
-  // trailing `.html` to recover the real path. Safe: the Worker only serves
-  // `/api/v1/newsletter/*` and never legitimately routes a `.html` path.
-  //
-  // This is a stopgap. The proper fix is to exclude `/api/` from the zone
-  // transform (terraform/zone/transform.tf); once that ships to production,
-  // REMOVE the `.replace(/\.html$/, "")` below. See docs/newsletter.md.
-  const path = url.pathname.replace(/\/+$/, "").replace(/\.html$/, "");
+  const path = url.pathname.replace(/\/+$/, ""); // tolerate a trailing slash
 
   if (!path.startsWith(API_PREFIX)) {
     return json({ code: "not_found" }, 404);
