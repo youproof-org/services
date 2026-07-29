@@ -1,5 +1,5 @@
-// router.ts coverage — focused on the TEMPORARY `.html` normalization that works
-// around the zone's .html-stripping Transform Rule (see router.ts / docs).
+// router.ts coverage. (The temporary `.html` normalization was removed once the
+// zone transform was fixed to exclude /api/ — see docs/newsletter.md.)
 
 import assert from "node:assert/strict";
 import { test } from "node:test";
@@ -14,41 +14,22 @@ function req(method, path, headers = {}) {
   return { request, url: new URL(request.url) };
 }
 
-test(".html-suffixed subscribe path still routes to the handler (not 404)", async () => {
-  // The zone transform turns /subscriptions into /subscriptions.html; the router
-  // must still dispatch it to handleSubscribe (which then 403s on missing Origin).
-  const { request, url } = req("POST", "/api/v1/newsletter/subscriptions.html");
+test("subscribe path routes to the handler (403 on missing Origin, not 404)", async () => {
+  const { request, url } = req("POST", "/api/v1/newsletter/subscriptions");
   const res = await route(request, env, url);
-  assert.equal(res.status, 403); // forbidden_origin — reached the handler, not not_found
+  assert.equal(res.status, 403);
   assert.equal((await res.json()).code, "forbidden_origin");
 });
 
-test("trailing slash also routes", async () => {
+test("trailing slash still routes", async () => {
   const { request, url } = req("POST", "/api/v1/newsletter/subscriptions/");
   const res = await route(request, env, url);
   assert.equal(res.status, 403);
 });
 
-test(".html-suffixed confirm path matches the detail route (not 404)", async () => {
-  // No token/env → confirm redirects to the homepage with newsletter_confirmed=invalid
-  // (a 302), proving the route matched rather than falling through to not_found.
-  const { request, url } = req("GET", "/api/v1/newsletter/subscriptions/abc/confirm.html");
-  const res = await route(request, { ...env, DB: fakeEmptyDb(), SITE_HOST: "staging.youproof.org", DEFAULT_LOCALE: "hu" }, url);
-  assert.equal(res.status, 302);
-});
-
-test("genuinely unknown path still 404s", async () => {
+test("genuinely unknown path 404s", async () => {
   const { request, url } = req("GET", "/api/v1/newsletter/nope");
   const res = await route(request, env, url);
   assert.equal(res.status, 404);
   assert.equal((await res.json()).code, "not_found");
 });
-
-// A D1 stub that returns no subscription (so confirm treats the token as invalid).
-function fakeEmptyDb() {
-  return {
-    prepare() {
-      return { bind() { return this; }, async first() { return null; }, async run() {}, async all() { return { results: [] }; } };
-    },
-  };
-}
