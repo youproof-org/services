@@ -28,10 +28,12 @@ const mulish = Mulish({
   display: 'swap',
 })
 
-// Wordmark / hero-tagline font (brand lockup only — body/UI stays Mulish).
-// Google Sans isn't in this next version's next/font/google metadata, so it's
-// loaded via the Google Fonts <link> embed in <head> below and consumed through
-// the --font-wordmark CSS var (defined in globals.scss) — swappable in one place.
+// Wordmark font (brand lockup only — body/UI stays Mulish): Google Sans, which
+// isn't in this next version's next/font/google metadata. It is self-hosted rather
+// than embedded from fonts.googleapis.com — that embed sent every visitor's IP to
+// Google on every page view. scripts/gen-wordmark-font.mjs subsets the bundled OFL
+// face to the siteName glyphs at build time; app/globals.scss declares the
+// @font-face and the --font-wordmark var that consumes it.
 
 // Only production is indexable. Anything else — staging, previews, or a missing
 // SITE_ENV — emits noindex, so only an explicit SITE_ENV === 'production' can
@@ -66,13 +68,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang={DEFAULT_LOCALE} className={mulish.variable}>
       <head>
-        {/* Google Sans (wordmark). Not available via next/font/google in this
-            next version, so embedded directly; React hoists these into <head>. */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* The wordmark face is same-origin, but it's only discovered after the
+            stylesheet parses; preload so the lockup doesn't flash in Mulish. */}
         <link
-          href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap"
-          rel="stylesheet"
+          rel="preload"
+          href="/assets/generated/google-sans-wordmark.otf"
+          as="font"
+          type="font/otf"
+          crossOrigin="anonymous"
         />
       </head>
       <body className={mulish.className}>

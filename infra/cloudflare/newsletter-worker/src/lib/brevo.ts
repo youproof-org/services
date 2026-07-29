@@ -174,6 +174,35 @@ export async function setEmailBlacklisted(env: Env, email: string): Promise<void
 }
 
 /**
+ * Permanently delete a contact from Brevo. Used by the retention purge: once a
+ * subscription's retention window expires we erase the address from BOTH stores,
+ * so blacklisting (which merely stops sends) isn't enough — the contact itself has
+ * to go, or the email would outlive its own retention period in Brevo.
+ *
+ * 404 is success: a row that never confirmed never became a contact, and a repeat
+ * purge attempt after a partial failure should converge rather than jam.
+ *
+ * Note this also drops the address from Brevo's blocklist. Harmless here, because
+ * only `unsubscribed` rows are ever purged — bounce/spam addresses are `blocked`,
+ * kept in our own email_suppressions, and rejected at subscribe long before any
+ * Brevo call.
+ */
+export async function deleteContact(env: Env, email: string): Promise<void> {
+  const res = await fetch(`${BREVO_BASE}/contacts/${encodeURIComponent(email)}`, {
+    method: "DELETE",
+    headers: headers(env),
+  });
+  // 204 No Content on success; 200 tolerated in case Brevo echoes a body.
+  if (!res.ok && res.status !== 204 && res.status !== 404) {
+    throw new BrevoError(
+      `Brevo contact delete failed (${res.status})`,
+      res.status,
+      await safeBody(res),
+    );
+  }
+}
+
+/**
  * Send a plain-text operational alert to the admin address via the same
  * transactional API. No-op if ALERT_EMAIL is unset. Best-effort — the caller
  * treats failures as non-fatal (they're already in an error path).
