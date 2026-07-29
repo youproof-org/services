@@ -147,6 +147,15 @@ export interface TermRefTarget {
   parent: KnowledgeBaseRefTarget
 }
 
+// A standalone item (article/newsletter/page/landing). Addressed by the
+// language-independent `name`, not the localized `slug`, so the href stays correct
+// if the slug is ever localized — resolution goes through urlForStandalone, which
+// supplies the target's own locale + slug.
+export interface StandaloneRefTarget {
+  type: StandaloneKind
+  name: string
+}
+
 export type RefTarget =
   | ExternalRefTarget
   | KnowledgeBaseRefTarget
@@ -154,6 +163,7 @@ export type RefTarget =
   | TermRefTarget
   | ChapterRefTarget
   | SectionRefTarget
+  | StandaloneRefTarget
 
 export interface RefEntry {
   display: string
@@ -344,6 +354,7 @@ export interface StandaloneSection {
   slug: string                    // localized in-page anchor id
   title: string
   body: ContentBlock[]
+  references: RefMap
 }
 
 export interface StandaloneNode {
@@ -362,6 +373,7 @@ export interface StandaloneNode {
   epilogue: ContentBlock[]
   thumbnail?: ThumbnailImage
   meta?: MetaInfo                 // optional crawler/social metadata (kebab: meta)
+  references: RefMap              // inline [slug] targets (kebab: references)
 }
 
 // ---------------------------------------------------------------------------

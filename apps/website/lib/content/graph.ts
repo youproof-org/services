@@ -19,6 +19,10 @@ import type {
   SectionNode,
   StandaloneKind,
   StandaloneNode,
+  StandaloneSection,
+  RemarkNode,
+  RefEntry,
+  RefTarget,
 } from './types'
 import {
   getContentDir,
@@ -46,6 +50,7 @@ const STANDALONE_DIRS: Record<StandaloneKind, string> = {
 }
 import { buildContext, resolveTemplate } from './display-template'
 import { buildLocalizedUrl } from '@/lib/i18n/url'
+import { urlForStandalone } from './urls'
 import { claimId } from '@/lib/utils/claim-id'
 import { termId } from '@/lib/utils/term-id'
 import { entityId } from '@/lib/utils/entity-id'
@@ -90,6 +95,23 @@ function sectionKey(
   sectionName: string
 ): string {
   return `/books/${bookName}/${partName}/${chapterName}/${sectionName}`
+}
+
+// Key for the per-kind standalone Maps (graph.articles/newsletters/pages/landings).
+// Keyed on the language-independent `name`, which is also how a StandaloneRefTarget
+// addresses an item — so a reference is a direct Map lookup.
+function standaloneKey(kind: StandaloneKind, name: string): string {
+  return `/${STANDALONE_DIRS[kind]}/${name}`
+}
+
+/** The graph Map holding a given standalone kind. */
+function standaloneMapFor(graph: ContentGraph, kind: StandaloneKind): Map<string, StandaloneNode> {
+  switch (kind) {
+    case 'article': return graph.articles
+    case 'newsletter': return graph.newsletters
+    case 'page': return graph.pages
+    case 'landing': return graph.landings
+  }
 }
 
 function scanFiles(dir: string, ext = '.yaml'): string[] {
@@ -208,10 +230,11 @@ export interface RawStandaloneEntry {
   excerpt?: string
   abstract: ContentBlock[]
   prologue: ContentBlock[]
-  sections: { name: string; slug: string; title: string; body: ContentBlock[] }[]
+  sections: StandaloneSection[]
   epilogue: ContentBlock[]
   thumbnail?: ThumbnailImage
   meta?: MetaInfo
+  references: RefMap
 }
 
 export interface RawGraphData {
@@ -496,7 +519,13 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
         const sections = rawItem.sectionNames
           .map((n) => sectionByName.get(n))
           .filter((s): s is ReturnType<typeof loadSection> => s !== undefined)
-          .map((s) => ({ name: s.name, slug: s.slug, title: s.title, body: s.body }))
+          .map((s) => ({
+            name: s.name,
+            slug: s.slug,
+            title: s.title,
+            body: s.body,
+            references: s.references,
+          }))
 
         raw.standalones.push({
           kind,
@@ -515,6 +544,7 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
             ? { src: resolveImageSrc(rawItem.thumbnail.src, itemDir, urlPrefix), alt: rawItem.thumbnail.alt }
             : undefined,
           meta: rawItem.meta,
+          references: rawItem.references,
         })
       } catch (err) {
         if (err instanceof ContentFormatError) throw err // format violations are fatal
@@ -711,13 +741,8 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
   }
 
   // Pass 3b: Standalone content (article/newsletter/page/landing). No parent
-  // wiring and no ref resolution (inline references are out of scope for now).
-  const standaloneMap: Record<StandaloneKind, Map<string, StandaloneNode>> = {
-    article: graph.articles,
-    newsletter: graph.newsletters,
-    page: graph.pages,
-    landing: graph.landings,
-  }
+  // wiring; `references` ride along and are resolved/validated with everything
+  // else below (see refOwners + validateReferences).
   for (const e of raw.standalones) {
     const node: StandaloneNode = {
       kind: e.kind,
@@ -735,17 +760,110 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
       epilogue: e.epilogue,
       thumbnail: e.thumbnail,
       meta: e.meta,
+      references: e.references,
     }
-    standaloneMap[e.kind].set(`/${STANDALONE_DIRS[e.kind]}/${e.name}`, node)
+    standaloneMapFor(graph, e.kind).set(standaloneKey(e.kind, e.name), node)
   }
 
   const entityChapterInfo = buildEntityChapterInfo(graph)
   resolveDisplayTemplates(graph, entityChapterInfo)
   resolveSelfReferenceDisplayTemplates(graph)
-  resolveClaimRefHrefs(graph, entityChapterInfo)
+  resolveRefHrefs(graph, entityChapterInfo)
+  validateReferences(graph)
   validateTermInsertions(graph)
 
   return graph
+}
+
+// ---------------------------------------------------------------------------
+// Reference owners
+// ---------------------------------------------------------------------------
+
+/**
+ * Every node in the graph that can carry a `references` map, together with what
+ * kind of node it is and (for a section) its parent.
+ *
+ * This is the single place that enumerates reference owners. Everything that walks
+ * references — href resolution, display-template resolution, validation — goes
+ * through `refOwners`, so adding a node kind means touching one function instead of
+ * every walker.
+ *
+ * The owner is carried, not just its RefMap, because reference *rules* are
+ * statements about an owner and its target together ("a chapter may only reference
+ * chapters of the same book"). Handing walkers a bare RefMap would make such rules
+ * inexpressible.
+ */
+type RefOwner =
+  | { kind: 'chapter'; node: ChapterNode }
+  | { kind: 'section'; node: SectionNode; parent: ChapterNode }
+  | { kind: 'definition'; node: DefinitionNode }
+  | { kind: 'theorem'; node: TheoremNode }
+  | { kind: 'proof'; node: ProofNode }
+  | { kind: 'remark'; node: RemarkNode }
+  | { kind: StandaloneKind; node: StandaloneNode }
+  | { kind: 'standalone-section'; node: StandaloneSection; parent: StandaloneNode }
+
+/**
+ * Yields the LIVE node objects, not copies: resolution mutates `RefEntry.href` and
+ * `RefEntry.display` in place, and the renderer reads the same objects back off the
+ * graph.
+ */
+function* refOwners(graph: ContentGraph): Generator<RefOwner> {
+  for (const node of graph.chapters.values()) {
+    yield { kind: 'chapter', node }
+    for (const section of node.sections) yield { kind: 'section', node: section, parent: node }
+  }
+  for (const node of graph.definitions.values()) yield { kind: 'definition', node }
+  for (const node of graph.theorems.values()) yield { kind: 'theorem', node }
+  for (const node of graph.proofs.values()) yield { kind: 'proof', node }
+  for (const node of graph.remarks.values()) yield { kind: 'remark', node }
+  for (const map of [graph.articles, graph.newsletters, graph.pages, graph.landings]) {
+    for (const node of map.values()) {
+      yield { kind: node.kind, node }
+      for (const section of node.sections) {
+        yield { kind: 'standalone-section', node: section, parent: node }
+      }
+    }
+  }
+}
+
+/** Every reference map in the graph, for walkers that don't need owner context. */
+function* allRefEntries(graph: ContentGraph): Generator<RefEntry> {
+  for (const owner of refOwners(graph)) yield* Object.values(owner.node.references)
+}
+
+/**
+ * Which `target.type`s each owner kind may reference.
+ *
+ * Only kinds listed here are constrained; anything absent keeps the historical
+ * permissive behaviour. The standalone kinds are restricted because a legal page
+ * linking into the middle of a book's entity graph is not something the standalone
+ * renderer supports (it has no entity/embed indices) — better a build error than a
+ * silently broken link.
+ *
+ * This table is the seam for the richer rules still to come (a chapter referencing
+ * only chapters of its own book; an embedded entity referencing only entities
+ * embedded in the same book). Those need the owner's parentage, which `refOwners`
+ * already supplies — add the rule here rather than in the walkers.
+ */
+const ALLOWED_REF_TARGETS: Partial<Record<RefOwner['kind'], readonly RefTarget['type'][]>> = {
+  page: ['external', 'page'],
+}
+
+function validateReferences(graph: ContentGraph): void {
+  for (const owner of refOwners(graph)) {
+    const allowed = ALLOWED_REF_TARGETS[owner.kind]
+    if (!allowed) continue
+    for (const [key, entry] of Object.entries(owner.node.references)) {
+      if (!allowed.includes(entry.target.type)) {
+        throw new Error(
+          `Reference "${key}" in ${owner.kind} "${owner.node.name}" targets ` +
+            `'${entry.target.type}', which a ${owner.kind} may not reference ` +
+            `(allowed: ${allowed.join(', ')}).`
+        )
+      }
+    }
+  }
 }
 
 type EntityChapterInfo = Map<string, { chapterUrl: string; index?: string }>
@@ -804,62 +922,71 @@ function buildEntityChapterInfo(graph: ContentGraph): EntityChapterInfo {
   return info
 }
 
-function resolveClaimRefHrefs(graph: ContentGraph, entityChapterInfo: EntityChapterInfo): void {
-  const refMaps: RefMap[] = [
-    ...[...graph.chapters.values()].map(n => n.references),
-    ...[...graph.sections.values()].map(n => n.references),
-    ...[...graph.definitions.values()].map(n => n.references),
-    ...[...graph.theorems.values()].map(n => n.references),
-    ...[...graph.proofs.values()].map(n => n.references),
-    ...[...graph.remarks.values()].map(n => n.references),
-  ]
-  for (const refMap of refMaps) {
-    for (const entry of Object.values(refMap)) {
-      if (entry.target.type === 'claim') {
-        const target = entry.target
-        const parentKey = `${target.parent.namespace}/${target.parent.name}`
-        const chapterUrl = entityChapterInfo.get(parentKey)?.chapterUrl
-        if (!chapterUrl) {
-          throw new Error(`Cannot resolve chapter URL for claim reference to ${target.name} in ${parentKey}`)
-        }
-        entry.href = `${chapterUrl}#${claimId(target.name, target.parent)}`
-      } else if (entry.target.type === 'term') {
-        const target = entry.target
-        const parentKey = `${target.parent.namespace}/${target.parent.name}`
-        const chapterUrl = entityChapterInfo.get(parentKey)?.chapterUrl
-        if (!chapterUrl) {
-          throw new Error(`Cannot resolve chapter URL for term reference to "${target.name}" in ${parentKey}`)
-        }
-        entry.href = `${chapterUrl}#${termId(target.name, target.parent)}`
-      } else if (
-        entry.target.type === 'definition' || entry.target.type === 'theorem' ||
-        entry.target.type === 'proof'       || entry.target.type === 'remark'
-      ) {
-        const target = entry.target
-        const key = `${target.namespace}/${target.name}`
-        const chapterUrl = entityChapterInfo.get(key)?.chapterUrl
-        if (!chapterUrl) {
-          throw new Error(`Cannot resolve chapter URL for entity reference to ${target.type} "${target.name}" in ${target.namespace}`)
-        }
-        entry.href = `${chapterUrl}#${entityId(target.type, target.namespace, target.name)}`
-      } else if (entry.target.type === 'chapter') {
-        const target = entry.target
-        const chapter = graph.chapters.get(chapterKey(target.book, target.part, target.name))
-        if (!chapter) {
-          throw new Error(`Cannot resolve chapter reference to "${target.name}" in ${target.book}/${target.part}`)
-        }
-        entry.href = buildLocalizedUrl(chapter.locale, 'chapter', chapter.part.book.slug, chapter.slug)
-      } else if (entry.target.type === 'section') {
-        const target = entry.target
-        const section = graph.sections.get(sectionKey(target.book, target.part, target.chapter, target.name))
-        if (!section) {
-          throw new Error(`Cannot resolve section reference to "${target.name}" in ${target.book}/${target.part}/${target.chapter}`)
-        }
-        const chapter = section.chapter
-        const chapterUrl = buildLocalizedUrl(chapter.locale, 'chapter', chapter.part.book.slug, chapter.slug)
-        // Section slug is the localized in-page anchor id (see SectionView).
-        entry.href = `${chapterUrl}#${section.slug}`
+function resolveRefHrefs(graph: ContentGraph, entityChapterInfo: EntityChapterInfo): void {
+  for (const entry of allRefEntries(graph)) {
+    if (entry.target.type === 'claim') {
+      const target = entry.target
+      const parentKey = `${target.parent.namespace}/${target.parent.name}`
+      const chapterUrl = entityChapterInfo.get(parentKey)?.chapterUrl
+      if (!chapterUrl) {
+        throw new Error(`Cannot resolve chapter URL for claim reference to ${target.name} in ${parentKey}`)
       }
+      entry.href = `${chapterUrl}#${claimId(target.name, target.parent)}`
+    } else if (entry.target.type === 'term') {
+      const target = entry.target
+      const parentKey = `${target.parent.namespace}/${target.parent.name}`
+      const chapterUrl = entityChapterInfo.get(parentKey)?.chapterUrl
+      if (!chapterUrl) {
+        throw new Error(`Cannot resolve chapter URL for term reference to "${target.name}" in ${parentKey}`)
+      }
+      entry.href = `${chapterUrl}#${termId(target.name, target.parent)}`
+    } else if (
+      entry.target.type === 'definition' || entry.target.type === 'theorem' ||
+      entry.target.type === 'proof'       || entry.target.type === 'remark'
+    ) {
+      const target = entry.target
+      const key = `${target.namespace}/${target.name}`
+      const chapterUrl = entityChapterInfo.get(key)?.chapterUrl
+      if (!chapterUrl) {
+        throw new Error(`Cannot resolve chapter URL for entity reference to ${target.type} "${target.name}" in ${target.namespace}`)
+      }
+      entry.href = `${chapterUrl}#${entityId(target.type, target.namespace, target.name)}`
+    } else if (entry.target.type === 'chapter') {
+      const target = entry.target
+      const chapter = graph.chapters.get(chapterKey(target.book, target.part, target.name))
+      if (!chapter) {
+        throw new Error(`Cannot resolve chapter reference to "${target.name}" in ${target.book}/${target.part}`)
+      }
+      entry.href = buildLocalizedUrl(chapter.locale, 'chapter', chapter.part.book.slug, chapter.slug)
+    } else if (entry.target.type === 'section') {
+      const target = entry.target
+      const section = graph.sections.get(sectionKey(target.book, target.part, target.chapter, target.name))
+      if (!section) {
+        throw new Error(`Cannot resolve section reference to "${target.name}" in ${target.book}/${target.part}/${target.chapter}`)
+      }
+      const chapter = section.chapter
+      const chapterUrl = buildLocalizedUrl(chapter.locale, 'chapter', chapter.part.book.slug, chapter.slug)
+      // Section slug is the localized in-page anchor id (see SectionView).
+      entry.href = `${chapterUrl}#${section.slug}`
+    } else if (
+      entry.target.type === 'article'  || entry.target.type === 'newsletter' ||
+      entry.target.type === 'page'     || entry.target.type === 'landing'
+    ) {
+      const target = entry.target
+      const node = standaloneMapFor(graph, target.type).get(standaloneKey(target.type, target.name))
+      if (!node) {
+        throw new Error(`Cannot resolve ${target.type} reference to "${target.name}" — no such ${target.type} in the content graph`)
+      }
+      // Unpublished targets resolve to the not-migrated stub rather than a dead
+      // link, so this is a warning, not an error — the footer deliberately links
+      // unpublished legal pages for the same reason.
+      if (!node.published) {
+        console.warn(
+          `Reference to ${target.type} "${target.name}" points at an unpublished item; ` +
+            `it will link to the not-migrated stub until 'published-at' is set.`
+        )
+      }
+      entry.href = urlForStandalone(node)
     }
   }
 }
@@ -904,20 +1031,10 @@ function validateTermInsertions(graph: ContentGraph): void {
 }
 
 function resolveDisplayTemplates(graph: ContentGraph, entityChapterInfo: EntityChapterInfo): void {
-  const refMaps: RefMap[] = [
-    ...[...graph.chapters.values()].map(n => n.references),
-    ...[...graph.sections.values()].map(n => n.references),
-    ...[...graph.definitions.values()].map(n => n.references),
-    ...[...graph.theorems.values()].map(n => n.references),
-    ...[...graph.proofs.values()].map(n => n.references),
-    ...[...graph.remarks.values()].map(n => n.references),
-  ]
-  for (const refMap of refMaps) {
-    for (const entry of Object.values(refMap)) {
-      if (!entry.display?.includes('{')) continue
-      const ctx = buildContext(entry.target, graph, entityChapterInfo)
-      if (ctx) entry.display = resolveTemplate(entry.display, ctx).trim()
-    }
+  for (const entry of allRefEntries(graph)) {
+    if (!entry.display?.includes('{')) continue
+    const ctx = buildContext(entry.target, graph, entityChapterInfo)
+    if (ctx) entry.display = resolveTemplate(entry.display, ctx).trim()
   }
 }
 

@@ -198,6 +198,17 @@ function parseNormalized(
           nodes.push(formatSegmentedDisplay(display, counter, (text: React.ReactNode[]) =>
             <a href={href} target="_blank" className="ref-link">{text}</a>
           ))
+        } else if (
+          ref.target.type === 'article'  || ref.target.type === 'newsletter' ||
+          ref.target.type === 'page'     || ref.target.type === 'landing'
+        ) {
+          // Standalone item (e.g. one legal page linking to another). href is the
+          // locale-prefixed site path, resolved at graph-build time via
+          // urlForStandalone — never a hardcoded absolute URL.
+          const href = ref.href ?? '#'
+          nodes.push(formatSegmentedDisplay(display, counter, (text: React.ReactNode[]) =>
+            <a href={href} target="_blank" className="ref-link">{text}</a>
+          ))
         } else if (ref.target.type === 'claim') {
           const href = ref.href ?? `#${claimId(ref.target.name, ref.target.parent)}`
           nodes.push(formatSegmentedDisplay(display, counter, (text: React.ReactNode[]) =>
