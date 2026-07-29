@@ -88,33 +88,38 @@ async function ensureAttribute() {
 }
 
 async function ensureFolder() {
+  // Name the folder after the (sanitized) host and look it up by that name, so a
+  // shared Brevo account keeps each environment's list in its own folder rather
+  // than dropping into whatever folder happens to be first.
+  const name = sanitizeName(SITE_HOST);
   const list = await api("GET", "/contacts/folders?limit=50&offset=0");
-  const existing = list.json?.folders?.[0];
+  const existing = (list.json?.folders ?? []).find((f) => f.name === name);
   if (existing) return existing.id;
-  const created = await api("POST", "/contacts/folders", { name: "Newsletter" });
+  const created = await api("POST", "/contacts/folders", { name });
   if (!created.ok) throw new Error(`create folder failed: ${created.status}`);
   return created.json.id;
 }
 
 async function ensureList() {
+  const name = sanitizeName(BREVO_LIST_NAME);
   const list = await api("GET", "/contacts/lists?limit=50&offset=0");
-  const found = (list.json?.lists ?? []).find((l) => l.name === BREVO_LIST_NAME);
+  const found = (list.json?.lists ?? []).find((l) => l.name === name);
   if (found) {
-    console.log(`• list "${BREVO_LIST_NAME}" exists → BREVO_LIST_ID=${found.id}`);
+    console.log(`• list "${name}" exists → BREVO_LIST_ID=${found.id}`);
     return found.id;
   }
   const folderId = await ensureFolder();
-  const created = await api("POST", "/contacts/lists", { name: BREVO_LIST_NAME, folderId });
+  const created = await api("POST", "/contacts/lists", { name, folderId });
   if (!created.ok) throw new Error(`create list failed: ${created.status} ${JSON.stringify(created.json)}`);
-  console.log(`• list "${BREVO_LIST_NAME}" created → BREVO_LIST_ID=${created.json.id}`);
+  console.log(`• list "${name}" created → BREVO_LIST_ID=${created.json.id}`);
   return created.json.id;
 }
 
-// Brevo's dashboard restricts the webhook name/description to alphanumerics,
-// hyphens, and underscores (the API is laxer, but we conform so the value shows
-// cleanly and is editable in the UI). Collapse any other run of characters —
-// dots in the host, spaces, parentheses — to a single hyphen.
-function sanitizeDescription(s) {
+// Brevo's dashboard restricts names (webhook description, list name) to
+// alphanumerics, hyphens, and underscores (the API is laxer, but we conform so
+// the value shows cleanly and is editable in the UI). Collapse any other run of
+// characters — dots in the host, spaces, parentheses — to a single hyphen.
+function sanitizeName(s) {
   return s.replace(/[^A-Za-z0-9_-]+/g, "-").replace(/^-+|-+$/g, "");
 }
 
@@ -130,7 +135,7 @@ async function ensureWebhook(type, events) {
     type,
     url,
     events,
-    description: sanitizeDescription(`${BREVO_WEBHOOK_DESCRIPTION} ${type}`),
+    description: sanitizeName(`${BREVO_WEBHOOK_DESCRIPTION} ${type}`),
   });
   if (!created.ok) throw new Error(`create ${type} webhook failed: ${created.status} ${JSON.stringify(created.json)}`);
   console.log(`• ${type} webhook registered (id=${created.json.id})`);

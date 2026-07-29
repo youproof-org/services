@@ -62,12 +62,13 @@ node scripts/setup-brevo.mjs
 
 It ensures the `FNAME` attribute, checks the sender, registers the webhook, and
 creates/finds the list — then prints the `BREVO_LIST_ID` to record. Re-running is
-safe (idempotent). The list name defaults to `<SITE_HOST> newsletter` and each
-webhook's name to `<SITE_HOST>-webhook-<type>` (the host's dots become hyphens —
-Brevo's dashboard only allows alphanumerics, hyphens, and underscores in the
-name), so a **shared** Brevo account keeps staging and production distinct
-automatically; override the base with `BREVO_LIST_NAME` /
-`BREVO_WEBHOOK_DESCRIPTION` if you want other names. The
+safe (idempotent). The list defaults to `<SITE_HOST>-newsletter` and each
+webhook to `<SITE_HOST>-webhook-<type>` — both names are **sanitized** to
+alphanumerics/hyphens/underscores (the host's dots and spaces become hyphens),
+because Brevo's dashboard only allows those characters. This keeps a **shared**
+Brevo account's staging and production names distinct automatically; override
+the base with `BREVO_LIST_NAME` / `BREVO_WEBHOOK_DESCRIPTION` if you want other
+names (they're sanitized the same way). The
 **same `BREVO_WEBHOOK_TOKEN`** must be stored as the worker secret for that
 environment; keep it out of shell history where possible.
 
@@ -101,18 +102,19 @@ curl -s -X POST https://api.brevo.com/v3/contacts/attributes/normal/FNAME \
 
 ### 3. Newsletter list
 
-Find an existing list by name; if none, create one (a list needs a folder):
+Find an existing list by name; if none, create one (a list needs a folder). The
+name is sanitized to alphanumerics/hyphens/underscores (dashboard constraint):
 
 ```bash
 curl -s "https://api.brevo.com/v3/contacts/lists?limit=50" -H "api-key: $BREVO_API_KEY" \
   | jq '.lists[] | {id, name}'
 
-# If absent — pick/create a folder, then the list:
-FOLDER_ID=$(curl -s "https://api.brevo.com/v3/contacts/folders?limit=50" -H "api-key: $BREVO_API_KEY" | jq '.folders[0].id // empty')
-# (create a folder if none: POST /contacts/folders {"name":"Newsletter"})
+# If absent — find/create a per-host folder, then the list:
+FOLDER_ID=$(curl -s "https://api.brevo.com/v3/contacts/folders?limit=50" -H "api-key: $BREVO_API_KEY" | jq --arg n "${HOST//./-}" '.folders[] | select(.name==$n) | .id')
+# (create the folder if none: POST /contacts/folders {"name":"<HOST//./->"})
 curl -s -X POST https://api.brevo.com/v3/contacts/lists \
   -H "api-key: $BREVO_API_KEY" -H 'content-type: application/json' \
-  -d "{\"name\":\"$HOST newsletter\",\"folderId\":$FOLDER_ID}"
+  -d "{\"name\":\"${HOST//./-}-newsletter\",\"folderId\":$FOLDER_ID}"
 ```
 
 Record the returned list `id` → the environment's **`BREVO_LIST_ID`** var.
