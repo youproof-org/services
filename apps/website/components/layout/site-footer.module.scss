@@ -24,7 +24,7 @@
     display: flex;
     // Wrap whole links onto new rows on narrow screens (justify-content keeps
     // them centered). Without flex-wrap the row can't grow, so items shrink and
-    // line-break their own text mid-link instead (YP-122 item 3).
+    // line-break their own text mid-link instead.
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;

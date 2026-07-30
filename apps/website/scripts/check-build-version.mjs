@@ -6,7 +6,7 @@
  * version isn't wired at build time (e.g. a CI build without the env override and
  * without the next.config package.json fallback), pages ship "vUNDEFINED". This
  * runs in `postbuild`, so it aborts the deploy's build step BEFORE the export is
- * uploaded — catching the regression for both staging and production (YP-122).
+ * uploaded — catching the regression for both staging and production.
  *
  * Scans the exported HTML for the footer version element and asserts every
  * occurrence is a real version (not UNDEFINED / empty), and that at least one

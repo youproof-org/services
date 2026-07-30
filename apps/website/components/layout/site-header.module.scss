@@ -34,7 +34,7 @@
   // Scale the shared lockup down to header size. The whole brand lockup (hex
   // mark + wordmark + tagline) scales from this one font-size, so alignment is
   // preserved. Smaller on mobile; full size from tablet up.
-  // ADJUST HERE if the mobile logo needs further tweaking (YP-122 item 4).
+  // ADJUST HERE if the mobile logo needs further tweaking.
   font-size: 0.7rem;
 
   @include tablet {

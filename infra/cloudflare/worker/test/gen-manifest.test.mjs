@@ -1,4 +1,4 @@
-// gen-manifest.mjs coverage (YP-122 item 10b).
+// gen-manifest.mjs coverage.
 //
 // The first production release runs against a `stable/released` content tree that
 // may be empty (no books/). The generator must never crash on missing content,

@@ -7,7 +7,7 @@ import './globals.scss'
 
 // FontAwesome injects its sizing CSS at runtime (client-side) by default, so
 // icons paint at their native (huge) size for a frame before hydration — the
-// hero scroll-cue "flash of oversized arrow" (YP-122 item 5b). Import the core
+// hero scroll-cue "flash of oversized arrow". Import the core
 // CSS statically instead and disable the runtime injection.
 config.autoAddCss = false
 import DevContentReloader from '@/components/DevContentReloader'
