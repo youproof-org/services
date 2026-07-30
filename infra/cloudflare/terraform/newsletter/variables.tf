@@ -55,6 +55,12 @@ variable "brevo_sender_email" {
   description = "Verified Brevo sender email used for the confirmation email. Bound to the Worker as BREVO_SENDER_EMAIL."
 }
 
+variable "brevo_sender_name" {
+  type        = string
+  default     = ""
+  description = "Display name on every outgoing email (From name, and the sign-off in personally-voiced mail). Bound to the Worker as BREVO_SENDER_NAME. Empty falls back to site_host, so staging mail is visibly from staging."
+}
+
 variable "brevo_list_id" {
   type        = string
   description = "Brevo list id confirmed subscribers are synced into. Bound to the Worker as BREVO_LIST_ID (string)."

@@ -18,6 +18,7 @@ at its own site host, list, and webhook.
 | --- | --- | --- |
 | **API key** | worker `BREVO_API_KEY` secret + the setup script | Brevo dashboard → **SMTP & API → API Keys**. |
 | **Verified sender + domain auth** | `From:` of every send | Dashboard → **Senders, Domains & Dedicated IPs**. Authenticate the sending domain (SPF/DKIM) or deliverability suffers. **Manual only** — the script only *checks* it. |
+| **Sender display name** | `From:` name of every send | Comes from the worker's `BREVO_SENDER_NAME` var, **not** from Brevo's sender record — the worker sets it per send. Brevo's own name field is only what you see in its dashboard. The script reports both and warns if they differ. |
 | **`FNAME` contact attribute** | contact sync on confirm | Usually a Brevo default; the script ensures it. |
 | **Newsletter list** | confirmed-contact sync; future campaigns | Its numeric id → worker `BREVO_LIST_ID`. |
 | **Webhooks (transactional + marketing)** | delivery/bounce/spam/unsubscribe events | Both point at the worker's `…/webhooks/brevo?token=…`. Marketing is required so campaign footer-unsubscribes reach the worker. |
@@ -27,7 +28,7 @@ Values consumed by the worker (set as GitHub Environment secrets/vars — see
 [state backend & credentials](state-backend-and-credentials.md)):
 
 - secrets: `BREVO_API_KEY`, `BREVO_WEBHOOK_TOKEN`, `TURNSTILE_SECRET`
-- vars: `BREVO_SENDER_EMAIL`, `BREVO_LIST_ID`, `ALERT_EMAIL` (optional), plus the site host
+- vars: `BREVO_SENDER_EMAIL`, `BREVO_SENDER_NAME` (optional; falls back to the site host), `BREVO_LIST_ID`, `ALERT_EMAIL` (optional), plus the site host
 
 ## Contact-sync reconciliation & alerts
 
@@ -57,10 +58,12 @@ BREVO_API_KEY=xkeysib-… \
 SITE_HOST=staging.youproof.org \
 BREVO_WEBHOOK_TOKEN="$(openssl rand -hex 32)" \
 BREVO_SENDER_EMAIL=hello@youproof.org \
+BREVO_SENDER_NAME="staging.youproof.org" \
 node scripts/setup-brevo.mjs
 ```
 
-It ensures the `FNAME` attribute, checks the sender, registers the webhook, and
+It ensures the `FNAME` attribute, checks the sender (address *and* the From
+name recipients will see), registers the webhook, and
 creates/finds the list — then prints the `BREVO_LIST_ID` to record. Re-running is
 safe (idempotent). The list defaults to `<SITE_HOST>-newsletter` and each
 webhook to `<SITE_HOST>-webhook-<type>` — both names are **sanitized** to

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# YP-120 branch-protection applier (REFERENCE — review before running).
+# Branch-protection applier (REFERENCE — review before running).
 #
 # NOT executed by any workflow. Run locally with a token that has admin on all
 # three repos: youproof-org/services, youproof-org/content, youproof-org/editor:

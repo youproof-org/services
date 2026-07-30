@@ -8,7 +8,24 @@
 import type { Env } from "../types";
 
 const BREVO_BASE = "https://api.brevo.com/v3";
-const SENDER_NAME = "youproof.org";
+// Reached only when neither binding is set — i.e. a local `wrangler dev` without
+// .dev.vars. Its only job is to stop senderName() returning "", which Brevo would
+// render as a bare address.
+const FALLBACK_SENDER_NAME = "youproof.org";
+
+/**
+ * The display name on every outgoing email. Single source so the confirmation
+ * mail, the ops alerts and the legacy re-permission invite cannot drift apart.
+ *
+ * Falling back to SITE_HOST mirrors what Terraform already does
+ * (`coalesce(var.brevo_sender_name, var.site_host)`, itself fed from
+ * REDIRECT_TARGET_HOST), so the two layers degrade to the same value instead of
+ * disagreeing — and an unset variable can never make staging mail claim to be
+ * production.
+ */
+export function senderName(env: Env): string {
+  return env.BREVO_SENDER_NAME?.trim() || env.SITE_HOST?.trim() || FALLBACK_SENDER_NAME;
+}
 
 export class BrevoError extends Error {
   constructor(
@@ -31,12 +48,19 @@ function headers(env: Env): Record<string, string> {
 
 export interface TransactionalEmail {
   toEmail: string;
-  toName: string;
+  /** Omitted entirely when unknown — the legacy re-permission list has no names. */
+  toName?: string;
   subject: string;
   htmlContent: string;
   textContent: string;
-  /** Our own tokenized unsubscribe URL, surfaced in the List-Unsubscribe header. */
+  /**
+   * Our own tokenized opt-out URL, surfaced in the List-Unsubscribe header.
+   * For the double-opt-in mail that's the unsubscribe endpoint; for a legacy
+   * invite it's the decline endpoint.
+   */
   listUnsubscribeUrl: string;
+  /** Brevo-side segmentation, e.g. to read one campaign's bounce rate alone. */
+  tags?: string[];
 }
 
 /**
@@ -54,8 +78,8 @@ export async function sendTransactionalEmail(
     method: "POST",
     headers: headers(env),
     body: JSON.stringify({
-      sender: { email: env.BREVO_SENDER_EMAIL, name: SENDER_NAME },
-      to: [{ email: msg.toEmail, name: msg.toName }],
+      sender: { email: env.BREVO_SENDER_EMAIL, name: senderName(env) },
+      to: [msg.toName ? { email: msg.toEmail, name: msg.toName } : { email: msg.toEmail }],
       subject: msg.subject,
       htmlContent: msg.htmlContent,
       textContent: msg.textContent,
@@ -63,7 +87,7 @@ export async function sendTransactionalEmail(
         "List-Unsubscribe": `<${msg.listUnsubscribeUrl}>`,
         "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
       },
-      tags: ["newsletter-doi"],
+      tags: msg.tags ?? ["newsletter-doi"],
     }),
   });
   if (!res.ok) {
@@ -217,7 +241,7 @@ export async function sendAdminAlert(
     method: "POST",
     headers: headers(env),
     body: JSON.stringify({
-      sender: { email: env.BREVO_SENDER_EMAIL, name: SENDER_NAME },
+      sender: { email: env.BREVO_SENDER_EMAIL, name: senderName(env) },
       to: [{ email: env.ALERT_EMAIL }],
       subject,
       textContent: text,

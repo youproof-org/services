@@ -360,6 +360,7 @@ jobs:
       TF_VAR_content_sha: ${{ needs.resolve.outputs.content_sha }}
       # Brevo/Turnstile: non-secret config as vars, real secrets as env secrets.
       TF_VAR_brevo_sender_email: ${{ vars.BREVO_SENDER_EMAIL }}
+      TF_VAR_brevo_sender_name: ${{ vars.BREVO_SENDER_NAME || vars.REDIRECT_TARGET_HOST }}
       TF_VAR_brevo_list_id: ${{ vars.BREVO_LIST_ID }}
       TF_VAR_alert_email: ${{ vars.ALERT_EMAIL }}
       TF_VAR_brevo_api_key: ${{ secrets.BREVO_API_KEY }}

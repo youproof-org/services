@@ -2,12 +2,12 @@
 #
 # Two responsibilities:
 #   1. PULL REQUESTS -> plan-only review gates (Terraform fmt/plan for each root,
-#      worker build). No apply, no site build. Preserves the pre-YP-120 behaviour
+#      worker build). No apply, no site build. Preserves the pre-pipeline-overhaul
 #      of the zone/worker plan gates and adds a website plan.
 #   2. PUSH to a stable branch, OR a content repository_dispatch -> a full deploy
 #      by calling the reusable ./.github/workflows/deploy.yml.
 #
-# IMPORTANT CHANGE (YP-120): apply now lives entirely in deploy.yml. The old
+# IMPORTANT CHANGE: apply now lives entirely in deploy.yml. The old
 # in-place push-apply of the zone/worker roots is superseded — a push routes to
 # the reusable deploy, which also regenerates the worker manifest from content,
 # deploys the .org CDN + site, and runs the post-deploy quality gate. The
@@ -310,6 +310,7 @@ jobs:
       TF_VAR_allowed_origins: https://${{ vars.REDIRECT_TARGET_HOST }}
       TF_VAR_content_sha: ""
       TF_VAR_brevo_sender_email: ${{ vars.BREVO_SENDER_EMAIL }}
+      TF_VAR_brevo_sender_name: ${{ vars.BREVO_SENDER_NAME || vars.REDIRECT_TARGET_HOST }}
       TF_VAR_brevo_list_id: ${{ vars.BREVO_LIST_ID }}
       TF_VAR_alert_email: ${{ vars.ALERT_EMAIL }}
       TF_VAR_brevo_api_key: ${{ secrets.BREVO_API_KEY }}

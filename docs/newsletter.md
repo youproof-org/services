@@ -5,7 +5,9 @@ subscription feature: a **double opt-in** flow with all state in a **D1**
 database, using **Brevo** only to send email and to report delivery/bounce/spam
 via a webhook. It is the **first Worker on the `.org` zone** — everything else
 there is served static from R2. Brevo provisioning is covered separately in the
-[Brevo setup runbook](brevo-setup.md).
+[Brevo setup runbook](brevo-setup.md), and the one-shot re-consent of the
+addresses inherited from the old site's newsletter in the
+[legacy re-permission campaign](newsletter-legacy-repermission.md).
 
 ## Architecture
 
@@ -29,8 +31,10 @@ there is served static from R2. Brevo provisioning is covered separately in the
   soft-delete).
 - **Retention (GDPR storage limitation):** the same 15-minute cron enforces the
   periods published in the [privacy policy](https://youproof.org/hu/adatkezeles) —
-  `subscribe_attempts` 24 hours, `email_events` 24 months, and `unsubscribed`
-  subscriptions 5 years from the unsubscribe (the consent-evidence window). Expired
+  `subscribe_attempts` 24 hours, `email_events` 24 months, `unsubscribed`
+  subscriptions 5 years from the unsubscribe (the consent-evidence window), and
+  `legacy_contacts` 90 days from import (see the
+  [legacy re-permission campaign](newsletter-legacy-repermission.md)). Expired
   subscriptions are erased from **Brevo first, then D1**: D1 is the only record of
   which addresses still owe Brevo a deletion, so dropping the row first would orphan
   the contact. A failed Brevo delete leaves the row for the next tick (404 counts as

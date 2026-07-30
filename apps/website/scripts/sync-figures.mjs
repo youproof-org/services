@@ -15,7 +15,7 @@
  * figure path ("/content/.../foo.svg") to its intrinsic [width, height]. The
  * content loader stamps these onto <img width/height> so the browser reserves
  * layout space — otherwise a lazy figure above a cross-reference target loads
- * late and shifts the target out of view after the anchor jump (YP-122 item 1).
+ * late and shifts the target out of view after the anchor jump.
  */
 import { readdir, copyFile, mkdir, stat, writeFile } from 'fs/promises'
 import { execFile } from 'child_process'
