@@ -20,6 +20,9 @@ allowed_origins = "https://staging.youproof.org"
 content_sha = ""
 
 brevo_sender_email = "REPLACE_WITH_VERIFIED_SENDER"
+# Display name on every outgoing email (From name + personal sign-off).
+# Leave unset to fall back to site_host ("staging.youproof.org").
+brevo_sender_name  = "staging.youproof.org"
 brevo_list_id      = "REPLACE_WITH_LIST_ID"
 alert_email        = "REPLACE_WITH_ADMIN_EMAIL" # optional; empty disables ops alerts
 

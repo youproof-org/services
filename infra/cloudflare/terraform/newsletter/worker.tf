@@ -77,6 +77,15 @@ resource "cloudflare_workers_script" "newsletter" {
       text = var.brevo_sender_email
     },
     {
+      name = "BREVO_SENDER_NAME"
+      type = "plain_text"
+      # Falls back to the site host (coalesce skips empty strings), mirroring how
+      # CI defaults this to REDIRECT_TARGET_HOST — so a manual apply without the
+      # variable behaves the same as the pipeline, and staging mail is visibly
+      # from staging rather than impersonating production.
+      text = coalesce(var.brevo_sender_name, var.site_host)
+    },
+    {
       name = "ALERT_EMAIL"
       type = "plain_text"
       text = var.alert_email

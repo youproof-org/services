@@ -1,5 +1,11 @@
 import { handleSubscribe } from "./handlers/subscribe";
 import { handleConfirm } from "./handlers/confirm";
+import {
+  handleLegacyDecline,
+  handleLegacyDeclineLanding,
+  handleLegacyLanding,
+  handleLegacyResubscribe,
+} from "./handlers/legacy";
 import { handleUnsubscribe } from "./handlers/unsubscribe";
 import { handleWebhook } from "./handlers/webhook";
 import { json } from "./lib/http";
@@ -40,6 +46,24 @@ export async function route(
     }
     if (action === "unsubscribe" && ["GET", "POST", "DELETE"].includes(method)) {
       return handleUnsubscribe(request, env, url, id, method);
+    }
+    return json({ code: "method_not_allowed" }, 405);
+  }
+
+  // /legacy/{id}/resubscribe | /legacy/{id}/decline — the one-shot re-permission
+  // campaign for the defunct site's newsletter list. Both GETs are
+  // read-only by design; see handlers/legacy.ts.
+  const legacy = sub.match(/^\/legacy\/([^/]+)\/(resubscribe|decline)$/);
+  if (legacy) {
+    const [, id, action] = legacy;
+    if (action === "resubscribe") {
+      if (method === "GET") return handleLegacyLanding(request, env, url, id);
+      if (method === "POST") return handleLegacyResubscribe(request, env, url, id);
+    } else {
+      if (method === "GET") return handleLegacyDeclineLanding(request, env, url, id);
+      if (method === "POST" || method === "DELETE") {
+        return handleLegacyDecline(request, env, url, id);
+      }
     }
     return json({ code: "method_not_allowed" }, 405);
   }

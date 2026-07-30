@@ -26,7 +26,7 @@ export interface DbSubscription {
   unsubscribed_at: string | null;
   created_at: string;
   updated_at: string;
-  // Brevo list-sync reconciliation markers (migration 0002).
+  // Brevo list-sync reconciliation markers.
   brevo_synced_at: string | null;
   brevo_sync_attempts: number;
   brevo_sync_last_error: string | null;
@@ -37,10 +37,19 @@ interface D1Like {
   prepare(query: string): {
     bind(...values: unknown[]): {
       first<T = unknown>(): Promise<T | null>;
-      run(): Promise<unknown>;
+      // Real D1 resolves to a D1Result carrying meta.changes. Nearly every caller
+      // ignores it; claimLegacyInvite needs it to tell a won compare-and-swap
+      // from a lost one.
+      run(): Promise<{ meta?: { changes?: number } } | unknown>;
       all<T = unknown>(): Promise<{ results: T[] }>;
     };
   };
+}
+
+/** Rows affected by the last write, or 0 when the driver doesn't report it. */
+function changesOf(result: unknown): number {
+  const meta = (result as { meta?: { changes?: number } } | null)?.meta;
+  return meta?.changes ?? 0;
 }
 
 /** Deps injected for determinism; real implementations used in production. */
@@ -55,6 +64,16 @@ export const defaultDeps: UpsertDeps = {
   newId,
   newToken,
 };
+
+/**
+ * What subscribeUpsert actually reads. Narrower than SubscribeInput so callers
+ * that never saw a form (the legacy re-permission flow) don't have to invent a
+ * turnstileToken and a privacyAccepted flag it would ignore anyway.
+ */
+export type UpsertInput = Pick<
+  SubscribeInput,
+  "name" | "email" | "locale" | "sourcePage" | "sourceFormInstance"
+>;
 
 export type SubscribeOutcome =
   | { kind: "blocked" }
@@ -173,7 +192,7 @@ export async function unsubscribeSubscription(
  */
 export async function subscribeUpsert(
   db: D1Like,
-  input: SubscribeInput,
+  input: UpsertInput,
   contentSha: string,
   deps: UpsertDeps = defaultDeps,
 ): Promise<SubscribeOutcome> {
@@ -498,4 +517,222 @@ export async function listPurgeableUnsubscribed(
 /** Hard-delete a subscription row. Only called once Brevo has dropped the contact. */
 export async function deleteSubscription(db: D1Like, id: string): Promise<void> {
   await db.prepare("DELETE FROM subscriptions WHERE id = ?").bind(id).run();
+}
+
+// --- legacy re-permission campaign ---
+//
+// One-shot: see docs/newsletter-legacy-repermission.md. Everything below is
+// deleted along with the table when the campaign is decommissioned, which is why
+// it sits in one block rather than interleaved with the subscription queries.
+
+export type LegacyContactStatus =
+  | "pending"
+  | "paused"
+  | "invited"
+  | "converted"
+  | "declined"
+  | "failed";
+
+export interface DbLegacyContact {
+  id: string;
+  email: string;
+  locale: string;
+  status: LegacyContactStatus;
+  invite_token: string | null;
+  imported_at: string;
+  invited_at: string | null;
+  responded_at: string | null;
+  send_attempts: number;
+  last_error: string | null;
+  brevo_message_id: string | null;
+  subscription_id: string | null;
+}
+
+export async function getLegacyContactById(
+  db: D1Like,
+  id: string,
+): Promise<DbLegacyContact | null> {
+  return db
+    .prepare("SELECT * FROM legacy_contacts WHERE id = ?")
+    .bind(id)
+    .first<DbLegacyContact>();
+}
+
+/**
+ * The send worklist: imported-but-unmailed rows still under the attempt cap.
+ *
+ * The two NOT EXISTS clauses are the runtime safety net for addresses that
+ * subscribed normally, or hard-bounced/complained, AFTER the import. The webhook
+ * handler already writes email_suppressions on a bounce, so filtering here is
+ * what closes the bounce feedback loop with no extra code: yesterday's bounces
+ * suppress today's sends. Keeping the check in SQL (not in the caller) means it
+ * cannot be forgotten by a future code path.
+ *
+ * Fewest attempts first so a few permanently-failing rows can't starve fresh ones
+ * out of the LIMIT-bounded batch — same rationale as listPendingBrevoSync.
+ */
+export async function listSendableLegacyContacts(
+  db: D1Like,
+  maxAttempts: number,
+  limit: number,
+): Promise<DbLegacyContact[]> {
+  const { results } = await db
+    .prepare(
+      `SELECT * FROM legacy_contacts
+        WHERE status = 'pending' AND send_attempts < ?
+          AND NOT EXISTS (SELECT 1 FROM subscriptions s WHERE s.email = legacy_contacts.email)
+          AND NOT EXISTS (SELECT 1 FROM email_suppressions x WHERE x.email = legacy_contacts.email)
+        ORDER BY send_attempts ASC, imported_at ASC
+        LIMIT ?`,
+    )
+    .bind(maxAttempts, limit)
+    .all<DbLegacyContact>();
+  return results;
+}
+
+/**
+ * Claim a row for sending (compare-and-swap) and mint its invite token. Returns
+ * false when another cron tick already took it.
+ *
+ * This is what makes "exactly one email per address" true rather than merely
+ * likely: overlapping ticks both read the same worklist, but only one UPDATE can
+ * match `status = 'pending'`. Claiming BEFORE the send also means a crash between
+ * claim and send loses that invite rather than risking a duplicate — for a
+ * re-permission mail to a stale list, silence is the safer failure.
+ */
+export async function claimLegacyInvite(
+  db: D1Like,
+  id: string,
+  inviteToken: string,
+  now: string,
+): Promise<boolean> {
+  const res = await db
+    .prepare(
+      `UPDATE legacy_contacts
+         SET status = 'invited', invited_at = ?, invite_token = ?,
+             send_attempts = send_attempts + 1, last_error = NULL
+       WHERE id = ? AND status = 'pending'`,
+    )
+    .bind(now, inviteToken, id)
+    .run();
+  return changesOf(res) === 1;
+}
+
+/** Record the Brevo messageId of the invite (webhook join key). */
+export async function setLegacyMessageId(
+  db: D1Like,
+  id: string,
+  messageId: string,
+): Promise<void> {
+  await db
+    .prepare("UPDATE legacy_contacts SET brevo_message_id = ? WHERE id = ?")
+    .bind(messageId, id)
+    .run();
+}
+
+/**
+ * Retryable send failure: back to 'pending' for the next tick. send_attempts was
+ * already incremented by the claim, so the worklist's cap bounds how many copies
+ * a Brevo-delivered-then-timed-out call can produce.
+ */
+export async function releaseLegacyInvite(
+  db: D1Like,
+  id: string,
+  error: string,
+): Promise<void> {
+  await db
+    .prepare(
+      `UPDATE legacy_contacts
+         SET status = 'pending', invited_at = NULL, invite_token = NULL, last_error = ?
+       WHERE id = ?`,
+    )
+    .bind(error, id)
+    .run();
+}
+
+/** Terminal send failure (a Brevo 4xx that retrying cannot fix). Needs a human. */
+export async function failLegacyInvite(
+  db: D1Like,
+  id: string,
+  error: string,
+): Promise<void> {
+  await db
+    .prepare(
+      "UPDATE legacy_contacts SET status = 'failed', invite_token = NULL, last_error = ? WHERE id = ?",
+    )
+    .bind(error, id)
+    .run();
+}
+
+/**
+ * The contact re-subscribed. The row is MARKED, not deleted: a second click (or a
+ * double-submit, or a back-button resubmit) must still find it and answer
+ * "already done" rather than 404 after the user just saw a success message. The
+ * 90-day retention sweep collects it.
+ *
+ * Nulling invite_token is the single-use enforcement — verifyToken(x, null) is
+ * false, so the emailed link stops working here rather than in a status check.
+ */
+export async function markLegacyConverted(
+  db: D1Like,
+  id: string,
+  subscriptionId: string,
+  now: string,
+): Promise<void> {
+  await db
+    .prepare(
+      `UPDATE legacy_contacts
+         SET status = 'converted', responded_at = COALESCE(responded_at, ?),
+             subscription_id = ?, invite_token = NULL
+       WHERE id = ?`,
+    )
+    .bind(now, subscriptionId, id)
+    .run();
+}
+
+/** The contact opted out. Same mark-don't-delete reasoning as markLegacyConverted. */
+export async function markLegacyDeclined(
+  db: D1Like,
+  id: string,
+  now: string,
+): Promise<void> {
+  await db
+    .prepare(
+      `UPDATE legacy_contacts
+         SET status = 'declined', responded_at = COALESCE(responded_at, ?), invite_token = NULL
+       WHERE id = ?`,
+    )
+    .bind(now, id)
+    .run();
+}
+
+/**
+ * Legacy contacts past their retention window, in any status.
+ *
+ * Keyed on imported_at, not invited_at: the clock starts when the personal data
+ * entered our systems, not when we got around to mailing it. That also means a
+ * batch imported and then never sent still expires on schedule instead of sitting
+ * here indefinitely — and, because the cron purges before it sends, such a row is
+ * erased rather than cold-contacted three months late.
+ */
+export async function listPurgeableLegacyContacts(
+  db: D1Like,
+  cutoffIso: string,
+  limit: number,
+): Promise<DbLegacyContact[]> {
+  const { results } = await db
+    .prepare(
+      `SELECT * FROM legacy_contacts
+        WHERE imported_at < ?
+        ORDER BY imported_at ASC
+        LIMIT ?`,
+    )
+    .bind(cutoffIso, limit)
+    .all<DbLegacyContact>();
+  return results;
+}
+
+/** Hard-delete a legacy contact. Only called once Brevo has dropped the contact. */
+export async function deleteLegacyContact(db: D1Like, id: string): Promise<void> {
+  await db.prepare("DELETE FROM legacy_contacts WHERE id = ?").bind(id).run();
 }

@@ -42,6 +42,13 @@ export interface Env {
   /** Verified Brevo sender email for the confirmation email. */
   BREVO_SENDER_EMAIL: string;
   /**
+   * Display name on every outgoing email (the "From" name, and the sign-off in
+   * mail written in a personal voice). One variable for all senders so the
+   * identity can't drift between the transactional mail, the ops alerts and the
+   * legacy re-permission invite. Falls back to "youproof.org" when unset.
+   */
+  BREVO_SENDER_NAME: string;
+  /**
    * Admin recipient for operational alerts (e.g. a confirmed contact repeatedly
    * failing to sync into the Brevo list). Empty disables alert emails.
    */

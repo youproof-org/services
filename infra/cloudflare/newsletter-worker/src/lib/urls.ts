@@ -39,3 +39,29 @@ export function unsubscribeUrl(env: Env, id: string, token: string): string {
     token,
   });
 }
+
+// --- legacy re-permission campaign ---
+
+/** The "yes, sign me up" link in a legacy invite. GET is read-only; it redirects
+ *  to the homepage, where the popup collects the name and consent. */
+export function legacyResubscribeUrl(env: Env, id: string, token: string): string {
+  return siteUrl(env, `${API_BASE}/legacy/${encodeURIComponent(id)}/resubscribe`, {
+    token,
+  });
+}
+
+/** The "no thanks" link, and the List-Unsubscribe header target of a legacy
+ *  invite. A GET only opens a confirmation dialog; the POST is what declines. */
+export function legacyDeclineUrl(env: Env, id: string, token: string): string {
+  return siteUrl(env, `${API_BASE}/legacy/${encodeURIComponent(id)}/decline`, { token });
+}
+
+/**
+ * The published privacy policy for a locale. Mirrors the frontend's
+ * buildLocalizedUrl(locale, 'page', 'adatkezeles') — /{locale}/{slug}, with no
+ * container segment. The slug is duplicated across the two repos; see
+ * docs/newsletter-legacy-repermission.md.
+ */
+export function privacyUrl(env: Env, locale?: string | null): string {
+  return siteUrl(env, `${homePath(env, locale)}/adatkezeles`);
+}

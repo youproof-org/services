@@ -6,10 +6,12 @@
 //   - registers the transactional AND marketing webhooks at the worker's
 //     /webhooks/brevo (campaign events, incl. footer-unsubscribe, only reach a
 //     marketing webhook),
-//   - sanity-checks that the sender email is a known Brevo sender.
+//   - sanity-checks that the sender email is a known Brevo sender, and reports
+//     the From name recipients will actually see.
 //
 // Required env: BREVO_API_KEY, SITE_HOST, BREVO_WEBHOOK_TOKEN, BREVO_SENDER_EMAIL
-// Optional env: BREVO_LIST_NAME (default "<SITE_HOST> newsletter"),
+// Optional env: BREVO_SENDER_NAME (the worker's From name; reported, not provisioned),
+//               BREVO_LIST_NAME (default "<SITE_HOST> newsletter"),
 //               BREVO_WEBHOOK_DESCRIPTION (default "<SITE_HOST> webhook")
 //
 // Usage:
@@ -23,6 +25,7 @@ const {
   SITE_HOST,
   BREVO_WEBHOOK_TOKEN,
   BREVO_SENDER_EMAIL,
+  BREVO_SENDER_NAME,
   BREVO_LIST_NAME = `${SITE_HOST} newsletter`,
   // Human-readable webhook description shown in the Brevo dashboard. Defaults to
   // include SITE_HOST so staging and production are distinguishable even when
@@ -153,6 +156,19 @@ async function checkSender() {
     console.warn(`! sender ${BREVO_SENDER_EMAIL} exists but is not active/verified.`);
   } else {
     console.log(`• sender ${BREVO_SENDER_EMAIL} is present`);
+  }
+
+  // The From *name* is not taken from Brevo's sender record: the worker sets it
+  // per send from BREVO_SENDER_NAME. Surface both, because a mismatch between
+  // what the Brevo dashboard shows and what recipients actually see is otherwise
+  // invisible and very confusing to debug.
+  const effective = BREVO_SENDER_NAME?.trim() || "youproof.org (worker default)";
+  console.log(`• From name at send time: "${effective}" (from BREVO_SENDER_NAME)`);
+  if (found?.name && BREVO_SENDER_NAME?.trim() && found.name !== BREVO_SENDER_NAME.trim()) {
+    console.warn(
+      `! Brevo's sender record is named "${found.name}" but recipients will see "${BREVO_SENDER_NAME.trim()}".`,
+    );
+    console.warn("  Harmless (the envelope address is what's authenticated), but align them to avoid confusion.");
   }
 }
 

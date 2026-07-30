@@ -215,3 +215,81 @@ test("listPurgeableUnsubscribed ignores rows with a null unsubscribed_at", async
 
   assert.equal(rows.length, 0);
 });
+
+// --- legacy re-permission contacts (90 days from import) --------------------
+// One-shot campaign. Same tripwire duty as the sections above: the
+// window here is published in the privacy policy AND quoted to the recipient in
+// the invite email itself, so it cannot be changed in one place alone.
+
+/** A legacy contact imported `agoMs` ago, in whatever campaign state. */
+function seedLegacyAged(db, agoMs, overrides = {}) {
+  return db.seedLegacy({
+    email: "regi@example.com",
+    imported_at: iso(Date.now() - agoMs),
+    ...overrides,
+  });
+}
+
+test("purges a legacy contact past 90 days, from Brevo then D1", async () => {
+  const db = new FakeD1();
+  const row = seedLegacyAged(db, 91 * DAY, { status: "invited", invite_token: "t" });
+
+  await handleScheduled(env(db));
+
+  assert.equal(deleteCalls().length, 1, "Brevo asked to erase the contact first");
+  assert.ok(deleteCalls()[0].url.includes(encodeURIComponent("regi@example.com")));
+  assert.equal(db.legacy.has(row.id), false, "then the row is gone");
+});
+
+test("keeps a legacy contact inside the 90-day window", async () => {
+  const db = new FakeD1();
+  const row = seedLegacyAged(db, 89 * DAY, { status: "invited", invite_token: "t" });
+
+  await handleScheduled(env(db));
+
+  assert.equal(db.legacy.has(row.id), true);
+  assert.equal(deleteCalls().length, 0);
+});
+
+test("the 90-day clock runs from import, not from the send", async () => {
+  const db = new FakeD1();
+  // Imported long ago, mailed only yesterday: still expired. The retention
+  // promise is about how long we hold the address, not how long since we used it.
+  const row = seedLegacyAged(db, 100 * DAY, {
+    status: "invited",
+    invite_token: "t",
+    invited_at: iso(Date.now() - DAY),
+  });
+
+  await handleScheduled(env(db));
+
+  assert.equal(db.legacy.has(row.id), false);
+});
+
+test("purges converted, declined and failed legacy rows on the same clock", async () => {
+  const db = new FakeD1();
+  for (const status of ["converted", "declined", "failed"]) {
+    db.seedLegacy({
+      email: `${status}@example.com`,
+      status,
+      imported_at: iso(Date.now() - 91 * DAY),
+    });
+  }
+
+  await handleScheduled(env(db));
+
+  assert.equal(db.legacy.size, 0, "no legacy row outlives the window in any state");
+});
+
+test("a failed Brevo delete leaves the legacy row for the next tick", async () => {
+  const db = new FakeD1();
+  const row = seedLegacyAged(db, 91 * DAY, { status: "invited", invite_token: "t" });
+  deleteResponder = () => new Response("nope", { status: 500 });
+
+  await handleScheduled(env(db));
+  assert.equal(db.legacy.has(row.id), true, "D1 is the only pointer to the pending erase");
+
+  deleteResponder = () => new Response(null, { status: 204 });
+  await handleScheduled(env(db));
+  assert.equal(db.legacy.has(row.id), false, "and the retry converges");
+});
