@@ -103,3 +103,41 @@ export function validateSubscribeBody(body: unknown): ValidationResult {
     },
   };
 }
+
+// --- legacy re-permission campaign ---
+
+export interface LegacyResubscribeInput {
+  name: string;
+  privacyAccepted: boolean;
+  token: string;
+}
+
+export type LegacyResubscribeResult =
+  | { ok: true; value: LegacyResubscribeInput }
+  | { ok: false; errors: string[] };
+
+/**
+ * Validate the popup body for a legacy re-subscription.
+ *
+ * Deliberately smaller than validateSubscribeBody: the email comes from the
+ * legacy_contacts row (never the client), the locale likewise, and there is no
+ * Turnstile because the invite token already proves control of the mailbox.
+ * Error codes are reused verbatim so the frontend can share its copy.
+ */
+export function validateLegacyResubscribeBody(body: unknown): LegacyResubscribeResult {
+  const errors: string[] = [];
+  const b = (body ?? {}) as Record<string, unknown>;
+
+  const name = asString(b.name).trim();
+  if (name.length === 0) errors.push("name_required");
+  else if (name.length > MAX_NAME) errors.push("name_too_long");
+
+  const privacyAccepted = b.privacyAccepted === true;
+  if (!privacyAccepted) errors.push("privacy_not_accepted");
+
+  const token = asString(b.token).trim();
+  if (token.length === 0) errors.push("token_missing");
+
+  if (errors.length > 0) return { ok: false, errors };
+  return { ok: true, value: { name, privacyAccepted, token } };
+}

@@ -140,6 +140,7 @@ per-environment is committed. Configure these on each GitHub Environment
 | `TURNSTILE_SECRET` | secret | Newsletter worker: Cloudflare Turnstile **secret** key for server-side siteverify (`secret_text` binding). |
 | `TURNSTILE_SITEKEY` | var | Newsletter form: Cloudflare Turnstile **sitekey** (public) — consumed by the website build as `NEXT_PUBLIC_TURNSTILE_SITEKEY` and inlined into the static export so the widget renders. Public by design, hence a var (not a secret). Pairs with `TURNSTILE_SECRET`. |
 | `BREVO_SENDER_EMAIL` | var | Newsletter worker: verified Brevo sender for the confirmation email. |
+| `BREVO_SENDER_NAME` | var | Newsletter worker: display name on **every** outgoing email — the `From` name, and the sign-off in mail written in a personal voice (the legacy re-permission invite). One variable for all senders so the identity can't drift between them. Falls back to `REDIRECT_TARGET_HOST` if unset, so staging mail is visibly from staging rather than impersonating production. Does not affect the envelope address, so DKIM/SPF are unchanged. |
 | `BREVO_LIST_ID` | var | Newsletter worker: Brevo list id confirmed subscribers sync into. |
 | `ALERT_EMAIL` | var | Newsletter worker: admin recipient for contact-sync failure alerts (optional; empty disables). |
 

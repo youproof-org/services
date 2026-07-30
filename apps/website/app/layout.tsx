@@ -7,7 +7,7 @@ import './globals.scss'
 
 // FontAwesome injects its sizing CSS at runtime (client-side) by default, so
 // icons paint at their native (huge) size for a frame before hydration — the
-// hero scroll-cue "flash of oversized arrow" (YP-122 item 5b). Import the core
+// hero scroll-cue "flash of oversized arrow". Import the core
 // CSS statically instead and disable the runtime injection.
 config.autoAddCss = false
 import DevContentReloader from '@/components/DevContentReloader'
@@ -79,7 +79,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className={mulish.className}>
-        {children}
+        {/* Carries the compositing hint that used to sit on <body> — see
+            .page-root in globals.scss. NewsletterLanding must stay OUTSIDE it,
+            or its fixed overlay is contained by the transform and centres on
+            the document instead of the viewport. */}
+        <div className="page-root">{children}</div>
         <NewsletterLanding />
         {process.env.NODE_ENV === 'development' && <DevContentReloader />}
       </body>

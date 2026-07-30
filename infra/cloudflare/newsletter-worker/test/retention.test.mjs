@@ -215,3 +215,143 @@ test("listPurgeableUnsubscribed ignores rows with a null unsubscribed_at", async
 
   assert.equal(rows.length, 0);
 });
+
+// --- legacy re-permission contacts (90 days from import) --------------------
+// One-shot campaign. Same tripwire duty as the sections above: the
+// window here is published in the privacy policy AND quoted to the recipient in
+// the invite email itself, so it cannot be changed in one place alone.
+
+/** A legacy contact imported `agoMs` ago, in whatever campaign state. */
+function seedLegacyAged(db, agoMs, overrides = {}) {
+  return db.seedLegacy({
+    email: "regi@example.com",
+    imported_at: iso(Date.now() - agoMs),
+    ...overrides,
+  });
+}
+
+test("purges a legacy contact past 90 days from D1, without touching Brevo", async () => {
+  const db = new FakeD1();
+  const row = seedLegacyAged(db, 91 * DAY, { status: "invited", invite_token: "t" });
+
+  await handleScheduled(env(db));
+
+  assert.equal(db.legacy.has(row.id), false, "the row is gone");
+  // These addresses are never in the Brevo list — Brevo only ever saw them as
+  // the recipient of one message — so there is nothing of ours to erase there.
+  assert.equal(deleteCalls().length, 0, "no Brevo call");
+});
+
+test("keeps a legacy contact inside the 90-day window", async () => {
+  const db = new FakeD1();
+  const row = seedLegacyAged(db, 89 * DAY, { status: "invited", invite_token: "t" });
+
+  await handleScheduled(env(db));
+
+  assert.equal(db.legacy.has(row.id), true);
+  assert.equal(deleteCalls().length, 0);
+});
+
+test("the 90-day clock runs from import, not from the send", async () => {
+  const db = new FakeD1();
+  // Imported long ago, mailed only yesterday: still expired. The retention
+  // promise is about how long we hold the address, not how long since we used it.
+  const row = seedLegacyAged(db, 100 * DAY, {
+    status: "invited",
+    invite_token: "t",
+    invited_at: iso(Date.now() - DAY),
+  });
+
+  await handleScheduled(env(db));
+
+  assert.equal(db.legacy.has(row.id), false);
+});
+
+test("purges converted, declined and failed legacy rows on the same clock", async () => {
+  const db = new FakeD1();
+  for (const status of ["converted", "declined", "failed"]) {
+    db.seedLegacy({
+      email: `${status}@example.com`,
+      status,
+      imported_at: iso(Date.now() - 91 * DAY),
+    });
+  }
+
+  await handleScheduled(env(db));
+
+  assert.equal(db.legacy.size, 0, "no legacy row outlives the window in any state");
+});
+
+test("an unreachable Brevo does not postpone the erasure", async () => {
+  const db = new FakeD1();
+  const row = seedLegacyAged(db, 91 * DAY, { status: "invited", invite_token: "t" });
+  deleteResponder = () => new Response("nope", { status: 500 });
+
+  await handleScheduled(env(db));
+
+  // The period we publish for these addresses is about our own database, and
+  // nothing here depends on a third party being up.
+  assert.equal(db.legacy.has(row.id), false, "erased regardless");
+});
+
+// --- the Brevo delete must never reach a live subscriber ---------------------
+
+/** A confirmed subscriber already synced into the Brevo list. */
+async function seedConfirmedSubscriber(db, email) {
+  const created = await subscribeUpsert(
+    db,
+    { ...input, email, sourceFormInstance: "legacy-repermission" },
+    "sha",
+    makeDeps(),
+  );
+  await confirmSubscription(db, created.subscription.id, iso(Date.now() - 80 * DAY));
+  db.rows.get(created.subscription.id).brevo_synced_at = iso(Date.now() - 80 * DAY);
+  return created.subscription;
+}
+
+test("does not delete a converted contact's subscriber from Brevo", async () => {
+  const db = new FakeD1();
+  const sub = await seedConfirmedSubscriber(db, "regi@example.com");
+  const row = seedLegacyAged(db, 91 * DAY, {
+    status: "converted",
+    subscription_id: sub.id,
+  });
+
+  await handleScheduled(env(db));
+
+  // The row exists past conversion only to keep a repeated click idempotent;
+  // deleting the contact would drop a live subscriber from the list for good,
+  // since brevo_synced_at is set and the reconciliation would never notice.
+  assert.equal(deleteCalls().length, 0, "no Brevo delete for a subscriber");
+  assert.equal(db.legacy.has(row.id), false, "the legacy row is still erased");
+  assert.equal(db.rows.get(sub.id).status, "confirmed", "and the subscription is untouched");
+});
+
+test("does not delete from Brevo when a decliner later subscribed via the form", async () => {
+  const db = new FakeD1();
+  // Status is not the discriminator: presence in `subscriptions` is.
+  await seedConfirmedSubscriber(db, "regi@example.com");
+  seedLegacyAged(db, 91 * DAY, { status: "declined", responded_at: iso(Date.now() - 85 * DAY) });
+
+  await handleScheduled(env(db));
+
+  assert.equal(deleteCalls().length, 0);
+});
+
+test("no legacy status triggers a Brevo delete", async () => {
+  const db = new FakeD1();
+  for (const status of ["pending", "paused", "invited", "converted", "declined", "failed"]) {
+    db.seedLegacy({
+      email: `${status}@example.com`,
+      status,
+      imported_at: iso(Date.now() - 91 * DAY),
+    });
+  }
+
+  await handleScheduled(env(db));
+
+  // Belt and braces for the whole state space: an earlier version deleted the
+  // contact for every expired row, which silently dropped live subscribers.
+  assert.equal(db.legacy.size, 0, "all erased from D1");
+  assert.equal(deleteCalls().length, 0, "and not one Brevo delete");
+});

@@ -36,13 +36,23 @@ body {
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
   margin: 0;
-  // Promote <body> to its own GPU compositing layer. Without this, Chromium
-  // rasterizes the scrolling contents on the root scroller and reuses stale
-  // cached tiles across soft (client-side) navigations — leaving the previous
-  // page's pixels painted as "ghost text" (most visible between two long
-  // chapters) until a resize/zoom forces a global re-raster. Giving <body> its
-  // own layer makes content changes invalidate it correctly on every
-  // navigation, so the stale-tile reuse can't occur. Static, no per-nav JS.
+}
+
+// Promote the page content to its own GPU compositing layer. Without this,
+// Chromium rasterizes the scrolling contents on the root scroller and reuses
+// stale cached tiles across soft (client-side) navigations — leaving the
+// previous page's pixels painted as "ghost text" (most visible between two long
+// chapters) until a resize/zoom forces a global re-raster. Giving the content
+// its own layer makes content changes invalidate it correctly on every
+// navigation, so the stale-tile reuse can't occur. Static, no per-nav JS.
+//
+// Scoped to this wrapper rather than <body> ON PURPOSE: a transform makes the
+// element the containing block for `position: fixed` descendants, so with it on
+// <body> the newsletter dialog's fixed overlay sized itself to the whole
+// document instead of the viewport and opened halfway down the page. The dialog
+// is a sibling of this wrapper, so it now escapes the transform. Anything added
+// to the root layout that must be viewport-fixed belongs outside it too.
+.page-root {
   transform: translateZ(0);
 }
 
