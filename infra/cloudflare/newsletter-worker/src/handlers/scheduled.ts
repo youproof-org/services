@@ -153,23 +153,33 @@ async function purgeExpiredSubscriptions(env: Env, cutoffIso: string): Promise<v
  * non-responders, decliners, converted rows kept only for click idempotency, and
  * permanently-failed sends alike.
  *
- * Brevo first, then D1, for the same reason as purgeExpiredSubscriptions: D1 is
- * the only record of who still owes Brevo a deletion. These addresses were never
- * added to the marketing list, but a transactional send can still materialise a
- * contact depending on account settings, and deleteContact treats 404 as success
- * — so the call is cheap insurance for the "a Brevónál is" promise in the
- * privacy policy.
+ * D1 only. Unlike purgeExpiredSubscriptions this makes NO Brevo call, and that
+ * is deliberate — do not "fix" it by adding one:
+ *
+ *  - These addresses are never added to the Brevo list. Brevo sees them solely
+ *    as the recipient of one transactional message, so there is nothing of ours
+ *    to erase there, and the retention period published for them is about our
+ *    own database.
+ *  - A delete here would be actively dangerous. This query selects expired rows
+ *    in EVERY status, and a 'converted' row is kept past conversion purely so a
+ *    repeated click stays idempotent — its address is by then a confirmed
+ *    subscriber sitting in the Brevo list. Deleting that contact would drop a
+ *    live subscriber permanently: their brevo_synced_at is already set, so the
+ *    reconciliation would never notice they had gone. The same trap applies to
+ *    anyone who declined here, or was never mailed, and later signed up through
+ *    the ordinary form.
+ *
+ * If Brevo ever does hold a contact for one of these addresses, it is because
+ * the recipient opened or clicked and Brevo identified them into
+ * `identified_contacts` — an account-level tracking behaviour, switched off with
+ * Settings → Automations → Transactional emails → Tracking → Anonymous email
+ * tracking. That is the right place to solve it; see
+ * docs/newsletter-legacy-repermission.md.
  */
 async function purgeExpiredLegacyContacts(env: Env, cutoffIso: string): Promise<void> {
   const expired = await listPurgeableLegacyContacts(env.DB, cutoffIso, LEGACY_PURGE_BATCH);
 
   for (const row of expired) {
-    try {
-      await deleteContact(env, row.email);
-    } catch (err) {
-      console.error("legacy retention purge: Brevo delete failed", row.id, err);
-      continue;
-    }
     await deleteLegacyContact(env.DB, row.id);
   }
 }

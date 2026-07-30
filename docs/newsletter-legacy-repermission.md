@@ -198,9 +198,37 @@ The cron **purges before it sends**, which matters: a batch imported long ago an
 never mailed satisfies both queries, and erasing it is the right answer — we
 should not cold-contact an address we have been sitting on for three months.
 
-Erasure is **Brevo first, then D1**, matching the subscription purge: D1 is the
-only record of which addresses still owe Brevo a deletion, and `deleteContact`
-treats 404 as success so retries converge.
+Erasure is **D1 only** — unlike the subscription purge, this makes no Brevo call
+at all, and that is deliberate. Do not add one:
+
+- **There is nothing of ours there to erase.** These addresses never join the
+  Brevo list; Brevo sees them solely as the recipient of one transactional
+  message. The period published for them is about our own database, so nothing
+  here should depend on a third party being reachable either.
+- **A delete would be actively dangerous.** The query selects expired rows in
+  *every* status, and a `converted` row is kept past conversion purely so a
+  repeated click stays idempotent — its address is by then a confirmed
+  subscriber sitting in the Brevo list. Deleting that contact would drop a live
+  subscriber **permanently**: `brevo_synced_at` is already set, so the
+  reconciliation would never notice they had gone, and the person would just
+  stop receiving the newsletter. The same trap catches anyone who declined here,
+  or was never mailed, and later signed up through the ordinary form — which is
+  why filtering on the legacy status would not save you.
+
+An earlier revision of this campaign did exactly that; `test/retention.test.mjs`
+now pins "no legacy status triggers a Brevo delete" across the whole state space.
+
+> **If you do want Brevo to hold nothing for these addresses.** Brevo does not
+> create a contact when a transactional message is *sent*. It creates one when
+> the recipient **opens or clicks**, identifying them into the
+> `identified_contacts` list — which itself only exists once the account has an
+> Automation workflow. Since this invite is designed to be clicked, that is a
+> real (if narrow) exposure. Turn it off account-wide at **Settings →
+> Automations → Transactional emails → Tracking → Anonymous email tracking →
+> Yes**, which stops opens and clicks being linked to a contact. Brevo does not
+> offer a way to disable open/click collection entirely. Note this is
+> account-level, so it also removes per-contact open/click attribution from the
+> ordinary confirmation emails.
 
 Four things state this period and must move together:
 
@@ -231,7 +259,9 @@ Four things state this period and must move together:
    `curl -X GET` the decline URL → it must **not** decline.
 6. Seed a known-bad domain → hard bounce → `email_suppressions` row → the address
    disappears from the send worklist.
-7. Backdate `imported_at` by 91 days → the next tick deletes it from Brevo, then D1.
+7. Backdate `imported_at` by 91 days → the next tick erases the row from D1 and
+   makes **no** Brevo call. Do this once for a contact that converted: their
+   subscription and their Brevo contact must both survive untouched.
 
 ## Decommission
 
