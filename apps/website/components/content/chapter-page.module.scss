@@ -79,8 +79,12 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background-color: $blue-500;
-  color: #fff;
+  // Matches the dialog/form buttons: solid black, inverting to white on hover.
+  // The border is what keeps the hovered state legible — without it the button
+  // would dissolve into the white page.
+  background-color: $black;
+  color: $white;
+  border: 1px solid $black;
   text-decoration: none;
   padding: 0.75rem 1.25rem;
   font-size: 1rem;
@@ -89,7 +93,8 @@
   max-width: 45%;
 
   &:hover {
-    background-color: $gray-800;
+    background-color: $white;
+    color: $black;
   }
 }
 
