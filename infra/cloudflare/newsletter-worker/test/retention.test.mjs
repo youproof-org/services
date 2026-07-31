@@ -4,6 +4,7 @@
 import assert from "node:assert/strict";
 import { test, beforeEach, afterEach } from "node:test";
 import { handleScheduled } from "../src/handlers/scheduled.ts";
+import { handleLegacyResubscribe } from "../src/handlers/legacy.ts";
 import {
   confirmSubscription,
   insertEmailEvent,
@@ -399,4 +400,92 @@ test("no legacy status triggers a Brevo delete", async () => {
   // contact for every expired row, which silently dropped live subscribers.
   assert.equal(db.legacy.size, 0, "all erased from D1");
   assert.equal(deleteCalls().length, 0, "and not one Brevo delete");
+});
+
+// --- the invariant underneath all of the above -------------------------------
+// A CONFIRMED subscriber is never purged, by any sweep, however old, whichever
+// flow created them. This is written as its own section because it is the thing
+// that actually broke once: the legacy purge used to call deleteContact on every
+// expired row, which silently dropped live subscribers out of the Brevo list —
+// permanently, since brevo_synced_at was already set and the reconciliation
+// therefore never noticed.
+
+/** Age every timestamp on a row as far back as possible. */
+function ageEverything(db, id) {
+  const r = db.rows.get(id);
+  const ancient = iso(Date.now() - 10 * 365 * DAY);
+  r.subscribed_at = ancient;
+  r.created_at = ancient;
+  r.updated_at = ancient;
+  r.confirmed_at = ancient;
+  r.brevo_synced_at = ancient;
+}
+
+test("a subscriber confirmed through the normal flow survives every sweep", async () => {
+  const db = new FakeD1();
+  const c = await subscribeUpsert(db, { ...input, email: "normal@example.com" }, "sha", makeDeps());
+  await confirmSubscription(db, c.subscription.id, iso(Date.now() - 3650 * DAY));
+  ageEverything(db, c.subscription.id);
+
+  for (let i = 0; i < 3; i++) await handleScheduled(env(db));
+
+  assert.equal(db.rows.has(c.subscription.id), true, "still in D1 after a decade");
+  assert.equal(db.rows.get(c.subscription.id).status, "confirmed");
+  assert.equal(deleteCalls().length, 0, "and never deleted from Brevo");
+});
+
+test("a subscriber confirmed through the legacy campaign survives every sweep", async () => {
+  const db = new FakeD1();
+  const row = db.seedLegacy({
+    email: "legacy@example.com",
+    status: "invited",
+    invite_token: "tok",
+    imported_at: iso(Date.now() - 200 * DAY),
+  });
+  // Convert through the real handler rather than hand-building the row, so this
+  // exercises whatever that path actually writes.
+  const req = new Request(
+    `https://youproof.org/api/v1/newsletter/legacy/${row.id}/resubscribe`,
+    {
+      method: "POST",
+      headers: { origin: "https://youproof.org", "content-type": "application/json" },
+      body: JSON.stringify({ token: "tok", name: "Bea", privacyAccepted: true }),
+    },
+  );
+  const res = await handleLegacyResubscribe(
+    req,
+    { ...env(db), ALLOWED_ORIGINS: "https://youproof.org" },
+    new URL(req.url),
+    row.id,
+  );
+  assert.equal(res.status, 200, "converted");
+
+  const sub = [...db.rows.values()].find((r) => r.email === "legacy@example.com");
+  ageEverything(db, sub.id);
+  calls.length = 0;
+
+  for (let i = 0; i < 3; i++) await handleScheduled(env(db));
+
+  assert.equal(db.legacy.has(row.id), false, "the legacy row is purged, as it should be");
+  assert.equal(db.rows.has(sub.id), true, "but the subscriber they became is not");
+  assert.equal(db.rows.get(sub.id).status, "confirmed");
+  assert.equal(deleteCalls().length, 0, "and no Brevo delete for a live subscriber");
+});
+
+test("a confirmed subscriber survives a stale legacy row in every status", async () => {
+  // Status is not the discriminator — someone who declined, or was never mailed,
+  // can equally be a subscriber today. Cover the whole state space.
+  for (const status of ["pending", "paused", "invited", "converted", "declined", "failed"]) {
+    const db = new FakeD1();
+    const c = await subscribeUpsert(db, { ...input, email: "both@example.com" }, "sha", makeDeps());
+    await confirmSubscription(db, c.subscription.id, iso(Date.now() - 3650 * DAY));
+    ageEverything(db, c.subscription.id);
+    db.seedLegacy({ email: "both@example.com", status, imported_at: iso(Date.now() - 3650 * DAY) });
+    calls.length = 0;
+
+    await handleScheduled(env(db));
+
+    assert.equal(db.rows.has(c.subscription.id), true, `survived a stale '${status}' legacy row`);
+    assert.equal(deleteCalls().length, 0, `no Brevo delete for a '${status}' legacy row`);
+  }
 });
