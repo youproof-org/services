@@ -231,13 +231,32 @@ export async function subscribeUpsert(
   if (existing.status === "blocked") return { kind: "blocked" };
 
   if (existing.status === "pending" || existing.status === "confirmed") {
+    // Re-submitting while still pending re-sends the confirmation mail
+    // (handlers/subscribe.ts), so restart the confirmation window with it —
+    // otherwise the retention sweep could erase the row days after we handed out
+    // a fresh link, and the reader would click it into "no longer valid".
+    //
+    // The CASE keeps that guard in SQL: a confirmed row's subscribed_at is the
+    // record of when they actually subscribed, and moving it would falsify the
+    // consent evidence.
     await db
-      .prepare("UPDATE subscriptions SET name = ?, updated_at = ? WHERE id = ?")
-      .bind(input.name, now, existing.id)
+      .prepare(
+        `UPDATE subscriptions
+           SET name = ?,
+               subscribed_at = CASE WHEN status = 'pending' THEN ? ELSE subscribed_at END,
+               updated_at = ?
+         WHERE id = ?`,
+      )
+      .bind(input.name, now, now, existing.id)
       .run();
     return {
       kind: "updated",
-      subscription: { ...existing, name: input.name, updated_at: now },
+      subscription: {
+        ...existing,
+        name: input.name,
+        subscribed_at: existing.status === "pending" ? now : existing.subscribed_at,
+        updated_at: now,
+      },
     };
   }
 

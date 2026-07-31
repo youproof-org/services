@@ -290,10 +290,12 @@ class Stmt {
       r.updated_at = now;
       return;
     }
-    if (sql.startsWith("UPDATE subscriptions SET name = ?, updated_at = ? WHERE id")) {
-      const [name, now, id] = args;
+    if (sql.includes("SET name = ?,") && sql.includes("subscribed_at = CASE WHEN status")) {
+      const [name, subscribedAt, now, id] = args;
       const r = db.rows.get(id);
       r.name = name;
+      // Mirror the CASE: only a pending row's confirmation window restarts.
+      if (r.status === "pending") r.subscribed_at = subscribedAt;
       r.updated_at = now;
       return;
     }
