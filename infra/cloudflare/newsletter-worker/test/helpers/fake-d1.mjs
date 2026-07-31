@@ -127,6 +127,16 @@ class Stmt {
         .map((r) => ({ ...r }));
       return { results: rows };
     }
+    if (sql.includes("status = 'pending' AND subscribed_at <")) {
+      const [cutoff, limit] = args;
+      const rows = [...db.rows.values()]
+        .filter((r) => r.status === "pending" && r.subscribed_at < cutoff)
+        // Mirror the query's ORDER BY subscribed_at ASC.
+        .sort((a, b) => String(a.subscribed_at).localeCompare(String(b.subscribed_at)))
+        .slice(0, limit)
+        .map((r) => ({ ...r }));
+      return { results: rows };
+    }
     // Same tripwire as first()/run(): an unrecognised query must fail loudly
     // rather than return an empty result set that reads as "nothing matched".
     throw new Error(`FakeD1.all: unhandled SQL: ${sql}`);
