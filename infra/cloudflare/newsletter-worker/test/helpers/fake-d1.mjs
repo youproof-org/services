@@ -17,6 +17,7 @@ export class FakeD1 {
     this.attempts = [];
     this.events = []; // email_events rows
     this._eventKeys = new Set(); // `${message_id}||${event}` for dedup
+    this.legacy = new Map(); // id -> legacy_contacts row
   }
   prepare(sql) {
     return new Stmt(this, sql);
@@ -27,6 +28,29 @@ export class FakeD1 {
   }
   _rowsByEmail(email) {
     return [...this.rows.values()].filter((r) => r.email === email);
+  }
+  /**
+   * Seed a legacy_contacts row. Deliberately NOT an SQL insert path: production
+   * rows are created by hand-written SQL pasted into the D1 dashboard, so there
+   * is no worker code path to exercise here.
+   */
+  seedLegacy(row) {
+    const full = {
+      id: `lc-${this.legacy.size + 1}`,
+      locale: "hu",
+      status: "pending",
+      invite_token: null,
+      imported_at: "2026-07-01T00:00:00.000Z",
+      invited_at: null,
+      responded_at: null,
+      send_attempts: 0,
+      last_error: null,
+      brevo_message_id: null,
+      subscription_id: null,
+      ...row,
+    };
+    this.legacy.set(full.id, full);
+    return full;
   }
 }
 
@@ -42,6 +66,10 @@ class Stmt {
   }
   async first() {
     const { sql, args, db } = this;
+    // MUST come first: legacy SQL contains substrings the subscription branches
+    // below match on (e.g. "brevo_message_id = ?"), so a later check would
+    // silently run the wrong branch against the wrong table.
+    if (sql.includes("legacy_contacts")) return this._firstLegacy();
     if (sql.includes("FROM email_suppressions WHERE email")) {
       return db.suppressed.has(args[0]) ? { email: args[0] } : null;
     }
@@ -65,6 +93,7 @@ class Stmt {
   }
   async all() {
     const { sql, args, db } = this;
+    if (sql.includes("legacy_contacts")) return this._allLegacy();
     if (sql.includes("brevo_synced_at IS NULL")) {
       const limit = args[0];
       const rows = [...db.rows.values()]
@@ -98,10 +127,23 @@ class Stmt {
         .map((r) => ({ ...r }));
       return { results: rows };
     }
-    return { results: [] };
+    if (sql.includes("status = 'pending' AND subscribed_at <")) {
+      const [cutoff, limit] = args;
+      const rows = [...db.rows.values()]
+        .filter((r) => r.status === "pending" && r.subscribed_at < cutoff)
+        // Mirror the query's ORDER BY subscribed_at ASC.
+        .sort((a, b) => String(a.subscribed_at).localeCompare(String(b.subscribed_at)))
+        .slice(0, limit)
+        .map((r) => ({ ...r }));
+      return { results: rows };
+    }
+    // Same tripwire as first()/run(): an unrecognised query must fail loudly
+    // rather than return an empty result set that reads as "nothing matched".
+    throw new Error(`FakeD1.all: unhandled SQL: ${sql}`);
   }
   async run() {
     const { sql, args, db } = this;
+    if (sql.includes("legacy_contacts")) return this._runLegacy();
 
     if (sql.startsWith("INSERT INTO subscriptions")) {
       const row = {};
@@ -248,14 +290,132 @@ class Stmt {
       r.updated_at = now;
       return;
     }
-    if (sql.startsWith("UPDATE subscriptions SET name = ?, updated_at = ? WHERE id")) {
-      const [name, now, id] = args;
+    if (sql.includes("SET name = ?,") && sql.includes("subscribed_at = CASE WHEN status")) {
+      const [name, subscribedAt, now, id] = args;
       const r = db.rows.get(id);
       r.name = name;
+      // Mirror the CASE: only a pending row's confirmation window restarts.
+      if (r.status === "pending") r.subscribed_at = subscribedAt;
       r.updated_at = now;
       return;
     }
     throw new Error(`FakeD1.run: unhandled SQL: ${sql}`);
+  }
+
+  // --- legacy re-permission campaign ---
+  // Split out so the whole campaign can be deleted in one piece later.
+
+  async _firstLegacy() {
+    const { sql, args, db } = this;
+    if (sql.includes("SELECT * FROM legacy_contacts WHERE id")) {
+      const r = db.legacy.get(args[0]);
+      return r ? { ...r } : null;
+    }
+    throw new Error(`FakeD1.first: unhandled legacy SQL: ${sql}`);
+  }
+
+  async _allLegacy() {
+    const { sql, args, db } = this;
+    if (sql.includes("status = 'pending' AND send_attempts <")) {
+      const [maxAttempts, limit] = args;
+      const rows = [...db.legacy.values()]
+        .filter(
+          (r) =>
+            r.status === "pending" &&
+            r.send_attempts < maxAttempts &&
+            // Mirror the two NOT EXISTS clauses.
+            db._byEmail(r.email) == null &&
+            !db.suppressed.has(r.email),
+        )
+        // Mirror ORDER BY send_attempts ASC, imported_at ASC.
+        .sort(
+          (a, b) =>
+            (a.send_attempts ?? 0) - (b.send_attempts ?? 0) ||
+            String(a.imported_at).localeCompare(String(b.imported_at)),
+        )
+        .slice(0, limit)
+        .map((r) => ({ ...r }));
+      return { results: rows };
+    }
+    if (sql.includes("WHERE imported_at <")) {
+      const [cutoff, limit] = args;
+      const rows = [...db.legacy.values()]
+        .filter((r) => r.imported_at < cutoff)
+        .sort((a, b) => String(a.imported_at).localeCompare(String(b.imported_at)))
+        .slice(0, limit)
+        .map((r) => ({ ...r }));
+      return { results: rows };
+    }
+    throw new Error(`FakeD1.all: unhandled legacy SQL: ${sql}`);
+  }
+
+  async _runLegacy() {
+    const { sql, args, db } = this;
+
+    if (sql.startsWith("DELETE FROM legacy_contacts")) {
+      db.legacy.delete(args[0]);
+      return { meta: { changes: 1 } };
+    }
+    // The compare-and-swap claim. This is the one branch whose meta.changes is
+    // load-bearing: claimLegacyInvite reads it to decide whether it won the row,
+    // so returning undefined here would silently stop every invite.
+    if (sql.includes("SET status = 'invited'")) {
+      const [now, token, id] = args;
+      const r = db.legacy.get(id);
+      if (!r || r.status !== "pending") return { meta: { changes: 0 } };
+      Object.assign(r, {
+        status: "invited",
+        invited_at: now,
+        invite_token: token,
+        send_attempts: (r.send_attempts ?? 0) + 1,
+        last_error: null,
+      });
+      return { meta: { changes: 1 } };
+    }
+    if (sql.includes("SET status = 'pending'")) {
+      const [error, id] = args;
+      const r = db.legacy.get(id);
+      Object.assign(r, {
+        status: "pending",
+        invited_at: null,
+        invite_token: null,
+        last_error: error,
+      });
+      return { meta: { changes: 1 } };
+    }
+    if (sql.includes("SET status = 'failed'")) {
+      const [error, id] = args;
+      const r = db.legacy.get(id);
+      Object.assign(r, { status: "failed", invite_token: null, last_error: error });
+      return { meta: { changes: 1 } };
+    }
+    if (sql.includes("SET status = 'converted'")) {
+      const [now, subscriptionId, id] = args;
+      const r = db.legacy.get(id);
+      Object.assign(r, {
+        status: "converted",
+        responded_at: r.responded_at ?? now,
+        subscription_id: subscriptionId,
+        invite_token: null,
+      });
+      return { meta: { changes: 1 } };
+    }
+    if (sql.includes("SET status = 'declined'")) {
+      const [now, id] = args;
+      const r = db.legacy.get(id);
+      Object.assign(r, {
+        status: "declined",
+        responded_at: r.responded_at ?? now,
+        invite_token: null,
+      });
+      return { meta: { changes: 1 } };
+    }
+    if (sql.includes("SET brevo_message_id = ?")) {
+      const [messageId, id] = args;
+      db.legacy.get(id).brevo_message_id = messageId;
+      return { meta: { changes: 1 } };
+    }
+    throw new Error(`FakeD1.run: unhandled legacy SQL: ${sql}`);
   }
 }
 

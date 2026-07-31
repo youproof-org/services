@@ -1,6 +1,12 @@
 import { handleSubscribe } from "./handlers/subscribe";
-import { handleConfirm } from "./handlers/confirm";
-import { handleUnsubscribe } from "./handlers/unsubscribe";
+import { handleConfirm, handleConfirmLanding } from "./handlers/confirm";
+import {
+  handleLegacyDecline,
+  handleLegacyDeclineLanding,
+  handleLegacyLanding,
+  handleLegacyResubscribe,
+} from "./handlers/legacy";
+import { handleUnsubscribe, handleUnsubscribeLanding } from "./handlers/unsubscribe";
 import { handleWebhook } from "./handlers/webhook";
 import { json } from "./lib/http";
 import type { Env } from "./types";
@@ -32,14 +38,39 @@ export async function route(
   }
 
   // /subscriptions/{id}/confirm | /subscriptions/{id}/unsubscribe
+  //
+  // Both GETs are READ-ONLY: they are links in an email, and inboxes are
+  // crawled. The GET opens a dialog on the site; the POST is what acts. See the
+  // docblocks in the two handlers.
   const detail = sub.match(/^\/subscriptions\/([^/]+)\/(confirm|unsubscribe)$/);
   if (detail) {
     const [, id, action] = detail;
-    if (action === "confirm" && method === "GET") {
-      return handleConfirm(request, env, url, id);
+    if (action === "confirm") {
+      if (method === "GET") return handleConfirmLanding(request, env, url, id);
+      if (method === "POST") return handleConfirm(request, env, url, id);
+    } else {
+      if (method === "GET") return handleUnsubscribeLanding(request, env, url, id);
+      if (method === "POST" || method === "DELETE") {
+        return handleUnsubscribe(request, env, url, id);
+      }
     }
-    if (action === "unsubscribe" && ["GET", "POST", "DELETE"].includes(method)) {
-      return handleUnsubscribe(request, env, url, id, method);
+    return json({ code: "method_not_allowed" }, 405);
+  }
+
+  // /legacy/{id}/resubscribe | /legacy/{id}/decline — the one-shot re-permission
+  // campaign for the defunct site's newsletter list. Both GETs are
+  // read-only by design; see handlers/legacy.ts.
+  const legacy = sub.match(/^\/legacy\/([^/]+)\/(resubscribe|decline)$/);
+  if (legacy) {
+    const [, id, action] = legacy;
+    if (action === "resubscribe") {
+      if (method === "GET") return handleLegacyLanding(request, env, url, id);
+      if (method === "POST") return handleLegacyResubscribe(request, env, url, id);
+    } else {
+      if (method === "GET") return handleLegacyDeclineLanding(request, env, url, id);
+      if (method === "POST" || method === "DELETE") {
+        return handleLegacyDecline(request, env, url, id);
+      }
     }
     return json({ code: "method_not_allowed" }, 405);
   }

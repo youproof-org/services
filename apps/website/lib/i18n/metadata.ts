@@ -19,7 +19,7 @@ export function absoluteUrl(pathname: string): string {
 
 // ---------------------------------------------------------------------------
 // Site-wide metadata constants (one source of truth for the root layout and the
-// per-page buildPageMeta helper — see the i18n doc / YP-129 plan).
+// per-page buildPageMeta helper — see the i18n doc).
 // ---------------------------------------------------------------------------
 // og:site_name, the <title> brand suffix, and the meta-description fallback are
 // per-locale (in locales.json, read via getLocaleConfig) — a future `en` locale
@@ -57,7 +57,7 @@ function toIsoTime(publishedAt: string): string {
 /**
  * Build the full per-page Metadata: <title>, meta description, canonical +
  * hreflang alternates, and the complete OpenGraph block (Facebook). Applies the
- * YP-129 fallback chain — meta overrides display text; og-specific overrides win
+ * fallback chain — meta overrides display text; og-specific overrides win
  * for OG only (brand/description defaults are per-locale, from locales.json):
  *   pageTitle    = meta.title            ?? node.title       ?? fallbackTitle
  *   <title>      = `${pageTitle} | ${locale.brand}`  (locale.brand if no pageTitle)

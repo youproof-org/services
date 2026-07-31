@@ -1,2 +1,7 @@
 dist/
 .wrangler/
+# Local secrets for `wrangler dev` (BREVO_API_KEY, BREVO_WEBHOOK_TOKEN,
+# TURNSTILE_SECRET). Deployed values are Terraform-owned; this file is only ever
+# a developer's local copy and must never be committed.
+.dev.vars
+.dev.vars.*

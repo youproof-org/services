@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
   sendTransactionalEmail,
+  sendAdminAlert,
   upsertContact,
   setEmailBlacklisted,
   classifyBrevoEvent,
@@ -146,4 +147,92 @@ test("classifyBrevoEvent normalizes casing/format", () => {
   assert.equal(classifyBrevoEvent("soft_bounce"), "other");
   assert.equal(classifyBrevoEvent("delivered"), "other");
   assert.equal(classifyBrevoEvent("opened"), "other");
+});
+
+// --- sender identity (BREVO_SENDER_NAME) ---
+// One variable drives the From name on every outgoing email, so the
+// transactional mail, the ops alerts and the legacy invite cannot drift apart.
+
+test("uses BREVO_SENDER_NAME as the From name on transactional sends", async () => {
+  let body;
+  globalThis.fetch = async (_u, init) => {
+    body = JSON.parse(init.body);
+    return new Response(JSON.stringify({ messageId: "<m>" }), { status: 201 });
+  };
+
+  await sendTransactionalEmail(
+    { BREVO_API_KEY: "k", BREVO_SENDER_EMAIL: "hello@youproof.org", BREVO_SENDER_NAME: "Teszt Elek" },
+    { toEmail: "a@b.hu", subject: "s", htmlContent: "h", textContent: "t", listUnsubscribeUrl: "https://x/u" },
+  );
+
+  assert.equal(body.sender.name, "Teszt Elek");
+  assert.equal(body.sender.email, "hello@youproof.org", "envelope address is unchanged");
+});
+
+test("uses the same name for operational alerts", async () => {
+  let body;
+  globalThis.fetch = async (_u, init) => {
+    body = JSON.parse(init.body);
+    return new Response(JSON.stringify({ messageId: "<m>" }), { status: 201 });
+  };
+
+  await sendAdminAlert(
+    {
+      BREVO_API_KEY: "k",
+      BREVO_SENDER_EMAIL: "hello@youproof.org",
+      BREVO_SENDER_NAME: "Teszt Elek",
+      ALERT_EMAIL: "admin@youproof.org",
+    },
+    "subject",
+    "text",
+  );
+
+  assert.equal(body.sender.name, "Teszt Elek");
+});
+
+test("falls back to SITE_HOST, then to the brand name, when BREVO_SENDER_NAME is blank", async () => {
+  let body;
+  globalThis.fetch = async (_u, init) => {
+    body = JSON.parse(init.body);
+    return new Response(JSON.stringify({ messageId: "<m>" }), { status: 201 });
+  };
+  const send = (env) =>
+    sendTransactionalEmail(
+      { BREVO_API_KEY: "k", BREVO_SENDER_EMAIL: "hello@youproof.org", ...env },
+      {
+        toEmail: "a@b.hu",
+        subject: "s",
+        htmlContent: "h",
+        textContent: "t",
+        listUnsubscribeUrl: "https://x/u",
+      },
+    );
+
+  // An unset GitHub variable reaches Terraform as "", so blank must behave as
+  // unset rather than producing an empty From name. Falling through to SITE_HOST
+  // mirrors coalesce(var.brevo_sender_name, var.site_host) in worker.tf, so
+  // staging mail can never claim to be production.
+  await send({ SITE_HOST: "staging.youproof.org" });
+  assert.equal(body.sender.name, "staging.youproof.org");
+  await send({ BREVO_SENDER_NAME: "  ", SITE_HOST: "staging.youproof.org" });
+  assert.equal(body.sender.name, "staging.youproof.org");
+
+  // Neither bound (a local wrangler dev with no .dev.vars): never an empty name.
+  await send({});
+  assert.equal(body.sender.name, "youproof.org");
+});
+
+test("omits the recipient name when there isn't one", async () => {
+  let body;
+  globalThis.fetch = async (_u, init) => {
+    body = JSON.parse(init.body);
+    return new Response(JSON.stringify({ messageId: "<m>" }), { status: 201 });
+  };
+
+  await sendTransactionalEmail(
+    { BREVO_API_KEY: "k", BREVO_SENDER_EMAIL: "hello@youproof.org" },
+    { toEmail: "a@b.hu", subject: "s", htmlContent: "h", textContent: "t", listUnsubscribeUrl: "https://x/u" },
+  );
+
+  assert.deepEqual(body.to, [{ email: "a@b.hu" }], "no empty name key for the legacy list");
 });

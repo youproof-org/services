@@ -1,13 +1,30 @@
-import { deleteContact, sendAdminAlert } from "../lib/brevo";
 import {
+  BrevoError,
+  deleteContact,
+  sendAdminAlert,
+  senderName,
+  sendTransactionalEmail,
+} from "../lib/brevo";
+import {
+  claimLegacyInvite,
+  deleteLegacyContact,
   deleteSubscription,
+  failLegacyInvite,
   listPendingBrevoSync,
+  listPurgeableLegacyContacts,
+  listPurgeablePending,
   listPurgeableUnsubscribed,
+  listSendableLegacyContacts,
   markSyncAlerted,
   pruneEmailEvents,
   pruneSubscribeAttempts,
+  releaseLegacyInvite,
+  setLegacyMessageId,
 } from "../lib/db";
+import { buildLegacyInviteEmail } from "../lib/email";
 import { syncBrevoContact } from "../lib/sync";
+import { newToken } from "../lib/tokens";
+import { legacyDeclineUrl, legacyResubscribeUrl, privacyUrl } from "../lib/urls";
 import type { Env } from "../types";
 
 // How many unsynced rows to reconcile per cron tick, and after how many failed
@@ -26,9 +43,35 @@ const EVENT_RETENTION_MS = 730 * 24 * 60 * 60 * 1000;
 // Unsubscribed subscriptions: 5 years from the unsubscribe, to evidence that the
 // consent was given and later withdrawn, then erased from D1 *and* Brevo.
 const UNSUBSCRIBED_RETENTION_MS = 5 * 365 * 24 * 60 * 60 * 1000;
+// Never-confirmed subscriptions: 30 days from the signup. A pending row is not a
+// subscription — the reader asked, but never proved they control the mailbox —
+// so it cannot sit under the "as long as you are subscribed" period. Side
+// effect worth knowing: this gives confirmation links a de-facto 30-day expiry,
+// where the token itself never expires.
+const PENDING_RETENTION_MS = 30 * 24 * 60 * 60 * 1000;
 // Purge batch size: each row costs a Brevo round-trip, so keep it well under the
 // reconciliation batch.
 const PURGE_BATCH = 20;
+// Legacy re-permission contacts: 90 days from IMPORT, not from the send — the
+// clock starts when the data entered our systems. See
+// docs/newsletter-legacy-repermission.md; the same number is quoted to the
+// recipient in the invite email, which reads it from this constant.
+const LEGACY_RETENTION_MS = 90 * 24 * 60 * 60 * 1000;
+
+// --- legacy re-permission campaign ---
+// One-shot; this whole block goes away with the table when the campaign ends.
+//
+// Deliberately a far smaller batch than BATCH/PURGE_BATCH: this mails a
+// years-old list whose hard-bounce rate is unknown, and burning through it fast
+// would damage the sending domain's reputation for the *real* newsletter. At
+// 5 per tick on the 15-minute schedule that's ~480/day, which also leaves time
+// for one day's bounce webhooks to land in email_suppressions and take those
+// addresses out of the next day's worklist automatically.
+const LEGACY_INVITE_BATCH = 5;
+const LEGACY_MAX_SEND_ATTEMPTS = 3;
+// Purely a DELETE (these contacts were never added to the Brevo list), so this
+// can run wider than PURGE_BATCH.
+const LEGACY_PURGE_BATCH = 100;
 
 /**
  * Scheduled reconciliation (Cron Trigger). Retries any subscription that owes
@@ -44,6 +87,14 @@ export async function handleScheduled(env: Env): Promise<void> {
   await pruneSubscribeAttempts(env.DB, new Date(now - ATTEMPT_RETENTION_MS).toISOString());
   await pruneEmailEvents(env.DB, new Date(now - EVENT_RETENTION_MS).toISOString());
   await purgeExpiredSubscriptions(env, new Date(now - UNSUBSCRIBED_RETENTION_MS).toISOString());
+  await purgeExpiredPending(env, new Date(now - PENDING_RETENTION_MS).toISOString());
+
+  // Purge legacy contacts BEFORE sending to them. A batch imported long ago and
+  // never mailed satisfies both queries; erasing it is the right answer, since
+  // cold-contacting an address we have been sitting on for three months is
+  // exactly what the retention window exists to prevent.
+  await purgeExpiredLegacyContacts(env, new Date(now - LEGACY_RETENTION_MS).toISOString());
+  await sendLegacyInvites(env);
 
   const pending = await listPendingBrevoSync(env.DB, BATCH);
 
@@ -102,5 +153,118 @@ async function purgeExpiredSubscriptions(env: Env, cutoffIso: string): Promise<v
       continue;
     }
     await deleteSubscription(env.DB, sub.id);
+  }
+}
+
+/**
+ * Erase never-confirmed subscriptions past the 30-day window.
+ *
+ * D1 only, no Brevo call — the opposite of purgeExpiredSubscriptions above, and
+ * for the same reason the legacy purge makes none: a pending row was never added
+ * to the Brevo list, because syncBrevoContact only runs on confirmation. There is
+ * nothing there to erase, and nothing to hold the erasure hostage to.
+ */
+async function purgeExpiredPending(env: Env, cutoffIso: string): Promise<void> {
+  const expired = await listPurgeablePending(env.DB, cutoffIso, PURGE_BATCH);
+
+  for (const sub of expired) {
+    await deleteSubscription(env.DB, sub.id);
+  }
+}
+
+/**
+ * Erase legacy contacts past the 90-day window, in whatever status — invited
+ * non-responders, decliners, converted rows kept only for click idempotency, and
+ * permanently-failed sends alike.
+ *
+ * D1 only. Unlike purgeExpiredSubscriptions this makes NO Brevo call, and that
+ * is deliberate — do not "fix" it by adding one:
+ *
+ *  - These addresses are never added to the Brevo list. Brevo sees them solely
+ *    as the recipient of one transactional message, so there is nothing of ours
+ *    to erase there, and the retention period published for them is about our
+ *    own database.
+ *  - A delete here would be actively dangerous. This query selects expired rows
+ *    in EVERY status, and a 'converted' row is kept past conversion purely so a
+ *    repeated click stays idempotent — its address is by then a confirmed
+ *    subscriber sitting in the Brevo list. Deleting that contact would drop a
+ *    live subscriber permanently: their brevo_synced_at is already set, so the
+ *    reconciliation would never notice they had gone. The same trap applies to
+ *    anyone who declined here, or was never mailed, and later signed up through
+ *    the ordinary form.
+ *
+ * If Brevo ever does hold a contact for one of these addresses, it is because
+ * the recipient opened or clicked and Brevo identified them into
+ * `identified_contacts` — an account-level tracking behaviour, switched off with
+ * Settings → Automations → Transactional emails → Tracking → Anonymous email
+ * tracking. That is the right place to solve it; see
+ * docs/newsletter-legacy-repermission.md.
+ */
+async function purgeExpiredLegacyContacts(env: Env, cutoffIso: string): Promise<void> {
+  const expired = await listPurgeableLegacyContacts(env.DB, cutoffIso, LEGACY_PURGE_BATCH);
+
+  for (const row of expired) {
+    await deleteLegacyContact(env.DB, row.id);
+  }
+}
+
+/**
+ * Send the one-shot re-permission invite to a small batch of legacy contacts.
+ *
+ * There is no feature flag: an empty table sends nothing, so this ships dark and
+ * the campaign starts when addresses are imported. Pausing is a one-line UPDATE
+ * to 'paused' in the D1 console — faster than a redeploy and available from the
+ * same place the import happens.
+ *
+ * The claim is a compare-and-swap taken BEFORE the send, so two overlapping ticks
+ * cannot both mail the same address. The trade is deliberate: a crash between
+ * claim and send silently drops that invite rather than risking a duplicate,
+ * which is the right way round for an unsolicited mail to a stale list.
+ */
+async function sendLegacyInvites(env: Env): Promise<void> {
+  const batch = await listSendableLegacyContacts(
+    env.DB,
+    LEGACY_MAX_SEND_ATTEMPTS,
+    LEGACY_INVITE_BATCH,
+  );
+
+  for (const row of batch) {
+    const token = newToken();
+    const claimed = await claimLegacyInvite(env.DB, row.id, token, new Date().toISOString());
+    if (!claimed) continue; // another tick took it
+
+    const declineUrl = legacyDeclineUrl(env, row.id, token);
+    const content = buildLegacyInviteEmail({
+      resubscribeUrl: legacyResubscribeUrl(env, row.id, token),
+      declineUrl,
+      privacyUrl: privacyUrl(env, row.locale),
+      // Same identity as the From name, so the sign-off can't contradict it.
+      senderName: senderName(env),
+      retentionDays: Math.round(LEGACY_RETENTION_MS / (24 * 60 * 60 * 1000)),
+    });
+
+    try {
+      const { messageId } = await sendTransactionalEmail(env, {
+        toEmail: row.email,
+        subject: content.subject,
+        htmlContent: content.htmlContent,
+        textContent: content.textContent,
+        listUnsubscribeUrl: declineUrl,
+        tags: ["newsletter-legacy-invite"],
+      });
+      if (messageId) await setLegacyMessageId(env.DB, row.id, messageId);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      // A 4xx that isn't rate limiting won't fix itself (bad recipient, rejected
+      // payload) — park it for a human instead of burning the attempt budget.
+      const retryable =
+        !(err instanceof BrevoError) || err.status >= 500 || err.status === 429;
+      if (retryable) {
+        await releaseLegacyInvite(env.DB, row.id, message);
+      } else {
+        await failLegacyInvite(env.DB, row.id, message);
+      }
+      console.error("legacy invite send failed", row.id, retryable ? "(will retry)" : "(terminal)", err);
+    }
   }
 }

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import Link from 'next/link'
 import { buildLocalizedUrl } from '@/lib/i18n/url'
+import { CONFIRMED_EVENT } from './SubscriptionActionDialog'
 import styles from './newsletter-form.module.scss'
 
 // Where this instance sits on the page. Part of the stable DOM id and the
@@ -55,17 +56,25 @@ export default function NewsletterForm({ locale, placement }: NewsletterFormProp
   const domId = `newsletter-form-${placement}`
   const privacyHref = buildLocalizedUrl(locale, 'page', 'adatkezeles')
 
-  // If the reader has just landed here from the confirmation email
-  // (?newsletter_confirmed=<page>#<placement>), and it targets THIS instance,
-  // switch to the confirmed state and scroll into view. Self-contained per
-  // instance; the fallback (form no longer present) is handled by NewsletterLanding.
+  // A confirmation just completed. The emailed link is read-only now (a mail
+  // scanner must not be able to confirm anyone), so the POST happens in
+  // SubscriptionActionDialog, which fires this event once it succeeds — naming
+  // the form instance the reader originally subscribed from. If that's us,
+  // switch to the confirmed state and scroll into view; the dialog closes at the
+  // same moment, so this is the only success message they see.
+  //
+  // A window event rather than props or context: NewsletterLanding is mounted in
+  // the root layout, outside .page-root, so there is no shared React tree short
+  // of wrapping the whole app in a provider.
   useEffect(() => {
-    const param = new URLSearchParams(window.location.search).get('newsletter_confirmed')
-    if (!param || param === 'invalid') return
-    const targetPlacement = param.includes('#') ? param.split('#')[1] : param
-    if (targetPlacement !== placement) return
-    setState('confirmed')
-    rootRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    function onConfirmed(e: Event) {
+      const detail = (e as CustomEvent<{ placement?: string }>).detail
+      if (detail?.placement !== placement) return
+      setState('confirmed')
+      rootRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+    window.addEventListener(CONFIRMED_EVENT, onConfirmed)
+    return () => window.removeEventListener(CONFIRMED_EVENT, onConfirmed)
   }, [placement])
 
   // Move focus to the first field when the interstitial expands.
