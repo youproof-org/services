@@ -121,3 +121,38 @@ test("isSuppressed reflects the suppression table", async () => {
   db.suppressed.add("x@y.z");
   assert.equal(await isSuppressed(db, "x@y.z"), true);
 });
+
+test("updated: re-submitting while pending restarts the confirmation window", async () => {
+  const db = new FakeD1();
+  const first = await subscribeUpsert(db, input, "sha", makeDeps());
+  const id = first.subscription.id;
+  // Pretend the original signup was 29 days ago and they never confirmed.
+  db.rows.get(id).subscribed_at = "2026-06-01T00:00:00.000Z";
+
+  const again = await subscribeUpsert(db, { ...input, name: "Anna B" }, "sha", makeDeps());
+
+  // Re-submitting re-sends the confirmation mail, so the 30-day retention window
+  // has to restart with it — otherwise the sweep could erase the row days after
+  // we handed out a fresh link.
+  assert.equal(again.kind, "updated");
+  assert.equal(db.rows.get(id).subscribed_at, "2026-07-24T00:00:00.000Z");
+  assert.equal(again.subscription.subscribed_at, "2026-07-24T00:00:00.000Z", "and the returned row agrees");
+  assert.equal(db.rows.get(id).status, "pending");
+  assert.equal(db.rows.get(id).name, "Anna B");
+});
+
+test("updated: a confirmed row's subscribed_at is never moved", async () => {
+  const db = new FakeD1();
+  const first = await subscribeUpsert(db, input, "sha", makeDeps());
+  const id = first.subscription.id;
+  await confirmSubscription(db, id, "2026-07-01T00:00:00.000Z");
+  db.rows.get(id).subscribed_at = "2026-06-01T00:00:00.000Z";
+
+  const again = await subscribeUpsert(db, { ...input, name: "Anna C" }, "sha", makeDeps());
+
+  // That timestamp is the record of when they actually subscribed; moving it
+  // would falsify the consent evidence.
+  assert.equal(db.rows.get(id).subscribed_at, "2026-06-01T00:00:00.000Z");
+  assert.equal(again.subscription.subscribed_at, "2026-06-01T00:00:00.000Z");
+  assert.equal(db.rows.get(id).name, "Anna C", "the name still updates");
+});
