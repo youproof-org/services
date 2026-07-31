@@ -216,6 +216,51 @@ test("listPurgeableUnsubscribed ignores rows with a null unsubscribed_at", async
   assert.equal(rows.length, 0);
 });
 
+// --- never-confirmed subscriptions (30 days from signup) ---------------------
+// A pending row is not a subscription: the reader asked, but never proved they
+// control the mailbox. Nothing purged these before, so they were retained
+// forever, outside any period the policy publishes.
+
+/** A subscription that was never confirmed, signed up `agoMs` ago. */
+async function seedPendingAged(db, agoMs, email = "pending@example.com") {
+  const c = await subscribeUpsert(db, { ...input, email }, "sha", makeDeps());
+  db.rows.get(c.subscription.id).subscribed_at = iso(Date.now() - agoMs);
+  return c.subscription.id;
+}
+
+test("purges a never-confirmed subscription past 30 days, without touching Brevo", async () => {
+  const db = new FakeD1();
+  const id = await seedPendingAged(db, 31 * DAY);
+
+  await handleScheduled(env(db));
+
+  assert.equal(db.rows.has(id), false, "erased from D1");
+  // A pending row was never added to the Brevo list — syncBrevoContact only runs
+  // on confirmation — so there is nothing there to erase.
+  assert.equal(deleteCalls().length, 0, "no Brevo call");
+});
+
+test("keeps a never-confirmed subscription inside the 30-day window", async () => {
+  const db = new FakeD1();
+  const id = await seedPendingAged(db, 29 * DAY);
+
+  await handleScheduled(env(db));
+
+  assert.equal(db.rows.has(id), true);
+});
+
+test("the pending sweep does not touch a long-standing confirmed subscriber", async () => {
+  const db = new FakeD1();
+  const id = await seedPendingAged(db, 400 * DAY);
+  await confirmSubscription(db, id, iso(Date.now() - 399 * DAY));
+  db.rows.get(id).brevo_synced_at = iso(Date.now() - 399 * DAY);
+
+  await handleScheduled(env(db));
+
+  assert.equal(db.rows.has(id), true, "confirmed rows have their own, much longer window");
+});
+
+
 // --- legacy re-permission contacts (90 days from import) --------------------
 // One-shot campaign. Same tripwire duty as the sections above: the
 // window here is published in the privacy policy AND quoted to the recipient in

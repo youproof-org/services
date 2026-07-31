@@ -514,6 +514,35 @@ export async function listPurgeableUnsubscribed(
   return results;
 }
 
+/**
+ * Subscriptions that were never confirmed and are past the confirmation window.
+ *
+ * Nothing else purges these: listPurgeableUnsubscribed only covers rows that
+ * were confirmed and later withdrawn, so without this an address that subscribed
+ * and never clicked the link would be retained forever — while the policy says
+ * subscriber data is kept "amíg fel vagy iratkozva", and a pending row was never
+ * a subscription.
+ *
+ * Keyed on subscribed_at, which the resubscribe branch of subscribeUpsert resets,
+ * so an address that unsubscribes and signs up again gets a fresh window.
+ */
+export async function listPurgeablePending(
+  db: D1Like,
+  cutoffIso: string,
+  limit: number,
+): Promise<DbSubscription[]> {
+  const { results } = await db
+    .prepare(
+      `SELECT * FROM subscriptions
+        WHERE status = 'pending' AND subscribed_at < ?
+        ORDER BY subscribed_at ASC
+        LIMIT ?`,
+    )
+    .bind(cutoffIso, limit)
+    .all<DbSubscription>();
+  return results;
+}
+
 /** Hard-delete a subscription row. Only called once Brevo has dropped the contact. */
 export async function deleteSubscription(db: D1Like, id: string): Promise<void> {
   await db.prepare("DELETE FROM subscriptions WHERE id = ?").bind(id).run();

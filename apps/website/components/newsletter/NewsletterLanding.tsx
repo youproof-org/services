@@ -4,15 +4,19 @@ import { useEffect, useRef, useState } from 'react'
 import { DEFAULT_LOCALE, isLocale } from '@/lib/i18n/config'
 import LegacyResubscribeDialog, { type LegacyMode } from './LegacyResubscribeDialog'
 import NewsletterDialog from './NewsletterDialog'
+import SubscriptionActionDialog, { type ActionMode } from './SubscriptionActionDialog'
 import styles from './newsletter-dialog.module.scss'
 
 // Mounted once globally (root layout). Handles the newsletter "landing" query
 // params that arrive as full-page loads from the worker's redirects:
-//   ?newsletter_unsubscribed=1|error   → confirmation/failure dialog (homepage)
-//   ?newsletter_confirmed=<page>#<placement>|invalid
-//        → the matching NewsletterForm instance shows the confirmed state itself;
-//          this only steps in with a dialog when that instance is gone (content
-//          edited) or the confirmation was invalid.
+//   ?newsletter_ask=confirm|unsubscribe (+ &sid &stok &sform)
+//        → the emailed link was READ-ONLY; open the dialog that actually POSTs.
+//          See SubscriptionActionDialog and the worker's confirm/unsubscribe
+//          handlers for why the GET can't be allowed to act.
+//   ?newsletter_unsubscribed=error     → failure dialog
+//   ?newsletter_confirmed=invalid      → failure dialog
+//          (the success values of those two are no longer emitted: success now
+//          arrives via the POST above, not via a redirect marker.)
 //   ?newsletter_legacy=1|decline|invalid (+ &lid &ltok)
 //        → the one-shot legacy re-permission campaign: open the popup that
 //          collects the name + consent, or confirms an opt-out.
@@ -26,6 +30,13 @@ interface LegacyTarget {
   token: string
   locale: string
   mode: LegacyMode
+}
+
+interface ActionTarget {
+  id: string
+  token: string
+  mode: ActionMode
+  formInstance: string | null
 }
 
 /**
@@ -50,6 +61,7 @@ function localeFromPath(): string {
 export default function NewsletterLanding() {
   const [dialog, setDialog] = useState<DialogContent | null>(null)
   const [legacy, setLegacy] = useState<LegacyTarget | null>(null)
+  const [action, setAction] = useState<ActionTarget | null>(null)
   const okButtonRef = useRef<HTMLButtonElement | null>(null)
 
   useEffect(() => {
@@ -59,14 +71,21 @@ export default function NewsletterLanding() {
     const legacyParam = params.get('newsletter_legacy')
     const lid = params.get('lid')
     const ltok = params.get('ltok')
+    const ask = params.get('newsletter_ask')
+    const sid = params.get('sid')
+    const stok = params.get('stok')
 
     let next: DialogContent | null = null
 
-    if (unsub === '1') {
-      next = {
-        title: 'Leiratkozás',
-        message: 'Sikeresen leiratkoztál a hírlevélről. Többé nem küldünk neked e-mailt.',
-      }
+    if ((ask === 'confirm' || ask === 'unsubscribe') && sid && stok) {
+      // Captured into state HERE, before the scrub below. The dialog POSTs long
+      // after that, so it must never re-read window.location.
+      setAction({
+        id: sid,
+        token: stok,
+        mode: ask,
+        formInstance: params.get('sform'),
+      })
     } else if (unsub === 'error') {
       next = {
         title: 'Leiratkozás',
@@ -95,27 +114,19 @@ export default function NewsletterLanding() {
         message:
           'A megerősítés nem sikerült — lehet, hogy a hivatkozás érvénytelen vagy lejárt. Próbálj meg újra feliratkozni.',
       }
-    } else if (confirmed) {
-      // A form instance owns the in-place confirmed state; only fall back to a
-      // dialog if that instance no longer exists on the page.
-      const placement = confirmed.includes('#') ? confirmed.split('#')[1] : confirmed
-      const el = document.getElementById(`newsletter-form-${placement}`)
-      if (!el) {
-        next = {
-          title: 'Feliratkozás megerősítve',
-          message: 'Sikeresen megerősítetted a feliratkozásod. Köszönjük, hogy csatlakoztál!',
-        }
-      }
     }
 
     if (next) setDialog(next)
 
     // Clean the params so a refresh/back doesn't re-trigger. Runs after the
     // form's own mount effect (children mount before this layout-level sibling).
-    if (unsub || confirmed || legacyParam) {
+    if (unsub || confirmed || legacyParam || ask) {
       params.delete('newsletter_unsubscribed')
       params.delete('newsletter_confirmed')
+      params.delete('newsletter_ask')
       params.delete('sid')
+      params.delete('stok')
+      params.delete('sform')
       params.delete('newsletter_legacy')
       params.delete('lid')
       params.delete('ltok')
@@ -127,6 +138,18 @@ export default function NewsletterLanding() {
       )
     }
   }, [])
+
+  if (action) {
+    return (
+      <SubscriptionActionDialog
+        id={action.id}
+        token={action.token}
+        mode={action.mode}
+        formInstance={action.formInstance}
+        onClose={() => setAction(null)}
+      />
+    )
+  }
 
   if (legacy) {
     return (

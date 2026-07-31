@@ -22,19 +22,45 @@ addresses inherited from the old site's newsletter in the
 - **Worker-owned double opt-in:** the worker generates its own tokenized confirm
   link (back to the exact originating page + form instance) and sends it via
   Brevo's transactional API. Nothing activates until the recipient clicks it.
-- **Endpoints:** `POST /subscriptions` (validate → origin/Turnstile/rate-limit →
-  suppression gate → upsert → send/resend confirmation; uniform `202 {pending}`,
-  distinct `409 subscription_blocked`), `GET /subscriptions/{id}/confirm`,
-  `GET|POST|DELETE /subscriptions/{id}/unsubscribe` (token-authed soft-delete +
-  propagate a blacklist to Brevo), `POST /webhooks/brevo` (token-authed,
-  idempotent; hard bounce/spam → suppress + block, Brevo-side unsubscribe →
-  soft-delete).
+- **Endpoints:**
+
+  | Method | Path | Behaviour |
+  | --- | --- | --- |
+  | `POST` | `/subscriptions` | validate → origin/Turnstile/rate-limit → suppression gate → upsert → send/resend confirmation. Uniform `202 {pending}`, distinct `409 subscription_blocked` |
+  | `GET` | `/subscriptions/{id}/confirm` | **read-only**; redirects to the originating page with `newsletter_ask=confirm&sid&stok&sform` |
+  | `POST` | `/subscriptions/{id}/confirm` | the actual confirmation. Origin-checked |
+  | `GET` | `/subscriptions/{id}/unsubscribe` | **read-only**; redirects with `newsletter_ask=unsubscribe&sid&stok` |
+  | `POST`/`DELETE` | `/subscriptions/{id}/unsubscribe` | token-authed soft-delete + blacklist propagation to Brevo. **No origin check** |
+  | `POST` | `/webhooks/brevo` | token-authed, idempotent; hard bounce/spam → suppress + block, Brevo-side unsubscribe → soft-delete |
+
+- **Neither emailed link acts on a GET.** Mail-security gateways fetch every link
+  in an inbox before a human sees it, and RFC 8058 states there is "no mechanical
+  way for a sender to tell whether a request was made automatically by anti-spam
+  software or manually requested by a user" — so header sniffing is not an
+  option. A GET that confirmed would let a scanner manufacture the proof of
+  mailbox control the double opt-in exists to establish; a GET that unsubscribed
+  did so silently on *every* send, since that URL ships in the `List-Unsubscribe`
+  header and the body of every email. Both GETs therefore only redirect to a
+  dialog, and a button issues the POST — sandboxes render pages but do not submit
+  forms. Pinned by the byte-identical-row assertions in `test/confirm.test.mjs`
+  and `test/unsubscribe.test.mjs`.
+- **The unsubscribe POST must never gain an origin check.** RFC 8058 one-click
+  requests come from the mailbox provider's infrastructure, cross-origin, and the
+  reply must not be a redirect. An origin check there would break Gmail/Yahoo
+  one-click unsubscribe. The token is the auth; pinned by
+  `test/unsubscribe.test.mjs`.
 - **Retention (GDPR storage limitation):** the same 15-minute cron enforces the
   periods published in the [privacy policy](https://youproof.org/hu/adatkezeles) —
-  `subscribe_attempts` 24 hours, `email_events` 24 months, `unsubscribed`
-  subscriptions 5 years from the unsubscribe (the consent-evidence window), and
+  `subscribe_attempts` 24 hours, `email_events` 24 months, **never-confirmed
+  (`pending`) subscriptions 30 days from signup**, `unsubscribed` subscriptions
+  5 years from the unsubscribe (the consent-evidence window), and
   `legacy_contacts` 90 days from import (see the
-  [legacy re-permission campaign](newsletter-legacy-repermission.md)). Expired
+  [legacy re-permission campaign](newsletter-legacy-repermission.md)). A pending
+  row is not a subscription — the reader asked but never proved they control the
+  mailbox — so it cannot sit under the "as long as you are subscribed" period;
+  purging it is D1-only, since nothing reaches the Brevo list before confirmation.
+  It also gives confirmation links a de-facto 30-day expiry, where the token
+  itself never expires. Expired
   subscriptions are erased from **Brevo first, then D1**: D1 is the only record of
   which addresses still owe Brevo a deletion, so dropping the row first would orphan
   the contact. A failed Brevo delete leaves the row for the next tick (404 counts as
@@ -139,18 +165,38 @@ the feature is deployed to staging; then run these against `staging.youproof.org
 1. **Route precedence (do first):** `GET https://staging.youproof.org/api/v1/newsletter/subscriptions`
    (or any `/api/v1/newsletter/*` path) reaches the worker (JSON response), while
    every other path still serves the static site from R2.
-2. **Full cycle:** submit the form → "check your inbox" → confirmation email from
-   `BREVO_SENDER_EMAIL` → click confirm → land back on the exact originating page
-   + form instance showing the confirmed state → contact appears in the Brevo list.
-3. **Unsubscribe:** via the email's visible link → redirected to `/{locale}` with
-   the unsubscribe dialog; row soft-deleted (retained). Test Gmail one-click.
-4. **Resubscribe:** unsubscribed-without-suppression → fresh pending; a suppressed
+2. **Prefetch safety (the property everything else depends on):** copy the confirm
+   and unsubscribe links out of a real email and `curl` each **twice** before
+   opening either in a browser, then diff the row.
+
+   ```sh
+   curl -sS -o /dev/null -D - "<confirm link>" | grep -i location
+   curl -sS -o /dev/null "<confirm link>"
+   ```
+
+   The row must be byte-identical and still `pending`, with no Brevo call — a
+   mail-security gateway fetching these must change nothing. Then open the link
+   for real and check it still works.
+3. **Full cycle:** submit the form → "check your inbox" → confirmation email from
+   `BREVO_SENDER_EMAIL` → click confirm → land back on the exact originating page,
+   click **Megerősítem** in the dialog → the dialog closes and that form instance
+   shows the confirmed state → contact appears in the Brevo list. Confirm there is
+   no *second* success message. Also try a subscription with no
+   `source_form_instance`: the dialog itself should show the thanks instead.
+
+   To curl the confirm POST you now need an origin: `curl -X POST -H 'Origin:
+   https://staging.youproof.org' "<confirm link>"`.
+4. **Unsubscribe:** via the email's visible link → the confirmation dialog, and
+   **nothing is written until you click Leiratkozom**. Then the row is
+   soft-deleted (retained). Separately test **Gmail one-click**, which POSTs the
+   same URL and must unsubscribe immediately without any dialog.
+5. **Resubscribe:** unsubscribed-without-suppression → fresh pending; a suppressed
    email → the explicit "not accepted" message (no silent success).
-5. **Bounce/spam:** trigger (or POST a token-authed test webhook) → suppression row
+6. **Bounce/spam:** trigger (or POST a token-authed test webhook) → suppression row
    + subscription `blocked` + future subscribe attempts rejected.
-6. **Abuse:** a cross-origin/no-token POST is rejected; Turnstile-fail → 403;
+7. **Abuse:** a cross-origin/no-token POST is rejected; Turnstile-fail → 403;
    exceed the rate limit → 429.
-7. **Live-account Brevo checks** (from the API research):
+8. **Live-account Brevo checks** (from the API research):
    - Inspect a real send's raw headers for `List-Unsubscribe` / `List-Unsubscribe-Post`
      behavior (Brevo injects its own; confirm override vs. duplicate).
    - Confirm webhook `event` casing and current egress IP ranges.

@@ -12,6 +12,7 @@ import {
   failLegacyInvite,
   listPendingBrevoSync,
   listPurgeableLegacyContacts,
+  listPurgeablePending,
   listPurgeableUnsubscribed,
   listSendableLegacyContacts,
   markSyncAlerted,
@@ -42,6 +43,12 @@ const EVENT_RETENTION_MS = 730 * 24 * 60 * 60 * 1000;
 // Unsubscribed subscriptions: 5 years from the unsubscribe, to evidence that the
 // consent was given and later withdrawn, then erased from D1 *and* Brevo.
 const UNSUBSCRIBED_RETENTION_MS = 5 * 365 * 24 * 60 * 60 * 1000;
+// Never-confirmed subscriptions: 30 days from the signup. A pending row is not a
+// subscription — the reader asked, but never proved they control the mailbox —
+// so it cannot sit under the "as long as you are subscribed" period. Side
+// effect worth knowing: this gives confirmation links a de-facto 30-day expiry,
+// where the token itself never expires.
+const PENDING_RETENTION_MS = 30 * 24 * 60 * 60 * 1000;
 // Purge batch size: each row costs a Brevo round-trip, so keep it well under the
 // reconciliation batch.
 const PURGE_BATCH = 20;
@@ -80,6 +87,7 @@ export async function handleScheduled(env: Env): Promise<void> {
   await pruneSubscribeAttempts(env.DB, new Date(now - ATTEMPT_RETENTION_MS).toISOString());
   await pruneEmailEvents(env.DB, new Date(now - EVENT_RETENTION_MS).toISOString());
   await purgeExpiredSubscriptions(env, new Date(now - UNSUBSCRIBED_RETENTION_MS).toISOString());
+  await purgeExpiredPending(env, new Date(now - PENDING_RETENTION_MS).toISOString());
 
   // Purge legacy contacts BEFORE sending to them. A batch imported long ago and
   // never mailed satisfies both queries; erasing it is the right answer, since
@@ -144,6 +152,22 @@ async function purgeExpiredSubscriptions(env: Env, cutoffIso: string): Promise<v
       console.error("newsletter retention purge: Brevo delete failed", sub.id, err);
       continue;
     }
+    await deleteSubscription(env.DB, sub.id);
+  }
+}
+
+/**
+ * Erase never-confirmed subscriptions past the 30-day window.
+ *
+ * D1 only, no Brevo call — the opposite of purgeExpiredSubscriptions above, and
+ * for the same reason the legacy purge makes none: a pending row was never added
+ * to the Brevo list, because syncBrevoContact only runs on confirmation. There is
+ * nothing there to erase, and nothing to hold the erasure hostage to.
+ */
+async function purgeExpiredPending(env: Env, cutoffIso: string): Promise<void> {
+  const expired = await listPurgeablePending(env.DB, cutoffIso, PURGE_BATCH);
+
+  for (const sub of expired) {
     await deleteSubscription(env.DB, sub.id);
   }
 }
