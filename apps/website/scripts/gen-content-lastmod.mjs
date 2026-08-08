@@ -16,6 +16,9 @@ import { execFileSync } from 'child_process'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import yaml from 'js-yaml'
+// Populates CONTENT_DIR from .env.local when not already exported (local dev);
+// must be imported before it is read below. CI exports it, so this is a no-op there.
+import './lib/load-env.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const websiteRoot = path.resolve(__dirname, '..')
