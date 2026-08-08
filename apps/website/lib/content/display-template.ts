@@ -1,5 +1,5 @@
 import 'server-only'
-import type { RefTarget, ContentGraph } from './types'
+import type { RefTarget, ContentGraph, StandaloneNode } from './types'
 import { getChapterIndex } from '../utils/index-helpers'
 
 // ---------------------------------------------------------------------------
@@ -279,6 +279,47 @@ export function buildContext(
   graph: ContentGraph,
   entityChapterInfo?: EntityChapterInfo,
 ): TemplateContext | null {
+  if (target.type === 'book') {
+    const book = graph.books.get(`/books/${target.name}`)
+    if (!book) return null
+    // No `index`: a book is the top of the numbering, not a numbered item within it.
+    return {
+      target: {
+        name: book.name,
+        title: book.title,
+        type: 'book',
+      },
+    }
+  }
+
+  if (
+    target.type === 'article' || target.type === 'newsletter' ||
+    target.type === 'page'    || target.type === 'landing'
+  ) {
+    const map =
+      target.type === 'article'    ? graph.articles :
+      target.type === 'newsletter' ? graph.newsletters :
+      target.type === 'page'       ? graph.pages :
+                                     graph.landings
+    // Scanned by `name` instead of keyed: the Map key embeds the per-kind content
+    // directory (STANDALONE_DIRS in graph.ts, where `newsletter` is singular), and a
+    // copy of that mapping here would break silently if it ever changed. There is a
+    // handful of standalone items and this runs once per reference at build time.
+    let node: StandaloneNode | undefined
+    for (const candidate of map.values()) {
+      if (candidate.name === target.name) { node = candidate; break }
+    }
+    if (!node) return null
+    // No `index`: standalone items are not numbered.
+    return {
+      target: {
+        name: node.name,
+        title: node.title,
+        type: target.type,
+      },
+    }
+  }
+
   if (target.type === 'chapter') {
     const key = `/books/${target.book}/${target.part}/${target.name}`
     const chapter = graph.chapters.get(key)
