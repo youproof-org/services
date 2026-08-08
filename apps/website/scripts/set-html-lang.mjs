@@ -18,6 +18,9 @@
 import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from 'node:fs'
 import { join, relative, resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
+// Populates DEFAULT_LOCALE from .env.local when not already exported; without it
+// this script would ignore an override that config.ts (loaded by next) honors.
+import './lib/load-env.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const outDir = resolve(here, '..', 'out')

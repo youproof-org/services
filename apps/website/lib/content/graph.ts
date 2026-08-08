@@ -50,7 +50,7 @@ const STANDALONE_DIRS: Record<StandaloneKind, string> = {
 }
 import { buildContext, resolveTemplate } from './display-template'
 import { buildLocalizedUrl } from '@/lib/i18n/url'
-import { urlForStandalone } from './urls'
+import { urlForBook, urlForStandalone } from './urls'
 import { claimId } from '@/lib/utils/claim-id'
 import { termId } from '@/lib/utils/term-id'
 import { entityId } from '@/lib/utils/entity-id'
@@ -951,6 +951,16 @@ function resolveRefHrefs(graph: ContentGraph, entityChapterInfo: EntityChapterIn
         throw new Error(`Cannot resolve chapter URL for entity reference to ${target.type} "${target.name}" in ${target.namespace}`)
       }
       entry.href = `${chapterUrl}#${entityId(target.type, target.namespace, target.name)}`
+    } else if (entry.target.type === 'book') {
+      const target = entry.target
+      const book = graph.books.get(bookKey(target.name))
+      if (!book) {
+        throw new Error(`Cannot resolve book reference to "${target.name}" — no such book in the content graph`)
+      }
+      // No published-gate here (unlike standalone targets): every book gets a
+      // static index page and BookIndex renders regardless of `published`, so
+      // the link is live either way.
+      entry.href = urlForBook(book)
     } else if (entry.target.type === 'chapter') {
       const target = entry.target
       const chapter = graph.chapters.get(chapterKey(target.book, target.part, target.name))

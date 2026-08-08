@@ -120,6 +120,14 @@ export interface KnowledgeBaseRefTarget {
   namespace: string
 }
 
+// A book's index page. Addressed by the language-independent `name` (parts are
+// flattened out of URLs, so no further parentage is needed); resolution goes
+// through urlForBook, which supplies the book's own locale + slug.
+export interface BookRefTarget {
+  type: 'book'
+  name: string
+}
+
 export interface ChapterRefTarget {
   type: 'chapter'
   book: string
@@ -161,6 +169,7 @@ export type RefTarget =
   | KnowledgeBaseRefTarget
   | ClaimRefTarget
   | TermRefTarget
+  | BookRefTarget
   | ChapterRefTarget
   | SectionRefTarget
   | StandaloneRefTarget
@@ -343,8 +352,8 @@ export interface BookNode {
 // ---------------------------------------------------------------------------
 // Standalone content nodes (article, newsletter, page, landing)
 // "Same structure as a chapter minus the book relationship." Inline
-// cross-references + entity embeds are out of scope for now, so no RefMap is
-// carried and these render with refs undefined.
+// cross-references ARE carried (see `references` below and StandalonePage);
+// entity embeds are out of scope for now, so these render with no embed indices.
 // ---------------------------------------------------------------------------
 
 export type StandaloneKind = 'article' | 'newsletter' | 'page' | 'landing'
