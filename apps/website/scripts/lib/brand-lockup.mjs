@@ -18,6 +18,10 @@ import { existsSync, readFileSync } from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import opentype from 'opentype.js'
+// Populates DEFAULT_LOCALE from .env.local when not already exported — imported
+// here rather than in each consumer so it can't be forgotten by a new one, and
+// because the DEFAULT_LOCALE read below happens at module scope.
+import './load-env.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 export const websiteRoot = path.resolve(__dirname, '..', '..')

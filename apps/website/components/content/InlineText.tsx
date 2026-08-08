@@ -185,6 +185,13 @@ function parseNormalized(
           nodes.push(formatSegmentedDisplay(display, counter, (text: React.ReactNode[]) =>
             <a href={url} target="_blank" rel="noopener noreferrer" className="ref-link">{text}</a>
           ))
+        } else if (ref.target.type === 'book') {
+          // href (the book's localized index page) is resolved at graph-build
+          // time via urlForBook — never a hardcoded absolute URL.
+          const href = ref.href ?? '#'
+          nodes.push(formatSegmentedDisplay(display, counter, (text: React.ReactNode[]) =>
+            <a href={href} target="_blank" className="ref-link">{text}</a>
+          ))
         } else if (ref.target.type === 'chapter') {
           // href is resolved at graph-build time via buildLocalizedUrl.
           const href = ref.href ?? '#'
