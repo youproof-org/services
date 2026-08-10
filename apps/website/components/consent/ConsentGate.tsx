@@ -65,6 +65,21 @@ export default function ConsentGate() {
   const fabRef = useRef<HTMLButtonElement | null>(null)
   const lastSentPath = useRef<string | null>(null)
 
+  // When the feature is off there is no way to consent, so any GA cookie present has
+  // nothing behind it and must go. This is not hypothetical: GA4 scopes `_ga` to the
+  // registrable domain, so cookies created on staging.youproof.org are sent to
+  // youproof.org too — where the visitor may never have been asked. Without this,
+  // a build with the feature disabled would leave them untouched indefinitely while
+  // the cookie policy says they only exist after acceptance.
+  //
+  // Kept as its own effect, deliberately: it must not interact with the resolution
+  // ordering below, where sweeping before the stored decision is read would reset the
+  // client id on every load.
+  useEffect(() => {
+    if (ENABLED) return
+    clearAnalyticsCookies()
+  }, [])
+
   useEffect(() => {
     if (!ENABLED) return
     setLocale(localeFromPath())
