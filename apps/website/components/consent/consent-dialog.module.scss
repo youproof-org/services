@@ -1,0 +1,110 @@
+@use 'variables' as *;
+
+// Content styles only — the overlay/dialog/title shell comes from
+// components/ui/modal.module.scss. Metrics mirror
+// newsletter/newsletter-dialog.module.scss so a dialog looks the same wherever it
+// is opened from.
+
+.message {
+  margin: 0 0 1.25rem;
+  font-weight: $font-light;
+  line-height: 1.5;
+  color: $gray-800;
+}
+
+.link {
+  color: $blue-500;
+  text-decoration: underline;
+}
+
+.options {
+  margin: 0 0 1.25rem;
+  padding: 0;
+  border: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+// The fieldset needs a legend for the radiogroup to be announced as one, but it
+// would repeat the dialog title on screen.
+.legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-weight: $font-light;
+  line-height: 1.4;
+  color: $gray-800;
+  cursor: pointer;
+
+  input {
+    margin-top: 0.2rem;
+    flex-shrink: 0;
+  }
+}
+
+.meta {
+  margin: 0 0 1.25rem;
+  font-size: 0.8125rem;
+  font-weight: $font-light;
+  color: $gray-500;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+}
+
+// Here a primary/secondary split IS correct: Mentés commits a change and Mégsem
+// abandons it, so they are not equivalent choices. The equal-prominence rule
+// applies to accept-vs-reject in the banner, which is a different decision.
+.button {
+  font: inherit;
+  font-weight: $font-bold;
+  padding: 0.7rem 1.5rem;
+  background: $black;
+  color: $white;
+  border: 1px solid $black;
+  cursor: pointer;
+
+  @media (max-width: #{$bp-tablet}) {
+    font-size: 0.9rem;
+    padding: 0.55rem 1.1rem;
+  }
+
+  &:hover {
+    background: $white;
+    color: $black;
+  }
+}
+
+.secondaryButton {
+  font: inherit;
+  font-weight: $font-normal;
+  padding: 0.7rem 1.25rem;
+  background: transparent;
+  color: $gray-800;
+  border: 1px solid $gray-400;
+  cursor: pointer;
+
+  @media (max-width: #{$bp-tablet}) {
+    font-size: 0.9rem;
+    padding: 0.55rem 1rem;
+  }
+
+  &:hover {
+    border-color: $black;
+    color: $black;
+  }
+}

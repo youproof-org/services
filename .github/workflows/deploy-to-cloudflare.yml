@@ -112,6 +112,7 @@ jobs:
       website: ${{ steps.filter.outputs.website }}
       worker: ${{ steps.filter.outputs.worker }}
       newsletter: ${{ steps.filter.outputs.newsletter }}
+      app: ${{ steps.filter.outputs.app }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
@@ -129,6 +130,37 @@ jobs:
             newsletter:
               - 'infra/cloudflare/terraform/newsletter/**'
               - 'infra/cloudflare/newsletter-worker/**'
+            app:
+              - 'apps/website/**'
+
+  # The website is NOT built on a PR (the full build needs TeX Live and a content
+  # checkout, and the deploy covers it). This job is the cheap slice worth having
+  # at review time: the consent logic that decides whether analytics may run, plus
+  # a typecheck. A regression there has legal consequences, not cosmetic ones.
+  app-test:
+    name: website unit tests
+    if: github.event_name == 'pull_request' && needs.changes.outputs.app == 'true'
+    needs: changes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: pnpm
+      # --ignore-scripts skips the website's postinstall LaTeX probe, which is a
+      # dev-machine convenience check and needs a TeX install this job has no
+      # reason to carry.
+      - name: Install dependencies (website subtree)
+        run: pnpm install --frozen-lockfile --filter @youproof.org/website... --ignore-scripts
+      # `typecheck` generates .generated/consent-policy.json first — it is imported
+      # by client code but gitignored, and this job has no content clone (the
+      # generator writes a valid version-0 file in that case).
+      - name: Typecheck
+        run: pnpm --filter @youproof.org/website run typecheck
+      - name: Unit tests (consent logic)
+        run: pnpm --filter @youproof.org/website run test
 
   # NOTE: zone-purity enforcement lives in the dedicated, always-run
   # `zone-purity-guard.yml` (no paths filter, so it can't be bypassed and is a

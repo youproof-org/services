@@ -1,0 +1,114 @@
+@use 'variables' as *;
+
+// Fixed to the bottom, full width. Fixed positioning means the bar cannot shift
+// the page's layout, so CLS from it is structurally zero — the body padding
+// published via --consent-banner-height is what keeps it from covering the
+// footer.
+//
+// Below $z-dialog on purpose: a first visit that lands on a newsletter-confirm
+// URL should show the banner behind the modal scrim rather than fighting it.
+.banner {
+  box-sizing: border-box;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: $z-banner;
+  background: $white;
+  color: $black;
+  border-top: 1px solid $black;
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.12);
+  padding: 1rem $pad-x;
+
+  // The banner appears one frame after paint (it is never server-rendered — see
+  // ConsentGate), so it slides in rather than popping, which reads as intentional
+  // instead of as a glitch.
+  animation: slide-in 200ms ease-out;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.inner {
+  max-width: $max-width;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 1.5rem;
+
+  // Stack on narrow screens so neither the copy nor the buttons get squeezed.
+  @media (max-width: #{$bp-tablet}) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.text {
+  margin: 0;
+  font-weight: $font-light;
+  line-height: 1.5;
+  color: $gray-800;
+  font-size: 0.9375rem;
+}
+
+.links {
+  white-space: normal;
+}
+
+.link {
+  color: $blue-500;
+  text-decoration: underline;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+
+  @media (max-width: #{$bp-tablet}) {
+    width: 100%;
+  }
+}
+
+// BOTH buttons share this class — accept and reject are visually identical.
+// That is the anti-dark-pattern requirement (equal prominence, no pre-selected
+// option), so do NOT split this into a primary/secondary pair to match
+// newsletter-dialog.module.scss. Metrics deliberately mirror that file's .button
+// so the control still feels like the rest of the site.
+.button {
+  font: inherit;
+  font-weight: $font-bold;
+  padding: 0.7rem 1.5rem;
+  background: $white;
+  color: $black;
+  border: 1px solid $black;
+  cursor: pointer;
+  white-space: nowrap;
+
+  @media (max-width: #{$bp-tablet}) {
+    font-size: 0.9rem;
+    padding: 0.55rem 1.1rem;
+    flex: 1;
+  }
+
+  &:hover {
+    background: $black;
+    color: $white;
+  }
+}
