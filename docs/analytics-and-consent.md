@@ -63,7 +63,19 @@ what they are deciding about, and that somewhere is the content, not the banner.
 | `_ga`, `_ga_<id>` | GA4's own | 2 years | Only after acceptance |
 
 `yp_consent` is host-only (**no `Domain`**), so youproof.org and
-staging.youproof.org hold independent decisions. It is not `HttpOnly` because
+staging.youproof.org hold independent decisions.
+
+**GA's own cookies are not host-only**, and this catches people out. GA4 uses
+`cookie_domain: 'auto'`, which resolves to the registrable domain — so `_ga` is written
+to `.youproof.org` and a cookie created while testing **staging** is sent to
+**production** as well, carrying the staging property's `_ga_<id>`. Consequences:
+
+- reporting stays isolated, because the session cookie name is per-property;
+- but a visitor may arrive at production already holding `_ga` without ever having been
+  asked there. So the sweep enumerates every `_ga*` cookie actually present rather than
+  only deriving `_ga_<id>` from this build's measurement ID, and it also runs when the
+  feature is disabled entirely — with no way to consent, nothing justifies those
+  cookies being there. It is not `HttpOnly` because
 client JS is the only reader — adding it would break the feature, not harden it.
 `Secure` is set only over https so `next dev` on plain http still works.
 
