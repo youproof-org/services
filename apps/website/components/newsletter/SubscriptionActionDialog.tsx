@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import NewsletterDialog from './NewsletterDialog'
+import Modal from '@/components/ui/Modal'
 import dialogStyles from './newsletter-dialog.module.scss'
 import formStyles from './newsletter-form.module.scss'
 
@@ -131,7 +131,7 @@ export default function SubscriptionActionDialog({
   const done = settled[state]
   if (done) {
     return (
-      <NewsletterDialog title={done.title} onClose={onClose} initialFocusRef={closeRef}>
+      <Modal title={done.title} onClose={onClose} initialFocusRef={closeRef}>
         <p className={dialogStyles.message} role="status">
           {done.message}
         </p>
@@ -140,7 +140,7 @@ export default function SubscriptionActionDialog({
             Rendben
           </button>
         </div>
-      </NewsletterDialog>
+      </Modal>
     )
   }
 
@@ -162,7 +162,7 @@ export default function SubscriptionActionDialog({
         }
 
   return (
-    <NewsletterDialog
+    <Modal
       title={prompt.title}
       onClose={onClose}
       initialFocusRef={primaryRef}
@@ -198,6 +198,6 @@ export default function SubscriptionActionDialog({
           </button>
         )}
       </div>
-    </NewsletterDialog>
+    </Modal>
   )
 }

@@ -56,6 +56,15 @@ body {
   transform: translateZ(0);
 }
 
+// Keep the consent banner from permanently covering the bottom of the page —
+// including the footer's legal links, one of which the banner itself links to.
+// The property is published on <html> by components/consent/ConsentBanner.tsx
+// while the banner is open and removed when it closes, so this collapses to 0
+// for everyone who has already decided (and for every visitor, once decided).
+body {
+  padding-bottom: var(--consent-banner-height, 0);
+}
+
 /* KaTeX inline math: prevent extra vertical spacing */
 .inline-math {
   display: inline;

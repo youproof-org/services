@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useRef, useState } from 'react'
 import { buildLocalizedUrl } from '@/lib/i18n/url'
-import NewsletterDialog from './NewsletterDialog'
+import Modal from '@/components/ui/Modal'
 import dialogStyles from './newsletter-dialog.module.scss'
 import styles from './newsletter-form.module.scss'
 
@@ -108,7 +108,7 @@ export default function LegacyResubscribeDialog({
       expired: 'Ez a hivatkozás már nem érvényes — lehet, hogy korábban már felhasználtad.',
     }
     return (
-      <NewsletterDialog
+      <Modal
         title={state === 'done' ? 'Feliratkozás megerősítve' : 'Hírlevél'}
         onClose={onClose}
         initialFocusRef={closeButtonRef}
@@ -126,7 +126,7 @@ export default function LegacyResubscribeDialog({
             Rendben
           </button>
         </div>
-      </NewsletterDialog>
+      </Modal>
     )
   }
 
@@ -138,7 +138,7 @@ export default function LegacyResubscribeDialog({
 
   if (mode === 'decline') {
     return (
-      <NewsletterDialog
+      <Modal
         title="Leiratkozás"
         onClose={onClose}
         initialFocusRef={confirmButtonRef}
@@ -166,14 +166,14 @@ export default function LegacyResubscribeDialog({
             Mégsem
           </button>
         </div>
-      </NewsletterDialog>
+      </Modal>
     )
   }
 
   // --- subscribe: the name + consent the legacy list never had ---------------
 
   return (
-    <NewsletterDialog
+    <Modal
       title="Feliratkozás az új hírlevélre"
       onClose={onClose}
       initialFocusRef={nameInputRef}
@@ -231,6 +231,6 @@ export default function LegacyResubscribeDialog({
           </button>
         </div>
       </form>
-    </NewsletterDialog>
+    </Modal>
   )
 }

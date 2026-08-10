@@ -1,0 +1,39 @@
+@use 'variables' as *;
+
+// Bottom-left, which is unoccupied: the sticky header is the only other fixed
+// chrome on the site, and nothing else claims a corner. Below $z-banner and
+// $z-dialog so it never sits on top of either.
+.fab {
+  position: fixed;
+  left: $pad-x;
+  bottom: $pad-x;
+  z-index: $z-fab;
+  // 2.75rem = 44px, the minimum comfortable touch target.
+  width: 2.75rem;
+  height: 2.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: $white;
+  color: $gray-600;
+  border: 1px solid $gray-300;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+  padding: 0;
+
+  &:hover {
+    color: $black;
+    border-color: $black;
+  }
+
+  // A cookie-settings control is meaningless on paper.
+  @media print {
+    display: none;
+  }
+}
+
+.icon {
+  width: 1.125rem;
+  height: 1.125rem;
+}

@@ -72,3 +72,71 @@ resource "cloudflare_dns_record" "staging_dmarc" {
   ttl     = 1 # 1 = automatic
   comment = "DMARC (staging): reject all mail claiming to be @staging.youproof.org"
 }
+
+# --- Search-engine domain verification (production apply only) ---
+#
+# Both records prove ownership of the ZONE, not of this environment's site host:
+# there is exactly one of each, so exactly one state must manage them. Gated to
+# production — the mirror image of the staging-only gate above. The value guards
+# let a staging plan and a pre-token production plan both succeed: the variables
+# default to empty, so no token means no record rather than a plan error.
+#
+# NOTE on the apex: the caveat in the staging_dmarc comment above — that Cloudflare
+# refuses TXT/MX alongside a proxied CNAME — applies to SUBDOMAINS, not to the
+# flattened apex. youproof.org already carries three TXT records (this one, Brevo's
+# verification, and SPF) alongside the R2 custom domain's proxied apex CNAME, so
+# apex TXT and the CDN coexist fine. Do not "fix" this by moving it elsewhere.
+#
+# Both records were created by hand before this root managed them, so they are
+# adopted by the import blocks in imports.tf rather than created.
+#
+# What a correct plan looks like: NO create and NO replace, and no change to
+# `content` — that is the part that would break verification. An in-place UPDATE of
+# `ttl` or `comment` is expected and harmless, because the hand-made records predate
+# these declarations and neither attribute affects resolution. Anything else means
+# the import did not match, and the apply should not be allowed to proceed.
+resource "cloudflare_dns_record" "google_site_verification" {
+  count   = var.environment == "production" && var.google_site_verification != "" ? 1 : 0
+  zone_id = local.zone_id
+  name    = local.zone_apex
+  type    = "TXT"
+  # Quoted per Cloudflare's zone-file convention (matches staging_dmarc above).
+  content = "\"google-site-verification=${var.google_site_verification}\""
+  ttl     = 1 # 1 = automatic
+  comment = "Google Search Console / GA4 domain verification"
+
+  lifecycle {
+    # Fail loudly on the one dangerous half-configuration: a token set without the
+    # record id means no import block matches (imports.tf), so this resource would
+    # be CREATED — adding a second verification TXT to the apex instead of adopting
+    # the existing one. Drop this precondition together with imports.tf once the
+    # record is in state.
+    precondition {
+      condition     = var.google_site_verification_record_id != ""
+      error_message = "google_site_verification is set but google_site_verification_record_id is not: the existing apex TXT would be duplicated rather than imported. Set both, or neither."
+    }
+  }
+}
+
+resource "cloudflare_dns_record" "bing_site_verification" {
+  count   = var.environment == "production" && var.bing_site_verification != "" ? 1 : 0
+  zone_id = local.zone_id
+  name    = "${var.bing_site_verification}.${local.zone_apex}"
+  type    = "CNAME"
+  content = "verify.bing.com"
+  # MUST stay false. A proxied CNAME resolves to Cloudflare's own IPs instead of
+  # to verify.bing.com, which silently breaks verification — the kind of failure
+  # only noticed weeks later in Bing Webmaster Tools.
+  proxied = false
+  ttl     = 1 # 1 = automatic
+  comment = "Bing Webmaster Tools domain verification"
+
+  lifecycle {
+    # Same reasoning as google_site_verification above; here a create would fail
+    # outright (duplicate CNAME name) rather than quietly duplicating.
+    precondition {
+      condition     = var.bing_site_verification_record_id != ""
+      error_message = "bing_site_verification is set but bing_site_verification_record_id is not: the existing CNAME would be recreated rather than imported. Set both, or neither."
+    }
+  }
+}

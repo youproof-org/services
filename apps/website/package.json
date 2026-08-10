@@ -4,11 +4,14 @@
   "private": true,
   "scripts": {
     "postinstall": "node scripts/check-latex.mjs",
-    "predev": "node scripts/sync-figures.mjs && node scripts/gen-og-images.mjs && node scripts/gen-wordmark-font.mjs && node scripts/gen-content-lastmod.mjs",
+    "predev": "node scripts/sync-figures.mjs && node scripts/gen-og-images.mjs && node scripts/gen-wordmark-font.mjs && node scripts/gen-content-lastmod.mjs && node scripts/gen-cookie-policy-version.mjs",
     "dev": "next dev",
-    "prebuild": "node scripts/sync-figures.mjs && node scripts/gen-og-images.mjs && node scripts/gen-wordmark-font.mjs && node scripts/gen-content-lastmod.mjs",
+    "prebuild": "node scripts/sync-figures.mjs && node scripts/gen-og-images.mjs && node scripts/gen-wordmark-font.mjs && node scripts/gen-content-lastmod.mjs && node scripts/gen-cookie-policy-version.mjs",
     "build": "next build",
-    "postbuild": "node scripts/set-html-lang.mjs && node scripts/check-build-version.mjs",
+    "//typecheck": "Generates first: lib/consent/version.ts imports .generated/consent-policy.json, which is gitignored, so a fresh clone has nothing to resolve until the generator has run.",
+    "typecheck": "node scripts/gen-cookie-policy-version.mjs && tsc --noEmit",
+    "postbuild": "node scripts/set-html-lang.mjs && node scripts/check-build-version.mjs && node scripts/check-analytics-build.mjs",
+    "test": "node --import tsx --test \"test/*.test.mjs\"",
     "gen:logo": "node scripts/gen-logo-lockup.mjs",
     "start": "next start",
     "lint": "next lint"
@@ -34,6 +37,7 @@
     "chokidar": "catalog:",
     "postcss": "catalog:",
     "sass": "catalog:",
+    "tsx": "catalog:",
     "typescript": "catalog:"
   }
 }
