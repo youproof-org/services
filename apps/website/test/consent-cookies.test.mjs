@@ -5,6 +5,7 @@ import {
   cookieDomainCandidates,
   deleteCookieString,
   gaCookieClearStrings,
+  gaCookieNames,
   hasGaCookies,
   parseCookieHeader,
   parseGaDebugParam,
@@ -69,21 +70,34 @@ test('derives domain candidates broadest-last, stopping at two labels', () => {
   assert.deepEqual(cookieDomainCandidates(''), [])
 })
 
-test('clears both GA cookies host-only and per domain candidate', () => {
-  const strings = gaCookieClearStrings('staging.youproof.org', 'G-ABC123', true)
-  // _ga and _ga_ABC123, each host-only plus two domain candidates.
+test('clears the given GA cookies host-only and per domain candidate', () => {
+  const strings = gaCookieClearStrings('staging.youproof.org', ['_ga', '_ga_ABC123'], true)
+  // Two names, each host-only plus two domain candidates.
   assert.equal(strings.length, 6)
   assert.ok(strings.every((s) => s.includes('Max-Age=0')))
   assert.ok(strings.some((s) => s.startsWith('_ga=') && !s.includes('Domain=')))
   assert.ok(strings.some((s) => s.startsWith('_ga_ABC123=') && s.endsWith('Domain=youproof.org')))
-  // The G- prefix belongs to the measurement ID, not the cookie name.
-  assert.ok(!strings.some((s) => s.includes('_ga_G-')))
 })
 
-test('clears only _ga when no measurement ID is configured', () => {
-  const strings = gaCookieClearStrings('youproof.org', '', false)
-  assert.equal(strings.length, 2)
-  assert.ok(strings.every((s) => s.startsWith('_ga=')))
+test('derives the cookie name from the measurement id without its G- prefix', () => {
+  assert.deepEqual(gaCookieNames('', 'G-ABC123'), ['_ga', '_ga_ABC123'])
+  assert.ok(!gaCookieNames('', 'G-ABC123').some((n) => n.includes('G-')))
+})
+
+test('includes _ga cookies belonging to another property', () => {
+  // GA4 scopes _ga to the registrable domain, so a cookie created on
+  // staging.youproof.org is visible on youproof.org carrying the STAGING property's
+  // _ga_<id>. Deriving names only from our own measurement id would never clear it.
+  assert.deepEqual(
+    gaCookieNames('_ga=GA1.1.1.2; _ga_QG2G5V0VC9=GS1.1.x; other=1', 'G-L1YC9V574V'),
+    ['_ga', '_ga_L1YC9V574V', '_ga_QG2G5V0VC9'],
+  )
+})
+
+test('still names _ga when no measurement id is configured', () => {
+  // The feature-off case: we can clean up even without knowing our own id.
+  assert.deepEqual(gaCookieNames('_ga=GA1.1.1.2; _ga_ABC=x', ''), ['_ga', '_ga_ABC'])
+  assert.deepEqual(gaCookieNames('', ''), ['_ga'])
 })
 
 test('detects GA cookies that outlived the consent that created them', () => {

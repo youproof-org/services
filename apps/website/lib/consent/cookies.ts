@@ -79,24 +79,42 @@ export function cookieDomainCandidates(hostname: string): string[] {
 }
 
 /**
- * Every `document.cookie` assignment needed to remove GA4's own cookies after a
- * withdrawal. GA4 sets `_ga` plus a per-property `_ga_<id>`, where `<id>` is the
- * measurement ID without its `G-` prefix.
+ * The GA cookie names to clear: every `_ga*` cookie actually present, plus the
+ * `_ga_<id>` this build would create even if it is not there yet.
  *
- * Each cookie is cleared host-only and once per domain candidate, because we
- * cannot know from script which scope GA actually used. The leading-dot form is
- * not emitted separately: RFC 6265 has the browser ignore a leading dot, so
+ * Enumerating what exists rather than deriving only from our own measurement ID
+ * matters because GA4 scopes `_ga` to the REGISTRABLE DOMAIN (`cookie_domain:
+ * 'auto'` resolves to `.youproof.org`, not to the host). So cookies created on
+ * staging are visible on production, carrying a different property's `_ga_<id>`
+ * that we would otherwise never think to remove. It also means we can clean up
+ * when our own measurement ID is unset.
+ */
+export function gaCookieNames(
+  header: string | null | undefined,
+  measurementId: string,
+): string[] {
+  const names = new Set<string>(['_ga'])
+  for (const name of parseCookieHeader(header).keys()) {
+    if (name === '_ga' || name.startsWith('_ga_')) names.add(name)
+  }
+  const suffix = measurementId.replace(/^G-/, '')
+  if (suffix) names.add(`_ga_${suffix}`)
+  return [...names].sort()
+}
+
+/**
+ * Every `document.cookie` assignment needed to remove the given GA cookies.
+ *
+ * Each is cleared host-only and once per domain candidate, because we cannot know
+ * from script which scope GA actually used. The leading-dot form is not emitted
+ * separately: RFC 6265 has the browser ignore a leading dot, so
  * `Domain=youproof.org` already matches a cookie stored as `.youproof.org`.
  */
 export function gaCookieClearStrings(
   hostname: string,
-  measurementId: string,
+  names: readonly string[],
   secure: boolean,
 ): string[] {
-  const names = ['_ga']
-  const suffix = measurementId.replace(/^G-/, '')
-  if (suffix) names.push(`_ga_${suffix}`)
-
   const out: string[] = []
   for (const name of names) {
     out.push(deleteCookieString(name, secure))

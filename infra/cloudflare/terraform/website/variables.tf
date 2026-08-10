@@ -64,37 +64,6 @@ variable "bing_site_verification" {
   }
 }
 
-variable "google_site_verification_record_id" {
-  type    = string
-  default = ""
-  # Non-sensitive: a Cloudflare object id, not a credential.
-  description = <<-EOT
-    Cloudflare record id of the EXISTING google-site-verification TXT record, so
-    imports.tf can adopt it instead of creating a duplicate. One-time migration
-    input: once the record is in state, this and the matching import block can be
-    dropped. Fetch with:
-
-      curl -s -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
-        "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?type=TXT&name=youproof.org" \
-        | jq -r '.result[] | "\(.id)  \(.content)"'
-  EOT
-}
-
-variable "bing_site_verification_record_id" {
-  type    = string
-  default = ""
-  # Non-sensitive: a Cloudflare object id, not a credential.
-  description = <<-EOT
-    Cloudflare record id of the EXISTING Bing verification CNAME, so imports.tf can
-    adopt it instead of creating a duplicate. One-time migration input, same as
-    google_site_verification_record_id. Fetch with:
-
-      curl -s -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
-        "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?type=CNAME&content=verify.bing.com" \
-        | jq -r '.result[] | "\(.id)  \(.name)"'
-  EOT
-}
-
 variable "environment" {
   type        = string
   description = "Deployment environment: \"production\" or \"staging\". Drives the site host and R2 bucket names."
