@@ -1,9 +1,9 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { DEFAULT_LOCALE, isLocale } from '@/lib/i18n/config'
+import { localeFromPath } from '@/lib/i18n/locale-from-path'
 import LegacyResubscribeDialog, { type LegacyMode } from './LegacyResubscribeDialog'
-import NewsletterDialog from './NewsletterDialog'
+import Modal from '@/components/ui/Modal'
 import SubscriptionActionDialog, { type ActionMode } from './SubscriptionActionDialog'
 import styles from './newsletter-dialog.module.scss'
 
@@ -37,25 +37,6 @@ interface ActionTarget {
   token: string
   mode: ActionMode
   formInstance: string | null
-}
-
-/**
- * The locale of the page we landed on.
- *
- * Every site URL is `/{locale}/...` (see docs/i18n-design.md), so the first path
- * segment identifies the locale wherever we land — that holds for a deep article
- * page as much as for the homepage, which matters because the confirm redirect
- * returns the user to `source_page`, not to `/{locale}`. The apex `/` is the one
- * path with no locale segment, and it redirects to `/{DEFAULT_LOCALE}` before any
- * of this runs; the isLocale guard covers it regardless.
- *
- * Read back rather than constructed, so buildLocalizedUrl stays the only thing
- * that composes locale paths. Needed at all because this component is mounted
- * from the ROOT layout, which has no locale param.
- */
-function localeFromPath(): string {
-  const seg = window.location.pathname.split('/')[1] ?? ''
-  return isLocale(seg) ? seg : DEFAULT_LOCALE
 }
 
 export default function NewsletterLanding() {
@@ -166,7 +147,7 @@ export default function NewsletterLanding() {
   if (!dialog) return null
 
   return (
-    <NewsletterDialog
+    <Modal
       title={dialog.title}
       onClose={() => setDialog(null)}
       initialFocusRef={okButtonRef}
@@ -182,6 +163,6 @@ export default function NewsletterLanding() {
           Rendben
         </button>
       </div>
-    </NewsletterDialog>
+    </Modal>
   )
 }

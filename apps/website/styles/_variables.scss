@@ -26,6 +26,16 @@ $max-width-narrow: 48rem;   // max-w-3xl
 $max-width-card:   24rem;   // max-w-sm
 $pad-x:            1.5rem;  // px-6
 
+// Stacking order for the app's fixed/sticky layers. Introduced when the consent
+// UI added three more of them; the header and overlay values are unchanged, they
+// just have names now. The consent banner sits BELOW the modal overlay on
+// purpose: a first visit landing on a newsletter-confirm URL should show the
+// banner behind the scrim, not competing with it.
+$z-header: 100;
+$z-fab:    900;
+$z-banner: 950;
+$z-dialog: 1000;
+
 $chapter-width-mobile: 92%;
 $chapter-width-tablet: 75%;
 $chapter-width-desktop: 60%;

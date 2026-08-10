@@ -15,8 +15,16 @@ is uploaded to an R2 bucket and served through the CDN (see
     reads).
   - `SITE_ENV` — `staging` | `production`, controls the
     [noindex gate](#noindex-on-staging).
+  - `NEXT_PUBLIC_GA_MEASUREMENT_ID` — GA4 measurement id for this environment's
+    property, inlined into the bundle at build time. Empty disables analytics and
+    the consent banner entirely (see [analytics & consent](analytics-and-consent.md)).
 - The build runner needs **TeX Live** (`pdflatex` + `dvisvgm`) for figure
   compilation.
+- Analytics never appears in the exported **HTML** — the measurement id and the
+  consent components are inlined into the JS chunks, and no markup references
+  `googletagmanager.com` (that is what makes "GA4 cannot load before consent"
+  checkable, and `scripts/check-analytics-build.mjs` enforces it). Grepping `out/`
+  for `gtag` will find nothing in the pages.
 
 ### `__next_f` script tags are expected (not a bug)
 
