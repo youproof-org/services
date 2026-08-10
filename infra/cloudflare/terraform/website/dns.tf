@@ -88,8 +88,13 @@ resource "cloudflare_dns_record" "staging_dmarc" {
 # apex TXT and the CDN coexist fine. Do not "fix" this by moving it elsewhere.
 #
 # Both records were created by hand before this root managed them, so they are
-# adopted by the import blocks in imports.tf rather than created. A correct plan
-# shows NO CHANGES for them.
+# adopted by the import blocks in imports.tf rather than created.
+#
+# What a correct plan looks like: NO create and NO replace, and no change to
+# `content` — that is the part that would break verification. An in-place UPDATE of
+# `ttl` or `comment` is expected and harmless, because the hand-made records predate
+# these declarations and neither attribute affects resolution. Anything else means
+# the import did not match, and the apply should not be allowed to proceed.
 resource "cloudflare_dns_record" "google_site_verification" {
   count   = var.environment == "production" && var.google_site_verification != "" ? 1 : 0
   zone_id = local.zone_id
