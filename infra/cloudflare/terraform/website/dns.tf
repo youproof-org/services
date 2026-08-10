@@ -87,14 +87,10 @@ resource "cloudflare_dns_record" "staging_dmarc" {
 # verification, and SPF) alongside the R2 custom domain's proxied apex CNAME, so
 # apex TXT and the CDN coexist fine. Do not "fix" this by moving it elsewhere.
 #
-# Both records were created by hand before this root managed them, so they are
-# adopted by the import blocks in imports.tf rather than created.
-#
-# What a correct plan looks like: NO create and NO replace, and no change to
-# `content` — that is the part that would break verification. An in-place UPDATE of
-# `ttl` or `comment` is expected and harmless, because the hand-made records predate
-# these declarations and neither attribute affects resolution. Anything else means
-# the import did not match, and the apply should not be allowed to proceed.
+# Both records were created by hand years before this root managed any apex DNS, and
+# were adopted into state by one-off import blocks (removed once applied — see the
+# git history for imports.tf if the adoption ever needs repeating). Their `content` is
+# the attribute that must never drift: changing it revokes verification.
 resource "cloudflare_dns_record" "google_site_verification" {
   count   = var.environment == "production" && var.google_site_verification != "" ? 1 : 0
   zone_id = local.zone_id
@@ -104,18 +100,6 @@ resource "cloudflare_dns_record" "google_site_verification" {
   content = "\"google-site-verification=${var.google_site_verification}\""
   ttl     = 1 # 1 = automatic
   comment = "Google Search Console / GA4 domain verification"
-
-  lifecycle {
-    # Fail loudly on the one dangerous half-configuration: a token set without the
-    # record id means no import block matches (imports.tf), so this resource would
-    # be CREATED — adding a second verification TXT to the apex instead of adopting
-    # the existing one. Drop this precondition together with imports.tf once the
-    # record is in state.
-    precondition {
-      condition     = var.google_site_verification_record_id != ""
-      error_message = "google_site_verification is set but google_site_verification_record_id is not: the existing apex TXT would be duplicated rather than imported. Set both, or neither."
-    }
-  }
 }
 
 resource "cloudflare_dns_record" "bing_site_verification" {
@@ -130,13 +114,4 @@ resource "cloudflare_dns_record" "bing_site_verification" {
   proxied = false
   ttl     = 1 # 1 = automatic
   comment = "Bing Webmaster Tools domain verification"
-
-  lifecycle {
-    # Same reasoning as google_site_verification above; here a create would fail
-    # outright (duplicate CNAME name) rather than quietly duplicating.
-    precondition {
-      condition     = var.bing_site_verification_record_id != ""
-      error_message = "bing_site_verification is set but bing_site_verification_record_id is not: the existing CNAME would be recreated rather than imported. Set both, or neither."
-    }
-  }
 }

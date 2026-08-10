@@ -86,14 +86,12 @@ of merely unrecorded.
 proxied CNAME — applies to subdomains, not to the flattened apex. `youproof.org`
 carries three TXT records today next to the R2 custom domain's proxied CNAME.
 
-The two verification records predate Terraform and are **adopted by import**
-(`website/imports.tf`) rather than created. A correct production plan shows no create
-and no replace, and leaves `content` untouched — that is the attribute whose change
-would break verification. An in-place update of `ttl` or `comment` is expected and
-harmless: the hand-made records predate the declarations, and in provider v5 both are
-managed attributes that do not affect resolution. `imports.tf` is transient — delete
-it, the `*_record_id` variables, and the matching lifecycle preconditions once the
-adoption has applied.
+The two verification records were created by hand years before this root managed any
+apex DNS, and were **adopted into state by one-off `import` blocks** rather than
+recreated — so verification was never interrupted. Those blocks have applied and been
+removed; see the git history for `website/imports.tf` if the adoption ever needs
+repeating. Their `content` is the attribute that must never drift, because changing it
+revokes verification.
 
 The www→apex 301 rule for the `.org` zone (in `zone/redirects.tf`, alongside the
 `.hu` rule) is the same generic rule as on the `.hu` zone; it is dormant unless a

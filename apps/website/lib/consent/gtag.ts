@@ -1,4 +1,4 @@
-import { gaCookieClearStrings, hasGaCookies } from './cookies'
+import { gaCookieClearStrings, gaCookieNames, hasGaCookies } from './cookies'
 
 /**
  * Google Analytics 4 glue, including Consent Mode v2.
@@ -96,7 +96,7 @@ export function clearAnalyticsCookies(): void {
   if (!hasGaCookies(document.cookie)) return
   for (const cookie of gaCookieClearStrings(
     window.location.hostname,
-    measurementId,
+    gaCookieNames(document.cookie, measurementId),
     window.location.protocol === 'https:',
   )) {
     document.cookie = cookie
