@@ -235,7 +235,12 @@ controller for that use, contradicting the published text.
 
 `apps/website/scripts/check-analytics-build.mjs` (postbuild, before upload):
 
-- a deploy build (`SITE_ENV` set) must have a measurement ID;
+- a deploy build whose **content declares a policy version** must have a measurement
+  ID. An empty ID on its own is *not* an error — that is the intended inert state.
+  What is incoherent, and therefore fatal, is published policy pages telling readers
+  analytics runs after consent while no tag exists to honour that consent;
+- the ID baked into the bundle must equal the one configured for this environment; a
+  mismatch means a stale export that would report into the wrong GA4 property;
 - no `.html` references `googletagmanager.com` — the static-export form of "GA
   cannot load before consent";
 - the banner's CSS-module class appears in **no** `.html`, which is the regression

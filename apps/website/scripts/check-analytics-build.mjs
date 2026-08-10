@@ -38,12 +38,18 @@ const fail = (msg) => {
   process.exit(1)
 }
 
-// A deploy build must be fully wired. Local builds are allowed to be silent.
-if (siteEnv && !measurementId) {
+// An empty measurement id is the intended inert state, NOT an error: it is what
+// lets this code ship to an environment before its GA4 property exists, and what
+// keeps production inert until the rewritten cookie policy is promoted. So the
+// failure condition is the genuinely incoherent combination — the CONTENT declares a
+// cookie policy (so the published pages tell readers analytics runs on consent) while
+// no tag is configured to honour that consent.
+if (siteEnv && cookiePolicyVersion >= 1 && !measurementId) {
   fail(
-    `SITE_ENV=${siteEnv} but NEXT_PUBLIC_GA_MEASUREMENT_ID is empty — the consent UI and ` +
-      'analytics would both be absent. Set the GA_MEASUREMENT_ID variable on this ' +
-      'GitHub Environment, or drop SITE_ENV for a local build.',
+    `SITE_ENV=${siteEnv}: the content declares cookie-policy-version ${cookiePolicyVersion}, so the ` +
+      'published policy says analytics runs after consent — but NEXT_PUBLIC_GA_MEASUREMENT_ID is ' +
+      'empty, so the banner never appears and nothing is measured. Set the GA_MEASUREMENT_ID ' +
+      'variable on this GitHub Environment, or revert the policy content.',
   )
 }
 
@@ -135,6 +141,18 @@ if (live) {
             'NEXT_PUBLIC_GA_MEASUREMENT_ID did not reach the bundle.'
         : `found ${ids.size} distinct measurement ids (${[...ids].join(', ')}); expected exactly one. ` +
             'Staging and production are separate properties and must never share a build.',
+    )
+  }
+  // The id in the bundle must be the one configured for THIS environment. A
+  // mismatch means the export was built against a different environment's value
+  // and would report into the wrong GA4 property — the exact failure that having
+  // separate staging and production properties is meant to make impossible.
+  const bundled = [...ids][0]
+  if (bundled !== measurementId) {
+    fail(
+      `the exported bundle carries measurement id ${bundled} but this environment is configured ` +
+        `for ${measurementId}. The build is stale — rebuild so the export matches, or the site ` +
+        'will report into the wrong GA4 property.',
     )
   }
 }
