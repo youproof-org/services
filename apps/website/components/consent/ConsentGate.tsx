@@ -120,11 +120,42 @@ export default function ConsentGate() {
   // `output: 'export'` it forces a Suspense boundary, and the query string must
   // not reach GA anyway (see sendPageView).
   useEffect(() => {
-    if (!ENABLED || !granted || !pathname) return
+    // `mode === 'unresolved'` means the mount effect has not read the stored
+    // decision yet. Bailing out here is load-bearing, not defensive: `granted`
+    // starts false, so acting on it before resolution would sweep the _ga cookies
+    // on EVERY page load and the tag would then mint a fresh client id each time —
+    // making every reload look like a brand-new user.
+    if (!ENABLED || !pathname || mode === 'unresolved') return
+
+    if (!granted) {
+      // Sweep again on every navigation while consent is withheld.
+      //
+      // Withdrawal disables the tag immediately, so no further data is sent — but
+      // gtag.js is still loaded in the page and re-creates its cookies shortly
+      // after clearAnalyticsCookies() removes them, so a withdrawal mid-session
+      // leaves them visible until the next full page load. Re-sweeping here clears
+      // them at the next navigation instead, without reloading the page and losing
+      // the reader's place. Cheap: the sweep no-ops unless a _ga cookie is present.
+      clearAnalyticsCookies()
+      return
+    }
+
     if (lastSentPath.current === pathname) return
     lastSentPath.current = pathname
-    sendPageView(pathname)
-  }, [granted, pathname])
+
+    // Defer one frame before reading document.title.
+    //
+    // sendPageView reads the title when it is called, and gtag takes plain values —
+    // there is no way to have Google read it at the moment it actually transmits. So
+    // the closest we get to "read it late" is waiting for the next paint, which is
+    // after any follow-up commit React makes. Metadata does appear to be applied in
+    // the same commit as the pathname change today, so this is hardening against a
+    // slower device or a route whose metadata resolves later, not a fix for an
+    // observed wrong title. Cancelled if we navigate again first, so a quick
+    // A -> B never reports A's page_view with B's title.
+    const frame = requestAnimationFrame(() => sendPageView(pathname))
+    return () => cancelAnimationFrame(frame)
+  }, [granted, pathname, mode])
 
   if (!ENABLED || mode === 'unresolved') return null
 

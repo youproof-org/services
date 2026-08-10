@@ -181,6 +181,15 @@ A loaded `gtag.js` cannot be unloaded, and `consent update → denied` on its ow
    which is what actually stops the requests.
 3. Delete `_ga` and `_ga_<id>` across every plausible domain scope.
 
+One caveat, verified by hand: withdrawal stops the data immediately, but the `_ga`
+cookies do **not** stay deleted within that page view. `gtag.js` is still loaded and
+re-creates them shortly after the sweep removes them. It is disabled, so nothing is
+sent — but the cookies remain visible in DevTools until the next full page load. So
+the sweep also runs on **every SPA navigation while consent is withheld**, which
+clears them at the next page the reader opens rather than forcing a reload and losing
+their place. The policy text deliberately promises no timing for this, only that the
+measurement stops and the cookies are deleted.
+
 The same cookie sweep also runs on **every load where the stored decision does not
 resolve to `granted`**, not only on an explicit withdrawal. A GA cookie can outlive
 the consent that created it in three ways: the visitor cleared `yp_consent` by hand,
