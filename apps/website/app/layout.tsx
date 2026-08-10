@@ -11,6 +11,7 @@ import './globals.scss'
 // CSS statically instead and disable the runtime injection.
 config.autoAddCss = false
 import DevContentReloader from '@/components/DevContentReloader'
+import ConsentGate from '@/components/consent/ConsentGate'
 import NewsletterLanding from '@/components/newsletter/NewsletterLanding'
 import { DEFAULT_LOCALE, getLocaleConfig } from '@/lib/i18n/config'
 import {
@@ -80,11 +81,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className={mulish.className}>
         {/* Carries the compositing hint that used to sit on <body> — see
-            .page-root in globals.scss. NewsletterLanding must stay OUTSIDE it,
-            or its fixed overlay is contained by the transform and centres on
-            the document instead of the viewport. */}
+            .page-root in globals.scss. NewsletterLanding and ConsentGate must
+            stay OUTSIDE it, or their fixed overlay/banner/FAB are contained by
+            the transform and position against the document instead of the
+            viewport. Anything else viewport-fixed added here belongs out here too.
+
+            ConsentGate comes AFTER NewsletterLanding on purpose: both scrub
+            query params from the URL in their mount effects, effects run in DOM
+            order, and each re-reads window.location.search at the top of its own
+            effect so neither clobbers the other's params. */}
         <div className="page-root">{children}</div>
         <NewsletterLanding />
+        <ConsentGate />
         {process.env.NODE_ENV === 'development' && <DevContentReloader />}
       </body>
     </html>

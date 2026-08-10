@@ -62,15 +62,43 @@ bucket to a custom domain provisions the proxied CNAME and the edge certificate.
 Creating our own record for the same host would collide with it (see
 `website/dns.tf` for the commented reference record).
 
-| Name | Managed by | Notes |
-| --- | --- | --- |
-| `youproof.org` | R2 custom domain (production `website/`) | proxied CNAME → content bucket |
-| `staging.youproof.org` | R2 custom domain (staging `website/`) | proxied CNAME → content bucket |
-| `www.youproof.org` / `www.staging.youproof.org` | (only if added) | would redirect to apex via the zone www rule |
+| Name | Type | Managed by | Notes |
+| --- | --- | --- | --- |
+| `youproof.org` | CNAME | R2 custom domain (production `website/`) | proxied → content bucket |
+| `staging.youproof.org` | CNAME | R2 custom domain (staging `website/`) | proxied → content bucket |
+| `www.youproof.org` / `www.staging.youproof.org` | A | `website/dns.tf` (per env) | proxied placeholder (RFC 5737) so the zone www→apex rule is reachable |
+| `_dmarc.staging.youproof.org` | TXT | `website/dns.tf` (staging only) | `p=reject; sp=reject` — belt-and-braces over the apex `sp=reject` |
+| `youproof.org` | TXT | `website/dns.tf` (production only) | `google-site-verification=…` — Search Console / GA4 ([analytics & consent](analytics-and-consent.md)) |
+| `<token>.youproof.org` | CNAME | `website/dns.tf` (production only) | → `verify.bing.com`, Bing Webmaster Tools. **Unproxied** — a proxied CNAME resolves to Cloudflare's IPs and silently breaks verification |
+| `youproof.org` | MX | **manual — not Terraform-managed** | `mx03.rackhost.hu` (10), `alt2-mx.rackhostmx.com` (20) |
+| `youproof.org` | TXT | **manual — not Terraform-managed** | SPF: `v=spf1 mx include:_cspf.rackhost.hu include:spf.brevo.com ~all` |
+| `youproof.org` | TXT | **manual — not Terraform-managed** | `brevo-code:…` — Brevo sender-domain verification |
+| Brevo DKIM | TXT | **manual — not Terraform-managed** | added via the Brevo dashboard ([Brevo setup](brevo-setup.md)) |
+
+The manual rows are deliberate, not an oversight. Mail-critical records (MX, SPF,
+DKIM) are left in the dashboard because a mistake there breaks mail delivery, which
+deserves its own focused change rather than riding along with unrelated work. They
+are listed here so the drift between the dashboard and Terraform is visible instead
+of merely unrecorded.
+
+**Apex TXT coexists with the proxied apex CNAME.** The constraint noted for
+`staging.youproof.org` in `website/dns.tf` — Cloudflare refusing TXT/MX alongside a
+proxied CNAME — applies to subdomains, not to the flattened apex. `youproof.org`
+carries three TXT records today next to the R2 custom domain's proxied CNAME.
+
+The two verification records predate Terraform and are **adopted by import**
+(`website/imports.tf`) rather than created. A correct production plan shows no create
+and no replace, and leaves `content` untouched — that is the attribute whose change
+would break verification. An in-place update of `ttl` or `comment` is expected and
+harmless: the hand-made records predate the declarations, and in provider v5 both are
+managed attributes that do not affect resolution. `imports.tf` is transient — delete
+it, the `*_record_id` variables, and the matching lifecycle preconditions once the
+adoption has applied.
 
 The www→apex 301 rule for the `.org` zone (in `zone/redirects.tf`, alongside the
 `.hu` rule) is the same generic rule as on the `.hu` zone; it is dormant unless a
-`www.*` record exists. The R2 custom domain does not create a `www.*` record.
+`www.*` record exists. The R2 custom domain does not create a `www.*` record — the
+`www` A record above exists precisely to make the rule reachable.
 
 See [CDN & R2](cdn-and-r2.md) for how the R2 custom domain, the
 `.html`-stripping transform rule, and cache behave on this zone.

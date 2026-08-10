@@ -1,44 +1,8 @@
 @use 'variables' as *;
 
-// No global box-sizing reset in this app; scope one so the full-width dialog
-// (width:100% + padding) doesn't overflow the padded overlay.
-.overlay {
-  box-sizing: border-box;
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: $pad-x;
-  background: rgba(0, 0, 0, 0.5);
-  // A dialog taller than the viewport (the form variant on a short mobile
-  // screen, with a validation message showing) scrolls inside the overlay
-  // instead of being clipped by it — the page behind never moves.
-  overflow-y: auto;
-
-  *,
-  *::before,
-  *::after {
-    box-sizing: border-box;
-  }
-}
-
-.dialog {
-  background: $white;
-  color: $black;
-  border: 1px solid $black;
-  max-width: $max-width-card;
-  width: 100%;
-  padding: 1.75rem;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
-}
-
-.title {
-  margin: 0 0 0.75rem;
-  font-size: 1.125rem;
-  font-weight: $font-x-bold;
-}
+// Content styles for the newsletter dialogs. The shell itself (.overlay,
+// .dialog, .title) moved to components/ui/modal.module.scss when the consent
+// dialog started sharing it.
 
 .message {
   margin: 0 0 1.5rem;

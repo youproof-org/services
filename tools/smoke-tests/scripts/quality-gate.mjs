@@ -19,6 +19,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { config, baseUrl } from "../lib/config.mjs";
 import { buildReport } from "../lib/report.mjs";
 import { runSmoke } from "../lib/smoke-runner.mjs";
+import { runConsentChecks } from "../lib/consent-checks.mjs";
 import { runCrawl } from "./crawl.mjs";
 
 const reportOut = process.env.REPORT_OUT ?? "./quality-gate-report.json";
@@ -86,6 +87,50 @@ if (skipSmoke) {
   console.log(
     `quality-gate: smoke -> ${smoke.passed} passed, ${smoke.failed} failed, ${smoke.skipped} skipped (of ${smoke.total})`,
   );
+}
+
+// Consent checks: the banner's policy links plus a pre-consent tag check. Folded
+// into the smoke suite (rather than a new suite) so the artifact schema is
+// unchanged and failures stay fatal.
+//
+// The page list arrives via CONSENT_POLICY_PAGES, set from the website job's
+// output. It cannot be read from disk here: the generated file is gitignored and
+// this job runs on a fresh checkout with no content clone. Falling back to the
+// file anyway covers running this locally straight after a build. Empty or absent
+// => the consent feature is off in this build and there is nothing to verify.
+let consentPages = [];
+if (process.env.CONSENT_POLICY_PAGES) {
+  try {
+    consentPages = JSON.parse(process.env.CONSENT_POLICY_PAGES);
+  } catch (err) {
+    console.log(`quality-gate: CONSENT_POLICY_PAGES is not valid JSON (${err.message}) — skipping consent checks`);
+  }
+} else {
+  try {
+    consentPages =
+      JSON.parse(
+        readFileSync(new URL("../../../apps/website/.generated/consent-policy.json", import.meta.url), "utf8"),
+      ).pages ?? [];
+  } catch {
+    // Expected in CI: nothing generated in this job.
+  }
+}
+
+if (consentPages.length > 0) {
+  const { cases } = await runConsentChecks({
+    baseUrl,
+    pages: consentPages,
+    defaultLocale: defaultLocale ?? "hu",
+  });
+  smoke.cases = [...(smoke.cases ?? []), ...cases];
+  smoke.total = smoke.cases.length;
+  smoke.passed = smoke.cases.filter((c) => c.status === "pass").length;
+  smoke.failed = smoke.cases.filter((c) => c.status === "fail").length;
+  console.log(
+    `quality-gate: consent checks -> ${cases.filter((c) => c.status === "pass").length}/${cases.length} passed`,
+  );
+} else {
+  console.log("quality-gate: no consent policy pages for this build — skipping consent checks.");
 }
 
 // Seed the crawl with EVERY locale's homepage (locales are separate link-islands

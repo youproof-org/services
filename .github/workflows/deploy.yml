@@ -160,6 +160,20 @@ jobs:
       TF_VAR_environment: ${{ inputs.environment }}
       TF_VAR_cloudflare_account_id: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
       TF_VAR_tfstate_bucket: ${{ vars.R2_STATE_BUCKET }}
+      # Search-engine domain verification for the apex. Production-only: these records
+      # prove ownership of the ZONE, not of one environment's host, so exactly one
+      # state may manage them — the vars are simply unset on the staging Environment
+      # and the resources are count-gated off there. Vars rather than secrets: both
+      # values are published in public DNS the moment they apply.
+      #
+      # The *_RECORD_ID pair is a one-time migration input. Both records predate
+      # Terraform, so imports.tf adopts them instead of creating duplicates; set each
+      # token together with its record id (a lifecycle precondition fails the plan
+      # otherwise) and drop the ids once the adoption has applied.
+      TF_VAR_google_site_verification: ${{ vars.GOOGLE_SITE_VERIFICATION }}
+      TF_VAR_google_site_verification_record_id: ${{ vars.GOOGLE_SITE_VERIFICATION_RECORD_ID }}
+      TF_VAR_bing_site_verification: ${{ vars.BING_SITE_VERIFICATION }}
+      TF_VAR_bing_site_verification_record_id: ${{ vars.BING_SITE_VERIFICATION_RECORD_ID }}
       AWS_ACCESS_KEY_ID: ${{ secrets.R2_STATE_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_STATE_SECRET_ACCESS_KEY }}
     steps:
@@ -462,6 +476,13 @@ jobs:
       needs.website-infra.result == 'success' && needs.worker.result == 'success'
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
+    # The consent banner's policy-page list, for the quality gate to verify those
+    # URLs resolve. Passed as an output because the generated file is gitignored and
+    # the gate runs on a fresh checkout with no content clone — and because the
+    # crawler can never discover these URLs itself (the banner is not in the HTML,
+    # so nothing links to them from the markup).
+    outputs:
+      consent_policy_pages: ${{ steps.consent-pages.outputs.pages }}
     env:
       ENVIRONMENT: ${{ inputs.environment }}
       SITE_ENV: ${{ inputs.environment }}
@@ -484,6 +505,19 @@ jobs:
       # form renders without the widget. The newsletter API base is intentionally
       # unset (same-origin relative fetch in production).
       NEXT_PUBLIC_TURNSTILE_SITEKEY: ${{ vars.TURNSTILE_SITEKEY }}
+      # GA4 measurement id for THIS environment's property. Production and staging
+      # are separate GA4 properties (never one property with filters), so this is
+      # one variable name with a different value per GitHub Environment — there is
+      # no shared id that could leak staging traffic into production reporting.
+      # Public by design (it ships in the client bundle), hence a var, same as the
+      # Turnstile sitekey above.
+      #
+      # EMPTY IS THE KILL SWITCH: with no id, ConsentGate renders nothing at all —
+      # no banner, no FAB, no analytics. That is how this code ships safely before
+      # the GA4 properties exist, and it is one of the two things keeping
+      # production inert until the rewritten cookie policy reaches stable/released
+      # (the other is cookiePolicyVersion resolving to 0 from the content).
+      NEXT_PUBLIC_GA_MEASUREMENT_ID: ${{ vars.GA_MEASUREMENT_ID }}
       CONTENT_BUCKET: youproof-${{ inputs.environment }}-content
       R2_ENDPOINT: https://${{ vars.CLOUDFLARE_ACCOUNT_ID }}.eu.r2.cloudflarestorage.com
       # R2 S3 credentials for the content-bucket upload. Dedicated per-environment
@@ -546,8 +580,28 @@ jobs:
       - name: Install dependencies (website subtree)
         run: pnpm install --frozen-lockfile --filter @youproof.org/website...
 
+      # Consent logic (expiry, policy-version comparison, cookie parsing) decides
+      # whether analytics may run, so a regression there has legal consequences
+      # rather than cosmetic ones. Runs before the build so a failure costs a
+      # 30-second job, not a deploy.
+      - name: Unit tests (consent logic)
+        run: pnpm --filter @youproof.org/website run test
+
       - name: Build static export
         run: pnpm --filter @youproof.org/website build
+
+      # Read AFTER the build, so this is the list the deployed bundle actually
+      # links. Absent file => the consent feature is off in this build; the gate
+      # treats an empty list as "nothing to verify".
+      - name: Collect consent policy pages
+        id: consent-pages
+        run: |
+          f=apps/website/.generated/consent-policy.json
+          if [ -f "$f" ]; then
+            echo "pages=$(jq -c '.pages // []' "$f")" >> "$GITHUB_OUTPUT"
+          else
+            echo "pages=[]" >> "$GITHUB_OUTPUT"
+          fi
 
       # Upload the export to R2 via the S3 API. --delete removes stale objects so
       # the bucket exactly mirrors out/. aws-cli (preinstalled on the runner)
@@ -597,6 +651,11 @@ jobs:
       LEGACY_PROXY_HOST: ""
       REDIRECT_TARGET_HOST: ""
       SKIP_SMOKE: "1"
+      # Consent policy pages from the website job. SKIP_SMOKE drops the .hu redirect
+      # suites, but these .org consent cases are still appended to the smoke suite,
+      # so a policy page the banner links to but the site does not serve fails the
+      # gate. Empty when the consent feature is off in this build.
+      CONSENT_POLICY_PAGES: ${{ needs.website.outputs.consent_policy_pages }}
       # Absolute path: the gate step runs with cwd = the smoke-tests package dir
       # (pnpm --filter), but the upload step runs from the repo root. An absolute
       # path makes both agree on where the report lives.
