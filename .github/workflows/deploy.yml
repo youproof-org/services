@@ -160,6 +160,20 @@ jobs:
       TF_VAR_environment: ${{ inputs.environment }}
       TF_VAR_cloudflare_account_id: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
       TF_VAR_tfstate_bucket: ${{ vars.R2_STATE_BUCKET }}
+      # Search-engine domain verification for the apex. Production-only: these records
+      # prove ownership of the ZONE, not of one environment's host, so exactly one
+      # state may manage them — the vars are simply unset on the staging Environment
+      # and the resources are count-gated off there. Vars rather than secrets: both
+      # values are published in public DNS the moment they apply.
+      #
+      # The *_RECORD_ID pair is a one-time migration input. Both records predate
+      # Terraform, so imports.tf adopts them instead of creating duplicates; set each
+      # token together with its record id (a lifecycle precondition fails the plan
+      # otherwise) and drop the ids once the adoption has applied.
+      TF_VAR_google_site_verification: ${{ vars.GOOGLE_SITE_VERIFICATION }}
+      TF_VAR_google_site_verification_record_id: ${{ vars.GOOGLE_SITE_VERIFICATION_RECORD_ID }}
+      TF_VAR_bing_site_verification: ${{ vars.BING_SITE_VERIFICATION }}
+      TF_VAR_bing_site_verification_record_id: ${{ vars.BING_SITE_VERIFICATION_RECORD_ID }}
       AWS_ACCESS_KEY_ID: ${{ secrets.R2_STATE_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_STATE_SECRET_ACCESS_KEY }}
     steps:

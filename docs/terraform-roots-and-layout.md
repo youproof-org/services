@@ -58,6 +58,15 @@ state (`website/data.tf`), and owns the environment's **R2 buckets** (content
 bucket, and the environment's `.org` DNS. No Worker resources. See
 [CDN & R2](cdn-and-r2.md).
 
+This root also owns the apex **search-engine verification records** (Google and
+Bing), `count`-gated to the production apply. They belong here rather than in
+`zone/` for two reasons: `zone/` deliberately owns no DNS records at all (see
+`zone/zone.tf`), and `zone-purity-guard.yml` fails any PR that mixes `zone/**` with
+non-zone paths, so putting them there would force every change touching them into a
+solo zone-only promotion. Because the records identify the zone rather than an
+environment's host, exactly one state may manage them — hence the production gate,
+the mirror image of the staging-only DMARC record alongside them.
+
 ## Shared-vs-per-env state split
 
 Zone ownership and per-environment resources have different lifecycles, so the
