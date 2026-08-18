@@ -3,6 +3,7 @@
 Status: Draft, iterating
 Audience: Claude Code (implementation), with full repo context (`youproof-org/services`, `youproof-org/content`, `youproof-org/editor`)
 Repos affected: `services` (routing, D1/manifest, Terraform), `content` (YAML schema, slugs)
+Implementation plan: [`yp-162-knowledge-graph-urls-implementation-plan.md`](yp-162-knowledge-graph-urls-implementation-plan.md) — codebase analysis, open decisions, and phased build derived from this design
 
 ---
 
