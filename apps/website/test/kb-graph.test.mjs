@@ -1,0 +1,386 @@
+// Knowledge-base graph derivation: page existence, slug validation, the backlink
+// index, the glossary, and the two-href reference resolution.
+//
+// Everything is driven through `buildGraphFromRaw` with a hand-built raw graph, so
+// these are real graph invariants rather than assertions about a fixture on disk.
+import { test } from 'node:test'
+import assert from 'node:assert/strict'
+
+import * as graphModule from '../lib/content/graph.ts'
+import { urlForDefinition, urlForTheorem, urlForProof, urlForRemark, kbRefs, claimAnchorId, termAnchorId, entityAnchorId } from '../lib/content/urls.ts'
+import { RAW_GRAPH_VERSION } from '../lib/content/graph.ts'
+
+const { buildGraphFromRaw, kbPageExists, kbNodeTitle } = graphModule.default ?? graphModule
+
+const NS = '/proba'
+const hu = { locale: 'hu', namespace: NS }
+
+const narrative = (content) => ({ type: 'narrative', content })
+const claim = (name, slug, content = 'Állítás.') => ({ type: 'claim', name, slug, content })
+const embed = (type, name) => ({ type: 'embed', target: { type, name, namespace: NS } })
+
+/**
+ * A raw graph with one chapter/section embedding a definition, a theorem, its
+ * proof, and a remark on the definition. `published` controls whether the chapter
+ * is published, which is what gates page existence on a deployed build.
+ */
+function raw({ published = true, references = {}, extraDefinitions = [], terms } = {}) {
+  return {
+    version: RAW_GRAPH_VERSION,
+    episodeOrder: ['konyv'],
+    definitions: [
+      {
+        ...hu,
+        name: 'def-egy',
+        slug: 'def-egy',
+        title: 'Első definíció',
+        terms: terms ?? {
+          'first-term': { slug: 'elso-fogalom', display: '[első]', canonical: 'első fogalom' },
+        },
+        body: [narrative('Törzs [[first-term]].'), claim('def-claim', 'def-allitas')],
+        references,
+        remarkSlugs: ['rem-egy'],
+      },
+      ...extraDefinitions,
+    ],
+    theorems: [
+      {
+        ...hu,
+        name: 'tetel-egy',
+        slug: 'tetel-egy',
+        title: 'Első tétel',
+        body: [narrative('Tétel.')],
+        references: {},
+        proofSlugs: ['biz-egy'],
+        remarkSlugs: [],
+      },
+    ],
+    proofs: [
+      {
+        ...hu,
+        name: 'biz-egy',
+        slug: 'biz-egy',
+        body: [narrative('Bizonyítás.')],
+        references: {},
+        remarkSlugs: [],
+      },
+    ],
+    remarks: [
+      { ...hu, name: 'rem-egy', slug: 'rem-egy', body: [narrative('Megjegyzés.')], references: {} },
+    ],
+    books: [
+      {
+        name: 'konyv',
+        slug: 'konyv',
+        locale: 'hu',
+        title: 'Könyv',
+        abstract: [],
+        parts: [
+          {
+            name: 'resz',
+            title: 'Rész',
+            chapters: [
+              {
+                name: 'fejezet',
+                slug: 'fejezet',
+                locale: 'hu',
+                title: 'Fejezet',
+                publishedAt: published ? '2020-01-01 00:00:00' : undefined,
+                abstract: [],
+                prologue: [],
+                epilogue: [],
+                references: {},
+                sections: [
+                  {
+                    name: 'szakasz',
+                    slug: 'szakasz',
+                    locale: 'hu',
+                    title: 'Szakasz',
+                    references: {},
+                    body: [
+                      embed('definition', 'def-egy'),
+                      embed('theorem', 'tetel-egy'),
+                      embed('proof', 'biz-egy'),
+                      embed('remark', 'rem-egy'),
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    standalones: [],
+  }
+}
+
+const def = (g) => g.definitions.get(`/entities${NS}/def-egy`)
+const thm = (g) => g.theorems.get(`/entities${NS}/tetel-egy`)
+const prf = (g) => g.proofs.get(`/entities${NS}/biz-egy`)
+const rem = (g) => g.remarks.get(`/entities${NS}/rem-egy`)
+
+// ---------------------------------------------------------------------------
+
+test('URLs are flat for definitions/theorems and nested for owned types', () => {
+  const g = buildGraphFromRaw(raw())
+  assert.equal(urlForDefinition(def(g)), '/hu/tudasbazis/definiciok/def-egy')
+  assert.equal(urlForTheorem(thm(g)), '/hu/tudasbazis/tetelek/tetel-egy')
+  assert.equal(urlForProof(prf(g)), '/hu/tudasbazis/tetelek/tetel-egy/bizonyitasok/biz-egy')
+  assert.equal(urlForRemark(rem(g)), '/hu/tudasbazis/definiciok/def-egy/megjegyzesek/rem-egy')
+})
+
+test('a URL does not contain the namespace, so reorganizing namespaces cannot move it', () => {
+  const g = buildGraphFromRaw(raw())
+  for (const url of [urlForDefinition(def(g)), urlForTheorem(thm(g)), urlForProof(prf(g))]) {
+    assert.ok(!url.includes('proba'), `${url} leaks its namespace`)
+  }
+})
+
+test('embedding records the chapter, the section and the index label', () => {
+  const g = buildGraphFromRaw(raw())
+  const e = g.embedding.get(`/entities${NS}/def-egy`)
+  assert.equal(e.chapter.name, 'fejezet')
+  assert.equal(e.section.name, 'szakasz')
+  assert.equal(e.index, '1.1.', 'definitions and theorems are numbered in embed order')
+  assert.equal(g.embedding.get(`/entities${NS}/biz-egy`).index, undefined, 'proofs are not numbered')
+})
+
+test('a node embedded in a published chapter has a page', () => {
+  const g = buildGraphFromRaw(raw({ published: true }))
+  for (const n of [def(g), thm(g), prf(g), rem(g)]) assert.equal(kbPageExists(g, n), true)
+})
+
+test('a node embedded nowhere never has a page', () => {
+  const g = buildGraphFromRaw(
+    raw({
+      extraDefinitions: [
+        { ...hu, name: 'arva', slug: 'arva', title: 'Árva', body: [], references: {}, remarkSlugs: [] },
+      ],
+    }),
+  )
+  assert.equal(kbPageExists(g, g.definitions.get(`/entities${NS}/arva`)), false)
+})
+
+test('titles: authored for definitions/theorems, derived from the owner otherwise', () => {
+  const g = buildGraphFromRaw(raw())
+  assert.equal(kbNodeTitle(g, def(g)), 'Első definíció')
+  assert.equal(kbNodeTitle(g, thm(g)), 'Első tétel')
+  assert.equal(kbNodeTitle(g, prf(g)), 'Bizonyítás: Első tétel')
+  assert.equal(kbNodeTitle(g, rem(g)), 'Megjegyzés: Első definíció')
+})
+
+test('a reference gets a chapter href AND a knowledge-base href', () => {
+  const g = buildGraphFromRaw(
+    raw({
+      references: {
+        'r-thm': { display: 'a tétel', target: { type: 'theorem', name: 'tetel-egy', namespace: NS } },
+      },
+    }),
+  )
+  const entry = def(g).references['r-thm']
+  assert.equal(entry.href, '/hu/konyvek/konyv/fejezetek/fejezet#tetel-tetel-egy')
+  assert.equal(entry.kbHref, '/hu/tudasbazis/tetelek/tetel-egy')
+})
+
+test('a claim reference resolves to the slug anchor in both contexts', () => {
+  const g = buildGraphFromRaw(
+    raw({
+      references: {
+        'r-claim': {
+          display: 'az állítás',
+          target: {
+            type: 'claim',
+            name: 'def-claim',
+            parent: { type: 'definition', name: 'def-egy', namespace: NS },
+          },
+        },
+      },
+    }),
+  )
+  const entry = def(g).references['r-claim']
+  assert.equal(entry.href, '/hu/konyvek/konyv/fejezetek/fejezet#allitas-def-allitas')
+  assert.equal(entry.kbHref, '/hu/tudasbazis/definiciok/def-egy#allitas-def-allitas')
+})
+
+test('kbRefs swaps in the knowledge-base href and leaves other entries alone', () => {
+  const g = buildGraphFromRaw(
+    raw({
+      references: {
+        'r-thm': { display: 'a tétel', target: { type: 'theorem', name: 'tetel-egy', namespace: NS } },
+        'r-ext': { display: 'kifelé', target: { type: 'external', url: 'https://example.org' } },
+      },
+    }),
+  )
+  const remapped = kbRefs(def(g).references)
+  assert.equal(remapped['r-thm'].href, '/hu/tudasbazis/tetelek/tetel-egy')
+  assert.equal(remapped['r-ext'].href, def(g).references['r-ext'].href, 'no kbHref means unchanged')
+  assert.equal(
+    def(g).references['r-thm'].href,
+    '/hu/konyvek/konyv/fejezetek/fejezet#tetel-tetel-egy',
+    'the original map must not be mutated',
+  )
+})
+
+test('the backlink index records who cites a node, and which claim they cite', () => {
+  const g = buildGraphFromRaw(
+    raw({
+      references: {
+        'r-thm': { display: 'a tétel', target: { type: 'theorem', name: 'tetel-egy', namespace: NS } },
+      },
+    }),
+  )
+  const onTheorem = g.backlinks.get(`/entities${NS}/tetel-egy`)
+  assert.equal(onTheorem.length, 1)
+  assert.equal(onTheorem[0].ownerKind, 'definition')
+  assert.equal(onTheorem[0].ownerName, 'def-egy')
+  assert.equal(onTheorem[0].ownerTitle, 'Első definíció')
+  assert.equal(onTheorem[0].ownerUrl, '/hu/tudasbazis/definiciok/def-egy')
+  assert.equal(onTheorem[0].refKey, 'r-thm')
+  assert.equal(onTheorem[0].targetAnchor, undefined, 'a whole-node citation has no anchor')
+})
+
+test('a claim-scoped citation is indexed under the anchor, not the node', () => {
+  const g = buildGraphFromRaw(
+    raw({
+      references: {
+        'r-claim': {
+          display: 'az állítás',
+          target: {
+            type: 'claim',
+            name: 'def-claim',
+            parent: { type: 'definition', name: 'def-egy', namespace: NS },
+          },
+        },
+      },
+    }),
+  )
+  assert.equal(g.backlinks.get(`/entities${NS}/def-egy`), undefined)
+  const scoped = g.backlinks.get(`/entities${NS}/def-egy#allitas-def-allitas`)
+  assert.equal(scoped.length, 1)
+  assert.equal(scoped[0].targetAnchor, 'allitas-def-allitas')
+})
+
+test('chapters and sections appear as backlink owners, not just KB nodes', () => {
+  const data = raw()
+  data.books[0].parts[0].chapters[0].references = {
+    'r-def': { display: 'a definíció', target: { type: 'definition', name: 'def-egy', namespace: NS } },
+  }
+  data.books[0].parts[0].chapters[0].sections[0].references = {
+    'r-def2': { display: 'a definíció', target: { type: 'definition', name: 'def-egy', namespace: NS } },
+  }
+  const g = buildGraphFromRaw(data)
+  const kinds = g.backlinks.get(`/entities${NS}/def-egy`).map((b) => b.ownerKind).sort()
+  assert.deepEqual(kinds, ['chapter', 'section'])
+})
+
+test('the glossary points at the term anchor and counts inbound references', () => {
+  const g = buildGraphFromRaw(
+    raw({
+      references: {
+        'r-term': {
+          display: 'első',
+          target: {
+            type: 'term',
+            name: 'first-term',
+            parent: { type: 'definition', name: 'def-egy', namespace: NS },
+          },
+        },
+      },
+    }),
+  )
+  assert.equal(g.glossary.length, 1)
+  const [entry] = g.glossary
+  assert.equal(entry.termKey, 'first-term')
+  assert.equal(entry.canonical, 'első fogalom')
+  assert.equal(entry.href, '/hu/tudasbazis/definiciok/def-egy#fogalom-elso-fogalom')
+  assert.equal(entry.referencedBy, 1)
+})
+
+test('the same term key defined by two nodes yields two glossary rows', () => {
+  const data = raw()
+  data.theorems[0].terms = {
+    'first-term': { slug: 'elso-fogalom', display: '[első]', canonical: 'első fogalom' },
+  }
+  data.theorems[0].body = [{ type: 'narrative', content: 'Tétel [[first-term]].' }]
+  const g = buildGraphFromRaw(data)
+  assert.equal(g.glossary.length, 2, 'one row per (defining node, term key)')
+  assert.deepEqual(
+    g.glossary.map((e) => e.ownerName).sort(),
+    ['def-egy', 'tetel-egy'],
+    'both defining nodes are listed, so a duplicated term is visible rather than hidden',
+  )
+})
+
+test('an anchor slug is used verbatim; a missing one falls back to the name', () => {
+  const data = raw({ terms: { 'no-slug-term': { display: '[x]', canonical: 'nincs slug' } } })
+  data.definitions[0].body = [
+    { type: 'narrative', content: 'Törzs [[no-slug-term]].' },
+    { type: 'claim', name: 'unslugged-claim', content: 'Állítás.' },
+  ]
+  const g = buildGraphFromRaw(data)
+  assert.equal(g.glossary[0].href, '/hu/tudasbazis/definiciok/def-egy#fogalom-no-slug-term')
+})
+
+test('two definitions sharing a slug fail the build', () => {
+  const data = raw({
+    extraDefinitions: [
+      { ...hu, name: 'masik', slug: 'def-egy', title: 'Másik', body: [], references: {}, remarkSlugs: [] },
+    ],
+  })
+  assert.throws(() => buildGraphFromRaw(data), /Slug collision/)
+})
+
+test('two claims on one node sharing a slug fail the build', () => {
+  const data = raw()
+  data.definitions[0].body = [
+    { type: 'claim', name: 'a', slug: 'ugyanaz', content: 'A.' },
+    { type: 'claim', name: 'b', slug: 'ugyanaz', content: 'B.' },
+  ]
+  data.definitions[0].terms = {}
+  assert.throws(() => buildGraphFromRaw(data), /Slug collision/)
+})
+
+test('two proofs of DIFFERENT theorems may share a slug', () => {
+  const data = raw()
+  data.theorems.push({
+    ...hu, name: 'tetel-ketto', slug: 'tetel-ketto', title: 'Második tétel',
+    body: [], references: {}, proofSlugs: ['biz-ketto'], remarkSlugs: [],
+  })
+  data.proofs.push({ ...hu, name: 'biz-ketto', slug: 'biz-egy', body: [], references: {}, remarkSlugs: [] })
+  data.books[0].parts[0].chapters[0].sections[0].body.push(
+    embed('theorem', 'tetel-ketto'),
+    embed('proof', 'biz-ketto'),
+  )
+  const g = buildGraphFromRaw(data)
+  assert.equal(urlForProof(g.proofs.get(`/entities${NS}/biz-ketto`)), '/hu/tudasbazis/tetelek/tetel-ketto/bizonyitasok/biz-egy')
+})
+
+test('a reference to a node embedded nowhere fails the build', () => {
+  const data = raw({
+    references: { 'r-arva': { display: 'árva', target: { type: 'definition', name: 'arva', namespace: NS } } },
+    extraDefinitions: [
+      { ...hu, name: 'arva', slug: 'arva', title: 'Árva', body: [], references: {}, remarkSlugs: [] },
+    ],
+  })
+  assert.throws(() => buildGraphFromRaw(data), /embedded in no chapter/)
+})
+
+test('anchor prefixes are localized, and come from the locale dictionary', () => {
+  const g = buildGraphFromRaw(raw())
+  const d = def(g)
+  assert.equal(entityAnchorId(d), 'definicio-def-egy')
+  assert.equal(entityAnchorId(thm(g)), 'tetel-tetel-egy')
+  assert.equal(entityAnchorId(prf(g)), 'bizonyitas-biz-egy')
+  assert.equal(entityAnchorId(rem(g)), 'megjegyzes-rem-egy')
+  assert.equal(claimAnchorId(d, { name: 'def-claim', slug: 'def-allitas' }), 'allitas-def-allitas')
+  assert.equal(termAnchorId(d, 'first-term', d.terms['first-term']), 'fogalom-elso-fogalom')
+  // No English prefix may survive anywhere in a generated anchor.
+  for (const id of [entityAnchorId(d), claimAnchorId(d, { name: 'x' }), termAnchorId(d, 'y', {})]) {
+    assert.ok(!/^(definition|theorem|proof|remark|claim|term)-/.test(id), `${id} is not localized`)
+  }
+})
+
+test('an unknown locale fails loudly rather than emitting a bare anchor', () => {
+  assert.throws(() => entityAnchorId({ type: 'definition', slug: 's', locale: 'xx' }), /Unknown locale/)
+})
