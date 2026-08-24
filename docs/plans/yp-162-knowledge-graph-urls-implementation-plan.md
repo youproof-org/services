@@ -2,12 +2,20 @@
 
 **Companion to:** [`yp-162-knowledge-graph-urls-plan.md`](yp-162-knowledge-graph-urls-plan.md) (the design; §-references below point into it)
 **Repos touched:** `youproof-org/services`, `youproof-org/content`, `youproof-org/editor`
-**Status:** Draft for review. §B lists decisions that must be settled before Phase 1 — three of them change what gets built.
+**Status:** Revision 2 — David's review comments of 2026-08-24 folded in. Decisions D1, D2, D3, D6 and the R7 page-existence rule are now **settled**; D4, D5, D7, D8 remain open with recommendations.
 
-This document is the result of reading the current `services` and `content` code
-against the design plan. §A is what the code and content actually look like today
-(with the mismatches against the design called out); §B is the decisions the
-design leaves open once measured against real data; §C onward is the phased build.
+> ### Working agreement
+>
+> **Every phase ends with a review gate.** At the end of each phase: commit and
+> push to the feature branch in every affected repo, post a short summary of what
+> changed and how it was verified, then **stop and wait for explicit approval**
+> before starting the next phase. Do not begin the next phase — not even reading
+> files or investigating — until approved. Phases 1 and 2 additionally produce a
+> **review artifact** (the generated title and slug tables) that must be approved
+> on its content, not just on its diff, before any content file is written.
+
+§A is what the code and content actually look like today, measured against the
+design. §B is the decision log. §C onward is the phased build.
 
 ---
 
@@ -33,17 +41,22 @@ decision, so both documents must be amended, not silently contradicted.
   [entity-id.ts](../../apps/website/lib/utils/entity-id.ts),
   [claim-id.ts](../../apps/website/lib/utils/claim-id.ts) and
   [term-id.ts](../../apps/website/lib/utils/term-id.ts).
-- **`resolveRefHrefs` throws** if a referenced entity is embedded in no chapter.
-  That is currently unreachable — all 537 entities are embedded — but a KB page
-  makes an un-embedded entity legitimate, so the throw must become a graceful
-  fallback to the entity's own canonical URL.
+- `resolveRefHrefs` **throws** if a referenced entity is embedded in no chapter.
+  Currently unreachable — see A2b — and per [D9](#d9--which-entities-get-a-page-settled)
+  it stays a hard error rather than becoming a fallback.
 
-Measured against the content: **every one of the 537 entities is embedded exactly
-once**, always inside a `section` body (never a chapter prologue/epilogue). One
-exception — theorem `rsa-algoritmus-helyes-mukodese` is embedded in two chapters;
+### A2b. Embedding is universal, single, and always inside a section
+
+**Every one of the 537 entities is embedded exactly once**, always inside a
+`section` body (never a chapter prologue/epilogue/abstract). One exception:
+theorem `rsa-algoritmus-helyes-mukodese` is embedded in two chapters;
 `buildEntityChapterInfo` keeps the first in iteration order (deterministic, driven
-by `episodes.yaml`). This is good news for §7's *"Embedding context"* block: the
-full `book → chapter → section` chain is derivable for every node today.
+by `episodes.yaml`).
+
+Consequence: §7's *"Embedding context"* block (`book → chapter → section`) has
+complete data for every node, and — given [D9](#d9--which-entities-get-a-page-settled)
+— it is **non-optional** on every generated KB page. The chapter-scoped index
+(`"11.3."`, A17) is likewise always available.
 
 ### A3. KB graph nodes carry no `locale` — every URL helper needs it
 
@@ -58,31 +71,33 @@ read it, and `DefinitionNode`/`TheoremNode`/`ProofNode`/`RemarkNode`
 
 `grep -rl '^slug:' content/knowledge-base` → 0 of 551 files.
 
-### A5. **Blocker: `title` is missing on 468 of the 537 entities**
+### A5. `title` is missing on 468 of the 537 entities
 
-| type | has `title` | missing |
-|---|---|---|
-| definition | 62 / 84 | 22 |
-| theorem | 35 / 191 | **156** |
-| proof | 0 / 190 | **190** |
-| remark | 0 / 72 | **72** |
+| type | has `title` | missing (all) | missing **and** on a published-embedded node |
+|---|---|---|---|
+| definition | 62 / 84 | 22 | **1** |
+| theorem | 35 / 191 | **156** | **101** |
+| proof | 0 / 190 | 190 | 136 |
+| remark | 0 / 72 | 72 | 54 |
 
-`title` is optional in the model and mostly unused. A display title **cannot** be
-derived from `name`, because `name` is diacritic-stripped kebab-case
-(`gyuru-reszbenrendezesenek-tulajdonsagai` → "gyuru reszbenrendezesenek
-tulajdonsagai", not "Gyűrű részbenrendezésének tulajdonságai").
+A display title **cannot** be derived mechanically from `name`, because `name` is
+diacritic-stripped kebab-case (`gyuru-reszbenrendezesenek-tulajdonsagai` → "gyuru
+reszbenrendezesenek tulajdonsagai", not "Gyűrű részbenrendezésének tulajdonságai").
+It has to be reconstructed from the name **plus the mathematical content of the
+node** — which is what Phase 1 does.
 
-§7 assumes `{def-title}` / `{thm-title}` for H1, `<title>`, breadcrumb leaf, index
-listing and sitemap-worthy content. With no title there is nothing to put in any of
-them. This is the single largest piece of work in the ticket and it is **content
-authoring, not code** — see decision [D1](#d1--titles-for-the-468-untitled-entities).
+The right-hand column matters: under [D9](#d9--which-entities-get-a-page-settled)
+only nodes in *published* chapters get a page on staging/production, so the titles
+that actually gate the launch are **1 definition + 101 theorems**, not 178. The
+remaining 76 become live when those five chapters publish. Resolved by
+[D1](#d1--titles-settled).
 
 ### A6. Entity names are globally unique — a flat slug space is safe
 
 All 537 `name` values are unique across every type *and* namespace (0 collisions).
-So §3.1's flat, namespace-independent slug space collides with nothing if slugs are
-seeded from `name`. §3.1 asks for uniqueness within `(locale, type)`; the data is
-in fact unique across all types, which is stricter.
+§3.1 asks for uniqueness within `(locale, type)`; the data is in fact unique across
+all types, which is stricter. So seeding entity slugs from `name` collides with
+nothing.
 
 ### A7. Compositional ownership is clean and strictly 1:1
 
@@ -90,33 +105,44 @@ in fact unique across all types, which is stricter.
 - 72/72 remarks have exactly one owner: 36 definitions, 28 theorems, 8 proofs. 0 orphans, 0 shared.
 - **No theorem has more than one proof; no parent has more than one remark.**
 
-Two consequences: §7.2's *"otherwise a neutral label (e.g. `1. bizonyítás`)"*
-disambiguation has no data exercising it yet (implement it, but it is untestable
-against real content), and there are currently **zero "independent" remarks** — so
-the `attachedTo === undefined` branch in `buildEntityChapterInfo`'s `isIndexed`
-and in [index-helpers.ts:46-59](../../apps/website/lib/utils/index-helpers.ts#L46-L59)
-is dead code today.
+So §7.2's *"otherwise a neutral label (e.g. `1. bizonyítás`)"* disambiguation has no
+data exercising it yet — implement it, but it is untestable against real content.
+There are also currently **zero "independent" remarks**, so the
+`attachedTo === undefined` branch in `buildEntityChapterInfo`'s `isIndexed` and in
+[index-helpers.ts:46-59](../../apps/website/lib/utils/index-helpers.ts#L46-L59) is
+dead code today. Keep both paths — the model permits them.
 
-### A8. Claims and terms — the data disagrees with §3.3 in two places
+### A8. Claims and terms
 
-- **150 `claim` blocks**: 92 in theorems, 30 in definitions, 28 in remarks. **No
-  proof carries a claim** — consistent with §2's ownership rule.
+- **150 `claim` blocks**: 92 in theorems, 30 in definitions, 28 in remarks.
 - **217 term definitions** across 82 entities: 172 on definitions, 38 on theorems,
-  7 on remarks. **Proofs define no terms.**
+  7 on remarks.
+- **Claims on proofs and terms on proofs are both currently zero, but neither is a
+  constraint to build on.** David has stated that defining terms directly in proofs
+  is wanted later. The *code* already supports it — `ProofNode.terms` exists
+  ([types.ts:245](../../apps/website/lib/content/types.ts#L245)), `loadProof` reads
+  it, `EmbeddedEntity` passes `terms`/`termParent` for proofs, and
+  `TermRefTarget.parent` / `ClaimRefTarget.parent` are typed as
+  `KnowledgeBaseRefTarget`, which already includes `'proof'`. Only
+  `content/docs/content-model.md` claims otherwise ("`terms` is a dictionary … on
+  definitions, theorems, and remarks") and its `proof` example omits `terms`. So
+  the work here is: fix the doc, and make the **proof page** (§7.3) render a
+  "Defined terms" block and term anchors on the same footing as the other three
+  types, with the glossary sourcing terms from all four types. No special-casing
+  that treats proofs as term-free.
 - Claim `name`s and term keys are **English** kebab-case
-  (`ring-multiplication-is-distributive-over-addition`, `integer-number`), unlike
-  entity names which are Hungarian. §3.3's `#claim-{slug}` / `#term-{slug}` would
-  therefore be English fragments on Hungarian pages unless slugs are authored —
-  see [D2](#d2--where-slugs-come-from).
+  (`ring-multiplication-is-distributive-over-addition`, `integer-number`).
+  Resolved by [D2](#d2--where-slugs-come-from-settled) — Hungarian slugs get
+  authored via a reviewed table.
 - **§3.3 says a term is defined by one node. It is not.** 8 term keys are defined
   in more than one entity, and 9 `canonical` forms are duplicated — `reprezentáns`
   and `reprezentáció` are each defined in **3** different entities;
-  `is-at-most`/`is-at-least`/`is-less-than`/`is-greater-than` each in 2. The
-  glossary needs an explicit grouping rule — see [D5](#d5--glossary-grouping-for-duplicate-terms).
-- One term is missing `canonical` (`proper-containment` in definition
-  `reszhalmaz`), so it has no glossary display name. Content fix.
+  `is-at-most`/`is-at-least`/`is-less-than`/`is-greater-than` each in 2. Still open:
+  [D5](#d5--glossary-grouping-for-duplicate-terms-open).
+- ~~One term is missing `canonical`~~ — fixed in content (`proper-containment` in
+  `reszhalmaz` now has `canonical: szigorú tartalmazás`). No action.
 
-### A9. The reverse-reference graph is dense, but half the nodes have no inbound links
+### A9. The reverse-reference graph is dense; roughly half the nodes have no inbound links
 
 Reference targets across the whole corpus:
 
@@ -132,28 +158,28 @@ Reference targets across the whole corpus:
 | remark | 45 |
 | proof | 17 |
 
-- **281 of 537 entities have ≥1 inbound entity reference — 256 have none.** Proofs
-  are referenced 17 times in total across 190 proofs, remarks 45 times across 72.
-  So §7.3/§7.4's *"Referenced by"* block will be empty on the large majority of
-  proof and remark pages. Combined with A5 (no titles), proof and remark pages are
-  the thin-content risk in this ticket, not definitions/theorems.
+- 281 of 537 entities have ≥1 inbound entity reference; 256 have none (proofs are
+  referenced 17 times in total across 190 proofs, remarks 45 times across 72). So
+  the "Referenced by" section is empty on most proof and remark pages.
+  **Accepted — David: not a problem for now.** Tracked as R2, not as a blocker.
 - Referrers are **not** only KB nodes: 152 chapter-owned and 180 section-owned
-  references point into the KB. Whether those appear in "Referenced by" is
-  [D7](#d7--do-chapter-and-section-referrers-appear-in-referenced-by).
-- Term inbound counts are healthy and make §7.5's *"referenced by N nodes"* worth
-  showing: 197/217 terms have ≥1 inbound reference, top counts 166 / 151 / 129.
-- 118/150 claims have ≥1 inbound reference — confirming §9's corrected premise
-  that claim references are a common pattern, not incidental.
+  references point into the KB — see [D7](#d7--do-chapter-and-section-referrers-appear-in-referenced-by-open).
+- 197/217 terms have ≥1 inbound reference (top counts 166 / 151 / 129), and
+  118/150 claims do — confirming §9's corrected premise that claim references are a
+  common pattern. This is what makes F2's interactive cross-highlighting worth
+  building.
 
-### A10. **§7.2's "Consequences" block has no backing data**
+### A10. "Consequences" has no backing data — block removed
 
 The complete set of top-level fields present anywhere in `content/knowledge-base`
 is: `type`, `name`, `locale`, `body`, `references`, `remarks`, `proofs`, `title`,
 `labels`, `terms`, `children` (the last only on 3 `namespace.yaml` files). There is
-**no** `consequences`, `follows-from`, `implies` or equivalent relation. Logical
-consequence cannot be computed from `references` — a proof citing theorem Y tells
-you Y was *used*, not that the proved theorem is a *consequence* in any curated
-sense. See [D6](#d6--the-consequences-block).
+**no** `consequences`, `follows-from`, `implies` or equivalent relation, and
+consequence is not derivable from `references` — a proof citing theorem Y says Y was
+*used*, not that anything is a consequence of it.
+
+**Settled ([D6](#d6--the-consequences-block-settled)): the "Consequences" block is
+removed from §7.2.** It would duplicate "Referenced by".
 
 ### A11. The URL layer only supports one-segment containers at `path[0]`
 
@@ -161,14 +187,14 @@ sense. See [D6](#d6--the-consequences-block).
   ([config.ts:14](../../apps/website/lib/i18n/config.ts#L14)); `resolveContainerKey`
   maps a single segment.
 - `buildLocalizedUrl` ([url.ts:33-59](../../apps/website/lib/i18n/url.ts#L33-L59))
-  has one `case` per `UrlKey` and `req()` enforces an **exact** slug-segment count.
+  has one `case` per `UrlKey`, and `req()` enforces an **exact** slug-segment count.
 - `resolvePath` ([page.tsx:74-120](../../apps/website/app/[locale]/[[...path]]/page.tsx#L74-L120))
   branches on `resolveContainerKey(locale, path[0])` and handles at most 4 segments.
 
 The KB needs a two-level container (`tudasbazis/definiciok`) and up to **six**
 segments (`/hu/tudasbazis/tetelek/{t}/bizonyitasok/{p}/megjegyzesek/{r}`). The
 catch-all route itself is fine; `resolvePath`, `generateStaticParams` and
-`generateMetadata` all need a KB branch.
+`generateMetadata` each need a KB branch.
 
 Useful side effect: adding `knowledge-base: 'tudasbazis'` to the `containers`
 dictionary automatically extends the existing custom-page collision guard
@@ -184,43 +210,55 @@ Verified in the installed Next: `resolveSitemap` in
 `node_modules/next/dist/build/webpack/loaders/metadata/resolve-route-data.js`
 serializes **only** `<urlset>`, and `generateSitemaps`
 (`.../loaders/next-metadata-route-loader.js`) emits `/sitemap/{id}.xml` files
-**without** generating an index. So §6.4's "per-type files + sitemap index" cannot
-be expressed through the `app/sitemap.ts` metadata convention at all.
+**without** an index. §6.4's "per-type files + sitemap index" therefore cannot be
+expressed through the `app/sitemap.ts` metadata convention.
 
-Recommended mechanism (Phase 5): keep `app/sitemap.ts` as the single enumerator of
-every URL, and add a `postbuild` splitter that reads `out/sitemap.xml`, buckets
-`<url>` entries by URL shape into `out/sitemap-{type}.xml`, and rewrites
-`out/sitemap.xml` as the `<sitemapindex>`. Precedent for a postbuild rewrite of the
-export exists (`scripts/set-html-lang.mjs`). Bucketing is deterministic from the
-path prefix, which the script can derive from `locales.json` — the same file
-`gen-content-lastmod.mjs` and the migration-worker manifest generator already read.
-`robots.ts` keeps pointing at `/sitemap.xml`, which becomes the index. No Terraform
-change is needed: `.xml` is already in `zone/locals.tf`'s `asset_extensions`, so the
-new files are served directly and skip the `.html`-append transform.
+Mechanism (Phase 7): keep `app/sitemap.ts` as the single enumerator of every URL,
+and add a `postbuild` splitter that reads `out/sitemap.xml`, buckets `<url>` entries
+by URL shape into `out/sitemap-{type}.xml`, and rewrites `out/sitemap.xml` as the
+`<sitemapindex>`. Precedent for a postbuild rewrite of the export exists
+(`scripts/set-html-lang.mjs`). Bucketing is deterministic from the path prefix,
+derived from `locales.json` — the same file `gen-content-lastmod.mjs` and the
+migration-worker manifest generator already read. `robots.ts` keeps pointing at
+`/sitemap.xml`, which becomes the index. No Terraform change: `.xml` is already in
+`zone/locals.tf`'s `asset_extensions`, so the new files are served directly and skip
+the `.html`-append transform.
 
 ### A13. `gen-content-lastmod.mjs` will not see KB files
 
 [gen-content-lastmod.mjs:30-33](../../apps/website/scripts/gen-content-lastmod.mjs#L30-L33)
-keys off **fixed filenames** (`book.yaml`, `chapter.yaml`, `article.yaml`, …). KB
-filenames are arbitrary (`csoport.yaml`), so no KB entity gets a `lastmod`. It also
-spawns one `git log` per matched file; adding 537 files means 537 extra
-subprocesses. Both fixed in Phase 5 (detect the type from the YAML's `type` field;
-replace the per-file `git log` with a single `git log --name-only` pass).
+keys off **fixed filenames** (`book.yaml`, `chapter.yaml`, …). KB filenames are
+arbitrary (`csoport.yaml`), so no KB entity would get a `lastmod`. It also spawns one
+`git log` per matched file; adding 537 files means 537 extra subprocesses. Both fixed
+in Phase 7.
 
-### A14. The quality-gate crawler will fail once the pages exist
+### A14. Crawler: it already visits each page once — the caps are the problem
 
-[crawl.mjs:62-63](../../tools/smoke-tests/scripts/crawl.mjs#L62-L63): `MAX_PAGES = 500`,
-`MAX_DEPTH = 5`, `CONCURRENCY = 5`.
+[crawl.mjs](../../tools/smoke-tests/scripts/crawl.mjs) already dedupes: an
+`enqueued` Set (L128) is checked before every push (L340), so **each internal page is
+fetched exactly once today**. A depth-first refactor would not change that property,
+so it is not needed. Two real constraints remain:
 
-- Today's export is **46 HTML pages / 30 sitemap URLs**. This work adds ~541
-  (84 + 191 + 190 + 72 entity pages, plus KB root, two type indexes and the
-  glossary) → **~590 pages**. The crawl caps out at 500 (`cappedAtMaxPages`), and
-  because the **orphan check compares `/sitemap.xml` against pages actually
-  visited**, every URL the truncated crawl never reached is reported as an orphan.
-- The deepest URL sits at crawl depth 5 from the `/hu` seed
-  (home → KB root → theorems index → theorem → proof → remark) — exactly at
-  `MAX_DEPTH`. Any additional hop in the navigation path drops it from the crawl.
-- Crawl wall-clock grows ~13× at `CONCURRENCY = 5`.
+- **`MAX_PAGES = 500`** (L62). Page counts under [D9](#d9--which-entities-get-a-page-settled):
+
+  | | entity pages | + KB root/indexes/glossary | + existing export | total |
+  |---|---|---|---|---|
+  | development | 537 | 541 | 46 | **587** |
+  | staging / production (today) | 389 | 393 | 46 | **439** |
+  | staging / production (all 5 chapters published) | 537 | 541 | 46 | **587** |
+
+  Staging fits under 500 *today* with ~12% headroom, and blows through it the moment
+  the five unpublished chapters ship. Because the orphan check compares
+  `/sitemap.xml` against pages actually **visited**, a truncated crawl reports
+  hundreds of false orphans and fails the gate. Raise the cap now, and assert
+  `cappedAtMaxPages === false` so a future overflow fails loudly instead of silently.
+- **`MAX_DEPTH = 5`** (L63). The deepest URL sits at depth 5 from the `/hu` seed
+  (home → KB root → theorems index → theorem → proof → remark), i.e. **exactly** at
+  the limit with zero margin. One extra hop anywhere in the nav path silently drops
+  every remark-under-proof page from the crawl. Raise to 7.
+
+Crawl wall-clock grows ~10× at `CONCURRENCY = 5`; measure before deciding whether to
+raise concurrency.
 
 ### A15. The editor silently deletes new sub-fields on claims and terms
 
@@ -230,457 +268,540 @@ In `youproof-org/editor`, `src/handlers.ts` rebuilds claim blocks and term entri
 - claim (`case 'claim'`, ~L658) writes only `name`, `content`, `formula`;
 - terms (~L533) write only `display`, `canonical`, `synonyms`.
 
-So a `slug` added to a claim block or a term entry is **destroyed the first time an
-author saves that file in the editor**. A top-level `slug` on a KB entity *does*
-survive (`saveFromModel` mutates the loaded YAML document, and `reorderYamlKeys`
-preserves unlisted keys) but would be appended at the end of the file unless added
-to `CANONICAL_ORDER`. Both need an editor change — see Phase 8.
+A `slug` on a claim block or term entry is therefore **destroyed the first time an
+author saves that file in the editor**. Since [D2](#d2--where-slugs-come-from-settled)
+now authors 367 such slugs, this is a **hard prerequisite**, not a follow-up — the
+editor fix (Phase 2) must land and be installed before Phase 3 writes any content.
+
+A top-level `slug` on a KB entity *does* survive (`saveFromModel` mutates the loaded
+YAML document, and `reorderYamlKeys` preserves unlisted keys) but would be appended
+at the end of the file unless added to `CANONICAL_ORDER`.
 
 ### A16. Localizable strings are hardcoded in the current shell
 
-`locales.json` already has a `labels` block, but `SiteHeader` hardcodes the nav
-labels `'Cikkek'`/`'Hírek'`
+`locales.json` has a `labels` block, but `SiteHeader` hardcodes the nav labels
+`'Cikkek'`/`'Hírek'`
 ([SiteHeader.tsx:22-25](../../apps/website/components/layout/SiteHeader.tsx#L22-L25))
 and `page.tsx` hardcodes `'Főoldal'`, `'Cikkek'`, `'Hírek'` in breadcrumbs. New KB
-labels must go in `locales.json.labels` per the i18n guiding principle ("hardcoding
-lives only in *data*"); the plan does not require fixing the existing offenders, but
-Phase 6 touches the same lines and it is cheap to do so.
+labels go in `locales.json.labels` per the i18n guiding principle ("hardcoding lives
+only in *data*"); Phase 8 touches the same lines, so fixing the existing offenders is
+nearly free.
 
 ### A17. Entity numbering (`"11.3."`) is chapter-scoped
 
 `buildChapterEmbedIndices` / `buildEntityChapterInfo` derive `"11.3."` from `embed`
-order inside the embedding chapter. A standalone page has no numbering context of
-its own. It can borrow the embedding chapter's index (available for all 537 nodes
-today per A2), but must degrade to label-only for a future un-embedded node.
+order inside the embedding chapter. Per A2b + D9 every KB page has an embedding
+chapter, so the index is always available to borrow for the page kicker.
 
 ### A18. Build-cost baseline (measured)
 
-`next build` on this machine: **16.66 s wall** for 52 static pages; content graph
-built in 302–533 ms per webpack context. Extrapolating ~590 pages linearly gives
-roughly 2–3 min, dominated by server-side KaTeX rendering. Not a blocker, but the
-CI build step's timing should be re-measured at the end of Phase 4 rather than
-assumed.
+`next build`: **16.66 s wall** for 52 static pages; content graph built in 302–533 ms
+per webpack context. Extrapolating to ~590 pages gives roughly 2–3 min, dominated by
+server-side KaTeX. Not a blocker; re-measure at the end of Phase 6.
 
 ### A19. The dev raw-graph cache has no shape version
 
 [graph-cache.ts](../../apps/website/lib/content/graph-cache.ts) writes
-`RawGraphData` to `.next/cache/content-graph.json` and `readRawCache` deserializes
-it with no version check. Phase 2 adds fields to `RawDefinitionEntry` &co., so a
-cache written before the change would rehydrate nodes missing `locale`/`slug` and
-produce confusing local-dev failures. Add a `version` constant to `RawGraphData` and
-have `readRawCache` return `null` on mismatch.
+`RawGraphData` to `.next/cache/content-graph.json` and `readRawCache` deserializes it
+with no version check. Phase 4 adds fields to `RawDefinitionEntry` &co., so a cache
+written before the change would rehydrate nodes missing `locale`/`slug`. Add a
+`version` constant to `RawGraphData` and return `null` on mismatch.
+
+### A20. `RefEntry.href` is a single mutated field — D3 now needs two
+
+`resolveRefHrefs` mutates `entry.href` **in place** on the live node object
+([graph.ts:807-810](../../apps/website/lib/content/graph.ts#L807-L810) documents this
+deliberately). Under [D3](#d3--where-internal-entity-cross-references-point-settled)
+the *same* `references` map is now rendered in two contexts — embedded inside a
+chapter page, and on the node's own KB page — and must produce **different hrefs** in
+each. One mutated field can no longer serve both.
+
+Solution (Phase 4/6): resolve **both** at build time — keep `href` as today's
+chapter-context value and add `kbHref` for the KB-page context — then, at the single
+boundary where a KB page hands its `refs` to `ContentBlocks`, pass a shallow-remapped
+RefMap (`{...entry, href: entry.kbHref ?? entry.href}`). That is one helper call at
+the page boundary instead of threading a new prop through `ContentBlocks` →
+`Narrative`/`Formula`/`List`/`Quote`/`Claim`/`Figure`/`Subsection`/`Details` →
+`InlineText`. Nested `subsection`/`details` blocks inherit the same `refs` prop, so
+they are covered for free.
 
 ---
 
-## B. Decisions needed before Phase 1
+## B. Decision log
 
-D1, D2 and D6 change what gets built. The rest can be defaulted to the
-recommendation and revisited.
+### D1 — Titles (settled)
 
-### D1 — Titles for the 468 untitled entities
+**Decision:** generate a proposed `title` for **every definition and theorem that
+lacks one** (22 + 156 = 178), derived from the `name` field *and the node's
+mathematical content*. Deliver as a review table; David reviews and overrides where
+needed; the finalized table is then applied to the content files.
 
-Per A5, `title` is absent on 156/191 theorems, 190/190 proofs, 72/72 remarks and
-22/84 definitions, and cannot be derived from `name`.
+Proofs and remarks are **not** given authored titles. They use derived display
+titles: `"Bizonyítás: {theorem-title}"` and `"Megjegyzés: {owner-title}"`. §7.3/§7.4
+already sanction a neutral label; an owner-derived one is strictly better.
 
-| option | consequence |
+Implementation note: the fallback chain still exists in code
+(`title ?? ownerDerived ?? "{index} {Label}" ?? "{Label}"`) so the build never
+depends on a title being present, but after Phase 3 no definition or theorem should
+reach the `"{index} {Label}"` rung.
+
+### D2 — Where slugs come from (settled)
+
+- **Entities (537):** `slug` backfilled from `name` by a one-off script. `name` is
+  already Hungarian kebab-case, URL-safe and globally unique (A6). This is the
+  precedent set by `content/scripts/migrate-locale-slug.mjs`, which seeded
+  chapter/section slugs the same way.
+- **Claims (150) and terms (217):** Hungarian slugs **authored**, produced the same
+  way as titles — derived from the English `name`/key plus mathematical context,
+  delivered as a review table, reviewed and overridden by David, then applied.
+
+The anchor is `#claim-{slug}` / `#term-{slug}`, with a `slug ?? name` fallback kept
+in code so an un-slugged node (e.g. one added between migrations) still renders a
+working anchor rather than crashing.
+
+**Prerequisite:** the editor fix (A15, Phase 2) must ship before Phase 3 writes these
+slugs, or the first editor save destroys them.
+
+### D3 — Where internal entity cross-references point (settled)
+
+Keyed on the **rendering context**, not on the target:
+
+| reference rendered on… | resolves to |
 |---|---|
-| **(a)** Author all missing titles in `content` | Correct for SEO, ~468 hand edits, the dominant cost of the ticket |
-| **(b)** Code fallback: derive a title from label + borrowed chapter index (`"11.3. Tétel"`) and, for owned nodes, the owner's title (`"Bizonyítás: {theorem-title}"`, `"Megjegyzés: {owner-title}"`) | Ships immediately; proof/remark pages read sensibly; definition/theorem pages without titles read as bare numbers, which is poor for search |
-| **(c)** Launch only the nodes that already have titles | Contradicts §1 ("every node gets its own indexable URL") |
+| a chapter page — including references inside an entity embedded on that page | the **in-page anchor** (today's `{embedding-chapter-url}#{anchor}`), unchanged |
+| a standalone KB page | the **canonical KB page** of the target (+ claim/term anchor) |
 
-**Recommendation: (b) + (a) together, staged.** Implement (b) so the build never
-depends on a title existing — §7.3/§7.4 already sanction a "neutral label" for
-proofs and remarks, and an owner-derived title is strictly better than a neutral
-one. Then run (a) as a content workstream scoped to **definitions and theorems
-only** (178 files), because those are the two types that get their own search
-intent. Use §6.4's per-type sitemap files to hold `bizonyitasok`/`megjegyzesek` out
-of Search Console submission until their pages are judged non-thin. Proof and remark
-titles stay derived; they are not independently searched.
+See A20 for the `href` / `kbHref` mechanism this requires.
 
-### D2 — Where slugs come from
+Edge case this creates: on staging/production a KB page may reference an entity that
+has **no** KB page (its embedding chapter is unpublished — 148 such entities today).
+`kbHref` must then fall back to the chapter anchor, which lands on the chapter's
+not-migrated/unavailable stub. That mirrors the existing standalone-reference policy
+(link to the stub, log a build warning) rather than emitting a dead link.
 
-§8 resolved that *every* node — including claims and terms — carries an
-author-supplied `slug`. Against the data (A4, A8) that means 537 + 150 + 217 = **904
-new authored fields**, of which the 367 on claims and terms would be silently
-deleted by the editor (A15).
+### D4 — Replace the base64 anchor ids with readable ones (open — recommendation stands)
 
-**Recommendation, split by node kind:**
+§3.3 specifies `#claim-{slug}` and `#term-{slug}`; today the ids are base64-of-JSON.
+**Recommendation: yes, in this release.** Production is indexed but pre-release,
+page-level URLs are unchanged, and nothing external links a base64 fragment. Deferring
+means churning the same call sites twice (`EmbeddedEntity`, `ClaimBlock`, `InlineText`,
+`resolveRefHrefs`, three id helpers). D2's authored Hungarian slugs are what make the
+readable form worth having, so the two land together.
 
-- **Entities (537):** add `slug`, backfilled from `name` by a one-off script. Zero
-  risk — `name` is already Hungarian kebab-case, URL-safe and globally unique (A6),
-  and this is exactly the precedent set by `content/scripts/migrate-locale-slug.mjs`,
-  which seeded chapter/section slugs from `name`.
-- **Claims and terms (367):** make `slug` an **optional override**. The anchor is
-  `#claim-{slug ?? name}` / `#term-{slug ?? name}`. No migration up front, English
-  fragments initially, and Hungarian anchors can be authored incrementally per file
-  once the editor preserves the field (Phase 8). A fragment is not an indexed URL,
-  so the SEO cost of an English fragment is negligible; the cost of 367 hand edits
-  gated behind an editor change is not.
-
-The implementation is a superset of §8's decision, so switching to fully authored
-slugs later needs no code change — only content edits.
-
-### D3 — Where internal entity cross-references point
-
-Today every `[ref]` to an entity resolves to `{embedding-chapter-url}#{id}` (A2).
-§3.5 says *"every internally-generated link (breadcrumbs, cross-references, nav)"*
-uses the canonical URL.
-
-| option | consequence |
-|---|---|
-| **(a)** keep the chapter anchor | Reading flow unchanged; KB pages get almost no inbound internal links, undercutting §1's indexability goal |
-| **(b)** always the canonical KB page | Literal §3.5; clicking "az 1. definícióban" mid-chapter now leaves the chapter |
-| **(c)** hybrid — same-page target stays an in-page anchor, cross-page target becomes the canonical KB page | Preserves in-chapter reading flow, gives KB pages ~1400 inbound internal links |
-
-**Recommendation: (c).** It is one branch in `resolveRefHrefs` (compare the
-referrer's own page URL against the target's embedding-chapter URL) and it is the
-only option that satisfies both §1 and the existing reading experience.
-
-### D4 — Replace the base64 anchor ids with readable ones
-
-§3.3 specifies `#claim-{slug}` and `#term-{slug}`; today the ids are
-base64-of-JSON (A2). Changing them changes existing anchors on chapter pages.
-
-**Recommendation: yes, in this release.** Production is indexed but the site is
-pre-release, page-level URLs are unchanged, and there are no external backlinks to
-a base64 fragment. Doing it later would mean a second churn of the same call sites
-(`EmbeddedEntity`, `ClaimBlock`, `InlineText`, `resolveRefHrefs`, three id helpers).
-
-### D5 — Glossary grouping for duplicate terms
+### D5 — Glossary grouping for duplicate terms (open)
 
 Per A8, 8 term keys and 9 `canonical` forms have multiple defining nodes.
-
 **Recommendation: one glossary entry per (defining node, term key)**, sorted by
-`canonical`, with the defining node's title shown next to each so duplicates are
-visibly disambiguated ("reprezentáns — *Egész számok halmaza*" /
-"reprezentáns — *Egész számok maradékosztálygyűrűi*"). Grouping by `canonical` and
-listing 3 "defined in" links would hide that these are genuinely different
-definitions in different contexts. Also fix the one missing `canonical`.
+`canonical`, each showing its defining node's title so duplicates are visibly
+disambiguated ("reprezentáns — *Egész számok halmaza*" / "reprezentáns — *Egész számok
+maradékosztálygyűrűi*"). Grouping by `canonical` under a single entry with three
+"defined in" links would hide that these are genuinely different definitions in
+different contexts.
 
-### D6 — The "Consequences" block
+### D6 — The "Consequences" block (settled)
 
-Per A10 there is no consequence relation in the content model, and it is not
-derivable from `references`.
+**Removed.** It has no backing data (A10) and would duplicate "Referenced by".
+§7.2 loses the bullet; nothing replaces it.
 
-**Recommendation: drop "Consequences" from §7.2 for this ticket** and ship
-"Referenced by" instead — grouped per claim anchor where the referrer targeted a
-specific claim, which is what §4's *"grouped/nested by individual claim"*
-requirement actually needs and which 460 claim references make substantial. A
-curated `consequences` relation is a separate content-model ticket. Do **not**
-relabel inverted references as "consequences" — that would be a false claim on the
-page.
-
-### D7 — Do chapter and section referrers appear in "Referenced by"?
+### D7 — Do chapter and section referrers appear in "Referenced by"? (open)
 
 332 references into the KB come from chapters and sections (A9).
+**Recommendation: yes**, rendered in the same flat "Referenced by" list as KB
+referrers (F2 removes the grouping), labelled by chapter/section title so the
+narrative origin is legible. It is the strongest internal-linking gain available.
 
-**Recommendation: yes, as a separate group** ("Hol használjuk" / narrative
-context), distinct from the KB-node group. It is the strongest internal-linking
-gain available and it directly serves §7's "embedding context" intent.
+### D8 — Container segments and labels (open — follows §3 directly)
 
-### D8 — Container segments and labels
+Add to `ContainerKey` / `locales.json.containers`: `knowledge-base → tudasbazis`,
+`definition → definiciok`, `theorem → tetelek`, `proof → bizonyitasok`,
+`remark → megjegyzesek`, `term → fogalmak`; and to `locales.json.labels`:
+`knowledgeBase`, `definitionsIndex`, `theoremsIndex`, `glossary`.
 
-**Recommendation** (no alternatives worth listing — these follow §3 directly):
-add to `ContainerKey` / `locales.json.containers`:
-`knowledge-base → tudasbazis`, `definition → definiciok`, `theorem → tetelek`,
-`proof → bizonyitasok`, `remark → megjegyzesek`, `term → fogalmak`; and to
-`locales.json.labels`: `knowledgeBase`, `definitionsIndex`, `theoremsIndex`,
-`glossary`.
+### D9 — Which entities get a page (settled)
 
----
+A KB entity gets a standalone page **iff it is embedded in a chapter section**, and:
 
-## C. Phase 1 — Content schema + backfill (`youproof-org/content`)
+- **development** — that is the only condition; the embedding chapter's published
+  state is ignored (matching how unpublished chapters already render normally
+  locally, `isDeployedEnv` in `page.tsx`).
+- **staging / production** — the embedding chapter must **also be published**.
 
-1. **`docs/content-model.md`**
-   - Add `slug` to the `definition`/`theorem`/`proof`/`remark` examples and to the
-     `locale` & `slug` field table; move these four types out of the "never
-     addressable" sentence.
-   - Document the optional `slug` on `claim` blocks and on `TermMap` entries, and
-     state the `slug ?? name` anchor fallback (D2).
-   - Extend the **slug uniqueness** table: `definition`/`theorem` unique across all
-     nodes of that type in the locale; `proof`/`remark` unique within their owning
-     parent; claim/term anchor keys unique within their owning node.
-   - State that `title` is required in practice for `definition`/`theorem` and
-     derived for `proof`/`remark` (D1), with the derivation rule spelled out.
-2. **`scripts/migrate-kb-slug.mjs`** — one-off backfill, modelled directly on the
-   existing `scripts/migrate-locale-slug.mjs`: line-based rewrite (not a YAML
-   re-dump, so comments and ordering survive), idempotent, dry-run by default,
-   `--write` to apply. Inserts `slug: <name>` immediately after the `locale:` line
-   for the 537 entity files. Run, review the diff, commit separately from any
-   hand-authored change.
-3. **Content fix:** add the missing `canonical` to term `proper-containment` in
-   `definitions/reszhalmaz.yaml`.
-4. **Title authoring (D1a)** — separate, reviewable commits, definitions first
-   (22 files), then theorems (156). Track as its own sub-task; it does not block
-   Phases 2–7, only the point at which `definiciok`/`tetelek` sitemaps are
-   submitted to Search Console.
+Today: 22 published chapters, 5 unpublished; **389 of 537 entities qualify on
+staging/production**, 148 do not (55 theorems, 54 proofs, 21 definitions, 18 remarks).
+All 217 terms and all 150 claims live on qualifying nodes, so the glossary is
+complete in every environment.
 
-*Exit criterion:* `migrate-kb-slug.mjs` is idempotent on a second run, and the
-services build (Phase 2 not yet started) still passes — the backfill is additive and
-unread until Phase 2.
+This rule must be applied at **one** place and consumed everywhere:
+`generateStaticParams`, both type indexes, the glossary, the sitemap, backlink
+rendering, and `kbHref` resolution (D3's edge case). An un-embedded entity gets no
+page and `resolveRefHrefs` keeps **throwing** on a reference to it — a reference to a
+node rendered nowhere is a content error, and that is the right place to catch it.
+
+Testing hazard this creates: the local page set differs from the deployed one, so a
+KB link that works locally can 404 on staging. Mitigated by a build-time
+"no dangling KB link" validator (Phase 4) plus the crawler (Phase 9).
 
 ---
 
-## D. Phase 2 — Loader, graph model, reverse index (`services`)
+## C. Phase 1 — Generated title and slug tables *(review artifact — no content written)*
 
-### D.1 Types — `lib/content/types.ts`
+Produces three reviewable tables under `docs/plans/`, in the **content** repo (they
+describe content, and David reviews them alongside the YAML they will become):
 
-- Add `locale: string` and `slug: string` to `DefinitionNode`, `TheoremNode`,
-  `ProofNode`, `RemarkNode`.
-- Add `slug?: string` to `ClaimBlock` and to `TermDefinition`.
-- Widen `RemarkNode.attachedTo` handling: keep it optional (A7 shows the
-  independent-remark branch is currently dead, but the model allows it) and give an
-  un-owned remark a top-level URL rather than crashing the URL builder.
-- New types for the KB page data: `KbBacklink` (`{ owner: RefOwnerRef; refKey: string; targetAnchor?: string }`),
-  `EmbeddingContext` (`{ book; chapter; section }`), `GlossaryEntry`.
+1. **`yp-162-generated-titles.md`** — 178 rows (22 definitions, 156 theorems), columns:
+   `type` · `namespace` · `name` · **proposed title** · one-line rationale (what in the
+   body the title was drawn from) · `override` (blank, for David).
+   Ordered by type then namespace so related nodes are reviewed together, and marked
+   with whether the node is currently published-embedded (A5's right-hand column) so
+   the 102 launch-gating rows can be reviewed first.
+2. **`yp-162-generated-claim-slugs.md`** — 150 rows: `parent type/name` ·
+   `claim name` (English) · `claim index` · claim text excerpt · **proposed Hungarian
+   slug** · `override`.
+3. **`yp-162-generated-term-slugs.md`** — 217 rows: `defining node` · `term key`
+   (English) · `canonical` (Hungarian) · **proposed Hungarian slug** · `override`.
+   Term slugs derive primarily from `canonical`, which is already the Hungarian base
+   form — so most rows should be a mechanical slugification of `canonical`, with the
+   8 duplicate keys and 9 duplicate canonicals (A8) explicitly flagged since they will
+   need disambiguating suffixes to stay unique within their parent.
 
-### D.2 Loader — `lib/content/loader.ts`
+Generation is scripted (a throwaway script under `content/scripts/`, not committed as
+a permanent tool) so the tables can be regenerated if content moves before review
+finishes. **No YAML is modified in this phase.**
 
-- Call the existing `readLocale(raw)` and `readSlug(raw, name)` in
-  `loadDefinition` / `loadTheorem` / `loadProof` / `loadRemark`. `readSlug` already
-  falls back to `name.toLowerCase()`, so Phase 2 is safe to land **before** the
-  Phase 1 backfill reaches `stable/*`.
-- Read the optional `slug` on claim blocks (`normalizeBlock` already kebab→camels
-  every key, so `slug` needs no special case) and on term entries (`toTermMap`
-  passes the object through, likewise).
-
-### D.3 Graph — `lib/content/graph.ts`
-
-- Thread `locale`/`slug` through `RawDefinitionEntry`/`RawTheoremEntry`/
-  `RawProofEntry`/`RawRemarkEntry` and the corresponding `buildGraphFromRaw`
-  constructions.
-- **`RawGraphData.version`** + a mismatch check in `graph-cache.ts` (A19).
-- **`buildEntityChapterInfo` → `buildEmbeddingContext`:** widen the value from
-  `{ chapterUrl, index? }` to `{ chapter: ChapterNode; section: SectionNode; index?: string }`.
-  `scanForUrl` currently only receives a URL string; give it the owning
-  `ChapterNode`/`SectionNode` so §7's three-level "Appears in" chain is available.
-  Every embed lives in a section body (A2), so `section` is always present today —
-  still model it as optional for chapter prologue/epilogue embeds.
-- **New `buildBacklinkIndex(graph)`:** iterate `refOwners(graph)` (which already
-  enumerates every reference owner and is documented as *the* seam for this) and
-  build `Map<nodeKey, KbBacklink[]>` for entity, claim and term targets. Key on the
-  existing `entityKey(namespace, name)` — the "permanent internal node ID" §4 asks
-  for is already in the graph; no new identifier is needed.
-- **New `validateKbSlugs(graph)`:** enforce the uniqueness table from Phase 1.1 and
-  fail the build on collision, matching how `validateReferences` and
-  `validateTermInsertions` behave today.
-- **`resolveRefHrefs`:** implement D3, and replace the `throw` for an un-embedded
-  entity with a fallback to the entity's own canonical URL (A2).
-- **New `buildGlossary(graph)`:** one entry per (defining node, term key) per D5,
-  carrying `canonical`, the defining node's URL + term anchor, and the inbound-count
-  from the backlink index.
-
-### D.4 Anchors — `lib/utils/{entity,claim,term}-id.ts`
-
-Per D4, replace the three base64 helpers with slug-based ones
-(`#claim-{slug ?? name}`, `#term-{slug ?? name}`, and for an entity embedded in a
-chapter `#{type}-{slug}`). Call sites: `EmbeddedEntity`, `ClaimBlock`, `InlineText`,
-`resolveRefHrefs`. Keep them as three small modules so the existing import graph is
-unchanged.
-
-*Exit criterion:* unit tests for `validateKbSlugs`, `buildBacklinkIndex` and the
-anchor helpers; `next build` green with no page-layer change yet.
+**Review gate:** David reviews the three tables and fills in overrides. Phase 2 may
+start in parallel (it touches only the editor repo), but Phase 3 must not.
 
 ---
 
-## E. Phase 3 — URL layer (`services`)
+## D. Phase 2 — Editor: preserve claim/term slugs (`youproof-org/editor`)
 
-1. **`lib/i18n/locales.json` + `config.ts`** — the new `ContainerKey`s and `LabelKey`s from D8.
-2. **`lib/i18n/url.ts`** — new `UrlKey`s:
-   `kb-root`, `definitions-index`, `theorems-index`, `glossary`, `definition`,
-   `theorem`, `proof`, and — because `req()` enforces an exact segment count and a
-   remark's parent chain is variable-length (definition / theorem / proof) —
-   **three** distinct remark keys: `definition-remark` (2 slugs), `theorem-remark`
-   (2 slugs), `proof-remark` (3 slugs). Splitting the key keeps `req()`'s exact
-   arity check intact rather than weakening it for one case.
-3. **`lib/content/urls.ts`** — `urlForDefinition`, `urlForTheorem`, `urlForProof`,
-   `urlForRemark` (dispatching on `attachedTo.type`), `urlForKbRoot`,
-   `urlForDefinitionsIndex`, `urlForTheoremsIndex`, `urlForGlossary`, plus
-   `anchorForClaim(node, claim)` / `anchorForTerm(node, termKey)` returning
-   `{canonicalUrl}#{anchor}`. Each reads `node.locale`, exactly like
-   `urlForChapter`/`urlForStandalone` today.
-
-*Exit criterion:* a unit test asserting each helper's output shape against the §3
-examples, and that no helper is reachable without going through `buildLocalizedUrl`
-(the i18n doc's §5 invariant test pattern).
-
----
-
-## F. Phase 4 — Routing and pages (`services`)
-
-### F.1 Routing — `app/[locale]/[[...path]]/page.tsx`
-
-- Extend `Resolved` with `kb-root`, `definitions-index`, `theorems-index`,
-  `glossary`, `definition`, `theorem`, `proof`, `remark`.
-- `resolvePath`: a `key0 === 'knowledge-base'` branch handling depths 1–6, and an
-  early rejection of `definition`/`theorem`/`proof`/`remark`/`term` appearing at
-  `path[0]` (mirroring the existing `if (key0 === 'chapter') return null`).
-- `generateStaticParams`: 537 entity paths + 4 index paths, all derived from node
-  `locale`/`slug`, never from on-disk names.
-- `generateMetadata`: map each new kind to its `UrlKey` + `slugPath`; `ogType`
-  `'article'` for entity pages, `'website'` for the indexes and glossary. Entity
-  nodes have no `thumbnail`, so `buildPageMeta` falls back to the generic OG image
-  with no change. Supply `excerpt` for the meta description from the node's first
-  narrative block, truncated — otherwise all 537 pages share
-  `locale.defaultDescription`, which is a duplicate-description finding waiting to
-  happen in the SEO check.
-
-### F.2 Components (new, under `components/kb/`)
-
-| component | covers |
-|---|---|
-| `KbNodeShell` | shared page frame: breadcrumb chain per §7, title/kicker, body, then the relationship sections |
-| `DefinitionPage` | §7.1 — body, defined terms, remarks, referenced-by, embedding context |
-| `TheoremPage` | §7.2 — statement with per-claim anchored sections, proofs, remarks, referenced-by grouped per claim (D6) |
-| `ProofPage` | §7.3 — body, remarks, "Uses" (this node's own outgoing references, which already exist as its `references` map), embedding context |
-| `RemarkPage` | §7.4 — ownership-dependent breadcrumb, body, claims, referenced-by |
-| `KbTypeIndex` | §7.6/§7.7 — list + client-side filter |
-| `GlossaryPage` | §7.5 — glossary entries + client-side filter |
-| `KbRoot` | §7.8 — orientation page with node counts |
-| `RelatedNodes` | shared renderer for the backlink groups (D7) |
-| `EmbeddingContext` | shared "Appears in: book → chapter → section" block |
-
-Reuse `ContentBlocks` / `EmbeddedEntity` / `InlineText` verbatim for bodies. Note
-`ContentBlocks` takes chapter-scoped `embedIndices`/`figureIndices`; a KB page can
-pass the ones borrowed from its embedding chapter (A17) or none.
-
-The two filter bars are the only client-side JS this ticket adds — one small
-`'use client'` input filtering an already-rendered list (217 glossary entries, 191
-theorems; no virtualization needed).
-
-### F.3 Titles
-
-Implement the D1(b) fallback chain in one helper so every consumer (H1, `<title>`,
-breadcrumb leaf, index row, backlink label) agrees:
-`title ?? ownerDerivedTitle ?? "{index} {Label}" ?? "{Label}"`.
-
-*Exit criterion:* `next build` emits ~590 pages; spot-check one page of each of the
-7 kinds; re-measure build wall time against the 16.66 s / 52-page baseline (A18).
-
----
-
-## G. Phase 5 — Sitemaps, robots, lastmod (`services`)
-
-1. **`app/sitemap.ts`** — add the KB URLs (entity pages, KB root, both indexes,
-   glossary), each with the same self-alternate + `lastmod` treatment as existing
-   entries. Landing pages stay excluded; claims and terms are **not** separately
-   sitemapped (§6.4).
-2. **`scripts/split-sitemap.mjs`** (new `postbuild` step, per A12) — buckets
-   `out/sitemap.xml` into `out/sitemap-{konyvek,cikkek,hirek,oldalak,definiciok,tetelek,bizonyitasok,megjegyzesek,fogalmak}.xml`
-   by URL shape derived from `locales.json`, then rewrites `out/sitemap.xml` as the
-   `<sitemapindex>`. Include a **per-type allowlist** so D1's staged rollout can hold
-   `bizonyitasok`/`megjegyzesek` out of the index without touching `app/sitemap.ts`.
-   Unit-test the splitter directly on a fixture XML.
-3. **`scripts/gen-content-lastmod.mjs`** (A13) — detect the type from the YAML's
-   `type` field instead of the filename, and replace the per-file `git log` with a
-   single `git log --name-only --format=%cI` pass over the content repo.
-4. **`app/robots.ts`** — unchanged; `/sitemap.xml` is now the index.
-5. **No Terraform change** — `.xml` is already an asset extension (A12).
-
-*Exit criterion:* `out/sitemap.xml` validates as a sitemap index; every
-`<loc>` in every child file returns 200 in the local export; the sum of child
-entries equals the pre-split entry count.
-
----
-
-## H. Phase 6 — Navigation, discovery, internal linking (`services`)
-
-1. `SiteHeader` — add a "Tudásbázis" nav link, sourced from
-   `locales.json.labels.knowledgeBase` (and, while touching these lines, move the
-   existing hardcoded `'Cikkek'`/`'Hírek'` to the same mechanism — A16).
-2. `RootHome` — a knowledge-base entry block, so the KB root is reachable from the
-   locale homepage and therefore from the crawler's seed.
-3. Breadcrumbs — implement §7's chains for all seven KB page kinds, using
-   `locales.json` labels rather than literals.
-4. Switch entity/claim/term cross-reference hrefs to the D3 rule in
-   `resolveRefHrefs`, and make `InlineText`'s entity/claim/term branches use the
-   resolved `href` uniformly (they already do; verify no branch still falls back to
-   a bare `'#'`).
-
----
-
-## I. Phase 7 — Quality gate and tests
-
-1. **`tools/smoke-tests/scripts/crawl.mjs`** (A14) — raise `MAX_PAGES` to ~800 and
-   `MAX_DEPTH` to 7, and re-check crawl wall-clock at `CONCURRENCY = 5`; raise
-   concurrency only if the gate's runtime becomes a problem. Verify the orphan check
-   is clean (it compares the sitemap against visited pages, so a truncated crawl
-   reports false orphans — this is the finding that must not survive to CI).
-2. Confirm the `checkSeo` path passes on each new page kind: canonical present and
-   self-referential, hreflang + `x-default`, title/description length within the
-   warning thresholds, `og:image` resolving to the generic fallback.
-3. New unit tests in `apps/website/test/`: URL-helper shapes (Phase 3), KB slug
-   uniqueness validator, backlink index, glossary grouping (including the duplicate
-   `reprezentáns` case), anchor helpers, sitemap splitter.
-4. Verify `<html lang>` on the new pages (`set-html-lang.mjs` is path-driven, so
-   `/hu/tudasbazis/...` is already covered — assert it rather than assume).
-
----
-
-## J. Phase 8 — Editor (`youproof-org/editor`)
-
-Required only once claim/term slugs are actually authored (D2), but the field is
-destroyed on save until then (A15), so it must land before any such content edit.
+Hard prerequisite for Phase 3 (A15).
 
 1. `src/handlers.ts` — preserve `slug` in the claim-block serializer (`case 'claim'`)
    and in the term-entry serializer.
 2. `CANONICAL_ORDER` — add `slug` after `name` for `definition`, `theorem`, `proof`,
    `remark`, so the backfilled entity slug keeps a stable position instead of being
-   appended.
-3. `src/content/model.ts` — extend the "`slug` is intentionally NOT modelled"
-   comment to say it is now *preserved* on KB entities, claims and terms.
+   appended at the end of the file.
+3. `src/content/model.ts` — update the "`slug` is intentionally NOT modelled" comment
+   to record that it is now *preserved* on KB entities, claims and terms.
+4. Round-trip test: load a KB entity with entity/claim/term slugs, save without
+   editing, assert the file is byte-identical.
+
+**Review gate.** Also: the updated editor must be installed
+(`pnpm editor:install` from the content repo) before Phase 3 begins.
 
 ---
 
-## K. Phase 9 — Documentation
+## E. Phase 3 — Content schema + backfill (`youproof-org/content`)
+
+1. **Apply the approved tables** from Phase 1 — titles into the 178 definition/theorem
+   files, claim slugs into the 150 claim blocks, term slugs into the 217 term entries.
+   Scripted from the finalized tables, line-based (not a YAML re-dump), idempotent,
+   dry-run by default. Commit titles and slugs **separately** so either can be reverted
+   alone.
+2. **`scripts/migrate-kb-slug.mjs`** — one-off entity slug backfill, modelled on the
+   existing `scripts/migrate-locale-slug.mjs`: line-based, idempotent, `--write` to
+   apply. Inserts `slug: <name>` immediately after the `locale:` line for the 537
+   entity files. Separate commit again.
+3. **`docs/content-model.md`**
+   - Add `slug` to the `definition`/`theorem`/`proof`/`remark` examples and to the
+     `locale` & `slug` field table; move those four types out of the "never
+     addressable" sentence.
+   - Document `slug` on `claim` blocks and on `TermMap` entries.
+   - **Correct the Terms System section: `terms` applies to definitions, theorems,
+     proofs *and* remarks** (A8), and add `terms` to the `proof` example.
+   - Extend the **slug uniqueness** table: `definition`/`theorem` unique across all
+     nodes of that type in the locale; `proof`/`remark` unique within their owning
+     parent; claim/term slugs unique within their owning node.
+   - State that `title` is required in practice for `definition`/`theorem`, and
+     derived for `proof`/`remark`, with the derivation rule spelled out.
+
+**Review gate.** Verify: re-running every script is a no-op; opening and saving a
+migrated file in the editor is byte-identical.
+
+---
+
+## F. Phase 4 — Loader, graph model, reverse index (`services`)
+
+### F.1 Types — `lib/content/types.ts`
+
+- Add `locale: string` and `slug: string` to `DefinitionNode`, `TheoremNode`,
+  `ProofNode`, `RemarkNode`.
+- Add `slug?: string` to `ClaimBlock` and to `TermDefinition`.
+- Add `kbHref?: string` to `RefEntry` (A20).
+- New: `KbBacklink { owner; ownerKind; ownerUrl; label; refKey; targetAnchor?: string }`
+  — `targetAnchor` is what F2's cross-highlighting keys on; `EmbeddingContext { book; chapter; section }`;
+  `GlossaryEntry`.
+
+### F.2 Loader — `lib/content/loader.ts`
+
+- Call the existing `readLocale(raw)` / `readSlug(raw, name)` in `loadDefinition`,
+  `loadTheorem`, `loadProof`, `loadRemark`. `readSlug` already falls back to
+  `name.toLowerCase()`, so this is safe to land before Phase 3 reaches `stable/*`.
+- Read the optional `slug` on claim blocks (`normalizeBlock` already kebab→camels
+  every key, so no special case) and on term entries (`toTermMap` passes the object
+  through, likewise).
+
+### F.3 Graph — `lib/content/graph.ts`
+
+- Thread `locale`/`slug` through `RawDefinitionEntry`/`RawTheoremEntry`/
+  `RawProofEntry`/`RawRemarkEntry` and their `buildGraphFromRaw` constructions.
+- **`RawGraphData.version`** + a mismatch check in `graph-cache.ts` (A19).
+- **`buildEntityChapterInfo` → `buildEmbeddingContext`:** widen the value from
+  `{ chapterUrl, index? }` to `{ chapter: ChapterNode; section: SectionNode; index?: string }`.
+  `scanForUrl` currently receives only a URL string; give it the owning
+  `ChapterNode`/`SectionNode`. Every embed lives in a section body (A2b), so `section`
+  is always present today — still model it as optional for a future chapter
+  prologue/epilogue embed.
+- **New `kbPageExists(entity, env)`** — the single implementation of D9, exported for
+  every consumer.
+- **New `buildBacklinkIndex(graph)`** — iterate `refOwners(graph)` (already documented
+  as *the* seam for this) and build `Map<nodeKey, KbBacklink[]>` for entity, claim and
+  term targets, recording `targetAnchor` for claim/term targets. Key on the existing
+  `entityKey(namespace, name)`: the "permanent internal node ID" §4 asks for is already
+  in the graph, so no new identifier is minted.
+- **New `validateKbSlugs(graph)`** — enforce the Phase 3.3 uniqueness table; fail the
+  build on collision, matching `validateReferences` / `validateTermInsertions`.
+- **New `validateKbLinks(graph)`** — the "no dangling KB link" check from D9: every
+  `kbHref` must point at a page that `kbPageExists` says will be generated in this
+  environment, or have fallen back to a chapter anchor.
+- **`resolveRefHrefs`** — set both `href` (chapter context, unchanged) and `kbHref`
+  (KB-page context) per D3, with the D3 unpublished-target fallback + warning. Keep the
+  existing `throw` for an un-embedded entity (D9).
+- **New `buildGlossary(graph)`** — one entry per (defining node, term key) per D5,
+  sourcing terms from **all four** entity types including proofs (A8), carrying
+  `canonical`, the defining node's URL + term anchor, and the inbound count from the
+  backlink index; filtered by `kbPageExists`.
+
+### F.4 Anchors — `lib/utils/{entity,claim,term}-id.ts`
+
+Per D4, replace the three base64 helpers with slug-based ones: `#claim-{slug ?? name}`,
+`#term-{slug ?? name}`, and `#{type}-{slug}` for an entity embedded in a chapter. Call
+sites: `EmbeddedEntity`, `ClaimBlock`, `InlineText`, `resolveRefHrefs`. Keep three
+small modules so the import graph is unchanged.
+
+**Review gate.** Unit tests for `validateKbSlugs`, `kbPageExists`,
+`buildBacklinkIndex`, `buildGlossary` and the anchor helpers; `next build` green with
+no page-layer change yet.
+
+---
+
+## G. Phase 5 — URL layer (`services`)
+
+1. **`lib/i18n/locales.json` + `config.ts`** — the new `ContainerKey`s and `LabelKey`s
+   from D8.
+2. **`lib/i18n/url.ts`** — new `UrlKey`s: `kb-root`, `definitions-index`,
+   `theorems-index`, `glossary`, `definition`, `theorem`, `proof`, and — because
+   `req()` enforces an exact segment count while a remark's parent chain is
+   variable-length — **three** remark keys: `definition-remark` (2 slugs),
+   `theorem-remark` (2 slugs), `proof-remark` (3 slugs). Splitting the key keeps
+   `req()`'s exactness rather than weakening it for one case.
+3. **`lib/content/urls.ts`** — `urlForDefinition`, `urlForTheorem`, `urlForProof`,
+   `urlForRemark` (dispatching on `attachedTo.type`), `urlForKbRoot`,
+   `urlForDefinitionsIndex`, `urlForTheoremsIndex`, `urlForGlossary`, plus
+   `anchorForClaim(node, claim)` / `anchorForTerm(node, termKey)` returning
+   `{canonicalUrl}#{anchor}`. Each reads `node.locale`, like `urlForChapter` today.
+4. **`kbRefs(refs)`** helper (A20) — shallow-remap a RefMap to KB-page hrefs.
+
+**Review gate.** Unit tests asserting each helper against the §3 examples, and that no
+KB URL is constructed outside `buildLocalizedUrl` (the i18n doc §5 invariant-test
+pattern).
+
+---
+
+## H. Phase 6 — Routing and pages (`services`)
+
+### H.1 Routing — `app/[locale]/[[...path]]/page.tsx`
+
+- Extend `Resolved` with `kb-root`, `definitions-index`, `theorems-index`, `glossary`,
+  `definition`, `theorem`, `proof`, `remark`.
+- `resolvePath`: a `key0 === 'knowledge-base'` branch handling depths 1–6, plus early
+  rejection of `definition`/`theorem`/`proof`/`remark`/`term` at `path[0]` (mirroring
+  the existing `if (key0 === 'chapter') return null`).
+- `generateStaticParams`: entity paths filtered by `kbPageExists` (D9) + the 4 index
+  paths, all derived from node `locale`/`slug`, never from on-disk names.
+- `generateMetadata`: map each new kind to its `UrlKey` + `slugPath`; `ogType`
+  `'article'` for entity pages, `'website'` for indexes and glossary. Entity nodes have
+  no `thumbnail`, so `buildPageMeta` falls back to the generic OG image unchanged.
+  **Supply a per-node `excerpt`** for the meta description (first narrative block,
+  truncated) — otherwise all 389+ pages share `locale.defaultDescription`, which the
+  SEO check will flag as duplicate descriptions.
+
+### H.2 Components (new, under `components/kb/`)
+
+| component | covers |
+|---|---|
+| `KbNodeShell` | shared frame: §7 breadcrumb chain, title/kicker, body, relationship sections |
+| `DefinitionPage` | §7.1 — body, defined terms, remarks, referenced-by, embedding context |
+| `TheoremPage` | §7.2 — statement with per-claim anchored sections, proofs, remarks, referenced-by (**no Consequences block** — D6) |
+| `ProofPage` | §7.3 — body, **defined terms** (A8), remarks, "Uses" (the node's own outgoing references), embedding context |
+| `RemarkPage` | §7.4 — ownership-dependent breadcrumb, body, claims, referenced-by |
+| `KbTypeIndex` | §7.6/§7.7 — list + client-side filter |
+| `GlossaryPage` | §7.5 — glossary entries + client-side filter |
+| `KbRoot` | §7.8 — orientation page with node counts |
+| `ReferencedBy` | flat backlink list + the F2 selection behaviour below |
+| `EmbeddingContext` | "Appears in: book → chapter → section" (non-optional per A2b/D9) |
+
+Bodies reuse `ContentBlocks` / `EmbeddedEntity` / `InlineText` verbatim, with `refs`
+passed through `kbRefs()` (A20). `ContentBlocks` takes chapter-scoped
+`embedIndices`/`figureIndices`; a KB page passes the ones borrowed from its embedding
+chapter (A17).
+
+### H.3 F2 — interactive claim/term ↔ backlink cross-highlighting
+
+Replaces §4's *"grouped/nested by individual claim (tree-structured HTML)"*. The
+"Referenced by" list is **flat** — not visually grouped by claim or term. Instead:
+
+- Every inline term span and every claim block in the body becomes **selectable**
+  (rendered as a `button`-semantics element so it is keyboard-reachable, with
+  `aria-pressed`), carrying its anchor id.
+- Every "Referenced by" row carries `data-target-anchor` when the reference targets a
+  specific claim or term (absent when it targets the node as a whole).
+- Selecting an inline term/claim highlights every backlink row whose
+  `data-target-anchor` matches. Selecting a backlink row highlights the corresponding
+  inline term/claim. Selection is bidirectional and mutually exclusive; clicking the
+  active element again, or pressing Escape, clears it.
+- Implemented as one small client component holding `selectedAnchor` and toggling CSS
+  classes on already-server-rendered markup — **no content is JS-gated**, so crawlers
+  and no-JS readers see the complete body and the complete backlink list.
+
+Two details I've assumed rather than been told; say the word if either is wrong:
+(a) backlinks that target the **node as a whole** are never highlighted, and when a
+selection is active they dim rather than disappear; (b) selection state is not
+reflected in the URL fragment (a `#claim-…` fragment still just scrolls, as it does
+from an external cross-reference). Both are cheap to change.
+
+### H.4 Titles
+
+Implement the D1 fallback chain in one helper so every consumer (H1, `<title>`,
+breadcrumb leaf, index row, backlink label) agrees:
+`title ?? ownerDerivedTitle ?? "{index} {Label}" ?? "{Label}"`.
+
+**Review gate.** `next build` emits ~587 pages locally / ~439 with `SITE_ENV=staging`;
+spot-check one page of each of the 7 kinds in both modes; re-measure build wall time
+against the 16.66 s / 52-page baseline (A18).
+
+---
+
+## I. Phase 7 — Sitemaps, robots, lastmod (`services`)
+
+1. **`app/sitemap.ts`** — add the KB URLs (entity pages filtered by `kbPageExists`, KB
+   root, both indexes, glossary), each with the same self-alternate + `lastmod`
+   treatment as existing entries. Landing pages stay excluded; claims and terms are
+   **not** separately sitemapped (§6.4).
+2. **`scripts/split-sitemap.mjs`** (new `postbuild` step, per A12) — buckets
+   `out/sitemap.xml` into
+   `out/sitemap-{konyvek,cikkek,hirek,oldalak,definiciok,tetelek,bizonyitasok,megjegyzesek,fogalmak}.xml`
+   by URL shape derived from `locales.json`, then rewrites `out/sitemap.xml` as the
+   `<sitemapindex>`. Include a per-type allowlist so a type can be held out of the
+   index without touching `app/sitemap.ts`. Unit-test the splitter on a fixture XML.
+3. **`scripts/gen-content-lastmod.mjs`** (A13) — detect the type from the YAML's `type`
+   field instead of the filename, and replace the per-file `git log` with a single
+   `git log --name-only --format=%cI` pass.
+4. **`app/robots.ts`** — unchanged; `/sitemap.xml` is now the index.
+5. **No Terraform change** — `.xml` is already an asset extension (A12).
+
+**Review gate.** `out/sitemap.xml` validates as a sitemap index; every `<loc>` in every
+child file exists in the export; child entries sum to the pre-split count.
+
+---
+
+## J. Phase 8 — Navigation, discovery, internal linking (`services`)
+
+1. `SiteHeader` — add a "Tudásbázis" nav link from `locales.json.labels.knowledgeBase`
+   (and move the existing hardcoded `'Cikkek'`/`'Hírek'` to the same mechanism — A16).
+2. `RootHome` — a knowledge-base entry block, so the KB root is reachable from the
+   locale homepage and therefore from the crawler's seed.
+3. Breadcrumbs — §7's chains for all seven KB page kinds, using `locales.json` labels
+   rather than literals.
+4. Verify D3 end-to-end: an entity reference inside a chapter page still resolves to
+   the in-page anchor, and the same reference on the node's KB page resolves to the
+   target's KB page.
+
+**Review gate.**
+
+---
+
+## K. Phase 9 — Quality gate and tests
+
+1. **`tools/smoke-tests/scripts/crawl.mjs`** (A14) — raise `MAX_PAGES` to 1000 and
+   `MAX_DEPTH` to 7; assert `cappedAtMaxPages === false` as a **fatal** finding so a
+   future overflow fails loudly instead of degrading into false orphan reports. No DFS
+   refactor: the `enqueued` Set already guarantees one visit per page. Measure crawl
+   wall-clock and raise `CONCURRENCY` only if the gate becomes slow.
+2. Confirm `checkSeo` passes on each new page kind: self-referential canonical,
+   hreflang + `x-default`, title/description within the warning thresholds, `og:image`
+   resolving.
+3. New unit tests in `apps/website/test/`: URL-helper shapes, KB slug uniqueness,
+   `kbPageExists` across both env modes, backlink index (including `targetAnchor`),
+   glossary grouping (including the duplicate `reprezentáns` case), anchor helpers,
+   sitemap splitter, `kbRefs` remapping.
+4. Assert `<html lang>` on the new pages (`set-html-lang.mjs` is path-driven so
+   `/hu/tudasbazis/...` is already covered — assert rather than assume).
+5. Run the crawler against a staging deploy and confirm zero orphans and zero broken
+   internal links, especially the D3/D9 fallback links into unpublished chapters.
+
+**Review gate.**
+
+---
+
+## L. Phase 10 — Documentation
 
 1. `docs/i18n-design.md` — supersede §4a and correct the field-summary table
-   (definition/theorem/proof/remark move to "Addressable"); extend §9's slug
-   uniqueness table with the KB rules.
+   (definition/theorem/proof/remark move to "Addressable"); extend §9's slug uniqueness
+   table with the KB rules.
 2. `docs/content-site-and-static-generation.md` — extend the [canonical URL
    rule](../content-site-and-static-generation.md#canonical-url-rule) with the KB
-   paths; note the page count going from ~46 to ~590.
-3. `content/docs/content-model.md` — per Phase 1.1.
-4. `docs/plans/yp-162-knowledge-graph-urls-plan.md` — mark §6 (redirects) and §5
-   (JSON-LD) as still out of scope, resolve the two open questions in §8 that are
-   redirect-related only when §6 is picked up, and link to this file.
+   paths; document the D9 published-gate and the page count going from ~46 to ~439
+   (staging/production) / ~587 (development).
+3. `content/docs/content-model.md` — per Phase 3.3 (already done in that phase;
+   re-verify against the shipped behaviour).
+4. `docs/plans/yp-162-knowledge-graph-urls-plan.md` — record the design changes this
+   review produced: §3.3 term/claim slugs are authored Hungarian; §4's per-claim
+   grouping is replaced by F2's interactive highlighting; §7.2 loses "Consequences";
+   §7.3 gains "Defined terms"; a new "which entities get a page" rule (D9). Keep §5
+   (JSON-LD) and §6 (redirects) marked out of scope.
+
+**Review gate.**
 
 ---
 
-## L. Out of scope (restated + additions)
+## M. Out of scope
 
 Already excluded by the design plan:
 
 - **JSON-LD / structured data** (§5) — separate backlog item.
 - **Slug-rename redirect infrastructure** (§6) — no `terraform/redirects/` root, no
   bulk redirect lists, no ruleset rule. The two unresolved §8 questions (Cloudflare
-  list entry limits; whether the list must exist before the zone-root apply) belong
-  to that ticket, not this one.
-- Namespace-mirrored URLs, dual-serving, worker-based redirects, standalone
-  claim/term pages (§9).
+  list entry limits; whether the list must exist before the zone-root apply) belong to
+  that ticket.
+- Namespace-mirrored URLs, dual-serving, worker-based redirects, standalone claim/term
+  pages (§9).
 
 Added by this analysis:
 
-- **A curated `consequences` relation** in the content model (D6) — needs its own
-  content-model ticket before §7.2's "Consequences" block can exist.
+- **A curated `consequences` relation** in the content model — needed before any
+  genuine "Consequences" block could exist; not the same thing as "Referenced by" (D6).
+- **Authored titles for proofs and remarks** — derived, per D1.
 - **Namespace pages.** Namespaces stay non-addressable path strings; three
   `namespace.yaml` files carry an unused `children` list, which this ticket does not
   read.
-- **Localizing the existing hardcoded Hungarian UI strings** beyond the lines
-  Phase 6 already touches.
-- **Multi-locale KB content.** Everything is built per-node-`locale` so a second
-  locale needs no code change, but no `en` KB content is produced.
+- **Editor UI for KB slugs.** Phase 2 makes the editor *preserve* them; it does not add
+  a field to edit them.
+- **Multi-locale KB content.** Everything is built per-node-`locale` so a second locale
+  needs no code change, but no `en` KB content is produced.
 
 ---
 
-## M. Risks
+## N. Risks
 
 | # | risk | mitigation |
 |---|---|---|
-| R1 | **468 missing titles** (A5) make definition/theorem pages unindexable-in-practice | D1: code fallback ships immediately; per-type sitemap staging holds untitled types back; 178-file authoring workstream tracked separately |
-| R2 | **Thin content** — 256 nodes with zero inbound references, 190 proof pages with a near-empty "Referenced by" (A9) | Proof pages lean on the "Uses" block (§7.3) and embedding context, both of which have data for every node; hold `bizonyitasok`/`megjegyzesek` out of the sitemap index until reviewed |
-| R3 | **Crawler cap** (A14) silently degrades the production promotion gate into false orphan findings | Phase 7 raises the caps *before* Phase 4's pages reach staging; assert `cappedAtMaxPages === false` in the gate |
-| R4 | **Editor data loss** on claim/term `slug` (A15) | D2 defers those slugs; Phase 8 lands before any are authored |
-| R5 | **Stale dev graph cache** after the Phase 2 type change (A19) | `RawGraphData.version` + invalidate on mismatch |
-| R6 | Build time growth (A18) — 13× the page count | Re-measure at Phase 4 exit; the graph itself is <600 ms, so growth is KaTeX-bound and parallelizable by Next |
-| R7 | `resolveRefHrefs`'s existing `throw` on an un-embedded entity (A2) turns a legitimate KB-only node into a hard build failure | Phase 2 replaces it with a canonical-URL fallback |
+| R1 | **Title generation quality** — 178 machine-proposed Hungarian mathematical titles, of which 102 gate the launch | Phase 1 is a review artifact with an explicit override column and a rationale per row; nothing is written until approved |
+| R2 | **Thin content** — 256 nodes with zero inbound references; most proof/remark pages have an empty "Referenced by" | Accepted for now (David). Proof pages lean on "Uses", "Defined terms" and embedding context, all of which have data for every node |
+| R3 | **Crawler caps** (A14) degrade the production promotion gate into false orphan findings | Phase 9 raises the caps and makes `cappedAtMaxPages` fatal; staging is at 439/500 today and would overflow the moment the 5 unpublished chapters ship |
+| R4 | **Editor data loss** on claim/term `slug` (A15) — now on the critical path, since D2 authors 367 of them | Phase 2 lands **and is installed** before Phase 3 writes any slug; round-trip test proves it |
+| R5 | **Dev/deployed page-set divergence** (D9) — a KB link that works locally 404s on staging | `validateKbLinks` at build time + the crawler on the live staging site |
+| R6 | **Two-href complexity** (A20) — a reference rendered in the wrong context links to the wrong place, silently | Resolve both at build time, remap at one page boundary (`kbRefs`), unit-test the remap, verify end-to-end in Phase 8.4 |
+| R7 | **Stale dev graph cache** after Phase 4's type change (A19) | `RawGraphData.version` + invalidate on mismatch |
+| R8 | Build time growth (A18) — ~11× the page count | Re-measure at Phase 6's gate; the graph itself is <600 ms, so growth is KaTeX-bound and parallelized by Next |
