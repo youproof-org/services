@@ -501,8 +501,15 @@ Hard prerequisite for Phase 3 (A15).
    alone.
 2. **`scripts/migrate-kb-slug.mjs`** — one-off entity slug backfill, modelled on the
    existing `scripts/migrate-locale-slug.mjs`: line-based, idempotent, `--write` to
-   apply. Inserts `slug: <name>` immediately after the `locale:` line for the 537
-   entity files. Separate commit again.
+   apply. Inserts `slug: <name>` immediately after the `name:` line — i.e. *before*
+   `locale:` — for the 537 entity files. Separate commit again.
+
+   > Position settled in Phase 2: the editor's `CANONICAL_ORDER` now lists `slug`
+   > right after `name` for all four knowledge-base types, matching where it already
+   > sits for `chapter`/`section`. Inserting it after `locale:` instead would make
+   > the first editor save move every line. The same rule applies to the sub-field
+   > slugs: `slug` is the first key of a `terms:` entry (the map key is the name)
+   > and comes right after `name` in a `claim` block.
 3. **`docs/content-model.md`**
    - Add `slug` to the `definition`/`theorem`/`proof`/`remark` examples and to the
      `locale` & `slug` field table; move those four types out of the "never
