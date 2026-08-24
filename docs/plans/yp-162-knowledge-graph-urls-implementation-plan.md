@@ -2,20 +2,101 @@
 
 **Companion to:** [`yp-162-knowledge-graph-urls-plan.md`](yp-162-knowledge-graph-urls-plan.md) (the design; §-references below point into it)
 **Repos touched:** `youproof-org/services`, `youproof-org/content`, `youproof-org/editor`
-**Status:** Revision 2 — David's review comments of 2026-08-24 folded in. Decisions D1, D2, D3, D6 and the R7 page-existence rule are now **settled**; D4, D5, D7, D8 remain open with recommendations.
+**Status:** Revision 3 — **phases 1–4 are shipped**; every decision below is now
+settled. The remaining phases are renumbered: the URL layer, planned as its own
+phase, had to be absorbed into phase 4 (see §Shipped), so what follows counts one
+lower than in revision 2.
+
+**Next up: phase 5, routing and page components — gated on the page-layout design
+being settled first.** §7 of the design plan sketches what each page contains, but
+the layout is deliberately still open; phase 5 should not start until it is
+decided, because the component structure follows from it.
 
 > ### Working agreement
 >
-> **Every phase ends with a review gate.** At the end of each phase: commit and
-> push to the feature branch in every affected repo, post a short summary of what
-> changed and how it was verified, then **stop and wait for explicit approval**
-> before starting the next phase. Do not begin the next phase — not even reading
-> files or investigating — until approved. Phases 1 and 2 additionally produce a
-> **review artifact** (the generated title and slug tables) that must be approved
-> on its content, not just on its diff, before any content file is written.
+> **Nothing is committed or pushed without approval.** Do the work, post a short
+> summary of what changed and how it was verified, and wait for an explicit go
+> before running `git commit`/`git push`.
+>
+> **Every phase also ends with a review gate.** After a phase is committed, stop and
+> wait for separate approval before starting the next one — do not begin it, not
+> even reading files. Where a phase produces a **review artifact** (as phase 1's
+> generated title and slug tables did), the artifact is what gets reviewed; the
+> derived content files are not written until it is approved.
 
-§A is what the code and content actually look like today, measured against the
-design. §B is the decision log. §C onward is the phased build.
+§A is what the code and content looked like when this plan was written, measured
+against the design — kept as the record of why each choice was made, not as a
+description of the code today. §B is the decision log. §Shipped records what
+actually landed in phases 1–4 and where it diverged from the plan. §C onward is
+the remaining build.
+
+---
+
+## Shipped — phases 1–4
+
+| phase | what landed | commits |
+|---|---|---|
+| 1 | Generated title + slug review tables (178 / 150 / 217 rows) | `content cef7759`, reviewed in `d56fcbb` |
+| 2 | Editor preserves claim/term slugs; stops deleting a proof's `terms`; round-trip test harness | `editor 960e7cf`, `1da3504`, `0058c19` |
+| 3 | 537 entity slugs, 178 titles, 367 claim/term slugs, content-model doc | `content 72fcfab`, `883267b`, `a9459b9`, `e01e56d`, `21f61d0` |
+| 4 | KB node URLs, localized anchors, graph derivation, 20 tests, version 2.2.0 | `services ccd5322`, `caace9c`, `51469c5` |
+
+Plus two follow-ups: `content 4167543` (two mistyped reference targets) and
+`content 8a9a364` (renamed the generated tables off the ticket number).
+
+### Divergences from the plan, and why
+
+- **The URL layer was absorbed into phase 4.** Phase 4's `resolveRefHrefs` and
+  `buildGlossary` cannot compile without `urlForDefinition` &c., so the 4/5 split
+  in revision 2 was not real. Everything the old phase 5 listed is done.
+- **The anchor rework moved from the page phase into phase 4.** Once the graph
+  emits `#allitas-{slug}` hrefs, leaving the components rendering base64 ids
+  breaks every in-chapter anchor, so both halves had to land together.
+- **Anchor prefixes are localized** — this was not in the plan at all. A fragment
+  is URL text the reader sees and copies, so `claim-`/`term-`/`{type}-` became a
+  per-locale `anchors` dictionary in `locales.json`: `allitas-`, `fogalom-`,
+  `definicio-`, `tetel-`, `bizonyitas-`, `megjegyzes-`. Singular, and therefore
+  distinct from the plural container segments. The helpers take the **owning node**
+  rather than a locale string, so the locale cannot drift from the node the anchor
+  lives on; a shared `AnchorParent` type then let the compiler find all seven block
+  components that thread it through.
+- **Phase 4 shipped as 3 commits, not 5.** `graph.ts` changed pervasively;
+  splitting it further would have meant hand-reconstructing intermediate states of
+  a 500-line diff, i.e. committing code that was never built. Each of the three was
+  verified to typecheck in isolation.
+- **`slug` sits after `name`, not after `locale`** (already folded into §E) —
+  otherwise the first save in the editor moves 537 lines.
+- **A latent bug fixed on the way:** `display-template`'s `buildContext` took the
+  embedding map as an *optional* argument, so calling it without one compiled fine
+  and silently dropped every `{target.index}`. It now reads `graph.embedding`.
+- **A content bug found and fixed:** two proofs referenced a theorem as
+  `type: definition`. Harmless in output — the graph resolves by namespace+name and
+  ignores the declared type — but it was also what made an earlier
+  inbound-reference count off by one.
+- **Generated artifacts must not be named after the ticket.** Naming the review
+  tables `yp-162-generated-*.md` forced three scripts to embed the ticket number in
+  a hardcoded path. Renamed to `generated-kb-*.md`; the rule is now: name a
+  generated file after its contents.
+
+### Measured on the real content (not fixtures)
+
+- 537 KB nodes, all embedded exactly once, all inside a section.
+- **389 nodes get a page under `SITE_ENV=staging`** (63 definitions, 136 theorems,
+  136 proofs, 54 remarks); 537 locally. Matches the A9/D9 prediction exactly.
+- 217 glossary rows; 6090 backlinks — the latter independently equal to a direct
+  count of KB-directed references in the content.
+- **11 085 internal fragment hrefs in the built output, 0 broken**, and no English
+  anchor prefix anywhere.
+- Build unchanged at ~12 s / 46 pages; 59/59 tests pass.
+
+### Closed without action
+
+- **486 references carry no `display`** and render as a visible `ref-error`. They
+  sit entirely in the five *unpublished* chapters: a local build shows 5 affected
+  pages, a `SITE_ENV=staging` build shows **0**, because unpublished chapters render
+  as stubs on deployed environments. They resolve as those chapters are finalized.
+- **Three pre-existing ticket references** in source (`quality-gate.mjs`,
+  `report.mjs`, `notify-services.yml`) stay, by decision.
 
 ---
 
@@ -379,38 +460,35 @@ has **no** KB page (its embedding chapter is unpublished — 148 such entities t
 not-migrated/unavailable stub. That mirrors the existing standalone-reference policy
 (link to the stub, log a build warning) rather than emitting a dead link.
 
-### D4 — Replace the base64 anchor ids with readable ones (open — recommendation stands)
+### D4 — Replace the base64 anchor ids with readable ones (settled — shipped in phase 4)
 
 §3.3 specifies `#claim-{slug}` and `#term-{slug}`; today the ids are base64-of-JSON.
-**Recommendation: yes, in this release.** Production is indexed but pre-release,
-page-level URLs are unchanged, and nothing external links a base64 fragment. Deferring
-means churning the same call sites twice (`EmbeddedEntity`, `ClaimBlock`, `InlineText`,
-`resolveRefHrefs`, three id helpers). D2's authored Hungarian slugs are what make the
-readable form worth having, so the two land together.
+Done, and extended: the *prefix* is localized too, which the plan had not
+considered. See §Shipped. The three base64 helpers are deleted.
 
-### D5 — Glossary grouping for duplicate terms (open)
+### D5 — Glossary grouping for duplicate terms (settled — shipped in phase 4)
 
 Per A8, 8 term keys and 9 `canonical` forms have multiple defining nodes.
-**Recommendation: one glossary entry per (defining node, term key)**, sorted by
-`canonical`, each showing its defining node's title so duplicates are visibly
-disambiguated ("reprezentáns — *Egész számok halmaza*" / "reprezentáns — *Egész számok
-maradékosztálygyűrűi*"). Grouping by `canonical` under a single entry with three
-"defined in" links would hide that these are genuinely different definitions in
-different contexts.
+Shipped as recommended: **one entry per (defining node, term key)**, sorted by
+`canonical` then owner title, each carrying its defining node's title so duplicates
+are visibly disambiguated. 217 rows. Grouping by `canonical` would have hidden that
+these are genuinely different definitions in different contexts.
 
 ### D6 — The "Consequences" block (settled)
 
 **Removed.** It has no backing data (A10) and would duplicate "Referenced by".
 §7.2 loses the bullet; nothing replaces it.
 
-### D7 — Do chapter and section referrers appear in "Referenced by"? (open)
+### D7 — Do chapter and section referrers appear in "Referenced by"? (data settled; rendering open)
 
 332 references into the KB come from chapters and sections (A9).
-**Recommendation: yes**, rendered in the same flat "Referenced by" list as KB
-referrers (F2 removes the grouping), labelled by chapter/section title so the
-narrative origin is legible. It is the strongest internal-linking gain available.
+The backlink index already carries them — a chapter or section citation is indexed
+exactly like a KB one, with `ownerKind` distinguishing it (370 chapter-owned and
+1826 section-owned citations). **What remains open is presentational:** whether they
+share the flat "Referenced by" list with KB referrers or get their own grouping.
+That belongs to the page-layout decision gating phase 5.
 
-### D8 — Container segments and labels (open — follows §3 directly)
+### D8 — Container segments and labels (settled — shipped in phase 4)
 
 Add to `ContainerKey` / `locales.json.containers`: `knowledge-base → tudasbazis`,
 `definition → definiciok`, `theorem → tetelek`, `proof → bizonyitasok`,
@@ -443,7 +521,7 @@ KB link that works locally can 404 on staging. Mitigated by a build-time
 
 ---
 
-## C. Phase 1 — Generated title and slug tables *(review artifact — no content written)*
+## C. Phase 1 — Generated title and slug tables *(DONE — see §Shipped)*
 
 Produces three reviewable tables under `docs/plans/`, in the **content** repo (they
 describe content, and David reviews them alongside the YAML they will become):
@@ -473,7 +551,7 @@ start in parallel (it touches only the editor repo), but Phase 3 must not.
 
 ---
 
-## D. Phase 2 — Editor: preserve claim/term slugs (`youproof-org/editor`)
+## D. Phase 2 — Editor: preserve claim/term slugs (`youproof-org/editor`) *(DONE — see §Shipped)*
 
 Hard prerequisite for Phase 3 (A15).
 
@@ -499,7 +577,7 @@ VS Code does not hot-reload installed extensions.
 
 ---
 
-## E. Phase 3 — Content schema + backfill (`youproof-org/content`)
+## E. Phase 3 — Content schema + backfill (`youproof-org/content`) *(DONE — see §Shipped)*
 
 1. **Apply the approved tables** from Phase 1 — titles into the 178 definition/theorem
    files, claim slugs into the 150 claim blocks, term slugs into the 217 term entries.
@@ -535,7 +613,7 @@ migrated file in the editor is byte-identical.
 
 ---
 
-## F. Phase 4 — Loader, graph model, reverse index (`services`)
+## F. Phase 4 — Loader, graph model, reverse index, URL layer (`services`) *(DONE — see §Shipped)*
 
 ### F.1 Types — `lib/content/types.ts`
 
@@ -587,7 +665,7 @@ migrated file in the editor is byte-identical.
   `canonical`, the defining node's URL + term anchor, and the inbound count from the
   backlink index; filtered by `kbPageExists`.
 
-### F.4 Anchors — `lib/utils/{entity,claim,term}-id.ts`
+### F.4 Anchors — `lib/utils/{entity,claim,term}-id.ts` *(deleted; replaced by helpers in `lib/content/urls.ts`)*
 
 Per D4, replace the three base64 helpers with slug-based ones: `#claim-{slug ?? name}`,
 `#term-{slug ?? name}`, and `#{type}-{slug}` for an entity embedded in a chapter. Call
@@ -600,7 +678,16 @@ no page-layer change yet.
 
 ---
 
-## G. Phase 5 — URL layer (`services`)
+## G. ~~Phase 5 — URL layer~~ — absorbed into phase 4 *(DONE)*
+
+Kept as a heading only so the numbering change is visible. Everything below shipped
+with phase 4: the KB `ContainerKey`s and labels, the ten KB `UrlKey`s (three of them
+for a remark, so the segment-count check stays exact), the node→URL helpers, and
+`kbRefs`. The `anchors` dictionary and the three anchor helpers were added on top —
+see §Shipped.
+
+<details><summary>Original phase-5 text</summary>
+
 
 1. **`lib/i18n/locales.json` + `config.ts`** — the new `ContainerKey`s and `LabelKey`s
    from D8.
@@ -623,7 +710,21 @@ pattern).
 
 ---
 
-## H. Phase 6 — Routing and pages (`services`)
+</details>
+
+---
+
+## H. Phase 5 — Routing and pages (`services`) — **NEXT, gated on the layout design**
+
+> The page **layout** is not settled. §7 of the design plan lists what each page
+> contains, and §H.3 below fixes the one interaction that is decided (claim/term ↔
+> backlink cross-highlighting), but how any of it is arranged is open — and the
+> component structure follows from it. Settle the layout before starting.
+>
+> Two things to decide alongside it: whether chapter/section referrers share the
+> flat "Referenced by" list or get their own grouping (D7), and the two F2 details
+> flagged in §H.3.
+
 
 ### H.1 Routing — `app/[locale]/[[...path]]/page.tsx`
 
@@ -697,7 +798,7 @@ against the 16.66 s / 52-page baseline (A18).
 
 ---
 
-## I. Phase 7 — Sitemaps, robots, lastmod (`services`)
+## I. Phase 6 — Sitemaps, robots, lastmod (`services`)
 
 1. **`app/sitemap.ts`** — add the KB URLs (entity pages filtered by `kbPageExists`, KB
    root, both indexes, glossary), each with the same self-alternate + `lastmod`
@@ -720,7 +821,7 @@ child file exists in the export; child entries sum to the pre-split count.
 
 ---
 
-## J. Phase 8 — Navigation, discovery, internal linking (`services`)
+## J. Phase 7 — Navigation, discovery, internal linking (`services`)
 
 1. `SiteHeader` — add a "Tudásbázis" nav link from `locales.json.labels.knowledgeBase`
    (and move the existing hardcoded `'Cikkek'`/`'Hírek'` to the same mechanism — A16).
@@ -736,7 +837,7 @@ child file exists in the export; child entries sum to the pre-split count.
 
 ---
 
-## K. Phase 9 — Quality gate and tests
+## K. Phase 8 — Quality gate and tests
 
 1. **`tools/smoke-tests/scripts/crawl.mjs`** (A14) — raise `MAX_PAGES` to 1000 and
    `MAX_DEPTH` to 7; assert `cappedAtMaxPages === false` as a **fatal** finding so a
@@ -759,7 +860,7 @@ child file exists in the export; child entries sum to the pre-split count.
 
 ---
 
-## L. Phase 10 — Documentation
+## L. Phase 9 — Documentation
 
 1. `docs/i18n-design.md` — supersede §4a and correct the field-summary table
    (definition/theorem/proof/remark move to "Addressable"); extend §9's slug uniqueness
@@ -802,8 +903,16 @@ Added by this analysis:
   read.
 - **Editor UI for KB slugs.** Phase 2 makes the editor *preserve* them; it does not add
   a field to edit them.
-- **Multi-locale KB content.** Everything is built per-node-`locale` so a second locale
-  needs no code change, but no `en` KB content is produced.
+- **Multi-locale KB content.** Everything is built per-node-`locale` — including the
+  anchor prefixes — so a second locale needs no code change, only a `locales.json`
+  entry. No `en` KB content is produced.
+- **The 486 references with no `display`.** They render a visible `ref-error`, but
+  only in the five unpublished chapters, which are stubs on any deployed
+  environment. They resolve as those chapters are finalized; see §Shipped.
+- **Three pre-existing ticket references in source** (`quality-gate.mjs`,
+  `report.mjs`, `notify-services.yml`) — left in place by decision. Note two of them
+  cite a ticket-named plan document, so removing them properly means renaming that
+  document too.
 
 ---
 
@@ -811,11 +920,11 @@ Added by this analysis:
 
 | # | risk | mitigation |
 |---|---|---|
-| R1 | **Title generation quality** — 178 machine-proposed Hungarian mathematical titles, of which 102 gate the launch | Phase 1 is a review artifact with an explicit override column and a rationale per row; nothing is written until approved |
-| R2 | **Thin content** — 256 nodes with zero inbound references; most proof/remark pages have an empty "Referenced by" | Accepted for now (David). Proof pages lean on "Uses", "Defined terms" and embedding context, all of which have data for every node |
-| R3 | **Crawler caps** (A14) degrade the production promotion gate into false orphan findings | Phase 9 raises the caps and makes `cappedAtMaxPages` fatal; staging is at 439/500 today and would overflow the moment the 5 unpublished chapters ship |
-| R4 | **Editor data loss** on claim/term `slug` (A15) — now on the critical path, since D2 authors 367 of them | Phase 2 lands **and is installed** before Phase 3 writes any slug; round-trip test proves it |
-| R5 | **Dev/deployed page-set divergence** (D9) — a KB link that works locally 404s on staging | `validateKbLinks` at build time + the crawler on the live staging site |
-| R6 | **Two-href complexity** (A20) — a reference rendered in the wrong context links to the wrong place, silently | Resolve both at build time, remap at one page boundary (`kbRefs`), unit-test the remap, verify end-to-end in Phase 8.4 |
-| R7 | **Stale dev graph cache** after Phase 4's type change (A19) | `RawGraphData.version` + invalidate on mismatch |
-| R8 | Build time growth (A18) — ~11× the page count | Re-measure at Phase 6's gate; the graph itself is <600 ms, so growth is KaTeX-bound and parallelized by Next |
+| ~~R1~~ | **Title generation quality** — *discharged.* 178 proposed, 88 overridden on review, all applied from the reviewed table | — |
+| R2 | **Thin content** — 257 nodes with zero inbound references; most proof/remark pages have an empty "Referenced by" | Accepted for now (David). Proof pages lean on "Uses", "Defined terms" and embedding context, all of which have data for every node. (257, not 256: the earlier count double-counted one theorem via a mistyped reference, since fixed) |
+| R3 | **Crawler caps** (A14) degrade the production promotion gate into false orphan findings | Phase 8 raises the caps and makes `cappedAtMaxPages` fatal. Now measured rather than estimated: 389 KB pages + 46 existing = **435 of the 500 cap**, overflowing as soon as the 5 unpublished chapters ship |
+| ~~R4~~ | **Editor data loss** on claim/term `slug` — *discharged.* Fixed and installed before phase 3, and verified on the real tree: on a sample the old writer destroyed all 27 claim and 19 term slugs, the new one loses none | — |
+| R5 | **Dev/deployed page-set divergence** (D9) — a KB link that works locally 404s on staging | `validateKbLinks` ships and passes in both env modes; the crawler on live staging is the second layer (phase 8) |
+| R6 | **Two-href complexity** (A20) — a reference rendered in the wrong context links to the wrong place, silently | Both hrefs resolved at build time and unit-tested; `kbRefs` remaps at one page boundary. **Still live** until a KB page actually renders — verify end-to-end in phase 5 |
+| ~~R7~~ | **Stale dev graph cache** — *discharged.* `RawGraphData.version`, invalidated on mismatch | — |
+| R8 | Build time growth (A18) — ~11× the page count | Not yet exercised: phase 4 added no pages and the build is unchanged at ~12 s / 46 pages. Re-measure at phase 5's gate, when the ~390 KB pages first render |
