@@ -11,12 +11,33 @@ import localesData from './locales.json'
 
 // Canonical, language-independent container keys. The localized URL segment for
 // each is looked up per locale from the dictionary below.
-export type ContainerKey = 'book' | 'chapter' | 'article' | 'newsletter' | 'landing'
+export type ContainerKey =
+  | 'book' | 'chapter' | 'article' | 'newsletter' | 'landing'
+  // Knowledge base. `knowledge-base` is the outer segment every KB page sits
+  // under; the rest are the per-type segments nested inside it. Namespaces
+  // deliberately have no segment — a node's URL must not move when namespaces are
+  // reorganized — so a definition/theorem path is flat and a proof/remark path
+  // nests under its owner instead.
+  | 'knowledge-base' | 'definition' | 'theorem' | 'proof' | 'remark' | 'term'
+
+/**
+ * Fragment-identifier prefixes, per locale. These end up in a URL the reader sees
+ * and can copy — `…/definiciok/gyuru-test#allitas-letezik-nullelem` — so they are
+ * localized data exactly like the container segments; nothing about `allitas` may
+ * be hardcoded in a code path.
+ *
+ * Deliberately SINGULAR, and therefore distinct from `containers`: an anchor names
+ * one claim or one node (`definicio`), while a container segment names the
+ * collection it addresses (`definiciok`).
+ */
+export type AnchorKey = 'definition' | 'theorem' | 'proof' | 'remark' | 'claim' | 'term'
 
 // Localized UI/title labels for pages that have no backing content object
 // (homepage + the article/newsletter index pages). Data-driven so a new locale
 // needs no code change — only a `labels` block in locales.json.
-export type LabelKey = 'home' | 'articlesIndex' | 'newsletterIndex'
+export type LabelKey =
+  | 'home' | 'articlesIndex' | 'newsletterIndex'
+  | 'knowledgeBase' | 'definitionsIndex' | 'theoremsIndex' | 'glossary'
 
 export interface LocaleConfig {
   displayName: string
@@ -29,6 +50,7 @@ export interface LocaleConfig {
   defaultDescription: string      // meta-description fallback for this locale
   labels: Record<LabelKey, string>
   containers: Record<ContainerKey, string>
+  anchors: Record<AnchorKey, string>
 }
 
 const DATA = localesData as {
@@ -81,6 +103,13 @@ export function getContainerSegment(locale: string, key: ContainerKey): string {
   const segment = getLocaleConfig(locale).containers[key]
   if (!segment) throw new Error(`Locale '${locale}' has no container segment for '${key}'`)
   return segment
+}
+
+/** Localized fragment-identifier prefix for a node / claim / term kind. */
+export function getAnchorPrefix(locale: string, key: AnchorKey): string {
+  const prefix = getLocaleConfig(locale).anchors[key]
+  if (!prefix) throw new Error(`Locale '${locale}' has no anchor prefix for '${key}'`)
+  return prefix
 }
 
 /**

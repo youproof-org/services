@@ -12,14 +12,32 @@
       "labels": {
         "home": "Főoldal",
         "articlesIndex": "Cikkek",
-        "newsletterIndex": "Hírek"
+        "newsletterIndex": "Hírek",
+        "knowledgeBase": "Tudásbázis",
+        "definitionsIndex": "Definíciók",
+        "theoremsIndex": "Tételek",
+        "glossary": "Fogalmak"
       },
       "containers": {
         "book": "konyvek",
         "chapter": "fejezetek",
         "article": "cikkek",
         "newsletter": "hirek",
-        "landing": "landing"
+        "landing": "landing",
+        "knowledge-base": "tudasbazis",
+        "definition": "definiciok",
+        "theorem": "tetelek",
+        "proof": "bizonyitasok",
+        "remark": "megjegyzesek",
+        "term": "fogalmak"
+      },
+      "anchors": {
+        "definition": "definicio",
+        "theorem": "tetel",
+        "proof": "bizonyitas",
+        "remark": "megjegyzes",
+        "claim": "allitas",
+        "term": "fogalom"
       }
     }
   }

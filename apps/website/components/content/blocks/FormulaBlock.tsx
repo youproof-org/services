@@ -1,4 +1,4 @@
-import type { RefMap, TermMap } from '@/lib/content/types'
+import type { RefMap, TermMap, AnchorParent } from '@/lib/content/types'
 import { renderKatex } from '@/lib/utils/math'
 import InlineText from '../InlineText'
 import styles from './formula-block.module.scss'
@@ -9,7 +9,7 @@ interface FormulaBlockProps {
   leadOut?: string
   refs?: RefMap
   terms?: TermMap
-  termParent?: { type: string; namespace: string; name: string }
+  termParent?: AnchorParent
 }
 
 export default function FormulaBlock({ leadIn, content, leadOut, refs, terms, termParent }: FormulaBlockProps) {

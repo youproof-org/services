@@ -1,14 +1,13 @@
 import React from 'react'
 import { renderKatex } from '@/lib/utils/math'
-import { claimId } from '@/lib/utils/claim-id'
-import { termId } from '@/lib/utils/term-id'
-import type { RefMap, TermMap } from '@/lib/content/types'
+import { termAnchorId } from '@/lib/content/urls'
+import type { RefMap, TermMap, AnchorParent } from '@/lib/content/types'
 
 interface InlineTextProps {
   text: string
   refs?: RefMap
   terms?: TermMap
-  termParent?: { type: string; namespace: string; name: string }
+  termParent?: AnchorParent
   selfRefDisplay?: string
 }
 
@@ -92,7 +91,7 @@ function parseInline(
   text: string,
   refs?: RefMap,
   terms?: TermMap,
-  termParent?: { type: string; namespace: string; name: string },
+  termParent?: AnchorParent,
   selfRefDisplay?: string,
 ): React.ReactNode[] {
   return parseNormalized(normalise(text), refs, terms, termParent, { n: 0 }, selfRefDisplay)
@@ -138,7 +137,7 @@ function parseNormalized(
   text: string,
   refs: RefMap | undefined,
   terms: TermMap | undefined,
-  termParent: { type: string; namespace: string; name: string } | undefined,
+  termParent: AnchorParent | undefined,
   counter: KeyCounter,
   selfRefDisplay?: string,
 ): React.ReactNode[] {
@@ -217,7 +216,9 @@ function parseNormalized(
             <a href={href} target="_blank" className="ref-link">{text}</a>
           ))
         } else if (ref.target.type === 'claim') {
-          const href = ref.href ?? `#${claimId(ref.target.name, ref.target.parent)}`
+          // href is always resolved at graph-build time (resolveRefHrefs throws
+          // rather than leaving one unset), so there is no id to recompute here.
+          const href = ref.href ?? '#'
           nodes.push(formatSegmentedDisplay(display, counter, (text: React.ReactNode[]) =>
             <a href={href} target="_blank" className="ref-concept">{text}</a>
           ))
@@ -260,7 +261,7 @@ function parseNormalized(
     } else if (termKey !== undefined) {
       const term = terms?.[termKey]
       if (term && termParent) {
-        const id = termId(termKey, termParent)
+        const id = termAnchorId(termParent, termKey, term)
         nodes.push(
           <span key={counter.n++} id={id} className="term">
             {formatTermDisplay(term.display, counter)}

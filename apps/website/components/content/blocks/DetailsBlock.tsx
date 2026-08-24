@@ -1,4 +1,4 @@
-import type { ContentBlock, RefMap, TermMap } from '@/lib/content/types'
+import type { ContentBlock, RefMap, TermMap, AnchorParent } from '@/lib/content/types'
 import InlineText from '../InlineText'
 import ContentBlocks from '../ContentBlocks'
 import styles from './details-block.module.scss'
@@ -11,7 +11,7 @@ interface DetailsBlockProps {
   refs?: RefMap
   context: 'web' | 'latex'
   terms?: TermMap
-  termParent?: { type: string; namespace: string; name: string }
+  termParent?: AnchorParent
 }
 
 export default function DetailsBlock({ title, blocks, embedIndices, figureIndices, refs, context, terms, termParent }: DetailsBlockProps) {

@@ -1,5 +1,5 @@
-import type { RefMap, TermMap } from '@/lib/content/types'
-import { claimId } from '@/lib/utils/claim-id'
+import type { RefMap, TermMap, AnchorParent } from '@/lib/content/types'
+import { claimAnchorId } from '@/lib/content/urls'
 import { renderKatex } from '@/lib/utils/math'
 import InlineText from '../InlineText'
 import styles from './claim-block.module.scss'
@@ -7,16 +7,20 @@ import styles from './claim-block.module.scss'
 interface ClaimBlockProps {
   index: number
   name: string
+  slug?: string
   content: string
   formula?: string
   refs?: RefMap
-  parent?: { type: string; namespace: string; name: string }
+  parent?: AnchorParent
   terms?: TermMap
-  termParent?: { type: string; namespace: string; name: string }
+  termParent?: AnchorParent
 }
 
-export default function ClaimBlock({ index, name, content, formula, refs, parent, terms, termParent }: ClaimBlockProps) {
-  const id = parent ? claimId(name, parent) : undefined
+export default function ClaimBlock({ index, name, slug, content, formula, refs, parent, terms, termParent }: ClaimBlockProps) {
+  // The owning node supplies the locale for the anchor prefix, so a claim outside
+  // one (which the content model does not produce) simply gets no anchor rather
+  // than an unlocalized guess.
+  const id = parent ? claimAnchorId(parent, { name, slug }) : undefined
   return (
     <div id={id} className={styles.claim}>
       <span className={styles.index}>{index}.</span>

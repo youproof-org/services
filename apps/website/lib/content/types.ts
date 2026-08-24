@@ -45,6 +45,11 @@ export interface EmbedBlock {
 export interface ClaimBlock {
   type: 'claim'
   name: string
+  // Localized fragment identifier: a claim has no page of its own, so it is cited
+  // as `#claim-{slug}` on whichever node asserts it. Falls back to `name` when
+  // absent (see claimAnchorId) — `name` stays the language-independent id that
+  // cross-references resolve against.
+  slug?: string
   content: string
   formula?: string
 }
@@ -176,7 +181,15 @@ export type RefTarget =
 
 export interface RefEntry {
   display: string
+  // Resolved at graph-build time, in two variants, because the SAME references map
+  // is rendered in two places and must point somewhere different in each:
+  //   href   — used on a chapter page (and inside an entity embedded there): the
+  //            in-page/cross-chapter anchor, i.e. today's behaviour, unchanged.
+  //   kbHref — used on a standalone knowledge-base page: the target's own KB page.
+  // A KB page therefore remaps its refs (see kbRefs) rather than threading a
+  // "which context am I in" flag through every block component.
   href?: string
+  kbHref?: string
   target: RefTarget
 }
 
@@ -203,6 +216,9 @@ export interface EntityLabels {
 export interface TermDefinition {
   display: string
   canonical: string
+  // Localized fragment identifier, as for a claim: `#term-{slug}` on the node that
+  // introduces the term. Falls back to the term's map key when absent.
+  slug?: string
   synonyms?: string[]
 }
 
@@ -215,7 +231,9 @@ export type TermMap = Record<string, TermDefinition>
 export interface DefinitionNode {
   type: 'definition'
   name: string
-  namespace: string               // e.g. "/primalitas"
+  slug: string                    // localized URL segment (flat, namespace-independent)
+  locale: string
+  namespace: string               // e.g. "/primalitas" — grouping only, never in the URL
   title?: string
   labels?: EntityLabels
   terms?: TermMap
@@ -227,6 +245,8 @@ export interface DefinitionNode {
 export interface TheoremNode {
   type: 'theorem'
   name: string
+  slug: string                    // localized URL segment (flat, namespace-independent)
+  locale: string
   namespace: string
   title?: string
   labels?: EntityLabels
@@ -240,6 +260,8 @@ export interface TheoremNode {
 export interface ProofNode {
   type: 'proof'
   name: string
+  slug: string                    // localized URL segment, nested under its theorem
+  locale: string
   namespace: string
   title?: string
   labels?: EntityLabels
@@ -253,6 +275,8 @@ export interface ProofNode {
 export interface RemarkNode {
   type: 'remark'
   name: string
+  slug: string                    // localized URL segment, nested under its owner
+  locale: string
   namespace: string
   title?: string
   labels?: EntityLabels
@@ -386,6 +410,76 @@ export interface StandaloneNode {
 }
 
 // ---------------------------------------------------------------------------
+// Knowledge-base graph derivatives
+// ---------------------------------------------------------------------------
+
+/** Any knowledge-base entity. */
+export type KbNode = DefinitionNode | TheoremNode | ProofNode | RemarkNode
+
+/**
+ * The knowledge-base node a claim or term belongs to, threaded through the
+ * renderers so a nested block can build its own anchor id.
+ *
+ * `locale` is what makes the anchor prefix localizable: a claim and a term carry no
+ * locale of their own, so the owner supplies it (see claimAnchorId/termAnchorId).
+ */
+export interface AnchorParent {
+  type: string
+  namespace: string
+  name: string
+  locale: string
+}
+
+/**
+ * Where in the narrative a knowledge-base node is introduced: the chapter that
+ * embeds it and the section within that chapter. Every node is embedded exactly
+ * once today, and a node only gets a page at all if it IS embedded (see
+ * kbPageExists), so a KB page can always show this.
+ */
+export interface EmbeddingContext {
+  chapter: ChapterNode
+  section?: SectionNode           // absent only for a chapter prologue/epilogue embed
+  index?: string                  // chapter-scoped label, e.g. "11.3."
+}
+
+/** What may cite a knowledge-base node. */
+export type BacklinkOwnerKind =
+  | 'definition' | 'theorem' | 'proof' | 'remark'
+  | 'chapter' | 'section'
+  | StandaloneKind
+
+/**
+ * One inbound reference to a knowledge-base node, for the "Referenced by" block.
+ *
+ * `targetAnchor` is set when the reference cites a specific claim or term rather
+ * than the node as a whole; the KB page uses it to cross-highlight the backlink
+ * against the inline claim/term it points at.
+ */
+export interface KbBacklink {
+  ownerKind: BacklinkOwnerKind
+  ownerName: string               // language-independent id of the citing node
+  ownerTitle: string              // display label for the link
+  ownerUrl: string                // where the citing node can be read
+  refKey: string                  // the `[ref-key]` used at the citation site
+  targetAnchor?: string           // "claim-{slug}" | "term-{slug}" when claim/term-scoped
+}
+
+/**
+ * One row of the glossary. A term has no page, so the entry points at the anchor
+ * on whichever node introduces it. Note that a term key may legitimately be
+ * defined by more than one node (8 keys are today), so an entry is identified by
+ * the (owner, key) pair, not by the key alone.
+ */
+export interface GlossaryEntry {
+  termKey: string                 // language-independent key, e.g. "natural-number"
+  canonical: string               // Hungarian display form
+  ownerName: string
+  ownerTitle: string
+  href: string                    // owner's KB page + "#term-{slug}"
+  referencedBy: number            // inbound reference count
+}
+
+// ---------------------------------------------------------------------------
 // Content graph
 // Map keys:
 //   Entities:     "/entities/{namespace}/{name}"
@@ -410,4 +504,16 @@ export interface ContentGraph {
   newsletters: Map<string, StandaloneNode>
   pages:       Map<string, StandaloneNode>
   landings:    Map<string, StandaloneNode>
+
+  // ── Derived, built once at graph-build time ──
+  /** Entity key -> where the node is embedded in the narrative. */
+  embedding:   Map<string, EmbeddingContext>
+  /**
+   * Inbound references, keyed by entity key for a whole-node citation and by
+   * "{entityKey}#{anchor}" for a claim/term-scoped one. A KB page reads both: the
+   * node's own list, plus the per-claim/term lists it cross-highlights against.
+   */
+  backlinks:   Map<string, KbBacklink[]>
+  /** Every term definition in the knowledge base, sorted by `canonical`. */
+  glossary:    GlossaryEntry[]
 }

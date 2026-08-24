@@ -17,6 +17,25 @@ import { getContainerSegment } from './config'
  *   landing     /{locale}/{landing}/{slug}
  *   page        /{locale}/{slug}                (no container segment)
  *   *-index     /{locale}/{container}           (listing pages)
+ *
+ * Knowledge base. Namespaces never appear: a node's URL
+ * must survive a namespace reorganization, so definitions and theorems are flat
+ * and the types that are *owned* by another node nest under their owner instead:
+ *   kb-root            /{locale}/{kb}
+ *   definitions-index  /{locale}/{kb}/{definition}
+ *   theorems-index     /{locale}/{kb}/{theorem}
+ *   glossary           /{locale}/{kb}/{term}
+ *   definition         /{locale}/{kb}/{definition}/{slug}
+ *   theorem            /{locale}/{kb}/{theorem}/{slug}
+ *   proof              /{locale}/{kb}/{theorem}/{thm}/{proof}/{slug}
+ *   definition-remark  /{locale}/{kb}/{definition}/{def}/{remark}/{slug}
+ *   theorem-remark     /{locale}/{kb}/{theorem}/{thm}/{remark}/{slug}
+ *   proof-remark       /{locale}/{kb}/{theorem}/{thm}/{proof}/{prf}/{remark}/{slug}
+ *
+ * A remark gets three keys rather than one variable-arity key so that `req`'s
+ * exact segment count stays exact — a remark's parent chain differs in length
+ * depending on what owns it, and collapsing that into one key would mean giving
+ * up the arity check for every caller.
  */
 export type UrlKey =
   | 'home'
@@ -29,6 +48,16 @@ export type UrlKey =
   | 'books-index'
   | 'articles-index'
   | 'newsletter-index'
+  | 'kb-root'
+  | 'definitions-index'
+  | 'theorems-index'
+  | 'glossary'
+  | 'definition'
+  | 'theorem'
+  | 'proof'
+  | 'definition-remark'
+  | 'theorem-remark'
+  | 'proof-remark'
 
 export function buildLocalizedUrl(locale: string, key: UrlKey, ...slugPath: string[]): string {
   const base = `/${locale}`
@@ -55,7 +84,47 @@ export function buildLocalizedUrl(locale: string, key: UrlKey, ...slugPath: stri
       return `${base}/${getContainerSegment(locale, 'article')}`
     case 'newsletter-index':
       return `${base}/${getContainerSegment(locale, 'newsletter')}`
+
+    // ── Knowledge base ──
+    case 'kb-root':
+      return `${base}/${kb(locale)}`
+    case 'definitions-index':
+      return `${base}/${kb(locale)}/${getContainerSegment(locale, 'definition')}`
+    case 'theorems-index':
+      return `${base}/${kb(locale)}/${getContainerSegment(locale, 'theorem')}`
+    case 'glossary':
+      return `${base}/${kb(locale)}/${getContainerSegment(locale, 'term')}`
+    case 'definition':
+      return `${base}/${kb(locale)}/${getContainerSegment(locale, 'definition')}/${req(slugPath, 1, key)[0]}`
+    case 'theorem':
+      return `${base}/${kb(locale)}/${getContainerSegment(locale, 'theorem')}/${req(slugPath, 1, key)[0]}`
+    case 'proof': {
+      const [theoremSlug, proofSlug] = req(slugPath, 2, key)
+      return `${base}/${kb(locale)}/${getContainerSegment(locale, 'theorem')}/${theoremSlug}` +
+        `/${getContainerSegment(locale, 'proof')}/${proofSlug}`
+    }
+    case 'definition-remark': {
+      const [defSlug, remarkSlug] = req(slugPath, 2, key)
+      return `${base}/${kb(locale)}/${getContainerSegment(locale, 'definition')}/${defSlug}` +
+        `/${getContainerSegment(locale, 'remark')}/${remarkSlug}`
+    }
+    case 'theorem-remark': {
+      const [theoremSlug, remarkSlug] = req(slugPath, 2, key)
+      return `${base}/${kb(locale)}/${getContainerSegment(locale, 'theorem')}/${theoremSlug}` +
+        `/${getContainerSegment(locale, 'remark')}/${remarkSlug}`
+    }
+    case 'proof-remark': {
+      const [theoremSlug, proofSlug, remarkSlug] = req(slugPath, 3, key)
+      return `${base}/${kb(locale)}/${getContainerSegment(locale, 'theorem')}/${theoremSlug}` +
+        `/${getContainerSegment(locale, 'proof')}/${proofSlug}` +
+        `/${getContainerSegment(locale, 'remark')}/${remarkSlug}`
+    }
   }
+}
+
+/** The outer knowledge-base segment every KB page sits under. */
+function kb(locale: string): string {
+  return getContainerSegment(locale, 'knowledge-base')
 }
 
 function req(slugPath: string[], n: number, key: UrlKey): string[] {

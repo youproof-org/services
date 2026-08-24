@@ -272,12 +272,14 @@ export function resolveTemplate(template: string, ctx: TemplateContext): string 
  * Returns null if the target type does not support template fields.
  * Extend this function to add context for new target types.
  */
-type EntityChapterInfo = Map<string, { chapterUrl: string; index?: string }>
+// Embedding info is read straight off the graph (graph.embedding) rather than
+// passed in: it is built before any display template is resolved, and threading it
+// through as an optional argument made it possible to call this with the argument
+// missing and silently lose every `{target.index}`.
 
 export function buildContext(
   target: RefTarget,
   graph: ContentGraph,
-  entityChapterInfo?: EntityChapterInfo,
 ): TemplateContext | null {
   if (target.type === 'book') {
     const book = graph.books.get(`/books/${target.name}`)
@@ -353,7 +355,7 @@ export function buildContext(
       }
     }
     if (!found) return null
-    const parentInfo = entityChapterInfo?.get(`${target.parent.namespace}/${target.parent.name}`)
+    const parentInfo = graph.embedding.get(`/entities${target.parent.namespace}/${target.parent.name}`)
     const parentFallbackLabel = ENTITY_LABEL_HU[parentEntity.type] ?? parentEntity.type
     return {
       target: {
@@ -377,7 +379,7 @@ export function buildContext(
       graph.proofs.get(parentKey)     ??
       graph.remarks.get(parentKey)
     if (!parentEntity) return null
-    const parentInfo = entityChapterInfo?.get(`${target.parent.namespace}/${target.parent.name}`)
+    const parentInfo = graph.embedding.get(`/entities${target.parent.namespace}/${target.parent.name}`)
     const parentFallbackLabel = ENTITY_LABEL_HU[parentEntity.type] ?? parentEntity.type
     return {
       target: {
@@ -417,7 +419,7 @@ export function buildContext(
       graph.definitions.get(entityKey) ?? graph.theorems.get(entityKey) ??
       graph.proofs.get(entityKey)     ?? graph.remarks.get(entityKey)
     if (!entity) return null
-    const info = entityChapterInfo?.get(`${target.namespace}/${target.name}`)
+    const info = graph.embedding.get(`/entities${target.namespace}/${target.name}`)
     const fallbackLabel = ENTITY_LABEL_HU[target.type] ?? target.type
     return {
       target: {

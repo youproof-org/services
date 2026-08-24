@@ -6,6 +6,7 @@ import type {
   RemarkNode,
   RefMap,
   TermMap,
+  AnchorParent,
 } from '@/lib/content/types'
 import { getContentGraph } from '@/lib/content'
 
@@ -30,9 +31,9 @@ interface ContentBlocksProps {
   refs?: RefMap
   context: 'web' | 'latex'
   dropCapFirst?: boolean
-  parentEntity?: { type: string; namespace: string; name: string }
+  parentEntity?: AnchorParent
   terms?: TermMap
-  termParent?: { type: string; namespace: string; name: string }
+  termParent?: AnchorParent
 }
 
 export default function ContentBlocks({ blocks, embedIndices, figureIndices, refs, context, dropCapFirst, parentEntity, terms, termParent }: ContentBlocksProps) {
@@ -151,6 +152,8 @@ export default function ContentBlocks({ blocks, embedIndices, figureIndices, ref
                 entityType={entity.type}
                 namespace={entity.namespace}
                 name={entity.name}
+                slug={entity.slug}
+                locale={entity.locale}
                 body={entity.body}
                 label={label}
                 embedIndices={embedIndices}
@@ -160,7 +163,7 @@ export default function ContentBlocks({ blocks, embedIndices, figureIndices, ref
                 canonicalLabel={entity.labels?.canonical}
                 refs={entity.references}
                 terms={entity.terms}
-                termParent={{ type: entity.type, namespace: entity.namespace, name: entity.name }}
+                termParent={{ type: entity.type, namespace: entity.namespace, name: entity.name, locale: entity.locale }}
               />
             )
           }
@@ -171,6 +174,7 @@ export default function ContentBlocks({ blocks, embedIndices, figureIndices, ref
                 key={i}
                 index={claimIndex}
                 name={block.name}
+                slug={block.slug}
                 content={block.content}
                 formula={block.formula}
                 refs={refs}
