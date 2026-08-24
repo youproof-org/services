@@ -487,8 +487,15 @@ Hard prerequisite for Phase 3 (A15).
 4. Round-trip test: load a KB entity with entity/claim/term slugs, save without
    editing, assert the file is byte-identical.
 
-**Review gate.** Also: the updated editor must be installed
-(`pnpm editor:install` from the content repo) before Phase 3 begins.
+**Review gate.** Also: the updated editor must be installed before Phase 3 begins —
+`pnpm editor:install-dev` from the content repo, **not** `editor:install`. The
+latter is release mode: it downloads the latest released VSIX from the editor's
+GitHub releases, so it would install the old published editor and silently discard
+this phase's fix. `install-dev` symlinks the local `../editor` working copy, which
+is where the fix lives until it is released. Run `npm run build` in the editor
+first (dev mode warns, but does not fail, when `out/extension.js`, `media/panel.js`
+or `media/editor.js` are missing), and reload the VS Code window afterwards —
+VS Code does not hot-reload installed extensions.
 
 ---
 
