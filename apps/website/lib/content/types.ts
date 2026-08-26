@@ -448,27 +448,6 @@ export interface EmbeddingContext {
   index?: string                  // chapter-scoped label, e.g. "11.3."
 }
 
-/** What may cite a knowledge-base node. */
-export type BacklinkOwnerKind =
-  | 'definition' | 'theorem' | 'proof' | 'remark'
-  | 'chapter' | 'section'
-  | StandaloneKind
-
-/**
- * One inbound reference to a knowledge-base node, for the "Referenced by" block.
- *
- * `targetAnchor` is set when the reference cites a specific claim or term rather
- * than the node as a whole; the KB page uses it to cross-highlight the backlink
- * against the inline claim/term it points at.
- */
-export interface KbBacklink {
-  ownerKind: BacklinkOwnerKind
-  ownerName: string               // language-independent id of the citing node
-  ownerTitle: string              // display label for the link
-  ownerUrl: string                // where the citing node can be read
-  refKey: string                  // the `[ref-key]` used at the citation site
-  targetAnchor?: string           // "claim-{slug}" | "term-{slug}" when claim/term-scoped
-}
 
 /**
  * One row of the glossary. A term has no page, so the entry points at the anchor
@@ -482,7 +461,6 @@ export interface GlossaryEntry {
   ownerName: string
   ownerTitle: string
   href: string                    // owner's KB page + "#term-{slug}"
-  referencedBy: number            // inbound reference count
 }
 
 // ---------------------------------------------------------------------------
@@ -514,12 +492,6 @@ export interface ContentGraph {
   // ── Derived, built once at graph-build time ──
   /** Entity key -> where the node is embedded in the narrative. */
   embedding:   Map<string, EmbeddingContext>
-  /**
-   * Inbound references, keyed by entity key for a whole-node citation and by
-   * "{entityKey}#{anchor}" for a claim/term-scoped one. A KB page reads both: the
-   * node's own list, plus the per-claim/term lists it cross-highlights against.
-   */
-  backlinks:   Map<string, KbBacklink[]>
   /** Every term definition in the knowledge base, sorted by `canonical`. */
   glossary:    GlossaryEntry[]
 }

@@ -24,7 +24,6 @@ import type {
   RefEntry,
   RefTarget,
   KbNode,
-  KbBacklink,
   EmbeddingContext,
   GlossaryEntry,
 } from './types'
@@ -619,7 +618,6 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
     pages:       new Map(),
     landings:    new Map(),
     embedding:   new Map(),
-    backlinks:   new Map(),
     glossary:    [],
   }
 
@@ -827,14 +825,13 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
   }
 
   // Order matters. Embedding first: every URL and title below depends on knowing
-  // which chapter a node lives in. Then hrefs, since the glossary counts inbound
-  // references and needs the backlink index, which needs the anchors hrefs use.
+  // which chapter a node lives in. Then hrefs, since the glossary links to the term
+  // anchors they produce.
   graph.embedding = buildEmbedding(graph)
   validateIdentifiers(graph)
   resolveDisplayTemplates(graph)
   resolveSelfReferenceDisplayTemplates(graph)
   resolveRefHrefs(graph)
-  graph.backlinks = buildBacklinkIndex(graph)
   graph.glossary = buildGlossary(graph)
   validateReferences(graph)
   validateTermInsertions(graph)
@@ -935,7 +932,7 @@ function validateReferences(graph: ContentGraph): void {
 }
 
 // ---------------------------------------------------------------------------
-// Knowledge-base derivation: embedding, page existence, backlinks, glossary
+// Knowledge-base derivation: embedding, page existence, glossary
 // ---------------------------------------------------------------------------
 
 // A knowledge-base page is only generated on a deployed environment when the
@@ -1222,46 +1219,6 @@ function validateIdentifiers(graph: ContentGraph): void {
 }
 
 
-/**
- * Inbound references to knowledge-base nodes, for the "Referenced by" block.
- *
- * Keyed by entity key for a whole-node citation, and by "{entityKey}#{anchor}" for
- * one that cites a specific claim or term - which is what lets a KB page
- * cross-highlight a backlink against the inline claim/term it points at.
- *
- * Built by walking `refOwners`, the single enumeration of everything in the graph
- * that can carry references, so chapters and sections are included alongside KB
- * nodes rather than needing their own pass.
- */
-function buildBacklinkIndex(graph: ContentGraph): Map<string, KbBacklink[]> {
-  const index = new Map<string, KbBacklink[]>()
-  const add = (key: string, link: KbBacklink) => {
-    const list = index.get(key)
-    if (list) list.push(link)
-    else index.set(key, [link])
-  }
-
-  for (const owner of refOwners(graph)) {
-    const origin = backlinkOrigin(graph, owner)
-    if (!origin) continue
-    for (const [refKey, entry] of Object.entries(owner.node.references)) {
-      const t = entry.target
-      if (t.type === 'definition' || t.type === 'theorem' || t.type === 'proof' || t.type === 'remark') {
-        add(entityKey(t.namespace, t.name), { ...origin, refKey })
-      } else if (t.type === 'claim' || t.type === 'term') {
-        const parentKey = entityKey(t.parent.namespace, t.parent.name)
-        const parent = kbNodeByKey(graph, parentKey)
-        if (!parent) continue
-        const anchor = t.type === 'claim'
-          ? claimAnchorForName(parent, t.name)
-          : termAnchorForKey(parent, t.name)
-        if (!anchor) continue
-        add(`${parentKey}#${anchor}`, { ...origin, refKey, targetAnchor: anchor })
-      }
-    }
-  }
-  return index
-}
 
 /** The anchor a claim reference resolves to, or null if the parent has no such claim. */
 function claimAnchorForName(parent: KbNode, claimName: string): string | null {
@@ -1276,54 +1233,6 @@ function termAnchorForKey(parent: KbNode, termKey: string): string | null {
   return term ? termAnchorId(parent, termKey, term) : null
 }
 
-/** Identity of a citing node, or null when it is not something we can link to. */
-function backlinkOrigin(
-  graph: ContentGraph,
-  owner: RefOwner,
-): Omit<KbBacklink, 'refKey' | 'targetAnchor'> | null {
-  if (owner.kind === 'definition' || owner.kind === 'theorem' || owner.kind === 'proof' || owner.kind === 'remark') {
-    const node = owner.node
-    const page = kbPageExists(graph, node) ? urlForKbNode(node) : null
-    // Fall back to the embedding chapter when the citing node has no page in this
-    // environment, so the backlink is still followable.
-    const embedding = graph.embedding.get(entityKey(node.namespace, node.name))
-    const href = page ?? (embedding ? `${chapterUrlOf(embedding.chapter)}#${entityAnchorId(node)}` : null)
-    if (!href) return null
-    return {
-      ownerKind: owner.kind,
-      ownerName: node.name,
-      ownerTitle: kbNodeTitle(graph, node),
-      ownerUrl: href,
-    }
-  }
-  if (owner.kind === 'chapter') {
-    return {
-      ownerKind: 'chapter',
-      ownerName: owner.node.name,
-      ownerTitle: owner.node.title,
-      ownerUrl: chapterUrlOf(owner.node),
-    }
-  }
-  if (owner.kind === 'section') {
-    return {
-      ownerKind: 'section',
-      ownerName: owner.node.name,
-      ownerTitle: owner.node.title,
-      ownerUrl: `${chapterUrlOf(owner.parent)}#${owner.node.slug}`,
-    }
-  }
-  if (owner.kind === 'article' || owner.kind === 'newsletter' || owner.kind === 'page' || owner.kind === 'landing') {
-    return {
-      ownerKind: owner.kind,
-      ownerName: owner.node.name,
-      ownerTitle: owner.node.title,
-      ownerUrl: urlForStandalone(owner.node),
-    }
-  }
-  // standalone-section: the containing item is what has a URL, and it is yielded
-  // separately by refOwners, so nothing is lost by skipping the section itself.
-  return null
-}
 
 /**
  * Display title for a knowledge-base node.
@@ -1369,8 +1278,6 @@ function buildGlossary(graph: ContentGraph): GlossaryEntry[] {
         ownerName: node.name,
         ownerTitle: kbNodeTitle(graph, node),
         href: `${pageUrl}#${anchor}`,
-        referencedBy:
-          graph.backlinks.get(`${entityKey(node.namespace, node.name)}#${anchor}`)?.length ?? 0,
       })
     }
   }

@@ -1,5 +1,5 @@
-// Knowledge-base graph derivation: page existence, slug validation, the backlink
-// index, the glossary, and the two-href reference resolution.
+// Knowledge-base graph derivation: page existence, identifier validation, the
+// glossary, and the two-href reference resolution.
 //
 // Everything is driven through `buildGraphFromRaw` with a hand-built raw graph, so
 // these are real graph invariants rather than assertions about a fixture on disk.
@@ -120,58 +120,6 @@ test('kbRefs swaps in the knowledge-base href and leaves other entries alone', (
   )
 })
 
-test('the backlink index records who cites a node, and which claim they cite', () => {
-  const g = buildGraphFromRaw(
-    raw({
-      references: {
-        'r-thm': { display: 'a tétel', target: { type: 'theorem', name: 'tetel-egy', namespace: NS } },
-      },
-    }),
-  )
-  const onTheorem = g.backlinks.get(`/entities${NS}/tetel-egy`)
-  assert.equal(onTheorem.length, 1)
-  assert.equal(onTheorem[0].ownerKind, 'definition')
-  assert.equal(onTheorem[0].ownerName, 'def-egy')
-  assert.equal(onTheorem[0].ownerTitle, 'Első definíció')
-  assert.equal(onTheorem[0].ownerUrl, '/hu/tudasbazis/definiciok/def-egy')
-  assert.equal(onTheorem[0].refKey, 'r-thm')
-  assert.equal(onTheorem[0].targetAnchor, undefined, 'a whole-node citation has no anchor')
-})
-
-test('a claim-scoped citation is indexed under the anchor, not the node', () => {
-  const g = buildGraphFromRaw(
-    raw({
-      references: {
-        'r-claim': {
-          display: 'az állítás',
-          target: {
-            type: 'claim',
-            name: 'def-claim',
-            parent: { type: 'definition', name: 'def-egy', namespace: NS },
-          },
-        },
-      },
-    }),
-  )
-  assert.equal(g.backlinks.get(`/entities${NS}/def-egy`), undefined)
-  const scoped = g.backlinks.get(`/entities${NS}/def-egy#allitas-def-allitas`)
-  assert.equal(scoped.length, 1)
-  assert.equal(scoped[0].targetAnchor, 'allitas-def-allitas')
-})
-
-test('chapters and sections appear as backlink owners, not just KB nodes', () => {
-  const data = raw()
-  data.books[0].parts[0].chapters[0].references = {
-    'r-def': { display: 'a definíció', target: { type: 'definition', name: 'def-egy', namespace: NS } },
-  }
-  data.books[0].parts[0].chapters[0].sections[0].references = {
-    'r-def2': { display: 'a definíció', target: { type: 'definition', name: 'def-egy', namespace: NS } },
-  }
-  const g = buildGraphFromRaw(data)
-  const kinds = g.backlinks.get(`/entities${NS}/def-egy`).map((b) => b.ownerKind).sort()
-  assert.deepEqual(kinds, ['chapter', 'section'])
-})
-
 test('the glossary points at the term anchor and counts inbound references', () => {
   const g = buildGraphFromRaw(
     raw({
@@ -192,7 +140,6 @@ test('the glossary points at the term anchor and counts inbound references', () 
   assert.equal(entry.termKey, 'first-term')
   assert.equal(entry.canonical, 'első fogalom')
   assert.equal(entry.href, '/hu/tudasbazis/definiciok/def-egy#fogalom-elso-fogalom')
-  assert.equal(entry.referencedBy, 1)
 })
 
 test('the same term key defined by two nodes yields two glossary rows', () => {
