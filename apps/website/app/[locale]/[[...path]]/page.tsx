@@ -176,12 +176,9 @@ export async function generateStaticParams() {
 
     for (const p of graph.pages.values()) {
       if (p.locale !== locale) continue
-      // A custom page slug must never collide with a container segment.
-      if (resolveContainerKey(locale, p.slug) !== null) {
-        throw new Error(
-          `Custom page slug "${p.slug}" collides with a container segment in locale "${locale}". Rename the page.`,
-        )
-      }
+      // The page-slug-vs-container-segment guard lives in validateIdentifiers, so
+      // it fires for every consumer of the graph rather than only for route
+      // generation - and so it covers the anchor-only container segments too.
       params.push({ locale, path: [p.slug] })
     }
   }

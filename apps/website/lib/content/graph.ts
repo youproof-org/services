@@ -54,6 +54,7 @@ const STANDALONE_DIRS: Record<StandaloneKind, string> = {
 }
 import { buildContext, resolveTemplate, ENTITY_LABEL_HU } from './display-template'
 import { buildLocalizedUrl } from '@/lib/i18n/url'
+import { resolveContainerKey } from '@/lib/i18n/config'
 import {
   urlForBook,
   urlForStandalone,
@@ -829,7 +830,7 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
   // which chapter a node lives in. Then hrefs, since the glossary counts inbound
   // references and needs the backlink index, which needs the anchors hrefs use.
   graph.embedding = buildEmbedding(graph)
-  validateKbSlugs(graph)
+  validateIdentifiers(graph)
   resolveDisplayTemplates(graph)
   resolveSelfReferenceDisplayTemplates(graph)
   resolveRefHrefs(graph)
@@ -1036,49 +1037,190 @@ function kbNodeByKey(graph: ContentGraph, key: string): KbNode | undefined {
 }
 
 /**
- * Slug uniqueness, scoped to whatever disambiguates the URL:
- *   definition/theorem - across all nodes of that type, since the path is flat;
- *   proof              - within its owning theorem;
- *   remark             - within its owner;
- *   claim / term       - within the node that owns it (the anchor is page-scoped).
- * A collision means two pages resolve to one URL, or two anchors collide on one
- * page, so it is a hard build error rather than a warning.
+ * Identifier rules for the whole content model: one character rule, and one
+ * uniqueness scope per type for names and for slugs alike.
+ *
+ * Both identifiers are segments of a dotted grammar - a cross-reference target is
+ * `theorems.{t}.claims.{c}`, an anchor is `tetelek.{t}.allitasok.{c}` - so a `.`
+ * in either would split into two segments, and a duplicate in scope makes a
+ * reference ambiguous or collapses two pages onto one URL. Both are hard build
+ * errors rather than warnings.
+ *
+ * `name` and `slug` are separate namespaces with the SAME scopes, differing only
+ * in that a slug is unique per locale (a future `en` file may reuse an `hu` slug)
+ * while a name is unique across locales - it is the same id in every language.
+ *
+ * Each scope is the identifier's position in the reference grammar: what
+ * disambiguates a reference is what disambiguates the identifier. Consequences
+ * that look like gaps but are deliberate: a definition and a theorem may share
+ * either identifier (different container segments); two sections in different
+ * chapters may (the anchor is page-scoped); two proofs of different theorems may;
+ * and a claim may share a slug with a term on the same node, since they sit under
+ * distinct `allitasok.`/`fogalmak.` segments.
+ *
+ * See docs/i18n-design.md §9 and the content repo's docs/content-model.md.
  */
-function validateKbSlugs(graph: ContentGraph): void {
-  const seen = new Map<string, string>() // scope + slug -> the name that claimed it
-  const claim = (scope: string, slug: string, owner: string) => {
-    const key = `${scope} ${slug}`
+const IDENTIFIER_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
+
+function validateIdentifiers(graph: ContentGraph): void {
+  // Every (scope, identifier) may be claimed exactly ONCE. There is deliberately no
+  // "same owner may re-claim" tolerance: every node below is visited once, so a
+  // repeat claim is always a collision. Tolerating it by comparing owner labels
+  // would silently pass the cases where two colliding nodes produce the SAME label
+  // - two claims with one name, or two chapters with one name in different parts of
+  // a book - which is the exact class of duplicate this function exists to catch.
+  const seen = new Map<string, string>() // scope + identifier -> who claimed it
+  const claim = (scope: string, value: string, owner: string) => {
+    const key = `${scope}\u0000${value}`
     const prev = seen.get(key)
-    if (prev !== undefined && prev !== owner) {
+    if (prev !== undefined) {
       throw new Error(
-        `Slug collision: '${slug}' is used by both "${prev}" and "${owner}" within ${scope}.`,
+        `Identifier collision: '${value}' is used by both "${prev}" and "${owner}" within ${scope}.`,
       )
     }
     seen.set(key, owner)
   }
 
+  // `kind` is spelled out rather than derived, because the message is what an
+  // author sees and "section name" beats "identifier".
+  const shape = (kind: string, owner: string, value: string | undefined) => {
+    if (!value) throw new Error(`${owner} has no ${kind}.`)
+    if (!IDENTIFIER_RE.test(value)) {
+      throw new Error(
+        `Invalid ${kind} '${value}' on ${owner}: must be lowercase kebab-case ` +
+          `(${IDENTIFIER_RE.source}). A '.' is the separator of the reference and ` +
+          `anchor grammars, so it cannot appear in either identifier.`,
+      )
+    }
+  }
+
+  // A name is scoped without the locale, a slug with it. Everything below claims
+  // both in one call so a new type cannot be added to one table and forgotten in
+  // the other.
+  const both = (scope: string, node: { name: string; slug: string; locale: string }, owner: string) => {
+    shape('name', owner, node.name)
+    shape('slug', owner, node.slug)
+    claim(`${scope} names`, node.name, owner)
+    claim(`${scope} slugs in locale '${node.locale}'`, node.slug, owner)
+  }
+
+  // ── Books, parts, chapters, sections ──
+  for (const book of graph.books.values()) {
+    both('all books', book, `book ${book.name}`)
+    for (const part of book.parts) {
+      both(`book '${book.name}' parts`, part, `part ${part.name}`)
+      for (const chapter of part.chapters) {
+        // Scoped to the BOOK, not the part: a chapter URL flattens the part out,
+        // so two chapters in different parts of one book would collide.
+        both(
+          `book '${book.name}' chapters`,
+          chapter,
+          `chapter ${chapter.name} (in part ${part.name})`,
+        )
+        for (const section of chapter.sections) {
+          both(`chapter '${chapter.name}' sections`, section, `section ${section.name}`)
+        }
+      }
+    }
+  }
+
+  // ── Standalone items and their sections ──
+  for (const kind of ['article', 'newsletter', 'page', 'landing'] as const) {
+    for (const node of standaloneMapFor(graph, kind).values()) {
+      both(`all ${kind}s`, node, `${kind} ${node.name}`)
+      // A page sits at the locale root next to konyvek/cikkek/..., so its slug
+      // must not be a container segment. Checked here rather than in
+      // generateStaticParams so every consumer benefits, not just route
+      // generation - and so the anchor-only segments (allitasok, szakaszok,
+      // reszek) are covered by the same guard.
+      if (node.kind === 'page' && resolveContainerKey(node.locale, node.slug) !== null) {
+        throw new Error(
+          `Custom page slug "${node.slug}" collides with a container segment in ` +
+            `locale "${node.locale}". Rename the page.`,
+        )
+      }
+      for (const section of node.sections) {
+        // A standalone section carries no locale of its own; the item supplies it.
+        shape('name', `section ${section.name} of ${kind} ${node.name}`, section.name)
+        shape('slug', `section ${section.name} of ${kind} ${node.name}`, section.slug)
+        claim(`${kind} '${node.name}' section names`, section.name, `section ${section.name}`)
+        claim(
+          `${kind} '${node.name}' section slugs in locale '${node.locale}'`,
+          section.slug,
+          `section ${section.name}`,
+        )
+      }
+    }
+  }
+
+  // ── Namespace path segments ──
+  // A namespace is neither addressed nor anchored and appears in no reference, so
+  // it has no slug. Its name is still an identifier and still constrained.
+  //
+  // Only the SHAPE is checked, not per-parent uniqueness: namespaces are not graph
+  // nodes (namespace.yaml is skipped by the scan) and exist here only as the path
+  // string on each entity, assembled from the `name` in each namespace.yaml along
+  // the directory chain. Two sibling directories declaring the same name would
+  // collapse into one path, which this cannot see. No content does, and detecting
+  // it would mean loading namespaces as nodes - a bigger change than the risk
+  // warrants, since nothing addresses them.
+  const checkedNamespaces = new Set<string>()
+  for (const node of kbNodes(graph)) {
+    if (checkedNamespaces.has(node.namespace)) continue
+    checkedNamespaces.add(node.namespace)
+    for (const segment of node.namespace.split('/')) {
+      if (segment === '') continue
+      shape('name', `namespace '${node.namespace}'`, segment)
+    }
+  }
+
+  // ── Knowledge base ──
   for (const node of kbNodes(graph)) {
     const id = `${node.type} ${node.name}`
-    if (!node.slug) throw new Error(`${id} has no slug.`)
 
     if (node.type === 'definition' || node.type === 'theorem') {
-      claim(`${node.locale}/${node.type}`, node.slug, id)
+      both(`all ${node.type}s`, node, id)
     } else if (node.type === 'proof') {
-      claim(`${node.locale}/proof-of/${node.proves.name}`, node.slug, id)
+      both(`proofs of theorem '${node.proves.name}'`, node, id)
     } else if (node.type === 'remark' && node.attachedTo) {
-      claim(`${node.locale}/remark-of/${node.attachedTo.name}`, node.slug, id)
+      both(`remarks of ${node.attachedTo.type} '${node.attachedTo.name}'`, node, id)
+    } else {
+      // An owner-less remark: not addressable, but still validate its shape.
+      shape('name', id, node.name)
+      shape('slug', id, node.slug)
     }
 
-    // Claim and term anchors share one namespace: they land on the same page, so a
-    // collision between them is just as broken as one between two claims.
-    for (const block of node.body) {
-      if (block.type === 'claim') claim(`anchors of ${id}`, claimAnchorId(node, block), `claim ${block.name}`)
+    // Claims and terms sit under distinct anchor segments, so they get distinct
+    // scopes - unlike the single shared anchor namespace this replaces.
+    for (const [index, block] of node.body.entries()) {
+      if (block.type !== 'claim') continue
+      if (node.type === 'proof') {
+        throw new Error(
+          `Proof "${node.name}" contains a claim block ("${block.name}"). A proof is one ` +
+            `argument, not a set of numbered assertions; the claims it establishes belong ` +
+            `to the theorem being proved.`,
+        )
+      }
+      // The index, not just the name: two claims sharing a name must read as two
+      // distinct owners in the collision message.
+      const owner = `claim ${block.name} (body block ${index}) of ${id}`
+      shape('name', owner, block.name)
+      if (block.slug !== undefined) shape('slug', owner, block.slug)
+      claim(`claims of ${id}`, block.name, owner)
+      claim(`claim slugs of ${id}`, block.slug ?? block.name, owner)
     }
+
     for (const [termKey, term] of Object.entries(node.terms ?? {})) {
-      claim(`anchors of ${id}`, termAnchorId(node, termKey, term), `term ${termKey}`)
+      const owner = `term ${termKey} of ${id}`
+      // The key is the term's name, and a map cannot repeat a key, so name
+      // uniqueness is structural here - only the shape needs checking.
+      shape('name', owner, termKey)
+      if (term.slug !== undefined) shape('slug', owner, term.slug)
+      claim(`term slugs of ${id}`, term.slug ?? termKey, owner)
     }
   }
 }
+
 
 /**
  * Inbound references to knowledge-base nodes, for the "Referenced by" block.
