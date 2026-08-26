@@ -3,8 +3,8 @@
 **Parent plan:** [`yp-162-knowledge-graph-urls-implementation-plan.md`](yp-162-knowledge-graph-urls-implementation-plan.md)
 (design: [`yp-162-knowledge-graph-urls-plan.md`](yp-162-knowledge-graph-urls-plan.md))
 **Repos touched:** `youproof-org/services`, `youproof-org/content`, `youproof-org/editor`
-**Status:** revision 2 — all five open questions resolved (§5). **S1 is done**;
-S2 is next. **Blocks parent phase 5** (routing and pages): the anchor and reference
+**Status:** revision 3 — all five open questions resolved (§5). **S1 and S2 are done**;
+S3 is next. **Blocks parent phase 5** (routing and pages): the anchor and reference
 shapes settled here are what the page components render.
 
 > ### Working agreement (inherited from the parent plan)
@@ -83,10 +83,10 @@ Reference targets to migrate:
 External targets are **74 `https:` and 4 `mailto:`** — all 78 carry a scheme, and
 4 of them have no `//`, which [D9](#d9) depends on.
 
-### 2.1 The 14 non-conforming names
+### 2.1 The 13 non-conforming names
 
 Every one is an uppercase mathematical symbol embedded in an otherwise kebab-case
-name. Resolved by [D6](#d6) — normalize all 14.
+name. Resolved by [D6](#d6) — normalize all 13.
 
 | kind | identifier | owner |
 |---|---|---|
@@ -96,7 +96,7 @@ name. Resolved by [D6](#d6) — normalize all 14.
 | claim name ×7 | `mod-I-congruence-is-reflexive`, `-is-symmetric`, `-is-transitive`, `-divisors-of-modulus`, `operations-between-mod-I-congruences`, `operations-between-constant-and-mod-I-congruence`, `power-of-mod-I-congruence` | remark `egesz-szamok-kozotti-kongruencia-tulajdonsagai-bizonyitas-megjegyzes` |
 | term key | `complement-in-A` | definition `halmazmuveletek` |
 
-Blast radius of normalizing all 14, measured: **2 section files + 2 KB entity files
+Blast radius of normalizing all 13, measured: **2 section files + 2 KB entity files
 + 1 definition file**, plus **3 references** naming the two sections, **2
 references** naming the uppercase claims, **2 chapter `sections:` ordering-list
 entries**, and **1 inline `[[complement-in-A]]`** occurrence. Lowercasing produces
@@ -115,7 +115,7 @@ locale to be localized with.
 
 **The content is otherwise already fully compliant** with every constraint in §4.
 This sub-plan is therefore mostly about *enforcement* and *shape*; the content
-edits it requires are the 14 names of §2.1, 7 part slugs, and the 7082 target
+edits it requires are the 13 names of §2.1, 7 part slugs, and the 7082 target
 objects of §5.
 
 ---
@@ -256,7 +256,7 @@ along with `AnchorKey` and `getAnchorPrefix`.
 ```
 
 Applies to: every `slug`; every `name`; every `terms` map key (the key *is* the
-term's name); and, by [D7](#d7), part slugs. Per [D6](#d6) the 14 identifiers of
+term's name); and, by [D7](#d7), part slugs. Per [D6](#d6) the 13 identifiers of
 §2.1 are normalized to satisfy it.
 
 `.` is the FQN and anchor separator, so a `.` in either identifier makes both
@@ -430,10 +430,10 @@ better failure mode than a crash or `#undefined`. §4.1's single character rule 
 the fallback grammatically safe in a way the old two-rule split would not have.
 
 <a id="d6"></a>
-### D6 — Names take the same strict pattern as slugs; the 14 exceptions are normalized *(settled — was Q1)*
+### D6 — Names take the same strict pattern as slugs; the 13 exceptions are normalized *(settled — was Q1)*
 
 One character rule (§4.1) rather than a lax rule for names and a strict one for
-slugs. Cost: the 14 renames of §2.1, ~7 files, 0 collisions.
+slugs. Cost: the 13 renames of §2.1, ~7 files, 0 collisions.
 
 **Recorded so the S2 gate can reverse it if the result reads badly:** the uppercase
 in these names is meaningful — `P` is a positivity domain, `I` an ideal, `A` a set —
@@ -571,12 +571,12 @@ leaving half of a three-claim paragraph false while correcting the other half wo
 have defeated the purpose of the gate. Both are now corrected in full, so parent
 phase 9's L1 reduces to verification.
 
-### S2 — Content: normalize the 14 names, add 7 part slugs
+### S2 — Content: normalize the 13 names, add 7 part slugs *(DONE)*
 
 Must precede S3: the strict name pattern would otherwise fail the build on
 legitimate content.
 
-1. Rename the 14 identifiers of §2.1 — 2 section names (+ `git mv` the two files),
+1. Rename the 13 identifiers of §2.1 — 2 section names (+ `git mv` the two files),
    10 claim names, 1 term key — and every referrer: 3 section references, 2 claim
    references, 2 chapter `sections:` ordering entries, 1 inline `[[complement-in-A]]`.
 2. Backfill `slug` on the 7 `part.yaml` files, after `name`.
@@ -588,9 +588,39 @@ even before `CANONICAL_ORDER` learns about it. Parts also have no body, so the
 editor has no reason to write one.
 
 **Gate:** a services build against the renamed content is byte-identical except for
-the 14 identifiers and their anchors; scripts are idempotent; the review artifact is
-the 14-row rename table with the readability cost [D6](#d6) records, so it can still
+the 13 identifiers and their anchors; scripts are idempotent; the review artifact is
+the 13-row rename table with the readability cost [D6](#d6) records, so it can still
 be reversed here.
+
+#### What S2 actually changed
+
+`scripts/normalize-identifier-case.mjs` and `scripts/migrate-part-slug.mjs`, both
+dry-run by default and both idempotent (verified by re-running). 11 files for the
+renames, 7 `part.yaml` files for the slugs, in three commits.
+
+**The export is unchanged.** Comparing a build against migrated content with one
+against `content` at HEAD, the *only* difference across all 473 exported files is a
+React `key` string in two chapters' hydration payloads (`<Fragment key={section.name}>`
+in the chapter renderer). Rendered markup is identical line for line — 25 931 and
+17 955 lines respectively — because a `name` never reaches the output: anchors are
+built from `slug`, which was already lowercase.
+
+Two things the comparison itself taught, worth reusing at S7's gate:
+
+- A raw byte-diff of `out/` is useless. Next stamps a per-build id into every page,
+  **and writes it two ways** — `_next/static/{id}` in paths with hyphens, and
+  `<!--{id}-->` in the HTML comment with hyphens replaced by underscores.
+  Normalizing only the first form still leaves every page differing. The generated
+  wordmark font is nondeterministic too.
+- The residual React-key diff is the signal that the rename was total: it appears in
+  exactly the two chapters that own a renamed section, and nowhere else — including
+  the two chapters whose *reference keys* were rewritten, confirming that ref keys
+  never reach the output.
+
+Also, unrelated to the content but found while running the gate: the website test
+suite could not load on the repo's pinned Node (24.18.0), only on 22. Fixed in the
+same phase — see the `services` commits — because otherwise every later gate in this
+sub-plan would have been run on the wrong Node.
 
 ### S3 — Services: the part model, and enforce the constraints
 
@@ -771,5 +801,5 @@ phase 5 unblocked.
 | S-R4 | **The anchor rework breaks 11 085 in-page links** with no automated detection | [D11](#d11)'s `validateAnchors`; without it this sub-plan has no gate on its headline change |
 | S-R5 | **`mailto:` mis-parsed as an FQN** by a `://` discriminator, silently turning 4 references into unresolvable paths | [D9](#d9) specifies a scheme test, and S5's parser tests cover both schemes explicitly |
 | S-R6 | **`.` in an id** breaks a future `querySelector('#'+id)` | Documented at S4; phase 5's F2 already keys on `data-target-anchor`, and `getElementById` / `:target` / `[id="…"]` are unaffected |
-| S-R7 | **A constraint is enforced that real content violates**, blocking the build on something legitimate | §2 measured every constraint against the whole tree; the only violations are §2.1's 14 names, which S2 fixes before S3 enforces anything |
-| S-R8 | **[D6](#d6)'s lowercasing makes 14 names read worse** (`mod-i-congruence-…`) and is noticed only after the migration has built on them | S2 lands first, in its own revertible commit, with the rename table as its review artifact — the last cheap moment to reverse it |
+| S-R7 | **A constraint is enforced that real content violates**, blocking the build on something legitimate | §2 measured every constraint against the whole tree; the only violations are §2.1's 13 names, which S2 fixes before S3 enforces anything |
+| S-R8 | **[D6](#d6)'s lowercasing makes 13 names read worse** (`mod-i-congruence-…`) and is noticed only after the migration has built on them | S2 lands first, in its own revertible commit, with the rename table as its review artifact — the last cheap moment to reverse it |
