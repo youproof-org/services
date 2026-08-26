@@ -453,12 +453,20 @@ export interface GlossaryEntry {
 
 // ---------------------------------------------------------------------------
 // Content graph
-// Map keys:
-//   Entities:     "/entities/{namespace}/{name}"
-//   Books:        "/books/{book}"
-//   Parts:        "/books/{book}/{part}"
-//   Chapters:     "/books/{book}/{part}/{chapter}"
-//   Sections:     "/books/{book}/{part}/{chapter}/{section}"
+//
+// Every map is keyed by the node's fully qualified name — the same string a
+// cross-reference target is — so a lookup is `graph.theorems.get(target.fqn)` with
+// no key construction. See keys.ts for the builders and fqn.ts for the grammar:
+//
+//   books.{book}
+//   books.{book}.parts.{part}
+//   books.{book}.chapters.{chapter}                    (no part: it is not in the address)
+//   books.{book}.chapters.{chapter}.sections.{section}
+//   articles.{name} / newsletters.{name} / pages.{name} / landings.{name}
+//   definitions.{name}
+//   theorems.{name}
+//   theorems.{theorem}.proofs.{proof}
+//   {owner}.remarks.{remark}                           (owner: definition, theorem or proof)
 // ---------------------------------------------------------------------------
 
 export interface ContentGraph {

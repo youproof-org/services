@@ -3,9 +3,9 @@
 **Parent plan:** [`yp-162-knowledge-graph-urls-implementation-plan.md`](yp-162-knowledge-graph-urls-implementation-plan.md)
 (design: [`yp-162-knowledge-graph-urls-plan.md`](yp-162-knowledge-graph-urls-plan.md))
 **Repos touched:** `youproof-org/services`, `youproof-org/content`, `youproof-org/editor`
-**Status:** revision 3 — all five open questions resolved (§5). **S1–S7 are done**;
-S8 is next. **Blocks parent phase 5** (routing and pages): the anchor and reference
-shapes settled here are what the page components render.
+**Status:** revision 4 — **complete**. All eight phases shipped; all five open
+questions resolved (§5). **Parent phase 5 (routing and pages) is unblocked** — the
+anchor and reference shapes its components render are now settled and shipped.
 
 > ### Working agreement (inherited from the parent plan)
 >
@@ -103,7 +103,7 @@ entries**, and **1 inline `[[complement-in-A]]`** occurrence. Lowercasing produc
 **0 collisions** in any scope. The two section *filenames* also carry the uppercase
 (`05-muvelet-bevezetese-az-N-halmazon.yaml`) and get `git mv`d to match.
 
-All 14 slugs are already correctly lowercased, so after normalization each of these
+All 13 slugs are already correctly lowercased, so after normalization each of these
 names equals its slug.
 
 ### 2.2 Parts have no slug
@@ -967,7 +967,7 @@ Fixed by deleting the lookup rather than correcting the key: `ChapterPage` now t
 the resolved `book` and `chapter` nodes, which its caller already had. That removes
 the failure mode instead of repairing one instance of it.
 
-### S8 — Services: sweep tests and docs
+### S8 — Services: sweep tests and docs *(DONE)*
 
 1. Confirm no legacy target object survives anywhere: a grep for `type: definition`
    &c. under a `target:` key returns nothing, and the loader has no branch that
@@ -982,6 +982,53 @@ the failure mode instead of repairing one instance of it.
 
 **Gate:** `pnpm test` and `next build` green in both `SITE_ENV` modes; parent
 phase 5 unblocked.
+
+#### What S8 found
+
+The sweep was supposed to be confirmation. Three things were actually wrong.
+
+**Two documented examples did not exist.** `theorems.gyuru-muveletei.claims.disztributiv`
+names no theorem in the content — invented while writing §Target types — and the
+section example attached `hol-tartunk-most` to a chapter that does not contain it.
+Both were written from memory rather than read out of the content, and reading the
+section again would never have caught it: it is internally consistent and plausible.
+The loader's error message quoted the invented one too, so an author copying it
+would have got a second failure.
+
+Now a test: `test/doc-examples.test.mjs` extracts every `target:` example from the
+content-model doc and resolves it against the real graph. Verified to fail on a bad
+example. This is the one place docs are deliberately coupled to content — if a
+rename breaks it, the doc did become wrong.
+
+**That test initially never ran.** It skipped without `CONTENT_DIR`, which the test
+runner does not set, so an ordinary `pnpm test` reported success while checking
+nothing. It now reads `.env.local` then `.env` — and the first attempt read only
+`.env`, which does not exist here, so it still silently skipped. Third instance this
+sub-plan of a check that passed by not running; the pattern is that a skip and a
+pass look identical in a summary line.
+
+**One stale comment.** `types.ts` still documented the graph's map keys in the old
+filesystem shape (`/entities/{namespace}/{name}`). Found by grepping for `/entities`
+rather than by reading, which is the only reliable way — the comment sat 200 lines
+from anything that changed.
+
+#### Final measurements
+
+| | S4 baseline / plan | now |
+|---|---|---|
+| tests | 59 (start of sub-plan) | **96** |
+| pages / files in export | 46 / 473 | **46 / 473** |
+| internal fragment links | 11 086, 0 broken | **11 086, 0 broken** |
+| cold `next build` | 16.66 s / 52 pages (parent A18) | **19 s / 46 pages** |
+| content graph build | ~300–530 ms | **264 ms** |
+| composite reference targets | 7082 | **0** |
+| legacy `entityKey` call sites | 20 | **0** |
+
+Build time is within noise of the parent plan's A18 baseline, and the graph build is
+slightly faster — the FQN parse happens once per target where the old shape was
+re-derived at each lookup. Neither number is the point: A18's purpose was to have a
+figure to compare against when the ~390 knowledge-base pages first render, which is
+still parent phase 5's measurement to take.
 
 ---
 

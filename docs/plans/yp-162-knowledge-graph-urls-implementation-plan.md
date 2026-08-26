@@ -723,9 +723,12 @@ pattern).
 
 ## H. Phase 5 — Routing and pages (`services`) — gated on the layout design **and on the sub-plan**
 
-> **Gated on the [identifiers-and-anchors sub-plan](yp-162-identifiers-and-anchors-sub-plan.md)
-> as well.** It rewrites the anchor grammar and the reference-target shape that these
-> components render, so building the components first means building them twice.
+> **The [identifiers-and-anchors sub-plan](yp-162-identifiers-and-anchors-sub-plan.md)
+> is complete**, so this is no longer gated on it. What it settled and shipped, which
+> these components render: anchors are localized dotted paths
+> (`definiciok.{d}.fogalmak.{f}`), reference targets are fully qualified names
+> (`theorems.{t}.proofs.{p}`), the graph's map keys are those same names, and every
+> name and slug obeys one character rule and one uniqueness scope.
 >
 > **The backlink index no longer exists.** `graph.backlinks`, `KbBacklink`,
 > `targetAnchor` and `GlossaryEntry.referencedBy` were removed in the sub-plan's S4:

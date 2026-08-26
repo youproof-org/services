@@ -159,7 +159,7 @@ export function toRefTarget(raw: unknown, where: string): RefTarget {
   if (typeof raw !== 'string') {
     formatError(
       `${where}: 'target' must be a string — either a fully qualified name ` +
-        `(e.g. theorems.gyuru-muveletei.claims.disztributiv) or a URL.`,
+        `(e.g. definitions.gyuru.terms.integer-number) or a URL.`,
     )
   }
   const target = raw.trim()
