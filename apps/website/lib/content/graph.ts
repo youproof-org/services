@@ -215,6 +215,8 @@ export interface RawChapterEntry {
 
 export interface RawPartEntry {
   name: string
+  slug: string
+  locale: string
   title: string
   chapters: RawChapterEntry[]
 }
@@ -259,7 +261,7 @@ export interface RawStandaloneEntry {
  * schema, so a cache written by an older build would otherwise rehydrate nodes
  * that silently lack the new fields.
  */
-export const RAW_GRAPH_VERSION = 2
+export const RAW_GRAPH_VERSION = 3
 
 export interface RawGraphData {
   version: number
@@ -441,7 +443,13 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
       if (!part) { console.warn(`No part.yaml found with name "${partName}" under ${bookDir}`); continue }
       const { dir: partDir, raw: rawPart } = part
 
-      const partEntry: RawPartEntry = { name: rawPart.name, title: rawPart.title, chapters: [] }
+      const partEntry: RawPartEntry = {
+        name: rawPart.name,
+        slug: rawPart.slug,
+        locale: rawPart.locale,
+        title: rawPart.title,
+        chapters: [],
+      }
 
       // Build name → {dir, raw} map for chapters by scanning subdirectories
       const chapterByName = new Map<string, { dir: string; raw: ReturnType<typeof loadChapter> }>()
@@ -741,7 +749,14 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
     graph.books.set(bookKey(book.name), book)
 
     for (const partEntry of bookEntry.parts) {
-      const part: PartNode = { name: partEntry.name, title: partEntry.title, book, chapters: [] }
+      const part: PartNode = {
+        name: partEntry.name,
+        slug: partEntry.slug,
+        locale: partEntry.locale,
+        title: partEntry.title,
+        book,
+        chapters: [],
+      }
       book.parts.push(part)
       graph.parts.set(partKey(book.name, part.name), part)
 

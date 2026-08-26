@@ -415,6 +415,8 @@ export function loadChapter(filePath: string): RawChapter {
 
 export interface RawPart {
   name: string
+  slug: string
+  locale: string
   title: string
   chapterNames: string[]
 }
@@ -423,6 +425,8 @@ export function loadPart(filePath: string): RawPart {
   const raw = readYaml(filePath)
   return {
     name: raw.name as string,
+    slug: readSlug(raw, raw.name as string),
+    locale: readLocale(raw),
     title: raw.title as string,
     chapterNames: toStringArray(raw.chapters),
   }

@@ -342,8 +342,14 @@ export interface ChapterNode {
   meta?: MetaInfo                  // optional crawler/social metadata (kebab: meta)
 }
 
+// A part has no URL — it is flattened out of chapter paths — but it IS anchored,
+// on its book's index page, and is a cross-reference target. So it carries a slug
+// like every other addressable node, plus a locale to localize that anchor's
+// container segment with.
 export interface PartNode {
-  name: string
+  name: string                    // language-independent internal id (cross-refs)
+  slug: string                    // localized in-page anchor segment (not a URL segment)
+  locale: string
   title: string
   book: BookNode                  // parent reference
   chapters: ChapterNode[]
