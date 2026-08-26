@@ -1,14 +1,22 @@
 # YP-162: Knowledge Graph Node URLs — Implementation Plan
 
 **Companion to:** [`yp-162-knowledge-graph-urls-plan.md`](yp-162-knowledge-graph-urls-plan.md) (the design; §-references below point into it)
+**Sub-plan:** [`yp-162-identifiers-and-anchors-sub-plan.md`](yp-162-identifiers-and-anchors-sub-plan.md) — name/slug constraints, the hierarchical anchor grammar, and fully qualified reference targets. **Shipped**, between phase 4 and phase 5; it supersedes [D4](#d4--replace-the-base64-anchor-ids-with-readable-ones-settled--shipped-in-phase-4)'s flat prefixed anchors and E.3's slug-uniqueness table.
 **Repos touched:** `youproof-org/services`, `youproof-org/content`, `youproof-org/editor`
 **Status:** Revision 3 — **phases 1–4 are shipped**; every decision below is now
 settled. The remaining phases are renumbered: the URL layer, planned as its own
 phase, had to be absorbed into phase 4 (see §Shipped), so what follows counts one
 lower than in revision 2.
 
-**Next up: phase 5, routing and page components — gated on the page-layout design
-being settled first.** §7 of the design plan sketches what each page contains, but
+**The identifiers-and-anchors sub-plan has shipped.** It replaced the flat
+`fogalom-{slug}` anchors of phase 4 with a hierarchical
+`definiciok.{d}.fogalmak.{f}` grammar, turned reference targets into fully qualified
+names, made those names the graph's map keys, and put a character rule and a
+uniqueness scope on every name and slug. It also **removed the backlink index** —
+see the note on phase 5 below, which is where that matters.
+
+**Next up: phase 5, routing and page components — gated on the page-layout
+design being settled.** §7 of the design plan sketches what each page contains, but
 the layout is deliberately still open; phase 5 should not start until it is
 decided, because the component structure follows from it.
 
@@ -714,8 +722,25 @@ pattern).
 
 ---
 
-## H. Phase 5 — Routing and pages (`services`) — **NEXT, gated on the layout design**
+## H. Phase 5 — Routing and pages (`services`) — gated on the layout design **and on the sub-plan**
 
+> **The [identifiers-and-anchors sub-plan](yp-162-identifiers-and-anchors-sub-plan.md)
+> is complete**, so this is no longer gated on it. What it settled and shipped, which
+> these components render: anchors are localized dotted paths
+> (`definiciok.{d}.fogalmak.{f}`), reference targets are fully qualified names
+> (`theorems.{t}.proofs.{p}`), the graph's map keys are those same names, and every
+> name and slug obeys one character rule and one uniqueness scope.
+>
+> **The backlink index no longer exists.** `graph.backlinks`, `KbBacklink`,
+> `targetAnchor` and `GlossaryEntry.referencedBy` were removed in the sub-plan's S4:
+> nothing rendered them, and they were written against the reference-target shape the
+> sub-plan replaces. So three things below have no backing data until something
+> rebuilds it — the `ReferencedBy` component (H.2), F2's cross-highlighting (H.3),
+> and the glossary's inbound count (F.3) — and [D7](#d7--do-chapter-and-section-referrers-appear-in-referenced-by-data-settled-rendering-open)
+> and [R2](#n-risks) are both moot until then. Rebuilding it is a pure fold over
+> `refOwners`; write it against fully qualified name targets, not the old composite
+> shape.
+>
 > The page **layout** is not settled. §7 of the design plan lists what each page
 > contains, and §H.3 below fixes the one interaction that is decided (claim/term ↔
 > backlink cross-highlighting), but how any of it is arranged is open — and the

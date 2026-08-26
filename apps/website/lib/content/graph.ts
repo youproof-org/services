@@ -24,7 +24,6 @@ import type {
   RefEntry,
   RefTarget,
   KbNode,
-  KbBacklink,
   EmbeddingContext,
   GlossaryEntry,
 } from './types'
@@ -54,14 +53,33 @@ const STANDALONE_DIRS: Record<StandaloneKind, string> = {
 }
 import { buildContext, resolveTemplate, ENTITY_LABEL_HU } from './display-template'
 import { buildLocalizedUrl } from '@/lib/i18n/url'
+import { resolveContainerKey } from '@/lib/i18n/config'
 import {
   urlForBook,
   urlForStandalone,
   urlForKbNode,
   claimAnchorId,
   termAnchorId,
-  entityAnchorId,
+  kbAnchorPath,
+  sectionAnchorId,
+  partAnchorId,
+  ownPageScope,
+  embeddedScope,
 } from './urls'
+import {
+  bookKey,
+  partKey,
+  chapterKey,
+  sectionKey,
+  standaloneKey,
+  definitionKey,
+  theoremKey,
+  proofKey,
+  remarkKey,
+  keyForKbNode,
+  keyForChapter,
+} from './keys'
+import { fqnJoin } from './fqn'
 import { getChapterIndex, walkFigureBlocks } from '@/lib/utils/index-helpers'
 
 // ---------------------------------------------------------------------------
@@ -80,37 +98,6 @@ function resolveImageSrc(src: string, dir: string, urlPrefix: string): string {
   return `${urlPrefix}/${resolved}`
 }
 
-function entityKey(namespace: string, name: string): string {
-  return `/entities${namespace}/${name}`
-}
-
-function bookKey(bookName: string): string {
-  return `/books/${bookName}`
-}
-
-function partKey(bookName: string, partName: string): string {
-  return `/books/${bookName}/${partName}`
-}
-
-function chapterKey(bookName: string, partName: string, chapterName: string): string {
-  return `/books/${bookName}/${partName}/${chapterName}`
-}
-
-function sectionKey(
-  bookName: string,
-  partName: string,
-  chapterName: string,
-  sectionName: string
-): string {
-  return `/books/${bookName}/${partName}/${chapterName}/${sectionName}`
-}
-
-// Key for the per-kind standalone Maps (graph.articles/newsletters/pages/landings).
-// Keyed on the language-independent `name`, which is also how a StandaloneRefTarget
-// addresses an item — so a reference is a direct Map lookup.
-function standaloneKey(kind: StandaloneKind, name: string): string {
-  return `/${STANDALONE_DIRS[kind]}/${name}`
-}
 
 /** The graph Map holding a given standalone kind. */
 function standaloneMapFor(graph: ContentGraph, kind: StandaloneKind): Map<string, StandaloneNode> {
@@ -215,6 +202,8 @@ export interface RawChapterEntry {
 
 export interface RawPartEntry {
   name: string
+  slug: string
+  locale: string
   title: string
   chapters: RawChapterEntry[]
 }
@@ -259,7 +248,7 @@ export interface RawStandaloneEntry {
  * schema, so a cache written by an older build would otherwise rehydrate nodes
  * that silently lack the new fields.
  */
-export const RAW_GRAPH_VERSION = 2
+export const RAW_GRAPH_VERSION = 3
 
 export interface RawGraphData {
   version: number
@@ -441,7 +430,13 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
       if (!part) { console.warn(`No part.yaml found with name "${partName}" under ${bookDir}`); continue }
       const { dir: partDir, raw: rawPart } = part
 
-      const partEntry: RawPartEntry = { name: rawPart.name, title: rawPart.title, chapters: [] }
+      const partEntry: RawPartEntry = {
+        name: rawPart.name,
+        slug: rawPart.slug,
+        locale: rawPart.locale,
+        title: rawPart.title,
+        chapters: [],
+      }
 
       // Build name → {dir, raw} map for chapters by scanning subdirectories
       const chapterByName = new Map<string, { dir: string; raw: ReturnType<typeof loadChapter> }>()
@@ -610,13 +605,45 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
     pages:       new Map(),
     landings:    new Map(),
     embedding:   new Map(),
-    backlinks:   new Map(),
     glossary:    [],
+  }
+
+  // Pass 0: resolve ownership, because a key needs it.
+  //
+  // A proof's key is `theorems.{t}.proofs.{p}` and a remark's nests under whatever
+  // owns it, so neither can be keyed without knowing its owner — and ownership is
+  // declared on the PARENT (a theorem lists its `proofs`, a definition its
+  // `remarks`), not on the child. So the parent lists are indexed first, and in
+  // dependency order: a remark's owner may be a proof, whose own key needs its
+  // theorem.
+  const theoremOfProof = new Map<string, string>()   // proof name -> theorem name
+  for (const t of raw.theorems) {
+    for (const proofName of t.proofSlugs) theoremOfProof.set(proofName, t.name)
+  }
+  const keyOfRemarkOwner = new Map<string, string>() // remark name -> owner's key
+  for (const d of raw.definitions) {
+    for (const r of d.remarkSlugs) keyOfRemarkOwner.set(r, definitionKey(d.name))
+  }
+  for (const t of raw.theorems) {
+    for (const r of t.remarkSlugs) keyOfRemarkOwner.set(r, theoremKey(t.name))
+  }
+  for (const pf of raw.proofs) {
+    const theoremName = theoremOfProof.get(pf.name)
+    if (!theoremName) continue
+    for (const r of pf.remarkSlugs) {
+      keyOfRemarkOwner.set(r, proofKey(theoremName, pf.name))
+    }
+  }
+
+  /** A proof's key, or null when no theorem claims it (an orphan; none in content). */
+  const keyForRawProof = (name: string): string | null => {
+    const theoremName = theoremOfProof.get(name)
+    return theoremName ? proofKey(theoremName, name) : null
   }
 
   // Pass 1: Populate Maps
   for (const e of raw.definitions) {
-    graph.definitions.set(entityKey(e.namespace, e.name), {
+    graph.definitions.set(definitionKey(e.name), {
       type: 'definition',
       name: e.name,
       slug: e.slug,
@@ -632,7 +659,7 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
   }
 
   for (const e of raw.theorems) {
-    graph.theorems.set(entityKey(e.namespace, e.name), {
+    graph.theorems.set(theoremKey(e.name), {
       type: 'theorem',
       name: e.name,
       slug: e.slug,
@@ -649,7 +676,12 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
   }
 
   for (const e of raw.proofs) {
-    graph.proofs.set(entityKey(e.namespace, e.name), {
+    const key = keyForRawProof(e.name)
+    if (!key) {
+      console.warn(`Proof "${e.name}" is listed by no theorem, so it has no address; skipping.`)
+      continue
+    }
+    graph.proofs.set(key, {
       type: 'proof',
       name: e.name,
       slug: e.slug,
@@ -666,7 +698,8 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
   }
 
   for (const e of raw.remarks) {
-    graph.remarks.set(entityKey(e.namespace, e.name), {
+    const ownerKey = keyOfRemarkOwner.get(e.name)
+    graph.remarks.set(ownerKey ? remarkKey(ownerKey, e.name) : fqnJoin('', 'remark', e.name), {
       type: 'remark',
       name: e.name,
       slug: e.slug,
@@ -683,9 +716,9 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
 
   // Pass 2: Wire associations
   for (const theoremEntry of raw.theorems) {
-    const theorem = graph.theorems.get(entityKey(theoremEntry.namespace, theoremEntry.name))!
+    const theorem = graph.theorems.get(theoremKey(theoremEntry.name))!
     for (const slug of theoremEntry.proofSlugs) {
-      const proof = graph.proofs.get(entityKey(theorem.namespace, slug))
+      const proof = graph.proofs.get(proofKey(theoremEntry.name, slug))
       if (proof) {
         proof.proves = theorem
         theorem.proofs.push(proof)
@@ -693,18 +726,16 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
     }
   }
 
-  const allRemarkParents: Array<{
-    namespace: string
-    name: string
-    remarkSlugs: string[]
-  }> = [
-    ...raw.definitions.map(e => ({ namespace: e.namespace, name: e.name, remarkSlugs: e.remarkSlugs })),
-    ...raw.theorems.map(e => ({ namespace: e.namespace, name: e.name, remarkSlugs: e.remarkSlugs })),
-    ...raw.proofs.map(e => ({ namespace: e.namespace, name: e.name, remarkSlugs: e.remarkSlugs })),
+  const allRemarkParents: Array<{ key: string; remarkSlugs: string[] }> = [
+    ...raw.definitions.map(e => ({ key: definitionKey(e.name), remarkSlugs: e.remarkSlugs })),
+    ...raw.theorems.map(e => ({ key: theoremKey(e.name), remarkSlugs: e.remarkSlugs })),
+    ...raw.proofs.flatMap(e => {
+      const key = keyForRawProof(e.name)
+      return key ? [{ key, remarkSlugs: e.remarkSlugs }] : []
+    }),
   ]
 
-  for (const { namespace, name, remarkSlugs } of allRemarkParents) {
-    const key = entityKey(namespace, name)
+  for (const { key, remarkSlugs } of allRemarkParents) {
     const parent = (graph.definitions.get(key) ?? graph.theorems.get(key) ?? graph.proofs.get(key)) as
       | DefinitionNode
       | TheoremNode
@@ -712,7 +743,7 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
       | undefined
     if (!parent) continue
     for (const slug of remarkSlugs) {
-      const remark = graph.remarks.get(entityKey(namespace, slug))
+      const remark = graph.remarks.get(remarkKey(key, slug))
       if (remark) {
         remark.attachedTo = parent
         parent.remarks.push(remark)
@@ -741,7 +772,14 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
     graph.books.set(bookKey(book.name), book)
 
     for (const partEntry of bookEntry.parts) {
-      const part: PartNode = { name: partEntry.name, title: partEntry.title, book, chapters: [] }
+      const part: PartNode = {
+        name: partEntry.name,
+        slug: partEntry.slug,
+        locale: partEntry.locale,
+        title: partEntry.title,
+        book,
+        chapters: [],
+      }
       book.parts.push(part)
       graph.parts.set(partKey(book.name, part.name), part)
 
@@ -766,7 +804,7 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
           meta: chapterEntry.meta,
         }
         part.chapters.push(chapter)
-        graph.chapters.set(chapterKey(book.name, part.name, chapter.name), chapter)
+        graph.chapters.set(chapterKey(book.name, chapter.name), chapter)
 
         for (const sectionEntry of chapterEntry.sections) {
           const section: SectionNode = {
@@ -779,7 +817,7 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
             references: sectionEntry.references,
           }
           chapter.sections.push(section)
-          graph.sections.set(sectionKey(book.name, part.name, chapter.name, section.name), section)
+          graph.sections.set(sectionKey(book.name, chapter.name, section.name), section)
         }
       }
     }
@@ -811,18 +849,18 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
   }
 
   // Order matters. Embedding first: every URL and title below depends on knowing
-  // which chapter a node lives in. Then hrefs, since the glossary counts inbound
-  // references and needs the backlink index, which needs the anchors hrefs use.
+  // which chapter a node lives in. Then hrefs, since the glossary links to term
+  // anchors and the validators check the hrefs those produce.
   graph.embedding = buildEmbedding(graph)
-  validateKbSlugs(graph)
+  validateIdentifiers(graph)
   resolveDisplayTemplates(graph)
   resolveSelfReferenceDisplayTemplates(graph)
   resolveRefHrefs(graph)
-  graph.backlinks = buildBacklinkIndex(graph)
   graph.glossary = buildGlossary(graph)
   validateReferences(graph)
   validateTermInsertions(graph)
   validateKbLinks(graph)
+  validateAnchors(graph)
 
   return graph
 }
@@ -919,7 +957,7 @@ function validateReferences(graph: ContentGraph): void {
 }
 
 // ---------------------------------------------------------------------------
-// Knowledge-base derivation: embedding, page existence, backlinks, glossary
+// Knowledge-base derivation: embedding, page existence, glossary
 // ---------------------------------------------------------------------------
 
 // A knowledge-base page is only generated on a deployed environment when the
@@ -940,7 +978,7 @@ function buildEmbedding(graph: ContentGraph): Map<string, EmbeddingContext> {
   const info = new Map<string, EmbeddingContext>()
 
   const record = (block: EmbedBlock, chapter: ChapterNode, section?: SectionNode) => {
-    const key = entityKey(block.target.namespace, block.target.name)
+    const key = block.target.fqn
     if (!info.has(key)) info.set(key, { chapter, section })
   }
   const scan = (blocks: ContentBlock[], chapter: ChapterNode, section?: SectionNode) => {
@@ -959,10 +997,10 @@ function buildEmbedding(graph: ContentGraph): Map<string, EmbeddingContext> {
   // Second pass: the "11.3." label, numbered in embed order within the chapter.
   // Only definitions, theorems and owner-less remarks are numbered.
   const isIndexed = (block: EmbedBlock): boolean => {
-    const { type, name, namespace } = block.target
+    const { type, fqn } = block.target
     if (type === 'definition' || type === 'theorem') return true
     if (type === 'remark') {
-      const remark = graph.remarks.get(entityKey(namespace, name))
+      const remark = graph.remarks.get(fqn)
       return remark !== undefined && remark.attachedTo === undefined
     }
     return false
@@ -974,7 +1012,7 @@ function buildEmbedding(graph: ContentGraph): Map<string, EmbeddingContext> {
     const number = (blocks: ContentBlock[]) => {
       for (const block of blocks) {
         if (block.type !== 'embed' || !isIndexed(block)) continue
-        const entry = info.get(entityKey(block.target.namespace, block.target.name))
+        const entry = info.get(block.target.fqn)
         if (entry && !entry.index) entry.index = `${chapterIdx}.${++k}.`
       }
     }
@@ -1002,7 +1040,7 @@ function chapterUrlOf(chapter: ChapterNode): string {
  *   2. on staging/production, that chapter is published.
  */
 export function kbPageExists(graph: ContentGraph, node: KbNode): boolean {
-  const embedding = graph.embedding.get(entityKey(node.namespace, node.name))
+  const embedding = graph.embedding.get(keyForKbNode(node))
   if (!embedding) return false
   return isDeployedEnv ? embedding.chapter.published : true
 }
@@ -1021,152 +1059,229 @@ function kbNodeByKey(graph: ContentGraph, key: string): KbNode | undefined {
 }
 
 /**
- * Slug uniqueness, scoped to whatever disambiguates the URL:
- *   definition/theorem - across all nodes of that type, since the path is flat;
- *   proof              - within its owning theorem;
- *   remark             - within its owner;
- *   claim / term       - within the node that owns it (the anchor is page-scoped).
- * A collision means two pages resolve to one URL, or two anchors collide on one
- * page, so it is a hard build error rather than a warning.
+ * Identifier rules for the whole content model: one character rule, and one
+ * uniqueness scope per type for names and for slugs alike.
+ *
+ * Both identifiers are segments of a dotted grammar - a cross-reference target is
+ * `theorems.{t}.claims.{c}`, an anchor is `tetelek.{t}.allitasok.{c}` - so a `.`
+ * in either would split into two segments, and a duplicate in scope makes a
+ * reference ambiguous or collapses two pages onto one URL. Both are hard build
+ * errors rather than warnings.
+ *
+ * `name` and `slug` are separate namespaces with the SAME scopes, differing only
+ * in that a slug is unique per locale (a future `en` file may reuse an `hu` slug)
+ * while a name is unique across locales - it is the same id in every language.
+ *
+ * Each scope is the identifier's position in the reference grammar: what
+ * disambiguates a reference is what disambiguates the identifier. Consequences
+ * that look like gaps but are deliberate: a definition and a theorem may share
+ * either identifier (different container segments); two sections in different
+ * chapters may (the anchor is page-scoped); two proofs of different theorems may;
+ * and a claim may share a slug with a term on the same node, since they sit under
+ * distinct `allitasok.`/`fogalmak.` segments.
+ *
+ * See docs/i18n-design.md §9 and the content repo's docs/content-model.md.
  */
-function validateKbSlugs(graph: ContentGraph): void {
-  const seen = new Map<string, string>() // scope + slug -> the name that claimed it
-  const claim = (scope: string, slug: string, owner: string) => {
-    const key = `${scope} ${slug}`
+const IDENTIFIER_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
+
+function validateIdentifiers(graph: ContentGraph): void {
+  // Every (scope, identifier) may be claimed exactly ONCE. There is deliberately no
+  // "same owner may re-claim" tolerance: every node below is visited once, so a
+  // repeat claim is always a collision. Tolerating it by comparing owner labels
+  // would silently pass the cases where two colliding nodes produce the SAME label
+  // - two claims with one name, or two chapters with one name in different parts of
+  // a book - which is the exact class of duplicate this function exists to catch.
+  const seen = new Map<string, string>() // scope + identifier -> who claimed it
+  const claim = (scope: string, value: string, owner: string) => {
+    const key = `${scope}\u0000${value}`
     const prev = seen.get(key)
-    if (prev !== undefined && prev !== owner) {
+    if (prev !== undefined) {
       throw new Error(
-        `Slug collision: '${slug}' is used by both "${prev}" and "${owner}" within ${scope}.`,
+        `Identifier collision: '${value}' is used by both "${prev}" and "${owner}" within ${scope}.`,
       )
     }
     seen.set(key, owner)
   }
 
-  for (const node of kbNodes(graph)) {
-    const id = `${node.type} ${node.name}`
-    if (!node.slug) throw new Error(`${id} has no slug.`)
-
-    if (node.type === 'definition' || node.type === 'theorem') {
-      claim(`${node.locale}/${node.type}`, node.slug, id)
-    } else if (node.type === 'proof') {
-      claim(`${node.locale}/proof-of/${node.proves.name}`, node.slug, id)
-    } else if (node.type === 'remark' && node.attachedTo) {
-      claim(`${node.locale}/remark-of/${node.attachedTo.name}`, node.slug, id)
-    }
-
-    // Claim and term anchors share one namespace: they land on the same page, so a
-    // collision between them is just as broken as one between two claims.
-    for (const block of node.body) {
-      if (block.type === 'claim') claim(`anchors of ${id}`, claimAnchorId(node, block), `claim ${block.name}`)
-    }
-    for (const [termKey, term] of Object.entries(node.terms ?? {})) {
-      claim(`anchors of ${id}`, termAnchorId(node, termKey, term), `term ${termKey}`)
+  // `kind` is spelled out rather than derived, because the message is what an
+  // author sees and "section name" beats "identifier".
+  const shape = (kind: string, owner: string, value: string | undefined) => {
+    if (!value) throw new Error(`${owner} has no ${kind}.`)
+    if (!IDENTIFIER_RE.test(value)) {
+      throw new Error(
+        `Invalid ${kind} '${value}' on ${owner}: must be lowercase kebab-case ` +
+          `(${IDENTIFIER_RE.source}). A '.' is the separator of the reference and ` +
+          `anchor grammars, so it cannot appear in either identifier.`,
+      )
     }
   }
-}
 
-/**
- * Inbound references to knowledge-base nodes, for the "Referenced by" block.
- *
- * Keyed by entity key for a whole-node citation, and by "{entityKey}#{anchor}" for
- * one that cites a specific claim or term - which is what lets a KB page
- * cross-highlight a backlink against the inline claim/term it points at.
- *
- * Built by walking `refOwners`, the single enumeration of everything in the graph
- * that can carry references, so chapters and sections are included alongside KB
- * nodes rather than needing their own pass.
- */
-function buildBacklinkIndex(graph: ContentGraph): Map<string, KbBacklink[]> {
-  const index = new Map<string, KbBacklink[]>()
-  const add = (key: string, link: KbBacklink) => {
-    const list = index.get(key)
-    if (list) list.push(link)
-    else index.set(key, [link])
+  // A name is scoped without the locale, a slug with it. Everything below claims
+  // both in one call so a new type cannot be added to one table and forgotten in
+  // the other.
+  const both = (scope: string, node: { name: string; slug: string; locale: string }, owner: string) => {
+    shape('name', owner, node.name)
+    shape('slug', owner, node.slug)
+    claim(`${scope} names`, node.name, owner)
+    claim(`${scope} slugs in locale '${node.locale}'`, node.slug, owner)
   }
 
-  for (const owner of refOwners(graph)) {
-    const origin = backlinkOrigin(graph, owner)
-    if (!origin) continue
-    for (const [refKey, entry] of Object.entries(owner.node.references)) {
-      const t = entry.target
-      if (t.type === 'definition' || t.type === 'theorem' || t.type === 'proof' || t.type === 'remark') {
-        add(entityKey(t.namespace, t.name), { ...origin, refKey })
-      } else if (t.type === 'claim' || t.type === 'term') {
-        const parentKey = entityKey(t.parent.namespace, t.parent.name)
-        const parent = kbNodeByKey(graph, parentKey)
-        if (!parent) continue
-        const anchor = t.type === 'claim'
-          ? claimAnchorForName(parent, t.name)
-          : termAnchorForKey(parent, t.name)
-        if (!anchor) continue
-        add(`${parentKey}#${anchor}`, { ...origin, refKey, targetAnchor: anchor })
+  // ── Books, parts, chapters, sections ──
+  for (const book of graph.books.values()) {
+    both('all books', book, `book ${book.name}`)
+    for (const part of book.parts) {
+      both(`book '${book.name}' parts`, part, `part ${part.name}`)
+      for (const chapter of part.chapters) {
+        // Scoped to the BOOK, not the part: a chapter URL flattens the part out,
+        // so two chapters in different parts of one book would collide.
+        both(
+          `book '${book.name}' chapters`,
+          chapter,
+          `chapter ${chapter.name} (in part ${part.name})`,
+        )
+        for (const section of chapter.sections) {
+          both(`chapter '${chapter.name}' sections`, section, `section ${section.name}`)
+        }
       }
     }
   }
-  return index
+
+  // ── Standalone items and their sections ──
+  for (const kind of ['article', 'newsletter', 'page', 'landing'] as const) {
+    for (const node of standaloneMapFor(graph, kind).values()) {
+      both(`all ${kind}s`, node, `${kind} ${node.name}`)
+      // A page sits at the locale root next to konyvek/cikkek/..., so its slug
+      // must not be a container segment. Checked here rather than in
+      // generateStaticParams so every consumer benefits, not just route
+      // generation - and so the anchor-only segments (allitasok, szakaszok,
+      // reszek) are covered by the same guard.
+      if (node.kind === 'page' && resolveContainerKey(node.locale, node.slug) !== null) {
+        throw new Error(
+          `Custom page slug "${node.slug}" collides with a container segment in ` +
+            `locale "${node.locale}". Rename the page.`,
+        )
+      }
+      for (const section of node.sections) {
+        // A standalone section carries no locale of its own; the item supplies it.
+        shape('name', `section ${section.name} of ${kind} ${node.name}`, section.name)
+        shape('slug', `section ${section.name} of ${kind} ${node.name}`, section.slug)
+        claim(`${kind} '${node.name}' section names`, section.name, `section ${section.name}`)
+        claim(
+          `${kind} '${node.name}' section slugs in locale '${node.locale}'`,
+          section.slug,
+          `section ${section.name}`,
+        )
+      }
+    }
+  }
+
+  // ── Namespace path segments ──
+  // A namespace is neither addressed nor anchored and appears in no reference, so
+  // it has no slug. Its name is still an identifier and still constrained.
+  //
+  // Only the SHAPE is checked, not per-parent uniqueness: namespaces are not graph
+  // nodes (namespace.yaml is skipped by the scan) and exist here only as the path
+  // string on each entity, assembled from the `name` in each namespace.yaml along
+  // the directory chain. Two sibling directories declaring the same name would
+  // collapse into one path, which this cannot see. No content does, and detecting
+  // it would mean loading namespaces as nodes - a bigger change than the risk
+  // warrants, since nothing addresses them.
+  const checkedNamespaces = new Set<string>()
+  for (const node of kbNodes(graph)) {
+    if (checkedNamespaces.has(node.namespace)) continue
+    checkedNamespaces.add(node.namespace)
+    for (const segment of node.namespace.split('/')) {
+      if (segment === '') continue
+      shape('name', `namespace '${node.namespace}'`, segment)
+    }
+  }
+
+  // ── Knowledge base ──
+  for (const node of kbNodes(graph)) {
+    const id = `${node.type} ${node.name}`
+
+    if (node.type === 'definition' || node.type === 'theorem') {
+      both(`all ${node.type}s`, node, id)
+    } else if (node.type === 'proof') {
+      both(`proofs of theorem '${node.proves.name}'`, node, id)
+    } else if (node.type === 'remark' && node.attachedTo) {
+      both(`remarks of ${node.attachedTo.type} '${node.attachedTo.name}'`, node, id)
+    } else {
+      // An owner-less remark: not addressable, but still validate its shape.
+      shape('name', id, node.name)
+      shape('slug', id, node.slug)
+    }
+
+    // Claims and terms sit under distinct anchor segments, so they get distinct
+    // scopes - unlike the single shared anchor namespace this replaces.
+    for (const [index, block] of node.body.entries()) {
+      if (block.type !== 'claim') continue
+      if (node.type === 'proof') {
+        throw new Error(
+          `Proof "${node.name}" contains a claim block ("${block.name}"). A proof is one ` +
+            `argument, not a set of numbered assertions; the claims it establishes belong ` +
+            `to the theorem being proved.`,
+        )
+      }
+      // The index, not just the name: two claims sharing a name must read as two
+      // distinct owners in the collision message.
+      const owner = `claim ${block.name} (body block ${index}) of ${id}`
+      shape('name', owner, block.name)
+      if (block.slug !== undefined) shape('slug', owner, block.slug)
+      claim(`claims of ${id}`, block.name, owner)
+      claim(`claim slugs of ${id}`, block.slug ?? block.name, owner)
+    }
+
+    for (const [termKey, term] of Object.entries(node.terms ?? {})) {
+      const owner = `term ${termKey} of ${id}`
+      // The key is the term's name, and a map cannot repeat a key, so name
+      // uniqueness is structural here - only the shape needs checking.
+      shape('name', owner, termKey)
+      if (term.slug !== undefined) shape('slug', owner, term.slug)
+      claim(`term slugs of ${id}`, term.slug ?? termKey, owner)
+    }
+  }
 }
 
-/** The anchor a claim reference resolves to, or null if the parent has no such claim. */
-function claimAnchorForName(parent: KbNode, claimName: string): string | null {
+
+
+/**
+ * The anchors a claim/term reference resolves to, in BOTH contexts.
+ *
+ * An anchor is page-relative, so one claim has two of them: on its node's own page
+ * the node drops out of the path (`allitasok.{slug}`), and inside the chapter that
+ * embeds the node it does not (`definiciok.{d}.allitasok.{slug}`). That is the same
+ * split `href`/`kbHref` already makes for the path half of the URL.
+ *
+ * `onPage` is what the glossary links to, and what a knowledge-base page renders
+ * for its own claims and terms.
+ */
+interface AnchorPair {
+  onPage: string
+  inChapter: string
+}
+
+function claimAnchorsForName(parent: KbNode, claimName: string): AnchorPair | null {
   for (const block of parent.body) {
-    if (block.type === 'claim' && block.name === claimName) return claimAnchorId(parent, block)
+    if (block.type === 'claim' && block.name === claimName) {
+      return {
+        onPage: claimAnchorId(ownPageScope(parent), block),
+        inChapter: claimAnchorId(embeddedScope(parent), block),
+      }
+    }
   }
   return null
 }
 
-function termAnchorForKey(parent: KbNode, termKey: string): string | null {
+function termAnchorsForKey(parent: KbNode, termKey: string): AnchorPair | null {
   const term = parent.terms?.[termKey]
-  return term ? termAnchorId(parent, termKey, term) : null
+  if (!term) return null
+  return {
+    onPage: termAnchorId(ownPageScope(parent), termKey, term),
+    inChapter: termAnchorId(embeddedScope(parent), termKey, term),
+  }
 }
 
-/** Identity of a citing node, or null when it is not something we can link to. */
-function backlinkOrigin(
-  graph: ContentGraph,
-  owner: RefOwner,
-): Omit<KbBacklink, 'refKey' | 'targetAnchor'> | null {
-  if (owner.kind === 'definition' || owner.kind === 'theorem' || owner.kind === 'proof' || owner.kind === 'remark') {
-    const node = owner.node
-    const page = kbPageExists(graph, node) ? urlForKbNode(node) : null
-    // Fall back to the embedding chapter when the citing node has no page in this
-    // environment, so the backlink is still followable.
-    const embedding = graph.embedding.get(entityKey(node.namespace, node.name))
-    const href = page ?? (embedding ? `${chapterUrlOf(embedding.chapter)}#${entityAnchorId(node)}` : null)
-    if (!href) return null
-    return {
-      ownerKind: owner.kind,
-      ownerName: node.name,
-      ownerTitle: kbNodeTitle(graph, node),
-      ownerUrl: href,
-    }
-  }
-  if (owner.kind === 'chapter') {
-    return {
-      ownerKind: 'chapter',
-      ownerName: owner.node.name,
-      ownerTitle: owner.node.title,
-      ownerUrl: chapterUrlOf(owner.node),
-    }
-  }
-  if (owner.kind === 'section') {
-    return {
-      ownerKind: 'section',
-      ownerName: owner.node.name,
-      ownerTitle: owner.node.title,
-      ownerUrl: `${chapterUrlOf(owner.parent)}#${owner.node.slug}`,
-    }
-  }
-  if (owner.kind === 'article' || owner.kind === 'newsletter' || owner.kind === 'page' || owner.kind === 'landing') {
-    return {
-      ownerKind: owner.kind,
-      ownerName: owner.node.name,
-      ownerTitle: owner.node.title,
-      ownerUrl: urlForStandalone(owner.node),
-    }
-  }
-  // standalone-section: the containing item is what has a URL, and it is yielded
-  // separately by refOwners, so nothing is lost by skipping the section itself.
-  return null
-}
 
 /**
  * Display title for a knowledge-base node.
@@ -1184,7 +1299,7 @@ export function kbNodeTitle(graph: ContentGraph, node: KbNode): string {
   if (node.type === 'proof') return `${capital}: ${kbNodeTitle(graph, node.proves)}`
   if (node.type === 'remark' && node.attachedTo) return `${capital}: ${kbNodeTitle(graph, node.attachedTo)}`
 
-  const index = graph.embedding.get(entityKey(node.namespace, node.name))?.index
+  const index = graph.embedding.get(keyForKbNode(node))?.index
   return index ? `${index} ${capital}` : capital
 }
 
@@ -1205,15 +1320,13 @@ function buildGlossary(graph: ContentGraph): GlossaryEntry[] {
     const pageUrl = urlForKbNode(node)
     if (!pageUrl) continue
     for (const [termKey, term] of Object.entries(node.terms)) {
-      const anchor = termAnchorId(node, termKey, term)
+      const anchor = termAnchorId(ownPageScope(node), termKey, term)
       entries.push({
         termKey,
         canonical: term.canonical ?? termKey,
         ownerName: node.name,
         ownerTitle: kbNodeTitle(graph, node),
         href: `${pageUrl}#${anchor}`,
-        referencedBy:
-          graph.backlinks.get(`${entityKey(node.namespace, node.name)}#${anchor}`)?.length ?? 0,
       })
     }
   }
@@ -1251,6 +1364,111 @@ function validateKbLinks(graph: ContentGraph): void {
   }
 }
 
+/**
+ * Every internal fragment must be an anchor some page actually renders.
+ *
+ * What this catches: a fragment that names something the target page has no
+ * business rendering — a claim that does not exist on that node, a stale anchor
+ * left behind by a rename, a claim/term anchor resolved in the wrong context (the
+ * two contexts disagree by design: a chapter page renders
+ * `definiciok.{d}.fogalmak.{f}`, the definition's own page renders `fogalmak.{f}`).
+ *
+ * What this CANNOT catch: a component rendering a different `id` than the builder
+ * put in the href. Both sides here derive from the same builder, so on that
+ * question the check agrees with itself by construction. That gap is closed by
+ * `scripts/check-anchors.mjs`, which reads the built HTML — ids on one side, hrefs
+ * on the other, nothing from the graph — as a postbuild step.
+ */
+function validateAnchors(graph: ContentGraph): void {
+  // page URL -> the ids that page renders
+  const rendered = new Map<string, Set<string>>()
+  const add = (url: string, anchor: string) => {
+    const set = rendered.get(url)
+    if (set) set.add(anchor)
+    else rendered.set(url, new Set([anchor]))
+  }
+
+  // A book index page renders one anchor per part.
+  for (const book of graph.books.values()) {
+    const url = urlForBook(book)
+    rendered.set(url, rendered.get(url) ?? new Set())
+    for (const part of book.parts) add(url, partAnchorId(part))
+  }
+
+  // A chapter page renders its sections, plus every entity embedded in it and
+  // that entity's claims and terms, in chapter context.
+  for (const chapter of graph.chapters.values()) {
+    const url = chapterUrlOf(chapter)
+    rendered.set(url, rendered.get(url) ?? new Set())
+    for (const section of chapter.sections) add(url, sectionAnchorId(section))
+  }
+  for (const node of kbNodes(graph)) {
+    const embedding = graph.embedding.get(keyForKbNode(node))
+    if (!embedding) continue
+    const url = chapterUrlOf(embedding.chapter)
+    add(url, kbAnchorPath(node))
+    for (const [a, scope] of [
+      [url, embeddedScope(node)] as const,
+    ]) {
+      for (const block of node.body) {
+        if (block.type === 'claim') add(a, claimAnchorId(scope, block))
+      }
+      for (const [termKey, term] of Object.entries(node.terms ?? {})) {
+        add(a, termAnchorId(scope, termKey, term))
+      }
+    }
+  }
+
+  // A knowledge-base page renders its own claims and terms, page-relative.
+  for (const node of kbNodes(graph)) {
+    if (!kbPageExists(graph, node)) continue
+    const url = urlForKbNode(node)
+    if (!url) continue
+    rendered.set(url, rendered.get(url) ?? new Set())
+    const scope = ownPageScope(node)
+    for (const block of node.body) {
+      if (block.type === 'claim') add(url, claimAnchorId(scope, block))
+    }
+    for (const [termKey, term] of Object.entries(node.terms ?? {})) {
+      add(url, termAnchorId(scope, termKey, term))
+    }
+  }
+
+  // Standalone items render their sections, using the item's locale.
+  for (const kind of ['article', 'newsletter', 'page', 'landing'] as const) {
+    for (const node of standaloneMapFor(graph, kind).values()) {
+      const url = urlForStandalone(node)
+      rendered.set(url, rendered.get(url) ?? new Set())
+      for (const section of node.sections) {
+        add(url, sectionAnchorId({ slug: section.slug, locale: node.locale }))
+      }
+    }
+  }
+
+  const check = (href: string | undefined, what: string) => {
+    if (!href) return
+    const hash = href.indexOf('#')
+    if (hash === -1) return
+    const [pathname, anchor] = [href.slice(0, hash), href.slice(hash + 1)]
+    const set = rendered.get(pathname)
+    // A page this build does not generate is validateKbLinks' business, not ours.
+    if (!set) return
+    if (!set.has(anchor)) {
+      throw new Error(
+        `A ${what} resolves to '${href}', but '${pathname}' renders no element with ` +
+          `id '${anchor}'. Anchors known on that page: ${[...set].sort().slice(0, 8).join(', ')}` +
+          `${set.size > 8 ? ` (+${set.size - 8} more)` : ''}.`,
+      )
+    }
+  }
+
+  for (const entry of allRefEntries(graph)) {
+    check(entry.href, `'${entry.target.type}' reference (chapter context)`)
+    check(entry.kbHref, `'${entry.target.type}' reference (knowledge-base context)`)
+  }
+  for (const row of graph.glossary) check(row.href, `glossary row for term "${row.termKey}"`)
+}
+
 function resolveRefHrefs(graph: ContentGraph): void {
   // A KB target with no page in this environment: its kbHref falls back to the
   // chapter anchor, which on a deployed build is the chapter's not-migrated stub.
@@ -1274,45 +1492,50 @@ function resolveRefHrefs(graph: ContentGraph): void {
   for (const entry of allRefEntries(graph)) {
     if (entry.target.type === 'claim' || entry.target.type === 'term') {
       const target = entry.target
-      const parentKey = entityKey(target.parent.namespace, target.parent.name)
-      const parent = kbNodeByKey(graph, parentKey)
-      const embedding = graph.embedding.get(parentKey)
+      // The parent's key IS the path minus the leaf, so no reconstruction.
+      const parent = kbNodeByKey(graph, target.parentFqn)
+      const embedding = graph.embedding.get(target.parentFqn)
       if (!parent || !embedding) {
         throw new Error(
-          `Cannot resolve ${target.type} reference to "${target.name}" - its parent ` +
-            `${target.parent.type} "${target.parent.name}" is not in the graph, or is embedded nowhere.`,
+          `Cannot resolve ${target.type} reference '${target.fqn}' - its parent ` +
+            `'${target.parentFqn}' is not in the graph, or is embedded nowhere.`,
         )
       }
-      const anchor = target.type === 'claim'
-        ? claimAnchorForName(parent, target.name)
-        : termAnchorForKey(parent, target.name)
-      if (!anchor) {
+      const anchors = target.type === 'claim'
+        ? claimAnchorsForName(parent, target.name)
+        : termAnchorsForKey(parent, target.name)
+      if (!anchors) {
         throw new Error(
-          `Cannot resolve ${target.type} reference to "${target.name}" - no such ${target.type} ` +
-            `on ${target.parent.type} "${target.parent.name}".`,
+          `Cannot resolve ${target.type} reference '${target.fqn}' - '${target.parentFqn}' ` +
+            `has no ${target.type} named "${target.name}".`,
         )
       }
-      entry.href = `${chapterUrlOf(embedding.chapter)}#${anchor}`
-      entry.kbHref = `${kbUrlOrFallback(parent, entry.href)}#${anchor}`
+      // Two contexts, two anchors: the chapter page renders the node embedded, so
+      // the path carries the node; its own page does not.
+      entry.href = `${chapterUrlOf(embedding.chapter)}#${anchors.inChapter}`
+      const kbPage = kbUrlOrFallback(parent, entry.href)
+      entry.kbHref = kbPage === entry.href
+        // Fell back to the chapter anchor, which already carries its own fragment.
+        ? entry.href
+        : `${kbPage}#${anchors.onPage}`
     } else if (
       entry.target.type === 'definition' || entry.target.type === 'theorem' ||
       entry.target.type === 'proof'       || entry.target.type === 'remark'
     ) {
       const target = entry.target
-      const key = entityKey(target.namespace, target.name)
-      const node = kbNodeByKey(graph, key)
-      const embedding = graph.embedding.get(key)
+      const node = kbNodeByKey(graph, target.fqn)
+      const embedding = graph.embedding.get(target.fqn)
       if (!node || !embedding) {
         throw new Error(
-          `Cannot resolve entity reference to ${target.type} "${target.name}" in ${target.namespace} - ` +
-            `not in the graph, or embedded in no chapter (so it is rendered nowhere).`,
+          `Cannot resolve entity reference '${target.fqn}' - not in the graph, or embedded ` +
+            `in no chapter (so it is rendered nowhere).`,
         )
       }
-      entry.href = `${chapterUrlOf(embedding.chapter)}#${entityAnchorId(node)}`
+      entry.href = `${chapterUrlOf(embedding.chapter)}#${kbAnchorPath(node)}`
       entry.kbHref = kbUrlOrFallback(node, entry.href)
     } else if (entry.target.type === 'book') {
       const target = entry.target
-      const book = graph.books.get(bookKey(target.name))
+      const book = graph.books.get(target.fqn)
       if (!book) {
         throw new Error(`Cannot resolve book reference to "${target.name}" - no such book in the content graph`)
       }
@@ -1322,25 +1545,24 @@ function resolveRefHrefs(graph: ContentGraph): void {
       entry.href = urlForBook(book)
     } else if (entry.target.type === 'chapter') {
       const target = entry.target
-      const chapter = graph.chapters.get(chapterKey(target.book, target.part, target.name))
+      const chapter = graph.chapters.get(target.fqn)
       if (!chapter) {
-        throw new Error(`Cannot resolve chapter reference to "${target.name}" in ${target.book}/${target.part}`)
+        throw new Error(`Cannot resolve chapter reference '${target.fqn}' - no such chapter.`)
       }
       entry.href = chapterUrlOf(chapter)
     } else if (entry.target.type === 'section') {
       const target = entry.target
-      const section = graph.sections.get(sectionKey(target.book, target.part, target.chapter, target.name))
+      const section = graph.sections.get(target.fqn)
       if (!section) {
-        throw new Error(`Cannot resolve section reference to "${target.name}" in ${target.book}/${target.part}/${target.chapter}`)
+        throw new Error(`Cannot resolve section reference '${target.fqn}' - no such section.`)
       }
-      // Section slug is the localized in-page anchor id (see SectionView).
-      entry.href = `${chapterUrlOf(section.chapter)}#${section.slug}`
+      entry.href = `${chapterUrlOf(section.chapter)}#${sectionAnchorId(section)}`
     } else if (
       entry.target.type === 'article'  || entry.target.type === 'newsletter' ||
       entry.target.type === 'page'     || entry.target.type === 'landing'
     ) {
       const target = entry.target
-      const node = standaloneMapFor(graph, target.type).get(standaloneKey(target.type, target.name))
+      const node = standaloneMapFor(graph, target.type as StandaloneKind).get(target.fqn)
       if (!node) {
         throw new Error(`Cannot resolve ${target.type} reference to "${target.name}" - no such ${target.type} in the content graph`)
       }

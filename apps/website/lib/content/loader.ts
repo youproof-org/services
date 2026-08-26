@@ -4,6 +4,7 @@ import path from 'path'
 import yaml from 'js-yaml'
 import { DEFAULT_LOCALE } from '@/lib/i18n/config'
 import type {
+  RefTarget,
   ContentBlock,
   RefMap,
   TermMap,
@@ -19,6 +20,7 @@ import type {
   ChapterNode,
   SectionNode,
 } from './types'
+import { isExternalTarget, parseFqn } from './fqn'
 
 // ---------------------------------------------------------------------------
 // Content directory
@@ -91,6 +93,15 @@ function normalizeBlock(raw: Record<string, unknown>): ContentBlock {
   if (out.type === 'details' && Array.isArray(out.blocks)) {
     out.blocks = toBlocks(out.blocks)
   }
+  // `embed` and `recall` carry a target in the same form as a reference, always
+  // pointing at a knowledge-base entity.
+  if (out.type === 'embed' || out.type === 'recall') {
+    const target = toRefTarget(out.target, `${out.type} block target`)
+    if (target.type === 'external') {
+      formatError(`${out.type} block target must be a knowledge-base entity, not a URL.`)
+    }
+    out.target = { type: target.type, name: target.name, fqn: target.fqn }
+  }
   return out as unknown as ContentBlock
 }
 
@@ -99,9 +110,95 @@ function toBlocks(raw: unknown): ContentBlock[] {
   return (raw as Record<string, unknown>[]).map(normalizeBlock)
 }
 
+/**
+ * Parse a `references` map: every `target` is a string, either a fully qualified
+ * name or an external URL (see fqn.ts for the scheme test that tells them apart).
+ *
+ * The ref key is in the message because that is what the author sees at the
+ * citation site (`[ref-key]`); the file comes from `inFile`, which wraps the whole
+ * load, so neither has to be threaded through every helper.
+ */
+export class ContentFormatError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'ContentFormatError'
+  }
+}
+
+/**
+ * A malformed reference target is a FORMAT violation, not a missing file.
+ *
+ * The distinction matters: the per-entity loader downgrades a plain Error to a
+ * warning and drops that entity, which for a bad target would mean a build that
+ * passes with a node silently absent. ContentFormatError is rethrown as fatal, so
+ * an unparseable or illegal target stops the build.
+ */
+function formatError(message: string): never {
+  throw new ContentFormatError(message)
+}
+
 function toRefMap(raw: unknown): RefMap {
   if (!raw || typeof raw !== 'object') return {}
-  return raw as RefMap
+  const out: RefMap = {}
+  for (const [refKey, value] of Object.entries(raw as Record<string, unknown>)) {
+    const entry = value as { display?: string; target?: unknown }
+    out[refKey] = {
+      display: typeof entry.display === 'string' ? entry.display : '',
+      target: toRefTarget(entry.target, `reference '${refKey}'`),
+    }
+  }
+  return out
+}
+
+/**
+ * Exported for tests, which build a raw graph directly and so would otherwise have
+ * to hand-write parsed targets — and would then be asserting against their own
+ * idea of the shape rather than the parser's.
+ */
+export function toRefTarget(raw: unknown, where: string): RefTarget {
+  if (typeof raw !== 'string') {
+    formatError(
+      `${where}: 'target' must be a string — either a fully qualified name ` +
+        `(e.g. definitions.gyuru.terms.integer-number) or a URL.`,
+    )
+  }
+  const target = raw.trim()
+  if (isExternalTarget(target)) return { type: 'external', url: target }
+  let parsed
+  try {
+    parsed = parseFqn(target, where)
+  } catch (err) {
+    formatError(err instanceof Error ? err.message : String(err))
+  }
+  return {
+    type: parsed.kind,
+    name: parsed.name,
+    fqn: parsed.fqn,
+    parentFqn: parsed.parentFqn,
+    parentKind: parsed.parentKind,
+  }
+}
+
+/**
+ * Attach the file to anything thrown while loading it.
+ *
+ * A bad reference target is authored in a YAML file, and the file is what the
+ * author needs to open — but the parse happens several helpers deep, inside block
+ * normalization that recurses through subsections. Wrapping the load is one edit
+ * per loader instead of a `where` parameter threaded through all 24 call sites, and
+ * it covers everything nested inside for free.
+ */
+function inFile<T>(filePath: string, load: () => T): T {
+  try {
+    return load()
+  } catch (err) {
+    const rel = path.relative(process.cwd(), filePath)
+    const message = err instanceof Error ? err.message : String(err)
+    // Preserve the class: a ContentFormatError is fatal to the build, a plain one
+    // is downgraded to a warning by the caller, and re-wrapping would flip that.
+    if (err instanceof ContentFormatError) throw new ContentFormatError(`${rel} — ${message}`)
+    throw new Error(`${rel} — ${message}`, { cause: err })
+  }
 }
 
 function toTermMap(raw: unknown): TermMap | undefined {
@@ -206,87 +303,95 @@ export interface RawRemark {
 }
 
 export function loadDefinition(filePath: string, namespace: string): RawDefinition {
-  const raw = readYaml(filePath)
-  return {
-    node: {
-      type: 'definition',
-      name: raw.name as string,
-      // `slug` falls back to a lowercased `name` (readSlug), so a knowledge-base
-      // file authored before the slug backfill still loads and still gets a URL.
-      slug: readSlug(raw, raw.name as string),
-      locale: readLocale(raw),
-      namespace,
-      title: raw.title as string | undefined,
-      labels: raw.labels as EntityLabels | undefined,
-      terms: toTermMap(raw.terms),
-      references: toRefMap(raw.references),
-      body: toBlocks(raw.body),
-    },
-    rawRemarks: toStringArray(raw.remarks),
-  }
+  return inFile(filePath, () => {
+    const raw = readYaml(filePath)
+    return {
+      node: {
+        type: 'definition',
+        name: raw.name as string,
+        // `slug` falls back to a lowercased `name` (readSlug), so a knowledge-base
+        // file authored before the slug backfill still loads and still gets a URL.
+        slug: readSlug(raw, raw.name as string),
+        locale: readLocale(raw),
+        namespace,
+        title: raw.title as string | undefined,
+        labels: raw.labels as EntityLabels | undefined,
+        terms: toTermMap(raw.terms),
+        references: toRefMap(raw.references),
+        body: toBlocks(raw.body),
+      },
+      rawRemarks: toStringArray(raw.remarks),
+    }
+  })
 }
 
 export function loadTheorem(filePath: string, namespace: string): RawTheorem {
-  const raw = readYaml(filePath)
-  return {
-    node: {
-      type: 'theorem',
-      name: raw.name as string,
-      // `slug` falls back to a lowercased `name` (readSlug), so a knowledge-base
-      // file authored before the slug backfill still loads and still gets a URL.
-      slug: readSlug(raw, raw.name as string),
-      locale: readLocale(raw),
-      namespace,
-      title: raw.title as string | undefined,
-      labels: raw.labels as EntityLabels | undefined,
-      terms: toTermMap(raw.terms),
-      references: toRefMap(raw.references),
-      body: toBlocks(raw.body),
-    },
-    rawProofs: toStringArray(raw.proofs),
-    rawRemarks: toStringArray(raw.remarks),
-  }
+  return inFile(filePath, () => {
+    const raw = readYaml(filePath)
+    return {
+      node: {
+        type: 'theorem',
+        name: raw.name as string,
+        // `slug` falls back to a lowercased `name` (readSlug), so a knowledge-base
+        // file authored before the slug backfill still loads and still gets a URL.
+        slug: readSlug(raw, raw.name as string),
+        locale: readLocale(raw),
+        namespace,
+        title: raw.title as string | undefined,
+        labels: raw.labels as EntityLabels | undefined,
+        terms: toTermMap(raw.terms),
+        references: toRefMap(raw.references),
+        body: toBlocks(raw.body),
+      },
+      rawProofs: toStringArray(raw.proofs),
+      rawRemarks: toStringArray(raw.remarks),
+    }
+  })
 }
 
 export function loadProof(filePath: string, namespace: string): RawProof {
-  const raw = readYaml(filePath)
-  return {
-    node: {
-      type: 'proof',
-      name: raw.name as string,
-      // `slug` falls back to a lowercased `name` (readSlug), so a knowledge-base
-      // file authored before the slug backfill still loads and still gets a URL.
-      slug: readSlug(raw, raw.name as string),
-      locale: readLocale(raw),
-      namespace,
-      title: raw.title as string | undefined,
-      labels: raw.labels as EntityLabels | undefined,
-      terms: toTermMap(raw.terms),
-      references: toRefMap(raw.references),
-      body: toBlocks(raw.body),
-    },
-    rawRemarks: toStringArray(raw.remarks),
-  }
+  return inFile(filePath, () => {
+    const raw = readYaml(filePath)
+    return {
+      node: {
+        type: 'proof',
+        name: raw.name as string,
+        // `slug` falls back to a lowercased `name` (readSlug), so a knowledge-base
+        // file authored before the slug backfill still loads and still gets a URL.
+        slug: readSlug(raw, raw.name as string),
+        locale: readLocale(raw),
+        namespace,
+        title: raw.title as string | undefined,
+        labels: raw.labels as EntityLabels | undefined,
+        terms: toTermMap(raw.terms),
+        references: toRefMap(raw.references),
+        body: toBlocks(raw.body),
+      },
+      rawRemarks: toStringArray(raw.remarks),
+    }
+  })
 }
 
 export function loadRemark(filePath: string, namespace: string): RawRemark {
-  const raw = readYaml(filePath)
-  return {
-    node: {
-      type: 'remark',
-      name: raw.name as string,
-      // `slug` falls back to a lowercased `name` (readSlug), so a knowledge-base
-      // file authored before the slug backfill still loads and still gets a URL.
-      slug: readSlug(raw, raw.name as string),
-      locale: readLocale(raw),
-      namespace,
-      title: raw.title as string | undefined,
-      labels: raw.labels as EntityLabels | undefined,
-      terms: toTermMap(raw.terms),
-      references: toRefMap(raw.references),
-      body: toBlocks(raw.body),
-    },
-  }
+  return inFile(filePath, () => {
+    const raw = readYaml(filePath)
+    return {
+      node: {
+        type: 'remark',
+        name: raw.name as string,
+        // `slug` falls back to a lowercased `name` (readSlug), so a knowledge-base
+        // file authored before the slug backfill still loads and still gets a URL.
+        slug: readSlug(raw, raw.name as string),
+        locale: readLocale(raw),
+        namespace,
+        title: raw.title as string | undefined,
+        labels: raw.labels as EntityLabels | undefined,
+        terms: toTermMap(raw.terms),
+        references: toRefMap(raw.references),
+        body: toBlocks(raw.body),
+      },
+    }
+  })
 }
 
 // ---------------------------------------------------------------------------
@@ -298,16 +403,18 @@ export function loadSection(
   figureUrlPrefix: string,
   figuresDir?: string
 ): { name: string; slug: string; locale: string; title: string; body: ContentBlock[]; references: RefMap } {
-  const raw = readYaml(filePath)
-  const name = raw.name as string
-  return {
-    name,
-    slug: readSlug(raw, name),
-    locale: readLocale(raw),
-    title: raw.title as string,
-    body: resolveBlocksFigures(toBlocks(raw.body), figureUrlPrefix, figuresDir),
-    references: toRefMap(raw.references),
-  }
+  return inFile(filePath, () => {
+    const raw = readYaml(filePath)
+    const name = raw.name as string
+    return {
+      name,
+      slug: readSlug(raw, name),
+      locale: readLocale(raw),
+      title: raw.title as string,
+      body: resolveBlocksFigures(toBlocks(raw.body), figureUrlPrefix, figuresDir),
+      references: toRefMap(raw.references),
+    }
+  })
 }
 
 // `published-at` in the model: the canonical string `'YYYY-MM-DD HH:MM:SS'`,
@@ -322,13 +429,6 @@ export function loadSection(
 // validators; the graph builder re-throws it past its per-item resilience
 // try/catch (which otherwise skips a broken file), so a format violation is a
 // hard, fatal build error rather than a silently-skipped item.
-export class ContentFormatError extends Error {
-  constructor(message: string) {
-    super(message)
-    this.name = 'ContentFormatError'
-  }
-}
-
 const PUBLISHED_AT_RE = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/
 
 function toPublishedAt(raw: unknown, filePath: string): string | undefined {
@@ -390,42 +490,50 @@ export interface RawChapter {
 }
 
 export function loadChapter(filePath: string): RawChapter {
-  const raw = readYaml(filePath)
-  const name = raw.name as string
-  return {
-    name,
-    slug: readSlug(raw, name),
-    locale: readLocale(raw),
-    title: raw.title as string,
-    publishedAt: toPublishedAt(raw['published-at'], filePath),
-    legacyPath: typeof raw['legacy-path'] === 'string' ? (raw['legacy-path'] as string) : undefined,
-    excerpt: typeof raw.excerpt === 'string' ? (raw.excerpt as string) : undefined,
-    sectionNames: toStringArray(raw.sections),
-    abstract: toBlocks(raw.abstract),
-    prerequisiteWarning: raw['prerequisite-warning']
-      ? toBlocks(raw['prerequisite-warning'])
-      : undefined,
-    prologue: toBlocks(raw.prologue),
-    epilogue: toBlocks(raw.epilogue),
-    references: toRefMap(raw.references),
-    thumbnail: toThumbnail(raw.thumbnail),
-    meta: toMeta(raw.meta),
-  }
+  return inFile(filePath, () => {
+    const raw = readYaml(filePath)
+    const name = raw.name as string
+    return {
+      name,
+      slug: readSlug(raw, name),
+      locale: readLocale(raw),
+      title: raw.title as string,
+      publishedAt: toPublishedAt(raw['published-at'], filePath),
+      legacyPath: typeof raw['legacy-path'] === 'string' ? (raw['legacy-path'] as string) : undefined,
+      excerpt: typeof raw.excerpt === 'string' ? (raw.excerpt as string) : undefined,
+      sectionNames: toStringArray(raw.sections),
+      abstract: toBlocks(raw.abstract),
+      prerequisiteWarning: raw['prerequisite-warning']
+        ? toBlocks(raw['prerequisite-warning'])
+        : undefined,
+      prologue: toBlocks(raw.prologue),
+      epilogue: toBlocks(raw.epilogue),
+      references: toRefMap(raw.references),
+      thumbnail: toThumbnail(raw.thumbnail),
+      meta: toMeta(raw.meta),
+    }
+  })
 }
 
 export interface RawPart {
   name: string
+  slug: string
+  locale: string
   title: string
   chapterNames: string[]
 }
 
 export function loadPart(filePath: string): RawPart {
-  const raw = readYaml(filePath)
-  return {
-    name: raw.name as string,
-    title: raw.title as string,
-    chapterNames: toStringArray(raw.chapters),
-  }
+  return inFile(filePath, () => {
+    const raw = readYaml(filePath)
+    return {
+      name: raw.name as string,
+      slug: readSlug(raw, raw.name as string),
+      locale: readLocale(raw),
+      title: raw.title as string,
+      chapterNames: toStringArray(raw.chapters),
+    }
+  })
 }
 
 export interface RawBook {
@@ -460,23 +568,25 @@ function toItemList(raw: unknown): { items: string[] } | undefined {
 }
 
 export function loadBook(filePath: string): RawBook {
-  const raw = readYaml(filePath)
-  const name = raw.name as string
-  return {
-    name,
-    slug: readSlug(raw, name),
-    locale: readLocale(raw),
-    title: raw.title as string,
-    partNames: toStringArray(raw.parts),
-    thumbnail: toThumbnail(raw.thumbnail),
-    publishedAt: toPublishedAt(raw['published-at'], filePath),
-    legacyPath: typeof raw['legacy-path'] === 'string' ? (raw['legacy-path'] as string) : undefined,
-    excerpt: typeof raw.excerpt === 'string' ? (raw.excerpt as string) : undefined,
-    abstract: toBlocks(raw.abstract),
-    teaser: toItemList(raw.teaser),
-    bibliography: toItemList(raw.bibliography),
-    meta: toMeta(raw.meta),
-  }
+  return inFile(filePath, () => {
+    const raw = readYaml(filePath)
+    const name = raw.name as string
+    return {
+      name,
+      slug: readSlug(raw, name),
+      locale: readLocale(raw),
+      title: raw.title as string,
+      partNames: toStringArray(raw.parts),
+      thumbnail: toThumbnail(raw.thumbnail),
+      publishedAt: toPublishedAt(raw['published-at'], filePath),
+      legacyPath: typeof raw['legacy-path'] === 'string' ? (raw['legacy-path'] as string) : undefined,
+      excerpt: typeof raw.excerpt === 'string' ? (raw.excerpt as string) : undefined,
+      abstract: toBlocks(raw.abstract),
+      teaser: toItemList(raw.teaser),
+      bibliography: toItemList(raw.bibliography),
+      meta: toMeta(raw.meta),
+    }
+  })
 }
 
 // ---------------------------------------------------------------------------
@@ -504,22 +614,24 @@ export interface RawStandalone {
 // `references` included — which target types a standalone item may actually point
 // at is enforced later, by validateReferences in graph.ts.
 export function loadStandalone(filePath: string): RawStandalone {
-  const raw = readYaml(filePath)
-  const name = raw.name as string
-  return {
-    name,
-    slug: readSlug(raw, name),
-    locale: readLocale(raw),
-    title: raw.title as string,
-    publishedAt: toPublishedAt(raw['published-at'], filePath),
-    legacyPath: typeof raw['legacy-path'] === 'string' ? (raw['legacy-path'] as string) : undefined,
-    excerpt: typeof raw.excerpt === 'string' ? (raw.excerpt as string) : undefined,
-    sectionNames: toStringArray(raw.sections),
-    abstract: toBlocks(raw.abstract),
-    prologue: toBlocks(raw.prologue),
-    epilogue: toBlocks(raw.epilogue),
-    thumbnail: toThumbnail(raw.thumbnail),
-    meta: toMeta(raw.meta),
-    references: toRefMap(raw.references),
-  }
+  return inFile(filePath, () => {
+    const raw = readYaml(filePath)
+    const name = raw.name as string
+    return {
+      name,
+      slug: readSlug(raw, name),
+      locale: readLocale(raw),
+      title: raw.title as string,
+      publishedAt: toPublishedAt(raw['published-at'], filePath),
+      legacyPath: typeof raw['legacy-path'] === 'string' ? (raw['legacy-path'] as string) : undefined,
+      excerpt: typeof raw.excerpt === 'string' ? (raw.excerpt as string) : undefined,
+      sectionNames: toStringArray(raw.sections),
+      abstract: toBlocks(raw.abstract),
+      prologue: toBlocks(raw.prologue),
+      epilogue: toBlocks(raw.epilogue),
+      thumbnail: toThumbnail(raw.thumbnail),
+      meta: toMeta(raw.meta),
+      references: toRefMap(raw.references),
+    }
+  })
 }

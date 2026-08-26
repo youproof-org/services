@@ -44,11 +44,11 @@ is `hu`.
 | Custom page | `/{locale}/{slug}` — **no container segment** |
 | Site root | `/` → **301 → `/{DEFAULT_LOCALE}`** (§6) |
 
-Parts and sections are **not** in the public URL — the chapter is the deepest
-routed page (unchanged from today). Sections nonetheless render as in-page
-**HTML anchors** (`<section id=…>`) and are the target of in-chapter section
-cross-references (`…/{chapter}#{section}`); that anchor ID is a locale-dependent
-**`slug`** (§4b). Knowledge-base entities have **no URLs** of their own (§4a).
+Parts and sections are **not** in the public URL. Both nonetheless render as
+in-page **HTML anchors** and are cross-reference targets — a part on its book's
+index page, a section on its item's page — keyed by a locale-dependent **`slug`**
+(§4b). Knowledge-base entities have URL shapes of their own, nesting owned types
+under their owner and keeping namespaces out of the path (§4a).
 
 Concrete `hu` examples (from §3):
 
@@ -126,43 +126,55 @@ The same conceptual entity (e.g. "the cryptography book") will be represented as
 
 ### 4a. Addendum — knowledge-base entities
 
-Investigated per the planfile. Findings:
+KB entity types are `definition`, `theorem`, `proof`, `remark`, plus `namespace`
+(a grouping node). **There are no `lemmas`.**
 
-- KB entity types are `definition`, `theorem`, `proof`, `remark`, plus `namespace`
-  (a grouping node). **There are no `lemmas`.**
-- **They have no addressable URLs.** They are rendered **inline inside a parent
-  chapter** via `embed`/`recall` content blocks, anchored by opaque base64 IDs
-  (`lib/utils/entity-id.ts`, `claim-id.ts`, `term-id.ts`). An entity's address is
-  `{embedding-chapter-url}#{base64-id}`.
-- Internal cross-references to them resolve to that
-  `{chapter-url}#{id}` at build time (`graph.ts` `resolveClaimRefHrefs` /
-  `buildEntityChapterInfo`).
-- `namespace` is expressed only as a **path string** built from the `name` chain
-  of `namespace.yaml` files; it is not materialized as a routed node.
+All four entity types are **addressable** and carry both `locale` and `slug`. Their
+URLs are deliberately **independent of namespace position** — namespaces are
+expected to be reorganized, and a node's URL must not move when that happens — so a
+definition or theorem sits at a flat path and a proof or remark nests under the node
+that owns it. `lib/i18n/url.ts` is the single constructor for all of them.
 
-**Decision:** KB entities and namespaces (and `part`, which is likewise flattened
-out of URLs and has no anchor) get a **`locale` field only — no `slug`** — for a
-uniform per-file locale and to prepare for future per-locale KB content.
+An entity is *also* rendered inline inside a chapter, via `embed`/`recall` content
+blocks. That gives it two addresses, and which one a cross-reference resolves to
+depends on the **rendering context**, not on the target: a reference rendered on a
+chapter page resolves to the in-chapter anchor, and the same reference on a
+knowledge-base page resolves to the target's own page. Both are resolved at build
+time — `RefEntry.href` and `RefEntry.kbHref` in `lib/content/graph.ts`.
 
-### 4b. Addendum — sections (localized anchor slugs)
+`namespace` is the one type with **`locale` only, no `slug`**. It is not
+materialized as a routed node and has no anchor; it exists solely as a slash-joined
+path string built from the `name` of each `namespace.yaml` down the directory chain
+(`/szamelmeleti-alapok/modularis-aritmetika`), which groups entities and appears in
+no cross-reference.
 
-Sections have no routed URL, but they **do** get an HTML element ID and are the
-target of in-chapter section cross-references. Today that ID is the section's
-`name` (`<section id={name}>` in `SectionView.tsx`; cross-ref href
-`…/{chapter}#{name}` in `InlineText.tsx`).
+It does reach one public URL, though not a page one: a knowledge-base figure is
+served from `/content/knowledge-base/{namespace}/{type}/figures/…`, so the namespace
+is a directory segment there. That is the one respect in which reorganizing a
+namespace is not free — a node's page URL and anchors are unaffected, but its figure
+asset URLs move. Harmless in practice, since assets are re-synced and re-referenced
+on every build and nothing outside the build links them, and consistent with §5:
+asset URLs are locale-independent and separate from the page URL model.
 
-**Decision:** sections get **both `locale` and `slug`**. The `slug` — not `name` —
-becomes the localized HTML element ID and the `#…` anchor used by section
-cross-references, so anchors read in the page's language. `name` stays the
-language-independent internal ID that cross-references resolve against.
+### 4b. Addendum — parts and sections (localized anchor slugs)
+
+Neither a `part` nor a `section` has a routed URL — a part is flattened out of
+chapter URLs, and a section is one heading inside its chapter or standalone item.
+Both are nonetheless **addressable by anchor**: a part on its book's index page, a
+section on its item's page, and both are cross-reference targets.
+
+Both therefore carry **`locale` and `slug`**. The `slug` — not `name` — is what
+appears in the anchor, so a fragment reads in the page's language; `name` stays the
+language-independent internal ID that cross-references resolve against. See
+[§9](#9-identifier-rules--names-and-slugs) for the anchor shape.
 
 ### Field summary
 
 | category | types | `locale` | `slug` |
 |---|---|---|---|
-| Addressable (own URL) | `book`, `chapter`, `article`, `newsletter`, `landing`, `page` | ✔ | ✔ (URL segment) |
-| Anchored (no URL, in-page anchor) | `section` | ✔ | ✔ (HTML element ID) |
-| Inline / structural (no URL, no anchor) | `part`, `definition`, `theorem`, `proof`, `remark`, `namespace` | ✔ | — |
+| Addressable (own URL) | `book`, `chapter`, `article`, `newsletter`, `landing`, `page`, `definition`, `theorem`, `proof`, `remark` | ✔ | ✔ (URL segment) |
+| Anchored (no URL, in-page anchor) | `part`, `section`, `claim` block, `terms` entry | ✔ (the entity's; a claim/term takes its owner's) | ✔ (anchor segment) |
+| Structural (no URL, no anchor) | `namespace` | ✔ | — |
 
 ---
 
@@ -283,25 +295,49 @@ the zone rule ships) — starting at `/` would traverse nothing.
 
 ---
 
-## 9. Slug uniqueness rules
+## 9. Identifier rules — names and slugs
 
-The real constraint is: **no two pages may resolve to the same URL, and no two
-sections within a chapter may share an anchor.** The uniqueness scope therefore
-follows the URL/anchor shape, not a blanket "per-type" rule. `name` (the internal
-cross-reference ID) is a *separate* namespace and keeps its existing
-global-per-type uniqueness — this section is only about `slug`.
+The real constraint is: **no two pages may resolve to the same URL, no two nodes on
+one page may share an anchor, and no reference may be ambiguous.** The uniqueness
+scope therefore follows the address shape, not a blanket "per-type" rule.
 
-Recommended rule (enforced by the loader/validator), per locale:
+`name` and `slug` are two *separate* namespaces with the **same scopes**, differing
+only in that a slug is unique **per locale** (a future `en` file may reuse an `hu`
+slug) while a name is unique **across locales** (it is the same id in every
+language). Each scope is the identifier's position in the cross-reference grammar:
+what disambiguates a reference is what disambiguates the identifier. The
+author-facing statement of the same rules lives in the content repo's
+`docs/content-model.md`; enforcement is `validateIdentifiers` in
+`lib/content/graph.ts`.
 
-| type | slug must be unique within… | why |
+### Character rule
+
+One pattern for every name and every slug: `^[a-z0-9]+(?:-[a-z0-9]+)*$`.
+
+What has to hold is *no `.`, no `/`, no `:`* — `.` separates the segments of the
+reference and anchor grammars, `/` separates URL segments, `:` marks an external
+target. The full kebab pattern costs nothing more and keeps names and slugs the
+same shape of string, differing only in language.
+
+### Uniqueness scopes
+
+| type | unique within… | why |
 |---|---|---|
-| `book` | all books in the locale | URL `/{loc}/konyvek/{book-slug}` |
-| `article` | all articles in the locale | URL `/{loc}/cikkek/{slug}` |
-| `newsletter` | all newsletters in the locale | URL `/{loc}/hirek/{slug}` |
-| `landing` | all landings in the locale | URL `/{loc}/landing/{slug}` |
-| `page` | all pages in the locale **+ not equal to any container segment** | URL `/{loc}/{slug}` sits at the locale root next to `konyvek`/`cikkek`/… |
-| `chapter` | its **parent book** (not globally) | URL `/{loc}/konyvek/{book-slug}/fejezetek/{chapter-slug}` |
-| `section` | its **parent chapter** (not globally) | in-page anchor `…#{section-slug}` |
+| `book` | all books | URL `/{loc}/konyvek/{slug}` |
+| `article` | all articles | URL `/{loc}/cikkek/{slug}` |
+| `newsletter` | all newsletters | URL `/{loc}/hirek/{slug}` |
+| `landing` | all landings | URL `/{loc}/landing/{slug}` |
+| `page` | all pages **+ not equal to any container segment** | URL `/{loc}/{slug}` sits at the locale root next to `konyvek`/`cikkek`/… |
+| `part` | its **parent book** | anchor `reszek.{slug}` on the book index page |
+| `chapter` | its **parent book** (not globally) | URL `/{loc}/konyvek/{book}/fejezetek/{slug}` |
+| `section` | its **parent chapter** or standalone item | anchor `szakaszok.{slug}` |
+| `definition` | all definitions | URL `/{loc}/tudasbazis/definiciok/{slug}` — flat, so the slug carries no namespace |
+| `theorem` | all theorems | URL `/{loc}/tudasbazis/tetelek/{slug}` |
+| `proof` | its **owning theorem** | URL nests under the theorem |
+| `remark` | its **owning** definition / theorem / proof | URL nests under the owner |
+| `claim` | its owning definition / theorem / remark | anchor `…allitasok.{slug}` |
+| `terms` entry | its owning node | anchor `…fogalmak.{slug}` |
+| `namespace` (name only) | its parent namespace | appears in no URL, anchor or reference |
 
 ### Examples
 
@@ -315,10 +351,14 @@ Recommended rule (enforced by the loader/validator), per locale:
   `/hu/konyvek/book-b/fejezetek/bevezetes`) — the parent book segment
   disambiguates.
 - Two different chapters each contain a section with slug `attekintes`
-  (`…/fejezetek/ch-1#attekintes` and `…/fejezetek/ch-2#attekintes`) — the anchor
-  is page-scoped.
+  (`…/fejezetek/ch-1#szakaszok.attekintes` and
+  `…/fejezetek/ch-2#szakaszok.attekintes`) — the anchor is page-scoped.
+- A definition and a theorem both slugged `gyuru` —
+  `/hu/tudasbazis/definiciok/gyuru` and `/hu/tudasbazis/tetelek/gyuru`.
+- A claim and a term on the same node both slugged `nullelem` —
+  `#…allitasok.nullelem` and `#…fogalmak.nullelem`.
 - The `hu` book slug `alice-es-bob` and a future `en` book slug `alice-and-bob`
-  are independent — uniqueness is per-locale.
+  are independent — slug uniqueness is per-locale.
 
 **Rejected** (validator fails the build):
 
@@ -326,10 +366,12 @@ Recommended rule (enforced by the loader/validator), per locale:
   `/hu/cikkek/pi-nap`.
 - A custom page with slug `konyvek` — collides with the `book` container segment
   at the locale root (`/hu/konyvek`). This is the multi-locale generalization of
-  today's `RESERVED_SLUGS` guard.
+  today's `RESERVED_SLUGS` guard, and it now also covers the anchor-only segments
+  `allitasok`, `szakaszok` and `reszek`.
 - Two chapters **in the same book** both with slug `bevezetes`.
 - Two sections **in the same chapter** both with slug `attekintes` — duplicate
   in-page anchor.
+- Any name or slug containing a `.` — it would split into two grammar segments.
 
 ---
 
@@ -339,4 +381,4 @@ Recommended rule (enforced by the loader/validator), per locale:
   `.org` (manifest generator emits `/` → `/hu`). ✅ confirmed.
 - **Container word `landing`** — kept English (`landing`); no Hungarian word.
   ✅ confirmed.
-- **Slug uniqueness scope** — per §9 above. ✅ confirmed.
+- **Name and slug uniqueness scope** — per §9 above. ✅ confirmed.

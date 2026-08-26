@@ -1,3 +1,5 @@
+import type { RefTargetKind } from './fqn'
+
 // ---------------------------------------------------------------------------
 // Content blocks
 // ---------------------------------------------------------------------------
@@ -30,10 +32,14 @@ export interface FigureBlock {
   height?: number
 }
 
+/**
+ * An `embed` or `recall` block's target: always a knowledge-base entity, addressed
+ * by the same parsed path as a cross-reference (see PathRefTarget).
+ */
 export interface EmbedTarget {
-  type: string
+  type: RefTargetKind
   name: string
-  namespace: string
+  fqn: string
 }
 
 export interface EmbedBlock {
@@ -119,65 +125,39 @@ export interface ExternalRefTarget {
   url: string
 }
 
-export interface KnowledgeBaseRefTarget {
-  type: 'definition' | 'theorem' | 'proof' | 'remark'
+/**
+ * An internal cross-reference target: a parsed fully qualified name (see fqn.ts).
+ *
+ * One shape for all fourteen kinds, replacing the eight hand-written interfaces
+ * this used to be. Those carried the parentage each kind happened to need —
+ * `namespace` on an entity, `book` + `part` on a chapter, a nested `parent` object
+ * on a claim — which meant the shape of a target depended on what it pointed at,
+ * and adding a kind meant adding an interface. The path already encodes parentage,
+ * so it is read off the path instead.
+ *
+ * `type` keeps its name so the many `target.type === 'book'` checks still read the
+ * same, and there is no `type` field in the YAML any more: the leading container
+ * decides the root type and the last one decides the leaf's, so a declared type
+ * could only ever duplicate or contradict the path.
+ */
+export interface PathRefTarget {
+  type: RefTargetKind
+  /** Leaf key — a `name`, never a slug. */
   name: string
-  namespace: string
+  /** The path as authored, e.g. "theorems.t.proofs.p". Also the graph's map key. */
+  fqn: string
+  /** The path minus its last step; '' when the leaf sits at the root. */
+  parentFqn: string
+  /** Kind of the parent, or null at the root. Lets a consumer branch without re-parsing. */
+  parentKind: RefTargetKind | null
 }
 
-// A book's index page. Addressed by the language-independent `name` (parts are
-// flattened out of URLs, so no further parentage is needed); resolution goes
-// through urlForBook, which supplies the book's own locale + slug.
-export interface BookRefTarget {
-  type: 'book'
-  name: string
-}
+export type RefTarget = ExternalRefTarget | PathRefTarget
 
-export interface ChapterRefTarget {
-  type: 'chapter'
-  book: string
-  part: string
-  name: string
+/** True for every target except an external URL — i.e. everything with an `fqn`. */
+export function isPathTarget(target: RefTarget): target is PathRefTarget {
+  return target.type !== 'external'
 }
-
-export interface SectionRefTarget {
-  type: 'section'
-  book: string
-  part: string
-  chapter: string
-  name: string
-}
-
-export interface ClaimRefTarget {
-  type: 'claim'
-  name: string
-  parent: KnowledgeBaseRefTarget
-}
-
-export interface TermRefTarget {
-  type: 'term'
-  name: string
-  parent: KnowledgeBaseRefTarget
-}
-
-// A standalone item (article/newsletter/page/landing). Addressed by the
-// language-independent `name`, not the localized `slug`, so the href stays correct
-// if the slug is ever localized — resolution goes through urlForStandalone, which
-// supplies the target's own locale + slug.
-export interface StandaloneRefTarget {
-  type: StandaloneKind
-  name: string
-}
-
-export type RefTarget =
-  | ExternalRefTarget
-  | KnowledgeBaseRefTarget
-  | ClaimRefTarget
-  | TermRefTarget
-  | BookRefTarget
-  | ChapterRefTarget
-  | SectionRefTarget
-  | StandaloneRefTarget
 
 export interface RefEntry {
   display: string
@@ -342,8 +322,14 @@ export interface ChapterNode {
   meta?: MetaInfo                  // optional crawler/social metadata (kebab: meta)
 }
 
+// A part has no URL — it is flattened out of chapter paths — but it IS anchored,
+// on its book's index page, and is a cross-reference target. So it carries a slug
+// like every other addressable node, plus a locale to localize that anchor's
+// container segment with.
 export interface PartNode {
-  name: string
+  name: string                    // language-independent internal id (cross-refs)
+  slug: string                    // localized in-page anchor segment (not a URL segment)
+  locale: string
   title: string
   book: BookNode                  // parent reference
   chapters: ChapterNode[]
@@ -424,10 +410,15 @@ export type KbNode = DefinitionNode | TheoremNode | ProofNode | RemarkNode
  * locale of their own, so the owner supplies it (see claimAnchorId/termAnchorId).
  */
 export interface AnchorParent {
-  type: string
-  namespace: string
-  name: string
   locale: string
+  /**
+   * Dotted anchor path of the node owning these claims/terms, RELATIVE to the page
+   * being rendered — the node's full path inside a chapter that embeds it, and
+   * empty on the node's own page, where the node drops out of the path. Built by
+   * `embeddedScope`/`ownPageScope` in lib/content/urls.ts; the components only
+   * thread it through.
+   */
+  prefix: string
 }
 
 /**
@@ -442,27 +433,6 @@ export interface EmbeddingContext {
   index?: string                  // chapter-scoped label, e.g. "11.3."
 }
 
-/** What may cite a knowledge-base node. */
-export type BacklinkOwnerKind =
-  | 'definition' | 'theorem' | 'proof' | 'remark'
-  | 'chapter' | 'section'
-  | StandaloneKind
-
-/**
- * One inbound reference to a knowledge-base node, for the "Referenced by" block.
- *
- * `targetAnchor` is set when the reference cites a specific claim or term rather
- * than the node as a whole; the KB page uses it to cross-highlight the backlink
- * against the inline claim/term it points at.
- */
-export interface KbBacklink {
-  ownerKind: BacklinkOwnerKind
-  ownerName: string               // language-independent id of the citing node
-  ownerTitle: string              // display label for the link
-  ownerUrl: string                // where the citing node can be read
-  refKey: string                  // the `[ref-key]` used at the citation site
-  targetAnchor?: string           // "claim-{slug}" | "term-{slug}" when claim/term-scoped
-}
 
 /**
  * One row of the glossary. A term has no page, so the entry points at the anchor
@@ -475,18 +445,28 @@ export interface GlossaryEntry {
   canonical: string               // Hungarian display form
   ownerName: string
   ownerTitle: string
-  href: string                    // owner's KB page + "#term-{slug}"
-  referencedBy: number            // inbound reference count
+  // Owner's KB page + the page-relative term anchor ("#fogalmak.{slug}") — the
+  // page-relative form because that is the page this links to, where the term is
+  // rendered without its node in the path.
+  href: string
 }
 
 // ---------------------------------------------------------------------------
 // Content graph
-// Map keys:
-//   Entities:     "/entities/{namespace}/{name}"
-//   Books:        "/books/{book}"
-//   Parts:        "/books/{book}/{part}"
-//   Chapters:     "/books/{book}/{part}/{chapter}"
-//   Sections:     "/books/{book}/{part}/{chapter}/{section}"
+//
+// Every map is keyed by the node's fully qualified name — the same string a
+// cross-reference target is — so a lookup is `graph.theorems.get(target.fqn)` with
+// no key construction. See keys.ts for the builders and fqn.ts for the grammar:
+//
+//   books.{book}
+//   books.{book}.parts.{part}
+//   books.{book}.chapters.{chapter}                    (no part: it is not in the address)
+//   books.{book}.chapters.{chapter}.sections.{section}
+//   articles.{name} / newsletters.{name} / pages.{name} / landings.{name}
+//   definitions.{name}
+//   theorems.{name}
+//   theorems.{theorem}.proofs.{proof}
+//   {owner}.remarks.{remark}                           (owner: definition, theorem or proof)
 // ---------------------------------------------------------------------------
 
 export interface ContentGraph {
@@ -508,12 +488,6 @@ export interface ContentGraph {
   // ── Derived, built once at graph-build time ──
   /** Entity key -> where the node is embedded in the narrative. */
   embedding:   Map<string, EmbeddingContext>
-  /**
-   * Inbound references, keyed by entity key for a whole-node citation and by
-   * "{entityKey}#{anchor}" for a claim/term-scoped one. A KB page reads both: the
-   * node's own list, plus the per-claim/term lists it cross-highlights against.
-   */
-  backlinks:   Map<string, KbBacklink[]>
   /** Every term definition in the knowledge base, sorted by `canonical`. */
   glossary:    GlossaryEntry[]
 }

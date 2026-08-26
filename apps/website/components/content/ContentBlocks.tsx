@@ -9,6 +9,7 @@ import type {
   AnchorParent,
 } from '@/lib/content/types'
 import { getContentGraph } from '@/lib/content'
+import { kbAnchorPath, embeddedScope } from '@/lib/content/urls'
 
 type AnyEntity = DefinitionNode | TheoremNode | ProofNode | RemarkNode
 import InlineText from './InlineText'
@@ -111,9 +112,7 @@ export default function ContentBlocks({ blocks, embedIndices, figureIndices, ref
             )
           case 'embed': {
             const graph = getContentGraph()
-            const { type: entityType, name, namespace } = block.target
-            const ns = namespace.startsWith('/') ? namespace.slice(1) : namespace
-            const entityKey = `/entities/${ns}/${name}`
+            const { type: entityType, name, fqn: entityKey } = block.target
             const label = embedIndices?.[entityKey]
 
             let entity: AnyEntity | undefined =
@@ -150,10 +149,6 @@ export default function ContentBlocks({ blocks, embedIndices, figureIndices, ref
               <EmbeddedEntity
                 key={i}
                 entityType={entity.type}
-                namespace={entity.namespace}
-                name={entity.name}
-                slug={entity.slug}
-                locale={entity.locale}
                 body={entity.body}
                 label={label}
                 embedIndices={embedIndices}
@@ -163,7 +158,8 @@ export default function ContentBlocks({ blocks, embedIndices, figureIndices, ref
                 canonicalLabel={entity.labels?.canonical}
                 refs={entity.references}
                 terms={entity.terms}
-                termParent={{ type: entity.type, namespace: entity.namespace, name: entity.name, locale: entity.locale }}
+                anchorId={kbAnchorPath(entity)}
+                termParent={embeddedScope(entity)}
               />
             )
           }

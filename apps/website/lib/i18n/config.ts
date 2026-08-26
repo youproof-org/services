@@ -9,8 +9,11 @@ import localesData from './locales.json'
  * from here; nothing about a particular language is hardcoded elsewhere.
  */
 
-// Canonical, language-independent container keys. The localized URL segment for
-// each is looked up per locale from the dictionary below.
+// Canonical, language-independent container keys — one per addressable container in
+// the content model. The localized segment for each is looked up per locale from the
+// dictionary below. Most are URL segments; `claim`, `part` and `section` are anchor
+// segments only (see below), so "container" here means "thing that contains
+// addressable children", not "thing that appears in a path".
 export type ContainerKey =
   | 'book' | 'chapter' | 'article' | 'newsletter' | 'landing'
   // Knowledge base. `knowledge-base` is the outer segment every KB page sits
@@ -19,18 +22,13 @@ export type ContainerKey =
   // reorganized — so a definition/theorem path is flat and a proof/remark path
   // nests under its owner instead.
   | 'knowledge-base' | 'definition' | 'theorem' | 'proof' | 'remark' | 'term'
+  // Anchor-only: these three name a container that is addressed by a FRAGMENT
+  // rather than by a path, so they never appear in a URL. They live in the same
+  // dictionary as the rest because they are the same words — an anchor segment and
+  // a URL segment for one concept must not be able to drift apart — and because
+  // being here also reserves them against a colliding custom-page slug.
+  | 'claim' | 'part' | 'section'
 
-/**
- * Fragment-identifier prefixes, per locale. These end up in a URL the reader sees
- * and can copy — `…/definiciok/gyuru-test#allitas-letezik-nullelem` — so they are
- * localized data exactly like the container segments; nothing about `allitas` may
- * be hardcoded in a code path.
- *
- * Deliberately SINGULAR, and therefore distinct from `containers`: an anchor names
- * one claim or one node (`definicio`), while a container segment names the
- * collection it addresses (`definiciok`).
- */
-export type AnchorKey = 'definition' | 'theorem' | 'proof' | 'remark' | 'claim' | 'term'
 
 // Localized UI/title labels for pages that have no backing content object
 // (homepage + the article/newsletter index pages). Data-driven so a new locale
@@ -50,7 +48,6 @@ export interface LocaleConfig {
   defaultDescription: string      // meta-description fallback for this locale
   labels: Record<LabelKey, string>
   containers: Record<ContainerKey, string>
-  anchors: Record<AnchorKey, string>
 }
 
 const DATA = localesData as {
@@ -105,11 +102,54 @@ export function getContainerSegment(locale: string, key: ContainerKey): string {
   return segment
 }
 
-/** Localized fragment-identifier prefix for a node / claim / term kind. */
-export function getAnchorPrefix(locale: string, key: AnchorKey): string {
-  const prefix = getLocaleConfig(locale).anchors[key]
-  if (!prefix) throw new Error(`Locale '${locale}' has no anchor prefix for '${key}'`)
-  return prefix
+
+
+/**
+ * Which container keys may appear as the FIRST path segment after the locale.
+ *
+ * Exhaustive by construction: it is a `Record<ContainerKey, boolean>`, so adding a
+ * ContainerKey without classifying it here is a COMPILE error. That matters because
+ * the failure mode is silent — `resolvePath` falls through to the standalone branch
+ * for any key it does not explicitly reject, and a single-segment path there
+ * resolves to an index page. An unclassified `claim` would make `/hu/allitasok`
+ * render a bogus index instead of 404ing.
+ *
+ * `false` means "this container is addressed some other way": nested inside another
+ * path (`chapter`), or by a fragment rather than a path at all (`claim`, `part`,
+ * `section`).
+ */
+const ROUTABLE_AT_ROOT = {
+  book: true,
+  article: true,
+  newsletter: true,
+  landing: true,
+  // Nested under its book.
+  chapter: false,
+  // Knowledge base: the segments are reserved (so no custom page can take them),
+  // but the routes are not wired up yet — that lands with the KB page components.
+  'knowledge-base': false,
+  definition: false,
+  theorem: false,
+  proof: false,
+  remark: false,
+  term: false,
+  // Anchor-only containers: addressed by a fragment, never by a path.
+  claim: false,
+  part: false,
+  section: false,
+} as const satisfies Record<ContainerKey, boolean>
+
+/** The container keys that may start a path, derived from the table above. */
+export type RootRoutableKey = {
+  [K in ContainerKey]: (typeof ROUTABLE_AT_ROOT)[K] extends true ? K : never
+}[ContainerKey]
+
+/**
+ * True when a localized segment may start a path. Narrows, so `resolvePath` can
+ * switch on the result without a second hand-written list of keys to reject.
+ */
+export function isRoutableAtRoot(key: ContainerKey): key is RootRoutableKey {
+  return ROUTABLE_AT_ROOT[key]
 }
 
 /**
