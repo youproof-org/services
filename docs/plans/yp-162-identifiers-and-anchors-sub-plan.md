@@ -3,8 +3,8 @@
 **Parent plan:** [`yp-162-knowledge-graph-urls-implementation-plan.md`](yp-162-knowledge-graph-urls-implementation-plan.md)
 (design: [`yp-162-knowledge-graph-urls-plan.md`](yp-162-knowledge-graph-urls-plan.md))
 **Repos touched:** `youproof-org/services`, `youproof-org/content`, `youproof-org/editor`
-**Status:** revision 2 — all five open questions resolved (§6). Awaiting approval to
-start S1. **Blocks parent phase 5** (routing and pages): the anchor and reference
+**Status:** revision 2 — all five open questions resolved (§5). **S1 is done**;
+S2 is next. **Blocks parent phase 5** (routing and pages): the anchor and reference
 shapes settled here are what the page components render.
 
 > ### Working agreement (inherited from the parent plan)
@@ -340,8 +340,13 @@ longer drift apart.
 Two consequences, both wanted:
 
 - `/hu/allitasok`, `/hu/szakaszok` and `/hu/reszek` become resolvable container
-  segments, so `resolvePath` must reject them at `path[0]` — the same rejection the
-  parent plan already schedules for `definiciok`/`tetelek`/… in phase 5 H.1.
+  segments, so `resolvePath` must reject them at `path[0]`. **This is not deferrable
+  to phase 5.** The rejection list already exists — `page.tsx:107` returns `null`
+  for `knowledge-base`/`definition`/`theorem`/`proof`/`remark`/`term` — and a new
+  key that is *not* added to it falls through to the article/newsletter/landing
+  branch, where `path.length === 1` resolves it to a standalone index page. So
+  `/hu/allitasok` would render a bogus page rather than 404. S4 extends the list in
+  the same commit that extends the dictionary.
 - The custom-page collision guard at `page.tsx:180` picks up all three for free: a
   page slugged `allitasok` becomes a build error.
 
@@ -508,7 +513,7 @@ only automated protection the headline change gets.
 Ordered so each gate is verifiable on its own, and so the two cross-repo hand-offs
 happen the way parent phases 2→3 did: the writer ships before the writing.
 
-### S1 — Specification and documentation *(review artifact, no code)*
+### S1 — Specification and documentation *(DONE — review artifact, no code)*
 
 Write the grammar and the constraint tables down first, because four documents
 currently disagree with each other and with the content.
@@ -527,6 +532,33 @@ currently disagree with each other and with the content.
 4. This document, with the S1 wording folded back in.
 
 **Gate:** the four documents agree with each other and with §2's measurements.
+
+#### What S1 actually changed
+
+- `content/docs/content-model.md` — the `locale`/`slug` field table now
+  distinguishes URL segments from anchor segments; one character rule replaces the
+  slug-only pattern; a new **Uniqueness** section carries both scope tables plus the
+  four deliberate non-constraints; a new **Fully qualified names, and anchors**
+  section states the grammar and both projections; `part`, `namespace`, `section`
+  and `terms` examples corrected; the `claim` block row narrowed to
+  definition/theorem/remark with the proof prohibition spelled out; **Target types**
+  rewritten to FQN strings with the scheme test and the "no `type` field" rationale.
+- `services/docs/i18n-design.md` — §9 retitled *Identifier rules — names and slugs*
+  and rewritten around both namespaces, with an explicit correction of the false
+  global-per-type-name claim; §4a marked superseded with a pointer to what replaced
+  each of its three claims; the field-summary table's three rows redrawn
+  (`part`/`section`/`claim`/`term` move to *Anchored*, the four KB types to
+  *Addressable*, `namespace` alone left *Structural*).
+- `services/docs/content-site-and-static-generation.md` — a new **Anchor rule**
+  section beside the canonical-URL rule, with the per-page anchor table and the CSS
+  selector note; the stale URL rule above it marked as being superseded.
+
+**One scope change, pulled forward deliberately:** parent-plan phase 9 (L1) owns
+amending i18n-design §4a and its field-summary table for the KB types. S1 had to
+touch both anyway — §4a asserted `part` gets no slug, which S2 contradicts — and
+leaving half of a three-claim paragraph false while correcting the other half would
+have defeated the purpose of the gate. Both are now corrected in full, so parent
+phase 9's L1 reduces to verification.
 
 ### S2 — Content: normalize the 14 names, add 7 part slugs
 
@@ -578,6 +610,11 @@ has a test that fails when the rule is removed.
 
 1. `lib/i18n/locales.json` + `config.ts` — add `claim` / `section` / `part` to
    `containers`; delete the `anchors` dictionary, `AnchorKey` and `getAnchorPrefix`.
+   **In the same commit**, add the three new keys to `resolvePath`'s top-level
+   rejection list (`page.tsx:107`) — see [D1](#d1) for why omitting that renders a
+   bogus page instead of a 404 — and add a test asserting every `ContainerKey`
+   either resolves to a real page kind at `path[0]` or is rejected there, so the
+   next key added cannot repeat the mistake.
 2. `lib/content/urls.ts` — replace `claimAnchorId` / `termAnchorId` /
    `entityAnchorId` with one builder that walks a node's ancestor chain and emits
    the §3.2 path, taking a page-context argument so the same node yields
