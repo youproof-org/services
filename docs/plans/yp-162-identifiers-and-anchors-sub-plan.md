@@ -3,8 +3,8 @@
 **Parent plan:** [`yp-162-knowledge-graph-urls-implementation-plan.md`](yp-162-knowledge-graph-urls-implementation-plan.md)
 (design: [`yp-162-knowledge-graph-urls-plan.md`](yp-162-knowledge-graph-urls-plan.md))
 **Repos touched:** `youproof-org/services`, `youproof-org/content`, `youproof-org/editor`
-**Status:** revision 3 — all five open questions resolved (§5). **S1–S5 are done**;
-S6 is next. **Blocks parent phase 5** (routing and pages): the anchor and reference
+**Status:** revision 3 — all five open questions resolved (§5). **S1–S6 are done**;
+S7 is next. **Blocks parent phase 5** (routing and pages): the anchor and reference
 shapes settled here are what the page components render.
 
 > ### Working agreement (inherited from the parent plan)
@@ -819,7 +819,7 @@ and `inFile` (wrapping all 9 loaders) preserves the class while prefixing the fi
 path, so the first bad target stops the build and names the file and ref key. 474
 warnings → 0, one fatal error.
 
-### S6 — Editor: FQN targets
+### S6 — Editor: FQN targets *(DONE)*
 
 Hard prerequisite for S7, exactly as parent phase 2 was for phase 3: the editor
 rewrites `references`, `embed` and `recall` field by field on save, so it must emit
@@ -848,6 +848,51 @@ FQNs before any content file is saved after S7. This ordering survives the
 (**not** `editor:install` — that installs the last released VSIX and would silently
 discard this phase), `npm run build` in the editor first, reload the VS Code window
 after.
+
+#### What S6 actually changed, and a pre-existing bug it uncovered
+
+**The editor was already destroying reference targets.** Probing it before changing
+anything: the editor models only books and the knowledge base, so an `article`,
+`page`, `landing`, `book` or `part` target had no branch in `resolveTarget`, loaded
+as an *empty external*, and `targetToYaml` then returned `undefined` for it — so the
+writer emitted no `target` key at all. One save of a file containing such a
+reference silently deleted its target, leaving a `display` pointing nowhere.
+**13 such references exist in the content** (7 page, 4 article, 2 book).
+
+This is the same class of loss phase 2 fixed for claim/term slugs, and it was
+invisible because the round-trip fixture was knowledge-base-only — nothing in it
+exercised a target the editor cannot resolve.
+
+Fixed structurally rather than by adding the missing branches: `RefTarget` gained an
+explicit `unresolved` kind plus `fqn`, the path as authored. A resolved target's path
+is **rebuilt from the object graph** (so it follows a rename made in the editor); an
+unresolved one is written back verbatim. `undefined` now means only "there is
+genuinely nothing to write". The fixture gained a book and chapter with one reference
+of every resolvability class, and two tests pin it — both verified to fail against
+the old behaviour.
+
+**Resolution walks the object graph** rather than looking up a flat key, which is
+stricter for free: `theorems.{t}.proofs.{p}` naming a proof that is not that
+theorem's proof now fails to resolve instead of finding it anyway. Possible because
+targets resolve in Pass 2, after ownership is wired.
+
+**A second silent dropper, found by the failing tests.** `enqueueTarget` began with
+`if (typeof rawTarget !== 'object') return` — so once targets became strings, *every*
+target was skipped before resolution even ran. That is why the first test run lost
+even the resolvable ones.
+
+**Editor-side identifier validation is narrower than the plan imagined.** The plan
+asked for the character rule and the uniqueness scopes here. But the editor models no
+slug (they are carried across saves unmodelled) and authors no name — except one: a
+new `claim` block is created with `name: ''`, so a claim name is the single identifier
+an author types. That is validated on save, with a message saying why (`.`, a space
+or a capital would break the path that references it). The uniqueness scopes are not
+duplicated: they need the whole graph, the site build enforces them, and a second
+copy of a rule that must agree is a drift risk for an error the build already gives.
+
+`src/content/fqn.ts` mirrors the services module deliberately as a **subset** — it
+parses and names kinds, and does not carry the legal-parent grammar, for the same
+reason.
 
 ### S7 — Content: migrate 7082 targets to FQNs
 
