@@ -12,6 +12,27 @@ runbooks removed; what remains is the ongoing operational reference.
 Historical planfiles for the work that produced this system live under
 [`plans/`](plans/) and are not part of this reference.
 
+## Local prerequisites
+
+**Node 24.18.0.** Run `nvm use` from the repo root before anything else — the
+version is pinned in [`.nvmrc`](../.nvmrc), and `engines.node` in
+[`package.json`](../package.json) requires `>=24.18.0`. `pnpm@10.12.1` is pinned
+via `packageManager`, so Corepack selects it automatically.
+
+```sh
+nvm use          # reads .nvmrc
+pnpm install
+```
+
+Any shell that has not sourced nvm — a fresh terminal, an editor task, a
+`bash -c` invocation — starts on whatever Node is on `PATH`, and the resulting
+failure names the wrong floor: `pnpm` reports `ERROR: This version of pnpm
+requires at least Node.js v22.13`, which is pnpm's own minimum, not this repo's.
+Satisfying that message alone can still leave you below `engines.node`. Reaching
+for `node` directly to work around it is worse: the website's test suite loads
+through a different resolver path depending on the Node version, so it can fail to
+load entirely on one version and pass on another.
+
 ## Contents
 
 | Doc | Topic |
