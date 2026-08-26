@@ -29,15 +29,10 @@
         "theorem": "tetelek",
         "proof": "bizonyitasok",
         "remark": "megjegyzesek",
-        "term": "fogalmak"
-      },
-      "anchors": {
-        "definition": "definicio",
-        "theorem": "tetel",
-        "proof": "bizonyitas",
-        "remark": "megjegyzes",
-        "claim": "allitas",
-        "term": "fogalom"
+        "term": "fogalmak",
+        "claim": "allitasok",
+        "part": "reszek",
+        "section": "szakaszok"
       }
     }
   }

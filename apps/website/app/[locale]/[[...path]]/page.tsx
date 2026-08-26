@@ -8,6 +8,7 @@ import {
   getContainerSegment,
   getLocaleLabel,
   resolveContainerKey,
+  isRoutableAtRoot,
 } from '@/lib/i18n/config'
 import { buildPageMeta, type OgType, type PageMetaNode } from '@/lib/i18n/metadata'
 import type { UrlKey } from '@/lib/i18n/url'
@@ -96,19 +97,11 @@ function resolvePath(locale: string, path: string[]): Resolved | null {
     return null
   }
 
-  // `chapter` (fejezetek) is only valid nested under a book, never at the top.
-  if (key0 === 'chapter') return null
-
-  // Knowledge base. The container segments now exist in the locale dictionary
-  // (so a custom page can no longer be slugged `tudasbazis`, `definiciok`, …),
-  // but the KB routes themselves are not wired up yet — that lands with the KB
-  // page components. Until then every KB path 404s, exactly as before.
-  if (
-    key0 === 'knowledge-base' || key0 === 'definition' || key0 === 'theorem' ||
-    key0 === 'proof' || key0 === 'remark' || key0 === 'term'
-  ) {
-    return null
-  }
+  // Every container key is classified in ROUTABLE_AT_ROOT, which is an exhaustive
+  // Record over ContainerKey — so a newly added key cannot silently fall through to
+  // the standalone branch below and resolve to a bogus index page. See that
+  // constant for why each is false.
+  if (!isRoutableAtRoot(key0)) return null
 
   // article | newsletter | landing
   if (path.length === 1) {

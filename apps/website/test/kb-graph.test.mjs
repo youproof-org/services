@@ -1,5 +1,5 @@
-// Knowledge-base graph derivation: page existence, identifier validation, the
-// glossary, and the two-href reference resolution.
+// Knowledge-base graph derivation: page existence, slug validation, the backlink
+// index, the glossary, and the two-href reference resolution.
 //
 // Everything is driven through `buildGraphFromRaw` with a hand-built raw graph, so
 // these are real graph invariants rather than assertions about a fixture on disk.
@@ -7,7 +7,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 
 import * as graphModule from '../lib/content/graph.ts'
-import { urlForDefinition, urlForTheorem, urlForProof, urlForRemark, kbRefs, claimAnchorId, termAnchorId, entityAnchorId } from '../lib/content/urls.ts'
+import { urlForDefinition, urlForTheorem, urlForProof, urlForRemark, kbRefs, claimAnchorId, termAnchorId, kbAnchorPath, sectionAnchorId, partAnchorId, ownPageScope, embeddedScope } from '../lib/content/urls.ts'
 
 const { buildGraphFromRaw, kbPageExists, kbNodeTitle } = graphModule.default ?? graphModule
 
@@ -77,7 +77,7 @@ test('a reference gets a chapter href AND a knowledge-base href', () => {
     }),
   )
   const entry = def(g).references['r-thm']
-  assert.equal(entry.href, '/hu/konyvek/konyv/fejezetek/fejezet#tetel-tetel-egy')
+  assert.equal(entry.href, '/hu/konyvek/konyv/fejezetek/fejezet#tetelek.tetel-egy')
   assert.equal(entry.kbHref, '/hu/tudasbazis/tetelek/tetel-egy')
 })
 
@@ -97,8 +97,12 @@ test('a claim reference resolves to the slug anchor in both contexts', () => {
     }),
   )
   const entry = def(g).references['r-claim']
-  assert.equal(entry.href, '/hu/konyvek/konyv/fejezetek/fejezet#allitas-def-allitas')
-  assert.equal(entry.kbHref, '/hu/tudasbazis/definiciok/def-egy#allitas-def-allitas')
+  // Chapter context carries the node in the path; the node's own page does not.
+  assert.equal(
+    entry.href,
+    '/hu/konyvek/konyv/fejezetek/fejezet#definiciok.def-egy.allitasok.def-allitas',
+  )
+  assert.equal(entry.kbHref, '/hu/tudasbazis/definiciok/def-egy#allitasok.def-allitas')
 })
 
 test('kbRefs swaps in the knowledge-base href and leaves other entries alone', () => {
@@ -115,33 +119,30 @@ test('kbRefs swaps in the knowledge-base href and leaves other entries alone', (
   assert.equal(remapped['r-ext'].href, def(g).references['r-ext'].href, 'no kbHref means unchanged')
   assert.equal(
     def(g).references['r-thm'].href,
-    '/hu/konyvek/konyv/fejezetek/fejezet#tetel-tetel-egy',
+    '/hu/konyvek/konyv/fejezetek/fejezet#tetelek.tetel-egy',
     'the original map must not be mutated',
   )
 })
 
-test('the glossary points at the term anchor and counts inbound references', () => {
-  const g = buildGraphFromRaw(
-    raw({
-      references: {
-        'r-term': {
-          display: 'első',
-          target: {
-            type: 'term',
-            name: 'first-term',
-            parent: { type: 'definition', name: 'def-egy', namespace: NS },
-          },
-        },
-      },
-    }),
-  )
+test('the glossary points at the page-relative term anchor of the owner\'s page', () => {
+  // The glossary links to a term on the node's OWN page, so the node drops out of
+  // the anchor path: `#fogalmak.{slug}`, not `#definiciok.{d}.fogalmak.{slug}`.
+  // That distinction is the whole point of an anchor being page-relative, and the
+  // glossary is now the only place in the graph that depends on it besides kbHref.
+  const g = buildGraphFromRaw(raw())
   assert.equal(g.glossary.length, 1)
-  const [entry] = g.glossary
-  assert.equal(entry.termKey, 'first-term')
-  assert.equal(entry.canonical, 'első fogalom')
-  assert.equal(entry.href, '/hu/tudasbazis/definiciok/def-egy#fogalom-elso-fogalom')
+  const row = g.glossary[0]
+  const d = def(g)
+  assert.equal(row.termKey, 'first-term')
+  assert.equal(row.canonical, 'első fogalom')
+  assert.equal(
+    row.href,
+    `${urlForDefinition(d)}#${termAnchorId(ownPageScope(d), 'first-term', d.terms['first-term'])}`,
+  )
+  assert.equal(row.href, '/hu/tudasbazis/definiciok/def-egy#fogalmak.elso-fogalom')
+  // The chapter-context form must NOT be what the glossary links to.
+  assert.ok(!row.href.includes('definiciok.def-egy.fogalmak'))
 })
-
 test('the same term key defined by two nodes yields two glossary rows', () => {
   const data = raw()
   data.theorems[0].terms = {
@@ -164,7 +165,7 @@ test('an anchor slug is used verbatim; a missing one falls back to the name', ()
     { type: 'claim', name: 'unslugged-claim', content: 'Állítás.' },
   ]
   const g = buildGraphFromRaw(data)
-  assert.equal(g.glossary[0].href, '/hu/tudasbazis/definiciok/def-egy#fogalom-no-slug-term')
+  assert.equal(g.glossary[0].href, '/hu/tudasbazis/definiciok/def-egy#fogalmak.no-slug-term')
 })
 
 test('two definitions sharing a slug fail the build', () => {
@@ -211,21 +212,51 @@ test('a reference to a node embedded nowhere fails the build', () => {
   assert.throws(() => buildGraphFromRaw(data), /embedded in no chapter/)
 })
 
-test('anchor prefixes are localized, and come from the locale dictionary', () => {
+test('an anchor is the localized dotted path of the node, rooted at its own type', () => {
   const g = buildGraphFromRaw(raw())
   const d = def(g)
-  assert.equal(entityAnchorId(d), 'definicio-def-egy')
-  assert.equal(entityAnchorId(thm(g)), 'tetel-tetel-egy')
-  assert.equal(entityAnchorId(prf(g)), 'bizonyitas-biz-egy')
-  assert.equal(entityAnchorId(rem(g)), 'megjegyzes-rem-egy')
-  assert.equal(claimAnchorId(d, { name: 'def-claim', slug: 'def-allitas' }), 'allitas-def-allitas')
-  assert.equal(termAnchorId(d, 'first-term', d.terms['first-term']), 'fogalom-elso-fogalom')
-  // No English prefix may survive anywhere in a generated anchor.
-  for (const id of [entityAnchorId(d), claimAnchorId(d, { name: 'x' }), termAnchorId(d, 'y', {})]) {
-    assert.ok(!/^(definition|theorem|proof|remark|claim|term)-/.test(id), `${id} is not localized`)
+  assert.equal(kbAnchorPath(d), 'definiciok.def-egy')
+  assert.equal(kbAnchorPath(thm(g)), 'tetelek.tetel-egy')
+  // An owned type carries its owner's path, exactly as its URL does.
+  assert.equal(kbAnchorPath(prf(g)), 'tetelek.tetel-egy.bizonyitasok.biz-egy')
+  assert.equal(kbAnchorPath(rem(g)), 'definiciok.def-egy.megjegyzesek.rem-egy')
+  assert.equal(sectionAnchorId({ slug: 'szakasz', locale: 'hu' }), 'szakaszok.szakasz')
+  assert.equal(partAnchorId({ slug: 'resz', locale: 'hu' }), 'reszek.resz')
+})
+
+test('a claim/term anchor is page-relative: the page node drops out of the path', () => {
+  const g = buildGraphFromRaw(raw())
+  const d = def(g)
+  const claim = { name: 'def-claim', slug: 'def-allitas' }
+  assert.equal(claimAnchorId(embeddedScope(d), claim), 'definiciok.def-egy.allitasok.def-allitas')
+  assert.equal(claimAnchorId(ownPageScope(d), claim), 'allitasok.def-allitas')
+  assert.equal(
+    termAnchorId(embeddedScope(d), 'first-term', d.terms['first-term']),
+    'definiciok.def-egy.fogalmak.elso-fogalom',
+  )
+  assert.equal(termAnchorId(ownPageScope(d), 'first-term', d.terms['first-term']), 'fogalmak.elso-fogalom')
+})
+
+test('every anchor segment is localized — no English container name survives', () => {
+  const g = buildGraphFromRaw(raw())
+  const d = def(g)
+  const anchors = [
+    kbAnchorPath(d), kbAnchorPath(thm(g)), kbAnchorPath(prf(g)), kbAnchorPath(rem(g)),
+    claimAnchorId(embeddedScope(d), { name: 'x' }),
+    termAnchorId(embeddedScope(d), 'y', {}),
+    sectionAnchorId({ slug: 's', locale: 'hu' }),
+    partAnchorId({ slug: 'p', locale: 'hu' }),
+  ]
+  for (const id of anchors) {
+    for (const segment of id.split('.').filter((_, i) => i % 2 === 0)) {
+      assert.ok(
+        !/^(definitions?|theorems?|proofs?|remarks?|claims?|terms?|sections?|parts?)$/.test(segment),
+        `${id} contains the English segment '${segment}'`,
+      )
+    }
   }
 })
 
 test('an unknown locale fails loudly rather than emitting a bare anchor', () => {
-  assert.throws(() => entityAnchorId({ type: 'definition', slug: 's', locale: 'xx' }), /Unknown locale/)
+  assert.throws(() => sectionAnchorId({ slug: 's', locale: 'xx' }), /Unknown locale/)
 })

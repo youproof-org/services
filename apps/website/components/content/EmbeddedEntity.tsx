@@ -1,20 +1,14 @@
 import type { ContentBlock, RefMap, TermMap, AnchorParent } from '@/lib/content/types'
 import { ENTITY_LABEL_HU } from '@/lib/content/display-template'
-import { entityAnchorId } from '@/lib/content/urls'
-import type { AnchorKey } from '@/lib/i18n/config'
 import ContentBlocks from './ContentBlocks'
 import styles from './embedded-entity.module.scss'
 
 interface EmbeddedEntityProps {
   entityType: string
-  namespace: string
-  name: string
-  // Localized slug — the element id an entity-scoped cross-reference targets when
-  // it lands on the embedding chapter rather than the node's own page.
-  slug: string
-  // The node's locale, which localizes its own anchor prefix and those of the
-  // claims and terms inside it (see AnchorParent).
-  locale: string
+  // The node's dotted anchor path on this page — computed by the caller, which is
+  // the only place that has the graph node and therefore the ownership chain a
+  // nested anchor needs (a proof's path carries its theorem).
+  anchorId: string
   body: ContentBlock[]
   label?: string
   canonicalLabel?: string
@@ -27,13 +21,11 @@ interface EmbeddedEntityProps {
   termParent?: AnchorParent
 }
 
-export default function EmbeddedEntity({ entityType, namespace, name, slug, locale, body, label, canonicalLabel, embedIndices, figureIndices, showTitle, title, refs, terms, termParent }: EmbeddedEntityProps) {
+export default function EmbeddedEntity({ entityType, anchorId, body, label, canonicalLabel, embedIndices, figureIndices, showTitle, title, refs, terms, termParent }: EmbeddedEntityProps) {
   const typeLabelRaw = canonicalLabel ?? ENTITY_LABEL_HU[entityType] ?? entityType
   const typeLabel = typeLabelRaw.charAt(0).toUpperCase() + typeLabelRaw.slice(1)
-  const parentEntity: AnchorParent = { type: entityType, namespace, name, locale }
-  // `entityType` is whatever the graph node reported, which is always one of the
-  // four knowledge-base kinds.
-  const anchorId = entityAnchorId({ type: entityType as AnchorKey, slug, locale })
+  // Claims inside this entity share the term scope: both hang off the same node.
+  const parentEntity: AnchorParent | undefined = termParent
 
   if (entityType === 'proof') {
     return (

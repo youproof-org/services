@@ -60,7 +60,11 @@ import {
   urlForKbNode,
   claimAnchorId,
   termAnchorId,
-  entityAnchorId,
+  kbAnchorPath,
+  sectionAnchorId,
+  partAnchorId,
+  ownPageScope,
+  embeddedScope,
 } from './urls'
 import { getChapterIndex, walkFigureBlocks } from '@/lib/utils/index-helpers'
 
@@ -825,8 +829,8 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
   }
 
   // Order matters. Embedding first: every URL and title below depends on knowing
-  // which chapter a node lives in. Then hrefs, since the glossary links to the term
-  // anchors they produce.
+  // which chapter a node lives in. Then hrefs, since the glossary links to term
+  // anchors and the validators check the hrefs those produce.
   graph.embedding = buildEmbedding(graph)
   validateIdentifiers(graph)
   resolveDisplayTemplates(graph)
@@ -1220,17 +1224,41 @@ function validateIdentifiers(graph: ContentGraph): void {
 
 
 
-/** The anchor a claim reference resolves to, or null if the parent has no such claim. */
-function claimAnchorForName(parent: KbNode, claimName: string): string | null {
+/**
+ * The anchors a claim/term reference resolves to, in BOTH contexts.
+ *
+ * An anchor is page-relative, so one claim has two of them: on its node's own page
+ * the node drops out of the path (`allitasok.{slug}`), and inside the chapter that
+ * embeds the node it does not (`definiciok.{d}.allitasok.{slug}`). That is the same
+ * split `href`/`kbHref` already makes for the path half of the URL.
+ *
+ * `onPage` is what the glossary links to, and what a knowledge-base page renders
+ * for its own claims and terms.
+ */
+interface AnchorPair {
+  onPage: string
+  inChapter: string
+}
+
+function claimAnchorsForName(parent: KbNode, claimName: string): AnchorPair | null {
   for (const block of parent.body) {
-    if (block.type === 'claim' && block.name === claimName) return claimAnchorId(parent, block)
+    if (block.type === 'claim' && block.name === claimName) {
+      return {
+        onPage: claimAnchorId(ownPageScope(parent), block),
+        inChapter: claimAnchorId(embeddedScope(parent), block),
+      }
+    }
   }
   return null
 }
 
-function termAnchorForKey(parent: KbNode, termKey: string): string | null {
+function termAnchorsForKey(parent: KbNode, termKey: string): AnchorPair | null {
   const term = parent.terms?.[termKey]
-  return term ? termAnchorId(parent, termKey, term) : null
+  if (!term) return null
+  return {
+    onPage: termAnchorId(ownPageScope(parent), termKey, term),
+    inChapter: termAnchorId(embeddedScope(parent), termKey, term),
+  }
 }
 
 
@@ -1271,7 +1299,7 @@ function buildGlossary(graph: ContentGraph): GlossaryEntry[] {
     const pageUrl = urlForKbNode(node)
     if (!pageUrl) continue
     for (const [termKey, term] of Object.entries(node.terms)) {
-      const anchor = termAnchorId(node, termKey, term)
+      const anchor = termAnchorId(ownPageScope(node), termKey, term)
       entries.push({
         termKey,
         canonical: term.canonical ?? termKey,
@@ -1315,6 +1343,7 @@ function validateKbLinks(graph: ContentGraph): void {
   }
 }
 
+
 function resolveRefHrefs(graph: ContentGraph): void {
   // A KB target with no page in this environment: its kbHref falls back to the
   // chapter anchor, which on a deployed build is the chapter's not-migrated stub.
@@ -1347,17 +1376,23 @@ function resolveRefHrefs(graph: ContentGraph): void {
             `${target.parent.type} "${target.parent.name}" is not in the graph, or is embedded nowhere.`,
         )
       }
-      const anchor = target.type === 'claim'
-        ? claimAnchorForName(parent, target.name)
-        : termAnchorForKey(parent, target.name)
-      if (!anchor) {
+      const anchors = target.type === 'claim'
+        ? claimAnchorsForName(parent, target.name)
+        : termAnchorsForKey(parent, target.name)
+      if (!anchors) {
         throw new Error(
           `Cannot resolve ${target.type} reference to "${target.name}" - no such ${target.type} ` +
             `on ${target.parent.type} "${target.parent.name}".`,
         )
       }
-      entry.href = `${chapterUrlOf(embedding.chapter)}#${anchor}`
-      entry.kbHref = `${kbUrlOrFallback(parent, entry.href)}#${anchor}`
+      // Two contexts, two anchors: the chapter page renders the node embedded, so
+      // the path carries the node; its own page does not.
+      entry.href = `${chapterUrlOf(embedding.chapter)}#${anchors.inChapter}`
+      const kbPage = kbUrlOrFallback(parent, entry.href)
+      entry.kbHref = kbPage === entry.href
+        // Fell back to the chapter anchor, which already carries its own fragment.
+        ? entry.href
+        : `${kbPage}#${anchors.onPage}`
     } else if (
       entry.target.type === 'definition' || entry.target.type === 'theorem' ||
       entry.target.type === 'proof'       || entry.target.type === 'remark'
@@ -1372,7 +1407,7 @@ function resolveRefHrefs(graph: ContentGraph): void {
             `not in the graph, or embedded in no chapter (so it is rendered nowhere).`,
         )
       }
-      entry.href = `${chapterUrlOf(embedding.chapter)}#${entityAnchorId(node)}`
+      entry.href = `${chapterUrlOf(embedding.chapter)}#${kbAnchorPath(node)}`
       entry.kbHref = kbUrlOrFallback(node, entry.href)
     } else if (entry.target.type === 'book') {
       const target = entry.target
@@ -1397,8 +1432,7 @@ function resolveRefHrefs(graph: ContentGraph): void {
       if (!section) {
         throw new Error(`Cannot resolve section reference to "${target.name}" in ${target.book}/${target.part}/${target.chapter}`)
       }
-      // Section slug is the localized in-page anchor id (see SectionView).
-      entry.href = `${chapterUrlOf(section.chapter)}#${section.slug}`
+      entry.href = `${chapterUrlOf(section.chapter)}#${sectionAnchorId(section)}`
     } else if (
       entry.target.type === 'article'  || entry.target.type === 'newsletter' ||
       entry.target.type === 'page'     || entry.target.type === 'landing'

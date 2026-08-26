@@ -81,6 +81,7 @@ export default function ChapterPage({ bookName, chapterName }: ChapterPageProps)
             )}
             <SectionView
               slug={section.slug}
+              locale={section.locale}
               title={section.title}
               body={section.body}
               label={`${chapterIndex}.${i + 1}`}

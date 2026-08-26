@@ -430,10 +430,15 @@ export type KbNode = DefinitionNode | TheoremNode | ProofNode | RemarkNode
  * locale of their own, so the owner supplies it (see claimAnchorId/termAnchorId).
  */
 export interface AnchorParent {
-  type: string
-  namespace: string
-  name: string
   locale: string
+  /**
+   * Dotted anchor path of the node owning these claims/terms, RELATIVE to the page
+   * being rendered — the node's full path inside a chapter that embeds it, and
+   * empty on the node's own page, where the node drops out of the path. Built by
+   * `embeddedScope`/`ownPageScope` in lib/content/urls.ts; the components only
+   * thread it through.
+   */
+  prefix: string
 }
 
 /**
@@ -460,7 +465,10 @@ export interface GlossaryEntry {
   canonical: string               // Hungarian display form
   ownerName: string
   ownerTitle: string
-  href: string                    // owner's KB page + "#term-{slug}"
+  // Owner's KB page + the page-relative term anchor ("#fogalmak.{slug}") — the
+  // page-relative form because that is the page this links to, where the term is
+  // rendered without its node in the path.
+  href: string
 }
 
 // ---------------------------------------------------------------------------

@@ -1,10 +1,15 @@
 import type { ContentBlock, RefMap } from '@/lib/content/types'
+import { sectionAnchorId } from '@/lib/content/urls'
 import InlineText from './InlineText'
 import ContentBlocks from './ContentBlocks'
 import styles from './section-view.module.scss'
 
 interface SectionViewProps {
-  slug: string               // localized in-page anchor id
+  // Slug + locale rather than a prebuilt id: the anchor's container segment is
+  // localized, so building it needs the locale, and taking both together keeps the
+  // two from drifting apart at a call site.
+  slug: string
+  locale: string
   title: string
   body: ContentBlock[]
   label: string              // "n.k" e.g. "11.3"
@@ -13,9 +18,9 @@ interface SectionViewProps {
   refs?: RefMap
 }
 
-export default function SectionView({ slug, title, body, label, embedIndices, figureIndices, refs }: SectionViewProps) {
+export default function SectionView({ slug, locale, title, body, label, embedIndices, figureIndices, refs }: SectionViewProps) {
   return (
-    <section id={slug} className={styles.section}>
+    <section id={sectionAnchorId({ slug, locale })} className={styles.section}>
       <h3 className={styles.heading}>
         <span className={styles['section-label']}>{label}</span>
         <InlineText text={title} />

@@ -10,7 +10,7 @@ import type {
   RefMap,
 } from './types'
 import { buildLocalizedUrl } from '@/lib/i18n/url'
-import { getAnchorPrefix, type AnchorKey } from '@/lib/i18n/config'
+import { getContainerSegment, type ContainerKey } from '@/lib/i18n/config'
 
 // Node → public URL helpers. Each node carries its own `locale` and `slug`, so a
 // node's URL is derived from the node itself (and, for cross-references, always
@@ -101,44 +101,107 @@ export function urlForKbNode(node: KbNode): string | null {
 // Fragment identifiers
 // ---------------------------------------------------------------------------
 //
-// Claims and terms get no page of their own: they are structural parts of their
-// parent's argument, so they are cited as a fragment on the parent's page. The
-// slug is authored (Hungarian); `name` / the term key is the language-independent
-// id and is the fallback, so a node authored before the slug migration still
-// produces a working — if English — anchor rather than `#undefined`.
+// An anchor is the localized, dotted path of a node, taken RELATIVE TO THE PAGE
+// that renders it — except that a knowledge-base entity is always rooted at its
+// own type container, exactly as its URL is, because a node's address must not
+// depend on where it happens to be embedded.
 //
-// Both halves are localized. The prefix comes from the locale's `anchors`
-// dictionary (`allitas-`, `fogalom-`, `definicio-`, …) because the whole fragment
-// is URL text a reader sees and copies, so it must read in the page's language —
-// the same reason the container segments are localized.
+//   book index page      reszek.{part}
+//   chapter page         szakaszok.{section}
+//                        definiciok.{d}.fogalmak.{term}
+//                        tetelek.{t}.bizonyitasok.{p}.megjegyzesek.{r}
+//   a definition's page  fogalmak.{term}          (the page node drops out)
 //
-// A claim and a term carry no locale of their own, so the OWNING node supplies it.
-// Taking the owner rather than a bare locale string makes that structural: there is
-// no call site where the locale can drift from the node the anchor lives on.
+// Both halves are localized. The segments come from the same `containers`
+// dictionary the URL segments come from — one word, one place, so an anchor and a
+// URL for the same concept cannot drift apart — and the key is the node's `slug`.
+// A fragment is URL text a reader sees and copies, so it must read in the page's
+// language.
+//
+// `.` is the separator, which is why no name or slug may contain one (enforced by
+// validateIdentifiers). A `.` in an HTML id is valid and needs no URL encoding, but
+// it IS a class separator in a CSS selector: getElementById, `:target` and
+// [id="…"] are fine, querySelector('#' + id) is not.
 
-/** Anything that can own an anchor: a knowledge-base node, which knows its locale. */
-export interface AnchorOwner {
-  locale: string
+const seg = (locale: string, key: ContainerKey): string => getContainerSegment(locale, key)
+
+/**
+ * A knowledge-base node's anchor path, rooted at its own type container. This is
+ * what an entity-scoped cross-reference targets when it lands on the embedding
+ * chapter instead of the node's own page.
+ *
+ * Recursive through the ownership chain, so a remark on a proof reads
+ * `tetelek.{t}.bizonyitasok.{p}.megjegyzesek.{r}` — the same shape as its URL. An
+ * owner-less remark (permitted by the model, absent from the content) roots at its
+ * own container rather than inventing a parent.
+ */
+export function kbAnchorPath(node: KbNode): string {
+  switch (node.type) {
+    case 'definition':
+      return `${seg(node.locale, 'definition')}.${node.slug}`
+    case 'theorem':
+      return `${seg(node.locale, 'theorem')}.${node.slug}`
+    case 'proof':
+      return `${kbAnchorPath(node.proves)}.${seg(node.locale, 'proof')}.${node.slug}`
+    case 'remark':
+      return node.attachedTo
+        ? `${kbAnchorPath(node.attachedTo)}.${seg(node.locale, 'remark')}.${node.slug}`
+        : `${seg(node.locale, 'remark')}.${node.slug}`
+  }
 }
 
-export function claimAnchorId(owner: AnchorOwner, claim: { name: string; slug?: string }): string {
-  return `${getAnchorPrefix(owner.locale, 'claim')}-${claim.slug ?? claim.name}`
+/** A section's anchor on the page of the chapter or standalone item that owns it. */
+export function sectionAnchorId(section: { slug: string; locale: string }): string {
+  return `${seg(section.locale, 'section')}.${section.slug}`
 }
 
-export function termAnchorId(owner: AnchorOwner, termKey: string, term: { slug?: string }): string {
-  return `${getAnchorPrefix(owner.locale, 'term')}-${term.slug ?? termKey}`
+/** A part's anchor on its book's index page. */
+export function partAnchorId(part: { slug: string; locale: string }): string {
+  return `${seg(part.locale, 'part')}.${part.slug}`
 }
 
 /**
- * A knowledge-base node's own element id on a chapter page. On its own KB page the
- * node IS the page, so no anchor is needed; this is what an entity-scoped
- * cross-reference targets when it lands on the embedding chapter instead.
+ * Where a claim or a term is being rendered, which is what makes its anchor
+ * page-relative.
  *
- * The node's own type supplies the prefix, so the four types stay distinguishable
- * on a chapter page that embeds several of them.
+ * `prefix` is the dotted path of the owning node relative to the current page:
+ * the node's full `kbAnchorPath` when it is embedded in a chapter, and EMPTY when
+ * the node is itself the page — there, the page node drops out of the path and a
+ * term is simply `fogalmak.{slug}`.
+ *
+ * Passing the scope rather than a bare locale keeps two things structural: the
+ * locale cannot drift from the node the anchor lives on, and a caller cannot
+ * accidentally emit a chapter-context anchor on a knowledge-base page.
  */
-export function entityAnchorId(node: { type: AnchorKey; slug: string; locale: string }): string {
-  return `${getAnchorPrefix(node.locale, node.type)}-${node.slug}`
+export interface AnchorScope {
+  locale: string
+  prefix: string
+}
+
+/** The scope for claims and terms rendered on their owning node's OWN page. */
+export function ownPageScope(node: { locale: string }): AnchorScope {
+  return { locale: node.locale, prefix: '' }
+}
+
+/** The scope for claims and terms rendered inside a chapter that embeds the node. */
+export function embeddedScope(node: KbNode): AnchorScope {
+  return { locale: node.locale, prefix: kbAnchorPath(node) }
+}
+
+const join = (prefix: string, tail: string): string => (prefix ? `${prefix}.${tail}` : tail)
+
+/**
+ * A claim's anchor. `slug` is authored Hungarian; `name` is the
+ * language-independent id and the fallback, so a claim added between migrations
+ * still produces a working — if English — anchor rather than `#undefined`.
+ */
+export function claimAnchorId(scope: AnchorScope, claim: { name: string; slug?: string }): string {
+  return join(scope.prefix, `${seg(scope.locale, 'claim')}.${claim.slug ?? claim.name}`)
+}
+
+/** A term's anchor. Same fallback rule as a claim's, with the map key as the name. */
+export function termAnchorId(scope: AnchorScope, termKey: string, term: { slug?: string }): string {
+  return join(scope.prefix, `${seg(scope.locale, 'term')}.${term.slug ?? termKey}`)
 }
 
 /**
