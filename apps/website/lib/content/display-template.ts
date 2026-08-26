@@ -282,7 +282,7 @@ export function buildContext(
   graph: ContentGraph,
 ): TemplateContext | null {
   if (target.type === 'book') {
-    const book = graph.books.get(`/books/${target.name}`)
+    const book = graph.books.get(target.fqn)
     if (!book) return null
     // No `index`: a book is the top of the numbering, not a numbered item within it.
     return {
@@ -323,8 +323,7 @@ export function buildContext(
   }
 
   if (target.type === 'chapter') {
-    const key = `/books/${target.book}/${target.part}/${target.name}`
-    const chapter = graph.chapters.get(key)
+    const chapter = graph.chapters.get(target.fqn)
     if (!chapter) return null
     const chapterIdx = getChapterIndex(chapter)
     return {
@@ -338,8 +337,7 @@ export function buildContext(
   }
 
   if (target.type === 'claim') {
-    const ns = target.parent.namespace.startsWith('/') ? target.parent.namespace.slice(1) : target.parent.namespace
-    const parentKey = `/entities/${ns}/${target.parent.name}`
+    const parentKey = target.parentFqn
     const parentEntity =
       graph.definitions.get(parentKey) ??
       graph.theorems.get(parentKey) ??
@@ -355,7 +353,7 @@ export function buildContext(
       }
     }
     if (!found) return null
-    const parentInfo = graph.embedding.get(`/entities${target.parent.namespace}/${target.parent.name}`)
+    const parentInfo = graph.embedding.get(target.parentFqn)
     const parentFallbackLabel = ENTITY_LABEL_HU[parentEntity.type] ?? parentEntity.type
     return {
       target: {
@@ -371,15 +369,14 @@ export function buildContext(
   }
 
   if (target.type === 'term') {
-    const ns = target.parent.namespace.startsWith('/') ? target.parent.namespace.slice(1) : target.parent.namespace
-    const parentKey = `/entities/${ns}/${target.parent.name}`
+    const parentKey = target.parentFqn
     const parentEntity =
       graph.definitions.get(parentKey) ??
       graph.theorems.get(parentKey)   ??
       graph.proofs.get(parentKey)     ??
       graph.remarks.get(parentKey)
     if (!parentEntity) return null
-    const parentInfo = graph.embedding.get(`/entities${target.parent.namespace}/${target.parent.name}`)
+    const parentInfo = graph.embedding.get(target.parentFqn)
     const parentFallbackLabel = ENTITY_LABEL_HU[parentEntity.type] ?? parentEntity.type
     return {
       target: {
@@ -394,8 +391,7 @@ export function buildContext(
   }
 
   if (target.type === 'section') {
-    const key = `/books/${target.book}/${target.part}/${target.chapter}/${target.name}`
-    const section = graph.sections.get(key)
+    const section = graph.sections.get(target.fqn)
     if (!section) return null
     const chapterIdx = getChapterIndex(section.chapter)
     const sectionIdx = section.chapter.sections.indexOf(section) + 1
@@ -413,13 +409,12 @@ export function buildContext(
     target.type === 'definition' || target.type === 'theorem' ||
     target.type === 'proof'       || target.type === 'remark'
   ) {
-    const ns = target.namespace.startsWith('/') ? target.namespace.slice(1) : target.namespace
-    const entityKey = `/entities/${ns}/${target.name}`
+    const entityKey = target.fqn
     const entity =
       graph.definitions.get(entityKey) ?? graph.theorems.get(entityKey) ??
       graph.proofs.get(entityKey)     ?? graph.remarks.get(entityKey)
     if (!entity) return null
-    const info = graph.embedding.get(`/entities${target.namespace}/${target.name}`)
+    const info = graph.embedding.get(target.fqn)
     const fallbackLabel = ENTITY_LABEL_HU[target.type] ?? target.type
     return {
       target: {

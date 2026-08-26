@@ -14,9 +14,7 @@ const TYPE_LABELS: Record<string, string> = {
 }
 
 export default function RecallBlock({ target, embedIndices }: RecallBlockProps) {
-  const ns = target.namespace.startsWith('/') ? target.namespace.slice(1) : target.namespace
-  const entityKey = `/entities/${ns}/${target.name}`
-  const label = embedIndices?.[entityKey] ?? target.name
+  const label = embedIndices?.[target.fqn] ?? target.name
   const typeLabel = TYPE_LABELS[target.type] ?? target.type
 
   return (

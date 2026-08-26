@@ -5,13 +5,23 @@
 // Lives here rather than in one test file because both the knowledge-base tests and
 // the identifier-rule tests need the same starting point.
 import { RAW_GRAPH_VERSION } from '../../lib/content/graph.ts'
+import { toRefTarget } from '../../lib/content/loader.ts'
+
+/**
+ * Build a reference entry the way the loader does, so a fixture cannot drift from
+ * the parser: `ref('az állítás', 'definitions.def-egy.claims.def-claim')`.
+ */
+export const ref = (display, fqn) => ({ display, target: toRefTarget(fqn, `test ref '${fqn}'`) })
 
 export const NS = '/proba'
 export const hu = { locale: 'hu', namespace: NS }
 
 export const narrative = (content) => ({ type: 'narrative', content })
 export const claim = (name, slug, content = 'Állítás.') => ({ type: 'claim', name, slug, content })
-export const embed = (type, name) => ({ type: 'embed', target: { type, name, namespace: NS } })
+export const embed = (fqn) => {
+  const t = toRefTarget(fqn, `test embed '${fqn}'`)
+  return { type: 'embed', target: { type: t.type, name: t.name, fqn: t.fqn } }
+}
 
 /**
  * A raw graph with one chapter/section embedding a definition, a theorem, its
@@ -94,10 +104,10 @@ export function raw({ published = true, references = {}, extraDefinitions = [], 
                     title: 'Szakasz',
                     references: {},
                     body: [
-                      embed('definition', 'def-egy'),
-                      embed('theorem', 'tetel-egy'),
-                      embed('proof', 'biz-egy'),
-                      embed('remark', 'rem-egy'),
+                      embed('definitions.def-egy'),
+                      embed('theorems.tetel-egy'),
+                      embed('theorems.tetel-egy.proofs.biz-egy'),
+                      embed('definitions.def-egy.remarks.rem-egy'),
                     ],
                   },
                 ],

@@ -66,6 +66,20 @@ import {
   ownPageScope,
   embeddedScope,
 } from './urls'
+import {
+  bookKey,
+  partKey,
+  chapterKey,
+  sectionKey,
+  standaloneKey,
+  definitionKey,
+  theoremKey,
+  proofKey,
+  remarkKey,
+  keyForKbNode,
+  keyForChapter,
+} from './keys'
+import { fqnJoin } from './fqn'
 import { getChapterIndex, walkFigureBlocks } from '@/lib/utils/index-helpers'
 
 // ---------------------------------------------------------------------------
@@ -84,37 +98,6 @@ function resolveImageSrc(src: string, dir: string, urlPrefix: string): string {
   return `${urlPrefix}/${resolved}`
 }
 
-function entityKey(namespace: string, name: string): string {
-  return `/entities${namespace}/${name}`
-}
-
-function bookKey(bookName: string): string {
-  return `/books/${bookName}`
-}
-
-function partKey(bookName: string, partName: string): string {
-  return `/books/${bookName}/${partName}`
-}
-
-function chapterKey(bookName: string, partName: string, chapterName: string): string {
-  return `/books/${bookName}/${partName}/${chapterName}`
-}
-
-function sectionKey(
-  bookName: string,
-  partName: string,
-  chapterName: string,
-  sectionName: string
-): string {
-  return `/books/${bookName}/${partName}/${chapterName}/${sectionName}`
-}
-
-// Key for the per-kind standalone Maps (graph.articles/newsletters/pages/landings).
-// Keyed on the language-independent `name`, which is also how a StandaloneRefTarget
-// addresses an item — so a reference is a direct Map lookup.
-function standaloneKey(kind: StandaloneKind, name: string): string {
-  return `/${STANDALONE_DIRS[kind]}/${name}`
-}
 
 /** The graph Map holding a given standalone kind. */
 function standaloneMapFor(graph: ContentGraph, kind: StandaloneKind): Map<string, StandaloneNode> {
@@ -625,9 +608,42 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
     glossary:    [],
   }
 
+  // Pass 0: resolve ownership, because a key needs it.
+  //
+  // A proof's key is `theorems.{t}.proofs.{p}` and a remark's nests under whatever
+  // owns it, so neither can be keyed without knowing its owner — and ownership is
+  // declared on the PARENT (a theorem lists its `proofs`, a definition its
+  // `remarks`), not on the child. So the parent lists are indexed first, and in
+  // dependency order: a remark's owner may be a proof, whose own key needs its
+  // theorem.
+  const theoremOfProof = new Map<string, string>()   // proof name -> theorem name
+  for (const t of raw.theorems) {
+    for (const proofName of t.proofSlugs) theoremOfProof.set(proofName, t.name)
+  }
+  const keyOfRemarkOwner = new Map<string, string>() // remark name -> owner's key
+  for (const d of raw.definitions) {
+    for (const r of d.remarkSlugs) keyOfRemarkOwner.set(r, definitionKey(d.name))
+  }
+  for (const t of raw.theorems) {
+    for (const r of t.remarkSlugs) keyOfRemarkOwner.set(r, theoremKey(t.name))
+  }
+  for (const pf of raw.proofs) {
+    const theoremName = theoremOfProof.get(pf.name)
+    if (!theoremName) continue
+    for (const r of pf.remarkSlugs) {
+      keyOfRemarkOwner.set(r, proofKey(theoremName, pf.name))
+    }
+  }
+
+  /** A proof's key, or null when no theorem claims it (an orphan; none in content). */
+  const keyForRawProof = (name: string): string | null => {
+    const theoremName = theoremOfProof.get(name)
+    return theoremName ? proofKey(theoremName, name) : null
+  }
+
   // Pass 1: Populate Maps
   for (const e of raw.definitions) {
-    graph.definitions.set(entityKey(e.namespace, e.name), {
+    graph.definitions.set(definitionKey(e.name), {
       type: 'definition',
       name: e.name,
       slug: e.slug,
@@ -643,7 +659,7 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
   }
 
   for (const e of raw.theorems) {
-    graph.theorems.set(entityKey(e.namespace, e.name), {
+    graph.theorems.set(theoremKey(e.name), {
       type: 'theorem',
       name: e.name,
       slug: e.slug,
@@ -660,7 +676,12 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
   }
 
   for (const e of raw.proofs) {
-    graph.proofs.set(entityKey(e.namespace, e.name), {
+    const key = keyForRawProof(e.name)
+    if (!key) {
+      console.warn(`Proof "${e.name}" is listed by no theorem, so it has no address; skipping.`)
+      continue
+    }
+    graph.proofs.set(key, {
       type: 'proof',
       name: e.name,
       slug: e.slug,
@@ -677,7 +698,8 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
   }
 
   for (const e of raw.remarks) {
-    graph.remarks.set(entityKey(e.namespace, e.name), {
+    const ownerKey = keyOfRemarkOwner.get(e.name)
+    graph.remarks.set(ownerKey ? remarkKey(ownerKey, e.name) : fqnJoin('', 'remark', e.name), {
       type: 'remark',
       name: e.name,
       slug: e.slug,
@@ -694,9 +716,9 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
 
   // Pass 2: Wire associations
   for (const theoremEntry of raw.theorems) {
-    const theorem = graph.theorems.get(entityKey(theoremEntry.namespace, theoremEntry.name))!
+    const theorem = graph.theorems.get(theoremKey(theoremEntry.name))!
     for (const slug of theoremEntry.proofSlugs) {
-      const proof = graph.proofs.get(entityKey(theorem.namespace, slug))
+      const proof = graph.proofs.get(proofKey(theoremEntry.name, slug))
       if (proof) {
         proof.proves = theorem
         theorem.proofs.push(proof)
@@ -704,18 +726,16 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
     }
   }
 
-  const allRemarkParents: Array<{
-    namespace: string
-    name: string
-    remarkSlugs: string[]
-  }> = [
-    ...raw.definitions.map(e => ({ namespace: e.namespace, name: e.name, remarkSlugs: e.remarkSlugs })),
-    ...raw.theorems.map(e => ({ namespace: e.namespace, name: e.name, remarkSlugs: e.remarkSlugs })),
-    ...raw.proofs.map(e => ({ namespace: e.namespace, name: e.name, remarkSlugs: e.remarkSlugs })),
+  const allRemarkParents: Array<{ key: string; remarkSlugs: string[] }> = [
+    ...raw.definitions.map(e => ({ key: definitionKey(e.name), remarkSlugs: e.remarkSlugs })),
+    ...raw.theorems.map(e => ({ key: theoremKey(e.name), remarkSlugs: e.remarkSlugs })),
+    ...raw.proofs.flatMap(e => {
+      const key = keyForRawProof(e.name)
+      return key ? [{ key, remarkSlugs: e.remarkSlugs }] : []
+    }),
   ]
 
-  for (const { namespace, name, remarkSlugs } of allRemarkParents) {
-    const key = entityKey(namespace, name)
+  for (const { key, remarkSlugs } of allRemarkParents) {
     const parent = (graph.definitions.get(key) ?? graph.theorems.get(key) ?? graph.proofs.get(key)) as
       | DefinitionNode
       | TheoremNode
@@ -723,7 +743,7 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
       | undefined
     if (!parent) continue
     for (const slug of remarkSlugs) {
-      const remark = graph.remarks.get(entityKey(namespace, slug))
+      const remark = graph.remarks.get(remarkKey(key, slug))
       if (remark) {
         remark.attachedTo = parent
         parent.remarks.push(remark)
@@ -784,7 +804,7 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
           meta: chapterEntry.meta,
         }
         part.chapters.push(chapter)
-        graph.chapters.set(chapterKey(book.name, part.name, chapter.name), chapter)
+        graph.chapters.set(chapterKey(book.name, chapter.name), chapter)
 
         for (const sectionEntry of chapterEntry.sections) {
           const section: SectionNode = {
@@ -797,7 +817,7 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
             references: sectionEntry.references,
           }
           chapter.sections.push(section)
-          graph.sections.set(sectionKey(book.name, part.name, chapter.name, section.name), section)
+          graph.sections.set(sectionKey(book.name, chapter.name, section.name), section)
         }
       }
     }
@@ -958,7 +978,7 @@ function buildEmbedding(graph: ContentGraph): Map<string, EmbeddingContext> {
   const info = new Map<string, EmbeddingContext>()
 
   const record = (block: EmbedBlock, chapter: ChapterNode, section?: SectionNode) => {
-    const key = entityKey(block.target.namespace, block.target.name)
+    const key = block.target.fqn
     if (!info.has(key)) info.set(key, { chapter, section })
   }
   const scan = (blocks: ContentBlock[], chapter: ChapterNode, section?: SectionNode) => {
@@ -977,10 +997,10 @@ function buildEmbedding(graph: ContentGraph): Map<string, EmbeddingContext> {
   // Second pass: the "11.3." label, numbered in embed order within the chapter.
   // Only definitions, theorems and owner-less remarks are numbered.
   const isIndexed = (block: EmbedBlock): boolean => {
-    const { type, name, namespace } = block.target
+    const { type, fqn } = block.target
     if (type === 'definition' || type === 'theorem') return true
     if (type === 'remark') {
-      const remark = graph.remarks.get(entityKey(namespace, name))
+      const remark = graph.remarks.get(fqn)
       return remark !== undefined && remark.attachedTo === undefined
     }
     return false
@@ -992,7 +1012,7 @@ function buildEmbedding(graph: ContentGraph): Map<string, EmbeddingContext> {
     const number = (blocks: ContentBlock[]) => {
       for (const block of blocks) {
         if (block.type !== 'embed' || !isIndexed(block)) continue
-        const entry = info.get(entityKey(block.target.namespace, block.target.name))
+        const entry = info.get(block.target.fqn)
         if (entry && !entry.index) entry.index = `${chapterIdx}.${++k}.`
       }
     }
@@ -1020,7 +1040,7 @@ function chapterUrlOf(chapter: ChapterNode): string {
  *   2. on staging/production, that chapter is published.
  */
 export function kbPageExists(graph: ContentGraph, node: KbNode): boolean {
-  const embedding = graph.embedding.get(entityKey(node.namespace, node.name))
+  const embedding = graph.embedding.get(keyForKbNode(node))
   if (!embedding) return false
   return isDeployedEnv ? embedding.chapter.published : true
 }
@@ -1279,7 +1299,7 @@ export function kbNodeTitle(graph: ContentGraph, node: KbNode): string {
   if (node.type === 'proof') return `${capital}: ${kbNodeTitle(graph, node.proves)}`
   if (node.type === 'remark' && node.attachedTo) return `${capital}: ${kbNodeTitle(graph, node.attachedTo)}`
 
-  const index = graph.embedding.get(entityKey(node.namespace, node.name))?.index
+  const index = graph.embedding.get(keyForKbNode(node))?.index
   return index ? `${index} ${capital}` : capital
 }
 
@@ -1383,7 +1403,7 @@ function validateAnchors(graph: ContentGraph): void {
     for (const section of chapter.sections) add(url, sectionAnchorId(section))
   }
   for (const node of kbNodes(graph)) {
-    const embedding = graph.embedding.get(entityKey(node.namespace, node.name))
+    const embedding = graph.embedding.get(keyForKbNode(node))
     if (!embedding) continue
     const url = chapterUrlOf(embedding.chapter)
     add(url, kbAnchorPath(node))
@@ -1472,13 +1492,13 @@ function resolveRefHrefs(graph: ContentGraph): void {
   for (const entry of allRefEntries(graph)) {
     if (entry.target.type === 'claim' || entry.target.type === 'term') {
       const target = entry.target
-      const parentKey = entityKey(target.parent.namespace, target.parent.name)
-      const parent = kbNodeByKey(graph, parentKey)
-      const embedding = graph.embedding.get(parentKey)
+      // The parent's key IS the path minus the leaf, so no reconstruction.
+      const parent = kbNodeByKey(graph, target.parentFqn)
+      const embedding = graph.embedding.get(target.parentFqn)
       if (!parent || !embedding) {
         throw new Error(
-          `Cannot resolve ${target.type} reference to "${target.name}" - its parent ` +
-            `${target.parent.type} "${target.parent.name}" is not in the graph, or is embedded nowhere.`,
+          `Cannot resolve ${target.type} reference '${target.fqn}' - its parent ` +
+            `'${target.parentFqn}' is not in the graph, or is embedded nowhere.`,
         )
       }
       const anchors = target.type === 'claim'
@@ -1486,8 +1506,8 @@ function resolveRefHrefs(graph: ContentGraph): void {
         : termAnchorsForKey(parent, target.name)
       if (!anchors) {
         throw new Error(
-          `Cannot resolve ${target.type} reference to "${target.name}" - no such ${target.type} ` +
-            `on ${target.parent.type} "${target.parent.name}".`,
+          `Cannot resolve ${target.type} reference '${target.fqn}' - '${target.parentFqn}' ` +
+            `has no ${target.type} named "${target.name}".`,
         )
       }
       // Two contexts, two anchors: the chapter page renders the node embedded, so
@@ -1503,20 +1523,19 @@ function resolveRefHrefs(graph: ContentGraph): void {
       entry.target.type === 'proof'       || entry.target.type === 'remark'
     ) {
       const target = entry.target
-      const key = entityKey(target.namespace, target.name)
-      const node = kbNodeByKey(graph, key)
-      const embedding = graph.embedding.get(key)
+      const node = kbNodeByKey(graph, target.fqn)
+      const embedding = graph.embedding.get(target.fqn)
       if (!node || !embedding) {
         throw new Error(
-          `Cannot resolve entity reference to ${target.type} "${target.name}" in ${target.namespace} - ` +
-            `not in the graph, or embedded in no chapter (so it is rendered nowhere).`,
+          `Cannot resolve entity reference '${target.fqn}' - not in the graph, or embedded ` +
+            `in no chapter (so it is rendered nowhere).`,
         )
       }
       entry.href = `${chapterUrlOf(embedding.chapter)}#${kbAnchorPath(node)}`
       entry.kbHref = kbUrlOrFallback(node, entry.href)
     } else if (entry.target.type === 'book') {
       const target = entry.target
-      const book = graph.books.get(bookKey(target.name))
+      const book = graph.books.get(target.fqn)
       if (!book) {
         throw new Error(`Cannot resolve book reference to "${target.name}" - no such book in the content graph`)
       }
@@ -1526,16 +1545,16 @@ function resolveRefHrefs(graph: ContentGraph): void {
       entry.href = urlForBook(book)
     } else if (entry.target.type === 'chapter') {
       const target = entry.target
-      const chapter = graph.chapters.get(chapterKey(target.book, target.part, target.name))
+      const chapter = graph.chapters.get(target.fqn)
       if (!chapter) {
-        throw new Error(`Cannot resolve chapter reference to "${target.name}" in ${target.book}/${target.part}`)
+        throw new Error(`Cannot resolve chapter reference '${target.fqn}' - no such chapter.`)
       }
       entry.href = chapterUrlOf(chapter)
     } else if (entry.target.type === 'section') {
       const target = entry.target
-      const section = graph.sections.get(sectionKey(target.book, target.part, target.chapter, target.name))
+      const section = graph.sections.get(target.fqn)
       if (!section) {
-        throw new Error(`Cannot resolve section reference to "${target.name}" in ${target.book}/${target.part}/${target.chapter}`)
+        throw new Error(`Cannot resolve section reference '${target.fqn}' - no such section.`)
       }
       entry.href = `${chapterUrlOf(section.chapter)}#${sectionAnchorId(section)}`
     } else if (
@@ -1543,7 +1562,7 @@ function resolveRefHrefs(graph: ContentGraph): void {
       entry.target.type === 'page'     || entry.target.type === 'landing'
     ) {
       const target = entry.target
-      const node = standaloneMapFor(graph, target.type).get(standaloneKey(target.type, target.name))
+      const node = standaloneMapFor(graph, target.type as StandaloneKind).get(target.fqn)
       if (!node) {
         throw new Error(`Cannot resolve ${target.type} reference to "${target.name}" - no such ${target.type} in the content graph`)
       }

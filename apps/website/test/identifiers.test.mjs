@@ -12,7 +12,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 
 import * as graphModule from '../lib/content/graph.ts'
-import { NS, hu, narrative, embed, raw } from './support/raw-graph.mjs'
+import { NS, hu, ref, narrative, embed, raw } from './support/raw-graph.mjs'
 
 const { buildGraphFromRaw } = graphModule.default ?? graphModule
 
@@ -210,9 +210,9 @@ test('a definition and a theorem may share a name and a slug', () => {
     ...hu, name: 'def-egy', slug: 'def-egy', title: 'Ütköző tétel',
     body: [], references: {}, proofSlugs: [], remarkSlugs: [],
   })
-  chapterOf(data).sections[0].body.push(embed('theorem', 'def-egy'))
+  chapterOf(data).sections[0].body.push(embed('theorems.def-egy'))
   const g = build(data)
-  assert.ok(g.definitions.has(`/entities${NS}/def-egy`))
+  assert.ok(g.definitions.has('definitions.def-egy'))
   assert.equal(g.theorems.size, 2)
 })
 
@@ -222,7 +222,7 @@ test('two remarks on the same owner sharing a slug fail', () => {
   data.remarks.push({
     ...hu, name: 'rem-ketto', slug: 'rem-egy', body: [narrative('M.')], references: {},
   })
-  chapterOf(data).sections[0].body.push(embed('remark', 'rem-ketto'))
+  chapterOf(data).sections[0].body.push(embed('definitions.def-egy.remarks.rem-ketto'))
   assert.throws(() => build(data), /Identifier collision: 'rem-egy'.*remarks of definition 'def-egy'/s)
 })
 
@@ -235,7 +235,7 @@ test('a claim and a term on one node MAY share a slug — distinct anchor segmen
     { type: 'claim', name: 'egy-allitas', slug: 'ugyanaz', content: 'A.' },
   ]
   const g = build(data)
-  const node = g.definitions.get(`/entities${NS}/def-egy`)
+  const node = g.definitions.get('definitions.def-egy')
   assert.equal(node.terms['a-term'].slug, 'ugyanaz')
 })
 
@@ -261,7 +261,7 @@ test('a term on a proof is accepted — the asymmetry with claims is deliberate'
   data.proofs[0].terms = { 'proof-term': { slug: 'bizonyitas-fogalom', canonical: 'fogalom' } }
   data.proofs[0].body = [narrative('Bizonyítás [[proof-term]].')]
   const g = build(data)
-  assert.equal(g.proofs.get(`/entities${NS}/biz-egy`).terms['proof-term'].slug, 'bizonyitas-fogalom')
+  assert.equal(g.proofs.get('theorems.tetel-egy.proofs.biz-egy').terms['proof-term'].slug, 'bizonyitas-fogalom')
 })
 
 test('a namespace path segment must satisfy the character rule', () => {
@@ -281,7 +281,7 @@ test('a namespace path segment must satisfy the character rule', () => {
 
 test('a part carries slug and locale through to the graph', () => {
   const g = build(raw())
-  const part = g.parts.get('/books/konyv/resz')
+  const part = g.parts.get('books.konyv.parts.resz')
   assert.equal(part.slug, 'resz')
   assert.equal(part.locale, 'hu')
 })

@@ -112,9 +112,7 @@ export default function ContentBlocks({ blocks, embedIndices, figureIndices, ref
             )
           case 'embed': {
             const graph = getContentGraph()
-            const { type: entityType, name, namespace } = block.target
-            const ns = namespace.startsWith('/') ? namespace.slice(1) : namespace
-            const entityKey = `/entities/${ns}/${name}`
+            const { type: entityType, name, fqn: entityKey } = block.target
             const label = embedIndices?.[entityKey]
 
             let entity: AnyEntity | undefined =

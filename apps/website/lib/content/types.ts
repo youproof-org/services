@@ -1,3 +1,5 @@
+import type { RefTargetKind } from './fqn'
+
 // ---------------------------------------------------------------------------
 // Content blocks
 // ---------------------------------------------------------------------------
@@ -30,10 +32,14 @@ export interface FigureBlock {
   height?: number
 }
 
+/**
+ * An `embed` or `recall` block's target: always a knowledge-base entity, addressed
+ * by the same parsed path as a cross-reference (see PathRefTarget).
+ */
 export interface EmbedTarget {
-  type: string
+  type: RefTargetKind
   name: string
-  namespace: string
+  fqn: string
 }
 
 export interface EmbedBlock {
@@ -119,65 +125,39 @@ export interface ExternalRefTarget {
   url: string
 }
 
-export interface KnowledgeBaseRefTarget {
-  type: 'definition' | 'theorem' | 'proof' | 'remark'
+/**
+ * An internal cross-reference target: a parsed fully qualified name (see fqn.ts).
+ *
+ * One shape for all fourteen kinds, replacing the eight hand-written interfaces
+ * this used to be. Those carried the parentage each kind happened to need —
+ * `namespace` on an entity, `book` + `part` on a chapter, a nested `parent` object
+ * on a claim — which meant the shape of a target depended on what it pointed at,
+ * and adding a kind meant adding an interface. The path already encodes parentage,
+ * so it is read off the path instead.
+ *
+ * `type` keeps its name so the many `target.type === 'book'` checks still read the
+ * same, and there is no `type` field in the YAML any more: the leading container
+ * decides the root type and the last one decides the leaf's, so a declared type
+ * could only ever duplicate or contradict the path.
+ */
+export interface PathRefTarget {
+  type: RefTargetKind
+  /** Leaf key — a `name`, never a slug. */
   name: string
-  namespace: string
+  /** The path as authored, e.g. "theorems.t.proofs.p". Also the graph's map key. */
+  fqn: string
+  /** The path minus its last step; '' when the leaf sits at the root. */
+  parentFqn: string
+  /** Kind of the parent, or null at the root. Lets a consumer branch without re-parsing. */
+  parentKind: RefTargetKind | null
 }
 
-// A book's index page. Addressed by the language-independent `name` (parts are
-// flattened out of URLs, so no further parentage is needed); resolution goes
-// through urlForBook, which supplies the book's own locale + slug.
-export interface BookRefTarget {
-  type: 'book'
-  name: string
-}
+export type RefTarget = ExternalRefTarget | PathRefTarget
 
-export interface ChapterRefTarget {
-  type: 'chapter'
-  book: string
-  part: string
-  name: string
+/** True for every target except an external URL — i.e. everything with an `fqn`. */
+export function isPathTarget(target: RefTarget): target is PathRefTarget {
+  return target.type !== 'external'
 }
-
-export interface SectionRefTarget {
-  type: 'section'
-  book: string
-  part: string
-  chapter: string
-  name: string
-}
-
-export interface ClaimRefTarget {
-  type: 'claim'
-  name: string
-  parent: KnowledgeBaseRefTarget
-}
-
-export interface TermRefTarget {
-  type: 'term'
-  name: string
-  parent: KnowledgeBaseRefTarget
-}
-
-// A standalone item (article/newsletter/page/landing). Addressed by the
-// language-independent `name`, not the localized `slug`, so the href stays correct
-// if the slug is ever localized — resolution goes through urlForStandalone, which
-// supplies the target's own locale + slug.
-export interface StandaloneRefTarget {
-  type: StandaloneKind
-  name: string
-}
-
-export type RefTarget =
-  | ExternalRefTarget
-  | KnowledgeBaseRefTarget
-  | ClaimRefTarget
-  | TermRefTarget
-  | BookRefTarget
-  | ChapterRefTarget
-  | SectionRefTarget
-  | StandaloneRefTarget
 
 export interface RefEntry {
   display: string

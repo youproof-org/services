@@ -11,12 +11,12 @@ import { urlForDefinition, urlForTheorem, urlForProof, urlForRemark, kbRefs, cla
 
 const { buildGraphFromRaw, kbPageExists, kbNodeTitle } = graphModule.default ?? graphModule
 
-import { NS, hu, narrative, claim, embed, raw } from './support/raw-graph.mjs'
+import { NS, hu, ref, narrative, claim, embed, raw } from './support/raw-graph.mjs'
 
-const def = (g) => g.definitions.get(`/entities${NS}/def-egy`)
-const thm = (g) => g.theorems.get(`/entities${NS}/tetel-egy`)
-const prf = (g) => g.proofs.get(`/entities${NS}/biz-egy`)
-const rem = (g) => g.remarks.get(`/entities${NS}/rem-egy`)
+const def = (g) => g.definitions.get('definitions.def-egy')
+const thm = (g) => g.theorems.get('theorems.tetel-egy')
+const prf = (g) => g.proofs.get('theorems.tetel-egy.proofs.biz-egy')
+const rem = (g) => g.remarks.get('definitions.def-egy.remarks.rem-egy')
 
 // ---------------------------------------------------------------------------
 
@@ -37,11 +37,11 @@ test('a URL does not contain the namespace, so reorganizing namespaces cannot mo
 
 test('embedding records the chapter, the section and the index label', () => {
   const g = buildGraphFromRaw(raw())
-  const e = g.embedding.get(`/entities${NS}/def-egy`)
+  const e = g.embedding.get('definitions.def-egy')
   assert.equal(e.chapter.name, 'fejezet')
   assert.equal(e.section.name, 'szakasz')
   assert.equal(e.index, '1.1.', 'definitions and theorems are numbered in embed order')
-  assert.equal(g.embedding.get(`/entities${NS}/biz-egy`).index, undefined, 'proofs are not numbered')
+  assert.equal(g.embedding.get('theorems.tetel-egy.proofs.biz-egy').index, undefined, 'proofs are not numbered')
 })
 
 test('a node embedded in a published chapter has a page', () => {
@@ -57,7 +57,7 @@ test('a node embedded nowhere never has a page', () => {
       ],
     }),
   )
-  assert.equal(kbPageExists(g, g.definitions.get(`/entities${NS}/arva`)), false)
+  assert.equal(kbPageExists(g, g.definitions.get('definitions.arva')), false)
 })
 
 test('titles: authored for definitions/theorems, derived from the owner otherwise', () => {
@@ -72,7 +72,7 @@ test('a reference gets a chapter href AND a knowledge-base href', () => {
   const g = buildGraphFromRaw(
     raw({
       references: {
-        'r-thm': { display: 'a tétel', target: { type: 'theorem', name: 'tetel-egy', namespace: NS } },
+        'r-thm': ref('a tétel', 'theorems.tetel-egy'),
       },
     }),
   )
@@ -85,14 +85,7 @@ test('a claim reference resolves to the slug anchor in both contexts', () => {
   const g = buildGraphFromRaw(
     raw({
       references: {
-        'r-claim': {
-          display: 'az állítás',
-          target: {
-            type: 'claim',
-            name: 'def-claim',
-            parent: { type: 'definition', name: 'def-egy', namespace: NS },
-          },
-        },
+        'r-claim': ref('az állítás', 'definitions.def-egy.claims.def-claim'),
       },
     }),
   )
@@ -109,7 +102,7 @@ test('kbRefs swaps in the knowledge-base href and leaves other entries alone', (
   const g = buildGraphFromRaw(
     raw({
       references: {
-        'r-thm': { display: 'a tétel', target: { type: 'theorem', name: 'tetel-egy', namespace: NS } },
+        'r-thm': ref('a tétel', 'theorems.tetel-egy'),
         'r-ext': { display: 'kifelé', target: { type: 'external', url: 'https://example.org' } },
       },
     }),
@@ -195,16 +188,16 @@ test('two proofs of DIFFERENT theorems may share a slug', () => {
   })
   data.proofs.push({ ...hu, name: 'biz-ketto', slug: 'biz-egy', body: [], references: {}, remarkSlugs: [] })
   data.books[0].parts[0].chapters[0].sections[0].body.push(
-    embed('theorem', 'tetel-ketto'),
-    embed('proof', 'biz-ketto'),
+    embed('theorems.tetel-ketto'),
+    embed('theorems.tetel-ketto.proofs.biz-ketto'),
   )
   const g = buildGraphFromRaw(data)
-  assert.equal(urlForProof(g.proofs.get(`/entities${NS}/biz-ketto`)), '/hu/tudasbazis/tetelek/tetel-ketto/bizonyitasok/biz-egy')
+  assert.equal(urlForProof(g.proofs.get('theorems.tetel-ketto.proofs.biz-ketto')), '/hu/tudasbazis/tetelek/tetel-ketto/bizonyitasok/biz-egy')
 })
 
 test('a reference to a node embedded nowhere fails the build', () => {
   const data = raw({
-    references: { 'r-arva': { display: 'árva', target: { type: 'definition', name: 'arva', namespace: NS } } },
+    references: { 'r-arva': ref('árva', 'definitions.arva') },
     extraDefinitions: [
       { ...hu, name: 'arva', slug: 'arva', title: 'Árva', body: [], references: {}, remarkSlugs: [] },
     ],
