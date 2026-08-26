@@ -840,6 +840,7 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
   validateReferences(graph)
   validateTermInsertions(graph)
   validateKbLinks(graph)
+  validateAnchors(graph)
 
   return graph
 }
@@ -1343,6 +1344,110 @@ function validateKbLinks(graph: ContentGraph): void {
   }
 }
 
+/**
+ * Every internal fragment must be an anchor some page actually renders.
+ *
+ * What this catches: a fragment that names something the target page has no
+ * business rendering — a claim that does not exist on that node, a stale anchor
+ * left behind by a rename, a claim/term anchor resolved in the wrong context (the
+ * two contexts disagree by design: a chapter page renders
+ * `definiciok.{d}.fogalmak.{f}`, the definition's own page renders `fogalmak.{f}`).
+ *
+ * What this CANNOT catch: a component rendering a different `id` than the builder
+ * put in the href. Both sides here derive from the same builder, so on that
+ * question the check agrees with itself by construction. That gap is closed by
+ * `scripts/check-anchors.mjs`, which reads the built HTML — ids on one side, hrefs
+ * on the other, nothing from the graph — as a postbuild step.
+ */
+function validateAnchors(graph: ContentGraph): void {
+  // page URL -> the ids that page renders
+  const rendered = new Map<string, Set<string>>()
+  const add = (url: string, anchor: string) => {
+    const set = rendered.get(url)
+    if (set) set.add(anchor)
+    else rendered.set(url, new Set([anchor]))
+  }
+
+  // A book index page renders one anchor per part.
+  for (const book of graph.books.values()) {
+    const url = urlForBook(book)
+    rendered.set(url, rendered.get(url) ?? new Set())
+    for (const part of book.parts) add(url, partAnchorId(part))
+  }
+
+  // A chapter page renders its sections, plus every entity embedded in it and
+  // that entity's claims and terms, in chapter context.
+  for (const chapter of graph.chapters.values()) {
+    const url = chapterUrlOf(chapter)
+    rendered.set(url, rendered.get(url) ?? new Set())
+    for (const section of chapter.sections) add(url, sectionAnchorId(section))
+  }
+  for (const node of kbNodes(graph)) {
+    const embedding = graph.embedding.get(entityKey(node.namespace, node.name))
+    if (!embedding) continue
+    const url = chapterUrlOf(embedding.chapter)
+    add(url, kbAnchorPath(node))
+    for (const [a, scope] of [
+      [url, embeddedScope(node)] as const,
+    ]) {
+      for (const block of node.body) {
+        if (block.type === 'claim') add(a, claimAnchorId(scope, block))
+      }
+      for (const [termKey, term] of Object.entries(node.terms ?? {})) {
+        add(a, termAnchorId(scope, termKey, term))
+      }
+    }
+  }
+
+  // A knowledge-base page renders its own claims and terms, page-relative.
+  for (const node of kbNodes(graph)) {
+    if (!kbPageExists(graph, node)) continue
+    const url = urlForKbNode(node)
+    if (!url) continue
+    rendered.set(url, rendered.get(url) ?? new Set())
+    const scope = ownPageScope(node)
+    for (const block of node.body) {
+      if (block.type === 'claim') add(url, claimAnchorId(scope, block))
+    }
+    for (const [termKey, term] of Object.entries(node.terms ?? {})) {
+      add(url, termAnchorId(scope, termKey, term))
+    }
+  }
+
+  // Standalone items render their sections, using the item's locale.
+  for (const kind of ['article', 'newsletter', 'page', 'landing'] as const) {
+    for (const node of standaloneMapFor(graph, kind).values()) {
+      const url = urlForStandalone(node)
+      rendered.set(url, rendered.get(url) ?? new Set())
+      for (const section of node.sections) {
+        add(url, sectionAnchorId({ slug: section.slug, locale: node.locale }))
+      }
+    }
+  }
+
+  const check = (href: string | undefined, what: string) => {
+    if (!href) return
+    const hash = href.indexOf('#')
+    if (hash === -1) return
+    const [pathname, anchor] = [href.slice(0, hash), href.slice(hash + 1)]
+    const set = rendered.get(pathname)
+    // A page this build does not generate is validateKbLinks' business, not ours.
+    if (!set) return
+    if (!set.has(anchor)) {
+      throw new Error(
+        `A ${what} resolves to '${href}', but '${pathname}' renders no element with ` +
+          `id '${anchor}'. Anchors known on that page: ${[...set].sort().slice(0, 8).join(', ')}` +
+          `${set.size > 8 ? ` (+${set.size - 8} more)` : ''}.`,
+      )
+    }
+  }
+
+  for (const entry of allRefEntries(graph)) {
+    check(entry.href, `'${entry.target.type}' reference (chapter context)`)
+    check(entry.kbHref, `'${entry.target.type}' reference (knowledge-base context)`)
+  }
+  for (const row of graph.glossary) check(row.href, `glossary row for term "${row.termKey}"`)
+}
 
 function resolveRefHrefs(graph: ContentGraph): void {
   // A KB target with no page in this environment: its kbHref falls back to the

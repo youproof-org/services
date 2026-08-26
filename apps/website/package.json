@@ -10,7 +10,7 @@
     "build": "next build",
     "//typecheck": "Generates first: lib/consent/version.ts imports .generated/consent-policy.json, which is gitignored, so a fresh clone has nothing to resolve until the generator has run.",
     "typecheck": "node scripts/gen-cookie-policy-version.mjs && tsc --noEmit",
-    "postbuild": "node scripts/set-html-lang.mjs && node scripts/check-build-version.mjs && node scripts/check-analytics-build.mjs",
+    "postbuild": "node scripts/set-html-lang.mjs && node scripts/check-build-version.mjs && node scripts/check-analytics-build.mjs && node scripts/check-anchors.mjs",
     "test": "node --import tsx --import ./test/support/register.mjs --test \"test/*.test.mjs\"",
     "gen:logo": "node scripts/gen-logo-lockup.mjs",
     "start": "next start",
