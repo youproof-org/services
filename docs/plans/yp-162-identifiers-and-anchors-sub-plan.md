@@ -400,14 +400,25 @@ restated in the content model, because parent-plan A8 records it as a wanted
 authoring feature and the code already carries it end to end.
 
 <a id="d4"></a>
-### D4 — A tolerant target reader bridges the two-repo migration *(settled)*
+### D4 — No transitional reader; the build goes red between S5 and S7 *(settled)*
 
-The services loader learns the FQN form **before** the content is migrated, and
-keeps accepting the legacy object form until the migration lands. Without that, the
-content repo and the services repo have to change in the same instant and no
-intermediate commit builds — which is both unreviewable and un-bisectable across
-7082 edits. The legacy branch is deleted in the last phase, and its removal is what
-proves the migration was total.
+An earlier revision had the services loader accept both the FQN and the legacy
+object form, so that every intermediate commit would build. **Dropped:** the three
+repos are released together, so a temporary incompatibility between them costs
+nothing, and a dual reader is a second code path that has to be written, tested and
+then deleted — plus a standing risk that the legacy branch silently keeps working on
+content that was supposed to be migrated.
+
+What this gives up is the ability to build at S5's and S6's gates. Replaced by a
+cheaper equivalent: **S4 is the last fully-green point, and its gate captures a
+build-output baseline.** S7 then compares the post-migration export against it. That
+is a stronger check than a mid-flight build anyway — it is the same comparison, taken
+across the whole change rather than at each step.
+
+Ordering that remains load-bearing, for a reason unrelated to releases: the **editor
+still ships before the content migration** (S6 before S7). The hazard there is not
+release skew but local data loss — an editor that does not know about FQNs destroys
+them the moment a file is saved, and the content repo is authored in it daily.
 
 <a id="d5"></a>
 ### D5 — Missing claim/term slugs keep falling back to the name *(settled)*
@@ -637,7 +648,8 @@ a note to keep it that way, not a defect.
 
 **Gate:** `next build` green; every fragment in the export is a §3.2 path; no
 English segment anywhere; `validateAnchors` passes; re-measure the fragment count
-against phase 4's 11 085.
+against phase 4's 11 085. **Also capture the export as the S7 baseline** — this is
+the last fully-green point before the FQN switchover ([D4](#d4)).
 
 ### S5 — Services: parse FQN reference targets
 
@@ -645,8 +657,9 @@ against phase 4's 11 085.
    gains the resolved ancestor chain. The eight target interfaces collapse toward
    one parsed-path shape plus `ExternalRefTarget`.
 2. `lib/content/loader.ts` — an FQN parser and resolver with [D9](#d9)'s scheme
-   discriminator, tolerant of the legacy object form per [D4](#d4), with the legacy
-   path marked for deletion in S8.
+   discriminator. **No legacy-object fallback** ([D4](#d4)) — the old shape is
+   deleted outright, so an unmigrated target fails loudly rather than resolving
+   through a path that was meant to be temporary.
 3. `resolveRefHrefs`, `buildBacklinkIndex`, `validateReferences`,
    `validateTermInsertions` and `display-template`'s `{target.*}` expressions all
    read the parsed chain instead of re-deriving parents from `namespace`.
@@ -656,17 +669,21 @@ against phase 4's 11 085.
    FQN, an unknown key, and a well-formed path whose leaf type is illegal
    (`…proofs.{p}.claims.{c}`) each failing with a message that names the file.
 
-**Gate:** `next build` green **on unmigrated content** through the legacy reader,
-byte-identical output.
+**Gate:** unit tests green. `next build` **cannot** pass here — the content is still
+unmigrated and there is no fallback reader ([D4](#d4)) — so the gate is the parser's
+tests plus a typecheck. The build comes back at S7 and is compared against the
+baseline captured at S4.
 
 ### S6 — Editor: FQN targets
 
 Hard prerequisite for S7, exactly as parent phase 2 was for phase 3: the editor
 rewrites `references`, `embed` and `recall` field by field on save, so it must emit
-FQNs before any content file is saved after S7.
+FQNs before any content file is saved after S7. This ordering survives the
+[D4](#d4) simplification — its reason is local data loss, not release skew.
 
-1. `src/content/loader.ts` — `resolveTarget` reads an FQN (and, transitionally, the
-   legacy object).
+1. `src/content/loader.ts` — `resolveTarget` reads an FQN. No legacy fallback, per
+   [D4](#d4); the editor cannot open unmigrated content between here and S7, which
+   is acceptable for one phase.
 2. `src/handlers.ts` — `targetToYaml` emits an FQN. It currently reconstructs
    `book` / `part` / `namespace` from the loaded object graph; it now walks the same
    ancestor chain and joins it. Its "claims nested in subsections/details are not
@@ -678,7 +695,9 @@ FQNs before any content file is saved after S7.
    time. Mirrored by hand, per the i18n design's no-shared-schema decision, with a
    pointer comment to the services validator.
 5. Extend the phase-2 round-trip test: load a file with FQN targets, save without
-   editing, assert byte-identical.
+   editing, assert byte-identical. Verified against **fixtures**, not the real tree —
+   the real tree is not migrated until S7, and the phase-2 harness already carries
+   fixtures for exactly this.
 
 **Gate:** round-trip test green; `pnpm editor:install-dev` from the content repo
 (**not** `editor:install` — that installs the last released VSIX and would silently
@@ -693,18 +712,20 @@ after.
    rewrites each target object as a single `target:` line.
 2. **Two commits**, so either reverts alone: the 6513 `references` entries, then the
    569 `embed` / `recall` targets.
-3. Verify: re-running the script is a no-op; a services build against the migrated
-   content is byte-identical to the pre-migration build; opening and saving one each
-   of a definition, theorem, proof, remark, chapter, section and part in the editor
-   is byte-identical.
+3. Verify: re-running the script is a no-op; the services build is **green again**
+   and its export is byte-identical to the **S4 baseline** ([D4](#d4)); opening and
+   saving one each of a definition, theorem, proof, remark, chapter, section and
+   part in the editor is byte-identical.
 
 **Gate:** the three verifications above, plus a diff summary showing 7082 target
 objects removed and 7082 `target:` lines added and nothing else.
 
-### S8 — Services: drop the legacy reader, sweep tests and docs
+### S8 — Services: sweep tests and docs
 
-1. Delete the legacy target-object branch from the loader, and its tests. Its
-   removal is the proof S7 was total: the build fails if one object survives.
+1. Confirm no legacy target object survives anywhere: a grep for `type: definition`
+   &c. under a `target:` key returns nothing, and the loader has no branch that
+   could have absorbed one. ([D4](#d4) removed the fallback, so a survivor would
+   already have failed the S7 build — this is the belt to that braces.)
 2. Full test sweep — the identifier validators, the anchor builder in every page
    context (book index, chapter, standalone, entity page), the FQN parser,
    `validateAnchors`, `kbRefs`, and the glossary and backlink index against the new
@@ -745,7 +766,7 @@ phase 5 unblocked.
 | # | risk | mitigation |
 |---|---|---|
 | S-R1 | **The 7082-target migration silently mis-resolves an ancestor** — attaches a term to the wrong parent — and the build still passes because the wrong target also exists | Byte-identical rendered output before and after is the gate, not "the build passes". §2 measured 0 ambiguities in every FQN scope, so a correct script has no judgement calls to make |
-| S-R2 | **Two-repo lock-step** — services cannot read migrated content, or vice versa, for the span of a phase | [D4](#d4)'s tolerant reader; S8's deletion of it is what proves the migration was total |
+| ~~S-R2~~ | **Two-repo lock-step** — *discharged.* The three repos release together, so a temporary incompatibility is not a defect ([D4](#d4)) | — |
 | S-R3 | **Editor destroys FQNs on the first save after S7**, the exact failure parent-plan A15/R4 hit with claim slugs | S6 ships and is installed before S7 writes anything; the round-trip test is extended rather than re-invented |
 | S-R4 | **The anchor rework breaks 11 085 in-page links** with no automated detection | [D11](#d11)'s `validateAnchors`; without it this sub-plan has no gate on its headline change |
 | S-R5 | **`mailto:` mis-parsed as an FQN** by a `://` discriminator, silently turning 4 references into unresolvable paths | [D9](#d9) specifies a scheme test, and S5's parser tests cover both schemes explicitly |
