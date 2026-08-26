@@ -3,8 +3,8 @@
 **Parent plan:** [`yp-162-knowledge-graph-urls-implementation-plan.md`](yp-162-knowledge-graph-urls-implementation-plan.md)
 (design: [`yp-162-knowledge-graph-urls-plan.md`](yp-162-knowledge-graph-urls-plan.md))
 **Repos touched:** `youproof-org/services`, `youproof-org/content`, `youproof-org/editor`
-**Status:** revision 3 — all five open questions resolved (§5). **S1–S4 are done**;
-S5 is next. **Blocks parent phase 5** (routing and pages): the anchor and reference
+**Status:** revision 3 — all five open questions resolved (§5). **S1–S5 are done**;
+S6 is next. **Blocks parent phase 5** (routing and pages): the anchor and reference
 shapes settled here are what the page components render.
 
 > ### Working agreement (inherited from the parent plan)
@@ -746,7 +746,7 @@ narrowing type guard derived from it. Adding a `ContainerKey` without classifyin
 is now a compile error — verified: 4 errors. That is strictly better than the test
 the plan asked for, so the test is not written.
 
-### S5 — Services: parse FQN reference targets
+### S5 — Services: parse FQN reference targets *(DONE)*
 
 1. `lib/content/types.ts` — `RefTarget` loses `namespace` / `part` / `parent` and
    gains the resolved ancestor chain. The eight target interfaces collapse toward
@@ -783,6 +783,41 @@ the plan asked for, so the test is not written.
 unmigrated and there is no fallback reader ([D4](#d4)) — so the gate is the parser's
 tests plus a typecheck. The build comes back at S7 and is compared against the
 baseline captured at S4.
+
+#### What S5 actually changed
+
+`lib/content/fqn.ts` is new: the container vocabulary, the parser, the scheme test,
+and a **grammar table of legal parents per kind**. That table is what makes a
+well-formed-but-illegal path an error rather than a failed lookup —
+`theorems.{t}.proofs.{p}.claims.{c}` parses cleanly and is still wrong, and the
+message says which parents a claim may have. 14 parser tests, one per production
+plus every failure mode.
+
+`lib/content/keys.ts` is new: the map keys, now FQNs. The payoff is visible at every
+call site — `graph.chapters.get(target.fqn)` replaced
+`graph.chapters.get(chapterKey(target.book, target.part, target.name))`, and four
+places that rebuilt an entity key from a namespace (with a leading-slash dance,
+because the key had one and the namespace did too) became `target.fqn`.
+
+**Pass 0 solved the ownership problem the plan called a blocker.** A proof's key
+needs its theorem, and ownership is declared on the *parent* (`theorem.proofs`), so
+it is indexed in one pre-pass before any node is constructed — in dependency order,
+since a remark's owner may be a proof whose own key needs its theorem. No
+re-keying, no two-phase map.
+
+`RefTarget` collapsed from eight interfaces to one `PathRefTarget` plus
+`ExternalRefTarget`. The old shape made a target's *fields* depend on what it
+pointed at, so adding a kind meant adding an interface; the path already encodes
+parentage, so it is read off the path.
+
+**One robustness fix, found by watching the gate fail.** The build failed as
+designed — but with **474 `Failed to load entity` warnings**, because the per-entity
+loader downgrades a plain `Error` to a warning and drops that entity. Only
+`ContentFormatError` is fatal. So a single malformed target would have dropped one
+node and let the build pass. A target parse failure is now a `ContentFormatError`,
+and `inFile` (wrapping all 9 loaders) preserves the class while prefixing the file
+path, so the first bad target stops the build and names the file and ref key. 474
+warnings → 0, one fatal error.
 
 ### S6 — Editor: FQN targets
 
