@@ -686,15 +686,26 @@ the last fully-green point before the FQN switchover ([D4](#d4)).
 1. `lib/content/types.ts` — `RefTarget` loses `namespace` / `part` / `parent` and
    gains the resolved ancestor chain. The eight target interfaces collapse toward
    one parsed-path shape plus `ExternalRefTarget`.
-2. `lib/content/loader.ts` — an FQN parser and resolver with [D9](#d9)'s scheme
+2. **The knowledge-base map keys become the FQN string itself**, replacing
+   `entityKey(namespace, name)` → `/entities/{namespace}/{name}`. This lands here
+   rather than earlier because it is entangled with the target shape, not merely
+   adjacent to it: a nested key like `theorems.{t}.proofs.{p}` cannot be built at
+   graph-build Pass 1 (a proof's `proves` is still `undefined` — ownership is wired
+   in Pass 2), and four of the twenty `entityKey` call sites derive the key from a
+   reference or embed target carrying `namespace` + `name` and **no owner**, which
+   is unbuildable for a proof or remark until targets are FQNs. Once they are, the
+   payoff is that a lookup becomes `map.get(target)` with no key construction at
+   all. Doing it before S5 would mean rewriting the same 20 sites and 15 test
+   literals twice, the second time to a different shape.
+3. `lib/content/loader.ts` — an FQN parser and resolver with [D9](#d9)'s scheme
    discriminator. **No legacy-object fallback** ([D4](#d4)) — the old shape is
    deleted outright, so an unmigrated target fails loudly rather than resolving
    through a path that was meant to be temporary.
-3. `resolveRefHrefs`, `buildBacklinkIndex`, `validateReferences`,
+4. `resolveRefHrefs`, `buildBacklinkIndex`, `validateReferences`,
    `validateTermInsertions` and `display-template`'s `{target.*}` expressions all
    read the parsed chain instead of re-deriving parents from `namespace`.
-4. `embed` and `recall` block targets, same reader.
-5. Tests: the parser against one example of each §3.1 production, including
+5. `embed` and `recall` block targets, same reader.
+6. Tests: the parser against one example of each §3.1 production, including
    `books.{b}.parts.{p}` ([D8](#d8)) and both external schemes; plus an unparseable
    FQN, an unknown key, and a well-formed path whose leaf type is illegal
    (`…proofs.{p}.claims.{c}`) each failing with a message that names the file.

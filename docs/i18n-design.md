@@ -142,9 +142,19 @@ chapter page resolves to the in-chapter anchor, and the same reference on a
 knowledge-base page resolves to the target's own page. Both are resolved at build
 time — `RefEntry.href` and `RefEntry.kbHref` in `lib/content/graph.ts`.
 
-`namespace` is the one type with **`locale` only, no `slug`**. It is expressed
-solely as a path string built from the `name` chain of `namespace.yaml` files, is
-not materialized as a routed node, has no anchor, and appears in no cross-reference.
+`namespace` is the one type with **`locale` only, no `slug`**. It is not
+materialized as a routed node and has no anchor; it exists solely as a slash-joined
+path string built from the `name` of each `namespace.yaml` down the directory chain
+(`/szamelmeleti-alapok/modularis-aritmetika`), which groups entities and appears in
+no cross-reference.
+
+It does reach one public URL, though not a page one: a knowledge-base figure is
+served from `/content/knowledge-base/{namespace}/{type}/figures/…`, so the namespace
+is a directory segment there. That is the one respect in which reorganizing a
+namespace is not free — a node's page URL and anchors are unaffected, but its figure
+asset URLs move. Harmless in practice, since assets are re-synced and re-referenced
+on every build and nothing outside the build links them, and consistent with §5:
+asset URLs are locale-independent and separate from the page URL model.
 
 ### 4b. Addendum — parts and sections (localized anchor slugs)
 
