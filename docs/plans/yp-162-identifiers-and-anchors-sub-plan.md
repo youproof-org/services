@@ -3,8 +3,8 @@
 **Parent plan:** [`yp-162-knowledge-graph-urls-implementation-plan.md`](yp-162-knowledge-graph-urls-implementation-plan.md)
 (design: [`yp-162-knowledge-graph-urls-plan.md`](yp-162-knowledge-graph-urls-plan.md))
 **Repos touched:** `youproof-org/services`, `youproof-org/content`, `youproof-org/editor`
-**Status:** revision 3 — all five open questions resolved (§5). **S1 and S2 are done**;
-S3 is next. **Blocks parent phase 5** (routing and pages): the anchor and reference
+**Status:** revision 3 — all five open questions resolved (§5). **S1–S4 are done**;
+S5 is next. **Blocks parent phase 5** (routing and pages): the anchor and reference
 shapes settled here are what the page components render.
 
 > ### Working agreement (inherited from the parent plan)
@@ -647,7 +647,7 @@ which is the point — the constraints are being *pinned*, not introduced.
 **Gate:** `next build` and `pnpm test` green with unchanged output; every new rule
 has a test that fails when the rule is removed.
 
-### S4 — Services: the anchor grammar
+### S4 — Services: the anchor grammar *(DONE)*
 
 1. `lib/i18n/locales.json` + `config.ts` — add `claim` / `section` / `part` to
    `containers`; delete the `anchors` dictionary, `AnchorKey` and `getAnchorPrefix`.
@@ -677,26 +677,95 @@ cross-highlighting keys on `data-target-anchor` attributes, which is safe — th
 a note to keep it that way, not a defect.
 
 **Gate:** `next build` green; every fragment in the export is a §3.2 path; no
-English segment anywhere; `validateAnchors` passes; re-measure the fragment count
-against phase 4's 11 085. **Also capture the export as the S7 baseline** — this is
-the last fully-green point before the FQN switchover ([D4](#d4)).
+English segment anywhere; `validateAnchors` passes; re-measure the fragment count.
+
+**S7's baseline is this commit, not a stored artifact.** S7 reproduces it the way S2
+did: `git worktree add` at S4's commit, symlink `node_modules`, build, and compare
+normalized exports. Storing the bytes somewhere would be one more thing to keep
+alive across phases, and the worktree method is both reproducible and already
+proven. The normalization recipe is in §S2's notes — both spellings of the Next
+build id, or every page differs.
+
+#### What S4 actually changed, and one correction
+
+Measured on the real export: **11 086 fragment hrefs before and after**, every one
+reshaped from a flat prefix to a dotted path, and **every (page, target path) pair
+identical** — no link gained, lost or repointed. All 15 distinct container chains
+that appear are valid §3.2 productions, up to
+`tetelek.{t}.bizonyitasok.{p}.megjegyzesek.{r}.fogalmak.{f}`. Zero old prefixes
+survive. The one non-conforming fragment in the export is `#books` on the locale
+homepage — a hand-written `ScrollCue` target that predates all of this and is not a
+content-model anchor.
+
+**`validateAnchors` does less than first claimed.** Its initial comment said it
+would catch a component rendering a different `id` than the builder put in an href.
+It does not, and testing it proved so: breaking `SectionView`'s id changed nothing,
+because the validator enumerates expected anchors from the same builder the
+components use, so on that question it agrees with itself by construction. It still
+earns its place — it catches a fragment naming something the target page has no
+business rendering — but the comment now says only that.
+
+The gap is closed by **`scripts/check-anchors.mjs`**, a new postbuild step that
+reads the built HTML: `id` attributes on one side, `href` fragments on the other,
+nothing from the graph. It checks 11 086 links across 46 pages, follows cross-page
+fragments to the target file, and skips fragments whose target page is not in the
+export (an unpublished chapter, or a not-yet-routed KB page — validateKbLinks' and
+the crawler's business). Verified to fail the build (exit 1, 97 broken targets) when
+`SectionView` and the builder disagree.
+
+**`graph.backlinks` was removed outright** (~115 lines: `buildBacklinkIndex`,
+`backlinkOrigin`, `KbBacklink`, `BacklinkOwnerKind`, the map field, `targetAnchor`,
+`GlossaryEntry.referencedBy`, 4 tests). It was the only computation of inbound
+references, and it backed three parent-plan features — the "Referenced by" block on
+every KB page, F2's cross-highlighting, and the glossary's inbound count — none of
+which is rendered today, and all of which sit inside the phase 5 that is being
+redesigned.
+
+Removing it now rather than at S5 is the cheaper order: `buildBacklinkIndex` read
+`t.namespace` / `t.name` / `t.parent.*`, i.e. exactly the fields the FQN switchover
+replaces, so keeping it meant migrating 115 lines of unrendered code to a target
+shape that the redesign might discard anyway. Re-adding it later is a pure fold over
+`refOwners` — already documented as *the* seam for this — written directly against
+FQN targets, skipping the migration entirely. It also removes a design question from
+S5: the key was composite (`{entityKey}#{anchor}`), so S5 would have had to decide
+whether that stayed one string or became a nested map.
+
+What survives, because `resolveRefHrefs` needs it: `AnchorPair` and the two
+`*AnchorsFor*` helpers computing a claim/term's anchor in both contexts. The
+page-relative form is still load-bearing for `kbHref` and for the glossary's `href`,
+and a test pins that the glossary uses it rather than the chapter form.
+
+**Root routability became a compile-time obligation.**
+
+**Root routability became a compile-time obligation.** `resolvePath` had two
+hand-maintained rejection lists, and TypeScript flagged the new keys falling through
+into the standalone branch — where a single-segment path resolves to an *index page*,
+so `/hu/allitasok` would have rendered a bogus one instead of 404ing. Replaced by
+`ROUTABLE_AT_ROOT`, a `satisfies Record<ContainerKey, boolean>` table with a
+narrowing type guard derived from it. Adding a `ContainerKey` without classifying it
+is now a compile error — verified: 4 errors. That is strictly better than the test
+the plan asked for, so the test is not written.
 
 ### S5 — Services: parse FQN reference targets
 
 1. `lib/content/types.ts` — `RefTarget` loses `namespace` / `part` / `parent` and
    gains the resolved ancestor chain. The eight target interfaces collapse toward
    one parsed-path shape plus `ExternalRefTarget`.
-2. **The knowledge-base map keys become the FQN string itself**, replacing
-   `entityKey(namespace, name)` → `/entities/{namespace}/{name}`. This lands here
-   rather than earlier because it is entangled with the target shape, not merely
-   adjacent to it: a nested key like `theorems.{t}.proofs.{p}` cannot be built at
-   graph-build Pass 1 (a proof's `proves` is still `undefined` — ownership is wired
-   in Pass 2), and four of the twenty `entityKey` call sites derive the key from a
-   reference or embed target carrying `namespace` + `name` and **no owner**, which
-   is unbuildable for a proof or remark until targets are FQNs. Once they are, the
-   payoff is that a lookup becomes `map.get(target)` with no key construction at
-   all. Doing it before S5 would mean rewriting the same 20 sites and 15 test
-   literals twice, the second time to a different shape.
+2. **Every map key becomes the FQN string itself**, replacing
+   `entityKey(namespace, name)` → `/entities/{namespace}/{name}`. Twenty call sites,
+   all in `graph.ts`, plus 15 test literals. Two groups, for different reasons:
+
+   - **`graph.definitions` / `theorems` / `proofs` / `remarks` are blocked until
+     here.** A nested key like `theorems.{t}.proofs.{p}` cannot be built at
+     graph-build Pass 1, where these maps are populated: a proof's `proves` is still
+     `undefined`, since ownership is wired in Pass 2. And four call sites derive the
+     key from a reference or embed target carrying `namespace` + `name` and **no
+     owner**, which is unbuildable for a proof or remark until targets are FQNs.
+     Once they are, a lookup becomes `map.get(target)` with no key construction.
+   - **`graph.backlinks` is gone** (removed in S4), so its composite
+     `{entityKey}#{anchor}` key is no longer a case to handle. If the redesigned
+     phase 5 brings inbound references back, write the index against FQN targets
+     from the start rather than porting the old shape.
 3. `lib/content/loader.ts` — an FQN parser and resolver with [D9](#d9)'s scheme
    discriminator. **No legacy-object fallback** ([D4](#d4)) — the old shape is
    deleted outright, so an unmigrated target fails loudly rather than resolving

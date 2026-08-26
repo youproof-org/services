@@ -727,6 +727,16 @@ pattern).
 > as well.** It rewrites the anchor grammar and the reference-target shape that these
 > components render, so building the components first means building them twice.
 >
+> **The backlink index no longer exists.** `graph.backlinks`, `KbBacklink`,
+> `targetAnchor` and `GlossaryEntry.referencedBy` were removed in the sub-plan's S4:
+> nothing rendered them, and they were written against the reference-target shape the
+> sub-plan replaces. So three things below have no backing data until something
+> rebuilds it — the `ReferencedBy` component (H.2), F2's cross-highlighting (H.3),
+> and the glossary's inbound count (F.3) — and [D7](#d7--do-chapter-and-section-referrers-appear-in-referenced-by-data-settled-rendering-open)
+> and [R2](#n-risks) are both moot until then. Rebuilding it is a pure fold over
+> `refOwners`; write it against fully qualified name targets, not the old composite
+> shape.
+>
 > The page **layout** is not settled. §7 of the design plan lists what each page
 > contains, and §H.3 below fixes the one interaction that is decided (claim/term ↔
 > backlink cross-highlighting), but how any of it is arranged is open — and the
