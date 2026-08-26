@@ -1,20 +1,21 @@
 # YP-162: Knowledge Graph Node URLs — Implementation Plan
 
 **Companion to:** [`yp-162-knowledge-graph-urls-plan.md`](yp-162-knowledge-graph-urls-plan.md) (the design; §-references below point into it)
-**Sub-plan:** [`yp-162-identifiers-and-anchors-sub-plan.md`](yp-162-identifiers-and-anchors-sub-plan.md) — name/slug constraints, the hierarchical anchor grammar, and fully qualified reference targets. **Runs before phase 5** and supersedes [D4](#d4--replace-the-base64-anchor-ids-with-readable-ones-settled--shipped-in-phase-4)'s flat prefixed anchors and E.3's slug-uniqueness table.
+**Sub-plan:** [`yp-162-identifiers-and-anchors-sub-plan.md`](yp-162-identifiers-and-anchors-sub-plan.md) — name/slug constraints, the hierarchical anchor grammar, and fully qualified reference targets. **Shipped**, between phase 4 and phase 5; it supersedes [D4](#d4--replace-the-base64-anchor-ids-with-readable-ones-settled--shipped-in-phase-4)'s flat prefixed anchors and E.3's slug-uniqueness table.
 **Repos touched:** `youproof-org/services`, `youproof-org/content`, `youproof-org/editor`
 **Status:** Revision 3 — **phases 1–4 are shipped**; every decision below is now
 settled. The remaining phases are renumbered: the URL layer, planned as its own
 phase, had to be absorbed into phase 4 (see §Shipped), so what follows counts one
 lower than in revision 2.
 
-**Next up: the identifiers-and-anchors sub-plan, then phase 5.** The sub-plan
-replaces the flat `fogalom-{slug}` anchors that shipped in phase 4 with a
-hierarchical `definiciok.{d}.fogalmak.{f}` grammar, turns reference targets into
-fully qualified name strings, and enforces a character rule and a uniqueness scope
-on every name and slug. Phase 5 renders what it defines, so it goes first.
+**The identifiers-and-anchors sub-plan has shipped.** It replaced the flat
+`fogalom-{slug}` anchors of phase 4 with a hierarchical
+`definiciok.{d}.fogalmak.{f}` grammar, turned reference targets into fully qualified
+names, made those names the graph's map keys, and put a character rule and a
+uniqueness scope on every name and slug. It also **removed the backlink index** —
+see the note on phase 5 below, which is where that matters.
 
-**Phase 5, routing and page components, is additionally gated on the page-layout
+**Next up: phase 5, routing and page components — gated on the page-layout
 design being settled.** §7 of the design plan sketches what each page contains, but
 the layout is deliberately still open; phase 5 should not start until it is
 decided, because the component structure follows from it.
