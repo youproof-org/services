@@ -3,8 +3,8 @@
 **Parent plan:** [`yp-162-knowledge-graph-urls-implementation-plan.md`](yp-162-knowledge-graph-urls-implementation-plan.md)
 (design: [`yp-162-knowledge-graph-urls-plan.md`](yp-162-knowledge-graph-urls-plan.md))
 **Repos touched:** `youproof-org/services`, `youproof-org/content`, `youproof-org/editor`
-**Status:** revision 3 — all five open questions resolved (§5). **S1–S6 are done**;
-S7 is next. **Blocks parent phase 5** (routing and pages): the anchor and reference
+**Status:** revision 3 — all five open questions resolved (§5). **S1–S7 are done**;
+S8 is next. **Blocks parent phase 5** (routing and pages): the anchor and reference
 shapes settled here are what the page components render.
 
 > ### Working agreement (inherited from the parent plan)
@@ -894,7 +894,7 @@ copy of a rule that must agree is a drift risk for an error the build already gi
 parses and names kinds, and does not carry the legal-parent grammar, for the same
 reason.
 
-### S7 — Content: migrate 7082 targets to FQNs
+### S7 — Content: migrate 7082 targets to FQNs *(DONE)*
 
 1. `scripts/migrate-ref-targets.mjs` — one-off, line-based (not a YAML re-dump),
    idempotent, `--write` to apply, dry-run by default, modelled on
@@ -909,6 +909,63 @@ reason.
 
 **Gate:** the three verifications above, plus a diff summary showing 7082 target
 objects removed and 7082 `target:` lines added and nothing else.
+
+#### What S7 actually changed, and the bug the gate caught
+
+679 files, **7082 insertions and 42 579 deletions** — exactly one `target:` line
+added per target. Verified mechanically: *every* added line matches
+`^\s*target: `, and *every* removed line was a key of a target block
+(`type`/`name`/`namespace`/`parent`/`book`/`part`/`chapter`/`url`). Nothing else in
+679 files was touched. Re-running the script is a no-op, and 0 composite targets
+remain in the tree.
+
+**The build came back green and the output is unchanged**, by three independent
+measures:
+
+- **all 46 pages have byte-identical rendered body markup** to the S4 baseline;
+- **11 937 links identical**, 0 added, 0 removed, comparing every (page, href) pair
+  including fragments;
+- head metadata, element ids, sitemap, robots and the page inventory all identical;
+- 11 086 fragment hrefs in both, and `check-anchors` reports 0 broken.
+
+That comparison is now a tool rather than a one-off:
+**`scripts/compare-exports.mjs`**. It compares two exports in layers — inventory,
+rendered body, head metadata, element ids, links, sitemap — and exits non-zero when
+a meaningful one differs. RSC payloads and asset filenames are reported but never
+fatal, because both embed webpack module ids that legitimately move when any source
+file changes (verified: the payload differences here are `I[2017` → `I[4771` and
+nothing else).
+
+It exists because the hand-rolled version of this comparison was rebuilt three
+times, wrong twice, and both wrong versions *looked like a pass*: once the build-id
+regex came back empty so `sed` emitted nothing and two empty trees compared equal,
+and once the whole comparison ran against a directory that did not exist. The tool
+refuses to run rather than compare un-normalized text, and it was validated by
+injecting five regressions — a changed word, a changed link target, a changed anchor
+id, a changed meta description, and a deleted page — and confirming each is caught
+by the layer that should catch it.
+
+**The gate caught a real bug — one that S5's gate structurally could not.**
+`ChapterPage` looked its book up with a hand-assembled key,
+``graph.books.get(`/books/${bookName}`)``. Under FQN keys that returns `undefined`
+and the component returns `null`, so **all 27 chapter pages rendered as an empty
+shell** — header, breadcrumb, footer, no content. The whole export dropped from
+11 086 fragment links to 1.
+
+Three things let it through S5: the key is a string, so TypeScript could not object;
+no test renders a chapter page; and S5's gate *expects* a failing build, so a build
+that failed for a different reason looked exactly like success. That last one is a
+weakness of the no-fallback decision ([D4](#d4)) worth remembering — "the build
+fails here" is not a gate, it is the absence of one.
+
+It also was not findable by grep: the migration searched for `entityKey(`/`bookKey(`
+call sites, and this was a template literal. An audit of every `graph.*.get(...)`
+call afterwards found this as the only such case; the rest all derive from
+`target.fqn`.
+
+Fixed by deleting the lookup rather than correcting the key: `ChapterPage` now takes
+the resolved `book` and `chapter` nodes, which its caller already had. That removes
+the failure mode instead of repairing one instance of it.
 
 ### S8 — Services: sweep tests and docs
 
