@@ -8,112 +8,10 @@ import assert from 'node:assert/strict'
 
 import * as graphModule from '../lib/content/graph.ts'
 import { urlForDefinition, urlForTheorem, urlForProof, urlForRemark, kbRefs, claimAnchorId, termAnchorId, entityAnchorId } from '../lib/content/urls.ts'
-import { RAW_GRAPH_VERSION } from '../lib/content/graph.ts'
 
 const { buildGraphFromRaw, kbPageExists, kbNodeTitle } = graphModule.default ?? graphModule
 
-const NS = '/proba'
-const hu = { locale: 'hu', namespace: NS }
-
-const narrative = (content) => ({ type: 'narrative', content })
-const claim = (name, slug, content = 'Állítás.') => ({ type: 'claim', name, slug, content })
-const embed = (type, name) => ({ type: 'embed', target: { type, name, namespace: NS } })
-
-/**
- * A raw graph with one chapter/section embedding a definition, a theorem, its
- * proof, and a remark on the definition. `published` controls whether the chapter
- * is published, which is what gates page existence on a deployed build.
- */
-function raw({ published = true, references = {}, extraDefinitions = [], terms } = {}) {
-  return {
-    version: RAW_GRAPH_VERSION,
-    episodeOrder: ['konyv'],
-    definitions: [
-      {
-        ...hu,
-        name: 'def-egy',
-        slug: 'def-egy',
-        title: 'Első definíció',
-        terms: terms ?? {
-          'first-term': { slug: 'elso-fogalom', display: '[első]', canonical: 'első fogalom' },
-        },
-        body: [narrative('Törzs [[first-term]].'), claim('def-claim', 'def-allitas')],
-        references,
-        remarkSlugs: ['rem-egy'],
-      },
-      ...extraDefinitions,
-    ],
-    theorems: [
-      {
-        ...hu,
-        name: 'tetel-egy',
-        slug: 'tetel-egy',
-        title: 'Első tétel',
-        body: [narrative('Tétel.')],
-        references: {},
-        proofSlugs: ['biz-egy'],
-        remarkSlugs: [],
-      },
-    ],
-    proofs: [
-      {
-        ...hu,
-        name: 'biz-egy',
-        slug: 'biz-egy',
-        body: [narrative('Bizonyítás.')],
-        references: {},
-        remarkSlugs: [],
-      },
-    ],
-    remarks: [
-      { ...hu, name: 'rem-egy', slug: 'rem-egy', body: [narrative('Megjegyzés.')], references: {} },
-    ],
-    books: [
-      {
-        name: 'konyv',
-        slug: 'konyv',
-        locale: 'hu',
-        title: 'Könyv',
-        abstract: [],
-        parts: [
-          {
-            name: 'resz',
-            title: 'Rész',
-            chapters: [
-              {
-                name: 'fejezet',
-                slug: 'fejezet',
-                locale: 'hu',
-                title: 'Fejezet',
-                publishedAt: published ? '2020-01-01 00:00:00' : undefined,
-                abstract: [],
-                prologue: [],
-                epilogue: [],
-                references: {},
-                sections: [
-                  {
-                    name: 'szakasz',
-                    slug: 'szakasz',
-                    locale: 'hu',
-                    title: 'Szakasz',
-                    references: {},
-                    body: [
-                      embed('definition', 'def-egy'),
-                      embed('theorem', 'tetel-egy'),
-                      embed('proof', 'biz-egy'),
-                      embed('remark', 'rem-egy'),
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-      },
-    ],
-    standalones: [],
-  }
-}
+import { NS, hu, narrative, claim, embed, raw } from './support/raw-graph.mjs'
 
 const def = (g) => g.definitions.get(`/entities${NS}/def-egy`)
 const thm = (g) => g.theorems.get(`/entities${NS}/tetel-egy`)
@@ -328,7 +226,7 @@ test('two definitions sharing a slug fail the build', () => {
       { ...hu, name: 'masik', slug: 'def-egy', title: 'Másik', body: [], references: {}, remarkSlugs: [] },
     ],
   })
-  assert.throws(() => buildGraphFromRaw(data), /Slug collision/)
+  assert.throws(() => buildGraphFromRaw(data), /Identifier collision/)
 })
 
 test('two claims on one node sharing a slug fail the build', () => {
@@ -338,7 +236,7 @@ test('two claims on one node sharing a slug fail the build', () => {
     { type: 'claim', name: 'b', slug: 'ugyanaz', content: 'B.' },
   ]
   data.definitions[0].terms = {}
-  assert.throws(() => buildGraphFromRaw(data), /Slug collision/)
+  assert.throws(() => buildGraphFromRaw(data), /Identifier collision/)
 })
 
 test('two proofs of DIFFERENT theorems may share a slug', () => {
