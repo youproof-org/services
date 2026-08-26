@@ -348,7 +348,7 @@ export default async function LocalizedRoute({ params }: RouteProps) {
             <div className="hero-placeholder" aria-hidden="true" />
           )}
           <main className="page-content">
-            <ChapterPage bookName={book.name} chapterName={chapter.name} />
+            <ChapterPage book={book} chapter={chapter} />
           </main>
           <SiteFooter locale={locale} />
         </div>

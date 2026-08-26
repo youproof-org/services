@@ -2,7 +2,7 @@ import { Fragment } from 'react'
 import Link from 'next/link'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons'
-import type { ChapterNode } from '@/lib/content/types'
+import type { BookNode, ChapterNode } from '@/lib/content/types'
 import { getContentGraph } from '@/lib/content'
 import { getChapterIndex, buildChapterEmbedIndices, buildChapterFigureIndices, getBookRomanIndex } from '@/lib/utils/index-helpers'
 import ContentBlocks from './ContentBlocks'
@@ -13,22 +13,23 @@ import { midContentIndex } from '@/lib/newsletter/placement'
 import { urlForChapter } from '@/lib/content/urls'
 import styles from './chapter-page.module.scss'
 
+/**
+ * Takes the resolved nodes, not their names.
+ *
+ * It used to take `bookName`/`chapterName` and look the book up with a
+ * hand-assembled map key. The caller had already resolved both nodes, so the lookup
+ * was redundant — and when the graph's keys changed shape it silently returned
+ * undefined, so every chapter rendered as an empty shell: no type error, no failing
+ * test, because the key is just a string. Passing the nodes removes the failure mode
+ * rather than correcting the key.
+ */
 interface ChapterPageProps {
-  bookName: string
-  chapterName: string
+  book: BookNode
+  chapter: ChapterNode
 }
 
-export default function ChapterPage({ bookName, chapterName }: ChapterPageProps) {
+export default function ChapterPage({ book, chapter }: ChapterPageProps) {
   const graph = getContentGraph()
-  const book = graph.books.get(`/books/${bookName}`)
-  if (!book) return null
-
-  let chapter: ChapterNode | undefined
-  for (const part of book.parts) {
-    chapter = part.chapters.find(c => c.name === chapterName)
-    if (chapter) break
-  }
-  if (!chapter) return null
 
   const chapterIndex = getChapterIndex(chapter)
   const embedIndices = buildChapterEmbedIndices(graph, chapter, chapterIndex)
