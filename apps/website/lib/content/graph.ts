@@ -1051,6 +1051,52 @@ export function kbPageExists(graph: ContentGraph, node: KbNode): boolean {
   return isDeployedEnv ? embedding.chapter.published : true
 }
 
+/** What sits above and below one node in the ownership chain. */
+export interface KbOwnership {
+  /** The entity this one belongs to: a proof's theorem, a remark's owner. */
+  parent?: KbNode
+  /** The proofs attached to this one, in authored order. Only a theorem has any. */
+  proofs: ProofNode[]
+  /** The remarks attached to this one, in authored order. A remark has none. */
+  remarks: RemarkNode[]
+}
+
+/**
+ * The ownership chain around one node: the entity above it, and the entities
+ * attached to it. This is what an entity page lists below its body (sub-plan
+ * §6.1), so the chain sits in the served HTML as ordinary links.
+ *
+ *   definition   -               down: its remarks
+ *   theorem      -               down: its proofs, then its remarks
+ *   proof        up: its theorem down: its remarks
+ *   remark       up: its owner   -
+ *
+ * Both directions are gated on `kbPageExists`, so nothing here can point at a page
+ * this environment did not generate. It prunes nothing on today's content - every
+ * chain shares one chapter, so publication takes a chain whole (measured: on the
+ * staging build 0 links are dropped from a page that exists). It is not therefore
+ * decoration: an owner and its children are separate embed blocks, so a chain
+ * split across two chapters is a content edit away, and it is the parent link on a
+ * proof page and the child links on a theorem's that would 404.
+ */
+export function kbOwnership(graph: ContentGraph, node: KbNode): KbOwnership {
+  const shown = <T extends KbNode>(nodes: T[]): T[] => nodes.filter((n) => kbPageExists(graph, n))
+  const parentOf = (owner: KbNode | undefined): KbNode | undefined =>
+    owner && kbPageExists(graph, owner) ? owner : undefined
+
+  switch (node.type) {
+    case 'definition':
+      return { proofs: [], remarks: shown(node.remarks) }
+    case 'theorem':
+      return { proofs: shown(node.proofs), remarks: shown(node.remarks) }
+    case 'proof':
+      return { parent: parentOf(node.proves), proofs: [], remarks: shown(node.remarks) }
+    case 'remark':
+      // A remark owns nothing (sub-plan §6.5), so its chain is the one link up.
+      return { parent: parentOf(node.attachedTo), proofs: [], remarks: [] }
+  }
+}
+
 /** Every knowledge-base node, in one iterable. */
 export function* kbNodes(graph: ContentGraph): Generator<KbNode> {
   yield* graph.definitions.values()

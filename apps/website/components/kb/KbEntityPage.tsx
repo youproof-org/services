@@ -6,6 +6,7 @@ import { keyForKbNode } from '@/lib/content/keys'
 import { kbRefs, ownPageScope } from '@/lib/content/urls'
 import { buildChapterEmbedIndices, buildChapterFigureIndices, getChapterIndex } from '@/lib/utils/index-helpers'
 import type { KbNode } from '@/lib/content/types'
+import OwnershipLinks from './OwnershipLinks'
 import styles from './kb-entity-page.module.scss'
 
 interface KbEntityPageProps {
@@ -14,7 +15,7 @@ interface KbEntityPageProps {
 
 /**
  * The reading surface of one knowledge-base entity (sub-plan §6.1): a two-line
- * header, the body, and the q.e.d. that closes it.
+ * header, the body, the q.e.d. that closes it, and the ownership chain below.
  *
  * The body is the SAME object the reader met in the book — `ContentBlocks` over the
  * node's own body, so the typography, the LaTeX, the claims and the terms are the
@@ -79,6 +80,13 @@ export default function KbEntityPage({ node }: KbEntityPageProps) {
 
       {/* Closes the content, as it does on the embedded rendering (§6.1). */}
       <p className={styles.qed}>{node.type === 'proof' ? '∎' : '♣'}</p>
+
+      {/*
+        Below the q.e.d., not above it: the glyph closes the body, and the chain is
+        not part of the body — it is where this entity sits among the others. §6.1
+        puts the links "below the body", and the body ends at the q.e.d.
+      */}
+      <OwnershipLinks node={node} />
     </article>
   )
 }

@@ -9,7 +9,7 @@ import assert from 'node:assert/strict'
 import * as graphModule from '../lib/content/graph.ts'
 import { urlForDefinition, urlForTheorem, urlForProof, urlForRemark, kbRefs, claimAnchorId, termAnchorId, kbAnchorPath, sectionAnchorId, partAnchorId, ownPageScope, embeddedScope } from '../lib/content/urls.ts'
 
-const { buildGraphFromRaw, kbPageExists, kbNodeTitle, kbNodeLabel } = graphModule.default ?? graphModule
+const { buildGraphFromRaw, kbPageExists, kbNodeTitle, kbNodeLabel, kbOwnership } = graphModule.default ?? graphModule
 
 import { NS, hu, ref, narrative, claim, embed, raw } from './support/raw-graph.mjs'
 
@@ -190,23 +190,30 @@ function backlinkFixture() {
 }
 
 /**
- * The same fixture built as a DEPLOYED build sees it.
+ * The graph module as a DEPLOYED build evaluates it.
  *
  * `SITE_ENV` gates page existence and is read once, when the graph module is
  * evaluated, so this needs a second instance of that module: a query string makes
  * a distinct module URL and therefore a fresh evaluation, leaving the statically
- * imported instance above with its local-build behaviour.
+ * imported instance above with its local-build behaviour. Every export a test
+ * reaches for must come from THIS instance — a graph built here and read with the
+ * statically imported `kbPageExists` would answer with local-build rules.
  */
-async function deployedGraph(data) {
+async function deployedModule() {
   const before = process.env.SITE_ENV
   process.env.SITE_ENV = 'staging'
   try {
     const staging = await import('../lib/content/graph.ts?env=staging')
-    return (staging.default ?? staging).buildGraphFromRaw(data)
+    return staging.default ?? staging
   } finally {
     if (before === undefined) delete process.env.SITE_ENV
     else process.env.SITE_ENV = before
   }
+}
+
+/** The same fixture built as a deployed build sees it. */
+async function deployedGraph(data) {
+  return (await deployedModule()).buildGraphFromRaw(data)
 }
 
 const rowsOf = (list) => list.map((r) => [r.kind, r.fqn, r.count])
@@ -306,6 +313,82 @@ test('a source whose page this build does not generate is dropped', async () => 
   assert.deepEqual(rowsOf(b.byTarget.get('definitions.def-egy')), [
     ['chapter', 'books.konyv.chapters.fejezet', 2],
   ])
+})
+
+// ---------------------------------------------------------------------------
+// The ownership chain (sub-plan §6.1, second table in §6.5)
+// ---------------------------------------------------------------------------
+
+/**
+ * The shared fixture with a second and a third proof on its theorem, both embedded
+ * in the same section so both have a page.
+ *
+ * The content has no such theorem — 190 theorems with exactly one proof, one with
+ * none (measured) — and that is the case the design turns on: a menu item had to
+ * pick one proof, a list does not (D4). So it is built here rather than waited for.
+ */
+function rawWithThreeProofs() {
+  const data = raw()
+  data.theorems[0].proofSlugs = ['biz-egy', 'biz-ketto', 'biz-harom']
+  for (const name of ['biz-ketto', 'biz-harom']) {
+    data.proofs.push({ ...hu, name, slug: name, body: [narrative('Bizonyítás.')], references: {}, remarkSlugs: [] })
+    data.books[0].parts[0].chapters[0].sections[0].body.push(embed(`theorems.tetel-egy.proofs.${name}`))
+  }
+  return data
+}
+
+const slugsOf = (nodes) => nodes.map((n) => n.slug)
+
+test('a theorem owns its proofs and its remarks, and has no parent', () => {
+  const g = buildGraphFromRaw(raw())
+  const o = kbOwnership(g, thm(g))
+  assert.equal(o.parent, undefined, 'a theorem is the top of its chain')
+  assert.deepEqual(slugsOf(o.proofs), ['biz-egy'])
+  assert.deepEqual(slugsOf(o.remarks), [])
+})
+
+test('a theorem with three proofs owns all three, in authored order', () => {
+  const g = buildGraphFromRaw(rawWithThreeProofs())
+  // The point of D4: no "first one" is picked, so nothing here is length 1.
+  assert.deepEqual(slugsOf(kbOwnership(g, thm(g)).proofs), ['biz-egy', 'biz-ketto', 'biz-harom'])
+})
+
+test('a definition owns its remarks and nothing else', () => {
+  const g = buildGraphFromRaw(raw())
+  const o = kbOwnership(g, def(g))
+  assert.equal(o.parent, undefined)
+  assert.deepEqual(slugsOf(o.proofs), [])
+  assert.deepEqual(slugsOf(o.remarks), ['rem-egy'])
+})
+
+test('a proof links up to its theorem and down to its own remarks', () => {
+  const g = buildGraphFromRaw(raw())
+  const o = kbOwnership(g, prf(g))
+  assert.equal(o.parent, thm(g))
+  assert.deepEqual(slugsOf(o.proofs), [])
+  assert.deepEqual(slugsOf(o.remarks), [])
+})
+
+test('a remark owns nothing, so its chain is the one link up to its owner', () => {
+  const g = buildGraphFromRaw(raw())
+  const o = kbOwnership(g, rem(g))
+  assert.equal(o.parent, def(g))
+  assert.deepEqual(slugsOf(o.proofs), [])
+  assert.deepEqual(slugsOf(o.remarks), [])
+})
+
+test('a child whose page this build does not generate is dropped, not linked', async () => {
+  // The unpublished chapter takes the whole chain's pages with it on a deployed
+  // build, so this asserts the filter from both ends: no parent, no children.
+  const { buildGraphFromRaw: build, kbOwnership: ownership } = await deployedModule()
+  const g = build(raw({ published: false }))
+  assert.deepEqual(slugsOf(ownership(g, thm(g)).proofs), [], 'the proof has no page on staging')
+  assert.equal(ownership(g, prf(g)).parent, undefined, 'nor does the theorem above it')
+  assert.equal(ownership(g, rem(g)).parent, undefined)
+  // Locally the same fixture keeps every link, which is what makes the drop a
+  // filter rather than a missing relation.
+  const local = buildGraphFromRaw(raw({ published: false }))
+  assert.deepEqual(slugsOf(kbOwnership(local, thm(local)).proofs), ['biz-egy'])
 })
 
 test('the glossary points at the page-relative term anchor of the owner\'s page', () => {

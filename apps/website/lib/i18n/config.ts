@@ -50,6 +50,13 @@ export type LabelKey =
   // The shared list filter above a knowledge-base list — the glossary's names and
   // the index pages' titles use the same three.
   | 'kbFilterPlaceholder' | 'kbFilterEmpty' | 'kbFilterClear'
+  // The ownership-chain links below an entity's body. The two direction labels are
+  // the spoken form of the arrow the link carries: the arrow is decorative markup
+  // hidden from assistive technology, and these say the same thing in words.
+  // `kbOwnershipSibling` numbers children that would otherwise read alike — two
+  // proofs of one theorem are both "Bizonyítás", so the ordinal is what makes them
+  // two links rather than one repeated twice.
+  | 'kbOwnershipUp' | 'kbOwnershipDown' | 'kbOwnershipSibling'
 
 export interface LocaleConfig {
   displayName: string

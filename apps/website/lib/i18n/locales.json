@@ -28,7 +28,10 @@
         "kbGlossarySynonymOf": "{name} szinonimája",
         "kbFilterPlaceholder": "Szűrés a listában",
         "kbFilterEmpty": "Nincs találat",
-        "kbFilterClear": "Szűrés törlése"
+        "kbFilterClear": "Szűrés törlése",
+        "kbOwnershipUp": "Fölérendelt lap:",
+        "kbOwnershipDown": "Alárendelt lap:",
+        "kbOwnershipSibling": "{index}. {label}"
       },
       "containers": {
         "book": "konyvek",

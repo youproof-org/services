@@ -1,0 +1,69 @@
+@use '../../styles/variables' as *;
+
+// The ownership chain below an entity's body (§6.1): one plain link per step, the
+// parent first. A short list — at most two entries anywhere in the content today —
+// so it is a stack of lines rather than a grid, and it sits under a rule that
+// separates it from the q.e.d. that closed the body above it.
+
+.links {
+  margin: 2rem 0 0;
+  padding: 0.8rem 0 0;
+  border-top: 1px solid $gray-200;
+  list-style: none;
+  // Tighter than the body's leading, as the index rows are: an entry is one line.
+  line-height: 1.5;
+}
+
+.item {
+  padding: 0.2rem 0;
+}
+
+// Reads like an index row (kb-type-index-page.module.scss): the name in body
+// colour and bold, underlined only on hover, so the list is quiet under the body.
+.link {
+  color: $black;
+  text-decoration: none;
+  font-weight: $font-bold;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// The direction marker. $gray-600 (7.56:1 on white) rather than a fainter grey —
+// it is the only cue to which way the link moves, and at this size an arrow needs
+// the contrast.
+.arrow {
+  margin-right: 0.4rem;
+  color: $gray-600;
+  font-weight: $font-light;
+}
+
+// The spoken form of the arrow, for assistive technology only: out of flow, so it
+// takes no space, and clipped rather than `display: none`, which would take it out
+// of the accessibility tree along with the layout.
+.direction {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+// The target's title, where it has one — every definition and theorem, so every
+// up-link from a proof carries it. De-emphasised behind the label, and separated
+// by the em dash the index rows use; punctuation between two rendered values, so
+// it lives here and not as a literal in the component.
+.title {
+  color: $gray-600;
+  font-weight: $font-light;
+
+  &::before {
+    content: '\2014';
+    margin: 0 0.4rem;
+  }
+}

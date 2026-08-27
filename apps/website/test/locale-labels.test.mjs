@@ -22,6 +22,16 @@ test('the two glossary counts read as rows and the terms they name', () => {
   )
 })
 
+test('numbers a sibling in the ownership chain the way a label reads', () => {
+  // Two proofs of one theorem are both "Bizonyítás", so the ordinal is what makes
+  // the pair two links rather than one repeated; it leads, as an entity's index
+  // does in "15.6. Tétel".
+  assert.equal(
+    formatLocaleLabel('hu', 'kbOwnershipSibling', { index: 2, label: 'Bizonyítás' }),
+    '2. Bizonyítás',
+  )
+})
+
 test('throws on a placeholder the caller did not supply', () => {
   assert.throws(
     () => formatLocaleLabel('hu', 'kbDefinitionsCount', {}),
