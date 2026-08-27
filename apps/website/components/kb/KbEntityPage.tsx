@@ -11,6 +11,7 @@ import type { KbNode } from '@/lib/content/types'
 import EntityChrome from './EntityChrome'
 import OwnershipLinks from './OwnershipLinks'
 import type { KbPanelSection } from './Panel'
+import BacklinksPanel from './panels/BacklinksPanel'
 import ContextPanel from './panels/ContextPanel'
 import styles from './kb-entity-page.module.scss'
 
@@ -53,7 +54,13 @@ export default function KbEntityPage({ node }: KbEntityPageProps) {
   // The scope of every claim and term in this body: this node's own page.
   const scope = ownPageScope(node)
 
+  // In the menu's order (§6.2), which is the order the reader meets the items in.
   const panels: KbPanelSection[] = [
+    {
+      key: 'incoming',
+      title: getLocaleLabel(node.locale, 'kbPanelIncoming'),
+      content: <BacklinksPanel node={node} />,
+    },
     {
       key: 'context',
       title: getLocaleLabel(node.locale, 'kbPanelContext'),
@@ -113,8 +120,8 @@ export default function KbEntityPage({ node }: KbEntityPageProps) {
         The panel's contents go the same way and for the same reason, but they are
         markup rather than data: a server component per content, rendered here and
         handed over already finished, which is what puts it in the served HTML
-        (§2.1). Kontextus is the only one so far; the rest join this list as their
-        phases land.
+        (§2.1). Bejövő hivatkozások and Kontextus so far; the rest join this list as
+        their phases land.
       */}
       <EntityChrome
         items={kbMenuItems(node)}

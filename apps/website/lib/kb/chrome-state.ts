@@ -16,14 +16,14 @@
  *
  * `menu` is the open context menu. Every other kind is a panel, and is named after
  * the menu item that opens it (`KbMenuItemKey`) so the two cannot drift: `context`
- * is the Kontextus panel. The remaining items and the two selection modes join as
- * their phases land, and nothing here changes when they do except this union and
- * `STATE_KINDS`.
+ * is the Kontextus panel and `incoming` the Bejövő hivatkozások one. The remaining
+ * items and the two selection modes join as their phases land, and nothing here
+ * changes when they do except this union and `STATE_KINDS`.
  */
-export type ChromeStateKind = 'menu' | 'context'
+export type ChromeStateKind = 'menu' | 'incoming' | 'context'
 
 /** The kinds a restored history entry may name — anything else is not ours. */
-const STATE_KINDS: readonly ChromeStateKind[] = ['menu', 'context']
+const STATE_KINDS: readonly ChromeStateKind[] = ['menu', 'incoming', 'context']
 
 export interface ChromeState {
   kind: ChromeStateKind

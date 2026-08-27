@@ -38,7 +38,10 @@
         "kbMenuTerms": "Fogalmak",
         "kbMenuClaims": "Állítások",
         "kbMenuContext": "Kontextus",
-        "kbPanelContext": "Hol jelenik meg"
+        "kbPanelContext": "Hol jelenik meg",
+        "kbPanelIncoming": "Hol hivatkoznak rá",
+        "kbPanelIncomingCount": "{count} hivatkozás",
+        "kbPanelIncomingEmpty": "Nincs rá hivatkozás"
       },
       "containers": {
         "book": "konyvek",

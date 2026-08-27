@@ -22,6 +22,12 @@ test('the two glossary counts read as rows and the terms they name', () => {
   )
 })
 
+test('a backlink row counts the references one source aims at the entity', () => {
+  // One row per source with a count, not one row per reference (sub-plan §7.2), so
+  // the wording is about this source's references rather than about the list.
+  assert.equal(formatLocaleLabel('hu', 'kbPanelIncomingCount', { count: 5 }), '5 hivatkozás')
+})
+
 test('numbers a sibling in the ownership chain the way a label reads', () => {
   // Two proofs of one theorem are both "Bizonyítás", so the ordinal is what makes
   // the pair two links rather than one repeated; it leads, as an entity's index

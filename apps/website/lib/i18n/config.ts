@@ -67,8 +67,14 @@ export type LabelKey =
   // The panel's pinned header, one label per content (§6.4). Separate from the
   // menu captions on purpose: the caption names the action ("Kontextus"), the
   // header answers the question the panel is answering ("Hol jelenik meg") — §6.2
-  // gives that wording for this one.
-  | 'kbPanelContext'
+  // gives that wording for this one; "Hol hivatkoznak rá" answers §7.2's "where is
+  // this used?" the same way.
+  | 'kbPanelContext' | 'kbPanelIncoming'
+  // Bejövő hivatkozások (§7.2). The count is per row — one source citing this entity
+  // five times is one row saying five — and the empty state is a legitimate answer
+  // to the reader's question rather than a failure, which is why it is a sentence
+  // and not a dash.
+  | 'kbPanelIncomingCount' | 'kbPanelIncomingEmpty'
 
 export interface LocaleConfig {
   displayName: string

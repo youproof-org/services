@@ -1,0 +1,70 @@
+@use 'variables' as *;
+
+// Bejövő hivatkozások (components/kb/panels/BacklinksPanel.tsx), inside the panel's
+// own scroller — `panel.module.scss` owns the sheet, the pinned header and the
+// bottom padding that keeps the last row out from under the Vissza pill.
+//
+// The list is sized for the middle rather than for the median (sub-plan §9.1 note
+// 1): 129 of the 537 entities need more than five rows and 56 more than twenty, so
+// a row is one line of text with as little vertical padding as still separates two
+// of them. Nothing here caps the list or pages it — one list, internally scrolled,
+// no separate design for the 222-row case (§6.4).
+.sources {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.source {
+  // A hairline between rows rather than around them: 222 boxes would read as 222
+  // objects, while 222 lines read as one list. The last one is dropped so the list
+  // does not end on a rule that separates it from nothing.
+  border-bottom: 1px solid $gray-200;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+// The whole row is the link, so it is the element that has to lay the row out:
+// title on the left, count on the right, both on the same line whatever the title's
+// length. The gap is what stops a long title from touching its own count.
+.link {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.4rem 0;
+  color: $black;
+  text-decoration: none;
+  line-height: 1.5;
+
+  &:hover .title {
+    text-decoration: underline;
+  }
+}
+
+.title {
+  font-weight: $font-bold;
+  // Wraps rather than truncating: a chapter title the reader cannot read in full is
+  // not an answer to "where is this used?".
+  min-width: 0;
+}
+
+// Secondary to the title: it qualifies the row rather than naming it. `flex: none`
+// keeps the number whole when the title takes the rest of the line, and it is the
+// reason a two-digit count does not get broken across two lines.
+.count {
+  flex: none;
+  color: $gray-500;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+// The empty state, which 168 of the 389 shipped pages reach (§9.1 note 3). It reads
+// as the answer it is — the panel's own text, in the body colour, not a greyed-out
+// apology for a missing list (§7.2).
+.empty {
+  margin: 0;
+  line-height: 1.5;
+}

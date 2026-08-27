@@ -29,6 +29,7 @@ const { buildGraphFromRaw } = graphModule.default ?? graphModule
 
 const MENU = { kind: 'menu' }
 const CONTEXT = { kind: 'context' }
+const INCOMING = { kind: 'incoming' }
 const open = (stack, state = MENU) => reduceChrome(stack, { type: 'open', state })
 const back = (stack) => reduceChrome(stack, { type: 'back' })
 
@@ -129,9 +130,13 @@ test('a panel state names the panel that is open', () => {
 test('a panel state survives a history entry, and an unknown kind still does not', () => {
   const stack = open(open(DEFAULT_STACK, MENU), CONTEXT)
   assert.deepEqual(readChromeStack({ [CHROME_HISTORY_KEY]: stack }), stack)
+  // …and the panel that landed with it.
+  const incoming = open(open(DEFAULT_STACK, MENU), INCOMING)
+  assert.deepEqual(readChromeStack({ [CHROME_HISTORY_KEY]: incoming }), incoming)
   // The kinds are a closed set: a panel whose phase has not landed cannot be
-  // restored from an entry written by a newer build.
-  assert.deepEqual(readChromeStack({ [CHROME_HISTORY_KEY]: [{ kind: 'incoming' }] }), [])
+  // restored from an entry written by a newer build. `claims` is one of those —
+  // it is a menu item today, but not yet a state.
+  assert.deepEqual(readChromeStack({ [CHROME_HISTORY_KEY]: [{ kind: 'claims' }] }), [])
 })
 
 // ---------------------------------------------------------------------------
