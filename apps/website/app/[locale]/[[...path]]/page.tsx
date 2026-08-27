@@ -23,6 +23,11 @@ import BookIndex from '@/components/book/BookIndex'
 import ChapterPage from '@/components/content/ChapterPage'
 import StandaloneRoute from '@/components/content/StandaloneRoute'
 import StandaloneIndex from '@/components/content/StandaloneIndex'
+import KbPageShell from '@/components/kb/KbPageShell'
+import KbRootPage from '@/components/kb/KbRootPage'
+import KbTypeIndexPage from '@/components/kb/KbTypeIndexPage'
+import GlossaryPage from '@/components/kb/GlossaryPage'
+import { kbListBreadcrumbs } from '@/lib/content/kb-breadcrumbs'
 import styles from './page.module.scss'
 
 // Static export: only enumerated paths are generated; anything else 404s.
@@ -71,6 +76,14 @@ type Resolved =
   | { kind: 'newsletter-index' }
   | { kind: 'landing-index' }
   | { kind: 'article' | 'newsletter' | 'landing' | 'page'; node: StandaloneNode }
+  // Knowledge base — the four list pages. The entity routes land with the
+  // component that renders their term and claim ids: the postbuild anchor gate
+  // checks every fragment into a page the moment that page exists, so a route
+  // without those ids fails the build rather than 404ing.
+  | { kind: 'kb-root' }
+  | { kind: 'definitions-index' }
+  | { kind: 'theorems-index' }
+  | { kind: 'glossary' }
 
 function resolvePath(locale: string, path: string[]): Resolved | null {
   if (path.length === 0) return { kind: 'home' }
@@ -102,6 +115,24 @@ function resolvePath(locale: string, path: string[]): Resolved | null {
   // the standalone branch below and resolve to a bogus index page. See that
   // constant for why each is false.
   if (!isRoutableAtRoot(key0)) return null
+
+  // Knowledge base. Only the outer segment is routable at the root, so the
+  // per-type segments are reachable only nested under it: `/hu/tudasbazis/definiciok`
+  // is the definitions index while `/hu/definiciok` 404s above.
+  if (key0 === 'knowledge-base') {
+    if (path.length === 1) return { kind: 'kb-root' }
+    if (path.length === 2) {
+      switch (resolveContainerKey(locale, path[1])) {
+        case 'definition': return { kind: 'definitions-index' }
+        case 'theorem': return { kind: 'theorems-index' }
+        case 'term': return { kind: 'glossary' }
+        default: return null
+      }
+    }
+    // Deeper paths are the entity pages; they are not routed yet, so they 404
+    // instead of rendering a page with none of the ids other pages link into.
+    return null
+  }
 
   // article | newsletter | landing
   if (path.length === 1) {
@@ -138,6 +169,7 @@ export async function generateStaticParams() {
     const articleC = getContainerSegment(locale, 'article')
     const newsletterC = getContainerSegment(locale, 'newsletter')
     const landingC = getContainerSegment(locale, 'landing')
+    const kbC = getContainerSegment(locale, 'knowledge-base')
 
     params.push({ locale, path: [] }) // home
     params.push({ locale, path: [bookC] }) // books index (dead-end stub)
@@ -166,6 +198,13 @@ export async function generateStaticParams() {
     for (const l of graph.landings.values()) {
       if (l.locale === locale) params.push({ locale, path: [landingC, l.slug] })
     }
+
+    // Knowledge base: the root and the three index pages. The entity routes are
+    // enumerated with the component that renders their ids (see `Resolved`).
+    params.push({ locale, path: [kbC] })
+    params.push({ locale, path: [kbC, getContainerSegment(locale, 'definition')] })
+    params.push({ locale, path: [kbC, getContainerSegment(locale, 'theorem')] })
+    params.push({ locale, path: [kbC, getContainerSegment(locale, 'term')] })
 
     for (const p of graph.pages.values()) {
       if (p.locale !== locale) continue
@@ -216,6 +255,17 @@ export async function generateMetadata({ params }: RouteProps): Promise<Metadata
       key = 'articles-index'; fallbackTitle = getLocaleLabel(locale, 'articlesIndex'); ogType = 'website'; break
     case 'newsletter-index':
       key = 'newsletter-index'; fallbackTitle = getLocaleLabel(locale, 'newsletterIndex'); ogType = 'website'; break
+    // The four knowledge-base list pages: all `website`, and all four take the
+    // locale's default description — a per-page description is worth writing where
+    // there are hundreds of near-identical entity pages, not for four.
+    case 'kb-root':
+      key = 'kb-root'; fallbackTitle = getLocaleLabel(locale, 'knowledgeBase'); ogType = 'website'; break
+    case 'definitions-index':
+      key = 'definitions-index'; fallbackTitle = getLocaleLabel(locale, 'definitionsIndex'); ogType = 'website'; break
+    case 'theorems-index':
+      key = 'theorems-index'; fallbackTitle = getLocaleLabel(locale, 'theoremsIndex'); ogType = 'website'; break
+    case 'glossary':
+      key = 'glossary'; fallbackTitle = getLocaleLabel(locale, 'glossary'); ogType = 'website'; break
     default: // article | newsletter | landing | page
       key = resolved.node.kind
       slugPath = [resolved.node.slug]
@@ -285,6 +335,37 @@ export default async function LocalizedRoute({ params }: RouteProps) {
             { label: 'Hírek', href: `/${locale}/${getContainerSegment(locale, 'newsletter')}` },
           ]}
         />
+      )
+
+    // Knowledge base. Each page is a body inside the one shell (§2), and every
+    // chain comes from kbListBreadcrumbs so the list and entity pages cannot
+    // disagree about where a page sits.
+    case 'kb-root':
+      return (
+        <KbPageShell locale={locale} breadcrumbs={kbListBreadcrumbs(locale, 'kb-root')}>
+          <KbRootPage locale={locale} />
+        </KbPageShell>
+      )
+
+    case 'definitions-index':
+      return (
+        <KbPageShell locale={locale} breadcrumbs={kbListBreadcrumbs(locale, 'definitions-index')}>
+          <KbTypeIndexPage locale={locale} type="definition" />
+        </KbPageShell>
+      )
+
+    case 'theorems-index':
+      return (
+        <KbPageShell locale={locale} breadcrumbs={kbListBreadcrumbs(locale, 'theorems-index')}>
+          <KbTypeIndexPage locale={locale} type="theorem" />
+        </KbPageShell>
+      )
+
+    case 'glossary':
+      return (
+        <KbPageShell locale={locale} breadcrumbs={kbListBreadcrumbs(locale, 'glossary')}>
+          <GlossaryPage locale={locale} />
+        </KbPageShell>
       )
 
     case 'book': {

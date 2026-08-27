@@ -125,9 +125,12 @@ const ROUTABLE_AT_ROOT = {
   landing: true,
   // Nested under its book.
   chapter: false,
-  // Knowledge base: the segments are reserved (so no custom page can take them),
-  // but the routes are not wired up yet — that lands with the KB page components.
-  'knowledge-base': false,
+  // Knowledge base: every KB page sits under the outer `knowledge-base` segment,
+  // so it is the only one of these keys that may start a path. The per-type
+  // segments are reserved (no custom page can take them) but are addressed only
+  // nested inside it — which is what makes `/hu/definiciok` 404 rather than
+  // resolving to the definitions index.
+  'knowledge-base': true,
   definition: false,
   theorem: false,
   proof: false,
