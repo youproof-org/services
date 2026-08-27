@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "postinstall": "node scripts/check-latex.mjs",
-    "predev": "node scripts/sync-figures.mjs && node scripts/gen-og-images.mjs && node scripts/gen-wordmark-font.mjs && node scripts/gen-content-lastmod.mjs && node scripts/gen-cookie-policy-version.mjs",
+    "predev": "node scripts/sync-figures.mjs && node scripts/gen-og-images.mjs && node scripts/gen-kb-menu-icons.mjs && node scripts/gen-wordmark-font.mjs && node scripts/gen-content-lastmod.mjs && node scripts/gen-cookie-policy-version.mjs",
     "dev": "next dev",
-    "prebuild": "node scripts/sync-figures.mjs && node scripts/gen-og-images.mjs && node scripts/gen-wordmark-font.mjs && node scripts/gen-content-lastmod.mjs && node scripts/gen-cookie-policy-version.mjs",
+    "prebuild": "node scripts/sync-figures.mjs && node scripts/gen-og-images.mjs && node scripts/gen-kb-menu-icons.mjs && node scripts/gen-wordmark-font.mjs && node scripts/gen-content-lastmod.mjs && node scripts/gen-cookie-policy-version.mjs",
     "build": "next build",
     "//typecheck": "Generates first: lib/consent/version.ts imports .generated/consent-policy.json, which is gitignored, so a fresh clone has nothing to resolve until the generator has run.",
     "typecheck": "node scripts/gen-cookie-policy-version.mjs && tsc --noEmit",
