@@ -5,12 +5,14 @@
 **Sibling sub-plan:** [`yp-162-identifiers-and-anchors-sub-plan.md`](yp-162-identifiers-and-anchors-sub-plan.md) — **shipped**; it settled the anchor grammar, the fully qualified reference targets, and the identifier constraints these pages render.
 **Repos touched:** `youproof-org/services` only — no content or editor change is
 implied by anything here.
-**Status:** **UX settled** (§§2–7 complete, decisions in §8, nothing open in §9).
-**Phases are not yet written** — §10.
+**Status:** **UX settled** (§§2–7 complete, decisions in §8, nothing open in §9) and
+**phases written** — §10 is 21 phases; §9.1 records what measuring for them turned up.
+No code has been written yet.
 
-This document describes what the reader sees and does, not how it is built. No
-component structure, no data flow, no file layout: those are derived in the parent's
-phase 5, and two data-shape prerequisites it must start from are recorded in §9.
+§§2–7 describe what the reader sees and does, not how it is built. §10 is the build
+order that follows from it — 21 narrow phases, each written so that a session picking
+up one of them needs the phase text and one or two source files, not this whole
+document. The two data-shape prerequisites recorded in §9 are its phases 2–4.
 
 **This sub-plan replaces §7 of the design plan and the layout half of parent phase
 5 (§H).** Parent §H's component table, its H.3 interaction sketch and §7's per-page
@@ -910,12 +912,1047 @@ questions** — they belong to the implementation design that follows this docum
 Both are noted so the implementation design starts with them already on the list, not
 because the UX depends on an answer.
 
+### 9.1 Notes from deriving §10 — measured, not assumed
+
+Everything below was measured while writing the phases, on the real content at
+`content 8a9a364` and the real code on this branch. Nothing here reopens a §8
+decision; each is a fact a phase has to be built against, and each is attached to
+the phase that owns it.
+
+**1. The panel's row counts.** §7.2 says the median entity has 2 inbound sources. That
+figure is recoverable only by counting every authored source, including the ones whose
+own page this build does not generate (note 3). Counting what the panel would actually
+render, the median is **1** in both env modes:
+
+| set | pages | median sources shown | pages with an empty panel |
+|---|---|---|---|
+| local build — every embedded node | 537 | 1 | 244 (45%) |
+| `SITE_ENV=staging` — the pages that ship | 389 | 1 | 168 (43%) |
+| local, counting only pages that have any | 293 | 5 | — |
+
+Distribution, which is what the panel has to hold — local (537 pages) and deployed
+(389):
+
+| sources | 0 | 1–5 | 6–20 | 21–50 | 51+ |
+|---|---|---|---|---|---|
+| local | 244 | 164 | 73 | 42 | 14 |
+| deployed | 168 | 117 | 55 | 36 | 13 |
+
+So "median 2, maximum 222" understates the middle from both ends: nearly half the
+panels are empty, and **129** of the 537 need more than five rows, **56** more than
+twenty. The conclusion §6.4 draws (one list, internally scrolled, header pinned) is
+unchanged and better supported than the median suggested.
+
+**2. `gyuru-test` is 548 references from 222 sources, not 549.** §6.4 and §7.2 both
+say 549; the count over the built graph is 548 (222 distinct sources). On a deployed
+build it is **533 references from 207 sources** — see note 3. The design conclusions
+are unaffected; phase 14 should cite the measured numbers rather than the ones in
+§§6.4/7.2.
+
+**3. A backlink source can be a page this build does not generate.** Of the **3789**
+distinct (target, source) pairs, **467** have a source with no page on a deployed
+build:
+
+| dropped source kind | pairs | what a row would link to |
+|---|---|---|
+| proof / theorem / definition / remark | 353 | **a 404** — `kbPageExists` is false for it |
+| section / chapter | 114 | a chapter page that renders as a not-migrated stub |
+
+The first 353 must be filtered — a panel row that 404s on staging is exactly the class
+of bug `validateKbLinks` exists to prevent. The second 114 is a judgement call that
+belongs to phase 2: the URL resolves, so nothing breaks, but the row answers "where is
+this used?" with a stub. `gyuru-test` is the cheapest way to see the difference — 222
+sources locally, **212** on a deployed build with stub sources kept, **207** with them
+dropped. Either way the empty state of §7.2 is reached by **168 of the 389** shipped
+pages.
+
+**4. A glossary row cannot be keyed by its name.** §4's one-row-per-name list comes
+to **342 rows**: 217 canonical forms plus **125** synonyms, spread over 83 terms that
+have at least one. Those names are not unique — 9 canonical forms are carried by more
+than one node (already known, [parent D5](yp-162-knowledge-graph-urls-implementation-plan.md#d5--glossary-grouping-for-duplicate-terms-settled--shipped-in-phase-4)),
+14 synonym strings occur more than once, and **6 synonyms are also somebody else's
+canonical form** (`egységelem`, `inverz`, `maradékosztálygyűrű`, `nullelem`,
+`szorzás`, `összeadás`). A row is therefore identified by (owner, term key, name),
+and two rows may legitimately carry the same visible text and point at different
+nodes — which is also why §4 requires a synonym row to name its canonical form.
+
+**5. The anchor gate decides where the routing phase can stop.**
+[`scripts/check-anchors.mjs`](../../apps/website/scripts/check-anchors.mjs) reads the
+built HTML and skips fragments whose target page is absent from the export. So the
+moment an entity route exists, every `…#fogalmak.{f}` and `…#allitasok.{c}` pointing
+into it is checked against the ids that page actually renders — and a placeholder
+entity page fails the postbuild gate. That is why phase 5 routes the four list pages
+only, and the entity routes land in phase 9 together with the body that renders those
+ids. Today the export contains **0** occurrences of `tudasbazis`, so nothing is
+checked yet.
+
+**6. Where the shell work already has an owner.** The nav item and the homepage entry
+block that §2 assumes are parent phases [J.1 and J.2](yp-162-knowledge-graph-urls-implementation-plan.md#j-phase-7--navigation-discovery-internal-linking-services);
+§10 does not duplicate them. Breadcrumb chains are inseparable from the pages that
+carry them, so they land in phases 5 and 9 — which discharges parent J.3.
+
+**7. The interactive layer has no existing hook in the body markup.**
+[`InlineText.tsx`](../../apps/website/components/content/InlineText.tsx) emits
+**global** class names, not CSS-module ones — a reference is
+`<a class="ref-concept" target="_blank">` ([line 223](../../apps/website/components/content/InlineText.tsx#L223))
+and a term is `<span class="term" id="…">` with no style attached to `.term` at all.
+So the reveal, inert and marked states of §§6.3/7.1 are expressible from a global
+stylesheet without touching the block components, and `data-target-fqn` (D7) has
+`ref.target.fqn` available at the point the anchor is emitted. The `target="_blank"`
+is also why D7 must survive a cold load.
+
+**8. The menu icons are not yet assets.** The six icons D3 assigns are 512×512 PNGs
+in [`entity-page-menu-icons/`](entity-page-menu-icons/), outside the app. The repo's
+idiom for this is a source asset under `apps/website/assets/` plus a `sharp`
+generator in `scripts/gen-*.mjs` writing to `public/assets/generated/`, wired into
+`prebuild`/`predev` — see `gen-og-images.mjs`. Phase 11 does that and nothing else,
+so a 512px icon never reaches a 44px button.
+
+**9. On 262 of the 537 pages, §6.1's two header lines say the same thing.** A proof and
+a remark carry no authored `title` (0/190 and 0/72, measured), and `kbNodeTitle`
+derives one from the owner: `Bizonyítás: {theorem title}`. The label line above it is
+built from the same word — `ENTITY_LABEL_HU['proof']` — so a proof page's header would
+read `BIZONYÍTÁS` / `Bizonyítás: Euler–Fermat tétel`. §6.1 already says what to do
+("a node without a title shows only the label"), and the fix is to read `node.title`
+for the header while keeping `kbNodeTitle` everywhere a node needs a *standalone* name
+— the breadcrumb leaf, `<title>`, an index row, a backlink row — which is what parent
+H.4's one-helper rule is for. Phase 9 has to make the call explicitly rather than
+reach for the helper by reflex.
+
 ---
 
 ## 10. Phases
 
-*To be derived once §§3–7 are settled. The build order is a consequence of the
-layout, not an input to it.*
+Twenty-one phases, deliberately narrow. The order is a consequence of the layout, not
+an input to it: the documents that still describe the old design are corrected first,
+then the data shapes §§4 and 7.2 need, then the pages that have no incoming fragments,
+then the entity page, then one interaction at a time.
+
+Phase 1 is documentation and comes before the two §9 prerequisites on purpose. §7 of
+the design plan and §H of the parent both currently specify a different page — a
+component table, a "Uses" block, an `aria-pressed` selection model — and every phase
+below promises a session that a short reading list is enough. That promise is false
+while a document a reader might reasonably open contradicts this one.
+
+### How to read a phase
+
+Each phase below is written to be **the only thing a session has to read**, plus the
+one or two source files it names. A phase states its files, its reading list, what
+"done" means as a command, and its gate. If a phase seems to need the whole design in
+mind, that is a defect in the phase, not in the reader — say so and split it.
+
+What is *not* repeated in every phase, because it holds for all of them:
+
+- **The working agreement at the top of this document applies to every phase.**
+  Nothing is committed or pushed without approval; after a commit, stop and wait for
+  separate approval before starting the next phase.
+- **Node.** `engines` requires ≥ 24.18, and the bundled `pnpm` refuses to run at all
+  below 22.13 — which is what a default PATH here produces. `nvm use` first; the
+  failure mode is a `pnpm` error that looks nothing like the task.
+- **Commands.** All of them run in `apps/website`:
+  `pnpm typecheck`, `pnpm test`, `pnpm build`, `SITE_ENV=staging pnpm build`
+  (the shell variable wins over `.env.local` — verified), and
+  `find out -name '*.html' | wc -l` for the page count. `pnpm build` runs
+  `set-html-lang.mjs`, `check-build-version.mjs`, `check-analytics-build.mjs` and
+  `check-anchors.mjs` as `postbuild`, so a green build is already three checks and a
+  `<html lang>` rewrite. `check-anchors` is the one that matters most below.
+- **Baseline, measured on this branch today, not quoted from the parent plan:**
+  46 HTML pages in both env modes, 14.3 s wall for `pnpm build` including `prebuild`,
+  **96/96** tests passing, 11 086 internal fragment links checked with 0 broken, and
+  **0** occurrences of `tudasbazis` anywhere in the export.
+- **Localized strings** come from `lib/i18n/locales.json`. The four labels these
+  pages need — `knowledgeBase`, `definitionsIndex`, `theoremsIndex`, `glossary` — and
+  every container segment already exist there. No new literal belongs in a component.
+- **Every URL** goes through `buildLocalizedUrl` / the `urlFor*` helpers in
+  `lib/content/urls.ts`. All ten KB `UrlKey`s shipped in parent phase 4; nothing here
+  constructs a path by hand.
+
+### Phase table
+
+| # | phase | § it builds | new files? |
+|---|---|---|---|
+| 1 | Amend the documents this design supersedes | — | docs only |
+| 2 | Backlink index against FQN targets | 7.2 | no |
+| 3 | Glossary projection carries synonyms | 4 | no |
+| 4 | One row per name, and one Hungarian collation | 4, 5 | no |
+| 5 | KB routing and the page shell — the four list pages | 2 | yes |
+| 6 | The knowledge-base root page | 3 | yes |
+| 7 | The glossary page and the shared list filter | 4 | yes |
+| 8 | The definitions and theorems index pages | 5 | yes |
+| 9 | Entity routes: label, title, body, q.e.d. | 6.1 | yes |
+| 10 | The ownership-chain links | 6.1, D4 | yes |
+| 11 | The menu icons, as assets | 6.2, D3 | yes |
+| 12 | The menu, the overlay, and one back step four ways | 6.2, 6.3, D2 | yes |
+| 13 | The panel: shell, slide, scroll lock, and Kontextus | 6.4 | yes |
+| 14 | Bejövő hivatkozások | 7.2 | yes |
+| 15 | Selection modes, level 1: reveal | 6.3 | no |
+| 16 | Selection modes, level 2: the detail panel and the upper half | 6.3, 6.4 | no |
+| 17 | Outgoing references: inert, intercepted, and detailed | 7.1, D1 | yes |
+| 18 | The arrival marker | 6.2, D5 | yes |
+| 19 | `data-target-fqn`, the highlight parameter, and marking back-references | 7.2, D7 | yes |
+| 20 | Print, no-JavaScript and reduced-motion sweep | 2, 2.1, 6.4 | no |
+| 21 | Close out: measurements back into this plan and the parent | — | docs only |
+
+**Phases 1–4 have no visible output** and phases 15–20 add no pages; the page count
+moves exactly twice, at phase 5 (+4) and phase 9 (+389 deployed / +537 local).
+
+---
+
+### Phase 1 — Amend the documents this design supersedes
+
+**First, and before any code**, because every later phase's reading list is only
+honest once the documents it might send a reader to have stopped describing the old
+design. Two of them currently would.
+
+**Files.**
+- `docs/plans/yp-162-knowledge-graph-urls-plan.md` — §7.
+- `docs/plans/yp-162-knowledge-graph-urls-implementation-plan.md` — the status
+  paragraph at the top, §H, §D7, §J.3, §K.3, §R2.
+
+**Read to start.** This phase text; §§3–7 and §8 of this document; §7 of the design
+plan; §H of the parent plan. Nothing in the code.
+
+**Do.**
+- **Design plan §7** — a banner at the head of the section saying it is superseded by
+  this sub-plan for everything about arrangement, and per-subsection notes for the six
+  places the content list itself changed: §7.1/§7.2/§7.4 lose "Defined terms",
+  "Remarks", "Referenced by" and "Embedding context" *as stacked blocks* (they become
+  panel content and ownership links — §6.1, §6.2); §7.2 loses "Consequences" (already
+  parent D6); §7.3 loses "Uses" (D8); §7.5 loses the excerpt and the "referenced by N"
+  count and gains synonym rows (§4); §7.6/§7.7 lose the summary/preview line (§5). The
+  breadcrumb chains at the head of §7 stay — this design uses them unchanged.
+- **Parent §H** — replace the H.2 component table and H.3 wholesale with a pointer to
+  this document: H.2's ten components are not the structure being built, and H.3's
+  `button`-semantics-with-`aria-pressed` sketch is explicitly **not** part of this
+  design (§11). Keep H.1 (routing) and H.4 (titles) as the requirements they are, each
+  annotated with the phase below that owns it. Say plainly at the top of §H that the
+  layout gate is **lifted** and that §10 of this sub-plan is the build order.
+- **Parent status paragraph** — "gated on the page-layout design being settled" is no
+  longer true.
+- **Parent D7** ("do chapter and section referrers appear in Referenced by?") — settled
+  by §7.2: yes, in the same list, grouped by source like any other. Mark it settled and
+  point at §7.2.
+- **Parent J.3 and K.3** — a note that breadcrumbs land per page phase (5 and 9), and
+  that the backlink-index and glossary tests land in phases 2–4 rather than in phase 8.
+- **Parent R2** ("thin content") — point at §7.2's empty state and note 3 in §9.1;
+  the mitigation it records leans on "Uses" and "Defined terms", neither of which is
+  built.
+
+**Done when.** `pnpm test` is still 96/96 (this phase touches no code, so a change in
+that number means something else happened); §7 of the design plan and §H of the parent
+both open with a superseded/lifted note naming this document; and
+`grep -n 'aria-pressed\|Uses.*proof\|Consequences' docs/plans/yp-162-knowledge-graph-urls-implementation-plan.md`
+returns only historical mentions, none phrased as a requirement.
+
+**Review gate.** The diff of the two documents is the review artifact. No code follows
+until it is approved.
+
+---
+
+### Phase 2 — Backlink index against FQN targets
+
+The first of the two §9 prerequisites. Pure data; no component, no page.
+
+**Files.**
+- `apps/website/lib/content/types.ts` — `KbBacklinkSource`, `KbBacklinks`, and
+  `backlinks` on `ContentGraph`.
+- `apps/website/lib/content/graph.ts` — `buildBacklinkIndex(graph)`, called from
+  `buildGraphFromRaw`.
+- `apps/website/test/kb-graph.test.mjs`, `apps/website/test/support/raw-graph.mjs`.
+
+**Read to start.** This phase text; `lib/content/graph.ts` — specifically `refOwners`
+(the documented seam for exactly this fold), `kbPageExists`, and `buildGlossary` as
+the model for a derived projection; `test/support/raw-graph.mjs`.
+
+**Do.**
+- Fold over `refOwners(graph)`. For each reference with a path target, find the
+  **owning entity** of the target: the target FQN itself if it is one of the 537
+  nodes, otherwise the FQN minus its trailing `.claims.{c}` or `.terms.{t}` step.
+  Everything else (books, chapters, sections, standalone items, external URLs) is not
+  a KB target and is skipped.
+- Group by (owning entity, source) and carry a **count**, per §7.2. A source is the
+  `refOwners` owner: a chapter, a section, or one of the four entity types. Shape:
+
+  ```
+  KbBacklinkSource { kind; fqn; title; href; count }
+  KbBacklinks       { all: KbBacklinkSource[]; byTarget: Map<string, KbBacklinkSource[]> }
+  graph.backlinks:  Map<string /* owning entity FQN */, KbBacklinks>
+  ```
+
+  `all` is §7.2's unfiltered list; `byTarget` keyed by the *full* target FQN gives the
+  per-term and per-claim variants of §7.2 with no second index and no filtering at
+  render time.
+- `href`: `urlForKbNode` for an entity source; the chapter URL for a chapter; the
+  chapter URL plus `sectionAnchorId` for a section. `title`: `kbNodeTitle` for an
+  entity, the chapter title for a chapter, the section title for a section.
+- **Filter sources by page existence.** An entity source with `kbPageExists === false`
+  is dropped — 353 pairs on a deployed build, each of which would be a 404 (§9.1 note
+  3). For the 114 chapter/section pairs whose chapter is unpublished, decide and
+  record the decision in this phase's summary; the recommendation is to drop them too,
+  since the row promises the reader a place and delivers a stub.
+- Order `all` and each `byTarget` entry by **count descending**, tie-broken by title
+  with `localeCompare(…, 'hu')` — phase 4 replaces that call with the shared
+  comparator.
+
+**Done when.** `pnpm test` passes with new tests asserting, on the fixture graph: a
+reference to a claim and one to a term both land under the owning entity; two
+references from one source collapse to one row with `count: 2`; a chapter and a
+section source appear in the same list; `all` is count-ordered; and a source whose
+page does not exist is absent under `SITE_ENV=staging`. And, against the real content
+(a throwaway script, not a committed test): `graph.backlinks.get('definitions.gyuru-test').all`
+has **222** rows summing to **548** locally and **207** summing to **533** with
+`SITE_ENV=staging` (**212**/**538** if unpublished-chapter sources are kept — the
+decision above is visible right here); the index covers **293** of 537 nodes locally
+and **221** of 389 on staging. `pnpm build` stays green and the page count stays at 46.
+
+**Review gate.** The shape of `KbBacklinks` is the thing to review — every one of
+phases 14, 16 and 19 reads it.
+
+---
+
+### Phase 3 — Glossary projection carries synonyms
+
+The second §9 prerequisite, and the smallest phase here.
+
+**Files.**
+- `apps/website/lib/content/types.ts` — `GlossaryEntry`.
+- `apps/website/lib/content/graph.ts` — `buildGlossary`.
+- `apps/website/test/kb-graph.test.mjs`.
+
+**Read to start.** This phase text; `buildGlossary` in `lib/content/graph.ts`; the
+`TermDefinition` interface in `lib/content/types.ts` (which already has
+`synonyms?: string[]` — the authored data is there, the projection just drops it).
+
+**Do.** Carry `synonyms` onto `GlossaryEntry`, sourced from
+`node.terms[termKey].synonyms`. Nothing else: no row expansion, no re-sorting — that
+is phase 4. Keep the one-row-per-(owner, term key) rule that parent D5 settled.
+
+**Done when.** `pnpm test` passes with a test asserting a synonym-carrying term's
+entry exposes them and a synonym-less one exposes none or an empty list, and, against
+the real content, `graph.glossary.length === 217` unchanged with **83** entries
+carrying at least one synonym and **125** synonyms in total.
+
+**Review gate.** Small enough to review as a diff.
+
+---
+
+### Phase 4 — One row per name, and one Hungarian collation
+
+§4's list is an index of *names*, not of terms; §5's two pages sort on title with the
+same collation. Both are pure data, so both land before any page renders.
+
+**Files.**
+- `apps/website/lib/content/glossary-rows.ts` *(new)* — the name-row projection.
+- `apps/website/lib/content/collate.ts` *(new)* — the one comparator.
+- `apps/website/lib/content/graph.ts` — use the comparator in `buildGlossary` and in
+  phase 2's tie-break.
+- `apps/website/test/kb-graph.test.mjs` or a new `test/glossary-rows.test.mjs`.
+
+**Read to start.** This phase text; §4 of this document; `buildGlossary` in
+`lib/content/graph.ts`; note 4 in §9.1.
+
+**Do.**
+- **The comparator.** One exported function wrapping `localeCompare(a, b, 'hu')` with
+  the options settled here (at minimum `sensitivity` and `numeric`), so the glossary,
+  both index pages and the backlink tie-break cannot drift apart. Two lookup tables on
+  one site sorting differently is a defect (§5).
+- **The rows.** Expand each `GlossaryEntry` into **one row per name**: the canonical
+  form, plus one per synonym. A row carries its own `name`, the `canonical` it belongs
+  to, whether it *is* the canonical, and the entry's `href`. Sort the whole list on
+  `name` with the comparator — so a synonym sorts under its own initial, not its
+  canonical's (§4).
+- **Do not key a row by its name.** 342 rows over 206 distinct canonical forms and 110
+  distinct synonym strings, with 6 strings that are both (§9.1 note 4). The identity of
+  a row is (owner, term key, name).
+
+**Done when.** `pnpm test` passes with tests asserting: a term with two synonyms
+yields three rows; a synonym row names its canonical and points at the same `href`;
+`á` sorts among `a` rather than after `z`; and the six strings that are both a synonym
+and someone's canonical form yield two distinct rows with different `href`s. Against
+the real content: **342** rows, of which **217** canonical and **125** synonym.
+
+**Review gate.** The row shape and the sort order are what phases 7 and 8 render.
+
+---
+
+### Phase 5 — KB routing and the page shell — the four list pages
+
+Routing for `tudasbazis`, `tudasbazis/definiciok`, `tudasbazis/tetelek` and
+`tudasbazis/fogalmak` only. **Not** the entity routes: the postbuild anchor gate
+starts checking fragments into a page the moment it exists, so an entity page without
+its term and claim ids fails the build (§9.1 note 5). Entity routes are phase 9.
+
+**Files.**
+- `apps/website/lib/i18n/config.ts` — flip `knowledge-base` to `true` in
+  `ROUTABLE_AT_ROOT` (one line; the other KB keys stay `false`, which is what makes
+  `/hu/definiciok` 404 rather than resolving).
+- `apps/website/app/[locale]/[[...path]]/page.tsx` — four new `Resolved` variants, the
+  `key0 === 'knowledge-base'` branch of `resolvePath`, four `generateStaticParams`
+  entries per locale, and the `generateMetadata` cases.
+- `apps/website/components/kb/KbPageShell.tsx` + `kb-page-shell.module.scss` *(new)* —
+  header (`mode="inner"`), breadcrumb row, `<main>`, newsletter form, footer.
+- `apps/website/lib/content/kb-breadcrumbs.ts` *(new)* — the chain builder.
+- Four placeholder bodies under `components/kb/`, each rendering its title only.
+
+**Read to start.** This phase text; §2 of this document; `app/[locale]/[[...path]]/page.tsx`
+(the `resolvePath`/`generateStaticParams`/`generateMetadata` trio and the `chapter`
+case of the dispatcher, as the model for the shell); `lib/i18n/url.ts` for the `UrlKey`s.
+
+**Do.**
+- Depths 1–3 in the KB branch: bare (`kb-root`), then `definition`/`theorem`/`term`
+  segments as the three index pages. Depths 4–6 return `null` for now — phase 9 fills
+  them in, and until then an entity URL 404s rather than rendering an empty page.
+- `generateMetadata`: `ogType: 'website'` for all four; titles from the existing
+  labels; the locale's `defaultDescription` is acceptable for four pages (the
+  duplicate-description problem §H.1 flags is about the 389 entity pages, and belongs
+  to phase 9).
+- The breadcrumb builder handles all **seven** kinds now, including the three entity
+  chains, so phase 9 adds no breadcrumb code. A remark's chain follows its actual
+  ownership (§2).
+- The shell puts the newsletter form at the bottom of the main area, above the footer,
+  exactly as `StandaloneRoute` and `SiteFooter` already do it.
+
+**Done when.** `pnpm build` emits **50** HTML files (46 + 4) in both env modes,
+`check-anchors` reports 0 broken, and all four URLs render the shell with the right
+breadcrumb chain: `/hu/tudasbazis`, `/hu/tudasbazis/definiciok`,
+`/hu/tudasbazis/tetelek`, `/hu/tudasbazis/fogalmak`. `/hu/definiciok` and
+`/hu/tudasbazis/definiciok/gyuru-test` both 404. `pnpm typecheck` clean. A test
+asserting the breadcrumb chain for each of the seven kinds, the proof-remark chain
+included.
+
+**Review gate.** The shell and the breadcrumb chains, since phases 6–9 all sit inside
+them.
+
+---
+
+### Phase 6 — The knowledge-base root page
+
+**Files.**
+- `apps/website/components/kb/KbRootPage.tsx` + `kb-root-page.module.scss`.
+- `apps/website/lib/i18n/locales.json` — three one-line section descriptions and the
+  count nouns, as labels. No Hungarian literal in the component.
+
+**Read to start.** This phase text; §3 of this document; `components/kb/KbPageShell.tsx`
+from phase 5; `kbPageExists` in `lib/content/graph.ts`.
+
+**Do.** Three cards of equal weight — Definíciók, Tételek, Fogalmak — each with the
+section name, its one-line description, and its count, side by side on desktop and
+stacked on mobile (§3). The count is legible at a glance rather than buried in the
+sentence. Counts are the **published** counts: `kbPageExists`-filtered node counts for
+the two type indexes, so the root page and the page it links to can never disagree
+(§3).
+
+**One thing to decide and record here.** Fogalmak has two defensible counts: **217**
+terms, or the **342** rows the page actually lists (§9.1 note 4). §3's rule is that the
+root page must not advertise a number the index contradicts, which argues for 342 —
+but "342 fogalom" is not true, since 342 is a count of names. Pick one, say it in the
+card's wording rather than leaving a bare number, and make the glossary page's own
+count agree (phase 7).
+
+**Done when.** `pnpm build` and `SITE_ENV=staging pnpm build` both green, and the
+definition and theorem counts on the rendered page equal those index pages' own counts
+in the same env: **84 / 191** locally and **63 / 136** on staging. Check it as a
+command, not by eye — grep the counts out of `out/hu/tudasbazis.html` and compare with
+the index pages' rendered counts once phase 8 lands, and against the graph until then.
+
+**Review gate.** Visual; the card treatment is explicitly provisional (§3), so this is
+the phase to iterate in.
+
+---
+
+### Phase 7 — The glossary page and the shared list filter
+
+**Files.**
+- `apps/website/components/kb/GlossaryPage.tsx` + `glossary-page.module.scss`.
+- `apps/website/components/kb/ListFilter.tsx` + `list-filter.module.scss` *(new,
+  client)* — reused verbatim by phase 8.
+- `apps/website/lib/i18n/locales.json` — filter placeholder, "nincs találat", the
+  clear-filter label, the synonym-row wording.
+
+**Read to start.** This phase text; §4 of this document; `lib/content/glossary-rows.ts`
+from phase 4.
+
+**Do.**
+- The full **342-row** list, server-rendered in name order, every row a link to the
+  defining anchor. This is the crawler's view and the no-JavaScript view; the filter
+  narrows what is already there and never produces it (§2.1, §4).
+- A **synonym row names its canonical form** — the destination carries a different name
+  than the row, so without it the landing looks wrong (§4). Canonical and synonym rows
+  may look different but neither reads as second-class.
+- `ListFilter` is the only client component: immediate, no submit, matching row text,
+  with an empty state and a one-action clear (§4). It takes the rows as children and
+  filters DOM nodes it did not create, so it works the same for phase 8's title lists.
+- Alphabetical section markers are worth trying but must not leave empty headings
+  behind when filtering (§4) — if that costs more than it gives, drop them and say so.
+
+**Done when.** `pnpm build` green; `grep -c 'class="[^"]*glossary-row' out/hu/tudasbazis/fogalmak.html`
+is **342**; with JavaScript disabled the page still lists and links all 342; filtering
+to a string no row contains shows "nincs találat" and clearing restores 342. A test on
+the row projection is already in phase 4, so this phase's test surface is the filter's
+matching, if it is worth one.
+
+**Review gate.** Visual, plus the no-JavaScript check. Row layout is provisional (§4).
+
+---
+
+### Phase 8 — The definitions and theorems index pages
+
+One design, two instances (§5). If the two files diverge beyond the type they list,
+the phase has gone wrong.
+
+**Files.**
+- `apps/website/components/kb/KbTypeIndexPage.tsx` + `kb-type-index-page.module.scss`.
+- `apps/website/app/[locale]/[[...path]]/page.tsx` — pass the type through.
+
+**Read to start.** This phase text; §5 of this document; `components/kb/ListFilter.tsx`
+and `lib/content/collate.ts`; `kbNodeTitle` in `lib/content/graph.ts`.
+
+**Do.**
+- One line per node: **title first**, then the label in grey — `Euler–Fermat tétel —
+  15.6. Tétel`. Dense, scannable, no preview line (§5).
+- Sorted by title with phase 4's comparator. Filter by title, same `ListFilter`.
+- A count of what is shown, and of what matches while filtering (§5).
+- The grey label must still clear the contrast floor — it is the only in-page cue to
+  where a node sits in the book (§5).
+- **A title fallback**, even though it cannot fire today: 84/84 definitions and 191/191
+  theorems carry an authored title (measured). `kbNodeTitle` already implements the
+  chain; use it rather than reading `node.title`, so a future untitled node sorts
+  somewhere defensible instead of first.
+- Whether labels are right-aligned into a column or trail the title after a separator
+  is an implementation call — try both (§5).
+
+**Done when.** `pnpm build` green; the two pages' rendered counts are **84** and **191**
+locally and **63** and **136** with `SITE_ENV=staging`; the first and last rows of each
+are the Hungarian-collation first and last, not the code-point ones; the two components
+differ only in the node set and the labels they are given.
+
+**Review gate.** Visual, both pages side by side. Provisional per §5.
+
+---
+
+### Phase 9 — Entity routes: label, title, body, q.e.d.
+
+The page count moves from 50 to **439** (staging) / **587** (local) here. Everything
+relational is later phases; this one is the reading surface (§6.1).
+
+**Files.**
+- `apps/website/app/[locale]/[[...path]]/page.tsx` — KB branch depths 4–6, the four
+  entity `Resolved` variants, `generateStaticParams` filtered by `kbPageExists`, and
+  `generateMetadata` with a per-node excerpt.
+- `apps/website/components/kb/KbEntityPage.tsx` + `kb-entity-page.module.scss` *(new)*.
+- `apps/website/lib/content/kb-excerpt.ts` *(new)* — first narrative block, truncated.
+
+**Read to start.** This phase text; §6.1 of this document;
+`components/content/EmbeddedEntity.tsx` and `components/content/ChapterPage.tsx` (for
+the label/title treatment and how `embedIndices`/`figureIndices` are built);
+`kbRefs`, `ownPageScope` and `kbAnchorPath` in `lib/content/urls.ts`.
+
+**Do.**
+- **Header, two lines.** The entity's label (`1.14. Tétel`) styled like
+  `chapter-page_chapter-label`, and the title styled like `chapter-page_chapter-title`.
+  A node with no title shows the label alone (§6.1) — which is 0 of 275 definitions and
+  theorems but **all 262** proofs and remarks. Read `node.title` here, not
+  `kbNodeTitle`: the derived title is built from the same word as the label, so the
+  helper would print the type twice (§9.1 note 9). `kbNodeTitle` is still what the
+  breadcrumb leaf, the `<title>` and every list row use.
+- **Body**, rendered the way the same entity renders when embedded: `ContentBlocks`
+  with the same typography, LaTeX, claim and term treatment. Two things must be right
+  or the anchor gate catches it:
+  - refs go through **`kbRefs()`** so a reference on a KB page points at the target's
+    KB page rather than at a chapter anchor (parent A20/R6 — this phase is where that
+    two-href machinery is first exercised end to end);
+  - claim and term anchors use **`ownPageScope(node)`**, not `embeddedScope(node)`: on
+    its own page the node drops out of the path, so a term is `#fogalmak.{f}` and not
+    `#definiciok.{d}.fogalmak.{f}` (identifiers sub-plan §3.2).
+- `embedIndices`/`figureIndices` are chapter-scoped (parent A17): borrow them from
+  `graph.embedding.get(key).chapter`, the way `ChapterPage` builds them.
+- **q.e.d.** closes the content: `∎` for a proof, `♣` otherwise (§6.1).
+- `generateMetadata`: `ogType: 'article'`, and a real per-node `excerpt` — 389 pages
+  sharing `defaultDescription` is a duplicate-description finding waiting to happen
+  (parent H.1).
+
+**Done when.** `SITE_ENV=staging pnpm build` emits **439** HTML files and `pnpm build`
+emits **587**; `check-anchors` reports 0 broken across all of them — that is the real
+gate, because it is the first build in which KB-page fragments are checked at all, and
+it will be checking far more than 11 086; `pnpm typecheck` clean. Spot-check one page
+of each of the four types in both env modes. Re-measure build wall time against the
+**14.3 s / 46-page** baseline and record it (parent R8).
+
+**Review gate.** The body must be recognisably the same object the reader met in the
+book (§6.1) — compare an entity page against the same entity embedded in its chapter,
+side by side.
+
+---
+
+### Phase 10 — The ownership-chain links
+
+**Files.**
+- `apps/website/components/kb/OwnershipLinks.tsx` + `ownership-links.module.scss`.
+- `apps/website/components/kb/KbEntityPage.tsx` — render it below the body.
+
+**Read to start.** This phase text; §6.1's ownership-chain subsection and the second
+table in §6.5; `urlForKbNode` in `lib/content/urls.ts`.
+
+**Do.** A short list of plain links below the body: **up** to the parent (a proof to
+its theorem; a remark to its definition, theorem or proof) and **down** to each
+attached child (a theorem to each proof and each remark; a definition and a proof to
+each remark). An arrow in the link marks the direction (D4). A remark owns nothing, so
+it gets exactly one link; definitions and theorems have no parent, so they get none.
+Ordinary `<a>` elements in the served HTML — this is the ownership graph a crawler
+reads (§6.1). Filter by `kbPageExists` so a link to an unpublished child does not 404.
+
+**Done when.** `pnpm build` and `SITE_ENV=staging pnpm build` green with `check-anchors`
+at 0 broken; a theorem with several proofs shows one link per proof, not a "first one"
+fallback (D4); every link resolves in both env modes.
+
+**Review gate.** Visual, plus a check that no link 404s on staging.
+
+---
+
+### Phase 11 — The menu icons, as assets
+
+Deliberately its own phase so no later one has to think about image pipelines, and so
+a 512 px PNG never reaches a 44 px button.
+
+**Files.**
+- `apps/website/assets/kb-menu/{menu,back,incoming,star,paragraph,target}.png` — the
+  six D3 assigns, copied from [`entity-page-menu-icons/`](entity-page-menu-icons/).
+- `apps/website/scripts/gen-kb-menu-icons.mjs` *(new)*.
+- `apps/website/package.json` — add it to `prebuild` and `predev`.
+
+**Read to start.** This phase text; D3; `scripts/gen-logo-lockup.mjs` (the shortest
+example of the `sharp`-generator idiom).
+
+**Do.** Downscale each source to the sizes a 2.75 rem circular button needs and write
+them to `public/assets/generated/kb-menu/`, following the existing generator
+convention: source asset in `assets/`, generated output in `public/assets/generated/`,
+wired into `prebuild`/`predev`. `definition.png`, `theorem.png`, `proof.png` and
+`remark.png` are **not** menu icons (D3/D4) and are not copied; if phase 10's links
+want them, that is a separate decision.
+
+**Done when.** `pnpm build` regenerates all six with no manual step, each output is
+under a few kB, and the six render crisply at 2.75 rem on a 2× display. `git status`
+shows the generated directory ignored, not committed — check `.gitignore` first.
+
+**Review gate.** Look at the six at their real size, in the corner, against the
+consent button.
+
+---
+
+### Phase 12 — The menu, the overlay, and one back step four ways
+
+The first interactive phase, and the state machine every later one plugs into. No
+panels yet: the menu opens, the page dims, and there are four ways to step back.
+
+**Files.**
+- `apps/website/components/kb/EntityChrome.tsx` *(new, client)* — the state machine.
+- `apps/website/components/kb/MenuStack.tsx` + `menu-stack.module.scss` *(new)*.
+- `apps/website/components/kb/Overlay.tsx` + `overlay.module.scss` *(new)*.
+- `apps/website/styles/_variables.scss` — **two** new z-indexes, both below `$z-fab`
+  (900): the overlay lower, the menu stack and the panel above it. That ordering is
+  what keeps the consent button clickable through the dim and its dialog above
+  everything here (§2, §6.3).
+
+**Read to start.** This phase text; §§6.2 and 6.3 of this document, and D2;
+`components/consent/ConsentFab.tsx` + `consent-fab.module.scss` (the button treatment
+and the corner convention the stack mirrors); `components/consent/ConsentDialog.tsx`
+for the existing overlay treatment.
+
+**Do.**
+- A **vertical stack of pill buttons in the bottom-right**: circular icon at the right
+  end, caption on a bar extending left with a half-circle left edge, right-aligned so
+  the icons line up. Black and white only (§6.2).
+- The bottom-most button is **Menü** in the default state and **Vissza** in every other
+  state, in the same place (§6.2).
+- **The state machine.** A stack of states, not a boolean. "Vissza" pops **one**. The
+  browser's **Back** pops one too — push a history entry on each state change and pop
+  on `popstate`, so **Forward re-applies** what Back undid (§6.2). **Escape** and **a
+  click on the dim** are the same single step (D2). The page's state never reaches the
+  URL: same URL in every state, so a reload or a shared link opens the default state
+  and a crawler sees one page (§6.2).
+- **The overlay** dims everything except the menu buttons, the consent button, and
+  (from phase 13) the panel. It does **not** lock scrolling on its own (§6.3).
+- Items present per entity: **Bejövő hivatkozások** and **Kontextus** always;
+  **Fogalmak** if the node defines ≥ 1 term; **Állítások** if it contains ≥ 1 claim and
+  is not a proof (§6.5, and the identifiers sub-plan's D3 forbids claims on proofs).
+  Wire the items as disabled-for-now buttons; phases 13–16 give them behaviour.
+
+**Done when.** On a real page: Menü opens and dims; Vissza, Escape, a click on the dim
+and the browser's Back each step back exactly one state; Forward re-applies it; the URL
+never changes; the consent button stays clickable and its dialog opens above the dim.
+Measured availability, on a local build (all 537 nodes): Fogalmak appears on **62**
+definitions, **16** theorems, **4** remarks and **0** proofs; Állítások on **11**
+definitions, **26** theorems, **6** remarks and never on a proof. Check those counts by
+grepping the export, not by sampling.
+
+**Review gate.** Interaction review. Everything after this phase depends on the back
+semantics being right, so this is the gate to be slow at.
+
+---
+
+### Phase 13 — The panel: shell, slide, scroll lock, and Kontextus
+
+One panel, one content to prove it. Kontextus first because it is available on all 537
+nodes and has no empty state (§6.5).
+
+**Files.**
+- `apps/website/components/kb/Panel.tsx` + `panel.module.scss` *(new)*.
+- `apps/website/components/kb/panels/ContextPanel.tsx` *(new)*.
+- `apps/website/components/kb/EntityChrome.tsx` — the panel-open states.
+
+**Read to start.** This phase text; §6.4 of this document; `graph.embedding` and
+`EmbeddingContext` in `lib/content/types.ts`; `components/ui/Modal.tsx` for the
+existing overlay/scroll interaction.
+
+**Do.**
+- Slides in from the bottom over the **bottom half** of the screen; slides back down
+  on close. Above the overlay, so it stays legible while the page is dimmed (§6.4).
+- **Server-rendered, hidden.** The panel's markup is in the HTML from the first byte
+  and opening it unhides it (§2.1, D6). Nothing is fetched or built on the client —
+  this is the constraint that overrides layout preference where they conflict.
+- **Scroll-locks the page** while open, unlocks on close; the panel scrolls internally,
+  header pinned (§6.4).
+- **Reduced motion**: the panel appears and disappears without the slide. Follow the
+  existing convention in `root-page.module.scss` / `consent-banner.module.scss` (§6.4).
+- **Kontextus** shows book → chapter → section. Available on every node, since all 537
+  are embedded exactly once inside a section (§6.5) — so no empty state, and if one is
+  ever reachable the embedding data is wrong, not the panel.
+- Links inside the panel are ordinary links and navigate; a panel never opens a nested
+  panel (§6.4).
+
+**Done when.** `grep -c 'kb-panel' out/hu/tudasbazis/definiciok/gyuru-test.html` ≥ 1
+with JavaScript disabled — i.e. the content is served, not generated; the panel opens
+over the bottom half, the page behind does not scroll, the panel does scroll, and
+Vissza closes it and unlocks; with `prefers-reduced-motion` there is no slide. Every
+Kontextus panel across the export has three levels — check by grepping the export for
+an empty one, expecting **0**.
+
+**Review gate.** The panel geometry and the scroll lock; phases 14–17 all reuse both.
+
+---
+
+### Phase 14 — Bejövő hivatkozások
+
+The panel's hardest content, and the reason phase 2 exists.
+
+**Files.**
+- `apps/website/components/kb/panels/BacklinksPanel.tsx` + its scss *(new)*.
+- `apps/website/lib/i18n/locales.json` — the empty-state string and the count wording.
+
+**Read to start.** This phase text; §7.2 of this document; the `KbBacklinks` shape in
+`lib/content/types.ts` from phase 2; note 1 and note 3 in §9.1.
+
+**Do.**
+- One row per **source**, with a **count**, ordered by count descending (§7.2). A
+  source is an entity, a section or a chapter — all in one list, because a reader
+  asking "where is this used?" wants the chapter as much as the theorem (§7.2).
+- **All incoming means all**: references aimed at a claim or a term inside the entity
+  are references to the entity and belong here. `graph.backlinks.get(fqn).all` is
+  already exactly that list.
+- A real **empty state** — "nincs rá hivatkozás" as a legitimate answer, not a failure
+  (§7.2). It is reached by **168 of the 389** shipped pages (§9.1 note 3), so it is a
+  main case, not an edge one.
+- **Size for the middle, not the median.** 129 nodes have more than five sources, 56
+  have more than twenty, and `gyuru-test` has 222 locally / **207** on a deployed build
+  (§9.1 notes 1–2). One list, internally scrolled, no separate design for the long case
+  (§6.4).
+- Ordering is provisional (§7.2) — revisit once the page exists.
+
+**Done when.** `grep -o 'data-backlink-source' out/hu/tudasbazis/definiciok/gyuru-test.html | wc -l`
+is **222** on a local build and **207** with `SITE_ENV=staging`; the counts on that page
+sum to **548** and **533** respectively; a page with no inbound references shows the
+empty state; every row's href resolves in both env modes (the crawler in parent phase 8
+is the second layer, but check it here). The 222 rows are present with JavaScript
+disabled.
+
+**Review gate.** Open the `gyuru-test` panel and a two-row panel and an empty one.
+Row layout is provisional (§7.2); the grouping, the counts and the inclusion of
+chapters and sections are not.
+
+---
+
+### Phase 15 — Selection modes, level 1: reveal
+
+The overlay stops being a backdrop and starts revealing (§6.3). Level 1 only: pick a
+mode, see the candidates, no panel yet.
+
+**Files.**
+- `apps/website/components/kb/EntityChrome.tsx` — the two mode states.
+- `apps/website/app/globals.scss` — the reveal and inert states for `.term` and for the
+  claim block, expressed globally.
+
+**Read to start.** This phase text; §6.3 of this document;
+`components/content/InlineText.tsx` lines 261–270 (where a term span is emitted) and
+`components/content/blocks/ClaimBlock.tsx`; note 7 in §9.1.
+
+**Do.**
+- **Fogalmak** dims the page and lifts every term in the body out from under the dim,
+  selectable. **Állítások** does the same for claims. No panel opens (§6.3).
+- **Scrolling stays free** in a selection mode: picking a term means finding it first,
+  and a term can be anywhere in the body (§6.3).
+- "Vissza" returns to the open menu.
+- The markup already carries what this needs: a term is `<span class="term" id="…">`
+  and a claim is a `<div>` with the claim block's own class, both **global** class
+  names, so the states are expressible from `globals.scss` without touching the block
+  components (§9.1 note 7). That is also why they are not focusable — a deliberate
+  deferral, §11.
+
+**Done when.** On a definition with several terms, Fogalmak reveals exactly the terms
+and nothing else, the page still scrolls, and Vissza returns to the open menu. On a
+proof, Fogalmak is absent (0 proofs define terms) and Állítások is absent by rule.
+Verify the reveal hits every term on the page, not the first — count the revealed
+elements against `Object.keys(node.terms).length`, which is exact: `validateTermInsertions`
+fails the build unless each term is inserted **exactly once** in its node's body, so
+there is one span per key and no duplicate ids.
+
+**Review gate.** Interaction review: is "these, right now" unambiguous?
+
+---
+
+### Phase 16 — Selection modes, level 2: the detail panel and the upper half
+
+**Files.**
+- `apps/website/components/kb/panels/TermPanel.tsx`,
+  `apps/website/components/kb/panels/ClaimPanel.tsx` *(new)*.
+- `apps/website/components/kb/EntityChrome.tsx` — the selected state and the scroll.
+- `apps/website/components/kb/Panel.tsx` — the scroll-into-the-upper-half behaviour.
+
+**Read to start.** This phase text; §6.3's two-level description and the
+scroll-into-the-upper-half bullets of §6.4; §7.2's two filtered variants; the
+`byTarget` map from phase 2.
+
+**Do.**
+- **Selecting one** keeps it revealed and **drops all the others back under the
+  overlay**, so only the selection is lit — that narrowing is the whole point of the
+  mechanism and replaces a highlight colour, a scroll-to and a selected-state style
+  (§6.3).
+- The panel slides in with the selection's details: for a term, its canonical form and
+  its synonyms plus the inbound references targeting **that term**; for a claim, the
+  claim plus the inbound references targeting **that claim** (§6.2, §7.2). Both come
+  from `backlinks.byTarget.get(targetFqn)`, so all three reference lists are one list
+  narrowed, not three designs (§7.2).
+- **One gesture**: the selection is already in the free upper half by the time the panel
+  finishes arriving, landing comfortably inside it rather than flush against its bottom
+  edge. **Closing does not scroll back** (§6.4). Under reduced motion the scroll jumps
+  rather than eases (§6.4).
+- The arrival marker must **not** fire for this scroll — the overlay already says what
+  is selected, and two answers to one question is one too many (§6.2). This matters
+  once phase 18 lands; state it here so phase 18 inherits it.
+- "Vissza" steps back to level 1: panel closed, all terms revealed and selectable again
+  (§6.3).
+
+**Done when.** Selecting a term on a page whose terms are heavily referenced opens a
+panel whose row count equals `byTarget` for that term and is smaller than the
+unfiltered list; the selected term sits in the upper half with the panel over the lower
+half; Vissza returns to level 1 and a second Vissza to the open menu. With JavaScript
+disabled, every term panel and claim panel is present in the HTML (§2.1) — count them
+against the node's term and claim counts.
+
+**Review gate.** Interaction review, on a long body where the term starts below the
+fold.
+
+---
+
+### Phase 17 — Outgoing references: inert, intercepted, and detailed
+
+**Files.**
+- `apps/website/components/kb/panels/ReferencePanel.tsx` *(new)*.
+- `apps/website/components/kb/EntityChrome.tsx` — the click interception and the inert
+  rule.
+- `apps/website/app/globals.scss` — the inert state for `.ref-concept` inside a KB page.
+
+**Read to start.** This phase text; §7.1 of this document and D1;
+`components/content/InlineText.tsx` lines 174–245 (every branch that emits a
+reference; `ref-concept` is used at 223, 228 and 237); the `RefEntry`/`PathRefTarget`
+shapes in `lib/content/types.ts`.
+
+**Do.**
+- References keep the **`ref-concept`** treatment they have in a chapter: inherited
+  colour, dotted grey underline, subtle hover. Not a blue link (§7.1).
+- **Inert unless the page is in its default state.** While the menu is open or a panel
+  is showing, body references do not respond — at any moment exactly one class of thing
+  on the page is actionable (§7.1).
+- **Plain click only** is intercepted: the mark stays a real `<a>` with a real `href`,
+  so middle-click, ctrl-click and "open in new tab" navigate (D1). The existing anchors
+  already carry `target="_blank"`, so the interception must `preventDefault` and the
+  no-JavaScript behaviour is a normal navigation.
+- The transition is one gesture: overlay up, the selected reference revealed from under
+  it, panel in, reference scrolled into the free upper half (§7.1, §6.4) — the same
+  machinery as phase 16, entered without a mode to pick first.
+- Panel content per target kind, per §7.1's table: entity → label, title, body and a
+  link to its page; claim → the claim and a link to the owning node at that claim; term
+  → canonical form, synonyms and a link to the defining node at that term; section,
+  chapter or part → title and a link, **no body**; external URL → **no panel at all**,
+  it is an ordinary outbound link.
+- Opening a reference panel puts the menu into its open state with a matching "Vissza"
+  (D2).
+
+**Done when.** On a proof page dense with references: a plain click opens the panel
+without navigating; ctrl-click opens the target page in a new tab; an external
+reference navigates and opens no panel; while a panel is open, clicking another
+reference does nothing. Every reference panel is in the served HTML (§2.1) — count them
+against the node's reference count. `check-anchors` still 0 broken: the panel's "link to
+its page" hrefs are new fragment links and are now gated.
+
+**Review gate.** Interaction review, plus an explicit check of the modified-click
+behaviour, since D1 accepted that cost knowingly.
+
+---
+
+### Phase 18 — The arrival marker
+
+**Files.**
+- `apps/website/components/kb/ArrivalMarker.tsx` *(new, client)* + its scss.
+- `apps/website/app/layout.tsx` — mount it beside the existing fixed chrome, outside
+  `.page-root` (that container's transform would make a fixed marker position against
+  the document instead of the viewport — the comment there says so).
+
+**Read to start.** This phase text; §6.2's "Arriving at an anchor" and D5;
+`app/layout.tsx`'s body comment; `lib/content/urls.ts` for the five anchor builders.
+
+**Do.**
+- On a fragment arrival, scroll as today and additionally **mark** the target: a
+  rectangle shrinking onto it, framing it tightly, held a moment, gone. No lasting
+  change to the element (§6.2).
+- **Only for the three anchor kinds that name something inside the text** — embedded
+  entity, term, claim. Sections and parts scroll without a mark: they land on a heading
+  bearing their own name, so a marker would be noise (D5). That is the complete set of
+  anchor targets on the site; figures have no `id` and cannot be targeted at all (§6.2).
+- Works on every page, not only KB pages — a chapter arrival gets the same gesture.
+- **Reduced motion**: appears at its final size and fades. It is not removed, because
+  showing the reader where they landed is its job (§6.4).
+- Does **not** fire for a scroll the page performs itself (§6.2, and phase 16).
+
+**Done when.** Following a term reference from a chapter into another chapter marks the
+term; following a section reference marks nothing; the marker never fires on a
+selection scroll; with `prefers-reduced-motion` there is no shrink but there is still a
+mark. Check the anchor-kind table against the builders, not against memory:
+`kbAnchorPath`, `termAnchorId`, `claimAnchorId` get a mark; `sectionAnchorId` and
+`partAnchorId` do not.
+
+**Review gate.** Interaction review on a real cross-chapter arrival.
+
+---
+
+### Phase 19 — `data-target-fqn`, the highlight parameter, and marking back-references
+
+D7, in one phase because its three parts are useless separately.
+
+**Files.**
+- `apps/website/components/content/InlineText.tsx` — `data-target-fqn` on every
+  rendered reference.
+- `apps/website/components/kb/panels/BacklinksPanel.tsx` — append the parameter at
+  click time.
+- `apps/website/components/kb/HighlightOnArrival.tsx` *(new, client)* — read, validate,
+  apply, scrub.
+- `apps/website/app/layout.tsx` — mount it after `NewsletterLanding` and `ConsentGate`.
+
+**Read to start.** This phase text; **D7 in full**; `app/layout.tsx`'s comment about
+the two existing scrubbers; `components/newsletter/NewsletterLanding.tsx` and
+`components/consent/ConsentGate.tsx` mount effects; `parseFqn` in `lib/content/fqn.ts`.
+
+**Do.**
+1. **Every rendered reference carries `data-target-fqn`** — `ref.target.fqn` is already
+   on the entry at render time, for all fourteen kinds; an external target has none and
+   gets none.
+2. **A source row appends the query parameter at click time**, naming the FQN to
+   highlight, so the served HTML keeps clean hrefs and no crawler sees the variant
+   (D7).
+3. **The arrival page validates, applies and scrubs.** Three conditions from D7, none
+   optional:
+   - **Validate against the FQN character rule before the value reaches a selector** —
+     strictly `[a-z0-9-]` segments joined by dots, anything else rejected outright.
+     Otherwise a URL parameter flows into `querySelectorAll`.
+   - **Carry the FQN and nothing else.** Where to scroll is derivable from where the
+     matches are.
+   - **Mind the existing scrubbers.** `NewsletterLanding` and `ConsentGate` both scrub
+     in their mount effects, in DOM order, each re-reading `window.location.search` at
+     the top of its own effect — deliberately, per the comment in `layout.tsx`. A third
+     scrubber joins that arrangement and needs the same care.
+- On arrival, **mark every reference pointing back at the origin** with phase 18's
+  gesture, and **scroll to the first of them**, not to the source's own anchor: on a
+  long section the marks would animate off-screen and the effect would fire invisibly
+  (§7.2, D5).
+
+**Done when.** The worked case in §7.2 works end to end: select a term on a theorem
+page, follow a section row that reports five references, land on the chapter page with
+all five marked and the page at the first of them. The parameter is gone from the
+address bar afterwards; a copied link carries no parameter; a hand-crafted parameter
+containing anything outside the character rule is ignored rather than acted on; the
+newsletter and consent parameters still work when one arrives alongside this one.
+`grep -c 'data-target-fqn' out/hu/tudasbazis/definiciok/gyuru-test.html` is non-zero,
+and `grep -rho 'href="/hu/[^"]*?[^"]*"' out | wc -l` is **0** — the parameter is added
+by the client at click time and must never be in the served HTML (D7). Note the export
+does contain 47 query-carrying hrefs today (`/icon.svg?…` and one YouTube link), so
+check internal paths specifically rather than grepping for `?`.
+
+**Review gate.** Interaction review plus the parameter-validation check written as a
+test, since it is the one place a URL value reaches a selector.
+
+---
+
+### Phase 20 — Print, no-JavaScript and reduced-motion sweep
+
+One phase to check the three cross-cutting rules once, on the finished pages, instead
+of trusting nineteen phases to have each remembered.
+
+**Files.** Whichever of the scss modules the sweep finds wanting; ideally none.
+
+**Read to start.** This phase text; §2's print bullet; §2.1; §6.4's motion note.
+
+**Do.**
+- **Print.** None of the entity-page chrome prints: not the menu, not the overlay, not
+  the panel, not the marker (§2). The consent button already does this — `@media print
+  { display: none }` in `consent-fab.module.scss` is the pattern.
+- **No JavaScript.** Every page degrades to a long page with everything visible, not a
+  broken one (§2.1). This is the phase where that is verified as a whole rather than
+  per content type: the body, the ownership links, all five panel contents, the full
+  glossary, both index lists.
+- **Reduced motion.** All three animations — the panel slide, the scroll into the upper
+  half, the arrival marker — respect the query, and none of them is *removed* (§6.4).
+
+**Done when.** Print preview of an entity page shows the body and the ownership links
+and none of the chrome; with JavaScript disabled, an entity page shows the body,
+the ownership links, and every panel's content inline; with `prefers-reduced-motion`
+nothing slides, nothing eases, and the marker still marks. Do the no-JavaScript check
+against the **built export**, not the dev server, and record the three counts (backlink
+rows, term panels, claim panels) for one page as evidence.
+
+**Review gate.** The no-JavaScript pass is the one that matters — §2.1 is the rule that
+overrides layout preference, and this is the only phase that tests it end to end.
+
+---
+
+### Phase 21 — Close out: measurements back into this plan and the parent
+
+**Files.**
+- `docs/plans/yp-162-page-layout-sub-plan.md` — a "what actually landed" section, the
+  status line, and §9.1 corrected where the build disagreed with the measurement.
+- `docs/plans/yp-162-knowledge-graph-urls-implementation-plan.md` — §Shipped gains
+  phase 5; §H is marked done; parent R6 and R8 are discharged or re-measured; §K's test
+  list is reconciled with the tests that actually exist.
+
+**Read to start.** This phase text; the §Shipped section of the parent plan as the
+model for the format; the summaries of phases 1–20.
+
+**Do.** Record what landed, where it diverged from these phases and why — the parent's
+"Divergences from the plan, and why" is the right shape, and it is the part of that
+document that has been most useful. Specifically: the final page count and build wall
+time against the **14.3 s / 46 pages** baseline (R8), the final test count against
+**96**, the fragment count against **11 086**, and whether the two-href machinery held
+up in practice (R6, which stays live until a KB page renders).
+
+State clearly what parent phases 6–9 still owe: the KB URLs in `app/sitemap.ts` and the
+sitemap splitter (§I), the nav item and the homepage entry block (§J.1–J.2), and the
+crawler caps, which parent R3 already measures as overflowing — **439** of the 500-page
+cap at this phase's end, before the five unpublished chapters ship.
+
+**Done when.** A reader who lands on the parent plan's §H, or on §7 of the design plan,
+or on §10 above, gets the same account of what exists. No document still describes a
+component table, a "Uses" block, or an `aria-pressed` selection model as something to
+build.
+
+**Review gate.** The two document diffs.
 
 ---
 
