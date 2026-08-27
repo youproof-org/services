@@ -161,3 +161,79 @@ body {
   justify-content: center;
   align-items: center;
 }
+
+/* ---------------------------------------------------------------------------
+   Selection modes on a knowledge-base entity page (sub-plan §6.3)
+
+   Fogalmak and Állítások do not open anything. They dim the page and lift one
+   class of thing in the body — every term, or every claim — out from under the
+   dim, so what the reader can act on is unambiguous: "these, right now."
+
+   The state is published by components/kb/EntityChrome.tsx as `data-kb-select`
+   on <body>, and nothing else about it is rendered. It can be expressed here
+   because the markup already carries the handles: a term is
+   `<span class="term" id="fogalmak.…">` (components/content/InlineText.tsx) and a
+   claim is the <div> of components/content/blocks/ClaimBlock.tsx. That div's class
+   comes from a CSS module, but next.config.ts names every one of ours
+   `<file>_<local>`, which makes `claim-block_claim` as stable a handle as a global
+   name — the same handle the browser tests reach for. e2e/kb-select.test.ts counts
+   what these rules reveal, so renaming the file fails there rather than silently
+   turning the mode off.
+
+   WHY THE TRANSFORM COMES OFF. `.page-root` above carries `transform:
+   translateZ(0)`, and a transform makes the element a stacking context: nothing
+   inside it can paint above a layer outside it, whatever z-index it is given. The
+   dim is outside it — components/kb/Overlay.tsx is portalled to <body> at
+   $z-kb-overlay — so with the transform in place a revealed term is simply
+   unreachable, at any z-index. Dropping the transform for the duration of the mode
+   lets the term take part in the root stacking context, which is what makes the
+   lift (and the hit-testing that goes with "selectable") work at all.
+
+   That is safe here, and only here. The transform is a Chromium stale-tile fix for
+   SOFT NAVIGATIONS (see the note above), and a selection mode performs none: it is
+   a state of one page, its own four back gestures stay inside that page, and the
+   transform is back before any navigation can start. And nothing else in an entity
+   page rises with the terms: of the 899 elements inside `.page-root` on
+   /hu/tudasbazis/definiciok/gyuru-test, exactly one is positioned or numbered at
+   all — the sticky site header, at $z-header, which stays under the dim.
+   e2e/kb-select.test.ts checks that header by hit test for the same reason.
+
+   A revealed thing does paint over that dimmed header when the reader scrolls it
+   up there, which is level 1 working: in a mode the header is under the dim and
+   inert, and the candidate is the only thing on the page that is not.
+
+   INERT is the other half, and it is the dim doing it: everything that is not
+   revealed stays under a layer that absorbs clicks, so an outgoing reference, a
+   claim during Fogalmak or a term during Állítások cannot be pressed while a mode
+   is up. There is no rule for it because there is nothing to switch off.
+   --------------------------------------------------------------------------- */
+
+body[data-kb-select] .page-root {
+  transform: none;
+}
+
+body[data-kb-select='terms'] .page-root .term,
+body[data-kb-select='claims'] .page-root .claim-block_claim {
+  position: relative;
+  z-index: $z-kb-reveal;
+  /* Lit rather than merely uncovered: the page behind is a 50% black wash, so a
+     revealed thing carries its own white ground out from under it. `box-shadow`
+     with spread and no offset pads that ground without changing the layout —
+     padding on an inline span would reflow the paragraph it sits in. */
+  background: $white;
+  cursor: pointer;
+}
+
+body[data-kb-select='terms'] .page-root .term {
+  border-radius: 0.15em;
+  box-shadow: 0 0 0 0.15em $white;
+  /* A term can wrap across two lines; without this the ground and the rounding
+     would be drawn once around the whole span instead of around each fragment. */
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+body[data-kb-select='claims'] .page-root .claim-block_claim {
+  border-radius: 0.35rem;
+  box-shadow: 0 0 0 0.35rem $white;
+}

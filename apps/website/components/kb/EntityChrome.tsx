@@ -5,11 +5,13 @@ import { createPortal } from 'react-dom'
 import {
   CHROME_HISTORY_KEY,
   DEFAULT_STACK,
+  SELECTION_KINDS,
   currentState,
   isDefaultState,
   openPanel,
   readChromeStack,
   reduceChrome,
+  selectionMode,
   type ChromeStack,
   type ChromeState,
 } from '@/lib/kb/chrome-state'
@@ -45,6 +47,13 @@ import Panel, { type KbPanelSection } from './Panel'
  *
  * That leaves the menu and the dim out of the served HTML, which is fine for what
  * they are — two buttons and a scrim, no content and no link.
+ *
+ * **The selection modes are published on `<body>`, not rendered.** Fogalmak and
+ * Állítások do not add an element: they lift a class of thing that is already in
+ * the body out from under the dim (§6.3). What is revealed is spread across the
+ * whole article, so the state is written to `document.body` as `data-kb-select` and
+ * `app/globals.scss` expresses the reveal from there — the note beside those rules
+ * explains why the lift needs the page's own stacking context out of the way.
  *
  * **The panel is the exception, and it is not portalled.** §2.1 requires its
  * contents in the HTML from the first byte, and a portal renders nothing on the
@@ -84,6 +93,14 @@ export default function EntityChrome({
   const menuOpen = currentState(stack)?.kind === 'menu'
   const panel = openPanel(stack)
   const panelKeys = panels.map((section) => section.key)
+  const selection = selectionMode(stack)
+  /**
+   * The items that act when pressed. A panel item is live when its content is in
+   * the `panels` prop; a selection mode is live wherever its item exists at all,
+   * because what it reveals is the body itself and `kbMenuItems` has already
+   * checked that the entity has some (§6.5).
+   */
+  const liveItems = [...panelKeys, ...SELECTION_KINDS]
 
   useEffect(() => {
     setMounted(true)
@@ -125,14 +142,14 @@ export default function EntityChrome({
   }, [open])
 
   /**
-   * A menu item was pressed. Only an item with a panel behind it is live, so the
-   * key is looked up among the panels rather than cast: that is what turns a
-   * `KbMenuItemKey` into the `ChromePanelKind` a state needs, and it is also the
-   * compile-time link between the two unions — they have to overlap for the
-   * comparison to typecheck at all.
+   * A menu item was pressed. The key is looked up among the kinds that are live
+   * rather than cast: that is what turns a `KbMenuItemKey` into the
+   * `ChromeStateKind` a state needs, and it is also the compile-time link between
+   * the two unions — they have to overlap for the comparison to typecheck at all.
+   * An item with nothing behind it yet is rendered disabled and never gets here.
    */
   function onSelect(key: KbMenuItemKey) {
-    const kind = panelKeys.find((candidate) => candidate === key)
+    const kind = liveItems.find((candidate) => candidate === key)
     if (kind) openState({ kind })
   }
 
@@ -158,6 +175,26 @@ export default function EntityChrome({
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [open, stepBack])
 
+  /**
+   * Publish the selection mode on `<body>` (§6.3).
+   *
+   * An attribute rather than a class on some element of this component's own,
+   * because what the mode changes is not here: it is every term or every claim in
+   * the article, plus the wrapper those live in. `ConsentBanner` already publishes
+   * its height on `<html>` the same way, for the same reason — a fact about the
+   * page that the stylesheet, not a component, acts on.
+   *
+   * The cleanup removes it, so a back step, an unmount and a navigation all leave
+   * the page in its ordinary state.
+   */
+  useEffect(() => {
+    if (!selection) return
+    document.body.dataset.kbSelect = selection
+    return () => {
+      delete document.body.dataset.kbSelect
+    }
+  }, [selection])
+
   return (
     <>
       {/*
@@ -180,7 +217,7 @@ export default function EntityChrome({
               items={items}
               open={open}
               showItems={menuOpen}
-              liveItems={panelKeys}
+              liveItems={liveItems}
               openLabel={openLabel}
               backLabel={backLabel}
               onOpen={() => openState({ kind: 'menu' })}

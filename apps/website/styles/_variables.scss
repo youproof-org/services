@@ -38,8 +38,14 @@ $pad-x:            1.5rem;  // px-6
 // (§6.4), and the menu stack is over both — its bottom-most button is Vissza while
 // a panel is open, and §6.2 keeps that button in the same corner whatever state the
 // page is in, which means over the panel rather than under it.
+// $z-kb-reveal is the one value that is not a layer of the chrome: it is what a
+// term or a claim IN THE PAGE is raised to while a selection mode is up, so that
+// it sits above the dim and under everything the reader still has to be able to
+// press (§6.3). Between the overlay and the panel, because level 2 leaves the
+// selection revealed while the sheet is open and the sheet must still cover it.
 $z-header:     100;
 $z-kb-overlay: 700;
+$z-kb-reveal:  720;
 $z-kb-panel:   750;
 $z-kb-chrome:  800;
 $z-fab:        900;

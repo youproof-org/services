@@ -18,11 +18,13 @@ import { hu, claim, narrative, raw } from './support/raw-graph.mjs'
 const {
   CHROME_HISTORY_KEY,
   DEFAULT_STACK,
+  SELECTION_KINDS,
   currentState,
   isDefaultState,
   openPanel,
   readChromeStack,
   reduceChrome,
+  selectionMode,
 } = chromeModule.default ?? chromeModule
 const { kbMenuItems } = menuModule.default ?? menuModule
 const { buildGraphFromRaw } = graphModule.default ?? graphModule
@@ -30,6 +32,8 @@ const { buildGraphFromRaw } = graphModule.default ?? graphModule
 const MENU = { kind: 'menu' }
 const CONTEXT = { kind: 'context' }
 const INCOMING = { kind: 'incoming' }
+const TERMS = { kind: 'terms' }
+const CLAIMS = { kind: 'claims' }
 const open = (stack, state = MENU) => reduceChrome(stack, { type: 'open', state })
 const back = (stack) => reduceChrome(stack, { type: 'back' })
 
@@ -133,10 +137,59 @@ test('a panel state survives a history entry, and an unknown kind still does not
   // …and the panel that landed with it.
   const incoming = open(open(DEFAULT_STACK, MENU), INCOMING)
   assert.deepEqual(readChromeStack({ [CHROME_HISTORY_KEY]: incoming }), incoming)
-  // The kinds are a closed set: a panel whose phase has not landed cannot be
-  // restored from an entry written by a newer build. `claims` is one of those —
-  // it is a menu item today, but not yet a state.
-  assert.deepEqual(readChromeStack({ [CHROME_HISTORY_KEY]: [{ kind: 'claims' }] }), [])
+  // The kinds are a closed set: a state whose phase has not landed cannot be
+  // restored from an entry written by a newer build. `reference` is one of those —
+  // §7.1 gives it to a selected outgoing reference, and that phase has not landed.
+  assert.deepEqual(readChromeStack({ [CHROME_HISTORY_KEY]: [{ kind: 'reference' }] }), [])
+})
+
+// ---------------------------------------------------------------------------
+// Which state is a selection mode (§6.3)
+// ---------------------------------------------------------------------------
+
+test('the two selection modes are states, so one back step undoes one of them', () => {
+  // Level 1 is entered from the open menu, and "Vissza" returns to the open menu —
+  // which is what makes it a push rather than a mode flag (§6.3).
+  for (const mode of [TERMS, CLAIMS]) {
+    const stack = open(open(DEFAULT_STACK, MENU), mode)
+    assert.deepEqual(currentState(stack), mode)
+    assert.deepEqual(currentState(back(stack)), MENU)
+    assert.equal(isDefaultState(back(back(stack))), true)
+  }
+})
+
+test('a selection mode is not a panel: nothing slides in and nothing scroll-locks', () => {
+  // The distinction the page acts on. `openPanel` is what opens the sheet and what
+  // freezes the page behind it, and level 1 does neither — picking a term means
+  // finding it first, so the page has to stay scrollable (§6.3).
+  for (const mode of [TERMS, CLAIMS]) {
+    assert.equal(openPanel(open(open(DEFAULT_STACK, MENU), mode)), null)
+  }
+})
+
+test('selectionMode names the mode, and answers null for every other state', () => {
+  assert.equal(selectionMode(DEFAULT_STACK), null)
+  assert.equal(selectionMode(open(DEFAULT_STACK, MENU)), null)
+  assert.equal(selectionMode(open(open(DEFAULT_STACK, MENU), CONTEXT)), null)
+  assert.equal(selectionMode(open(open(DEFAULT_STACK, MENU), TERMS)), 'terms')
+  assert.equal(selectionMode(open(open(DEFAULT_STACK, MENU), CLAIMS)), 'claims')
+  // …and it is the TOP of the stack that decides, not any state below it.
+  assert.equal(selectionMode(back(open(open(DEFAULT_STACK, MENU), TERMS))), null)
+})
+
+test('a selection mode survives a history entry', () => {
+  // Same guarantee the panels have: Back and Forward both restore what the entry
+  // recorded, so the reveal comes back exactly as the reader left it.
+  for (const mode of [TERMS, CLAIMS]) {
+    const stack = open(open(DEFAULT_STACK, MENU), mode)
+    assert.deepEqual(readChromeStack({ [CHROME_HISTORY_KEY]: stack }), stack)
+  }
+})
+
+test('the selection kinds are exactly the two menu items that reveal', () => {
+  // The list EntityChrome hands the menu as live items, and the list globals.scss
+  // has a reveal rule for. Two entries, and the same two names the items carry.
+  assert.deepEqual([...SELECTION_KINDS], ['terms', 'claims'])
 })
 
 // ---------------------------------------------------------------------------

@@ -14,16 +14,39 @@
 /**
  * The states beyond the default.
  *
- * `menu` is the open context menu. Every other kind is a panel, and is named after
- * the menu item that opens it (`KbMenuItemKey`) so the two cannot drift: `context`
- * is the Kontextus panel and `incoming` the Bejövő hivatkozások one. The remaining
- * items and the two selection modes join as their phases land, and nothing here
- * changes when they do except this union and `STATE_KINDS`.
+ * `menu` is the open context menu. Every other kind is named after the menu item
+ * that opens it (`KbMenuItemKey`) so the two cannot drift, and falls into one of
+ * two groups: a **panel** state (`context` is the Kontextus panel, `incoming` the
+ * Bejövő hivatkozások one) or a **selection mode** (`terms` is Fogalmak, `claims`
+ * is Állítások — §6.3). The remaining items join as their phases land, and nothing
+ * here changes when they do except this union and `STATE_KINDS`.
  */
-export type ChromeStateKind = 'menu' | 'incoming' | 'context'
+export type ChromeStateKind = 'menu' | 'incoming' | 'context' | 'terms' | 'claims'
 
 /** The kinds a restored history entry may name — anything else is not ours. */
-const STATE_KINDS: readonly ChromeStateKind[] = ['menu', 'incoming', 'context']
+const STATE_KINDS: readonly ChromeStateKind[] = [
+  'menu',
+  'incoming',
+  'context',
+  'terms',
+  'claims',
+]
+
+/**
+ * The two states that reveal a class of thing in the body instead of opening a
+ * sheet over it (§6.3).
+ *
+ * A selection mode is a state like any other — pushed as a history entry, undone by
+ * exactly one back step, whichever of the four ways takes it — and is deliberately
+ * NOT a panel: level 1 is "pick one", and nothing slides in until level 2.
+ */
+export type ChromeSelectionKind = 'terms' | 'claims'
+
+export const SELECTION_KINDS: readonly ChromeSelectionKind[] = ['terms', 'claims']
+
+function isSelectionKind(kind: ChromeStateKind): kind is ChromeSelectionKind {
+  return (SELECTION_KINDS as readonly ChromeStateKind[]).includes(kind)
+}
 
 export interface ChromeState {
   kind: ChromeStateKind
@@ -67,8 +90,12 @@ export function currentState(stack: ChromeStack): ChromeState | null {
   return stack.length === 0 ? null : stack[stack.length - 1]
 }
 
-/** The kinds that are a panel rather than the menu — every kind except `menu`. */
-export type ChromePanelKind = Exclude<ChromeStateKind, 'menu'>
+/**
+ * The kinds that open a panel: every kind that is neither the menu nor one of the
+ * selection modes. Subtraction rather than a second list, so a kind added to
+ * `ChromeStateKind` has to be classified rather than silently become a panel.
+ */
+export type ChromePanelKind = Exclude<ChromeStateKind, 'menu' | ChromeSelectionKind>
 
 /**
  * Which panel the reader has open, or `null` when none is: the menu state and the
@@ -80,7 +107,25 @@ export type ChromePanelKind = Exclude<ChromeStateKind, 'menu'>
  */
 export function openPanel(stack: ChromeStack): ChromePanelKind | null {
   const state = currentState(stack)
-  return state === null || state.kind === 'menu' ? null : state.kind
+  if (state === null || state.kind === 'menu') return null
+  // A selection mode dims and reveals; it does not open a sheet, and it must not
+  // scroll-lock the page — picking a term means finding it first (§6.3).
+  return isSelectionKind(state.kind) ? null : state.kind
+}
+
+/**
+ * Which class of thing the body is currently offering, or `null` when it is
+ * offering none (§6.3).
+ *
+ * The counterpart of `openPanel`, and asked at exactly one place: the reveal is a
+ * property of the whole page rather than of any one component, so `EntityChrome`
+ * publishes the answer on `<body>` and `app/globals.scss` expresses both states
+ * from there.
+ */
+export function selectionMode(stack: ChromeStack): ChromeSelectionKind | null {
+  const state = currentState(stack)
+  if (state === null) return null
+  return isSelectionKind(state.kind) ? state.kind : null
 }
 
 /**
