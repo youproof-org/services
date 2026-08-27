@@ -1,0 +1,68 @@
+@use 'variables' as *;
+
+// Bottom-right, the corner the consent opener leaves free (sub-plan §2), and the
+// same inset from the edges as that button uses. Above $z-kb-overlay so the stack
+// stays lit while the page behind it dims, below $z-fab so the consent button and
+// its dialog stay above the whole of this chrome (§6.3).
+.stack {
+  position: fixed;
+  right: $pad-x;
+  bottom: $pad-x;
+  z-index: $z-kb-chrome;
+  display: flex;
+  flex-direction: column;
+  // Right-aligned, so the icons line up in a column whatever the captions measure.
+  align-items: flex-end;
+  gap: 0.5rem;
+
+  // Like the consent opener: a menu that opens panels means nothing on paper.
+  @media print {
+    display: none;
+  }
+}
+
+// One pill. The icon box is 2.75rem = 44px, the consent opener's box, and the
+// border-radius is larger than any height this can take, so both ends round into
+// half-circles — the right one exactly around the icon, the left one closing the
+// caption bar. Everything else is the opener's treatment: white, hairline border,
+// the same shadow, black and white only (§6.2).
+.item {
+  display: flex;
+  align-items: center;
+  padding: 0;
+  border-radius: 100rem;
+  background: $white;
+  color: $gray-600;
+  border: 1px solid $gray-300;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+  font: inherit;
+
+  &:hover:not(:disabled) {
+    color: $black;
+    border-color: $black;
+  }
+
+  // The items are disabled until their phases give them behaviour: no hover
+  // response and no pointer, so nothing here offers a press it will not act on.
+  &:disabled {
+    cursor: default;
+  }
+}
+
+.caption {
+  // Asymmetric: the icon brings its own visual padding, the half-circle left edge
+  // does not.
+  padding: 0 0.5rem 0 1.125rem;
+  font-size: 0.8125rem;
+  font-weight: $font-normal;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.icon {
+  display: block;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex-shrink: 0;
+}

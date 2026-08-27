@@ -31,7 +31,13 @@
         "kbFilterClear": "Szűrés törlése",
         "kbOwnershipUp": "Fölérendelt lap:",
         "kbOwnershipDown": "Alárendelt lap:",
-        "kbOwnershipSibling": "{index}. {label}"
+        "kbOwnershipSibling": "{index}. {label}",
+        "kbMenuOpen": "Menü",
+        "kbMenuBack": "Vissza",
+        "kbMenuIncoming": "Bejövő hivatkozások",
+        "kbMenuTerms": "Fogalmak",
+        "kbMenuClaims": "Állítások",
+        "kbMenuContext": "Kontextus"
       },
       "containers": {
         "book": "konyvek",

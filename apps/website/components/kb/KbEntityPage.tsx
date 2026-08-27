@@ -4,8 +4,11 @@ import { getContentGraph } from '@/lib/content'
 import { kbNodeLabel } from '@/lib/content/graph'
 import { keyForKbNode } from '@/lib/content/keys'
 import { kbRefs, ownPageScope } from '@/lib/content/urls'
+import { getLocaleLabel } from '@/lib/i18n/config'
+import { kbMenuItems } from '@/lib/kb/menu-items'
 import { buildChapterEmbedIndices, buildChapterFigureIndices, getChapterIndex } from '@/lib/utils/index-helpers'
 import type { KbNode } from '@/lib/content/types'
+import EntityChrome from './EntityChrome'
 import OwnershipLinks from './OwnershipLinks'
 import styles from './kb-entity-page.module.scss'
 
@@ -49,44 +52,59 @@ export default function KbEntityPage({ node }: KbEntityPageProps) {
   const scope = ownPageScope(node)
 
   return (
-    <article className={styles.entity}>
-      <header className={styles.header}>
-        {node.title ? (
-          <>
-            <p className={styles.label}>{label}</p>
-            <h1 className={styles.title}><InlineText text={node.title} /></h1>
-          </>
-        ) : (
-          // No authored title, which is every proof and every remark (262 of the
-          // 537 pages — sub-plan §9.1 note 9). `kbNodeTitle` would derive one from
-          // the same word the label is built from, so the header would read
-          // "BIZONYÍTÁS / Bizonyítás: Euler-Fermat tétel"; §6.1 shows the label
-          // alone instead. It carries the <h1>, because a page needs a heading and
-          // this is the page's name — the class keeps the label's own styling.
-          <h1 className={styles.label}>{label}</h1>
-        )}
-      </header>
+    <>
+      <article className={styles.entity}>
+        <header className={styles.header}>
+          {node.title ? (
+            <>
+              <p className={styles.label}>{label}</p>
+              <h1 className={styles.title}><InlineText text={node.title} /></h1>
+            </>
+          ) : (
+            // No authored title, which is every proof and every remark (262 of the
+            // 537 pages — sub-plan §9.1 note 9). `kbNodeTitle` would derive one from
+            // the same word the label is built from, so the header would read
+            // "BIZONYÍTÁS / Bizonyítás: Euler-Fermat tétel"; §6.1 shows the label
+            // alone instead. It carries the <h1>, because a page needs a heading and
+            // this is the page's name — the class keeps the label's own styling.
+            <h1 className={styles.label}>{label}</h1>
+          )}
+        </header>
 
-      <ContentBlocks
-        blocks={node.body}
-        embedIndices={embedIndices}
-        figureIndices={figureIndices}
-        refs={kbRefs(node.references)}
-        context="web"
-        parentEntity={scope}
-        terms={node.terms}
-        termParent={scope}
-      />
+        <ContentBlocks
+          blocks={node.body}
+          embedIndices={embedIndices}
+          figureIndices={figureIndices}
+          refs={kbRefs(node.references)}
+          context="web"
+          parentEntity={scope}
+          terms={node.terms}
+          termParent={scope}
+        />
 
-      {/* Closes the content, as it does on the embedded rendering (§6.1). */}
-      <p className={styles.qed}>{node.type === 'proof' ? '∎' : '♣'}</p>
+        {/* Closes the content, as it does on the embedded rendering (§6.1). */}
+        <p className={styles.qed}>{node.type === 'proof' ? '∎' : '♣'}</p>
+
+        {/*
+          Below the q.e.d., not above it: the glyph closes the body, and the chain is
+          not part of the body — it is where this entity sits among the others. §6.1
+          puts the links "below the body", and the body ends at the q.e.d.
+        */}
+        <OwnershipLinks node={node} />
+      </article>
 
       {/*
-        Below the q.e.d., not above it: the glyph closes the body, and the chain is
-        not part of the body — it is where this entity sits among the others. §6.1
-        puts the links "below the body", and the body ends at the q.e.d.
+        The interactive chrome (§6.2): fixed in the bottom-right corner, and a
+        sibling of the article rather than part of it — it acts on the page, it is
+        not something the page says. `kbMenuItems` decides what it carries, on the
+        server: which items an entity has follows from the entity (§6.5), and a
+        `KbNode` cannot be handed to a client component.
       */}
-      <OwnershipLinks node={node} />
-    </article>
+      <EntityChrome
+        items={kbMenuItems(node)}
+        openLabel={getLocaleLabel(node.locale, 'kbMenuOpen')}
+        backLabel={getLocaleLabel(node.locale, 'kbMenuBack')}
+      />
+    </>
   )
 }

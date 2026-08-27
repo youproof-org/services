@@ -57,6 +57,13 @@ export type LabelKey =
   // proofs of one theorem are both "Bizonyítás", so the ordinal is what makes them
   // two links rather than one repeated twice.
   | 'kbOwnershipUp' | 'kbOwnershipDown' | 'kbOwnershipSibling'
+  // The entity page's context menu (§6.2). `kbMenuOpen`/`kbMenuBack` are the two
+  // faces of its bottom-most button; the other four are its items. `kbMenuTerms`
+  // repeats the word `glossary` carries — the glossary page is named after the
+  // same thing this item reveals — but they are two labels on two surfaces, and a
+  // shared key would tie the page's title to the button's caption.
+  | 'kbMenuOpen' | 'kbMenuBack'
+  | 'kbMenuIncoming' | 'kbMenuTerms' | 'kbMenuClaims' | 'kbMenuContext'
 
 export interface LocaleConfig {
   displayName: string
