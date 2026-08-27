@@ -17,9 +17,9 @@ import { compareHu } from './collate'
  * to be able to tell the reader which term they are about to land on.
  *
  * Even that triple is not guaranteed unique: a term may list its own canonical form
- * among its synonyms, which yields two rows differing only in `isCanonical` (one
- * term in the content does this today). A caller that needs a render key should mix
- * in the row's position rather than assume the triple is a primary key.
+ * among its synonyms, which yields two rows differing only in `isCanonical` (nothing
+ * in the schema prevents it). A caller that needs a render key should mix in the
+ * row's position rather than assume the triple is a primary key.
  */
 export interface GlossaryRow {
   /** The name this row is filed under - the canonical form, or one synonym. */
