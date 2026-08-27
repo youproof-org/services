@@ -43,8 +43,8 @@
     border-color: $black;
   }
 
-  // The items are disabled until their phases give them behaviour: no hover
-  // response and no pointer, so nothing here offers a press it will not act on.
+  // An item is disabled until its own phase gives it behaviour: no hover response
+  // and no pointer, so nothing here offers a press it will not act on.
   &:disabled {
     cursor: default;
   }

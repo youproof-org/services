@@ -64,6 +64,11 @@ export type LabelKey =
   // shared key would tie the page's title to the button's caption.
   | 'kbMenuOpen' | 'kbMenuBack'
   | 'kbMenuIncoming' | 'kbMenuTerms' | 'kbMenuClaims' | 'kbMenuContext'
+  // The panel's pinned header, one label per content (§6.4). Separate from the
+  // menu captions on purpose: the caption names the action ("Kontextus"), the
+  // header answers the question the panel is answering ("Hol jelenik meg") — §6.2
+  // gives that wording for this one.
+  | 'kbPanelContext'
 
 export interface LocaleConfig {
   displayName: string

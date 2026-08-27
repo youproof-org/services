@@ -31,12 +31,16 @@ $pad-x:            1.5rem;  // px-6
 // just have names now. The consent banner sits BELOW the modal overlay on
 // purpose: a first visit landing on a newsletter-confirm URL should show the
 // banner behind the scrim, not competing with it.
-// The knowledge-base entity chrome sits BELOW $z-fab, both layers of it: the dim
-// covers the page but not the consent button, and the consent dialog opens above
-// everything here (sub-plan §2, §6.3). Within the pair the overlay is the lower
-// one — the menu stack and, from the panel phase, the panel stay lit above it.
+// The knowledge-base entity chrome sits BELOW $z-fab, all three layers of it: the
+// dim covers the page but not the consent button, and the consent dialog opens
+// above everything here (sub-plan §2, §6.3). Within the three the overlay is the
+// lowest, the panel sits over it so it stays legible while the page is dimmed
+// (§6.4), and the menu stack is over both — its bottom-most button is Vissza while
+// a panel is open, and §6.2 keeps that button in the same corner whatever state the
+// page is in, which means over the panel rather than under it.
 $z-header:     100;
 $z-kb-overlay: 700;
+$z-kb-panel:   750;
 $z-kb-chrome:  800;
 $z-fab:        900;
 $z-banner:     950;

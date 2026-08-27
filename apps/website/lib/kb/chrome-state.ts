@@ -12,14 +12,18 @@
  */
 
 /**
- * The states beyond the default. One for now; the panel, the term-selection and the
- * claim-selection modes join it as their phases land, and nothing here changes when
- * they do except this union and `STATE_KINDS`.
+ * The states beyond the default.
+ *
+ * `menu` is the open context menu. Every other kind is a panel, and is named after
+ * the menu item that opens it (`KbMenuItemKey`) so the two cannot drift: `context`
+ * is the Kontextus panel. The remaining items and the two selection modes join as
+ * their phases land, and nothing here changes when they do except this union and
+ * `STATE_KINDS`.
  */
-export type ChromeStateKind = 'menu'
+export type ChromeStateKind = 'menu' | 'context'
 
 /** The kinds a restored history entry may name — anything else is not ours. */
-const STATE_KINDS: readonly ChromeStateKind[] = ['menu']
+const STATE_KINDS: readonly ChromeStateKind[] = ['menu', 'context']
 
 export interface ChromeState {
   kind: ChromeStateKind
@@ -61,6 +65,22 @@ export function isDefaultState(stack: ChromeStack): boolean {
 /** Where the reader is now, or `null` in the default state. */
 export function currentState(stack: ChromeStack): ChromeState | null {
   return stack.length === 0 ? null : stack[stack.length - 1]
+}
+
+/** The kinds that are a panel rather than the menu — every kind except `menu`. */
+export type ChromePanelKind = Exclude<ChromeStateKind, 'menu'>
+
+/**
+ * Which panel the reader has open, or `null` when none is: the menu state and the
+ * default state both answer "none".
+ *
+ * The panel is what scroll-locks the page and what the slide belongs to (§6.4), so
+ * "is a panel open" is asked often enough to be one function rather than a `kind`
+ * comparison repeated at every call site.
+ */
+export function openPanel(stack: ChromeStack): ChromePanelKind | null {
+  const state = currentState(stack)
+  return state === null || state.kind === 'menu' ? null : state.kind
 }
 
 /**

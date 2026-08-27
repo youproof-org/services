@@ -20,6 +20,7 @@ const {
   DEFAULT_STACK,
   currentState,
   isDefaultState,
+  openPanel,
   readChromeStack,
   reduceChrome,
 } = chromeModule.default ?? chromeModule
@@ -27,6 +28,7 @@ const { kbMenuItems } = menuModule.default ?? menuModule
 const { buildGraphFromRaw } = graphModule.default ?? graphModule
 
 const MENU = { kind: 'menu' }
+const CONTEXT = { kind: 'context' }
 const open = (stack, state = MENU) => reduceChrome(stack, { type: 'open', state })
 const back = (stack) => reduceChrome(stack, { type: 'back' })
 
@@ -103,6 +105,33 @@ test('a malformed entry reads as the default state rather than an unknown one', 
       `${JSON.stringify(value)} should not restore a state`,
     )
   }
+})
+
+// ---------------------------------------------------------------------------
+// Which state is a panel (§6.4)
+// ---------------------------------------------------------------------------
+
+test('no panel is open in the default state or with the menu up', () => {
+  assert.equal(openPanel(DEFAULT_STACK), null)
+  assert.equal(openPanel(open(DEFAULT_STACK, MENU)), null)
+})
+
+test('a panel state names the panel that is open', () => {
+  // Opened from the menu, so the stack is menu-then-panel: the panel is the top.
+  const stack = open(open(DEFAULT_STACK, MENU), CONTEXT)
+  assert.equal(openPanel(stack), 'context')
+  // One step back is the open menu again, with no panel — which is what closing
+  // the panel and unlocking the page comes down to.
+  assert.equal(openPanel(back(stack)), null)
+  assert.deepEqual(currentState(back(stack)), MENU)
+})
+
+test('a panel state survives a history entry, and an unknown kind still does not', () => {
+  const stack = open(open(DEFAULT_STACK, MENU), CONTEXT)
+  assert.deepEqual(readChromeStack({ [CHROME_HISTORY_KEY]: stack }), stack)
+  // The kinds are a closed set: a panel whose phase has not landed cannot be
+  // restored from an entry written by a newer build.
+  assert.deepEqual(readChromeStack({ [CHROME_HISTORY_KEY]: [{ kind: 'incoming' }] }), [])
 })
 
 // ---------------------------------------------------------------------------

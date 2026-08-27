@@ -1,6 +1,6 @@
 'use client'
 
-import type { KbMenuIcon, KbMenuItem } from '@/lib/kb/menu-items'
+import type { KbMenuIcon, KbMenuItem, KbMenuItemKey } from '@/lib/kb/menu-items'
 import styles from './menu-stack.module.scss'
 
 /**
@@ -16,20 +16,31 @@ import styles from './menu-stack.module.scss'
  *
  * The bottom-most button is the constant: **Menü** in the default state and
  * **Vissza** in every other one, in the same place, so the reader always knows
- * where the control is. It is the only button here that does anything yet — the
- * items are wired as disabled until their own phases give them behaviour.
+ * where the control is.
+ *
+ * The items above it show in the open-menu state only. A panel is opened from the
+ * menu and never opens another one (§6.4), so once a panel is up the stack is that
+ * one button — which is also what keeps the corner uncluttered over the sheet. An
+ * item whose phase has not landed yet is rendered disabled rather than dropped, so
+ * the menu is the same shape throughout and nothing offers a press it will not act
+ * on.
  */
 
 interface MenuStackProps {
   /** The items this entity has (`kbMenuItems`), top to bottom. */
   items: readonly KbMenuItem[]
-  /** True in every non-default state: the items show and the last button is Vissza. */
+  /** True in every non-default state: the last button is Vissza rather than Menü. */
   open: boolean
+  /** True in the open-menu state only: the items show. */
+  showItems: boolean
+  /** The items that have behaviour behind them; the rest render disabled. */
+  liveItems: readonly KbMenuItemKey[]
   /** Caption of the bottom-most button in the default state. */
   openLabel: string
   /** …and in every other state. */
   backLabel: string
   onOpen: () => void
+  onSelect: (key: KbMenuItemKey) => void
   onBack: () => void
 }
 
@@ -60,20 +71,32 @@ function MenuIcon({ name }: { name: KbMenuIcon }) {
 export default function MenuStack({
   items,
   open,
+  showItems,
+  liveItems,
   openLabel,
   backLabel,
   onOpen,
+  onSelect,
   onBack,
 }: MenuStackProps) {
   return (
     <div className={styles.stack}>
-      {open &&
-        items.map((item) => (
-          <button key={item.key} type="button" className={styles.item} disabled>
-            <span className={styles.caption}>{item.label}</span>
-            <MenuIcon name={item.icon} />
-          </button>
-        ))}
+      {showItems &&
+        items.map((item) => {
+          const live = liveItems.includes(item.key)
+          return (
+            <button
+              key={item.key}
+              type="button"
+              className={styles.item}
+              disabled={!live}
+              onClick={live ? () => onSelect(item.key) : undefined}
+            >
+              <span className={styles.caption}>{item.label}</span>
+              <MenuIcon name={item.icon} />
+            </button>
+          )
+        })}
 
       <button type="button" className={styles.item} onClick={open ? onBack : onOpen}>
         <span className={styles.caption}>{open ? backLabel : openLabel}</span>

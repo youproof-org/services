@@ -10,6 +10,8 @@ import { buildChapterEmbedIndices, buildChapterFigureIndices, getChapterIndex } 
 import type { KbNode } from '@/lib/content/types'
 import EntityChrome from './EntityChrome'
 import OwnershipLinks from './OwnershipLinks'
+import type { KbPanelSection } from './Panel'
+import ContextPanel from './panels/ContextPanel'
 import styles from './kb-entity-page.module.scss'
 
 interface KbEntityPageProps {
@@ -50,6 +52,14 @@ export default function KbEntityPage({ node }: KbEntityPageProps) {
 
   // The scope of every claim and term in this body: this node's own page.
   const scope = ownPageScope(node)
+
+  const panels: KbPanelSection[] = [
+    {
+      key: 'context',
+      title: getLocaleLabel(node.locale, 'kbPanelContext'),
+      content: <ContextPanel node={node} />,
+    },
+  ]
 
   return (
     <>
@@ -99,11 +109,18 @@ export default function KbEntityPage({ node }: KbEntityPageProps) {
         not something the page says. `kbMenuItems` decides what it carries, on the
         server: which items an entity has follows from the entity (§6.5), and a
         `KbNode` cannot be handed to a client component.
+
+        The panel's contents go the same way and for the same reason, but they are
+        markup rather than data: a server component per content, rendered here and
+        handed over already finished, which is what puts it in the served HTML
+        (§2.1). Kontextus is the only one so far; the rest join this list as their
+        phases land.
       */}
       <EntityChrome
         items={kbMenuItems(node)}
         openLabel={getLocaleLabel(node.locale, 'kbMenuOpen')}
         backLabel={getLocaleLabel(node.locale, 'kbMenuBack')}
+        panels={panels}
       />
     </>
   )

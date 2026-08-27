@@ -37,7 +37,8 @@
         "kbMenuIncoming": "Bejövő hivatkozások",
         "kbMenuTerms": "Fogalmak",
         "kbMenuClaims": "Állítások",
-        "kbMenuContext": "Kontextus"
+        "kbMenuContext": "Kontextus",
+        "kbPanelContext": "Hol jelenik meg"
       },
       "containers": {
         "book": "konyvek",

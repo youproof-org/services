@@ -1,0 +1,126 @@
+@use 'variables' as *;
+
+// The entity page's panel (sub-plan §6.4): the bottom half of the screen, sliding
+// up over the dim and back down off-screen when it closes.
+//
+// Above $z-kb-overlay so it stays fully legible while the page behind it is dimmed,
+// and below $z-kb-chrome so the Vissza button keeps the corner §6.2 promises it —
+// the reader always finds the control in the same place, which here means over the
+// panel. `.body` pays for that with the bottom padding below.
+//
+// Half the screen is the point of the geometry, not a size that happened to fit:
+// the body of the entity stays visible in the top half, so the reader never loses
+// the thing the panel is about.
+.panel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 50vh;
+  z-index: $z-kb-panel;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  background: $white;
+  // The consent banner's treatment, which is the other sheet that arrives from the
+  // bottom edge of this site (consent-banner.module.scss).
+  border-top: 1px solid $black;
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.12);
+
+  // Closed: off-screen AND out of the way. `transform` alone would leave a
+  // full-width layer sitting below the fold, still hit-testable and still in the
+  // accessibility tree, so `visibility` closes it — delayed by the length of the
+  // slide, or the panel would vanish before it had finished leaving.
+  transform: translateY(100%);
+  visibility: hidden;
+  transition:
+    transform 280ms ease-out,
+    visibility 0s linear 280ms;
+
+  // A panel that opens over the page says nothing on paper.
+  @media print {
+    display: none;
+  }
+}
+
+// Open. Declared after `.panel`, so with equal specificity these win.
+.open {
+  transform: translateY(0);
+  visibility: visible;
+  transition:
+    transform 280ms ease-out,
+    visibility 0s linear 0s;
+}
+
+// The header stays put and the content scrolls under it (§6.4). Measured on the
+// content, the inbound-reference list for one entity runs to 222 sources while the
+// median is 2, so the same panel has to take both.
+.header {
+  flex: none;
+  padding: 1rem $pad-x 0.75rem;
+  border-bottom: 1px solid $gray-200;
+}
+
+.title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: $font-x-bold;
+  line-height: 1.3;
+}
+
+.body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  // The bottom-right pill sits above this layer (see the z-index note): 2.75rem of
+  // button, $pad-x below it, and a line of clearance, so the last row of a list
+  // never comes to rest underneath the Vissza button.
+  padding: 0.75rem $pad-x calc(2.75rem + #{$pad-x} + 1rem);
+}
+
+// ── Kontextus (components/kb/panels/ContextPanel.tsx) ──
+//
+// Book → chapter → section, one link per level. Indented by position rather than
+// by a class per level, because the position IS the hierarchy: the list is the
+// chain from the outermost container inwards, so the nth row is the nth level.
+.context {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  // Tighter than the body's leading, as the ownership chain is: a level is one line.
+  line-height: 1.5;
+}
+
+.contextLevel {
+  padding: 0.2rem 0;
+
+  &:nth-child(2) {
+    padding-left: 1.25rem;
+  }
+
+  &:nth-child(3) {
+    padding-left: 2.5rem;
+  }
+}
+
+// Reads like the ownership-chain links below the body: body colour, bold,
+// underlined only on hover.
+.contextLink {
+  color: $black;
+  text-decoration: none;
+  font-weight: $font-bold;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// Reduced motion: the panel appears and disappears without the slide, and nothing
+// else about it changes. The convention `root-page.module.scss` and
+// `consent-banner.module.scss` already follow — one trailing block that switches
+// the movement off (§6.4).
+@media (prefers-reduced-motion: reduce) {
+  .panel,
+  .panel.open {
+    transition: none;
+  }
+}
