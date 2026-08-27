@@ -16,7 +16,15 @@
         "knowledgeBase": "Tudásbázis",
         "definitionsIndex": "Definíciók",
         "theoremsIndex": "Tételek",
-        "glossary": "Fogalmak"
+        "glossary": "Fogalmak",
+        "kbIntro": "A könyvekben szereplő definíciók, tételek és fogalmak gyűjteménye, kereszthivatkozásokkal összekötve. Minden definíciónak és tételnek saját lapja van, a bizonyításaival és a megjegyzéseivel együtt; a fogalmakat névmutató fogja össze.",
+        "kbDefinitionsDescription": "Minden definíció önálló lapon, a megjegyzéseivel és azokkal a helyekkel, ahol hivatkoznak rá.",
+        "kbTheoremsDescription": "Minden tétel önálló lapon, az állításaival, a bizonyításaival és a rá épülő eredményekkel.",
+        "kbGlossaryDescription": "Névmutató: melyik definíció vagy tétel vezet be egy szakszót — a szinonimák a saját betűjüknél is szerepelnek.",
+        "kbDefinitionsCount": "{count} definíció",
+        "kbTheoremsCount": "{count} tétel",
+        "kbGlossaryCount": "{count} szócikk",
+        "kbGlossaryCountNote": "{count} fogalom nevei és szinonimái"
       },
       "containers": {
         "book": "konyvek",

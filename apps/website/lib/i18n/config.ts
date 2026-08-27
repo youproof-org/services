@@ -36,6 +36,13 @@ export type ContainerKey =
 export type LabelKey =
   | 'home' | 'articlesIndex' | 'newsletterIndex'
   | 'knowledgeBase' | 'definitionsIndex' | 'theoremsIndex' | 'glossary'
+  // Knowledge-base root page: the orienting paragraph, and per section its
+  // one-line description and the wording around its count. The count labels
+  // carry a `{count}` placeholder — see `formatLocaleLabel`.
+  | 'kbIntro'
+  | 'kbDefinitionsDescription' | 'kbTheoremsDescription' | 'kbGlossaryDescription'
+  | 'kbDefinitionsCount' | 'kbTheoremsCount'
+  | 'kbGlossaryCount' | 'kbGlossaryCountNote'
 
 export interface LocaleConfig {
   displayName: string
@@ -93,6 +100,27 @@ export function getLocaleLabel(locale: string, key: LabelKey): string {
   const label = getLocaleConfig(locale).labels[key]
   if (!label) throw new Error(`Locale '${locale}' has no label for '${key}'`)
   return label
+}
+
+/**
+ * A localized label with its `{name}` placeholders filled in — for the labels that
+ * carry a number rather than a fixed string, so the number stays in the code and
+ * the sentence around it stays in the dictionary.
+ *
+ * Throws on a placeholder the caller did not supply, because the failure mode is
+ * otherwise invisible: a literal `{count}` rendered to the reader.
+ */
+export function formatLocaleLabel(
+  locale: string,
+  key: LabelKey,
+  values: Record<string, string | number>,
+): string {
+  return getLocaleLabel(locale, key).replace(/\{(\w+)\}/g, (_match, name: string) => {
+    if (!Object.prototype.hasOwnProperty.call(values, name)) {
+      throw new Error(`Label '${key}' in locale '${locale}' has no value for '{${name}}'`)
+    }
+    return String(values[name])
+  })
 }
 
 /** Localized URL segment for a canonical container key in a locale. */
