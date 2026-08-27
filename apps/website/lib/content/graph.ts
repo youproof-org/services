@@ -1289,24 +1289,43 @@ function termAnchorsForKey(parent: KbNode, termKey: string): AnchorPair | null {
 }
 
 
+/** The type label of a node, capitalized: authored if it has one, else the default. */
+function kbTypeLabel(node: KbNode): string {
+  const label = node.labels?.canonical ?? ENTITY_LABEL_HU[node.type] ?? node.type
+  return label.charAt(0).toUpperCase() + label.slice(1)
+}
+
+/**
+ * Where a node sits in the book, as the reader sees it written beside it in the
+ * narrative: the chapter-scoped index plus the type label, e.g. "15.6. Tétel".
+ *
+ * Falls back to the bare type label for a node with no embedding - which has no
+ * page either (`kbPageExists`), so nothing links to it, but a label of "undefined
+ * Tétel" would be worse than a vague one if that ever changes.
+ */
+export function kbNodeLabel(graph: ContentGraph, node: KbNode): string {
+  const capital = kbTypeLabel(node)
+  const index = graph.embedding.get(keyForKbNode(node))?.index
+  return index ? `${index} ${capital}` : capital
+}
+
 /**
  * Display title for a knowledge-base node.
  *
  * Definitions and theorems carry an authored `title`. Proofs and remarks normally
  * do not - they take one derived from their owner, which reads better than a bare
  * label and is why authoring 262 more titles was left out of the content
- * migration. Last resort is the chapter-scoped index plus the type label.
+ * migration. Last resort is the node's own label.
  */
 export function kbNodeTitle(graph: ContentGraph, node: KbNode): string {
   if (node.title) return node.title
-  const label = node.labels?.canonical ?? ENTITY_LABEL_HU[node.type] ?? node.type
-  const capital = label.charAt(0).toUpperCase() + label.slice(1)
 
-  if (node.type === 'proof') return `${capital}: ${kbNodeTitle(graph, node.proves)}`
-  if (node.type === 'remark' && node.attachedTo) return `${capital}: ${kbNodeTitle(graph, node.attachedTo)}`
+  if (node.type === 'proof') return `${kbTypeLabel(node)}: ${kbNodeTitle(graph, node.proves)}`
+  if (node.type === 'remark' && node.attachedTo) {
+    return `${kbTypeLabel(node)}: ${kbNodeTitle(graph, node.attachedTo)}`
+  }
 
-  const index = graph.embedding.get(keyForKbNode(node))?.index
-  return index ? `${index} ${capital}` : capital
+  return kbNodeLabel(graph, node)
 }
 
 /**

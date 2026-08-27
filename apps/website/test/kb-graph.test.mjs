@@ -9,7 +9,7 @@ import assert from 'node:assert/strict'
 import * as graphModule from '../lib/content/graph.ts'
 import { urlForDefinition, urlForTheorem, urlForProof, urlForRemark, kbRefs, claimAnchorId, termAnchorId, kbAnchorPath, sectionAnchorId, partAnchorId, ownPageScope, embeddedScope } from '../lib/content/urls.ts'
 
-const { buildGraphFromRaw, kbPageExists, kbNodeTitle } = graphModule.default ?? graphModule
+const { buildGraphFromRaw, kbPageExists, kbNodeTitle, kbNodeLabel } = graphModule.default ?? graphModule
 
 import { NS, hu, ref, narrative, claim, embed, raw } from './support/raw-graph.mjs'
 
@@ -66,6 +66,20 @@ test('titles: authored for definitions/theorems, derived from the owner otherwis
   assert.equal(kbNodeTitle(g, thm(g)), 'Első tétel')
   assert.equal(kbNodeTitle(g, prf(g)), 'Bizonyítás: Első tétel')
   assert.equal(kbNodeTitle(g, rem(g)), 'Megjegyzés: Első definíció')
+})
+
+test('a label is where a node sits in the book, and an untitled node sorts under it', () => {
+  const untitled = raw()
+  delete untitled.definitions[0].title
+  const g = buildGraphFromRaw(untitled)
+  // What the index pages show in grey beside the title, and what the narrative
+  // writes beside the node itself.
+  assert.equal(kbNodeLabel(g, def(g)), '1.1. Definíció')
+  assert.equal(kbNodeLabel(g, thm(g)), '1.2. Tétel')
+  assert.equal(kbNodeLabel(g, prf(g)), 'Bizonyítás', 'proofs are not numbered')
+  // The fallback the index pages rely on: without it this row would sort under the
+  // empty string, at the top of the list.
+  assert.equal(kbNodeTitle(g, def(g)), '1.1. Definíció')
 })
 
 test('a reference gets a chapter href AND a knowledge-base href', () => {

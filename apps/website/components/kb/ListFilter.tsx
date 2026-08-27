@@ -11,6 +11,11 @@ interface ListFilterProps {
   emptyLabel: string
   /** The one-action clear. */
   clearLabel: string
+  /**
+   * The page's count line, above the field. Optional, and rendered verbatim — the
+   * live count is not this prop's business but `data-filter-count`'s, below.
+   */
+  count?: ReactNode
   /** The list to filter: rendered in full, on the server, by the page. */
   children: ReactNode
 }
@@ -20,11 +25,18 @@ interface ListFilterProps {
  * (sub-plan §4).
  *
  * The only client component on these pages, and it does not produce the list — it
- * hides rows of a list somebody else rendered on the server (§2.1). Its entire
- * contract with the page is one attribute: every filterable row carries
- * `data-filter-text` with the text to match on, and the filter toggles `hidden` on
- * exactly those elements. Nothing else about a row is its business, which is what
- * lets the glossary's name rows and the index pages' title rows share it.
+ * hides rows of a list somebody else rendered on the server (§2.1). Its contract
+ * with the page is two attributes, and nothing else about a row or a count is its
+ * business — which is what lets the glossary's name rows and the index pages' title
+ * rows share it:
+ *
+ *   - **`data-filter-text`** on every filterable row: the text to match on. The
+ *     filter toggles `hidden` on exactly those elements.
+ *   - **`data-filter-count`**, optional, on an element anywhere in the filter: a
+ *     localized "{count} …" template, whose text is rewritten with how many rows
+ *     are showing. The page still server-renders the unfiltered number into that
+ *     element, so the served HTML carries the true count and this only ever
+ *     narrows it (§2.1).
  *
  * `data-filter-text` rather than the row's own `textContent`: a name authored with
  * inline LaTeX renders to KaTeX markup whose text content is the rendered glyphs
@@ -39,12 +51,14 @@ export default function ListFilter({
   placeholder,
   emptyLabel,
   clearLabel,
+  count,
   children,
 }: ListFilterProps) {
   const [query, setQuery] = useState('')
   // Null while nothing is typed: "unfiltered" is a different state from "a query
   // that matched nothing", and only the second one shows the empty state.
   const [matches, setMatches] = useState<number | null>(null)
+  const rootRef = useRef<HTMLDivElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -59,10 +73,20 @@ export default function ListFilter({
       if (match) visible += 1
     }
     setMatches(next.trim() === '' ? null : visible)
+
+    // The same substitution `formatLocaleLabel` did on the server, on the same
+    // template — the label's wording stays in locales.json, and only the number
+    // is the client's.
+    const counts = rootRef.current?.querySelectorAll<HTMLElement>('[data-filter-count]') ?? []
+    for (const element of counts) {
+      element.textContent = (element.dataset.filterCount ?? '').replace('{count}', String(visible))
+    }
   }
 
   return (
-    <div className={styles.filter}>
+    <div className={styles.filter} ref={rootRef}>
+      {count}
+
       <div className={styles.controls}>
         <input
           ref={inputRef}
