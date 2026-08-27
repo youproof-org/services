@@ -68,6 +68,7 @@ import {
   ownPageScope,
   embeddedScope,
 } from './urls'
+import { compareHu } from './collate'
 import {
   bookKey,
   partKey,
@@ -1320,7 +1321,8 @@ export function kbNodeTitle(graph: ContentGraph, node: KbNode): string {
  *
  * Each row carries the term's authored synonyms verbatim; the row itself stays one
  * per (defining node, term key), so a synonym is data on a row rather than a row of
- * its own.
+ * its own. The glossary PAGE is an index of names and does want one row per synonym:
+ * that expansion is `glossaryRows` in glossary-rows.ts, over these entries.
  */
 function buildGlossary(graph: ContentGraph): GlossaryEntry[] {
   const entries: GlossaryEntry[] = []
@@ -1341,8 +1343,7 @@ function buildGlossary(graph: ContentGraph): GlossaryEntry[] {
     }
   }
   return entries.sort(
-    (a, b) =>
-      a.canonical.localeCompare(b.canonical, 'hu') || a.ownerTitle.localeCompare(b.ownerTitle, 'hu'),
+    (a, b) => compareHu(a.canonical, b.canonical) || compareHu(a.ownerTitle, b.ownerTitle),
   )
 }
 
@@ -1469,10 +1470,10 @@ function buildBacklinkIndex(graph: ContentGraph): Map<string, KbBacklinks> {
     }
   }
 
-  // Same Hungarian collation the glossary sorts by, so two lists of the same
-  // titles cannot disagree about their order.
+  // The site's one Hungarian collation (compareHu), so two lists of the same titles
+  // cannot disagree about their order.
   const order = (a: KbBacklinkSource, b: KbBacklinkSource) =>
-    b.count - a.count || a.title.localeCompare(b.title, 'hu')
+    b.count - a.count || compareHu(a.title, b.title)
 
   const index = new Map<string, KbBacklinks>()
   for (const [entityFqn, byTargetCounts] of counted) {
