@@ -1052,7 +1052,7 @@ export function kbPageExists(graph: ContentGraph, node: KbNode): boolean {
 }
 
 /** Every knowledge-base node, in one iterable. */
-function* kbNodes(graph: ContentGraph): Generator<KbNode> {
+export function* kbNodes(graph: ContentGraph): Generator<KbNode> {
   yield* graph.definitions.values()
   yield* graph.theorems.values()
   yield* graph.proofs.values()

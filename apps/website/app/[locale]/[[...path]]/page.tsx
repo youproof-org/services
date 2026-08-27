@@ -1,7 +1,17 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { getContentGraph, initContentGraph } from '@/lib/content'
-import type { BookNode, ChapterNode, StandaloneNode } from '@/lib/content/types'
+import type {
+  BookNode,
+  ChapterNode,
+  StandaloneNode,
+  DefinitionNode,
+  TheoremNode,
+  ProofNode,
+  RemarkNode,
+  KbNode,
+  ContentGraph,
+} from '@/lib/content/types'
 import {
   LOCALES,
   isLocale,
@@ -9,10 +19,13 @@ import {
   getLocaleLabel,
   resolveContainerKey,
   isRoutableAtRoot,
+  type ContainerKey,
 } from '@/lib/i18n/config'
 import { buildPageMeta, type OgType, type PageMetaNode } from '@/lib/i18n/metadata'
 import type { UrlKey } from '@/lib/i18n/url'
-import { homeUrl, urlForBook, urlForChapter } from '@/lib/content/urls'
+import { homeUrl, urlForBook, urlForChapter, urlForKbNode, kbUrlRef } from '@/lib/content/urls'
+import { kbExcerpt } from '@/lib/content/kb-excerpt'
+import { kbNodes, kbNodeTitle, kbPageExists } from '@/lib/content/graph'
 import { getBookRomanIndex, getChapterIndex } from '@/lib/utils/index-helpers'
 import RootHome from '@/components/RootHome'
 import SiteHeader from '@/components/layout/SiteHeader'
@@ -27,7 +40,8 @@ import KbPageShell from '@/components/kb/KbPageShell'
 import KbRootPage from '@/components/kb/KbRootPage'
 import KbTypeIndexPage from '@/components/kb/KbTypeIndexPage'
 import GlossaryPage from '@/components/kb/GlossaryPage'
-import { kbListBreadcrumbs } from '@/lib/content/kb-breadcrumbs'
+import KbEntityPage from '@/components/kb/KbEntityPage'
+import { kbEntityBreadcrumbs, kbListBreadcrumbs } from '@/lib/content/kb-breadcrumbs'
 import styles from './page.module.scss'
 
 // Static export: only enumerated paths are generated; anything else 404s.
@@ -76,14 +90,18 @@ type Resolved =
   | { kind: 'newsletter-index' }
   | { kind: 'landing-index' }
   | { kind: 'article' | 'newsletter' | 'landing' | 'page'; node: StandaloneNode }
-  // Knowledge base — the four list pages. The entity routes land with the
-  // component that renders their term and claim ids: the postbuild anchor gate
-  // checks every fragment into a page the moment that page exists, so a route
-  // without those ids fails the build rather than 404ing.
+  // Knowledge base — the four list pages, and one variant per entity type. The
+  // four entity variants differ only in the node they carry, which is what every
+  // consumer branches on; they are separate so a caller cannot be handed a
+  // `KbNode` where the route matched something else.
   | { kind: 'kb-root' }
   | { kind: 'definitions-index' }
   | { kind: 'theorems-index' }
   | { kind: 'glossary' }
+  | { kind: 'definition'; node: DefinitionNode }
+  | { kind: 'theorem'; node: TheoremNode }
+  | { kind: 'proof'; node: ProofNode }
+  | { kind: 'remark'; node: RemarkNode }
 
 function resolvePath(locale: string, path: string[]): Resolved | null {
   if (path.length === 0) return { kind: 'home' }
@@ -121,17 +139,18 @@ function resolvePath(locale: string, path: string[]): Resolved | null {
   // is the definitions index while `/hu/definiciok` 404s above.
   if (key0 === 'knowledge-base') {
     if (path.length === 1) return { kind: 'kb-root' }
+    const key1 = resolveContainerKey(locale, path[1])
     if (path.length === 2) {
-      switch (resolveContainerKey(locale, path[1])) {
+      switch (key1) {
         case 'definition': return { kind: 'definitions-index' }
         case 'theorem': return { kind: 'theorems-index' }
         case 'term': return { kind: 'glossary' }
         default: return null
       }
     }
-    // Deeper paths are the entity pages; they are not routed yet, so they 404
-    // instead of rendering a page with none of the ids other pages link into.
-    return null
+    // Deeper paths are the entity pages: `{definition}/{d}`, `{theorem}/{t}`, and
+    // the owned types nested under their owner.
+    return resolveKbEntity(graph, locale, key1, path.slice(2))
   }
 
   // article | newsletter | landing
@@ -152,6 +171,85 @@ function resolvePath(locale: string, path: string[]): Resolved | null {
     return node ? { kind: key0, node } : null
   }
   return null
+}
+
+/**
+ * The knowledge-base entity routes, below `/{locale}/{kb}`.
+ *
+ * `typeKey` is the container the path enters the type through, and `rest` is
+ * everything below it: `[d]` is a definition, `[d, {remark}, r]` a remark on it,
+ * `[t, {proof}, p, {remark}, r]` a remark on a proof. The six shapes are the six
+ * in lib/i18n/url.ts, read the other way round — this is the only place that
+ * takes them apart, and `generateStaticParams` enumerates them by asking
+ * `urlForKbNode` rather than by assembling them again.
+ *
+ * A node is looked up within its owner, not globally: a proof's slug is unique
+ * among the proofs of its theorem and a remark's among the remarks of its owner
+ * (see validateIdentifiers), so the owner is what makes the lookup unambiguous.
+ */
+function resolveKbEntity(
+  graph: ContentGraph,
+  locale: string,
+  typeKey: ContainerKey | null,
+  rest: string[],
+): Resolved | null {
+  if (typeKey === 'definition') {
+    const definition = findKbBySlug(graph.definitions.values(), locale, rest[0])
+    if (!definition) return null
+    if (rest.length === 1) return kbEntity(graph, definition)
+    if (rest.length === 3 && resolveContainerKey(locale, rest[1]) === 'remark') {
+      return kbEntity(graph, findKbBySlug(definition.remarks, locale, rest[2]))
+    }
+    return null
+  }
+
+  if (typeKey === 'theorem') {
+    const theorem = findKbBySlug(graph.theorems.values(), locale, rest[0])
+    if (!theorem) return null
+    if (rest.length === 1) return kbEntity(graph, theorem)
+    const ownedKey = rest.length >= 3 ? resolveContainerKey(locale, rest[1]) : null
+    if (rest.length === 3 && ownedKey === 'remark') {
+      return kbEntity(graph, findKbBySlug(theorem.remarks, locale, rest[2]))
+    }
+    if (ownedKey === 'proof') {
+      const proof = findKbBySlug(theorem.proofs, locale, rest[2])
+      if (!proof) return null
+      if (rest.length === 3) return kbEntity(graph, proof)
+      if (rest.length === 5 && resolveContainerKey(locale, rest[3]) === 'remark') {
+        return kbEntity(graph, findKbBySlug(proof.remarks, locale, rest[4]))
+      }
+    }
+    return null
+  }
+
+  return null
+}
+
+function findKbBySlug<T extends KbNode>(
+  nodes: Iterable<T>,
+  locale: string,
+  slug: string | undefined,
+): T | undefined {
+  if (!slug) return undefined
+  for (const node of nodes) {
+    if (node.locale === locale && node.slug === slug) return node
+  }
+}
+
+/**
+ * A resolved entity, or null when this environment generates no page for it —
+ * `kbPageExists` is the same gate `generateStaticParams`, the list pages and
+ * `kbHref` resolution use, so an unpublished chapter's entities 404 on staging
+ * instead of resolving to a page nothing links to.
+ */
+function kbEntity(graph: ContentGraph, node: KbNode | undefined): Resolved | null {
+  if (!node || !kbPageExists(graph, node)) return null
+  switch (node.type) {
+    case 'definition': return { kind: 'definition', node }
+    case 'theorem':    return { kind: 'theorem', node }
+    case 'proof':      return { kind: 'proof', node }
+    case 'remark':     return { kind: 'remark', node }
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -199,12 +297,24 @@ export async function generateStaticParams() {
       if (l.locale === locale) params.push({ locale, path: [landingC, l.slug] })
     }
 
-    // Knowledge base: the root and the three index pages. The entity routes are
-    // enumerated with the component that renders their ids (see `Resolved`).
+    // Knowledge base: the root, the three index pages, and one page per entity
+    // that has one in this environment.
     params.push({ locale, path: [kbC] })
     params.push({ locale, path: [kbC, getContainerSegment(locale, 'definition')] })
     params.push({ locale, path: [kbC, getContainerSegment(locale, 'theorem')] })
     params.push({ locale, path: [kbC, getContainerSegment(locale, 'term')] })
+
+    // The entity params come from each node's own canonical URL, minus its locale
+    // prefix, rather than from a second assembly of the six entity URL shapes: the
+    // path this route generates is then the same string every list page, breadcrumb
+    // and reference links to, by construction. `kbPageExists` is the gate, so on a
+    // deployed build an unpublished chapter's entities are not generated at all.
+    for (const node of kbNodes(graph)) {
+      if (node.locale !== locale || !kbPageExists(graph, node)) continue
+      const url = urlForKbNode(node)
+      if (!url) continue
+      params.push({ locale, path: url.split('/').slice(2) })
+    }
 
     for (const p of graph.pages.values()) {
       if (p.locale !== locale) continue
@@ -230,6 +340,7 @@ export async function generateMetadata({ params }: RouteProps): Promise<Metadata
   const { locale, path = [] } = await params
   if (!isLocale(locale)) return {}
   await initContentGraph()
+  const graph = getContentGraph()
   const resolved = resolvePath(locale, path)
   if (!resolved) return {}
 
@@ -266,6 +377,27 @@ export async function generateMetadata({ params }: RouteProps): Promise<Metadata
       key = 'theorems-index'; fallbackTitle = getLocaleLabel(locale, 'theoremsIndex'); ogType = 'website'; break
     case 'glossary':
       key = 'glossary'; fallbackTitle = getLocaleLabel(locale, 'glossary'); ogType = 'website'; break
+    // An entity page: an article, with a description taken from the node's own
+    // opening prose. There are 537 of these pages locally and 389 on a deployed
+    // build; all of them sharing the locale's defaultDescription would read to a
+    // crawler as several hundred pages about nothing in particular.
+    case 'definition':
+    case 'theorem':
+    case 'proof':
+    case 'remark': {
+      const ref = kbUrlRef(resolved.node)
+      // Only an owner-less remark has no URL, and no route resolves to one.
+      if (!ref) return {}
+      key = ref.key
+      slugPath = ref.slugPath
+      ogType = 'article'
+      // `kbNodeTitle`, not `node.title`: a proof and a remark have no authored
+      // title, and a <title> has to name the page on its own — that is the derived
+      // "Bizonyítás: {theorem}". The on-page header is the one place that reads
+      // `node.title` directly (see KbEntityPage).
+      node = { title: kbNodeTitle(graph, resolved.node), excerpt: kbExcerpt(resolved.node) }
+      break
+    }
     default: // article | newsletter | landing | page
       key = resolved.node.kind
       slugPath = [resolved.node.slug]
@@ -365,6 +497,20 @@ export default async function LocalizedRoute({ params }: RouteProps) {
       return (
         <KbPageShell locale={locale} breadcrumbs={kbListBreadcrumbs(locale, 'glossary')}>
           <GlossaryPage locale={locale} />
+        </KbPageShell>
+      )
+
+    // The four entity pages are one page: the type only decides the label the
+    // header carries and the glyph that closes the body (§6.1). The chain comes
+    // from the node's ownership, so a remark on a proof carries the theorem and
+    // the proof above it.
+    case 'definition':
+    case 'theorem':
+    case 'proof':
+    case 'remark':
+      return (
+        <KbPageShell locale={locale} breadcrumbs={kbEntityBreadcrumbs(graph, resolved.node)}>
+          <KbEntityPage node={resolved.node} />
         </KbPageShell>
       )
 

@@ -9,7 +9,7 @@ import type {
   KbNode,
   RefMap,
 } from './types'
-import { buildLocalizedUrl } from '@/lib/i18n/url'
+import { buildLocalizedUrl, type UrlKey } from '@/lib/i18n/url'
 import { getContainerSegment, type ContainerKey } from '@/lib/i18n/config'
 
 // Node → public URL helpers. Each node carries its own `locale` and `slug`, so a
@@ -75,26 +75,49 @@ export function urlForProof(node: ProofNode): string {
  * rather than inventing a path for it.
  */
 export function urlForRemark(node: RemarkNode): string | null {
-  const owner = node.attachedTo
-  if (!owner) return null
-  switch (owner.type) {
+  const ref = kbUrlRef(node)
+  return ref ? buildLocalizedUrl(node.locale, ref.key, ...ref.slugPath) : null
+}
+
+/**
+ * Which URL key a node's own page is built from, and with which slugs.
+ *
+ * Separate from `urlForKbNode` because a caller that needs the pair rather than
+ * the string cannot take it apart again: `generateMetadata` passes the key and the
+ * slug path to `buildPageMeta`, which builds the canonical and the hreflang set
+ * from them (one URL per locale, so it needs the parts and not one locale's
+ * string). Deriving them there would be a second copy of the remark's
+ * owner-dependent shape.
+ *
+ * Null for an owner-less remark, which has no page — see `urlForRemark`.
+ */
+export function kbUrlRef(node: KbNode): { key: UrlKey; slugPath: string[] } | null {
+  switch (node.type) {
     case 'definition':
-      return buildLocalizedUrl(node.locale, 'definition-remark', owner.slug, node.slug)
+      return { key: 'definition', slugPath: [node.slug] }
     case 'theorem':
-      return buildLocalizedUrl(node.locale, 'theorem-remark', owner.slug, node.slug)
+      return { key: 'theorem', slugPath: [node.slug] }
     case 'proof':
-      return buildLocalizedUrl(node.locale, 'proof-remark', owner.proves.slug, owner.slug, node.slug)
+      return { key: 'proof', slugPath: [node.proves.slug, node.slug] }
+    case 'remark': {
+      const owner = node.attachedTo
+      if (!owner) return null
+      switch (owner.type) {
+        case 'definition':
+          return { key: 'definition-remark', slugPath: [owner.slug, node.slug] }
+        case 'theorem':
+          return { key: 'theorem-remark', slugPath: [owner.slug, node.slug] }
+        case 'proof':
+          return { key: 'proof-remark', slugPath: [owner.proves.slug, owner.slug, node.slug] }
+      }
+    }
   }
 }
 
 /** The canonical page URL of any knowledge-base node, or null if it has none. */
 export function urlForKbNode(node: KbNode): string | null {
-  switch (node.type) {
-    case 'definition': return urlForDefinition(node)
-    case 'theorem':    return urlForTheorem(node)
-    case 'proof':      return urlForProof(node)
-    case 'remark':     return urlForRemark(node)
-  }
+  const ref = kbUrlRef(node)
+  return ref ? buildLocalizedUrl(node.locale, ref.key, ...ref.slugPath) : null
 }
 
 // ---------------------------------------------------------------------------
