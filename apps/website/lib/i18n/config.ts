@@ -43,6 +43,13 @@ export type LabelKey =
   | 'kbDefinitionsDescription' | 'kbTheoremsDescription' | 'kbGlossaryDescription'
   | 'kbDefinitionsCount' | 'kbTheoremsCount'
   | 'kbGlossaryCount' | 'kbGlossaryCountNote'
+  // Glossary page: the wording a synonym row uses to name the canonical form it
+  // belongs to. `{name}` is that form, so the label carries the sentence and the
+  // code only supplies the term.
+  | 'kbGlossarySynonymOf'
+  // The shared list filter above a knowledge-base list — the glossary's names and
+  // the index pages' titles use the same three.
+  | 'kbFilterPlaceholder' | 'kbFilterEmpty' | 'kbFilterClear'
 
 export interface LocaleConfig {
   displayName: string

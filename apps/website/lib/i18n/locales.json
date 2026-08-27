@@ -24,7 +24,11 @@
         "kbDefinitionsCount": "{count} definíció",
         "kbTheoremsCount": "{count} tétel",
         "kbGlossaryCount": "{count} szócikk",
-        "kbGlossaryCountNote": "{count} fogalom nevei és szinonimái"
+        "kbGlossaryCountNote": "{count} fogalom nevei és szinonimái",
+        "kbGlossarySynonymOf": "{name} szinonimája",
+        "kbFilterPlaceholder": "Szűrés a listában",
+        "kbFilterEmpty": "Nincs találat",
+        "kbFilterClear": "Szűrés törlése"
       },
       "containers": {
         "book": "konyvek",

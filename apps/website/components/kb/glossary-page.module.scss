@@ -1,0 +1,72 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+// The glossary: one long Hungarian-alphabetical run of rows, one per name (§4).
+// Row layout is provisional, as §4 says it is.
+
+// Matches the root page's title (kb-root-page.module.scss).
+.title {
+  margin: 0;
+  font-size: 1.5rem;
+
+  @include tablet {
+    font-size: 2.5rem;
+  }
+}
+
+// The two counts, in the root page card's own wording and weight: the row count at
+// a glance, the term count under it as the thing those rows are names of.
+.count {
+  margin: 0.8rem 0 0;
+  font-size: 1.35rem;
+  font-weight: $font-x-bold;
+  line-height: 1.2;
+}
+
+.countNote {
+  margin: 0.2rem 0 2rem;
+  font-size: 0.85rem;
+  color: $gray-500;
+}
+
+.rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// Kebab-case on purpose, unlike the camelCase locals around it: `getLocalIdent` in
+// next.config.ts emits `<stylesheet>_<local>` verbatim, so this is the one class
+// name that survives the build unhashed and readable — it is how a row is found in
+// the exported HTML.
+.glossary-row {
+  padding: 0.55rem 0;
+  border-bottom: 1px solid $gray-200;
+
+  &:first-child {
+    border-top: 1px solid $gray-200;
+  }
+}
+
+.name {
+  font-weight: $font-bold;
+  color: $black;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.meta {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.85rem;
+  color: $gray-500;
+}
+
+// Only a synonym row has both parts, so the separator hangs off the second one.
+.synonymOf + .source::before {
+  content: '·';
+  margin: 0 0.4rem;
+}

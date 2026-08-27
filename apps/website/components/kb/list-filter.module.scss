@@ -1,0 +1,69 @@
+@use '../../styles/variables' as *;
+
+// The filter above a knowledge-base list (sub-plan §4). Shared by the glossary and
+// the two index pages, so it styles the controls and the empty state only — the
+// rows belong to the page that renders them.
+
+.filter {
+  margin: 0 0 1.5rem;
+}
+
+.controls {
+  display: flex;
+  align-items: stretch;
+  gap: 0.75rem;
+  margin: 0 0 1rem;
+}
+
+// Metrics mirror newsletter-form.module.scss's .input so the field feels like the
+// rest of the site's forms.
+.input {
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  min-width: 0;
+  font: inherit;
+  font-weight: $font-normal;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid $gray-400;
+  background: $white;
+  color: $black;
+
+  &:focus {
+    outline: none;
+    border-color: $black;
+    box-shadow: 0 0 0 1px $black;
+  }
+
+  // One clear affordance, not two: the button beside the field works with the
+  // keyboard and in every browser, so WebKit's own cancel button steps aside.
+  &::-webkit-search-cancel-button {
+    appearance: none;
+  }
+}
+
+// The site's outline button, at the field's height rather than the dialog's.
+.clear {
+  font: inherit;
+  font-weight: $font-bold;
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+  background: $white;
+  color: $black;
+  border: 1px solid $black;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.empty {
+  margin: 0 0 1rem;
+  font-weight: $font-bold;
+  color: $gray-600;
+}
+
+// The filter hides a row by setting `hidden` on it, and a row is laid out by its
+// own page's stylesheet — the user-agent rule for `[hidden]` loses to any `display`
+// a class sets, so it is re-asserted here with the weight of a class plus an
+// attribute. This is why the filter can hide rows it did not create.
+.filter [hidden] {
+  display: none;
+}
