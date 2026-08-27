@@ -451,6 +451,45 @@ export interface GlossaryEntry {
   href: string
 }
 
+/**
+ * One row of an "incoming references" list: a single source that cites an entity,
+ * with how many times it does so.
+ *
+ * A source is whatever carried the reference — one of the four knowledge-base
+ * entity types, or a chapter or a section of the book, because the narrative cites
+ * entities too and a reader asking "where is this used?" wants the chapter as much
+ * as the theorem. A source appears ONCE with a count, not once per reference.
+ */
+export interface KbBacklinkSource {
+  kind: 'chapter' | 'section' | 'definition' | 'theorem' | 'proof' | 'remark'
+  /** Fully qualified name of the source node — the row's identity. */
+  fqn: string
+  title: string
+  /** The source's page, plus a fragment when the source is a section. */
+  href: string
+  /** How many references this source aims at the target this row sits under. */
+  count: number
+}
+
+/**
+ * Everything that cites one entity, in the two shapes a page needs.
+ *
+ * `all` is the unfiltered list shown for the entity as a whole. It includes
+ * references aimed at the entity's claims and terms, because those have no page of
+ * their own and the entity's page is the only place they can be shown.
+ *
+ * `byTarget` is keyed by the FULL target name — the entity's own name for a
+ * reference to the entity, `{entity}.claims.{c}` or `{entity}.terms.{t}` for one
+ * aimed inside it — so selecting a claim or a term narrows the list by a lookup
+ * rather than by filtering `all` at render time.
+ *
+ * Both lists are ordered by `count` descending, ties broken by title.
+ */
+export interface KbBacklinks {
+  all: KbBacklinkSource[]
+  byTarget: Map<string, KbBacklinkSource[]>
+}
+
 // ---------------------------------------------------------------------------
 // Content graph
 //
@@ -490,4 +529,10 @@ export interface ContentGraph {
   embedding:   Map<string, EmbeddingContext>
   /** Every term definition in the knowledge base, sorted by `canonical`. */
   glossary:    GlossaryEntry[]
+  /**
+   * Owning-entity key -> everything that cites it. Only entities with at least one
+   * source that survives the page-existence filter get an entry, so a page with no
+   * incoming references is a missing key rather than an empty list.
+   */
+  backlinks:   Map<string, KbBacklinks>
 }

@@ -26,6 +26,8 @@ import type {
   KbNode,
   EmbeddingContext,
   GlossaryEntry,
+  KbBacklinkSource,
+  KbBacklinks,
 } from './types'
 import {
   getContentDir,
@@ -78,6 +80,7 @@ import {
   remarkKey,
   keyForKbNode,
   keyForChapter,
+  keyForSection,
 } from './keys'
 import { fqnJoin } from './fqn'
 import { getChapterIndex, walkFigureBlocks } from '@/lib/utils/index-helpers'
@@ -606,6 +609,7 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
     landings:    new Map(),
     embedding:   new Map(),
     glossary:    [],
+    backlinks:   new Map(),
   }
 
   // Pass 0: resolve ownership, because a key needs it.
@@ -857,6 +861,7 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
   resolveSelfReferenceDisplayTemplates(graph)
   resolveRefHrefs(graph)
   graph.glossary = buildGlossary(graph)
+  graph.backlinks = buildBacklinkIndex(graph)
   validateReferences(graph)
   validateTermInsertions(graph)
   validateKbLinks(graph)
@@ -1334,6 +1339,148 @@ function buildGlossary(graph: ContentGraph): GlossaryEntry[] {
     (a, b) =>
       a.canonical.localeCompare(b.canonical, 'hu') || a.ownerTitle.localeCompare(b.ownerTitle, 'hu'),
   )
+}
+
+/** A backlink row before its count is known - the source's identity and label. */
+type BacklinkRow = Omit<KbBacklinkSource, 'count'>
+
+/**
+ * Does this build render the chapter's body, or only a stub in its place?
+ *
+ * The same environment rule `kbPageExists` applies to an embedded node, one level
+ * up: on staging/production an unpublished chapter's route returns
+ * `NotMigratedStub`/`UnavailableStub` instead of the chapter's content, while
+ * locally it renders normally so drafts are previewable (see
+ * app/[locale]/[[...path]]/page.tsx). The chapter URL resolves either way, so this
+ * is not a question of whether a link is dead - it is whether there is anything
+ * there to arrive at.
+ */
+function chapterBodyIsRendered(chapter: ChapterNode): boolean {
+  return isDeployedEnv ? chapter.published : true
+}
+
+/**
+ * Which backlink row an owner of references produces, or null if it produces none.
+ *
+ * A row is a link, so a source only earns one when this build generates something
+ * for the row to land on. That drops an entity whose `kbPageExists` is false - the
+ * row would be a 404, exactly the class of link `validateKbLinks` exists to
+ * prevent - and, for the same reason one step weaker, a chapter or section whose
+ * chapter renders as a stub: the URL resolves, but the chapter's body is not
+ * there, so neither is the section anchor, and the row answers "where is this
+ * used?" with a stub.
+ *
+ * Standalone items (articles, newsletters, pages, landings) and their sections are
+ * skipped: a source is a place in the book that leans on this entity. No
+ * standalone content cites a knowledge-base node today, so nothing is lost by it -
+ * revisit if any ever does.
+ */
+function backlinkRowFor(graph: ContentGraph, owner: RefOwner): BacklinkRow | null {
+  switch (owner.kind) {
+    case 'chapter':
+      if (!chapterBodyIsRendered(owner.node)) return null
+      return {
+        kind: 'chapter',
+        fqn: keyForChapter(owner.node),
+        title: owner.node.title,
+        href: chapterUrlOf(owner.node),
+      }
+    case 'section':
+      if (!chapterBodyIsRendered(owner.parent)) return null
+      return {
+        kind: 'section',
+        fqn: keyForSection(owner.node),
+        title: owner.node.title,
+        href: `${chapterUrlOf(owner.parent)}#${sectionAnchorId(owner.node)}`,
+      }
+    case 'definition':
+    case 'theorem':
+    case 'proof':
+    case 'remark': {
+      const node = owner.node
+      if (!kbPageExists(graph, node)) return null
+      const href = urlForKbNode(node)
+      if (!href) return null
+      return { kind: owner.kind, fqn: keyForKbNode(node), title: kbNodeTitle(graph, node), href }
+    }
+    default:
+      return null
+  }
+}
+
+/**
+ * Incoming references, keyed by the entity that OWNS the target.
+ *
+ * A reference aimed at a claim or a term is a reference to the entity holding it:
+ * claims and terms have no page, so the owning entity's page is the only place an
+ * incoming reference to them can be shown. Hence one index, keyed by the owning
+ * entity, with `byTarget` keyed by the full target name carrying the per-claim and
+ * per-term narrowings - no second index, and no filtering at render time.
+ *
+ * A row is a (target, source) pair with a count rather than one row per reference:
+ * a section citing an entity five times is one row saying five, because five rows
+ * would bury every other source and one row without a count would throw away how
+ * heavily that section leans on the entity.
+ *
+ * Ordering is by count descending, ties broken by title.
+ */
+function buildBacklinkIndex(graph: ContentGraph): Map<string, KbBacklinks> {
+  // owning entity -> target -> source -> row+count. The unfiltered `all` list
+  // accumulates under ALL_TARGETS, which cannot collide with a real target: every
+  // fully qualified name is a series of `container.name` pairs, so it has a dot.
+  const ALL_TARGETS = '*'
+  const counted = new Map<string, Map<string, Map<string, KbBacklinkSource>>>()
+
+  const bump = (entityFqn: string, targetFqn: string, row: BacklinkRow) => {
+    let byTarget = counted.get(entityFqn)
+    if (!byTarget) counted.set(entityFqn, (byTarget = new Map()))
+    let bySource = byTarget.get(targetFqn)
+    if (!bySource) byTarget.set(targetFqn, (bySource = new Map()))
+    const existing = bySource.get(row.fqn)
+    if (existing) existing.count += 1
+    else bySource.set(row.fqn, { ...row, count: 1 })
+  }
+
+  for (const owner of refOwners(graph)) {
+    const refs = Object.values(owner.node.references)
+    if (refs.length === 0) continue
+    const row = backlinkRowFor(graph, owner)
+    if (!row) continue
+
+    for (const { target } of refs) {
+      if (target.type === 'external') continue
+      // The owning entity is the target itself when the target IS an entity, and
+      // the target minus its trailing `.claims.{c}` / `.terms.{t}` step otherwise
+      // - which is exactly `parentFqn`, already parsed. Everything else (a book, a
+      // chapter, a section, a standalone item) is not a knowledge-base target.
+      const entity = kbNodeByKey(graph, target.fqn)
+        ?? (target.type === 'claim' || target.type === 'term'
+          ? kbNodeByKey(graph, target.parentFqn)
+          : undefined)
+      if (!entity) continue
+      const entityFqn = keyForKbNode(entity)
+      bump(entityFqn, ALL_TARGETS, row)
+      bump(entityFqn, target.fqn, row)
+    }
+  }
+
+  // Same Hungarian collation the glossary sorts by, so two lists of the same
+  // titles cannot disagree about their order.
+  const order = (a: KbBacklinkSource, b: KbBacklinkSource) =>
+    b.count - a.count || a.title.localeCompare(b.title, 'hu')
+
+  const index = new Map<string, KbBacklinks>()
+  for (const [entityFqn, byTargetCounts] of counted) {
+    let all: KbBacklinkSource[] = []
+    const byTarget = new Map<string, KbBacklinkSource[]>()
+    for (const [targetFqn, bySource] of byTargetCounts) {
+      const rows = Array.from(bySource.values()).sort(order)
+      if (targetFqn === ALL_TARGETS) all = rows
+      else byTarget.set(targetFqn, rows)
+    }
+    index.set(entityFqn, { all, byTarget })
+  }
+  return index
 }
 
 /**

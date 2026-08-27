@@ -117,6 +117,183 @@ test('kbRefs swaps in the knowledge-base href and leaves other entries alone', (
   )
 })
 
+// ---------------------------------------------------------------------------
+// Backlink index
+// ---------------------------------------------------------------------------
+
+/**
+ * A graph whose sources exercise every branch of the index: the chapter cites the
+ * definition twice, its section cites a CLAIM of it, one theorem cites a TERM of
+ * it, and a second, UNPUBLISHED chapter contributes a section source and (through
+ * the theorem it embeds) an entity source. The last two are what a deployed build
+ * has to drop.
+ */
+function backlinkFixture() {
+  const data = raw()
+  const chapter = data.books[0].parts[0].chapters[0]
+  chapter.references = {
+    'r-def': ref('a definíció', 'definitions.def-egy'),
+    'r-def-ujra': ref('ugyanaz újra', 'definitions.def-egy'),
+  }
+  chapter.sections[0].references = {
+    'r-claim': ref('az állítás', 'definitions.def-egy.claims.def-claim'),
+  }
+  data.theorems[0].references = {
+    'r-term': ref('a fogalom', 'definitions.def-egy.terms.first-term'),
+  }
+  data.theorems.push({
+    ...hu,
+    name: 'tetel-ketto',
+    slug: 'tetel-ketto',
+    title: 'Második tétel',
+    body: [narrative('Tétel.')],
+    references: { 'r-def': ref('a definíció', 'definitions.def-egy') },
+    proofSlugs: [],
+    remarkSlugs: [],
+  })
+  data.books[0].parts[0].chapters.push({
+    name: 'masodik',
+    slug: 'masodik',
+    locale: 'hu',
+    title: 'Második fejezet',
+    publishedAt: undefined,
+    abstract: [],
+    prologue: [],
+    epilogue: [],
+    references: {},
+    sections: [
+      {
+        name: 'masodik-szakasz',
+        slug: 'masodik-szakasz',
+        locale: 'hu',
+        title: 'Második szakasz',
+        references: { 'r-def': ref('a definíció', 'definitions.def-egy') },
+        body: [embed('theorems.tetel-ketto')],
+      },
+    ],
+  })
+  return data
+}
+
+/**
+ * The same fixture built as a DEPLOYED build sees it.
+ *
+ * `SITE_ENV` gates page existence and is read once, when the graph module is
+ * evaluated, so this needs a second instance of that module: a query string makes
+ * a distinct module URL and therefore a fresh evaluation, leaving the statically
+ * imported instance above with its local-build behaviour.
+ */
+async function deployedGraph(data) {
+  const before = process.env.SITE_ENV
+  process.env.SITE_ENV = 'staging'
+  try {
+    const staging = await import('../lib/content/graph.ts?env=staging')
+    return (staging.default ?? staging).buildGraphFromRaw(data)
+  } finally {
+    if (before === undefined) delete process.env.SITE_ENV
+    else process.env.SITE_ENV = before
+  }
+}
+
+const rowsOf = (list) => list.map((r) => [r.kind, r.fqn, r.count])
+
+test('backlinks group every source of one entity into one count-ordered list', () => {
+  const g = buildGraphFromRaw(backlinkFixture())
+  const b = g.backlinks.get('definitions.def-egy')
+  // Count first, then title in Hungarian collation — so the chapter's two
+  // references collapse to a single row that leads, and the four one-reference
+  // sources follow as "Első tétel", "Második szakasz", "Második tétel", "Szakasz".
+  assert.deepEqual(rowsOf(b.all), [
+    ['chapter', 'books.konyv.chapters.fejezet', 2],
+    ['theorem', 'theorems.tetel-egy', 1],
+    ['section', 'books.konyv.chapters.masodik.sections.masodik-szakasz', 1],
+    ['theorem', 'theorems.tetel-ketto', 1],
+    ['section', 'books.konyv.chapters.fejezet.sections.szakasz', 1],
+  ])
+  assert.ok(
+    b.all.every((row, i) => i === 0 || b.all[i - 1].count >= row.count),
+    'the list is ordered by count, highest first',
+  )
+})
+
+test('a reference to a claim or a term is a reference to the entity that owns it', () => {
+  const g = buildGraphFromRaw(backlinkFixture())
+  const b = g.backlinks.get('definitions.def-egy')
+  // Neither the claim nor the term has a page, so both land under the definition —
+  // and `byTarget`, keyed by the FULL target name, narrows the same list to each.
+  assert.deepEqual(
+    rowsOf(b.byTarget.get('definitions.def-egy.claims.def-claim')),
+    [['section', 'books.konyv.chapters.fejezet.sections.szakasz', 1]],
+  )
+  assert.deepEqual(
+    rowsOf(b.byTarget.get('definitions.def-egy.terms.first-term')),
+    [['theorem', 'theorems.tetel-egy', 1]],
+  )
+  // The entity's own name is a target like any other, not the whole list.
+  assert.deepEqual(rowsOf(b.byTarget.get('definitions.def-egy')), [
+    ['chapter', 'books.konyv.chapters.fejezet', 2],
+    ['section', 'books.konyv.chapters.masodik.sections.masodik-szakasz', 1],
+    ['theorem', 'theorems.tetel-ketto', 1],
+  ])
+  assert.equal(b.byTarget.size, 3)
+})
+
+test('a backlink row links to the source: an entity page, a chapter, or a section anchor', () => {
+  const g = buildGraphFromRaw(backlinkFixture())
+  const byFqn = new Map(g.backlinks.get('definitions.def-egy').all.map((r) => [r.fqn, r]))
+  assert.deepEqual(
+    { ...byFqn.get('books.konyv.chapters.fejezet') },
+    {
+      kind: 'chapter',
+      fqn: 'books.konyv.chapters.fejezet',
+      title: 'Fejezet',
+      href: '/hu/konyvek/konyv/fejezetek/fejezet',
+      count: 2,
+    },
+  )
+  assert.deepEqual(
+    { ...byFqn.get('books.konyv.chapters.fejezet.sections.szakasz') },
+    {
+      kind: 'section',
+      fqn: 'books.konyv.chapters.fejezet.sections.szakasz',
+      title: 'Szakasz',
+      href: `/hu/konyvek/konyv/fejezetek/fejezet#${sectionAnchorId({ slug: 'szakasz', locale: 'hu' })}`,
+      count: 1,
+    },
+  )
+  assert.deepEqual(
+    { ...byFqn.get('theorems.tetel-egy') },
+    {
+      kind: 'theorem',
+      fqn: 'theorems.tetel-egy',
+      title: 'Első tétel',
+      href: '/hu/tudasbazis/tetelek/tetel-egy',
+      count: 1,
+    },
+  )
+})
+
+test('an entity with no incoming reference has no entry at all', () => {
+  const g = buildGraphFromRaw(backlinkFixture())
+  assert.equal(g.backlinks.has('theorems.tetel-egy'), false)
+})
+
+test('a source whose page this build does not generate is dropped', async () => {
+  const g = await deployedGraph(backlinkFixture())
+  const b = g.backlinks.get('definitions.def-egy')
+  // Both sources inside the unpublished chapter go: the theorem's own page is not
+  // generated at all, and the section's anchor lives in a chapter body that a
+  // deployed build replaces with a stub.
+  assert.deepEqual(rowsOf(b.all), [
+    ['chapter', 'books.konyv.chapters.fejezet', 2],
+    ['theorem', 'theorems.tetel-egy', 1],
+    ['section', 'books.konyv.chapters.fejezet.sections.szakasz', 1],
+  ])
+  assert.deepEqual(rowsOf(b.byTarget.get('definitions.def-egy')), [
+    ['chapter', 'books.konyv.chapters.fejezet', 2],
+  ])
+})
+
 test('the glossary points at the page-relative term anchor of the owner\'s page', () => {
   // The glossary links to a term on the node's OWN page, so the node drops out of
   // the anchor path: `#fogalmak.{slug}`, not `#definiciok.{d}.fogalmak.{slug}`.
