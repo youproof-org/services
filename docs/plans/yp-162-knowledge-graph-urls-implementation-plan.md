@@ -1,7 +1,9 @@
 # YP-162: Knowledge Graph Node URLs — Implementation Plan
 
 **Companion to:** [`yp-162-knowledge-graph-urls-plan.md`](yp-162-knowledge-graph-urls-plan.md) (the design; §-references below point into it)
-**Sub-plan:** [`yp-162-identifiers-and-anchors-sub-plan.md`](yp-162-identifiers-and-anchors-sub-plan.md) — name/slug constraints, the hierarchical anchor grammar, and fully qualified reference targets. **Shipped**, between phase 4 and phase 5; it supersedes [D4](#d4--replace-the-base64-anchor-ids-with-readable-ones-settled--shipped-in-phase-4)'s flat prefixed anchors and E.3's slug-uniqueness table.
+**Sub-plans:**
+- [`yp-162-identifiers-and-anchors-sub-plan.md`](yp-162-identifiers-and-anchors-sub-plan.md) — name/slug constraints, the hierarchical anchor grammar, and fully qualified reference targets. **Shipped**, between phase 4 and phase 5; it supersedes [D4](#d4--replace-the-base64-anchor-ids-with-readable-ones-settled--shipped-in-phase-4)'s flat prefixed anchors and E.3's slug-uniqueness table.
+- [`yp-162-page-layout-sub-plan.md`](yp-162-page-layout-sub-plan.md) — the knowledge-base page layout. **UX settled, phases written, no code yet.** It replaces §7 of the design plan and the layout half of phase 5, and its §10 is the build order for §H below.
 **Repos touched:** `youproof-org/services`, `youproof-org/content`, `youproof-org/editor`
 **Status:** Revision 3 — **phases 1–4 are shipped**; every decision below is now
 settled. The remaining phases are renumbered: the URL layer, planned as its own
@@ -15,10 +17,12 @@ names, made those names the graph's map keys, and put a character rule and a
 uniqueness scope on every name and slug. It also **removed the backlink index** —
 see the note on phase 5 below, which is where that matters.
 
-**Next up: phase 5, routing and page components — gated on the page-layout
-design being settled.** §7 of the design plan sketches what each page contains, but
-the layout is deliberately still open; phase 5 should not start until it is
-decided, because the component structure follows from it.
+**Next up: phase 5, routing and page components. The page-layout design is settled**
+and the gate is lifted. §7 of the design plan only ever sketched what each page
+contains; the [page-layout sub-plan](yp-162-page-layout-sub-plan.md) settles the arrangement, and
+its §10 breaks phase 5 into 21 narrow phases. §H below is annotated accordingly: H.1
+and H.4 survive as requirements, H.2's component table and H.3's interaction sketch do
+not.
 
 > ### Working agreement
 >
@@ -252,11 +256,13 @@ Reference targets across the whole corpus:
   the "Referenced by" section is empty on most proof and remark pages.
   **Accepted — David: not a problem for now.** Tracked as R2, not as a blocker.
 - Referrers are **not** only KB nodes: 152 chapter-owned and 180 section-owned
-  references point into the KB — see [D7](#d7--do-chapter-and-section-referrers-appear-in-referenced-by-open).
+  references point into the KB — see [D7](#d7--do-chapter-and-section-referrers-appear-in-referenced-by-settled).
 - 197/217 terms have ≥1 inbound reference (top counts 166 / 151 / 129), and
   118/150 claims do — confirming §9's corrected premise that claim references are a
-  common pattern. This is what makes F2's interactive cross-highlighting worth
-  building.
+  common pattern. That is why the entity page gives terms and claims a way to show
+  what cites *them* specifically — the "Fogalmak" and "Állítások" modes of the
+  page-layout sub-plan, which replaced the F2 sketch this finding originally motivated
+  (§H.3).
 
 ### A10. "Consequences" has no backing data — block removed
 
@@ -487,14 +493,25 @@ these are genuinely different definitions in different contexts.
 **Removed.** It has no backing data (A10) and would duplicate "Referenced by".
 §7.2 loses the bullet; nothing replaces it.
 
-### D7 — Do chapter and section referrers appear in "Referenced by"? (data settled; rendering open)
+### D7 — Do chapter and section referrers appear in "Referenced by"? (settled)
 
 332 references into the KB come from chapters and sections (A9).
 The backlink index already carries them — a chapter or section citation is indexed
 exactly like a KB one, with `ownerKind` distinguishing it (370 chapter-owned and
-1826 section-owned citations). **What remains open is presentational:** whether they
-share the flat "Referenced by" list with KB referrers or get their own grouping.
-That belongs to the page-layout decision gating phase 5.
+1826 section-owned citations).
+
+**Settled by the page-layout sub-plan's
+[§7.2](yp-162-page-layout-sub-plan.md#72-incoming-references): yes, in the same list.** There is
+no separate grouping for them. The list is grouped **by source** — one row per source,
+whatever kind it is, carrying a count of how many times that source cites this entity —
+and a chapter or a section is a source like any other. A reader asking "where is this
+used?" wants the chapter as much as the theorem. A section row links to the chapter
+page at the section's anchor; an entity row links to the entity's own page.
+
+Two implementation consequences, both in sub-plan phase 2: sources whose page does not
+exist on a deployed build are **dropped** (353 of the 3789 (target, source) pairs would
+otherwise be a 404), and the 114 pairs whose source sits in an unpublished chapter are
+a judgement call recorded in that phase.
 
 ### D8 — Container segments and labels (settled — shipped in phase 4)
 
@@ -722,36 +739,50 @@ pattern).
 
 ---
 
-## H. Phase 5 — Routing and pages (`services`) — gated on the layout design **and on the sub-plan**
+## H. Phase 5 — Routing and pages (`services`) — **the layout gate is lifted**
 
+> **The layout gate is lifted, and this section is no longer the specification of the
+> pages.** The [page-layout sub-plan](yp-162-page-layout-sub-plan.md) settles what every
+> knowledge-base page contains and how it is arranged, and
+> **[its §10](yp-162-page-layout-sub-plan.md#10-phases) is the build order for this phase** —
+> 21 narrow phases, from the two data shapes it needs, through the four list pages, to
+> the entity page and one interaction at a time. Start there, not here.
+>
+> What survives below: **H.1** (routing) and **H.4** (titles), as the requirements they
+> are, each annotated with the sub-plan phase that owns it. What does not: **H.2**'s
+> component table and **H.3**'s interaction sketch, both written against the
+> pre-sub-plan design and replaced in place by a pointer.
+>
 > **The [identifiers-and-anchors sub-plan](yp-162-identifiers-and-anchors-sub-plan.md)
 > is complete**, so this is no longer gated on it. What it settled and shipped, which
-> these components render: anchors are localized dotted paths
+> the knowledge-base pages render: anchors are localized dotted paths
 > (`definiciok.{d}.fogalmak.{f}`), reference targets are fully qualified names
 > (`theorems.{t}.proofs.{p}`), the graph's map keys are those same names, and every
 > name and slug obeys one character rule and one uniqueness scope.
 >
-> **The backlink index no longer exists.** `graph.backlinks`, `KbBacklink`,
-> `targetAnchor` and `GlossaryEntry.referencedBy` were removed in the sub-plan's S4:
-> nothing rendered them, and they were written against the reference-target shape the
-> sub-plan replaces. So three things below have no backing data until something
-> rebuilds it — the `ReferencedBy` component (H.2), F2's cross-highlighting (H.3),
-> and the glossary's inbound count (F.3) — and [D7](#d7--do-chapter-and-section-referrers-appear-in-referenced-by-data-settled-rendering-open)
-> and [R2](#n-risks) are both moot until then. Rebuilding it is a pure fold over
-> `refOwners`; write it against fully qualified name targets, not the old composite
-> shape.
->
-> The page **layout** is not settled. §7 of the design plan lists what each page
-> contains, and §H.3 below fixes the one interaction that is decided (claim/term ↔
-> backlink cross-highlighting), but how any of it is arranged is open — and the
-> component structure follows from it. Settle the layout before starting.
->
-> Two things to decide alongside it: whether chapter/section referrers share the
-> flat "Referenced by" list or get their own grouping (D7), and the two F2 details
-> flagged in §H.3.
+> **The backlink index no longer exists**, and the page-layout sub-plan rebuilds it.
+> `graph.backlinks`, `KbBacklink`, `targetAnchor` and `GlossaryEntry.referencedBy` were
+> removed in the identifiers sub-plan's S4: nothing rendered them, and they were
+> written against the reference-target shape that sub-plan replaces. **Sub-plan phase 2**
+> rebuilds the index — a pure fold over `refOwners`, keyed on fully qualified name
+> targets rather than the old composite shape, grouped by source with a count per
+> source and filtered by `kbPageExists` — and **sub-plan phase 3** puts `synonyms` back
+> on the glossary projection. Everything that reads that data waits on those two
+> phases: the "Bejövő hivatkozások" panel, its per-term and per-claim variants, and
+> [D7](#d7--do-chapter-and-section-referrers-appear-in-referenced-by-settled).
+> **The glossary's inbound count (F.3) is not rebuilt at all** — the sub-plan's §4 drops
+> the "referenced by N nodes" figure from the page, so nothing needs it.
 
 
 ### H.1 Routing — `app/[locale]/[[...path]]/page.tsx`
+
+*Still a requirement. Owned by **sub-plan phases 5 and 9**: phase 5 does depths 1–3 —
+the KB root and the three index pages, `ogType: 'website'`, and the `ROUTABLE_AT_ROOT`
+flip for `knowledge-base` (the other KB keys stay `false`, which is what keeps
+`/hu/definiciok` a 404); phase 9 does depths 4–6 — the four entity kinds,
+`generateStaticParams` filtered by `kbPageExists`, `ogType: 'article'`, and the
+per-node excerpt. The split is forced by the postbuild anchor gate, which starts
+checking fragments into an entity page the moment that page exists.*
 
 - Extend `Resolved` with `kb-root`, `definitions-index`, `theorems-index`, `glossary`,
   `definition`, `theorem`, `proof`, `remark`.
@@ -767,59 +798,76 @@ pattern).
   truncated) — otherwise all 389+ pages share `locale.defaultDescription`, which the
   SEO check will flag as duplicate descriptions.
 
-### H.2 Components (new, under `components/kb/`)
+### H.2 Components — ~~a ten-component table~~ superseded
 
-| component | covers |
-|---|---|
-| `KbNodeShell` | shared frame: §7 breadcrumb chain, title/kicker, body, relationship sections |
-| `DefinitionPage` | §7.1 — body, defined terms, remarks, referenced-by, embedding context |
-| `TheoremPage` | §7.2 — statement with per-claim anchored sections, proofs, remarks, referenced-by (**no Consequences block** — D6) |
-| `ProofPage` | §7.3 — body, **defined terms** (A8), remarks, "Uses" (the node's own outgoing references), embedding context |
-| `RemarkPage` | §7.4 — ownership-dependent breadcrumb, body, claims, referenced-by |
-| `KbTypeIndex` | §7.6/§7.7 — list + client-side filter |
-| `GlossaryPage` | §7.5 — glossary entries + client-side filter |
-| `KbRoot` | §7.8 — orientation page with node counts |
-| `ReferencedBy` | flat backlink list + the F2 selection behaviour below |
-| `EmbeddingContext` | "Appears in: book → chapter → section" (non-optional per A2b/D9) |
+**Replaced wholesale by the [page-layout sub-plan](yp-162-page-layout-sub-plan.md).** The ten
+components listed here are not the structure being built. They assumed the stacked
+arrangement of design-plan §7 — a `ReferencedBy` block, an `EmbeddingContext` block, a
+per-type page component each — and the sub-plan arranges the same information
+differently: one entity-page component with a header, a body and ownership-chain links
+below it ([§6.1](yp-162-page-layout-sub-plan.md#61-the-header-and-the-content)), plus a context
+menu, an overlay and a single panel whose contents vary
+([§6.2–§6.4](yp-162-page-layout-sub-plan.md#62-the-context-menu)). Its
+[phase table](yp-162-page-layout-sub-plan.md#10-phases) is the file-by-file list, and each phase
+there names the components it adds.
 
-Bodies reuse `ContentBlocks` / `EmbeddedEntity` / `InlineText` verbatim, with `refs`
-passed through `kbRefs()` (A20). `ContentBlocks` takes chapter-scoped
-`embedIndices`/`figureIndices`; a KB page passes the ones borrowed from its embedding
-chapter (A17).
+**One requirement from this subsection still holds**, and sub-plan phase 9 carries it:
+bodies reuse `ContentBlocks` / `EmbeddedEntity` / `InlineText` verbatim, with `refs`
+passed through `kbRefs()` (A20), and the chapter-scoped `embedIndices`/`figureIndices`
+borrowed from the node's embedding chapter (A17).
 
-### H.3 F2 — interactive claim/term ↔ backlink cross-highlighting
+### H.3 F2 — ~~claim/term ↔ backlink cross-highlighting~~ superseded
 
-Replaces §4's *"grouped/nested by individual claim (tree-structured HTML)"*. The
-"Referenced by" list is **flat** — not visually grouped by claim or term. Instead:
+**Replaced wholesale by the [page-layout sub-plan](yp-162-page-layout-sub-plan.md).** The sketch
+here — every term span and claim block rendered with `button` semantics and
+`aria-pressed`, bidirectional highlighting against a flat "Referenced by" list keyed by
+`data-target-anchor` — is **explicitly not part of that design**: see its
+[§11](yp-162-page-layout-sub-plan.md#11-out-of-scope), which defers keyboard and screen-reader
+access to the entity-page chrome as its own piece of work, and records that terms stay
+non-focusable `<span>`s and claims stay `<div>`s.
 
-- Every inline term span and every claim block in the body becomes **selectable**
-  (rendered as a `button`-semantics element so it is keyboard-reachable, with
-  `aria-pressed`), carrying its anchor id.
-- Every "Referenced by" row carries `data-target-anchor` when the reference targets a
-  specific claim or term (absent when it targets the node as a whole).
-- Selecting an inline term/claim highlights every backlink row whose
-  `data-target-anchor` matches. Selecting a backlink row highlights the corresponding
-  inline term/claim. Selection is bidirectional and mutually exclusive; clicking the
-  active element again, or pressing Escape, clears it.
-- Implemented as one small client component holding `selectedAnchor` and toggling CSS
-  classes on already-server-rendered markup — **no content is JS-gated**, so crawlers
-  and no-JS readers see the complete body and the complete backlink list.
+What the sub-plan does instead, for the same purpose of connecting a term or claim to
+what cites it:
 
-Two details I've assumed rather than been told; say the word if either is wrong:
-(a) backlinks that target the **node as a whole** are never highlighted, and when a
-selection is active they dim rather than disappear; (b) selection state is not
-reflected in the URL fragment (a `#claim-…` fragment still just scrolls, as it does
-from an external cross-reference). Both are cheap to change.
+- The context menu's **"Fogalmak"** and **"Állítások"** modes dim the page, reveal the
+  terms (or claims) in the body, and let the reader pick one; the panel then shows that
+  one's inbound references
+  ([§6.2, §6.3](yp-162-page-layout-sub-plan.md#62-the-context-menu)). Pointer interaction only.
+- The correspondence is keyed on the **fully qualified name**, not on an anchor id:
+  every rendered reference carries `data-target-fqn`, a source row appends the FQN to
+  highlight as a query parameter at click time, and the arrival page marks the matching
+  references and scrubs the parameter — sub-plan
+  [D7](yp-162-page-layout-sub-plan.md#8-decision-log), built in its phase 19.
+- Nothing is JS-gated, which was the one commitment worth keeping from this
+  subsection: **all panel content is server-rendered** and merely revealed (sub-plan
+  §2.1, D6), so crawlers and no-JS readers still see every body and every
+  inbound-reference list.
+
+The two details flagged here as assumptions go with the sketch.
 
 ### H.4 Titles
 
-Implement the D1 fallback chain in one helper so every consumer (H1, `<title>`,
-breadcrumb leaf, index row, backlink label) agrees:
-`title ?? ownerDerivedTitle ?? "{index} {Label}" ?? "{Label}"`.
+*Still a requirement, with one correction. Owned by **sub-plan phases 5 and 9**.*
 
-**Review gate.** `next build` emits ~587 pages locally / ~439 with `SITE_ENV=staging`;
-spot-check one page of each of the 7 kinds in both modes; re-measure build wall time
-against the 16.66 s / 52-page baseline (A18).
+Implement the D1 fallback chain in one helper so every consumer (`<title>`,
+breadcrumb leaf, index row, backlink row) agrees:
+`title ?? ownerDerivedTitle ?? "{index} {Label}" ?? "{Label}"`. That helper is
+`kbNodeTitle`, and it is what every place a node needs a **standalone** name uses.
+
+**The page's own H1 is the exception.** The entity page's header is two lines — the
+label, then the title — so a proof, which carries no authored title, would print
+`BIZONYÍTÁS` above `Bizonyítás: {theorem title}`: the derived title is built from the
+same word as the label. The header therefore reads `node.title` directly and shows the
+label alone when there is none (sub-plan
+[§6.1](yp-162-page-layout-sub-plan.md#61-the-header-and-the-content) and its §9.1 note 9,
+which measures this at 262 of the 537 pages). Phase 9 makes that call explicitly.
+
+**Review gate.** Now **21 gates, not one** — each sub-plan phase carries its own. The
+two that move the page count are its phase 5 (46 → **50** in both env modes) and its
+phase 9 (**439** with `SITE_ENV=staging` / **587** locally), and phase 9's gate is where
+one page of each of the 7 kinds is spot-checked in both modes and the build wall time
+re-measured. The A18 baseline quoted here is stale: measured on the layout branch, the
+current build is **14.3 s for 46 pages** in both modes, not 16.66 s for 52.
 
 ---
 
@@ -852,8 +900,12 @@ child file exists in the export; child entries sum to the pre-split count.
    (and move the existing hardcoded `'Cikkek'`/`'Hírek'` to the same mechanism — A16).
 2. `RootHome` — a knowledge-base entry block, so the KB root is reachable from the
    locale homepage and therefore from the crawler's seed.
-3. Breadcrumbs — §7's chains for all seven KB page kinds, using `locales.json` labels
-   rather than literals.
+3. ~~Breadcrumbs — §7's chains for all seven KB page kinds, using `locales.json` labels
+   rather than literals.~~ **Moved.** A breadcrumb chain is inseparable from the page
+   that carries it, so the chains land with the pages: the builder handles all seven
+   kinds in **sub-plan phase 5**, which is also where the four list pages start using
+   it, and **sub-plan phase 9** adds no breadcrumb code when the entity routes appear.
+   Labels come from `locales.json` as specified here. This item is discharged there.
 4. Verify D3 end-to-end: an entity reference inside a chapter page still resolves to
    the in-page anchor, and the same reference on the node's KB page resolves to the
    target's KB page.
@@ -873,9 +925,16 @@ child file exists in the export; child entries sum to the pre-split count.
    hreflang + `x-default`, title/description within the warning thresholds, `og:image`
    resolving.
 3. New unit tests in `apps/website/test/`: URL-helper shapes, KB slug uniqueness,
-   `kbPageExists` across both env modes, backlink index (including `targetAnchor`),
-   glossary grouping (including the duplicate `reprezentáns` case), anchor helpers,
-   sitemap splitter, `kbRefs` remapping.
+   `kbPageExists` across both env modes, anchor helpers, sitemap splitter, `kbRefs`
+   remapping.
+   **Two of these have moved earlier.** The **backlink-index** tests land in **sub-plan
+   phase 2**, with the index itself, and against fully qualified name targets rather
+   than the `targetAnchor` field the identifiers sub-plan removed. The **glossary**
+   tests land in **sub-plan phases 3 and 4** — synonyms on the projection in 3, the
+   one-row-per-name expansion and the shared Hungarian comparator in 4; the duplicate
+   `reprezentáns` case (D5) is joined there by the six strings that are both a synonym
+   and somebody else's canonical form. Both are data shapes with no page to render
+   them, so they cannot wait for a quality gate at the end.
 4. Assert `<html lang>` on the new pages (`set-html-lang.mjs` is path-driven so
    `/hu/tudasbazis/...` is already covered — assert rather than assume).
 5. Run the crawler against a staging deploy and confirm zero orphans and zero broken
@@ -897,10 +956,14 @@ child file exists in the export; child entries sum to the pre-split count.
 3. `content/docs/content-model.md` — per Phase 3.3 (already done in that phase;
    re-verify against the shipped behaviour).
 4. `docs/plans/yp-162-knowledge-graph-urls-plan.md` — record the design changes this
-   review produced: §3.3 term/claim slugs are authored Hungarian; §4's per-claim
-   grouping is replaced by F2's interactive highlighting; §7.2 loses "Consequences";
-   §7.3 gains "Defined terms"; a new "which entities get a page" rule (D9). Keep §5
-   (JSON-LD) and §6 (redirects) marked out of scope.
+   review produced: §3.3 term/claim slugs are authored Hungarian; §7.2 loses
+   "Consequences"; a new "which entities get a page" rule (D9). Keep §5 (JSON-LD) and
+   §6 (redirects) marked out of scope.
+   **Two items dropped from this list.** §4's per-claim grouping is not replaced by
+   F2's interactive highlighting — F2 is superseded (§H.3) — and §7.3 does not gain a
+   "Defined terms" block, since no entity page has one. §7 of the design plan was
+   amended by **sub-plan phase 1**, which carries the supersession notes; what remains
+   for this phase is the §3.3 and D9 wording.
 
 **Review gate.**
 
@@ -946,7 +1009,7 @@ Added by this analysis:
 | # | risk | mitigation |
 |---|---|---|
 | ~~R1~~ | **Title generation quality** — *discharged.* 178 proposed, 88 overridden on review, all applied from the reviewed table | — |
-| R2 | **Thin content** — 257 nodes with zero inbound references; most proof/remark pages have an empty "Referenced by" | Accepted for now (David). Proof pages lean on "Uses", "Defined terms" and embedding context, all of which have data for every node. (257, not 256: the earlier count double-counted one theorem via a mistyped reference, since fixed) |
+| R2 | **Thin content** — most proof/remark pages have no inbound references at all | Accepted (David), but **the mitigation recorded here is void**: it leant on "Uses" and "Defined terms", and the page-layout sub-plan builds neither ("Uses" is its D8; defined terms become the Fogalmak mode). What is left is real: an explicit empty state — "Nincs rá hivatkozás" — in the inbound-reference panel ([sub-plan §7.2](yp-162-page-layout-sub-plan.md#72-incoming-references)), and **Kontextus**, which is available on every one of the 537 entities because each is embedded exactly once (A2b). Re-measured against what the panel would actually render (sub-plan §9.1 note 3): **244 of 537** pages locally and **168 of 389** deployed reach that empty state — the earlier 257 counted authored references, including ones from sources that get no page |
 | R3 | **Crawler caps** (A14) degrade the production promotion gate into false orphan findings | Phase 8 raises the caps and makes `cappedAtMaxPages` fatal. Now measured rather than estimated: 389 KB pages + 46 existing = **435 of the 500 cap**, overflowing as soon as the 5 unpublished chapters ship |
 | ~~R4~~ | **Editor data loss** on claim/term `slug` — *discharged.* Fixed and installed before phase 3, and verified on the real tree: on a sample the old writer destroyed all 27 claim and 19 term slugs, the new one loses none | — |
 | R5 | **Dev/deployed page-set divergence** (D9) — a KB link that works locally 404s on staging | `validateKbLinks` ships and passes in both env modes; the crawler on live staging is the second layer (phase 8) |

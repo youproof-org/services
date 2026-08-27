@@ -153,7 +153,21 @@ Note: claims and terms have no standalone pages, so they are **not** separately 
 
 ## 7. Page design — content blocks per page type
 
-High-level proposal for what each new page type should contain and why. Layout and interaction details are deferred to a subsequent design pass.
+> **Superseded, for everything about arrangement, by the
+> [page-layout sub-plan](yp-162-page-layout-sub-plan.md).** That document settles what a
+> reader sees on each knowledge-base page and how it is put together; where it
+> disagrees with this section, **it wins**.
+>
+> The **breadcrumb chains immediately below are unchanged** — the sub-plan uses them
+> as they stand. What changed in the *content lists* themselves is recorded per
+> subsection, and in short: §§7.1–7.4 no longer stack "Defined terms", "Remarks",
+> "Referenced by" or "Embedding context" underneath the body (they become the entity
+> page's context menu, its panel, and the ownership-chain links — sub-plan §6.1, §6.2);
+> §7.2 loses "Consequences"; §7.3 loses "Uses"; §7.5 loses the excerpt and the
+> "referenced by N" count and gains a row per synonym; §7.6 and §7.7 lose the
+> summary/preview line. §7.8 stands as written.
+
+High-level proposal for what each new page type should contain and why. Layout and interaction details were deferred to a subsequent design pass — that pass is the [page-layout sub-plan](yp-162-page-layout-sub-plan.md), and its §§2–7 supersede the arrangement implied here.
 
 Breadcrumb structure for all knowledge base pages, extending the existing site-wide breadcrumb component:
 
@@ -181,6 +195,17 @@ Főoldal
 - **Referenced by** — list of theorems, proofs, and other definitions that cross-reference this definition, keyed by node ID.
 - **Embedding context** — "Appears in: [Book title] → [Chapter title] → [Section title]" or "Appears in: [Article title] → [Section title]", with the book/chapter or article title as a clickable link to its own page, and the section title as a clickable link to its anchor within that page (e.g. `/books/{book-slug}/chapters/{chapter-slug}#{section-slug}` or `/articles/{article-slug}#{section-slug}`). Purpose: directs the reader to the broader narrative context in which this definition is introduced and used.
 
+> **Amended by the [page-layout sub-plan](yp-162-page-layout-sub-plan.md).** Breadcrumb, title
+> and body stand. The other four blocks are not stacked sections on the page:
+> **Defined terms** becomes the "Fogalmak" mode of the context menu, which reveals the
+> terms where they sit in the body and opens a panel for the one the reader picks
+> ([§6.2, §6.3](yp-162-page-layout-sub-plan.md#62-the-context-menu)) — with no "referenced by
+> N" count; **Remarks** becomes an ownership-chain link below the body
+> ([§6.1](yp-162-page-layout-sub-plan.md#61-the-header-and-the-content), D4);
+> **Referenced by** becomes the "Bejövő hivatkozások" panel, grouped by source with a
+> count per source ([§7.2](yp-162-page-layout-sub-plan.md#72-incoming-references)); and
+> **Embedding context** becomes the "Kontextus" panel.
+
 ### 7.2 Theorem page (`/tetelek/{slug}`)
 
 - **Breadcrumb** — Főoldal → Tudásbázis → Tételek → {thm-title}.
@@ -192,6 +217,20 @@ Főoldal
 - **Referenced by** — other nodes (definitions, theorems, proofs, remarks) that cite this theorem.
 - **Embedding context** — same structure as definition page: all three levels (book/chapter or article, and section) are clickable links, with the section linking to its anchor within the parent page.
 
+> **Amended by the [page-layout sub-plan](yp-162-page-layout-sub-plan.md).** Breadcrumb, title
+> and statement stand. **Proofs** and **Remarks** become ownership-chain links below
+> the body — a link each, so several proofs need no special handling
+> ([§6.1](yp-162-page-layout-sub-plan.md#61-the-header-and-the-content), D4). **Referenced by**
+> becomes the "Bejövő hivatkozások" panel
+> ([§7.2](yp-162-page-layout-sub-plan.md#72-incoming-references)), which is also where chapter
+> and section referrers appear — in the same list as every other source, grouped and
+> counted alike (settles the implementation plan's
+> [D7](yp-162-knowledge-graph-urls-implementation-plan.md#d7--do-chapter-and-section-referrers-appear-in-referenced-by-settled)).
+> **Embedding context** becomes the "Kontextus" panel. **Consequences** was already
+> removed before this design pass — it has no backing data
+> ([A10](yp-162-knowledge-graph-urls-implementation-plan.md#a10-consequences-has-no-backing-data--block-removed),
+> [D6](yp-162-knowledge-graph-urls-implementation-plan.md#d6--the-consequences-block-settled)).
+
 ### 7.3 Proof page (`/tetelek/{theorem-slug}/bizonyitasok/{proof-slug}`)
 
 - **Breadcrumb** — Főoldal → Tudásbázis → Tételek → {thm-title} → Bizonyítás: {proof-title}.
@@ -200,6 +239,16 @@ Főoldal
 - **Remarks** — links to remarks owned by this proof.
 - **Uses** — explicit list of definitions, theorems, and claims cited within this proof (drawn from cross-reference metadata, not free-text parsing). Gives the proof page standalone value for readers and crawlers: a proof page is a natural unit of "what machinery does this argument depend on?"
 - **Embedding context** — same structure as definition page: all three levels (book/chapter or article, and section) are clickable links, with the section linking to its anchor within the parent page.
+
+> **Amended by the [page-layout sub-plan](yp-162-page-layout-sub-plan.md).** Breadcrumb, title
+> and body stand. **"Uses" is not built** — sub-plan
+> [D8](yp-162-page-layout-sub-plan.md#8-decision-log): the proof's body already *is* that list,
+> in the order the argument uses it, with every citation a real link, so a separate
+> block would restate the same edges out of context. **Remarks** and **Embedding
+> context** move exactly as in §7.1 above — an ownership-chain link and the
+> "Kontextus" panel. A proof page can also show "Fogalmak" if it ever defines terms
+> (none do today), so the "defined terms" addition recorded in the implementation
+> plan's §L.4 is likewise not a stacked block.
 
 ### 7.4 Remark page (`/…/megjegyzesek/{remark-slug}`)
 
@@ -215,6 +264,15 @@ Remarks can be owned by a definition, theorem, or proof; the breadcrumb reflects
 - **Referenced by** — other nodes that cite this remark.
 - **Embedding context** — same structure as definition page: all three levels (book/chapter or article, and section) are clickable links, with the section linking to its anchor within the parent page.
 
+> **Amended by the [page-layout sub-plan](yp-162-page-layout-sub-plan.md).** Breadcrumb, title
+> and body stand, and the remark's link back up to its owner is an ownership-chain
+> link below the body ([§6.1](yp-162-page-layout-sub-plan.md#61-the-header-and-the-content)).
+> **Claims** keep their anchors — the grammar for them is the identifiers sub-plan's —
+> but they are not a stacked section: they are the claims in the body, reached through
+> the "Állítások" mode of the context menu
+> ([§6.2, §6.3](yp-162-page-layout-sub-plan.md#62-the-context-menu)). **Referenced by** and
+> **Embedding context** move as in §7.1 above.
+
 ### 7.5 Glossary page (`/fogalmak`)
 
 A single page covering all terms across all definitions/theorems/remarks.
@@ -223,6 +281,16 @@ A single page covering all terms across all definitions/theorems/remarks.
 - **Term list** — each entry shows: term name, a one-line excerpt from the defining node's context, a link to the defining anchor (`/definiciok/{slug}#term-{term-slug}` or equivalent), and a "referenced by N nodes" count.
 - **No per-term body content** — terms have no independent prose; the glossary entry is purely a directory/index pointing to the defining node. This is intentional and consistent with the §3.3 decision.
 
+> **Amended by the [page-layout sub-plan](yp-162-page-layout-sub-plan.md#4-the-glossary-page)
+> (§4).** The **one-line excerpt** and the **"referenced by N nodes" count** are both
+> dropped: the excerpt is expensive to make read well across hundreds of rows and the
+> count is not what a reader looking a term up is asking. **Synonyms get their own
+> rows**, alphabetized among the canonical forms rather than tucked under them, each
+> naming the canonical form it belongs to and linking to the same defining anchor — so
+> the page is one row per *name*, **342** of them (217 canonical, 125 synonyms).
+> Ordering is Hungarian-alphabetical, the same collation the two index pages use. The
+> client-side filter stands.
+
 ### 7.6 Definitions index page (`/definiciok`)
 
 - **Breadcrumb** — Főoldal → Tudásbázis → Definíciók.
@@ -230,12 +298,25 @@ A single page covering all terms across all definitions/theorems/remarks.
 - **Definition list** — all definitions, each shown with its title and a one-line summary or opening sentence. Linked to the individual definition page.
 - **Search / filter** — client-side filtering by title.
 
+> **Amended by the [page-layout sub-plan](yp-162-page-layout-sub-plan.md#5-the-definitions-and-theorems-index-pages)
+> (§5).** No **one-line summary** per row. A row is the definition's **title, followed
+> by its label in grey**, and links to its page; rows are ordered
+> Hungarian-alphabetically by title. The client-side filter stands, and the two index
+> pages are one design in two instances.
+
 ### 7.7 Theorems index page (`/tetelek`)
 
 - **Breadcrumb** — Főoldal → Tudásbázis → Tételek.
 - **Title** — "Tételek" (or localized equivalent).
 - **Theorem list** — all theorems, each shown with its title and a one-line statement preview. Linked to the individual theorem page.
 - **Search / filter** — client-side filtering by title.
+
+> **Amended by the [page-layout sub-plan](yp-162-page-layout-sub-plan.md#5-the-definitions-and-theorems-index-pages)
+> (§5).** No **one-line statement preview** per row — a mechanically-taken opening
+> sentence of a theorem is usually a fragment of LaTeX and reads worse than nothing. A
+> row is the theorem's **title followed by its label in grey**
+> (`Euler–Fermat tétel — 15.6. Tétel`), ordered Hungarian-alphabetically by title, with
+> the same client-side filter and the same design as §7.6.
 
 ### 7.8 Knowledge base root page (`/`)
 
@@ -246,6 +327,12 @@ A single page covering all terms across all definitions/theorems/remarks.
   - Brief description of what the knowledge base contains and how it is structured.
   - Links to the three top-level sections: Definíciók (`/definiciok`), Tételek (`/tetelek`), Fogalmak (`/fogalmak`), each with a short description and node count.
   - No listing of individual nodes — that is the job of the index pages.
+
+> **Adopted unchanged by the [page-layout sub-plan](yp-162-page-layout-sub-plan.md#3-the-knowledge-base-root-page)
+> (§3)**, which adds only design notes: the three section links read as three cards of
+> equal weight rather than a bulleted list, the count is legible at a glance, and the
+> counts are the **published** counts — the nodes that actually have a page in the
+> current environment.
 
 ---
 
