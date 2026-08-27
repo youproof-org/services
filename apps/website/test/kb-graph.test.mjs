@@ -328,6 +328,29 @@ test('the same term key defined by two nodes yields two glossary rows', () => {
   )
 })
 
+test('a glossary row carries the term\'s synonyms, and an empty list when there are none', () => {
+  // The synonyms are authored on the term, not on the row: one row per (owner, term
+  // key) either way. A term without them must still expose an array, so a caller
+  // can iterate without a guard.
+  const data = raw({
+    terms: {
+      'first-term': {
+        slug: 'elso-fogalom',
+        display: '[első]',
+        canonical: 'első fogalom',
+        synonyms: ['elsődleges fogalom', 'egyes fogalom'],
+      },
+      'second-term': { slug: 'masodik-fogalom', display: '[második]', canonical: 'második fogalom' },
+    },
+  })
+  data.definitions[0].body = [narrative('Törzs [[first-term]] és [[second-term]].')]
+  const g = buildGraphFromRaw(data)
+  assert.equal(g.glossary.length, 2, 'still one row per (owner, term key)')
+  const byKey = new Map(g.glossary.map((e) => [e.termKey, e]))
+  assert.deepEqual(byKey.get('first-term').synonyms, ['elsődleges fogalom', 'egyes fogalom'])
+  assert.deepEqual(byKey.get('second-term').synonyms, [], 'no synonyms authored -> empty list')
+})
+
 test('an anchor slug is used verbatim; a missing one falls back to the name', () => {
   const data = raw({ terms: { 'no-slug-term': { display: '[x]', canonical: 'nincs slug' } } })
   data.definitions[0].body = [

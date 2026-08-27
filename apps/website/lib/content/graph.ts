@@ -1317,6 +1317,10 @@ export function kbNodeTitle(graph: ContentGraph, node: KbNode): string {
  * four node types, proofs included: no content defines a term on a proof today,
  * but it is supported end to end and expected, so nothing here may assume
  * otherwise.
+ *
+ * Each row carries the term's authored synonyms verbatim; the row itself stays one
+ * per (defining node, term key), so a synonym is data on a row rather than a row of
+ * its own.
  */
 function buildGlossary(graph: ContentGraph): GlossaryEntry[] {
   const entries: GlossaryEntry[] = []
@@ -1332,6 +1336,7 @@ function buildGlossary(graph: ContentGraph): GlossaryEntry[] {
         ownerName: node.name,
         ownerTitle: kbNodeTitle(graph, node),
         href: `${pageUrl}#${anchor}`,
+        synonyms: term.synonyms ?? [],
       })
     }
   }

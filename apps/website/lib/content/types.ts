@@ -449,6 +449,10 @@ export interface GlossaryEntry {
   // page-relative form because that is the page this links to, where the term is
   // rendered without its node in the path.
   href: string
+  // The term's authored synonyms, copied from `TermDefinition.synonyms`. Always an
+  // array: a term with no synonyms gets an empty one, so a reader never has to
+  // distinguish "none authored" from "field absent".
+  synonyms: string[]
 }
 
 /**
