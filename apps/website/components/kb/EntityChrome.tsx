@@ -5,20 +5,26 @@ import { createPortal } from 'react-dom'
 import {
   CHROME_HISTORY_KEY,
   DEFAULT_STACK,
+  SELECTED_KINDS,
   SELECTION_KINDS,
   currentState,
   isDefaultState,
   openPanel,
   readChromeStack,
   reduceChrome,
+  selectedTarget,
   selectionMode,
+  type ChromePanelKind,
+  type ChromeSelectedKind,
+  type ChromeSelectionKind,
   type ChromeStack,
   type ChromeState,
 } from '@/lib/kb/chrome-state'
 import type { KbMenuItem, KbMenuItemKey } from '@/lib/kb/menu-items'
+import claimStyles from '@/components/content/blocks/claim-block.module.scss'
 import MenuStack from './MenuStack'
 import Overlay from './Overlay'
-import Panel, { type KbPanelSection } from './Panel'
+import Panel, { scrollSelectionIntoUpperHalf, type KbPanelSection } from './Panel'
 
 /**
  * The interactive chrome of an entity page: the context menu, the dim behind it,
@@ -48,6 +54,13 @@ import Panel, { type KbPanelSection } from './Panel'
  * That leaves the menu and the dim out of the served HTML, which is fine for what
  * they are — two buttons and a scrim, no content and no link.
  *
+ * **Level 2 of a selection mode is entered from the body, not from the menu**
+ * (§6.3). Nothing in this component's own tree is clickable for it: what the reader
+ * presses is a term or a claim in the article, which is a different subtree
+ * entirely and is rendered on the server. So the press is caught with one listener
+ * on `document` for as long as level 1 is up, and the state it opens carries the
+ * pressed element's `id`.
+ *
  * **The selection modes are published on `<body>`, not rendered.** Fogalmak and
  * Állítások do not add an element: they lift a class of thing that is already in
  * the body out from under the dim (§6.3). What is revealed is spread across the
@@ -63,6 +76,53 @@ import Panel, { type KbPanelSection } from './Panel'
  * `mounted` guard is client-only by construction, and the panel is deliberately
  * above it.
  */
+
+/**
+ * What a mode offers, as a selector for the thing the reader presses.
+ *
+ * The counterpart of the reveal rules in `app/globals.scss`, and it matches them
+ * selector for selector, `.page-root` included: what is lit is what is pressable,
+ * so a selector that drifted from those would light one set of things and act on
+ * another. The wrapper is part of it because a term also renders inside the panel
+ * (`panels/ClaimPanel.tsx` restates a claim, and a claim can contain one), and that
+ * copy is not a candidate.
+ *
+ * A term is a global class (`components/content/InlineText.tsx`), a claim a
+ * CSS-module one — imported rather than written out, so renaming the module's file
+ * cannot silently make this match nothing.
+ */
+const SELECTABLE: Record<ChromeSelectionKind, string> = {
+  terms: '.page-root .term',
+  claims: `.page-root .${claimStyles.claim}`,
+}
+
+/** The mode's singular: which level-2 state picking one of its candidates opens. */
+const SELECTED_OF: Record<ChromeSelectionKind, ChromeSelectedKind> = {
+  terms: 'term',
+  claims: 'claim',
+}
+
+/**
+ * The marker the selected element carries while it is the selection.
+ *
+ * The body says WHICH candidate is selected and the element says THAT IT IS — two
+ * halves of one fact, because `app/globals.scss` needs both to express the
+ * narrowing: "a mode is up and one is picked" gates the rule, and "this is not the
+ * one" is what drops the others back under the dim (§6.3).
+ */
+const SELECTED_ATTR = 'data-kb-selected'
+
+/** Level-2 panels are not menu items, so they are not what the menu goes live on. */
+function isMenuPanelKind(
+  key: ChromePanelKind,
+): key is Exclude<ChromePanelKind, ChromeSelectedKind> {
+  return !(SELECTED_KINDS as readonly ChromePanelKind[]).includes(key)
+}
+
+/** §6.4: under reduced motion the scroll jumps rather than eases. */
+function prefersReducedMotion(): boolean {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
 
 interface EntityChromeProps {
   /** The items this entity has, from `kbMenuItems` — already localized. */
@@ -94,13 +154,19 @@ export default function EntityChrome({
   const panel = openPanel(stack)
   const panelKeys = panels.map((section) => section.key)
   const selection = selectionMode(stack)
+  /** The candidate the reader has picked, or `null` at level 1 (§6.3). */
+  const selected = selectedTarget(stack)
   /**
    * The items that act when pressed. A panel item is live when its content is in
    * the `panels` prop; a selection mode is live wherever its item exists at all,
    * because what it reveals is the body itself and `kbMenuItems` has already
    * checked that the entity has some (§6.5).
+   *
+   * The `term` and `claim` sections are filtered out rather than listed disabled:
+   * they are panels with no menu item behind them, so "live" says nothing about
+   * them and the menu has nothing to render for them either.
    */
-  const liveItems = [...panelKeys, ...SELECTION_KINDS]
+  const liveItems: KbMenuItemKey[] = [...panelKeys.filter(isMenuPanelKind), ...SELECTION_KINDS]
 
   useEffect(() => {
     setMounted(true)
@@ -114,6 +180,30 @@ export default function EntityChrome({
         { ...window.history.state, [CHROME_HISTORY_KEY]: DEFAULT_STACK },
         '',
       )
+    }
+
+    /**
+     * The page owns its own scroll position while it is on this page (§6.4).
+     *
+     * Every chrome state is a history entry (see above), and the browser restores a
+     * scroll position when it goes back to one — so with the default setting, a back
+     * step out of a selection puts the page back where it was before the selection
+     * scrolled it, which is exactly what "closing does not scroll back" forbids. It
+     * would also throw away a scroll the READER made: level 1 leaves the page
+     * scrollable on purpose, because picking a term means finding it first (§6.3).
+     *
+     * The mode belongs to the entry the document is on, and an entry pushed from it
+     * inherits it, so setting it once here covers every state this component can
+     * push — which is what `e2e/kb-select.test.ts`'s "closing does not scroll the
+     * page back" demonstrates: the selection is three pushes deep and the back step
+     * out of it leaves the page where the scroll put it. Entries made before this
+     * mounted are untouched, and the previous value goes back on the entry the
+     * reader leaves on, so nothing after this page inherits `manual` either.
+     */
+    const restoration = window.history.scrollRestoration
+    window.history.scrollRestoration = 'manual'
+    return () => {
+      window.history.scrollRestoration = restoration
     }
   }, [])
 
@@ -154,17 +244,20 @@ export default function EntityChrome({
   }
 
   /** A new state on top of the current one — what the Menü button does. */
-  function openState(state: ChromeState) {
-    const next = reduceChrome(stack, { type: 'open', state })
-    setStack(next)
-    // Two arguments, never three: with no url, `pushState` cannot change the
-    // address bar, only add an entry to step back through. Next patches
-    // `history.pushState` to copy its routing keys onto whatever data it is handed
-    // (`__NA` and the internals tree — next/dist/client/components/app-router.js),
-    // and its own popstate handler reloads the page for an entry without them, so
-    // the entry has to go through the patched function rather than around it.
-    window.history.pushState({ [CHROME_HISTORY_KEY]: next }, '')
-  }
+  const openState = useCallback(
+    (state: ChromeState) => {
+      const next = reduceChrome(stack, { type: 'open', state })
+      setStack(next)
+      // Two arguments, never three: with no url, `pushState` cannot change the
+      // address bar, only add an entry to step back through. Next patches
+      // `history.pushState` to copy its routing keys onto whatever data it is handed
+      // (`__NA` and the internals tree — next/dist/client/components/app-router.js),
+      // and its own popstate handler reloads the page for an entry without them, so
+      // the entry has to go through the patched function rather than around it.
+      window.history.pushState({ [CHROME_HISTORY_KEY]: next }, '')
+    },
+    [stack],
+  )
 
   useEffect(() => {
     if (!open) return
@@ -195,6 +288,78 @@ export default function EntityChrome({
     }
   }, [selection])
 
+  /**
+   * Level 1 → level 2: pick one of the revealed candidates (§6.3).
+   *
+   * On `document`, and only while level 1 is up. What the reader presses is in the
+   * article — a server-rendered span or div this component does not own and cannot
+   * hand a handler to — and the mode is the only thing that makes it pressable at
+   * all, so the listener has exactly the mode's lifetime. At level 2 it is gone:
+   * the only lit thing left is the selection itself, and pressing it again is not
+   * a second step (`selected` is in the dependencies, so the listener comes off the
+   * moment one is picked).
+   *
+   * `preventDefault` because a revealed claim can contain an outgoing reference,
+   * and §7.1 makes a body reference inert unless the page is in its default state.
+   * An element with no `id` is not a candidate: the id IS the selection's identity
+   * (see `ChromeState.target`), and nothing can be shown about a thing that has
+   * none.
+   */
+  useEffect(() => {
+    if (!selection || selected) return
+    const selector = SELECTABLE[selection]
+    const kind = SELECTED_OF[selection]
+    function onClick(event: MouseEvent) {
+      if (!(event.target instanceof Element)) return
+      const candidate = event.target.closest(selector)
+      if (!candidate?.id) return
+      event.preventDefault()
+      openState({ kind, target: candidate.id })
+    }
+    document.addEventListener('click', onClick)
+    return () => document.removeEventListener('click', onClick)
+  }, [selection, selected, openState])
+
+  /**
+   * Level 2 itself: light the one, drop the others, and put it where the panel is
+   * not (§6.3, §6.4).
+   *
+   * The narrowing is published the same way the mode is — an attribute on `<body>`
+   * naming the selection, and `SELECTED_ATTR` on the element that IS it, with
+   * `app/globals.scss` expressing what the pair means. That is what replaces a
+   * highlight colour and a selected-state style: the overlay does the work (§6.3).
+   *
+   * The scroll rides along in the same commit as the panel's arrival, so the two
+   * are one gesture (§6.4). It is safe to measure here: the mode was already up
+   * before this state, so `.page-root`'s transform came off a step ago and the
+   * layout is not about to move under the measurement.
+   *
+   * **This scroll must not fire the arrival marker** (§6.2, phase 18's): the
+   * overlay has just said what is selected by lighting it alone, and the marker
+   * would be a second answer to a question the reader has already had answered.
+   * Nothing here starts one, and nothing that lands later should.
+   *
+   * The cleanup unlights and does NOT scroll back — §6.4 is explicit that closing
+   * leaves the reader where they have been reading.
+   */
+  useEffect(() => {
+    if (!selected) return
+    document.body.dataset.kbSelected = selected
+    const element = document.getElementById(selected)
+    if (!element) {
+      return () => {
+        delete document.body.dataset.kbSelected
+      }
+    }
+    element.setAttribute(SELECTED_ATTR, '')
+    const cancelScroll = scrollSelectionIntoUpperHalf(element, prefersReducedMotion())
+    return () => {
+      cancelScroll()
+      delete document.body.dataset.kbSelected
+      element.removeAttribute(SELECTED_ATTR)
+    }
+  }, [selected])
+
   return (
     <>
       {/*
@@ -202,7 +367,7 @@ export default function EntityChrome({
         client pass, which is the panel closed with every one of its contents
         already in the HTML.
       */}
-      <Panel sections={panels} activeKey={panel} />
+      <Panel sections={panels} activeKey={panel} activeTarget={selected} />
 
       {/*
         Nothing before mount: `document` is what the portal needs, and rendering the

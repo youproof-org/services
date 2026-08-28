@@ -41,7 +41,9 @@
         "kbPanelContext": "Hol jelenik meg",
         "kbPanelIncoming": "Hol hivatkoznak rá",
         "kbPanelIncomingCount": "{count} hivatkozás",
-        "kbPanelIncomingEmpty": "Nincs rá hivatkozás"
+        "kbPanelIncomingEmpty": "Nincs rá hivatkozás",
+        "kbPanelTermSynonyms": "Szinonimák",
+        "kbPanelClaim": "{index}. állítás"
       },
       "containers": {
         "book": "konyvek",

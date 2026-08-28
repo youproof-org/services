@@ -3,7 +3,7 @@ import InlineText from '@/components/content/InlineText'
 import { getContentGraph } from '@/lib/content'
 import { keyForKbNode } from '@/lib/content/keys'
 import { formatLocaleLabel, getLocaleLabel } from '@/lib/i18n/config'
-import type { KbNode } from '@/lib/content/types'
+import type { KbBacklinkSource, KbNode } from '@/lib/content/types'
 import styles from './backlinks-panel.module.scss'
 
 /**
@@ -53,9 +53,32 @@ export default function BacklinksPanel({ node }: BacklinksPanelProps) {
   // A missing key and an empty list are the same answer: `buildBacklinkIndex` only
   // records an entity once a source survives the page-existence filter.
   const sources = graph.backlinks.get(keyForKbNode(node))?.all ?? []
+  return <BacklinkList locale={node.locale} sources={sources} />
+}
 
+interface BacklinkListProps {
+  locale: string
+  /** Already ordered by `buildBacklinkIndex`: count descending, ties by title. */
+  sources: readonly KbBacklinkSource[]
+}
+
+/**
+ * The list itself, so that the three places §7.2 calls for it are one list
+ * narrowed rather than three designs.
+ *
+ * The panel above is the unfiltered case — `backlinks.all` — and the filtered ones
+ * are `backlinks.byTarget.get(targetFqn)` for a selected term or claim
+ * (`TermPanel`, `ClaimPanel`). Every difference between them is which array is
+ * handed in; the row, the count, the ordering and the empty state are the same in
+ * all three because they are literally the same component.
+ *
+ * The empty state travels with the list for the same reason: "nothing references
+ * this term" is the same kind of answer as "nothing references this entity", and a
+ * caller that had to write its own would be free to make it read differently.
+ */
+export function BacklinkList({ locale, sources }: BacklinkListProps) {
   if (sources.length === 0) {
-    return <p className={styles.empty}>{getLocaleLabel(node.locale, 'kbPanelIncomingEmpty')}</p>
+    return <p className={styles.empty}>{getLocaleLabel(locale, 'kbPanelIncomingEmpty')}</p>
   }
 
   return (
@@ -78,7 +101,7 @@ export default function BacklinksPanel({ node }: BacklinksPanelProps) {
               built HTML can rely on.
             */}
             <span className={styles.count} data-backlink-count={source.count}>
-              {formatLocaleLabel(node.locale, 'kbPanelIncomingCount', { count: source.count })}
+              {formatLocaleLabel(locale, 'kbPanelIncomingCount', { count: source.count })}
             </span>
           </Link>
         </li>

@@ -114,6 +114,54 @@
   }
 }
 
+// ── A selected term or claim (panels/TermPanel.tsx, panels/ClaimPanel.tsx) ──
+//
+// Level 2 of a selection mode (§6.3): the thing the reader picked, then the same
+// reference list the unfiltered panel shows, narrowed to it. Both panels use these,
+// which is the layout half of §7.2's "one list rather than three designs" — the
+// list itself is literally the same component.
+//
+// The subject sits above the list, so the space between them is what separates the
+// two halves; nothing here boxes or tints either of them.
+
+// The claim's own text, restated over its references.
+.selectionClaim {
+  margin: 0 0 0.75rem;
+  line-height: 1.6;
+}
+
+// A claim's display formula, matching the leading it has in the body.
+.selectionFormula {
+  margin: 0.5rem 0 0;
+  overflow-x: auto;
+}
+
+// The synonyms line under a term. Secondary to the term itself, which is the
+// panel's own heading — this qualifies it rather than naming it.
+.selectionMeta {
+  margin: 0 0 0.75rem;
+  line-height: 1.5;
+  color: $gray-500;
+}
+
+.selectionMetaLabel {
+  font-weight: $font-bold;
+  color: $black;
+}
+
+// "Hol hivatkoznak rá" over the narrowed list — the same words the unfiltered
+// panel puts in its header, because it is the same question. Smaller than that
+// header: there it is the panel's title, here it labels the second half of one.
+.selectionSubhead {
+  margin: 0 0 0.25rem;
+  font-size: 0.85rem;
+  font-weight: $font-x-bold;
+  line-height: 1.3;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: $gray-500;
+}
+
 // Reduced motion: the panel appears and disappears without the slide, and nothing
 // else about it changes. The convention `root-page.module.scss` and
 // `consent-banner.module.scss` already follow — one trailing block that switches

@@ -14,14 +14,30 @@
 /**
  * The states beyond the default.
  *
- * `menu` is the open context menu. Every other kind is named after the menu item
- * that opens it (`KbMenuItemKey`) so the two cannot drift, and falls into one of
+ * `menu` is the open context menu. The kinds that a menu item opens are named
+ * after that item (`KbMenuItemKey`) so the two cannot drift, and fall into one of
  * two groups: a **panel** state (`context` is the Kontextus panel, `incoming` the
  * Bejövő hivatkozások one) or a **selection mode** (`terms` is Fogalmak, `claims`
- * is Állítások — §6.3). The remaining items join as their phases land, and nothing
- * here changes when they do except this union and `STATE_KINDS`.
+ * is Állítások — §6.3).
+ *
+ * `term` and `claim` are the singulars, and they are the second level of a
+ * selection mode: one candidate picked out of the class the mode revealed (§6.3).
+ * No menu item opens them — the body does — so they are the two kinds whose names
+ * are NOT in `KbMenuItemKey`. They are panel states all the same, which is the
+ * whole difference between the two levels: level 1 reveals and waits, level 2
+ * opens a sheet about the one thing chosen.
+ *
+ * The remaining items join as their phases land, and nothing here changes when they
+ * do except this union and `STATE_KINDS`.
  */
-export type ChromeStateKind = 'menu' | 'incoming' | 'context' | 'terms' | 'claims'
+export type ChromeStateKind =
+  | 'menu'
+  | 'incoming'
+  | 'context'
+  | 'terms'
+  | 'claims'
+  | 'term'
+  | 'claim'
 
 /** The kinds a restored history entry may name — anything else is not ours. */
 const STATE_KINDS: readonly ChromeStateKind[] = [
@@ -30,6 +46,8 @@ const STATE_KINDS: readonly ChromeStateKind[] = [
   'context',
   'terms',
   'claims',
+  'term',
+  'claim',
 ]
 
 /**
@@ -48,8 +66,44 @@ function isSelectionKind(kind: ChromeStateKind): kind is ChromeSelectionKind {
   return (SELECTION_KINDS as readonly ChromeStateKind[]).includes(kind)
 }
 
+/**
+ * The two level-2 states: one term, or one claim, picked out of what its mode
+ * revealed (§6.3).
+ *
+ * Deliberately a state of its own rather than a field on the mode, for the same
+ * reason level 1 is a state: "Vissza" from level 2 is one step, and it lands on
+ * level 1 with every candidate revealed again.
+ */
+export type ChromeSelectedKind = 'term' | 'claim'
+
+export const SELECTED_KINDS: readonly ChromeSelectedKind[] = ['term', 'claim']
+
+/** Which mode a selected state belongs to — the singular's plural, and no more. */
+const MODE_OF: Record<ChromeSelectedKind, ChromeSelectionKind> = {
+  term: 'terms',
+  claim: 'claims',
+}
+
+function isSelectedKind(kind: ChromeStateKind): kind is ChromeSelectedKind {
+  return (SELECTED_KINDS as readonly ChromeStateKind[]).includes(kind)
+}
+
 export interface ChromeState {
   kind: ChromeStateKind
+  /**
+   * Which candidate a level-2 state is about: the selected element's `id`, which
+   * is its page-relative anchor (`fogalmak.{slug}` / `allitasok.{slug}` — see
+   * `lib/content/urls.ts`).
+   *
+   * The anchor rather than an index or a fully qualified name because it is the
+   * one handle that exists on both sides without being invented for this: the
+   * server puts it on the element and on the panel section, and the click that
+   * picks a candidate reads it straight off the DOM.
+   *
+   * Set on `term` and `claim` states and on nothing else, which `readChromeStack`
+   * enforces on the way back out of a history entry.
+   */
+  target?: string
 }
 
 /** Bottom-to-top: the last entry is where the reader is now. */
@@ -94,6 +148,10 @@ export function currentState(stack: ChromeStack): ChromeState | null {
  * The kinds that open a panel: every kind that is neither the menu nor one of the
  * selection modes. Subtraction rather than a second list, so a kind added to
  * `ChromeStateKind` has to be classified rather than silently become a panel.
+ *
+ * `term` and `claim` land here on purpose, and they are the reason the subtraction
+ * names the two modes instead of "anything to do with a selection": level 1 must
+ * not slide a sheet in or freeze the page, and level 2 must do both (§6.3, §6.4).
  */
 export type ChromePanelKind = Exclude<ChromeStateKind, 'menu' | ChromeSelectionKind>
 
@@ -121,11 +179,32 @@ export function openPanel(stack: ChromeStack): ChromePanelKind | null {
  * property of the whole page rather than of any one component, so `EntityChrome`
  * publishes the answer on `<body>` and `app/globals.scss` expresses both states
  * from there.
+ *
+ * **Both levels answer the same mode.** At level 2 the page is still in Fogalmak —
+ * the reveal machinery is what shows the reader their selection, and it is the
+ * narrowing from "all of them" to "just this one" that says which (§6.3). So the
+ * mode's rules, and with them the dropped `.page-root` transform they need, stay
+ * in place across the step; `selectedTarget` is what distinguishes the two levels.
  */
 export function selectionMode(stack: ChromeStack): ChromeSelectionKind | null {
   const state = currentState(stack)
   if (state === null) return null
-  return isSelectionKind(state.kind) ? state.kind : null
+  if (isSelectionKind(state.kind)) return state.kind
+  return isSelectedKind(state.kind) ? MODE_OF[state.kind] : null
+}
+
+/**
+ * The candidate the reader has picked — level 2 — or `null` at every other state,
+ * level 1 included.
+ *
+ * The value is the selected element's `id` (see `ChromeState.target`), which is
+ * both what the body has to light up and what the panel has to show, so one answer
+ * serves both.
+ */
+export function selectedTarget(stack: ChromeStack): string | null {
+  const state = currentState(stack)
+  if (state === null || !isSelectedKind(state.kind)) return null
+  return state.target ?? null
 }
 
 /**
@@ -145,6 +224,12 @@ export const CHROME_HISTORY_KEY = 'kbChrome'
  * Validating rather than casting: `history.state` is whatever anything on the page
  * put there, it survives a reload, and a malformed entry must degrade to the
  * default state instead of rendering an unknown one.
+ *
+ * `target` goes through the same treatment, and the pairing is checked in both
+ * directions: a level-2 state without one names no candidate, and any other kind
+ * with one is not a shape this module produces. Either is a malformed entry rather
+ * than a state to render — the alternative is a `term` state that lights nothing up
+ * and opens an empty panel.
  */
 export function readChromeStack(historyState: unknown): ChromeStack {
   if (typeof historyState !== 'object' || historyState === null) return DEFAULT_STACK
@@ -153,9 +238,15 @@ export function readChromeStack(historyState: unknown): ChromeStack {
   const stack: ChromeState[] = []
   for (const entry of raw) {
     if (typeof entry !== 'object' || entry === null) return DEFAULT_STACK
-    const kind = (entry as Record<string, unknown>).kind
+    const { kind, target } = entry as Record<string, unknown>
     if (!STATE_KINDS.includes(kind as ChromeStateKind)) return DEFAULT_STACK
-    stack.push({ kind: kind as ChromeStateKind })
+    if (isSelectedKind(kind as ChromeStateKind)) {
+      if (typeof target !== 'string' || target === '') return DEFAULT_STACK
+      stack.push({ kind: kind as ChromeStateKind, target })
+    } else {
+      if (target !== undefined) return DEFAULT_STACK
+      stack.push({ kind: kind as ChromeStateKind })
+    }
   }
   return stack
 }

@@ -18,12 +18,14 @@ import { hu, claim, narrative, raw } from './support/raw-graph.mjs'
 const {
   CHROME_HISTORY_KEY,
   DEFAULT_STACK,
+  SELECTED_KINDS,
   SELECTION_KINDS,
   currentState,
   isDefaultState,
   openPanel,
   readChromeStack,
   reduceChrome,
+  selectedTarget,
   selectionMode,
 } = chromeModule.default ?? chromeModule
 const { kbMenuItems } = menuModule.default ?? menuModule
@@ -34,6 +36,13 @@ const CONTEXT = { kind: 'context' }
 const INCOMING = { kind: 'incoming' }
 const TERMS = { kind: 'terms' }
 const CLAIMS = { kind: 'claims' }
+// Level 2: one candidate picked, named by the id it carries in the body.
+const TERM = { kind: 'term', target: 'fogalmak.gyuru' }
+const CLAIM = { kind: 'claim', target: 'allitasok.elso' }
+const LEVEL_TWO = [
+  [TERMS, TERM, 'terms'],
+  [CLAIMS, CLAIM, 'claims'],
+]
 const open = (stack, state = MENU) => reduceChrome(stack, { type: 'open', state })
 const back = (stack) => reduceChrome(stack, { type: 'back' })
 
@@ -190,6 +199,93 @@ test('the selection kinds are exactly the two menu items that reveal', () => {
   // The list EntityChrome hands the menu as live items, and the list globals.scss
   // has a reveal rule for. Two entries, and the same two names the items carry.
   assert.deepEqual([...SELECTION_KINDS], ['terms', 'claims'])
+})
+
+// ---------------------------------------------------------------------------
+// Level 2: one of them picked (§6.3)
+// ---------------------------------------------------------------------------
+
+test('the selected kinds are the two modes in the singular', () => {
+  // The counterpart of the list above, and the one EntityChrome subtracts to find
+  // the panels a menu item can open. Same two things, one of each.
+  assert.deepEqual([...SELECTED_KINDS], ['term', 'claim'])
+})
+
+test('picking one is a state on top of its mode, so Vissza lands back on level 1', () => {
+  // The whole reason level 2 is a state and not a flag: one back step returns the
+  // reader to "pick one" with every candidate revealed again, and the second to the
+  // open menu (§6.3).
+  for (const [mode, picked] of LEVEL_TWO) {
+    const stack = open(open(open(DEFAULT_STACK, MENU), mode), picked)
+    assert.deepEqual(currentState(stack), picked)
+    assert.deepEqual(currentState(back(stack)), mode)
+    assert.deepEqual(currentState(back(back(stack))), MENU)
+    assert.equal(isDefaultState(back(back(back(stack)))), true)
+  }
+})
+
+test('a selected state IS a panel, which is the whole difference between the levels', () => {
+  // Level 1 opens nothing and must not scroll-lock; level 2 slides the sheet in
+  // with the selection's details (§6.3, §6.4). `openPanel` is what both come down
+  // to, so this is the one assertion that separates them.
+  for (const [mode, picked] of LEVEL_TWO) {
+    const level1 = open(open(DEFAULT_STACK, MENU), mode)
+    assert.equal(openPanel(level1), null)
+    const level2 = open(level1, picked)
+    assert.equal(openPanel(level2), picked.kind)
+    // …and stepping back closes it again, which is what unlocks the page.
+    assert.equal(openPanel(back(level2)), null)
+  }
+})
+
+test('the mode stays named at level 2, and the target says which candidate', () => {
+  // The reveal is what shows the reader their selection, so the body has to stay in
+  // the mode across the step — the narrowing is level 2, not a different mode
+  // (§6.3). `selectedTarget` is the only thing that distinguishes the two levels.
+  for (const [mode, picked, name] of LEVEL_TWO) {
+    const level1 = open(open(DEFAULT_STACK, MENU), mode)
+    assert.equal(selectionMode(level1), name)
+    assert.equal(selectedTarget(level1), null)
+
+    const level2 = open(level1, picked)
+    assert.equal(selectionMode(level2), name)
+    assert.equal(selectedTarget(level2), picked.target)
+
+    // …and stepping back gives up the selection while keeping the mode.
+    assert.equal(selectionMode(back(level2)), name)
+    assert.equal(selectedTarget(back(level2)), null)
+  }
+  // No other state names a candidate, whatever else is on the stack.
+  assert.equal(selectedTarget(DEFAULT_STACK), null)
+  assert.equal(selectedTarget(open(open(DEFAULT_STACK, MENU), CONTEXT)), null)
+})
+
+test('a selection survives a history entry, target and all', () => {
+  for (const [mode, picked] of LEVEL_TWO) {
+    const stack = open(open(open(DEFAULT_STACK, MENU), mode), picked)
+    assert.deepEqual(readChromeStack({ [CHROME_HISTORY_KEY]: stack }), stack)
+  }
+})
+
+test('a state and a target that do not belong together read as the default state', () => {
+  // Both directions, because both are shapes this module never produces and both
+  // would render as something: a `term` with no target lights nothing up and opens
+  // an empty panel, and a target on any other kind is an entry from somewhere else.
+  for (const value of [
+    [{ kind: 'term' }],
+    [{ kind: 'claim' }],
+    [{ kind: 'term', target: '' }],
+    [{ kind: 'term', target: 42 }],
+    [{ kind: 'menu', target: 'fogalmak.gyuru' }],
+    [{ kind: 'context', target: 'fogalmak.gyuru' }],
+    [{ kind: 'terms', target: 'fogalmak.gyuru' }],
+  ]) {
+    assert.deepEqual(
+      readChromeStack({ [CHROME_HISTORY_KEY]: value }),
+      [],
+      `${JSON.stringify(value)} should not restore a state`,
+    )
+  }
 })
 
 // ---------------------------------------------------------------------------

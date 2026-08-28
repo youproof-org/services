@@ -75,6 +75,14 @@ export type LabelKey =
   // to the reader's question rather than a failure, which is why it is a sentence
   // and not a dash.
   | 'kbPanelIncomingCount' | 'kbPanelIncomingEmpty'
+  // A selected term or claim, level 2 of a selection mode (§6.3, §7.2). A term
+  // panel is headed by the term itself, which is content and needs no label, so
+  // only the synonyms line does; a claim has no name of its own and is headed by
+  // its position in the body, which `{index}` supplies. Both panels then reuse
+  // `kbPanelIncoming` over their narrowed reference list — the three lists are one
+  // list narrowed, and they say so by asking the reader's question in the same
+  // words (§7.2).
+  | 'kbPanelTermSynonyms' | 'kbPanelClaim'
 
 export interface LocaleConfig {
   displayName: string

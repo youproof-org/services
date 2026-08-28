@@ -3,16 +3,18 @@ import InlineText from '@/components/content/InlineText'
 import { getContentGraph } from '@/lib/content'
 import { kbNodeLabel } from '@/lib/content/graph'
 import { keyForKbNode } from '@/lib/content/keys'
-import { kbRefs, ownPageScope } from '@/lib/content/urls'
-import { getLocaleLabel } from '@/lib/i18n/config'
+import { claimAnchorId, kbRefs, ownPageScope, termAnchorId } from '@/lib/content/urls'
+import { formatLocaleLabel, getLocaleLabel } from '@/lib/i18n/config'
 import { kbMenuItems } from '@/lib/kb/menu-items'
 import { buildChapterEmbedIndices, buildChapterFigureIndices, getChapterIndex } from '@/lib/utils/index-helpers'
-import type { KbNode } from '@/lib/content/types'
+import type { ContentBlock, KbNode } from '@/lib/content/types'
 import EntityChrome from './EntityChrome'
 import OwnershipLinks from './OwnershipLinks'
 import type { KbPanelSection } from './Panel'
 import BacklinksPanel from './panels/BacklinksPanel'
+import ClaimPanel from './panels/ClaimPanel'
 import ContextPanel from './panels/ContextPanel'
+import TermPanel from './panels/TermPanel'
 import styles from './kb-entity-page.module.scss'
 
 interface KbEntityPageProps {
@@ -54,7 +56,34 @@ export default function KbEntityPage({ node }: KbEntityPageProps) {
   // The scope of every claim and term in this body: this node's own page.
   const scope = ownPageScope(node)
 
-  // In the menu's order (§6.2), which is the order the reader meets the items in.
+  /**
+   * The claims this body asserts, in the order `ContentBlocks` renders them and
+   * numbered the way `ClaimBlock` numbers them — so a panel's "3. állítás" is the
+   * one the body shows as "3.".
+   *
+   * Top level only, and filtered by render context, because that is exactly the set
+   * `ContentBlocks` gives an anchor: a claim nested in a subsection is handed no
+   * `parentEntity` and renders with no id, and a `latex`-only block renders not at
+   * all. A panel for one of those could never be selected — the selection IS the
+   * element's id (§6.3) — so building one would put content in the HTML that the
+   * page cannot reach.
+   */
+  const claims = node.body.filter(
+    (block): block is Extract<ContentBlock, { type: 'claim' }> =>
+      block.type === 'claim' && (!block.context || block.context === 'web'),
+  )
+
+  /*
+    In the menu's order (§6.2), which is the order the reader meets the items in —
+    and then the level-2 panels, which no menu item opens (§6.3).
+
+    A panel per term and a panel per claim, all of them server-rendered and all of
+    them in the served HTML: §2.1 does not distinguish between a content the menu
+    opens and one the body opens, and these are the per-term and per-claim
+    narrowings of the inbound-reference list, which is knowledge-graph structure by
+    any reading. `target` is the selected element's own anchor id, which is the
+    handle the click that picks it will arrive with.
+  */
   const panels: KbPanelSection[] = [
     {
       key: 'incoming',
@@ -66,6 +95,22 @@ export default function KbEntityPage({ node }: KbEntityPageProps) {
       title: getLocaleLabel(node.locale, 'kbPanelContext'),
       content: <ContextPanel node={node} />,
     },
+    ...Object.entries(node.terms ?? {}).map(([termKey, term]) => ({
+      key: 'term' as const,
+      target: termAnchorId(scope, termKey, term),
+      // The term itself heads its panel: it is the subject, and the reveal has
+      // already lit it in the body (§6.3), so the two agree by naming the same thing.
+      title: <InlineText text={term.canonical} />,
+      content: <TermPanel node={node} termKey={termKey} term={term} />,
+    })),
+    ...claims.map((claim, index) => ({
+      key: 'claim' as const,
+      target: claimAnchorId(scope, claim),
+      // A claim has no name of its own, so its position in the body is what names
+      // it — the same number `ClaimBlock` prints in front of it.
+      title: formatLocaleLabel(node.locale, 'kbPanelClaim', { index: index + 1 }),
+      content: <ClaimPanel node={node} claim={claim} />,
+    })),
   ]
 
   return (
@@ -120,8 +165,8 @@ export default function KbEntityPage({ node }: KbEntityPageProps) {
         The panel's contents go the same way and for the same reason, but they are
         markup rather than data: a server component per content, rendered here and
         handed over already finished, which is what puts it in the served HTML
-        (§2.1). Bejövő hivatkozások and Kontextus so far; the rest join this list as
-        their phases land.
+        (§2.1). The two the menu opens, plus one per term and one per claim; the
+        rest join this list as their phases land.
       */}
       <EntityChrome
         items={kbMenuItems(node)}

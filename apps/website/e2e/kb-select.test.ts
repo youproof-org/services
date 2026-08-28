@@ -1,7 +1,8 @@
 import { expect, test, type Page } from '@playwright/test'
 
 /**
- * The two selection modes, level 1: pick a mode, see the candidates (sub-plan §6.3).
+ * The two selection modes, both levels: pick a mode, see the candidates, pick one
+ * (sub-plan §6.3).
  *
  * This file exists because almost nothing about a reveal can be read off the
  * stylesheet. "Fogalmak lifts every term out from under the dim and nothing else"
@@ -21,6 +22,16 @@ import { expect, test, type Page } from '@playwright/test'
  *     This is the "revealed" half: painted above the dim AND reachable, which is
  *     what "selectable" means. Doing it for every candidate rather than the first
  *     is the point — a rule that matched one span would pass any weaker check.
+ *
+ * Level 2 adds a third question of the same kind and asks it the same way. The
+ * narrowing — "the chosen one stays lit, all the others drop back under the dim" —
+ * is the mechanism standing in for a highlight colour and a selected-state style,
+ * so it is checked by hit-testing every candidate rather than by reading a class
+ * off one; and where the selection ENDS UP is geometry the stylesheet does not
+ * contain at all, because it is the product of a scroll, a sticky header and a
+ * sheet that is still arriving. The mutation check below is what keeps the census
+ * honest: the rule that does the dropping is deleted at runtime and the same
+ * assertion is required to fail.
  *
  * Same conventions as `kb-panel.test.ts`: settle the consent decision first, scope
  * every chrome locator to the stack's own class, and match accessible names
@@ -51,6 +62,27 @@ const CLAIM_COUNT = 8
  */
 const PROOF =
   '/hu/tudasbazis/tetelek/egesz-kitevos-hatvanyozas-azonossagai/bizonyitasok/egesz-kitevos-hatvanyozas-azonossagai-bizonyitas'
+
+/**
+ * The candidates level 2 is checked on, and the row counts their panels must show.
+ *
+ * Every number here is `graph.backlinks.get('definitions.gyuru-test')` read off the
+ * built graph: `all.length` is 222 and `byTarget.get(fqn).length` is the rest. They
+ * are the assertion, not a sample of it — "the filtered list is the unfiltered one
+ * narrowed" is only worth checking against the exact figure the index holds.
+ *
+ * `SELECTED_TERM` is the busiest term on the busiest entity, so a filter that did
+ * nothing would show 222 rows instead of 150 and a filter that matched nothing
+ * would show 0. `BELOW_FOLD_TERM` is the last term in the body, 1911px down a
+ * 2884px page: it is off-screen when the page opens and in the half the panel is
+ * about to cover when it is pressed, which is the case §6.4's scroll exists for.
+ */
+const SELECTED_TERM = 'fogalmak.gyuru'
+const SELECTED_TERM_ROWS = 150
+const BELOW_FOLD_TERM = 'fogalmak.nullgyuru'
+const SELECTED_CLAIM = 'allitasok.szorzas-disztributiv'
+const SELECTED_CLAIM_ROWS = 16
+const UNFILTERED_ROWS = 222
 
 const MENU = 'Menü'
 const BACK = 'Vissza'
@@ -369,5 +401,564 @@ test.describe('a selection mode logs nothing', () => {
     }
 
     expect(noise).toEqual([])
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Level 2: pick one (§6.3, §6.4)
+// ---------------------------------------------------------------------------
+
+/** Where the panel's top edge is, closed panel included (see `kb-panel.test.ts`). */
+function panelTop(page: Page): Promise<number> {
+  return page.evaluate(() => document.querySelector('#kb-panel')!.getBoundingClientRect().top)
+}
+
+/** The sheet at rest over the bottom half — not merely visible, which it is mid-slide. */
+async function expectPanelSettled(page: Page) {
+  await expect.poll(() => panelTop(page)).toBe(page.viewportSize()!.height / 2)
+}
+
+/** The document scroll no longer moving, so a geometry reading is of a final position. */
+async function expectScrollSettled(page: Page) {
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          new Promise<boolean>((resolve) => {
+            const before = window.scrollY
+            requestAnimationFrame(() =>
+              requestAnimationFrame(() => resolve(before === window.scrollY)),
+            )
+          }),
+      ),
+    )
+    .toBe(true)
+}
+
+/** An element's box in the viewport, by id — ids carry dots, so `#id` is not a selector. */
+function boxOf(page: Page, id: string) {
+  return page.evaluate((target) => {
+    const element = document.getElementById(target)
+    if (!element) throw new Error(`no element with id '${target}'`)
+    const rect = element.getBoundingClientRect()
+    return { top: rect.top, bottom: rect.bottom, height: rect.height }
+  }, id)
+}
+
+/** The sticky header's lower edge: where the region the panel leaves free begins. */
+function headerBottom(page: Page): Promise<number> {
+  return page.evaluate(() => document.querySelector('header')!.getBoundingClientRect().bottom)
+}
+
+/**
+ * Put a candidate at a chosen fraction of the viewport, then press it there with a
+ * real mouse click.
+ *
+ * The placing is the point: §6.4's scroll exists for a selection that would be
+ * covered by the panel, so the test has to be able to say where the selection was
+ * when it was pressed. `locator.click()` scrolls the element into view itself and
+ * would decide that for us. The click is a mouse click at the element's own centre
+ * rather than a dispatched event, so it is hit-tested — pressing a candidate is
+ * also the proof that it was reachable.
+ */
+async function pressCandidateAt(page: Page, id: string, fraction: number) {
+  const spot = await placeCandidateAt(page, id, fraction)
+  await page.mouse.click(spot.x, spot.y)
+  return spot
+}
+
+/**
+ * The placing on its own, for the tests that press in-page: the candidate has to
+ * start somewhere known, and after one selection it is already at its destination —
+ * a second press from there would move nothing and every motion assertion would
+ * pass by describing a page that never moved.
+ */
+async function placeCandidateAt(page: Page, id: string, fraction: number) {
+  return page.evaluate(
+    ({ target, at }) =>
+      new Promise<{ x: number; y: number; top: number; bottom: number }>((resolve) => {
+        const element = document.getElementById(target)!
+        const first = element.getBoundingClientRect()
+        window.scrollTo({
+          top: window.scrollY + first.top - window.innerHeight * at,
+          behavior: 'instant' as ScrollBehavior,
+        })
+        requestAnimationFrame(() =>
+          requestAnimationFrame(() => {
+            const rect = element.getClientRects()[0]
+            resolve({
+              x: rect.left + rect.width / 2,
+              y: rect.top + rect.height / 2,
+              top: rect.top,
+              bottom: rect.bottom,
+            })
+          }),
+        )
+      }),
+    { target: id, at: fraction },
+  )
+}
+
+/**
+ * Press a candidate in-page and watch the page and the panel, frame by frame, until
+ * the sheet has landed.
+ *
+ * In-page for the same reason as `kb-panel.test.ts`'s `pressAndSample`: the question
+ * is what happens in the first few milliseconds, and a Playwright click followed by
+ * a separate read puts a protocol round trip of unpredictable length in the middle.
+ * Frame by frame because §6.4's "one gesture" is a claim about two DURATIONS — the
+ * page has to be moving while the sheet is still on its way, and it has to be
+ * finished by the time the sheet has landed — and a single sample can only answer
+ * half of it.
+ */
+interface Gesture {
+  /** Where the page was when the candidate was pressed. */
+  before: number
+  /** Four frames in: early enough that a 280ms movement is nowhere near done. */
+  early: { scrollY: number; panelTop: number }
+  /** The frame the sheet reached its resting place on, and the scroll then. */
+  arrival: { scrollY: number; frame: number }
+  /** Where the page came to rest. */
+  final: number
+}
+
+function pressAndTraceGesture(page: Page, id: string): Promise<Gesture> {
+  return page.evaluate(
+    (target) =>
+      new Promise<Gesture>((resolve) => {
+        const element = document.getElementById(target)! as HTMLElement
+        const panel = document.getElementById('kb-panel')!
+        const half = window.innerHeight / 2
+        const before = window.scrollY
+        let early: Gesture['early'] | null = null
+        let arrival: Gesture['arrival'] | null = null
+        let frame = 0
+
+        element.click()
+        const tick = () => {
+          frame += 1
+          const panelTop = panel.getBoundingClientRect().top
+          if (frame === 4) early = { scrollY: window.scrollY, panelTop }
+          if (arrival === null && panelTop <= half) {
+            arrival = { scrollY: window.scrollY, frame }
+          }
+          // A few frames past the landing, so `final` is a settled position and not
+          // the same reading as `arrival` by construction.
+          if ((arrival !== null && frame > arrival.frame + 10) || frame > 300) {
+            resolve({ before, early: early!, arrival: arrival!, final: window.scrollY })
+            return
+          }
+          requestAnimationFrame(tick)
+        }
+        requestAnimationFrame(tick)
+      }),
+    id,
+  )
+}
+
+/**
+ * Report what a click at each candidate's centre would hit, with the candidate
+ * placed in the region the panel leaves free.
+ *
+ * `hitTest` above scrolls to `block: 'center'`, which at level 2 is the panel's own
+ * top edge — every answer would be "the panel" and the test would be about nothing.
+ * A quarter of the way down is inside the free half whatever the candidate's height,
+ * so what covers it there is the dim or nothing.
+ */
+function hitTestInFreeHalf(page: Page, selector: string, insideOnly = true): Promise<string[]> {
+  return page.evaluate(
+    async ({ scope, target, inside }) => {
+      const frame = () =>
+        new Promise<void>((resolve) =>
+          requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+        )
+      const results: string[] = []
+      for (const element of Array.from(
+        document.querySelectorAll<HTMLElement>(`${scope} ${target}`),
+      )) {
+        const first = element.getBoundingClientRect()
+        window.scrollTo({
+          top: window.scrollY + first.top - window.innerHeight * 0.25,
+          behavior: 'instant' as ScrollBehavior,
+        })
+        await frame()
+        const rect = element.getClientRects()[0]
+        const found = document.elementFromPoint(
+          rect.left + rect.width / 2,
+          rect.top + rect.height / 2,
+        )
+        const hit = inside ? found?.closest(target) === element : found === element
+        results.push(hit ? 'self' : (found?.getAttribute('class') ?? 'nothing'))
+      }
+      return results
+    },
+    { scope: ARTICLE, target: selector, inside: insideOnly },
+  )
+}
+
+/**
+ * Delete the one stylesheet rule that drops the unselected candidates back under
+ * the dim, and report how many rules matched.
+ *
+ * This is what keeps the census above from passing vacuously. Every assertion about
+ * the narrowing is a statement about a live stacking order, and a stacking order
+ * that happened to be right for another reason would satisfy all of them; removing
+ * the rule and requiring the same assertion to flip is the only form that says the
+ * rule is what does it. One rule, two selectors — a term's and a claim's.
+ */
+function dropNarrowingRule(page: Page): Promise<number> {
+  return page.evaluate(() => {
+    let removed = 0
+    for (const sheet of Array.from(document.styleSheets)) {
+      let rules: CSSRule[]
+      try {
+        rules = Array.from(sheet.cssRules)
+      } catch {
+        continue
+      }
+      for (let index = rules.length - 1; index >= 0; index -= 1) {
+        const rule = rules[index]
+        if (
+          rule instanceof CSSStyleRule &&
+          rule.selectorText.includes(':not([data-kb-selected])')
+        ) {
+          sheet.deleteRule(index)
+          removed += 1
+        }
+      }
+    }
+    return removed
+  })
+}
+
+/** One panel section's rows, by the two attributes `Panel.tsx` puts on it. */
+function panelRows(page: Page, kind: string, target?: string) {
+  const section = target
+    ? `${PANEL} [data-kb-panel-kind="${kind}"][data-kb-panel-target="${target}"]`
+    : `${PANEL} [data-kb-panel-kind="${kind}"]`
+  return page.locator(`${section} .backlinks-panel_link`)
+}
+
+test.describe('Fogalmak — level 2', () => {
+  test('lights the one that was picked and drops the other eleven', async ({ page }) => {
+    await openEntity(page)
+    await enterMode(page, TERMS)
+    // Level 1 for comparison: all twelve are up, and all twelve are reachable.
+    expect(await lifted(page)).toEqual(Array(TERM_COUNT).fill('term'))
+
+    await pressCandidateAt(page, SELECTED_TERM, 0.4)
+    await expectPanelSettled(page)
+
+    // The census, and the whole of §6.3's narrowing: one thing raised, not twelve.
+    expect(await lifted(page)).toEqual(['term'])
+    await expect(page.locator(`${ARTICLE} ${TERM}[data-kb-selected]`)).toHaveCount(1)
+    await expect(
+      page.locator(`${ARTICLE} [id="${SELECTED_TERM}"][data-kb-selected]`),
+    ).toHaveCount(1)
+    await expect(page.locator(`body[data-kb-selected="${SELECTED_TERM}"]`)).toHaveCount(1)
+    // …and the mode is still up: level 2 is a narrowing of Fogalmak, not a different
+    // state of the page (§6.3).
+    await expect(page.locator('body[data-kb-select="terms"]')).toHaveCount(1)
+
+    // The hit test, every candidate: the selection is pressable and the other eleven
+    // are back under the dim, which is what "dropped back" has to mean.
+    const hits = await hitTestInFreeHalf(page, TERM)
+    expect(hits.filter((hit) => hit === 'self')).toHaveLength(1)
+    expect(hits.filter((hit) => hit === 'overlay_overlay')).toHaveLength(TERM_COUNT - 1)
+  })
+
+  test('the drop is that stylesheet rule, and nothing else', async ({ page }) => {
+    await openEntity(page)
+    await enterMode(page, TERMS)
+    await pressCandidateAt(page, SELECTED_TERM, 0.4)
+    await expectPanelSettled(page)
+    expect(await lifted(page)).toEqual(['term'])
+
+    // Take the rule away and the eleven come straight back up — so the assertion
+    // above was about this rule rather than about a layout that suited it.
+    expect(await dropNarrowingRule(page)).toBe(1)
+    expect(await lifted(page)).toEqual(Array(TERM_COUNT).fill('term'))
+  })
+
+  test('the panel shows the references aimed at that term, not at the entity', async ({
+    page,
+  }) => {
+    await openEntity(page)
+    await enterMode(page, TERMS)
+    await pressCandidateAt(page, SELECTED_TERM, 0.4)
+    await expectPanelSettled(page)
+
+    // Exactly one content is showing, and it is this term's.
+    await expect(page.locator(`${PANEL} section:not([hidden])`)).toHaveCount(1)
+    await expect(
+      page.locator(
+        `${PANEL} section:not([hidden])[data-kb-panel-target="${SELECTED_TERM}"]`,
+      ),
+    ).toHaveCount(1)
+    // The term itself heads the panel (§6.3: the panel and the reveal name the same
+    // thing), over the same question the unfiltered list asks (§7.2).
+    await expect(page.locator(PANEL).getByRole('heading', { name: 'gyűrű', exact: true })).toBeVisible()
+    await expect(
+      page.locator(PANEL).getByRole('heading', { name: 'Hol hivatkoznak rá', exact: true }),
+    ).toBeVisible()
+
+    // `byTarget` for this term, and smaller than `all` — the filtered list is the
+    // unfiltered one narrowed, and both are on this page to be compared (§7.2).
+    await expect(panelRows(page, 'term', SELECTED_TERM)).toHaveCount(SELECTED_TERM_ROWS)
+    await expect(panelRows(page, 'incoming')).toHaveCount(UNFILTERED_ROWS)
+    expect(SELECTED_TERM_ROWS).toBeLessThan(UNFILTERED_ROWS)
+
+    // Same rows as the unfiltered list, so the two are one list rather than two: the
+    // ordering is by count descending and the row is still the whole link.
+    const counts = await panelRows(page, 'term', SELECTED_TERM).evaluateAll((links) =>
+      links.map((link) =>
+        Number(link.querySelector('[data-backlink-count]')!.getAttribute('data-backlink-count')),
+      ),
+    )
+    expect([...counts].sort((a, b) => b - a)).toEqual(counts)
+  })
+
+  test('the selection lands comfortably in the free upper half, panel over the rest', async ({
+    page,
+  }) => {
+    await openEntity(page)
+    const viewport = page.viewportSize()!
+
+    // The review case, and the reason the scroll exists: the term is not on the
+    // screen at all when the page opens.
+    expect((await boxOf(page, BELOW_FOLD_TERM)).top).toBeGreaterThan(viewport.height)
+
+    await enterMode(page, TERMS)
+    // …and when it is pressed it is in the half the panel is about to cover, so
+    // "the page stays where it is" would leave the reader reading about something
+    // they can no longer see.
+    const pressed = await pressCandidateAt(page, BELOW_FOLD_TERM, 0.8)
+    expect(pressed.top).toBeGreaterThan(viewport.height / 2)
+
+    await expectPanelSettled(page)
+    await expectScrollSettled(page)
+
+    const box = await boxOf(page, BELOW_FOLD_TERM)
+    const top = await headerBottom(page)
+    // The panel has the bottom half, and the selection is wholly inside what is
+    // left of the top one — below the sticky header, above the sheet.
+    expect(await panelTop(page)).toBe(viewport.height / 2)
+    expect(box.top).toBeGreaterThanOrEqual(top)
+    expect(box.bottom).toBeLessThanOrEqual(viewport.height / 2)
+
+    // "Comfortably inside it rather than flush against its bottom edge" (§6.4),
+    // which is centred in the free region: the clearance below is the clearance
+    // above, and it is a tenth of the viewport rather than a hairline.
+    const above = box.top - top
+    const below = viewport.height / 2 - box.bottom
+    expect(Math.abs(above - below)).toBeLessThanOrEqual(2)
+    expect(below).toBeGreaterThan(viewport.height * 0.1)
+  })
+
+  test('the scroll and the slide are one gesture', async ({ page }) => {
+    await openEntity(page)
+    const viewport = page.viewportSize()!
+    await enterMode(page, TERMS)
+    // In the half the panel is about to cover, which is the case the scroll exists
+    // for, and pressed from there in-page so the trace starts on the same frame.
+    const placed = await placeCandidateAt(page, BELOW_FOLD_TERM, 0.8)
+    expect(placed.top).toBeGreaterThan(viewport.height / 2)
+
+    const gesture = await pressAndTraceGesture(page, BELOW_FOLD_TERM)
+
+    // It is a real journey, not a state that was already correct: the page ends
+    // somewhere else entirely.
+    expect(gesture.final).not.toBe(gesture.before)
+
+    // Four frames in, the sheet is still on its way and the page is already moving.
+    // Neither waits for the other, which is the first half of "one gesture" (§6.4).
+    expect(gesture.early.panelTop).toBeGreaterThan(viewport.height / 2)
+    expect(gesture.early.scrollY).not.toBe(gesture.before)
+    // …and it is eased rather than jumped: four frames in it is on the way, not there.
+    expect(gesture.early.scrollY).not.toBe(gesture.final)
+
+    // The second half, and the one the wording is explicit about: the selection is
+    // ALREADY IN PLACE by the time the panel has finished arriving (§6.4).
+    expect(gesture.arrival.scrollY).toBe(gesture.final)
+  })
+
+  test('Vissza returns to level 1, and a second Vissza to the open menu', async ({ page }) => {
+    await openEntity(page)
+    await enterMode(page, TERMS)
+    await pressCandidateAt(page, SELECTED_TERM, 0.4)
+    await expectPanelSettled(page)
+
+    await chromeButton(page, BACK).click()
+    await expect(page.locator(PANEL)).toBeHidden()
+
+    // Level 1, whole: no selection, every candidate revealed and selectable again,
+    // and the dim still up (§6.3).
+    await expect(page.locator('body[data-kb-selected]')).toHaveCount(0)
+    await expect(page.locator(`${ARTICLE} ${TERM}[data-kb-selected]`)).toHaveCount(0)
+    await expect(page.locator('body[data-kb-select="terms"]')).toHaveCount(1)
+    await expect(page.locator(OVERLAY)).toBeVisible()
+    expect(await lifted(page)).toEqual(Array(TERM_COUNT).fill('term'))
+    expect(await hitTest(page, TERM)).toEqual(Array(TERM_COUNT).fill('self'))
+
+    // …and the step after that is the open menu, not the default state.
+    await chromeButton(page, BACK).click()
+    await expect(chromeButton(page, TERMS)).toBeVisible()
+    await expect(page.locator(OVERLAY)).toBeVisible()
+    expect(await lifted(page)).toEqual([])
+  })
+
+  test('closing does not scroll the page back', async ({ page }) => {
+    await openEntity(page)
+    await enterMode(page, TERMS)
+    await pressCandidateAt(page, BELOW_FOLD_TERM, 0.8)
+    await expectPanelSettled(page)
+    await expectScrollSettled(page)
+    const placed = await page.evaluate(() => window.scrollY)
+
+    await chromeButton(page, BACK).click()
+    // All the way down and gone, so a scroll back would have had time to happen.
+    await expect.poll(() => panelTop(page)).toBe(page.viewportSize()!.height)
+    await expectScrollSettled(page)
+
+    // §6.4: the reader has been reading in the new position, and yanking the page
+    // out from under them on close would be disorienting.
+    expect(await page.evaluate(() => window.scrollY)).toBe(placed)
+  })
+})
+
+test.describe('Állítások — level 2', () => {
+  test('lights the one claim and shows the references aimed at it', async ({ page }) => {
+    await openEntity(page)
+    await enterMode(page, CLAIMS)
+    expect(await lifted(page)).toEqual(Array(CLAIM_COUNT).fill('claim-block_claim'))
+
+    await pressCandidateAt(page, SELECTED_CLAIM, 0.4)
+    await expectPanelSettled(page)
+
+    expect(await lifted(page)).toEqual(['claim-block_claim'])
+    await expect(page.locator(`body[data-kb-selected="${SELECTED_CLAIM}"]`)).toHaveCount(1)
+    await expect(page.locator('body[data-kb-select="claims"]')).toHaveCount(1)
+
+    // The same narrowing, on the other mode: `byTarget` for this claim, well under
+    // the unfiltered list, in the same list markup (§7.2).
+    await expect(page.locator(`${PANEL} section:not([hidden])`)).toHaveCount(1)
+    await expect(panelRows(page, 'claim', SELECTED_CLAIM)).toHaveCount(SELECTED_CLAIM_ROWS)
+    expect(SELECTED_CLAIM_ROWS).toBeLessThan(UNFILTERED_ROWS)
+    // Numbered by its position in the body, which is the number the body prints in
+    // front of it — this is the fifth claim of the eight.
+    await expect(
+      page.locator(PANEL).getByRole('heading', { name: '5. állítás', exact: true }),
+    ).toBeVisible()
+
+    // …and the other seven are back under the dim, every one of them.
+    const hits = await hitTestInFreeHalf(page, `${CLAIM} .claim-block_index`, false)
+    expect(hits.filter((hit) => hit === 'self')).toHaveLength(1)
+    expect(hits.filter((hit) => hit === 'overlay_overlay')).toHaveLength(CLAIM_COUNT - 1)
+  })
+
+  test('Vissza returns to level 1 with every claim selectable again', async ({ page }) => {
+    await openEntity(page)
+    await enterMode(page, CLAIMS)
+    await pressCandidateAt(page, SELECTED_CLAIM, 0.4)
+    await expectPanelSettled(page)
+
+    await chromeButton(page, BACK).click()
+    await expect(page.locator(PANEL)).toBeHidden()
+    await expect(page.locator('body[data-kb-selected]')).toHaveCount(0)
+    expect(await lifted(page)).toEqual(Array(CLAIM_COUNT).fill('claim-block_claim'))
+  })
+})
+
+test.describe('level 2 under prefers-reduced-motion', () => {
+  test('the scroll jumps rather than eases', async ({ page }) => {
+    // `page.emulateMedia` rather than the `reducedMotion` fixture, which on
+    // Playwright 1.62.1 leaves `matchMedia` false in the page — see
+    // `kb-panel.test.ts`.
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    await openEntity(page)
+    expect(
+      await page.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches),
+    ).toBe(true)
+
+    await enterMode(page, TERMS)
+    await placeCandidateAt(page, BELOW_FOLD_TERM, 0.8)
+
+    // The discriminating trace, against the animated one above: the page has moved,
+    // and on the very first frames it is ALREADY where it is going. Nothing is
+    // removed — the selection still ends up in the free upper half (§6.4).
+    const gesture = await pressAndTraceGesture(page, BELOW_FOLD_TERM)
+    expect(gesture.final).not.toBe(gesture.before)
+    expect(gesture.early.scrollY).toBe(gesture.final)
+    expect(gesture.arrival.scrollY).toBe(gesture.final)
+
+    const viewport = page.viewportSize()!
+    const box = await boxOf(page, BELOW_FOLD_TERM)
+    expect(box.top).toBeGreaterThanOrEqual(await headerBottom(page))
+    expect(box.bottom).toBeLessThanOrEqual(viewport.height / 2)
+  })
+})
+
+test.describe('picking one logs nothing', () => {
+  test('entering and leaving level 2 in both modes produces no console noise', async ({ page }) => {
+    const noise: string[] = []
+    page.on('console', (message) => {
+      if (message.type() === 'error' || message.type() === 'warning') {
+        noise.push(`${message.type()}: ${message.text()}`)
+      }
+    })
+    page.on('pageerror', (error) => noise.push(`pageerror: ${error.message}`))
+
+    await openEntity(page)
+    for (const [mode, candidate] of [
+      [TERMS, SELECTED_TERM],
+      [CLAIMS, SELECTED_CLAIM],
+    ] as const) {
+      await enterMode(page, mode)
+      await pressCandidateAt(page, candidate, 0.4)
+      await expectPanelSettled(page)
+      await chromeButton(page, BACK).click()
+      await expect(page.locator(PANEL)).toBeHidden()
+      await chromeButton(page, BACK).click()
+      await expect(chromeButton(page, mode)).toBeVisible()
+      await chromeButton(page, BACK).click()
+      await expect(page.locator(OVERLAY)).toHaveCount(0)
+    }
+
+    expect(noise).toEqual([])
+  })
+})
+
+test.describe('the level-2 panels without JavaScript', () => {
+  test.use({ javaScriptEnabled: false })
+
+  test('every term panel and every claim panel is in the served HTML', async ({ page }) => {
+    await page.goto(ENTITY)
+
+    // §2.1 draws no line between a content the menu opens and one the body opens:
+    // these are the per-term and per-claim narrowings of the inbound-reference list,
+    // and nothing runs here, so this is what a crawler is served.
+    await expect(page.locator(`main ${PANEL}`)).toHaveCount(1)
+    await expect(page.locator(PANEL)).toBeHidden()
+
+    // One per term and one per claim — the same two counts the body carries, which
+    // is what "every one of them" has to mean.
+    await expect(page.locator(`${PANEL} [data-kb-panel-kind="term"]`)).toHaveCount(TERM_COUNT)
+    await expect(page.locator(`${PANEL} [data-kb-panel-kind="claim"]`)).toHaveCount(CLAIM_COUNT)
+    await expect(page.locator(`${ARTICLE} ${TERM}`)).toHaveCount(TERM_COUNT)
+    await expect(page.locator(`${ARTICLE} ${CLAIM}`)).toHaveCount(CLAIM_COUNT)
+
+    // …and every one of them is addressed by the id of the element that selects it,
+    // so the click that picks a candidate has a panel to find.
+    const targets = await page
+      .locator(`${PANEL} [data-kb-panel-target]`)
+      .evaluateAll((sections) => sections.map((s) => s.getAttribute('data-kb-panel-target')))
+    const ids = await page
+      .locator(`${ARTICLE} ${TERM}, ${ARTICLE} ${CLAIM}`)
+      .evaluateAll((elements) => elements.map((element) => element.id))
+    expect([...targets].sort()).toEqual([...ids].sort())
+
+    // The rows themselves, not just the sections: the filtered list is served whole.
+    await expect(panelRows(page, 'term', SELECTED_TERM)).toHaveCount(SELECTED_TERM_ROWS)
+    await expect(panelRows(page, 'claim', SELECTED_CLAIM)).toHaveCount(SELECTED_CLAIM_ROWS)
   })
 })

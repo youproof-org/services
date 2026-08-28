@@ -37,9 +37,18 @@ const INCOMING = 'Bejövő hivatkozások'
 const PANEL = '#kb-panel'
 const PANEL_BODY = '#kb-panel .panel_body'
 const PANEL_HEADER = '#kb-panel .panel_header'
-/** One row. `next.config.ts` names a module class `<file>_<local>`. */
-const ROW = '#kb-panel .backlinks-panel_link'
-const EMPTY = '#kb-panel .backlinks-panel_empty'
+/**
+ * One row of the UNFILTERED list. `next.config.ts` names a module class
+ * `<file>_<local>`.
+ *
+ * Scoped to the `incoming` section rather than to the panel, because the panel is
+ * not one list any more: §7.2's filtered variants are the same component with the
+ * same classes, and a page carries one per term and one per claim (§6.3, level 2),
+ * all server-rendered beside this one. `e2e/kb-select.test.ts` is where those are
+ * counted; everything here is about the unfiltered case.
+ */
+const ROW = '#kb-panel [data-kb-panel-kind="incoming"] .backlinks-panel_link'
+const EMPTY = '#kb-panel [data-kb-panel-kind="incoming"] .backlinks-panel_empty'
 
 function stack(page: Page) {
   return page.locator('.menu-stack_stack')
