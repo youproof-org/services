@@ -1,6 +1,10 @@
 # Knowledge Graph Node URLs & Redirect Infrastructure — Plan
 
-Status: Draft, iterating
+Status: **Built, through implementation-plan phase 5.** Every knowledge-base page this
+design calls for exists, with the arrangement settled by the
+[page-layout sub-plan](yp-162-page-layout-sub-plan.md) rather than by §7 below.
+Sitemaps, the navigation entry, the crawler gate and the doc updates remain —
+implementation-plan phases 6–9. §5 (JSON-LD) and §6 (redirects) stay out of scope.
 Audience: Claude Code (implementation), with full repo context (`youproof-org/services`, `youproof-org/content`, `youproof-org/editor`)
 Repos affected: `services` (routing, D1/manifest, Terraform), `content` (YAML schema, slugs)
 Implementation plan: [`yp-162-knowledge-graph-urls-implementation-plan.md`](yp-162-knowledge-graph-urls-implementation-plan.md) — codebase analysis, open decisions, and phased build derived from this design
@@ -154,18 +158,29 @@ Note: claims and terms have no standalone pages, so they are **not** separately 
 ## 7. Page design — content blocks per page type
 
 > **Superseded, for everything about arrangement, by the
-> [page-layout sub-plan](yp-162-page-layout-sub-plan.md).** That document settles what a
-> reader sees on each knowledge-base page and how it is put together; where it
-> disagrees with this section, **it wins**.
+> [page-layout sub-plan](yp-162-page-layout-sub-plan.md) — which has now shipped.** That
+> document settled what a reader sees on each knowledge-base page and how it is put
+> together, and **all 21 of its phases are built**; where it disagrees with this
+> section, **it wins**. What actually exists is
+> [its §12](yp-162-page-layout-sub-plan.md#12-what-actually-landed) — read that rather
+> than the lists below if you want the state of the pages.
 >
-> The **breadcrumb chains immediately below are unchanged** — the sub-plan uses them
-> as they stand. What changed in the *content lists* themselves is recorded per
-> subsection, and in short: §§7.1–7.4 no longer stack "Defined terms", "Remarks",
-> "Referenced by" or "Embedding context" underneath the body (they become the entity
-> page's context menu, its panel, and the ownership-chain links — sub-plan §6.1, §6.2);
-> §7.2 loses "Consequences"; §7.3 loses "Uses"; §7.5 loses the excerpt and the
-> "referenced by N" count and gains a row per synonym; §7.6 and §7.7 lose the
-> summary/preview line. §7.8 stands as written.
+> The **breadcrumb chains immediately below are unchanged** — the sub-plan used them
+> as they stand, and `lib/content/kb-breadcrumbs.ts` builds all seven. What changed in
+> the *content lists* themselves is recorded per subsection, and in short: §§7.1–7.4 no
+> longer stack "Defined terms", "Remarks", "Referenced by" or "Embedding context"
+> underneath the body (they became the entity page's context menu, its panel, and the
+> ownership-chain links — sub-plan §6.1, §6.2); §7.2 lost "Consequences"; **§7.3's
+> "Uses" was not built**; §7.5 lost the excerpt and the "referenced by N" count and
+> gained a row per synonym; §7.6 and §7.7 lost the summary/preview line. §7.8 stands as
+> written and was built as written.
+>
+> **One thing changed again during the build**, and it cuts across §§7.1–7.4: an owner
+> ruling in the sub-plan's phase 17 settled that a panel about a referenced thing shows
+> **its name, its kind and a link — never its body, its claim text or its synonyms**.
+> Serving a copy of every cited body into every citing page cost roughly a third of
+> every knowledge-base page. See
+> [sub-plan §7.1](yp-162-page-layout-sub-plan.md#71-outgoing-references).
 
 High-level proposal for what each new page type should contain and why. Layout and interaction details were deferred to a subsequent design pass — that pass is the [page-layout sub-plan](yp-162-page-layout-sub-plan.md), and its §§2–7 supersede the arrangement implied here.
 
@@ -287,9 +302,16 @@ A single page covering all terms across all definitions/theorems/remarks.
 > count is not what a reader looking a term up is asking. **Synonyms get their own
 > rows**, alphabetized among the canonical forms rather than tucked under them, each
 > naming the canonical form it belongs to and linking to the same defining anchor — so
-> the page is one row per *name*, **342** of them (217 canonical, 125 synonyms).
+> the page is one row per *name*, **341** of them (217 canonical, 124 synonyms).
 > Ordering is Hungarian-alphabetical, the same collation the two index pages use. The
 > client-side filter stands.
+>
+> **Built, and this is what the page renders.** The count was 342 / 125 when the
+> amendment was written; `content fb76f03` removed a term that listed its own canonical
+> form among its synonyms, which would have put the same name on the index twice. The
+> root page's card says both numbers in words — "341 szócikk / 217 fogalom nevei és
+> szinonimái" — because 341 is a count of names and 217 a count of terms, and §7.8's
+> rule is that the root page must not advertise a number the index contradicts.
 
 ### 7.6 Definitions index page (`/definiciok`)
 

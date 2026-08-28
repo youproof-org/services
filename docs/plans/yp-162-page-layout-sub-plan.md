@@ -5,19 +5,26 @@
 **Sibling sub-plan:** [`yp-162-identifiers-and-anchors-sub-plan.md`](yp-162-identifiers-and-anchors-sub-plan.md) — **shipped**; it settled the anchor grammar, the fully qualified reference targets, and the identifier constraints these pages render.
 **Repos touched:** `youproof-org/services` only — no content or editor change is
 implied by anything here.
-**Status:** **UX settled** (§§2–7 complete, decisions in §8, nothing open in §9) and
-**phases written** — §10 is 21 phases; §9.1 records what measuring for them turned up.
-No code has been written yet.
+**Status:** **Shipped — all 21 phases of §10 are built**, on branch
+`feat/yp-162-page-layout-design` in `services`. **[§12](#12-what-actually-landed) is
+what actually landed**, where it diverged from these phases and why, and the final
+measurements; read it before §10. §§2–7 remain the design, corrected in place at the
+four points where an owner ruling during the build replaced what they said — §7.1's
+per-target-kind panel table, §7.2's panel ordering, §7.2's reference count, and
+§2.1's no-JavaScript reading. §9.1's measurements are likewise corrected where the
+build disagreed with them; the disagreements themselves are listed in §12.
 
 §§2–7 describe what the reader sees and does, not how it is built. §10 is the build
-order that follows from it — 21 narrow phases, each written so that a session picking
-up one of them needs the phase text and one or two source files, not this whole
-document. The two data-shape prerequisites recorded in §9 are its phases 2–4.
+order that followed from it — 21 narrow phases, each written so that a session picking
+up one of them needed the phase text and one or two source files, not this whole
+document. The two data-shape prerequisites recorded in §9 were its phases 2–4.
 
 **This sub-plan replaces §7 of the design plan and the layout half of parent phase
 5 (§H).** Parent §H's component table, its H.3 interaction sketch and §7's per-page
-content lists are inputs, not decisions — where this document disagrees with them,
-this document wins, and the parent gets amended when this one is complete.
+content lists were inputs, not decisions — where this document disagrees with them,
+this document wins. The parent has been amended accordingly: its §H is marked done,
+its §Shipped carries phase 5, and its H.2/H.3 are pointers rather than
+specifications.
 
 > ### Working agreement (inherited from the parent plan)
 >
@@ -114,6 +121,18 @@ part of these pages behind the one thing crawlers are least reliable at.
 
 A secondary benefit: it also makes every one of these pages work with JavaScript
 disabled, degrading to a long page with everything visible instead of a broken one.
+
+> **"Everything visible" was ambiguous, and phase 20 settled it.** Phase 13 served
+> every panel's content and left it `hidden`, which satisfies the sentence above about
+> the served HTML but leaves a reader without JavaScript looking at a page whose
+> panels are present and invisible. **The owner ruled that "shows every panel's
+> content inline" requires visibility, not just presence.** Phase 20 implemented it
+> with a stylesheet inside `<noscript>` in `Panel.tsx`, which is the only mechanism
+> that answers "no JavaScript" without a class a script would have to add. **The
+> served bytes are unchanged** — the sections still carry `hidden`, so a crawler reads
+> identical HTML and a scripted browser never parses the rule. What that costs, and
+> what it does not buy, is in [§12](#12-what-actually-landed): a no-JavaScript page
+> still does not *print* its panel content.
 
 ---
 
@@ -667,21 +686,36 @@ reader stays on the proof they are reading and inspects the definition it leans 
 Actually going to the referenced node is available from the panel, as a second,
 deliberate step.
 
-**What the panel shows** — a short design note; to be fine-tuned during
-implementation:
+**What the panel shows** — **one arrangement, not five. Corrected by an owner ruling
+during phase 17; the table this subsection used to carry is superseded.**
+
+Every kind renders the same three things: **the target's own name, the kind of thing
+it is, and a link to its page.** No body, no excerpt, no claim text, no synonyms.
 
 | the reference points at | the panel shows |
 |---|---|
-| a definition, theorem, proof or remark | its label and title, its body, and a link to its page |
-| a claim | the claim itself, and a link to the owning node's page at that claim |
-| a term | its canonical form and synonyms, and a link to the defining node at that term |
-| a section, chapter or part | its title and a link to it — no body |
+| a definition, theorem, proof or remark | its title, its label (`15.6. Definíció`), and a link to its page |
+| a claim | its number, the node that asserts it, and a link to that node's page at the claim |
+| a term | its canonical form, the node that defines it, and a link to that node's page at the term |
+| a book, part, chapter or section | its title and a link to it |
 | an external URL | nothing; it is an ordinary outbound link and never opens a panel |
 
-The through-line: **enough to answer "what is this?" without leaving the page**, plus
-one link for the reader who wants the whole thing. A definition's body is short enough
-to show in full; a chapter's is not, which is why the book-hierarchy row is a link
-only.
+*What the table said before, and what the build measured.* It gave each kind its own
+treatment: an entity's **full body**, **the claim itself**, a term's **synonyms**. Put
+together with §2.1's rule that panel content is in the served HTML, that meant every
+citing page carried a copy of everything it cited — a definition's body served once per
+citation. Measured over the export with the previews in place, they accounted for
+**52 KiB of the average knowledge-base page's 177.0 KiB** and **0.67 MB of the largest
+page's 2.10 MB** (the figures recorded in `components/kb/panels/ReferencePanel.tsx`'s
+own header comment). **The owner ruled the preview is not worth that.**
+
+The through-line survives, narrowed: **enough to answer "what is this called, and what
+kind of thing is it?" without leaving the page**, plus one link for the reader who wants
+the whole thing. The old table already prescribed exactly this for one row — *"a section,
+chapter or part: its title and a link to it — no body"* — so the ruling is that row
+applied to all five kinds rather than a sixth treatment. Five arrangements becoming one
+is also five panels reading as one design. The size figures before and after are in
+[§12.3](#123-the-measurements).
 
 **A reference stays a real link even though clicking it opens a panel** ([D1](#8-decision-log)).
 It has a genuine destination and crawler discoverability is the reason this ticket
@@ -718,25 +752,48 @@ ordering available without inventing a relevance notion, and the heaviest user o
 node is a reasonable guess at the most useful one. Revisit once the page exists and
 it is clear whether it reads well.
 
+**Each row also names what kind of thing the source is**, in words — definíció,
+tétel, bizonyítás, megjegyzés, fejezet, szakasz. *Added by an owner ruling during
+phase 14.* Two sources of different kinds can carry the same title, and then the title
+alone does not tell the reader which row goes where: measured over the local export's
+backlink lists, **57 same-title groups span more than one kind**, eight of them in
+`gyuru-test`'s own list — "Oszthatóság" among them, a *section* citing it 14 times
+next to a *definition* of that name citing it twice. Without the label those two rows
+read alike and lead elsewhere. `data-backlink-source` carries the same kind for
+markup that needs to target it.
+
 **The list can be very long.** Measured on the content: the entity with the most
-inbound references, `gyuru-test`, is cited by **222 distinct sources** (549
-references), while the median entity has **2**. The design has to hold both without
-branching — hence the panel's internal scroll (§6.4). Sizing the layout for the
-median case and letting the 222-row case degrade is the failure mode to avoid.
+inbound references, `gyuru-test`, is cited by **222 distinct sources** (**548**
+references — the 549 this subsection carried until phase 14 was one too many, see
+[§9.1 note 2](#91-notes-from-deriving-10--measured-not-assumed)), while the median
+entity has **2** — **1** counting only the sources whose rows the panel actually
+renders, which is what §9.1 note 1 measures. The design has to hold both without
+branching — hence the panel's
+internal scroll (§6.4). Sizing the layout for the median case and letting the 222-row
+case degrade is the failure mode to avoid.
 
 The filtered variants use the same list, narrowed:
 
 - selecting a **term** in Fogalmak mode shows only the inbound references targeting
-  **that term**, above the term's canonical form and synonyms;
+  **that term**, below the term's canonical form and the node that defines it;
 - selecting a **claim** in Állítások mode shows only the inbound references targeting
   **that claim**.
 
+**Identity first, in every panel.** *Corrected by an owner ruling during phase 16.*
+This subsection used to put the references "above the term's canonical form and
+synonyms" — references first. Phase 16's own text listed identity first, and the
+ruling is that identity comes first: the heading names the thing, the line under it
+qualifies it, and the list follows. The wording here was the error; the code is
+right, and `ReferencePanel` (§7.1) follows the same order so that three panels read as
+one design.
+
 So the Bejövő hivatkozások panel is the unfiltered case of the same thing, and all
-three should look like one list rather than three designs.
+three should look like one list rather than three designs. They are literally the same
+component — `BacklinkList`, called with a different array.
 
 *Row layout will be fine-tuned during implementation.* What is settled: grouped by
-source, one row per source, a count per row, and book sections and chapters included
-alongside entities.
+source, one row per source, a count per row, a kind per row, and book sections and
+chapters included alongside entities.
 
 #### Going to a source
 
@@ -746,7 +803,14 @@ rectangle used for an ordinary anchor arrival (§6.2).
 
 The worked case: the reader has selected a term on a theorem page, and the panel says
 a particular section references it five times. Following that row opens the chapter
-page, and all five of that section's references to the term are marked.
+page, and all of that section's references to the term are marked.
+
+> **The worked case marks nine elements where the row reports five. That is not a
+> defect** — recorded here so the next reader does not treat it as one. A row's count
+> is over reference *entries* (the section's `refs` map), while a mark is a *rendered*
+> link, and that section writes its five entries **3, 3, 1, 1 and 1** times: 9 marks.
+> Both numbers are right about different things. `e2e/kb-highlight.test.ts` asserts
+> nine, from the five the row counted, and says so in its own header comment.
 
 **The page scrolls to the first of those references**, not to the section heading.
 The section anchor was only ever a proxy for "the references are somewhere in there";
@@ -919,6 +983,26 @@ Everything below was measured while writing the phases, on the real content at
 decision; each is a fact a phase has to be built against, and each is attached to
 the phase that owns it.
 
+> **Checked against the finished build, at the end of phase 21.** Two notes moved.
+> **Note 4's glossary counts** are now **341 rows, 217 canonical and 124 synonyms** —
+> a content fix during the run removed a duplicated synonym; see the note. **Note 5's
+> "0 occurrences of `tudasbazis`" is historical**: the export now has **540** pages
+> under that segment and `check-anchors` checks **22 594** fragment links, up from
+> 11 086.
+>
+> Re-measured and unchanged: note 1 in full (537 / median 1 / 244 empty and the
+> distribution `244, 164, 73, 42, 14`; 389 / median 1 / 168 empty and
+> `168, 117, 55, 36, 13`; 293 pages with any, median 5; 129 over five rows, 56 over
+> twenty); note 2 (548 from 222 local, 533 from 207 deployed); note 3's **3789**
+> distinct pairs and its 207; note 9 (190/190 proofs and 72/72 remarks carry no
+> authored title, so 262 of 537). Note 3's `467 / 353 / 114` breakdown is over the
+> *pre-filter* fold, which the shipped index no longer exposes, so it stands as
+> recorded rather than re-verified. Notes 6, 7 and 8 are statements about the code and
+> are discharged: the nav item and the homepage block are still parent phases J.1–J.2
+> (see [§12](#12-what-actually-landed)), `data-target-fqn` did come off
+> `ref.target.fqn` at the point `InlineText` emits the anchor, and the icons are
+> generated into `public/assets/generated/kb-menu/` by `scripts/gen-kb-menu-icons.mjs`.
+
 **1. The panel's row counts.** §7.2 says the median entity has 2 inbound sources. That
 figure is recoverable only by counting every authored source, including the ones whose
 own page this build does not generate (note 3). Counting what the panel would actually
@@ -943,11 +1027,12 @@ panels are empty, and **129** of the 537 need more than five rows, **56** more t
 twenty. The conclusion §6.4 draws (one list, internally scrolled, header pinned) is
 unchanged and better supported than the median suggested.
 
-**2. `gyuru-test` is 548 references from 222 sources, not 549.** §6.4 and §7.2 both
-say 549; the count over the built graph is 548 (222 distinct sources). On a deployed
-build it is **533 references from 207 sources** — see note 3. The design conclusions
-are unaffected; phase 14 should cite the measured numbers rather than the ones in
-§§6.4/7.2.
+**2. `gyuru-test` is 548 references from 222 sources, not 549.** §7.2 said 549 (§6.4
+quotes the 222 sources but no reference count); the count over the built graph is 548
+from 222 distinct sources. On a deployed build it is **533 references from 207
+sources** — see note 3. The design conclusions are unaffected. *Discharged:* phase 14
+cited the measured numbers, §7.2 has been corrected to 548, and
+`components/kb/panels/BacklinksPanel.tsx` carries 222/207 in its header comment.
 
 **3. A backlink source can be a page this build does not generate.** Of the **3789**
 distinct (target, source) pairs, **467** have a source with no page on a deployed
@@ -967,14 +1052,26 @@ dropped. Either way the empty state of §7.2 is reached by **168 of the 389** sh
 pages.
 
 **4. A glossary row cannot be keyed by its name.** §4's one-row-per-name list comes
-to **342 rows**: 217 canonical forms plus **125** synonyms, spread over 83 terms that
+to **341 rows**: 217 canonical forms plus **124** synonyms, spread over 83 terms that
 have at least one. Those names are not unique — 9 canonical forms are carried by more
 than one node (already known, [parent D5](yp-162-knowledge-graph-urls-implementation-plan.md#d5--glossary-grouping-for-duplicate-terms-settled--shipped-in-phase-4)),
-14 synonym strings occur more than once, and **6 synonyms are also somebody else's
-canonical form** (`egységelem`, `inverz`, `maradékosztálygyűrű`, `nullelem`,
-`szorzás`, `összeadás`). A row is therefore identified by (owner, term key, name),
-and two rows may legitimately carry the same visible text and point at different
+13 of the 110 distinct synonym strings occur more than once, and **6 synonyms are also
+somebody else's canonical form** (`egységelem`, `inverz`, `maradékosztálygyűrű`,
+`nullelem`, `szorzás`, `összeadás`). A row is therefore identified by (owner, term key,
+name), and two rows may legitimately carry the same visible text and point at different
 nodes — which is also why §4 requires a synonym row to name its canonical form.
+
+> **The counts here were 342 rows / 125 synonyms / 14 repeated synonym strings when
+> this note was written, and every target in this document written before phase 4 is
+> off by one.** A content fix during the run removed a duplicated synonym:
+> `gyuru-test.yaml`'s `multiplicative-identity` listed `egységelem` among its **own**
+> canonical form's synonyms, so the same name would have appeared twice on the index,
+> both rows linking to the same anchor. Fixed in the content repo as `fb76f03` on
+> `feat/yp-162-knowledge-graph-pages` ("Stop a term from listing its own canonical form
+> as a synonym"); the only term in the content doing it.
+> `multiplikatív egységelem` stays — a real alternative name. The corrected figures
+> above are what the built page renders: `grep -o 'data-filter-text="'
+> out/hu/tudasbazis/fogalmak.html | wc -l` is 341.
 
 **5. The anchor gate decides where the routing phase can stop.**
 [`scripts/check-anchors.mjs`](../../apps/website/scripts/check-anchors.mjs) reads the
@@ -986,8 +1083,14 @@ only, and the entity routes land in phase 9 together with the body that renders 
 ids. Today the export contains **0** occurrences of `tudasbazis`, so nothing is
 checked yet.
 
+> *Historical, and it held.* The split worked: phase 5 shipped the four list pages
+> with a green gate and phase 9 shipped the 537 entity pages with a green one. The
+> finished export has **540** pages under `tudasbazis` and `check-anchors` reports
+> **22 594** fragment links across 587 pages, **0 broken, 0 skipped** — up from
+> 11 086 across 46.
+
 **6. Where the shell work already has an owner.** The nav item and the homepage entry
-block that §2 assumes are parent phases [J.1 and J.2](yp-162-knowledge-graph-urls-implementation-plan.md#j-phase-7--navigation-discovery-internal-linking-services);
+block that §2 assumes are parent phases [J.1 and J.2](yp-162-knowledge-graph-urls-implementation-plan.md#j-phase-7--navigation-discovery-internal-linking-services--j1j2-not-started);
 §10 does not duplicate them. Breadcrumb chains are inseparable from the pages that
 carry them, so they land in phases 5 and 9 — which discharges parent J.3.
 
@@ -1022,6 +1125,13 @@ reach for the helper by reflex.
 ---
 
 ## 10. Phases
+
+> **All 21 phases have shipped.** This section is the build order as it was written,
+> kept as the record of why the order was what it was. It is corrected in place at the
+> points where the build proved a figure or a gate command wrong, each correction marked
+> as such. **[§12](#12-what-actually-landed) is what actually landed** — the commits,
+> the divergences, the final measurements, and what is still outstanding. Read that
+> first if you want the state of the code rather than the plan for reaching it.
 
 Twenty-one phases, deliberately narrow. The order is a consequence of the layout, not
 an input to it: the documents that still describe the old design are corrected first,
@@ -1059,7 +1169,8 @@ What is *not* repeated in every phase, because it holds for all of them:
 - **Baseline, measured on this branch today, not quoted from the parent plan:**
   46 HTML pages in both env modes, 14.3 s wall for `pnpm build` including `prebuild`,
   **96/96** tests passing, 11 086 internal fragment links checked with 0 broken, and
-  **0** occurrences of `tudasbazis` anywhere in the export.
+  **0** occurrences of `tudasbazis` anywhere in the export. *(Each of these five is
+  re-measured at the end of the run in [§12.3](#123-the-measurements).)*
 - **Localized strings** come from `lib/i18n/locales.json`. The four labels these
   pages need — `knowledgeBase`, `definitionsIndex`, `theoremsIndex`, `glossary` — and
   every container segment already exist there. No new literal belongs in a component.
@@ -1095,6 +1206,11 @@ What is *not* repeated in every phase, because it holds for all of them:
 
 **Phases 1–4 have no visible output** and phases 15–20 add no pages; the page count
 moves exactly twice, at phase 5 (+4) and phase 9 (+389 deployed / +537 local).
+
+*That held exactly.* The export ends at **46 + 4 + 537 = 587** locally and
+**46 + 4 + 389 = 439** on staging. Commits per phase are in
+[§12.1](#121-the-21-phases-and-their-commits); two phases marked "no" in the *new
+files?* column did add files, and why is in [§12.2](#122-divergences-from-the-phases-and-why).
 
 ---
 
@@ -1230,7 +1346,9 @@ is phase 4. Keep the one-row-per-(owner, term key) rule that parent D5 settled.
 **Done when.** `pnpm test` passes with a test asserting a synonym-carrying term's
 entry exposes them and a synonym-less one exposes none or an empty list, and, against
 the real content, `graph.glossary.length === 217` unchanged with **83** entries
-carrying at least one synonym and **125** synonyms in total.
+carrying at least one synonym and **124** synonyms in total. *(125 as written; the
+content fix in §9.1 note 4 landed after this phase and moved every synonym target in
+this document down by one.)*
 
 **Review gate.** Small enough to review as a diff.
 
@@ -1261,7 +1379,7 @@ same collation. Both are pure data, so both land before any page renders.
   to, whether it *is* the canonical, and the entry's `href`. Sort the whole list on
   `name` with the comparator — so a synonym sorts under its own initial, not its
   canonical's (§4).
-- **Do not key a row by its name.** 342 rows over 206 distinct canonical forms and 110
+- **Do not key a row by its name.** 341 rows over 206 distinct canonical forms and 110
   distinct synonym strings, with 6 strings that are both (§9.1 note 4). The identity of
   a row is (owner, term key, name).
 
@@ -1269,7 +1387,8 @@ same collation. Both are pure data, so both land before any page renders.
 yields three rows; a synonym row names its canonical and points at the same `href`;
 `á` sorts among `a` rather than after `z`; and the six strings that are both a synonym
 and someone's canonical form yield two distinct rows with different `href`s. Against
-the real content: **342** rows, of which **217** canonical and **125** synonym.
+the real content: **341** rows, of which **217** canonical and **124** synonym. *(342 /
+125 as written — see §9.1 note 4.)*
 
 **Review gate.** The row shape and the sort order are what phases 7 and 8 render.
 
@@ -1343,11 +1462,16 @@ the two type indexes, so the root page and the page it links to can never disagr
 (§3).
 
 **One thing to decide and record here.** Fogalmak has two defensible counts: **217**
-terms, or the **342** rows the page actually lists (§9.1 note 4). §3's rule is that the
-root page must not advertise a number the index contradicts, which argues for 342 —
-but "342 fogalom" is not true, since 342 is a count of names. Pick one, say it in the
+terms, or the **341** rows the page actually lists (§9.1 note 4). §3's rule is that the
+root page must not advertise a number the index contradicts, which argues for 341 —
+but "341 fogalom" is not true, since 341 is a count of names. Pick one, say it in the
 card's wording rather than leaving a bare number, and make the glossary page's own
 count agree (phase 7).
+
+*Decided in phase 6:* the card says both, in words — the wording lives in
+`locales.json` and `test/locale-labels.test.mjs` asserts that the two glossary counts
+read as rows and the terms they name, so the row count and the term count can never be
+presented as the same number.
 
 **Done when.** `pnpm build` and `SITE_ENV=staging pnpm build` both green, and the
 definition and theorem counts on the rendered page equal those index pages' own counts
@@ -1373,7 +1497,7 @@ the phase to iterate in.
 from phase 4.
 
 **Do.**
-- The full **342-row** list, server-rendered in name order, every row a link to the
+- The full **341-row** list, server-rendered in name order, every row a link to the
   defining anchor. This is the crawler's view and the no-JavaScript view; the filter
   narrows what is already there and never produces it (§2.1, §4).
 - A **synonym row names its canonical form** — the destination carries a different name
@@ -1385,11 +1509,19 @@ from phase 4.
 - Alphabetical section markers are worth trying but must not leave empty headings
   behind when filtering (§4) — if that costs more than it gives, drop them and say so.
 
-**Done when.** `pnpm build` green; `grep -c 'class="[^"]*glossary-row' out/hu/tudasbazis/fogalmak.html`
-is **342**; with JavaScript disabled the page still lists and links all 342; filtering
-to a string no row contains shows "nincs találat" and clearing restores 342. A test on
-the row projection is already in phase 4, so this phase's test surface is the filter's
-matching, if it is worth one.
+**Done when.** `pnpm build` green;
+`grep -o 'data-filter-text="' out/hu/tudasbazis/fogalmak.html | wc -l` is **341**; with
+JavaScript disabled the page still lists and links all 341; filtering to a string no row
+contains shows "nincs találat" and clearing restores 341. A test on the row projection is
+already in phase 4, so this phase's test surface is the filter's matching, if it is worth
+one.
+
+> *Two corrections to this gate, both settled in phase 21.* The count is **341**, not
+> 342 (§9.1 note 4). And the command was `grep -c 'class="[^"]*glossary-row' …`, which
+> **can only ever print 0 or 1**: the exported HTML is a single line and `grep -c`
+> counts *lines*, not matches. `grep -o … | wc -l` is the form that counts occurrences.
+> The same mistake is in phases 13 and 19 and is corrected there too — see the note
+> under phase 13.
 
 **Review gate.** Visual, plus the no-JavaScript check. Row layout is provisional (§4).
 
@@ -1620,12 +1752,27 @@ existing overlay/scroll interaction.
 - Links inside the panel are ordinary links and navigate; a panel never opens a nested
   panel (§6.4).
 
-**Done when.** `grep -c 'kb-panel' out/hu/tudasbazis/definiciok/gyuru-test.html` ≥ 1
-with JavaScript disabled — i.e. the content is served, not generated; the panel opens
-over the bottom half, the page behind does not scroll, the panel does scroll, and
-Vissza closes it and unlocks; with `prefers-reduced-motion` there is no slide. Every
-Kontextus panel across the export has three levels — check by grepping the export for
-an empty one, expecting **0**.
+**Done when.** `grep -o 'data-kb-panel-kind="' out/hu/tudasbazis/definiciok/gyuru-test.html | wc -l`
+is non-zero with JavaScript disabled — i.e. the content is served, not generated; the
+panel opens over the bottom half, the page behind does not scroll, the panel does
+scroll, and Vissza closes it and unlocks; with `prefers-reduced-motion` there is no
+slide. Every Kontextus panel across the export has three levels — check by grepping the
+export for an empty one, expecting **0**.
+
+> **The gate as written was `grep -c 'kb-panel' out/…html` ≥ 1, and it measures far
+> less than it looks like it does.** The exported HTML is a **single line**, and
+> `grep -c` counts *lines*, not matches — so it prints 0 or 1 and nothing else, and
+> "≥ 1" is satisfied by one occurrence as readily as by a thousand. It would catch a
+> panel that was not served at all and nothing weaker than that. `grep -o … | wc -l` is
+> the form that counts occurrences. Phase 19's gate and phase 7's have the same shape
+> and are corrected there.
+>
+> **A second trap for any future gate of this kind: content passed as a `ReactNode`
+> prop into a client component is serialized a *second* time, into the RSC flight
+> payload**, so a bare attribute-name grep double-counts. Measured on
+> `gyuru-test.html`: `grep -o 'data-target-fqn'` gives **84** and
+> `grep -o 'data-target-fqn="'` gives **42**; across the export, 35 796 against
+> 17 902 — exactly double, both times. **Match `attr="` to count DOM attributes.**
 
 **Review gate.** The panel geometry and the scroll lock; phases 14–17 all reuse both.
 
@@ -1853,8 +2000,18 @@ the two existing scrubbers; `components/newsletter/NewsletterLanding.tsx` and
 
 **Do.**
 1. **Every rendered reference carries `data-target-fqn`** — `ref.target.fqn` is already
-   on the entry at render time, for all fourteen kinds; an external target has none and
-   gets none.
+   on the entry at render time, for **thirteen** of the fourteen kinds; an external
+   target has none and gets none.
+
+   > **"All fourteen kinds" is thirteen in practice.** `RefTargetKind`
+   > (`lib/content/fqn.ts`) has fourteen members, but `InlineText` has **no branch for
+   > a `parts.` target** — a pre-existing gap, not one this phase introduced — and no
+   > reference in the content targets one, so nothing renders through it. Its seven
+   > link-emitting branches cover book, chapter, section, the four standalone kinds,
+   > claim, term, and the four entity kinds: thirteen. `InlineText.tsx`'s own comment
+   > says "thirteen path kinds". A `parts.` target would fall through to the
+   > `ref-error` span, which is visible, so the gap fails loudly if content ever adds
+   > one.
 2. **A source row appends the query parameter at click time**, naming the FQN to
    highlight, so the served HTML keeps clean hrefs and no crawler sees the variant
    (D7).
@@ -1880,11 +2037,18 @@ all five marked and the page at the first of them. The parameter is gone from th
 address bar afterwards; a copied link carries no parameter; a hand-crafted parameter
 containing anything outside the character rule is ignored rather than acted on; the
 newsletter and consent parameters still work when one arrives alongside this one.
-`grep -c 'data-target-fqn' out/hu/tudasbazis/definiciok/gyuru-test.html` is non-zero,
-and `grep -rho 'href="/hu/[^"]*?[^"]*"' out | wc -l` is **0** — the parameter is added
-by the client at click time and must never be in the served HTML (D7). Note the export
-does contain 47 query-carrying hrefs today (`/icon.svg?…` and one YouTube link), so
-check internal paths specifically rather than grepping for `?`.
+`grep -o 'data-target-fqn="' out/hu/tudasbazis/definiciok/gyuru-test.html | wc -l` is
+non-zero, and `grep -rho 'href="/hu/[^"]*?[^"]*"' out | wc -l` is **0** — the parameter
+is added by the client at click time and must never be in the served HTML (D7). Note the
+export does contain 47 query-carrying hrefs today (`/icon.svg?…` and one YouTube link),
+so check internal paths specifically rather than grepping for `?`.
+
+> *Two corrections to this gate.* `grep -c` counts lines, not matches, on a
+> single-line export file, so "non-zero" was a much weaker assertion than it reads as —
+> and the trailing `="` matters, because a bare `data-target-fqn` also matches the RSC
+> flight payload and double-counts. Both are the same pair of mistakes as phase 13's gate; see the
+> note there. Measured on the finished export: **42** DOM attributes on `gyuru-test`,
+> **17 902** across the export over **651** distinct values.
 
 **Review gate.** Interaction review plus the parameter-validation check written as a
 test, since it is the one place a URL value reaches a selector.
@@ -1969,6 +2133,13 @@ exclusions. Added by this document:
   gap and should be its own piece of work. Note that §2.1 limits the damage: every
   page's content, including all the panel contents, is in the served HTML, so nothing
   is *unreachable* — only the interactive layer is pointer-only.
+
+  **As built, the gap has a third part worth naming**, found in phase 17 and confirmed
+  in phase 21: **reference marks are `<a>` elements, so unlike terms and claims they
+  *are* focusable — and phase 17 makes them inert while a mode is open without
+  removing them from the tab order.** So a keyboard reader can reach a mark whose
+  activation is being swallowed, which is worse than a mark they cannot reach at all.
+  Whoever picks the deferred work up owns this too; it is not a separate finding.
 - **Responsive detail for the entity-page chrome.** The half-screen panel and the
   captioned button stack are specified once, not per breakpoint. What they do on a
   phone in landscape, or at 320px, is settled during implementation.
@@ -1980,3 +2151,262 @@ exclusions. Added by this document:
 - **Search across the knowledge base.** The three list pages filter what is already on
   them; there is no cross-page search, and the site header's existing search is
   untouched.
+
+---
+
+## 12. What actually landed
+
+Written at the end of phase 21, on branch `feat/yp-162-page-layout-design` in
+`services`. Everything below was measured on that branch, not carried over from the
+phase texts — correcting the phase texts where they disagreed was the point of the
+phase, and the disagreements are named. The parent plan's
+[§Shipped](yp-162-knowledge-graph-urls-implementation-plan.md#shipped--phases-15) is
+the model for this format and carries the same account of phase 5 as a whole.
+
+### 12.1 The 21 phases and their commits
+
+| phase | what landed | commits |
+|---|---|---|
+| 1 | Amended the parent's §H and the design plan's §7 so neither still specified a different page | `629c8b9` |
+| 2 | Backlink index over fully qualified name targets: `graph.backlinks`, grouped by source with a count, page-existence filtered | `9d56bb3` |
+| 3 | `synonyms` carried onto `GlossaryEntry` | `de06b69` |
+| 4 | One row per name (`lib/content/glossary-rows.ts`) and one Hungarian comparator (`lib/content/collate.ts`) | `ad05dca`, `758fc80` |
+| 5 | KB routing at depths 1–3, `KbPageShell`, breadcrumb chains for all seven KB page kinds (`lib/content/kb-breadcrumbs.ts`) | `79da168` |
+| 6 | The knowledge-base root page, with published counts | `70a110f` |
+| 7 | The glossary page and the shared `ListFilter` (`lib/utils/filter-text.ts`) | `b1d9da5` |
+| 8 | The definitions and theorems index pages — one component, twice | `8ca085b` |
+| 9 | Entity routes at depths 4–6: header, body, q.e.d., per-node excerpt (`lib/content/kb-excerpt.ts`) | `f01b672` |
+| 10 | The ownership-chain links | `08de0ba` |
+| 11 | The six menu icons as generated assets (`scripts/gen-kb-menu-icons.mjs`) | `5be5653` |
+| 12 | The menu, the overlay, one back step four ways (`lib/kb/chrome-state.ts`) — **and Playwright** | `cf7c730`, `545ae84` |
+| 13 | The panel: shell, slide, scroll lock, Kontextus | `3608835` |
+| 14 | Bejövő hivatkozások; the visible kind label followed later | `d37993d`, `7eac0f0` |
+| 15 | Selection modes, level 1: the reveal | `7ac0f9c` |
+| 16 | Level 2: `TermPanel`, `ClaimPanel`, and the scroll into the upper half | `441b3c5` |
+| 17 | Outgoing references: inert, intercepted, `ReferencePanel`; then the no-body ruling | `a94669f`, `1aa44eb` |
+| 18 | The arrival marker (`lib/utils/motion.ts`) | `97709a2` |
+| 19 | `data-target-fqn`, the highlight parameter, back-reference marks (`lib/kb/highlight.ts`) | `37147d1` |
+| 20 | The print / no-JavaScript / reduced-motion sweep | `d4aa639` |
+| 21 | This section, and the parent's | *this diff* |
+
+The phase texts were written before any of it; `cc7abbf` is where they were derived and
+is the baseline every "before" figure below is measured against.
+
+### 12.2 Divergences from the phases, and why
+
+- **Playwright was added mid-run, and it was not in the plan at all.** Phase 12's D2
+  contract — one back step means one back step, four ways in — is about `pushState` and
+  `popstate` in a real browser, and no unit test can assert it. `545ae84` added
+  `@playwright/test`, `playwright.config.ts`, `scripts/serve-out.mjs` (which serves the
+  export and refuses to start without one) and a workspace catalog entry. Every phase
+  from 12 on then has browser tests instead of an "interaction review" it could only
+  describe. `pnpm test:e2e` is deliberately **not** part of `pnpm test`: it needs a
+  browser binary and a built `out/`. The run ends with **114 browser tests in 8 files**
+  where the baseline had none.
+- **§7.1's per-target-kind table was superseded by an owner ruling in phase 17**, and
+  it is the largest divergence in the run. See §7.1, which now carries the ruling and
+  the measurement that prompted it; the size figures are in §12.3.
+- **§7.2's panel ordering was corrected by an owner ruling in phase 16** — identity
+  first, in every panel. §7.2's wording was the error; the code is right. Recorded in
+  §7.2.
+- **A backlink row gained a visible kind label** — definíció / tétel / bizonyítás /
+  megjegyzés / fejezet / szakasz — by an owner ruling that landed as `7eac0f0`, after
+  phase 17 had started rather than inside phase 14. **57 same-title groups in the
+  backlink data span more than one kind**, eight of them in `gyuru-test`'s own list, so
+  without the label two rows could read alike and lead elsewhere. Recorded in §7.2.
+- **§2.1's no-JavaScript reading was ambiguous, and phase 20 settled it.** Phase 13
+  served every panel's content and left it `hidden`, which satisfies §2.1's letter.
+  Phase 20 ruled that "shows every panel's content inline" requires visibility, and
+  implemented it with a stylesheet inside `<noscript>`. **The served bytes did not
+  change.** Recorded in §2.1.
+- **Two phases marked "no new files" in the phase table added some.** Phase 4 added
+  `lib/content/collate.ts` and `lib/content/glossary-rows.ts`; phase 16 added
+  `components/kb/panels/TermPanel.tsx` and `ClaimPanel.tsx`. In both cases the
+  alternative was a second responsibility inside `graph.ts` or `Panel.tsx`. The column
+  was a guess made before the code existed and is not worth trusting.
+- **Four phases shipped as two commits** (4, 12, 14, 17) and the rest as one. Three of
+  those second commits are the rulings above; `758fc80` is a comment fix.
+- **The glossary counts moved during the run**, from 342 rows / 125 synonyms to
+  **341 / 124**, because of a content fix rather than a code change:
+  `gyuru-test.yaml`'s `multiplicative-identity` listed `egységelem` among its own
+  canonical form's synonyms, so the same name would have appeared twice on the index,
+  both rows linking to the same anchor. Fixed in the content repo as **`fb76f03`** on
+  `feat/yp-162-knowledge-graph-pages`. **Every target written into this document before
+  phase 4 is off by one**; §9.1 note 4 and the phase 3, 4, 6 and 7 texts are corrected
+  in place.
+- **Three gate commands in the phase texts measure far less than they look like they
+  do**, and are corrected where they stand (phases 7, 13, 19). `grep -c` counts *lines*,
+  and the exported HTML is one line, so it prints 0 or 1 regardless of how many matches
+  there are — enough to catch "nothing was served", nothing weaker. Separately, content passed as a
+  `ReactNode` prop into a client component is serialized a **second** time into the RSC
+  flight payload, so a bare attribute-name grep double-counts: on `gyuru-test.html`,
+  `grep -o 'data-target-fqn'` gives 84 and `grep -o 'data-target-fqn="'` gives 42.
+  **Match `attr="` to count DOM attributes.**
+- **Phase 19's "all fourteen kinds" is thirteen.** `InlineText` has no branch for a
+  `parts.` target and no content references one. Pre-existing; recorded under phase 19.
+
+### 12.3 The measurements
+
+Baseline is `cc7abbf`, measured on this branch before phase 1. Everything in the
+"final" columns was measured at the end of phase 21.
+
+| | baseline | final, local | final, `SITE_ENV=staging` |
+|---|---|---|---|
+| HTML pages in the export | 46 | **587** | **439** |
+| of which knowledge-base pages | 0 | 541 (537 entity + 3 index + root) | 393 (389 + 3 + root) |
+| `pnpm build` wall, incl. `prebuild` + `postbuild` | 14.3 s | **22.780 s** | **21.811 s** |
+| of which `next build` compile | — | 4.7 s | 4.6 s |
+| unit tests, `pnpm test` | 96 | **202** | — |
+| browser tests, `pnpm test:e2e` | none — Playwright did not exist | **114 in 8 files** | — |
+| fragment links, `check-anchors` | 11 086 / 0 broken / 0 skipped | **22 594 / 0 / 0** | **22 335 / 2 accepted / 0** |
+| `pnpm typecheck` | clean | clean | — |
+| `du -sh out/` | — | **234M** | 171M |
+| average knowledge-base page | — | **130.2 KiB** over 540 files under `out/hu/tudasbazis` | — |
+| largest knowledge-base page | — | **1 432 765 B (1.43 MB)** | — |
+
+Verbatim, from the local build's `postbuild`:
+
+```
+set-html-lang: scanned 587 HTML file(s), rewrote lang on 0.
+[check-build-version] footer version OK across 586 page(s).
+[check-analytics-build] OFF (measurementId=unset, cookiePolicyVersion=1); 587 page(s) clean of pre-consent GA.
+[check-anchors] 22594 internal fragment link(s) checked across 587 page(s).
+pnpm build  44.09s user 8.58s system 231% cpu 22.780 total
+```
+
+**Build time — parent R8 is discharged.** R8 feared growth at ~11× the page count.
+**12.8× the pages cost 1.59× the wall time**, so the per-page cost fell by an order of
+magnitude: the fixed `prebuild` generators dominate a 46-page build and are amortised
+over 587. `next build` itself compiles in 4.7 s.
+
+**Tests.** The 106 new unit tests are +13 on `kb-graph.test.mjs` and eight new files:
+`kb-chrome` 32, `kb-excerpt` 17, `glossary-rows` 9, `highlight-param` 8,
+`locale-labels` 7, `kb-breadcrumbs` 7, `anchor-kind` 7, `filter-text` 6. The 114
+browser tests are `kb-highlight` 24, `kb-select` 22, `kb-reference` 18, `kb-chrome` 13,
+`kb-panel` 11, `kb-backlinks` 10, `kb-arrival` 9, `kb-sweep` 7.
+
+**Page size, and the ruling that shaped it.** The chain, in order:
+
+| point in the run | average KB page | largest KB page | `out/` |
+|---|---|---|---|
+| before `ReferencePanel` | 113.4 KB | 1.41 MB | 216 MB |
+| with §7.1's full-body previews | 173.2 KB *(recorded as 177.0 KiB in `ReferencePanel.tsx`)* | 2.10 MB | 268 MB |
+| after the owner's no-body ruling | 124.9 KiB | 1.43 MB | 228 MB |
+| end of phase 20, measured here | **130.2 KiB** | **1.43 MB** | **234M** |
+
+The two pre-ruling figures come from phase 16's and phase 17's own reports and cannot
+be re-measured from this tree; **they do not reconcile exactly** — 173.2 KB is 169.1
+KiB, not 177.0 KiB — and the reason is unrecorded. The direction and the order of
+magnitude are not in doubt: the previews cost roughly a third of every page, because
+§7.1's full-body rule combined with §2.1's served-HTML rule served a definition's body
+once per citation. The 124.9 → 130.2 KiB drift after the ruling is phases 18–20 adding
+the arrival marker, `data-target-fqn` and the `<noscript>` sheet.
+
+**What the graph and the pages actually hold:**
+
+- **537 entity pages** locally, **389** on staging — the A9/D9 prediction, unchanged.
+- **Glossary:** 341 rows over 217 canonical terms, 124 synonyms, 83 terms carrying at
+  least one. 206 distinct canonical forms, 110 distinct synonym strings, 6 strings that
+  are both.
+- **Backlinks:** **3789** distinct (target, source) pairs. `gyuru-test` is the extreme
+  at **222 sources / 548 references** locally and **207 / 533** on staging; the median
+  entity shows **1**. The **empty state is reached by 244 of 537** pages locally and
+  **168 of 389** on staging — §7.2's empty state carries nearly half the pages, which
+  is why it reads as an answer rather than as a missing list.
+- **`data-target-fqn`:** **42** DOM attributes on `gyuru-test`, **17 902** across the
+  export, over **651** distinct values.
+- **The no-JavaScript census**, on `/hu/tudasbazis/tetelek/maradekosztalygyuruk` — the
+  page chosen because it carries all five panel kinds *and* an ownership link:
+  **23 panel sections**, being 1 Kontextus (3 levels), 1 Bejövő hivatkozások (13 rows
+  over 34 references), 4 term panels, 5 claim panels and 12 reference panels. With
+  scripting off, all 23 are visible — and **all 23 still carry `hidden`**, which is the
+  same assertion read the other way: the reveal is a stylesheet, not a change to the
+  bytes. `e2e/kb-sweep.test.ts` pins every one of those numbers, against the built
+  export rather than the dev server.
+
+### 12.4 Accepted states — recorded so nobody fixes them
+
+- **The staging build exits 1, by design.** `check-anchors` reports exactly two broken
+  anchors on staging, both into `alice-es-bob-atlepi-a-celvonalat`:
+  `#szakaszok.az-aks-primteszt` and
+  `#szakaszok.primitiv-gyokok-es-a-diffie-hellman-kulcscsere-protokoll`. They cite
+  content not yet migrated, and the stub in their place carries a link to the legacy
+  page. **The owner ruled they stay.** The condition on this acceptance is
+  **exactly these two** — a third is a real failure, and so is either of these two
+  becoming a different fragment.
+- **At 360px, on a first visit, the consent banner covers the Menü button outright**
+  (`$z-banner: 950` over `$z-kb-chrome: 800`, both in `styles/_variables.scss`). **The
+  owner ruled this acceptable**: the cookie question is a one-time gate, and once it is
+  answered the corner is free. Not a defect.
+- **The §7.2 worked case marks nine elements where the row reports five.** Both numbers
+  are right about different things; see the note in §7.2.
+- **Two CSS transitions are unguarded by `prefers-reduced-motion`, deliberately.**
+  `components/kb/kb-root-page.module.scss:53` (a card's hover `box-shadow`) and
+  `app/globals.scss:104` (`.ref-concept`'s hover `text-decoration-color`, site-wide and
+  pre-existing since the initial migration in `d4ae76b`). Neither moves anything, and
+  neither is one of §6.4's three animations.
+- **`display: contents` is the floor for the no-JavaScript pairing.** A browser without
+  it falls back to the titles as one block and the contents as another. Legible, not
+  broken.
+
+### 12.5 Unresolved — stated, not fixed
+
+- **A no-JavaScript page still does not print its panel content.** With the
+  `<noscript>` reveal and the `@media print` hide both in play, the print rule wins.
+  The article and the ownership links print, which is what §2 asks for ("it does not
+  print"). Carrying the appended sections into a no-JavaScript printout would need a
+  new ruling; nobody has asked for one.
+- **The four interaction review gates from phases 15–18 have not had a human review.**
+  The level-1 reveal, level 2 on a long body, modified-click behaviour, and a real
+  cross-chapter arrival all have browser tests asserting the mechanics, and none has
+  been looked at by a person. They are **outstanding, not passed.**
+- **Terms, claims and reference marks are not keyboard-focusable** — and an inert
+  reference mark stays focusable while its activation is swallowed, because
+  `pointer-events: none` is what makes it inert. §11 records the deferral and now
+  records this third part of it.
+- **`check-anchors` has a blind spot: it validates fragment links only, not whole-path
+  links.** A link to a page that does not exist passes it. The crawler on a live
+  deploy is the layer that would catch that, and it is parent phase 8.
+- **`pnpm lint` is unusable repo-wide.** `next lint` is deprecated in this Next
+  version and drops into an interactive ESLint setup prompt, exiting 1 on an untouched
+  tree. Pre-existing, and it means **no phase in this run had a lint gate**. Migrating
+  to the ESLint CLI is its own piece of work.
+- **`scripts/check-analytics-build.mjs` does not load `.env.local`.**
+  `gen-cookie-policy-version.mjs`, `gen-content-lastmod.mjs` and `set-html-lang.mjs`
+  all `import './lib/load-env.mjs'`; that script does not, so a local staging build
+  needs `NEXT_PUBLIC_GA_MEASUREMENT_ID` passed on the command line or the check reports
+  a mismatch. Out of scope this run; worth fixing.
+- **Playwright's `test.use({ reducedMotion: 'reduce' })` is a silent no-op** on 1.62.1
+  in this setup: it does not set the media query, so a test relying on it passes without
+  testing anything. `page.emulateMedia({ reducedMotion: 'reduce' })` works. Worth
+  knowing before writing the next browser test.
+
+### 12.6 What parent phases 6–9 still owe
+
+None of this is in scope for this sub-plan, and all of it is now the only thing between
+the knowledge base and a deployed, crawlable state. Verified against the tree at the end
+of phase 21:
+
+- **§I — sitemaps.** `app/sitemap.ts` contains **no** KB URLs and
+  `scripts/split-sitemap.mjs` does not exist. `out/sitemap.xml` carries **31** `<loc>`
+  entries against 587 pages in the export. Nothing in the knowledge base is
+  sitemapped.
+- **§J.1–J.2 — navigation and discovery.** `SiteHeader`'s `navLinks` is still the two
+  hardcoded literals `'Cikkek'` and `'Hírek'`; there is no "Tudásbázis" item, and no
+  knowledge-base block on the locale homepage. **§2 of this sub-plan assumes the nav
+  item and it does not exist** — so today no knowledge-base page is reachable from the
+  homepage, and therefore not from the crawler's seed either. This is the most
+  consequential of the four.
+- **§K — the quality gate.** `tools/smoke-tests/scripts/crawl.mjs` still has
+  `MAX_PAGES = 500` and `MAX_DEPTH = 5`, and `cappedAtMaxPages` is a `console.log`, not
+  a fatal finding. **Parent R3's overflow is now measured at 439 of the 500 cap**, before
+  the five unpublished chapters ship. `MAX_DEPTH` counts **link hops from the seed**, and
+  the shortest chain to the deepest entity page is homepage → KB root → theorem index →
+  theorem → proof → its remark: **depth 5, exactly at the limit, with no margin** — and
+  only once §J.2 gives the homepage a link to the KB root at all. Parent §K.1 asks for 7.
+- **§L — documentation.** `docs/i18n-design.md` §4a and its field-summary table, and
+  `docs/content-site-and-static-generation.md`'s canonical-URL rule and page counts,
+  still describe a knowledge base whose entities are non-addressable.
+
+The parent plan's §I, §J, §K and §L carry the same account, and its R3 has been
+re-measured to 439.
