@@ -164,11 +164,10 @@
 
 // ── A pressed outgoing reference (panels/ReferencePanel.tsx) ──
 //
-// §7.1: what the mark points at, then one link to the whole of it. The same
-// arrangement as a selected term or claim above — the heading names the thing, what
-// follows qualifies it — so these reuse `.selectionMeta` and `.selectionClaim` where
-// what they show is the same and add only what is new: the target's label, its body,
-// and the link out.
+// What the mark points at is named, and then linked: the heading is the target's own
+// name, one line under it says what kind of thing that is, and one link leads to the
+// whole of it. Nothing of the target's content is shown here (see
+// panels/ReferencePanel.tsx for why), so three rules are the whole treatment.
 
 // The line under the heading that says what kind of thing this is, or which node
 // holds it: "15.6. Definíció" for an entity, the owning node's name for a claim or a
@@ -181,17 +180,6 @@
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: $gray-500;
-}
-
-// The referenced entity's body, rendered by the same `ContentBlocks` the page uses.
-// It brings its own typography, so this only closes the gap to the link below —
-// content-blocks.module.scss margins collapse at the end of a flow.
-.referenceBody {
-  margin: 0 0 0.75rem;
-
-  > :last-child {
-    margin-bottom: 0;
-  }
 }
 
 .referenceOpen {

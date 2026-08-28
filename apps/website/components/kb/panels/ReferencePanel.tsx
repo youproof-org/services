@@ -1,19 +1,12 @@
 import Link from 'next/link'
 import type { ReactNode } from 'react'
-import ContentBlocks from '@/components/content/ContentBlocks'
 import InlineText from '@/components/content/InlineText'
 import { getContentGraph } from '@/lib/content'
 import { kbNodeByKey, kbNodeLabel, kbNodeTitle } from '@/lib/content/graph'
 import { kbRefs } from '@/lib/content/urls'
 import { formatLocaleLabel, getLocaleLabel } from '@/lib/i18n/config'
-import { renderKatex } from '@/lib/utils/math'
 import { isPathTarget } from '@/lib/content/types'
-import type {
-  AnchorParent,
-  ContentGraph,
-  KbNode,
-  PathRefTarget,
-} from '@/lib/content/types'
+import type { ContentGraph, KbNode, PathRefTarget } from '@/lib/content/types'
 import type { KbPanelSection } from '../Panel'
 import { webClaims } from './ClaimPanel'
 import styles from '../panel.module.scss'
@@ -23,21 +16,36 @@ import styles from '../panel.module.scss'
  *
  * **What a reference panel is for.** A reference in a proof is part of the sentence
  * it sits in, and following it costs the reader the sentence. So a plain press does
- * not navigate: it shows what the mark points at, next to the prose that leans on
- * it, and offers the target's own page as a second, deliberate step. What is shown
- * is §7.1's table — enough to answer "what is this?", never the whole neighbourhood:
+ * not navigate: it says what the mark points at, next to the prose that leans on it,
+ * and offers the target's own page as a second, deliberate step.
  *
- *   - an entity (definition, theorem, proof, remark): its label, its title and its
- *     body, which for a definition is the whole answer;
- *   - a claim: the claim itself, and the page of the node asserting it, at it;
- *   - a term: its canonical form and its synonyms, and the defining node's page;
- *   - the book hierarchy (a book, a part, a chapter, a section): the title and the
- *     link, and deliberately no body — a chapter's is a chapter long;
+ * **What it says.** The thing's own name, the kind of thing it is, and the way
+ * there — one arrangement for every target kind:
+ *
+ *   - an entity (definition, theorem, proof, remark): its title, and its label
+ *     ("15.6. Definíció"), which is what tells the reader whether they are about to
+ *     land on a definition or a theorem;
+ *   - a claim: its number, and the node that asserts it;
+ *   - a term: its canonical form, and the node that defines it;
+ *   - a book, a part, a chapter or a section: the title, which is the whole of what
+ *     identifies one;
  *   - an external URL: no panel at all, so the mark stays an ordinary outbound link.
  *     That is the one case this module answers by declining to build a section.
  *
+ * **Why no preview of the target's content.** §7.1 also asked for the entity's body,
+ * the claim restated and the term's synonyms, and §2.1 requires panel content in the
+ * served HTML — so every citing page carried a copy of everything it cited. Measured
+ * over the export, the previews cost the average knowledge-base page 52 KiB of its
+ * 177.0 KiB and the largest page 0.67 MB of its 2.10 MB, because a definition's body
+ * is served once per citation. The ruling is that the preview is not worth that: the
+ * panel answers "what is this called, and what kind of thing is it?", and the rest is
+ * one link away on the target's own page. §7.1 already prescribed exactly that for a
+ * section, so this is that row applied to all five kinds rather than a sixth
+ * treatment — and five arrangements becoming one is also five panels reading as one
+ * design.
+ *
  * **Identity first, then the rest**, which is the arrangement `TermPanel` and
- * `ClaimPanel` already use: the heading names the thing, and everything under it
+ * `ClaimPanel` already use: the heading names the thing, and the line under it
  * qualifies it. §7.2 is ambiguous about the order and phase 16 settled it for the
  * two level-2 panels; a third arrangement here would make three panels read as three
  * designs.
@@ -57,34 +65,17 @@ import styles from '../panel.module.scss'
  * name beside it.
  */
 
-/**
- * The anchor prefix for a claim or a term rendered inside a reference panel.
- *
- * A referenced body brings its own claims and terms, and both render with an id
- * (`components/content/blocks/ClaimBlock.tsx`, `components/content/InlineText.tsx`).
- * Rendered under the page's own scope those ids would collide with the page's —
- * `#fogalmak.{slug}` would stop being an anchor and "which element is the selection"
- * would stop having one answer — so the panel's copies get a namespace of their own,
- * as `ClaimPanel` does for the same reason. The target's fully qualified name is
- * what makes it unique per panel: one panel per target (see above), so one prefix.
- * Nothing links to these ids and nothing selects them; they exist only because that
- * is how a claim and a term render.
- */
-const PANEL_PREFIX = 'kb-panel'
-
-const scopeFor = (node: KbNode, target: PathRefTarget): AnchorParent => ({
-  locale: node.locale,
-  prefix: `${PANEL_PREFIX}.${target.fqn}`,
-})
-
 /** What the panel says about the thing a reference points at. */
 interface ReferenceSubject {
   /** The target's own page, at the target: the reference's own resolved href. */
   href: string
   /** The panel's heading — the target's name, whatever names it. */
   title: ReactNode
-  /** What is shown about it, or null for the book hierarchy (§7.1: no body). */
-  detail: ReactNode
+  /**
+   * The line under the heading: what kind of thing this is, or which node holds it.
+   * Null for the book hierarchy, where the title is already the whole answer.
+   */
+  label: ReactNode
 }
 
 /**
@@ -104,7 +95,7 @@ interface ReferenceSubject {
 export function referencePanels(node: KbNode): KbPanelSection[] {
   const graph = getContentGraph()
   const sections: KbPanelSection[] = []
-  // By href, because that is what identifies a panel — see PANEL_PREFIX above.
+  // By href, because that is what identifies a panel — one panel per target.
   const seen = new Set<string>()
 
   for (const entry of Object.values(kbRefs(node.references) ?? {})) {
@@ -133,11 +124,12 @@ interface ReferencePanelProps {
 export default function ReferencePanel({ node, subject }: ReferencePanelProps) {
   return (
     <>
-      {subject.detail}
+      {subject.label && <p className={styles.referenceLabel}>{subject.label}</p>}
       {/*
-        The second, deliberate step §7.1 asks for: the whole thing, on its own page.
-        An ordinary link, as every link in a panel is — panel content is what the
-        reader is meant to be acting on, so it navigates (§6.4).
+        The second, deliberate step §7.1 asks for, and now the whole of what the panel
+        offers beyond the name: the thing itself, on its own page. An ordinary link,
+        as every link in a panel is — panel content is what the reader is meant to be
+        acting on, so it navigates (§6.4).
       */}
       <p className={styles.referenceOpen}>
         <Link href={subject.href} className={styles.referenceLink}>
@@ -149,7 +141,7 @@ export default function ReferencePanel({ node, subject }: ReferencePanelProps) {
 }
 
 /**
- * §7.1's table, one branch per target kind.
+ * The name and the label per target kind, one branch each.
  *
  * Null where the graph holds nothing to show. For an entity, a claim or a term that
  * cannot happen — `resolveRefHrefs` throws while building the graph unless the
@@ -169,40 +161,13 @@ function subjectOf(
     case 'remark': {
       const entity = kbNodeByKey(graph, target.fqn)
       if (!entity) return null
-      const scope = scopeFor(entity, target)
       return {
         href,
         // `kbNodeTitle` rather than the authored title: 262 of the 537 nodes have
         // none (every proof and every remark), and it is the one name that is
         // always there — the same name a backlink row shows for the same node.
         title: <InlineText text={kbNodeTitle(graph, entity)} />,
-        detail: (
-          <>
-            <p className={styles.referenceLabel}>{kbNodeLabel(graph, entity)}</p>
-            {/*
-              The body as the reader met it in the book: the same `ContentBlocks`
-              over the same blocks, so the typography, the LaTeX, the claims and the
-              terms are the ones the target's own page shows. Its OWN references are
-              resolved for the knowledge-base context, so a link out of this preview
-              lands on a page rather than on a chapter anchor.
-
-              No `embedIndices` or `figureIndices`: no knowledge-base body carries an
-              embed or a recall block (measured: 0 of the 537), and a figure inside
-              one keeps its caption without the chapter-scoped number — that number
-              belongs to the chapter this preview is not in.
-            */}
-            <div className={styles.referenceBody}>
-              <ContentBlocks
-                blocks={entity.body}
-                refs={kbRefs(entity.references)}
-                context="web"
-                parentEntity={scope}
-                terms={entity.terms}
-                termParent={scope}
-              />
-            </div>
-          </>
-        ),
+        label: kbNodeLabel(graph, entity),
       }
     }
 
@@ -210,36 +175,16 @@ function subjectOf(
       const owner = kbNodeByKey(graph, target.parentFqn)
       if (!owner) return null
       // The same list `ContentBlocks` numbers, so "3. állítás" here is the claim the
-      // owning node's body prints a 3 in front of.
-      const claims = webClaims(owner)
-      const index = claims.findIndex((claim) => claim.name === target.name)
-      const claim = claims[index]
-      if (!claim) return null
-      const scope = scopeFor(owner, target)
+      // owning node's body prints a 3 in front of. The number is all the name a
+      // claim has, which is why this list is still needed with the text gone.
+      const index = webClaims(owner).findIndex((claim) => claim.name === target.name)
+      if (index < 0) return null
       return {
         href,
         title: formatLocaleLabel(node.locale, 'kbPanelClaim', { index: index + 1 }),
-        detail: (
-          <>
-            {/* Which node asserts it: a claim has no page of its own, so its name
-                is its number, and a number needs to say what it is a number in. */}
-            <p className={styles.referenceLabel}>{kbNodeTitle(graph, owner)}</p>
-            <div className={styles.selectionClaim}>
-              <InlineText
-                text={claim.content}
-                refs={kbRefs(owner.references)}
-                terms={owner.terms}
-                termParent={scope}
-              />
-              {claim.formula && (
-                <div
-                  className={styles.selectionFormula}
-                  dangerouslySetInnerHTML={{ __html: renderKatex(claim.formula, true) }}
-                />
-              )}
-            </div>
-          </>
-        ),
+        // Which node asserts it: a claim has no page of its own, so its name is its
+        // number, and a number needs to say what it is a number in.
+        label: kbNodeTitle(graph, owner),
       }
     }
 
@@ -247,51 +192,35 @@ function subjectOf(
       const owner = kbNodeByKey(graph, target.parentFqn)
       const term = owner?.terms?.[target.name]
       if (!owner || !term) return null
-      const synonyms = term.synonyms ?? []
       return {
         href,
         // The canonical form, which is what `TermPanel` heads its panel with — the
         // glossary's name for the term rather than the words the prose displayed.
         title: <InlineText text={term.canonical} />,
-        detail: (
-          <>
-            <p className={styles.referenceLabel}>{kbNodeTitle(graph, owner)}</p>
-            {synonyms.length > 0 && (
-              <p className={styles.selectionMeta}>
-                <span className={styles.selectionMetaLabel}>
-                  {getLocaleLabel(node.locale, 'kbPanelTermSynonyms')}
-                </span>{' '}
-                {/* One comma-separated line, as `TermPanel` shows them: a synonym is
-                    a name, and the glossary is where each gets a row. */}
-                <InlineText text={synonyms.join(', ')} />
-              </p>
-            )}
-          </>
-        ),
+        label: kbNodeTitle(graph, owner),
       }
     }
 
-    // The book hierarchy: the title and the link, and no body (§7.1). A part and a
-    // book index are not in that row's wording, which names "a section, chapter or
-    // part" — they are the same kind of thing one and two steps up, and the reason
-    // the row exists (a chapter's body is a chapter long) applies to them at least
-    // as strongly. The content references one book and one chapter from a
-    // knowledge-base node today, and one section.
+    // The book hierarchy: the title and the link. A part and a book index are not in
+    // §7.1's wording, which names "a section, chapter or part" — they are the same
+    // kind of thing one and two steps up, and one title is as much as identifies any
+    // of them. The content references one book and one chapter from a knowledge-base
+    // node today, and one section.
     case 'book': {
       const book = graph.books.get(target.fqn)
-      return book ? { href, title: <InlineText text={book.title} />, detail: null } : null
+      return book ? { href, title: <InlineText text={book.title} />, label: null } : null
     }
     case 'part': {
       const part = graph.parts.get(target.fqn)
-      return part ? { href, title: <InlineText text={part.title} />, detail: null } : null
+      return part ? { href, title: <InlineText text={part.title} />, label: null } : null
     }
     case 'chapter': {
       const chapter = graph.chapters.get(target.fqn)
-      return chapter ? { href, title: <InlineText text={chapter.title} />, detail: null } : null
+      return chapter ? { href, title: <InlineText text={chapter.title} />, label: null } : null
     }
     case 'section': {
       const section = graph.sections.get(target.fqn)
-      return section ? { href, title: <InlineText text={section.title} />, detail: null } : null
+      return section ? { href, title: <InlineText text={section.title} />, label: null } : null
     }
 
     // A standalone item — an article, a newsletter, a custom page, a landing page.

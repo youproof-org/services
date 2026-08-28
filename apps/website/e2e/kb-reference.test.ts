@@ -62,6 +62,8 @@ const HIERARCHY_ENTITY = '/hu/tudasbazis/definiciok/reszhalmaz/megjegyzesek/resz
 const SECTION_TARGET =
   '/hu/konyvek/alice-es-bob/fejezetek/alice-es-bob-felcsavarja-a-szamegyenest#szakaszok.maradekosztalygyuruk'
 const SECTION_TARGET_TITLE = 'Maradékosztálygyűrűk'
+/** Its panels, read off the built HTML: 16, of which that section is the one. */
+const HIERARCHY_PANEL_COUNT = 16
 
 const MENU = 'Menü'
 const BACK = 'Vissza'
@@ -328,13 +330,15 @@ test.describe('a plain click opens the panel instead of navigating', () => {
     await expect(
       page.locator(PANEL).getByRole('heading', { name: ENTITY_TARGET_TITLE, exact: true }),
     ).toBeVisible()
-    // …and the second, deliberate step out is offered inside it.
+    // …and the second, deliberate step out is offered inside it — which is the whole
+    // of what the panel offers beyond the name and the label line, so it is also the
+    // only link in there. Nothing of the target's own content is copied in; the
+    // served-HTML census at the bottom of this file is where that is pinned down.
+    const shown = page.locator(`${PANEL} section:not([hidden])`)
     await expect(
-      page.locator(`${PANEL} section:not([hidden])`).getByRole('link', {
-        name: 'Ugrás a hivatkozott lapra',
-        exact: true,
-      }),
+      shown.getByRole('link', { name: 'Ugrás a hivatkozott lapra', exact: true }),
     ).toBeVisible()
+    await expect(shown.getByRole('link')).toHaveCount(1)
 
     // D2: the panel opened from the body puts the menu in its open state, with the
     // one Vissza button — the same state a menu item's panel produces.
@@ -506,7 +510,7 @@ test.describe('an external reference is an ordinary outbound link (§7.1)', () =
 })
 
 test.describe('a reference into the book hierarchy (§7.1)', () => {
-  test('the section reference opens a panel with its title and a link, and no body', async ({
+  test('the section reference is intercepted too, and its panel is a title and a link', async ({
     page,
     context,
   }) => {
@@ -530,8 +534,10 @@ test.describe('a reference into the book hierarchy (§7.1)', () => {
     await expect(
       page.locator(PANEL).getByRole('heading', { name: SECTION_TARGET_TITLE, exact: true }),
     ).toBeVisible()
-    // "Title and a link — no body" (§7.1): the section's own prose is a section long,
-    // so the panel is the name and the way there, and nothing else.
+    // The narrowest panel the component makes: no label line, because a section is
+    // named by its title and by nothing else, so the title and the way there are the
+    // whole of it. Every other target kind adds one line to that and no more.
+    await expect(section.locator('p.panel_referenceLabel')).toHaveCount(0)
     const links = section.getByRole('link')
     await expect(links).toHaveCount(1)
     await expect(links).toHaveAttribute('href', SECTION_TARGET)
@@ -727,5 +733,52 @@ test.describe('the reference panels without JavaScript', () => {
     await expect(
       page.locator(`${PANEL} [data-kb-panel-kind="reference"] a[href="${ENTITY_TARGET}"]`),
     ).toHaveCount(1)
+  })
+
+  /**
+   * …and nothing else is, which is the ruling this phase applies.
+   *
+   * A reference panel used to serve a preview of its target as well — the entity's
+   * body, the claim restated, the term's synonyms — and §2.1 puts panel content in
+   * the served HTML, so every citing page carried a copy of everything it cited.
+   * Measured over the export, that was 52 KiB of the average knowledge-base page
+   * (177.0 KiB with the previews, 124.9 KiB without), 0.67 MB of the largest, and
+   * 6938 of the 29532 internal fragment links `check-anchors` walked. A name, a
+   * label and a link are now the whole payload, and the rest is on the target's own
+   * page.
+   *
+   * An exact census of the elements rather than a search for the markup that used to
+   * be there: `panel_referenceBody` no longer exists, so a test looking for it would
+   * pass on an empty page. Both pages and every panel on them, because a preview
+   * would come back per target kind — the entity, claim and term panels are here,
+   * and the one section reference in the content is on the second page.
+   */
+  test('a reference panel is a name, a label and a link, and nothing else', async ({ page }) => {
+    // `next.config.ts` names every CSS-module class `<file>_<local>`, so the two
+    // shapes `ReferencePanel` can produce can be written out in full. The heading is
+    // not in here: every section's title lives in the panel's pinned header.
+    const LABELLED = 'p.panel_referenceLabel p.panel_referenceOpen a.panel_referenceLink'
+    const TITLE_ONLY = 'p.panel_referenceOpen a.panel_referenceLink'
+
+    // The book hierarchy is the one kind with no label line, and one reference into
+    // it exists in the content — on the second page.
+    for (const [url, total, titleOnly] of [
+      [ENTITY, PANEL_COUNT, 0],
+      [HIERARCHY_ENTITY, HIERARCHY_PANEL_COUNT, 1],
+    ] as const) {
+      await page.goto(url)
+      const census = await page
+        .locator(`${PANEL} [data-kb-panel-kind="reference"]`)
+        .evaluateAll((sections) =>
+          sections.map((section) =>
+            Array.from(section.querySelectorAll('*'))
+              .map((element) => `${element.tagName.toLowerCase()}.${element.className}`)
+              .join(' '),
+          ),
+        )
+      expect(census).toHaveLength(total)
+      expect(census.filter((shape) => shape === TITLE_ONLY)).toHaveLength(titleOnly)
+      expect(census.filter((shape) => shape === LABELLED)).toHaveLength(total - titleOnly)
+    }
   })
 })
