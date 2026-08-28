@@ -22,6 +22,7 @@ import {
   type ChromeTargetKind,
 } from '@/lib/kb/chrome-state'
 import type { KbMenuItem, KbMenuItemKey } from '@/lib/kb/menu-items'
+import { prefersReducedMotion } from '@/lib/utils/motion'
 import claimStyles from '@/components/content/blocks/claim-block.module.scss'
 import MenuStack from './MenuStack'
 import Overlay from './Overlay'
@@ -167,11 +168,6 @@ function referenceElement(href: string, picked: Element | null): Element | null 
       (mark) => mark.getAttribute('href') === href,
     ) ?? null
   )
-}
-
-/** §6.4: under reduced motion the scroll jumps rather than eases. */
-function prefersReducedMotion(): boolean {
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
 interface EntityChromeProps {

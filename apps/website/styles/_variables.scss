@@ -43,7 +43,18 @@ $pad-x:            1.5rem;  // px-6
 // it sits above the dim and under everything the reader still has to be able to
 // press (§6.3). Between the overlay and the panel, because level 2 leaves the
 // selection revealed while the sheet is open and the sheet must still cover it.
+// $z-kb-marker is the other one that is not a layer of the chrome: it is the
+// rectangle components/kb/ArrivalMarker.tsx draws around a fragment's target for a
+// moment after the reader lands on it (§6.2, D5). BELOW every layer here that means
+// "deal with this now" — the dim, the panel, the menu, the consent button, the
+// banner, a dialog — because it is a transient decoration and any of those owns the
+// reader's attention while it is up. It is nonetheless above the page's own content
+// including the sticky header, and that is not this number's doing: the marker is a
+// sibling of `.page-root`, which carries a transform and is therefore a stacking
+// context, so $z-header's 100 is scoped inside it and cannot be compared with a
+// value out here at all (see the note in app/globals.scss).
 $z-header:     100;
+$z-kb-marker:  690;
 $z-kb-overlay: 700;
 $z-kb-reveal:  720;
 $z-kb-panel:   750;

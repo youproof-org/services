@@ -12,6 +12,7 @@ import './globals.scss'
 config.autoAddCss = false
 import DevContentReloader from '@/components/DevContentReloader'
 import ConsentGate from '@/components/consent/ConsentGate'
+import ArrivalMarker from '@/components/kb/ArrivalMarker'
 import NewsletterLanding from '@/components/newsletter/NewsletterLanding'
 import { DEFAULT_LOCALE, getLocaleConfig } from '@/lib/i18n/config'
 import {
@@ -93,6 +94,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div className="page-root">{children}</div>
         <NewsletterLanding />
         <ConsentGate />
+        {/* The arrival marker is one of the "anything else viewport-fixed" the
+            comment above is about: it draws a rectangle around whatever a fragment
+            sent the reader to, positioned from getBoundingClientRect, so inside the
+            wrapper it would frame a point in the document rather than on the screen
+            (sub-plan §6.2, D5). Here rather than in the knowledge-base chrome
+            because the gesture is the same on a chapter arrival — see the component. */}
+        <ArrivalMarker />
         {process.env.NODE_ENV === 'development' && <DevContentReloader />}
       </body>
     </html>
