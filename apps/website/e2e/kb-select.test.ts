@@ -949,8 +949,17 @@ test.describe('the level-2 panels without JavaScript', () => {
 
     // …and every one of them is addressed by the id of the element that selects it,
     // so the click that picks a candidate has a panel to find.
+    //
+    // The two level-2 kinds only. A pressed outgoing reference is a third panel the
+    // body opens (§7.1), and it is addressed by the mark's href rather than by an id,
+    // because a reference mark has none — `e2e/kb-reference.test.ts` counts those
+    // against the article's marks. The guarantee here is unchanged: for a term and a
+    // claim, the handle IS the element's id.
     const targets = await page
-      .locator(`${PANEL} [data-kb-panel-target]`)
+      .locator(
+        `${PANEL} [data-kb-panel-kind="term"][data-kb-panel-target],` +
+          ` ${PANEL} [data-kb-panel-kind="claim"][data-kb-panel-target]`,
+      )
       .evaluateAll((sections) => sections.map((s) => s.getAttribute('data-kb-panel-target')))
     const ids = await page
       .locator(`${ARTICLE} ${TERM}, ${ARTICLE} ${CLAIM}`)

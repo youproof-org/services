@@ -83,6 +83,12 @@ export type LabelKey =
   // list narrowed, and they say so by asking the reader's question in the same
   // words (§7.2).
   | 'kbPanelTermSynonyms' | 'kbPanelClaim'
+  // A pressed outgoing reference (§7.1). The panel answers "what is this?" out of
+  // the target itself — a label, a title, a body, a claim, a canonical form — so the
+  // only words the code supplies are the ones on the second, deliberate step: the
+  // link to the target's own page. One label for every kind of target, because it is
+  // one promise ("the whole thing, on its own page") whatever is on the other end.
+  | 'kbPanelReferenceOpen'
 
 export interface LocaleConfig {
   displayName: string

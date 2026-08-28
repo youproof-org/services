@@ -1,12 +1,12 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import {
   CHROME_HISTORY_KEY,
   DEFAULT_STACK,
-  SELECTED_KINDS,
   SELECTION_KINDS,
+  TARGET_KINDS,
   currentState,
   isDefaultState,
   openPanel,
@@ -19,6 +19,7 @@ import {
   type ChromeSelectionKind,
   type ChromeStack,
   type ChromeState,
+  type ChromeTargetKind,
 } from '@/lib/kb/chrome-state'
 import type { KbMenuItem, KbMenuItemKey } from '@/lib/kb/menu-items'
 import claimStyles from '@/components/content/blocks/claim-block.module.scss'
@@ -60,6 +61,14 @@ import Panel, { scrollSelectionIntoUpperHalf, type KbPanelSection } from './Pane
  * entirely and is rendered on the server. So the press is caught with one listener
  * on `document` for as long as level 1 is up, and the state it opens carries the
  * pressed element's `id`.
+ *
+ * **An outgoing reference is the third thing the body opens** (§7.1), and the one
+ * that opens without a mode to pick from first: the reader points at a mark in the
+ * prose and the page shows what it points at. It is caught the same way — one
+ * listener on `document` — and differs in three respects, each of them §7.1's or
+ * D1's: the listener is mounted in the DEFAULT state rather than during a mode, only
+ * the PLAIN click is taken so the mark stays a working link, and the state is named
+ * by the mark's `href` because a reference mark carries no id.
  *
  * **The selection modes are published on `<body>`, not rendered.** Fogalmak and
  * Állítások do not add an element: they lift a class of thing that is already in
@@ -103,6 +112,25 @@ const SELECTED_OF: Record<ChromeSelectionKind, ChromeSelectedKind> = {
 }
 
 /**
+ * The outgoing references in the body — every mark `InlineText` emits for a `[slug]`
+ * (§7.1).
+ *
+ * Both classes, because both are references: `ref-concept` is the treatment an
+ * entity, a claim and a term reference wear, `ref-link` the one a book, a chapter, a
+ * section, a standalone item and an external URL wear
+ * (`components/content/InlineText.tsx`). §7.1's inert rule is about references
+ * rather than about a treatment, and which of them opens a panel is decided by
+ * whether the page HAS one for the href — not by the class, which cannot tell an
+ * external URL from a chapter.
+ *
+ * Scoped to `.page-root` for the same reason `SELECTABLE` is: the panel's own
+ * contents include reference marks (a restated claim, a previewed body), and those
+ * are ordinary links that navigate (§6.4). The panel is moved out of the wrapper on
+ * mount (see `Panel`), so this selector cannot reach them.
+ */
+const REFERENCES = '.page-root a.ref-concept, .page-root a.ref-link'
+
+/**
  * The marker the selected element carries while it is the selection.
  *
  * The body says WHICH candidate is selected and the element says THAT IT IS — two
@@ -112,11 +140,33 @@ const SELECTED_OF: Record<ChromeSelectionKind, ChromeSelectedKind> = {
  */
 const SELECTED_ATTR = 'data-kb-selected'
 
-/** Level-2 panels are not menu items, so they are not what the menu goes live on. */
+/** The panels the body opens are not menu items, so they are not what it goes live on. */
 function isMenuPanelKind(
   key: ChromePanelKind,
-): key is Exclude<ChromePanelKind, ChromeSelectedKind> {
-  return !(SELECTED_KINDS as readonly ChromePanelKind[]).includes(key)
+): key is Exclude<ChromePanelKind, ChromeTargetKind> {
+  return !(TARGET_KINDS as readonly ChromePanelKind[]).includes(key)
+}
+
+/**
+ * The mark a reference state is about, for the reveal and the scroll (§7.1).
+ *
+ * The one the reader pressed when there is one — a body can display the same
+ * reference several times, and lighting the first of them would light a mark the
+ * reader did not touch and scroll the page to it. `isConnected` and the href are
+ * checked because the ref outlives the state: a Forward step re-applies a state
+ * whose click happened long ago, and it is only the right element if it is still on
+ * the page and still points where the state says.
+ *
+ * The search is the fallback for exactly that case, and it takes the first match:
+ * with no click to go on, the first occurrence is the only defensible answer.
+ */
+function referenceElement(href: string, picked: Element | null): Element | null {
+  if (picked?.isConnected && picked.getAttribute('href') === href) return picked
+  return (
+    Array.from(document.querySelectorAll(REFERENCES)).find(
+      (mark) => mark.getAttribute('href') === href,
+    ) ?? null
+  )
 }
 
 /** §6.4: under reduced motion the scroll jumps rather than eases. */
@@ -154,8 +204,42 @@ export default function EntityChrome({
   const panel = openPanel(stack)
   const panelKeys = panels.map((section) => section.key)
   const selection = selectionMode(stack)
-  /** The candidate the reader has picked, or `null` at level 1 (§6.3). */
+  /**
+   * The thing the reader has picked: a candidate at level 2 (§6.3), or the outgoing
+   * reference they pressed (§7.1). `null` at level 1 and in every other state.
+   */
   const selected = selectedTarget(stack)
+  /** True while that thing is a reference, which is how it is found in the DOM. */
+  const referenceSelected = selected !== null && currentState(stack)?.kind === 'reference'
+  /**
+   * The hrefs this page has a reference panel for — the whole of what makes a
+   * reference actionable (§7.1). A reference with no panel is an external URL or a
+   * target this build shows nothing about, and stays the plain link it already is.
+   *
+   * The panel's own `target`, so the set and the section it opens cannot drift: the
+   * click reads the href off the DOM and `Panel` finds the section by the same
+   * string (`KbEntityPage` and `panels/ReferencePanel.tsx` put it there).
+   */
+  const referenceTargets = useMemo(
+    () =>
+      new Set(
+        panels
+          .filter((section) => section.key === 'reference' && section.target)
+          .map((section) => section.target as string),
+      ),
+    [panels],
+  )
+  /**
+   * The reference mark the reader actually pressed.
+   *
+   * A state names a reference by its href (see `ChromeState.target`), and a body can
+   * carry the same reference several times — `kis-fermat-tetel-megjegyzes` displays
+   * one of its eleven four times over. The href is right for the PANEL, which is
+   * about the target; it is not enough for the REVEAL, which is about the mark the
+   * reader pressed. So the element travels in a ref, and the search below is the
+   * fallback for a state restored by Forward rather than opened by a click.
+   */
+  const pickedReference = useRef<Element | null>(null)
   /**
    * The items that act when pressed. A panel item is live when its content is in
    * the `panels` prop; a selection mode is live wherever its item exists at all,
@@ -289,6 +373,76 @@ export default function EntityChrome({
   }, [selection])
 
   /**
+   * Publish that the page is out of its default state (§7.1).
+   *
+   * The condition an outgoing reference's inertness is stated as: "no panel open,
+   * menu closed". The two attributes above cannot express it — a mode is only some
+   * of the states, and a selection only some of those — and the states they miss are
+   * the ones where the dim happens to absorb the click anyway. `app/globals.scss`
+   * says the thing rather than relying on that coincidence, and this is its hook.
+   *
+   * The current kind is the value rather than a bare presence flag, so the attribute
+   * says which state as well as that there is one; nothing reads the value, and no
+   * rule should need to — "not the default state" is the whole of what it means.
+   */
+  useEffect(() => {
+    const state = currentState(stack)
+    if (!state) return
+    document.body.dataset.kbChrome = state.kind
+    return () => {
+      delete document.body.dataset.kbChrome
+    }
+  }, [stack])
+
+  /**
+   * A plain click on an outgoing reference in the body (§7.1, D1).
+   *
+   * On `document`, and for the page's whole life rather than for one state: what is
+   * pressed is a mark inside the article, server-rendered and not this component's
+   * to hand a handler to, and unlike a selection mode there is no state that turns
+   * it on — a reference is pressable in the DEFAULT state, which is the one state
+   * this component otherwise has nothing mounted for.
+   *
+   * **Only the plain click is taken** (D1). The mark stays an `<a>` with a real
+   * `href` and `target="_blank"`, because crawler discoverability is why this ticket
+   * exists, so a modified click — ctrl, meta, shift, alt — is left to the browser
+   * and opens the target page as on any link. A middle click never reaches here at
+   * all: it fires `auxclick`. The cost is that plain and modified click do different
+   * things, which D1 accepted knowingly.
+   *
+   * **Inert unless the page is in its default state** (§7.1). The stylesheet keeps
+   * the pointer off a reference while any state is up; this is the same answer for
+   * the activation a stylesheet cannot reach — a keyboard Enter on a focused mark,
+   * which arrives as a click with no pointer behind it. Preventing rather than
+   * ignoring, because ignoring means the browser navigates.
+   *
+   * **A reference with no panel is not intercepted at all**: an external URL, which
+   * §7.1 leaves an ordinary outbound link, or a target this build shows nothing
+   * about. `referenceTargets` is the whole of that test.
+   */
+  useEffect(() => {
+    function onClick(event: MouseEvent) {
+      if (!(event.target instanceof Element)) return
+      const mark = event.target.closest(REFERENCES)
+      if (!mark) return
+      if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+        return
+      }
+      if (open) {
+        event.preventDefault()
+        return
+      }
+      const target = mark.getAttribute('href')
+      if (!target || !referenceTargets.has(target)) return
+      event.preventDefault()
+      pickedReference.current = mark
+      openState({ kind: 'reference', target })
+    }
+    document.addEventListener('click', onClick)
+    return () => document.removeEventListener('click', onClick)
+  }, [open, openState, referenceTargets])
+
+  /**
    * Level 1 → level 2: pick one of the revealed candidates (§6.3).
    *
    * On `document`, and only while level 1 is up. What the reader presses is in the
@@ -345,7 +499,11 @@ export default function EntityChrome({
   useEffect(() => {
     if (!selected) return
     document.body.dataset.kbSelected = selected
-    const element = document.getElementById(selected)
+    // Two kinds of handle, because two kinds of thing are selected: a candidate is
+    // named by its `id` and a reference by its `href` (see `ChromeState.target`).
+    const element = referenceSelected
+      ? referenceElement(selected, pickedReference.current)
+      : document.getElementById(selected)
     if (!element) {
       return () => {
         delete document.body.dataset.kbSelected
@@ -358,7 +516,7 @@ export default function EntityChrome({
       delete document.body.dataset.kbSelected
       element.removeAttribute(SELECTED_ATTR)
     }
-  }, [selected])
+  }, [selected, referenceSelected])
 
   return (
     <>

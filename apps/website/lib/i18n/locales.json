@@ -43,7 +43,8 @@
         "kbPanelIncomingCount": "{count} hivatkozás",
         "kbPanelIncomingEmpty": "Nincs rá hivatkozás",
         "kbPanelTermSynonyms": "Szinonimák",
-        "kbPanelClaim": "{index}. állítás"
+        "kbPanelClaim": "{index}. állítás",
+        "kbPanelReferenceOpen": "Ugrás a hivatkozott lapra"
       },
       "containers": {
         "book": "konyvek",

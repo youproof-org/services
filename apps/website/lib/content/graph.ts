@@ -1105,7 +1105,16 @@ export function* kbNodes(graph: ContentGraph): Generator<KbNode> {
   yield* graph.remarks.values()
 }
 
-function kbNodeByKey(graph: ContentGraph, key: string): KbNode | undefined {
+/**
+ * The node one fully qualified name addresses, or undefined when it addresses
+ * something that is not a knowledge-base node.
+ *
+ * Exported because a reference target is an FQN and a renderer has to get from it
+ * to the node it points at — `components/kb/panels/ReferencePanel.tsx` resolves
+ * exactly what `resolveRefHrefs` below resolved an href for, and a second lookup
+ * of its own could disagree with this one about which maps are searched.
+ */
+export function kbNodeByKey(graph: ContentGraph, key: string): KbNode | undefined {
   return graph.definitions.get(key) ?? graph.theorems.get(key)
     ?? graph.proofs.get(key) ?? graph.remarks.get(key)
 }

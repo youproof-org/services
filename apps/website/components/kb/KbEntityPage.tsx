@@ -7,13 +7,14 @@ import { claimAnchorId, kbRefs, ownPageScope, termAnchorId } from '@/lib/content
 import { formatLocaleLabel, getLocaleLabel } from '@/lib/i18n/config'
 import { kbMenuItems } from '@/lib/kb/menu-items'
 import { buildChapterEmbedIndices, buildChapterFigureIndices, getChapterIndex } from '@/lib/utils/index-helpers'
-import type { ContentBlock, KbNode } from '@/lib/content/types'
+import type { KbNode } from '@/lib/content/types'
 import EntityChrome from './EntityChrome'
 import OwnershipLinks from './OwnershipLinks'
 import type { KbPanelSection } from './Panel'
 import BacklinksPanel from './panels/BacklinksPanel'
-import ClaimPanel from './panels/ClaimPanel'
+import ClaimPanel, { webClaims } from './panels/ClaimPanel'
 import ContextPanel from './panels/ContextPanel'
+import { referencePanels } from './panels/ReferencePanel'
 import TermPanel from './panels/TermPanel'
 import styles from './kb-entity-page.module.scss'
 
@@ -59,19 +60,10 @@ export default function KbEntityPage({ node }: KbEntityPageProps) {
   /**
    * The claims this body asserts, in the order `ContentBlocks` renders them and
    * numbered the way `ClaimBlock` numbers them — so a panel's "3. állítás" is the
-   * one the body shows as "3.".
-   *
-   * Top level only, and filtered by render context, because that is exactly the set
-   * `ContentBlocks` gives an anchor: a claim nested in a subsection is handed no
-   * `parentEntity` and renders with no id, and a `latex`-only block renders not at
-   * all. A panel for one of those could never be selected — the selection IS the
-   * element's id (§6.3) — so building one would put content in the HTML that the
-   * page cannot reach.
+   * one the body shows as "3.". `webClaims` owns which claims those are, because a
+   * reference panel numbers another node's claims by the same rule.
    */
-  const claims = node.body.filter(
-    (block): block is Extract<ContentBlock, { type: 'claim' }> =>
-      block.type === 'claim' && (!block.context || block.context === 'web'),
-  )
+  const claims = webClaims(node)
 
   /*
     In the menu's order (§6.2), which is the order the reader meets the items in —
@@ -111,6 +103,14 @@ export default function KbEntityPage({ node }: KbEntityPageProps) {
       title: formatLocaleLabel(node.locale, 'kbPanelClaim', { index: index + 1 }),
       content: <ClaimPanel node={node} claim={claim} />,
     })),
+    /*
+      …and one per outgoing reference in the prose (§7.1), which the body opens too:
+      pressing a reference is a request to see what it points at without leaving the
+      sentence. Keyed by the reference's own href rather than by an element id,
+      because a reference mark has none — `referencePanels` owns the whole of that,
+      including which references get a panel at all.
+    */
+    ...referencePanels(node),
   ]
 
   return (

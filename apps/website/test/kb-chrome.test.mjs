@@ -20,6 +20,7 @@ const {
   DEFAULT_STACK,
   SELECTED_KINDS,
   SELECTION_KINDS,
+  TARGET_KINDS,
   currentState,
   isDefaultState,
   openPanel,
@@ -43,6 +44,12 @@ const LEVEL_TWO = [
   [TERMS, TERM, 'terms'],
   [CLAIMS, CLAIM, 'claims'],
 ]
+// A pressed outgoing reference (§7.1), named by the mark's href — a reference has no
+// id, and the href is what says what the panel is about.
+const REFERENCE = {
+  kind: 'reference',
+  target: '/hu/tudasbazis/definiciok/gyuru-test#fogalmak.gyuru',
+}
 const open = (stack, state = MENU) => reduceChrome(stack, { type: 'open', state })
 const back = (stack) => reduceChrome(stack, { type: 'back' })
 
@@ -146,10 +153,11 @@ test('a panel state survives a history entry, and an unknown kind still does not
   // …and the panel that landed with it.
   const incoming = open(open(DEFAULT_STACK, MENU), INCOMING)
   assert.deepEqual(readChromeStack({ [CHROME_HISTORY_KEY]: incoming }), incoming)
-  // The kinds are a closed set: a state whose phase has not landed cannot be
-  // restored from an entry written by a newer build. `reference` is one of those —
-  // §7.1 gives it to a selected outgoing reference, and that phase has not landed.
-  assert.deepEqual(readChromeStack({ [CHROME_HISTORY_KEY]: [{ kind: 'reference' }] }), [])
+  // The kinds are a closed set, and a name that is not one of them restores nothing
+  // — an entry written by a build that named its states differently, or by anything
+  // else on the page. `outgoing` is the section heading §7.1 carries; the state it
+  // describes is called `reference`, and this is the difference mattering.
+  assert.deepEqual(readChromeStack({ [CHROME_HISTORY_KEY]: [{ kind: 'outgoing' }] }), [])
 })
 
 // ---------------------------------------------------------------------------
@@ -274,8 +282,10 @@ test('a state and a target that do not belong together read as the default state
   for (const value of [
     [{ kind: 'term' }],
     [{ kind: 'claim' }],
+    [{ kind: 'reference' }],
     [{ kind: 'term', target: '' }],
     [{ kind: 'term', target: 42 }],
+    [{ kind: 'reference', target: '' }],
     [{ kind: 'menu', target: 'fogalmak.gyuru' }],
     [{ kind: 'context', target: 'fogalmak.gyuru' }],
     [{ kind: 'terms', target: 'fogalmak.gyuru' }],
@@ -286,6 +296,48 @@ test('a state and a target that do not belong together read as the default state
       `${JSON.stringify(value)} should not restore a state`,
     )
   }
+})
+
+// ---------------------------------------------------------------------------
+// A pressed outgoing reference (§7.1)
+// ---------------------------------------------------------------------------
+
+test('the kinds that name a thing are the two singulars plus a reference', () => {
+  // The list `ChromeState.target` follows, and the one EntityChrome subtracts to
+  // find the panels a MENU item can open. Wider than SELECTED_KINDS by exactly one:
+  // a reference is a selection that no mode revealed.
+  assert.deepEqual([...TARGET_KINDS], ['term', 'claim', 'reference'])
+  assert.deepEqual([...SELECTED_KINDS], ['term', 'claim'])
+})
+
+test('a reference is a panel state opened straight from the default state', () => {
+  // No mode above it (§7.1): the reader points at a mark in the prose, so the stack
+  // is one deep and one back step is the whole way out. It is a panel all the same —
+  // the sheet arrives and the page freezes behind it (§6.4).
+  const stack = open(DEFAULT_STACK, REFERENCE)
+  assert.deepEqual(currentState(stack), REFERENCE)
+  assert.equal(openPanel(stack), 'reference')
+  assert.equal(isDefaultState(back(stack)), true)
+  assert.equal(openPanel(back(stack)), null)
+})
+
+test('a reference names its target and belongs to no selection mode', () => {
+  const stack = open(DEFAULT_STACK, REFERENCE)
+  assert.equal(selectedTarget(stack), REFERENCE.target)
+  // The one respect in which it is not a level-2 state: nothing revealed a class of
+  // things for it to be one of, so the body is in no mode. `app/globals.scss` reads
+  // this difference — the reveal for a reference is gated on the selection alone.
+  assert.equal(selectionMode(stack), null)
+})
+
+test('a reference state survives a history entry, href and all', () => {
+  // The positive half of the closed-set check above, and the one that matters for
+  // Forward: the entry has to bring back the same reference, not merely a reference.
+  const stack = open(DEFAULT_STACK, REFERENCE)
+  assert.deepEqual(readChromeStack({ [CHROME_HISTORY_KEY]: stack }), stack)
+  // …and from under the menu too, which is where D2 says it leaves the reader.
+  const fromMenu = open(open(DEFAULT_STACK, MENU), REFERENCE)
+  assert.deepEqual(readChromeStack({ [CHROME_HISTORY_KEY]: fromMenu }), fromMenu)
 })
 
 // ---------------------------------------------------------------------------

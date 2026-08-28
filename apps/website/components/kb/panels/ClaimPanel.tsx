@@ -5,7 +5,12 @@ import { fqnJoin } from '@/lib/content/fqn'
 import { getLocaleLabel } from '@/lib/i18n/config'
 import { renderKatex } from '@/lib/utils/math'
 import { kbRefs } from '@/lib/content/urls'
-import type { AnchorParent, ClaimBlock as ClaimBlockData, KbNode } from '@/lib/content/types'
+import type {
+  AnchorParent,
+  ClaimBlock as ClaimBlockData,
+  ContentBlock,
+  KbNode,
+} from '@/lib/content/types'
 import { BacklinkList } from './BacklinksPanel'
 import styles from '../panel.module.scss'
 
@@ -36,6 +41,27 @@ import styles from '../panel.module.scss'
 
 /** The anchor prefix for a term rendered inside the panel rather than in the body. */
 const PANEL_PREFIX = 'kb-panel'
+
+/**
+ * The claims of a node that `ContentBlocks` gives an anchor and a number.
+ *
+ * Top level only, and filtered by render context, because that is exactly the set:
+ * a claim nested in a subsection is handed no `parentEntity` and renders with no id,
+ * and a `latex`-only block renders not at all. A claim outside this list can never
+ * be selected — the selection IS the element's id (§6.3) — and has no number to be
+ * named by either.
+ *
+ * One list, two callers, on purpose: `KbEntityPage` builds a panel per claim from it
+ * and numbers them, and `ReferencePanel` numbers a claim on ANOTHER node from it, so
+ * "3. állítás" in a reference panel is the claim that node's body prints a 3 in
+ * front of. Two copies of the filter could disagree about which claim that is.
+ */
+export function webClaims(node: KbNode): ClaimBlockData[] {
+  return node.body.filter(
+    (block): block is Extract<ContentBlock, { type: 'claim' }> =>
+      block.type === 'claim' && (!block.context || block.context === 'web'),
+  )
+}
 
 interface ClaimPanelProps {
   node: KbNode

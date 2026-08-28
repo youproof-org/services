@@ -27,6 +27,11 @@
  * whole difference between the two levels: level 1 reveals and waits, level 2
  * opens a sheet about the one thing chosen.
  *
+ * `reference` is the third the body opens: one outgoing reference in the prose,
+ * pressed (§7.1). It has no mode above it — there is no "references" level 1 to
+ * pick from, because a reference is already the one thing the reader pointed at —
+ * so it is the one kind that is a selection without belonging to a selection mode.
+ *
  * The remaining items join as their phases land, and nothing here changes when they
  * do except this union and `STATE_KINDS`.
  */
@@ -38,6 +43,7 @@ export type ChromeStateKind =
   | 'claims'
   | 'term'
   | 'claim'
+  | 'reference'
 
 /** The kinds a restored history entry may name — anything else is not ours. */
 const STATE_KINDS: readonly ChromeStateKind[] = [
@@ -48,6 +54,7 @@ const STATE_KINDS: readonly ChromeStateKind[] = [
   'claims',
   'term',
   'claim',
+  'reference',
 ]
 
 /**
@@ -88,20 +95,42 @@ function isSelectedKind(kind: ChromeStateKind): kind is ChromeSelectedKind {
   return (SELECTED_KINDS as readonly ChromeStateKind[]).includes(kind)
 }
 
+/**
+ * The kinds whose state says WHICH thing it is about, and therefore the kinds that
+ * carry a `target`: the two mode singulars, plus a pressed outgoing reference.
+ *
+ * A reference is a selection in every respect that matters here — the body lights
+ * the thing that was pressed, the panel is about that thing, and one back step
+ * gives up both — and in exactly one respect it is not: no mode revealed it, so
+ * `selectionMode` answers null for it and `SELECTED_KINDS` stays the two singulars
+ * of the two modes. This is the wider list, and it is the one `target` follows.
+ */
+export type ChromeTargetKind = ChromeSelectedKind | 'reference'
+
+export const TARGET_KINDS: readonly ChromeTargetKind[] = ['term', 'claim', 'reference']
+
+function isTargetKind(kind: ChromeStateKind): kind is ChromeTargetKind {
+  return (TARGET_KINDS as readonly ChromeStateKind[]).includes(kind)
+}
+
 export interface ChromeState {
   kind: ChromeStateKind
   /**
-   * Which candidate a level-2 state is about: the selected element's `id`, which
-   * is its page-relative anchor (`fogalmak.{slug}` / `allitasok.{slug}` — see
-   * `lib/content/urls.ts`).
+   * Which thing the state is about, as the handle the DOM already carries.
    *
-   * The anchor rather than an index or a fully qualified name because it is the
-   * one handle that exists on both sides without being invented for this: the
-   * server puts it on the element and on the panel section, and the click that
-   * picks a candidate reads it straight off the DOM.
+   * For `term` and `claim` that is the selected element's `id` — its page-relative
+   * anchor (`fogalmak.{slug}` / `allitasok.{slug}`, see `lib/content/urls.ts`). For
+   * `reference` it is the anchor's **`href`**: a reference mark carries no id (it
+   * is a plain `<a>` from `components/content/InlineText.tsx`), and the href is
+   * what identifies what it points at — which is what the panel is about, so two
+   * marks aimed at the same target are one panel and one state.
    *
-   * Set on `term` and `claim` states and on nothing else, which `readChromeStack`
-   * enforces on the way back out of a history entry.
+   * In both cases it is a handle that exists on both sides without being invented
+   * for this: the server renders it into the element and onto the panel section,
+   * and the click that opens the state reads it straight off the DOM.
+   *
+   * Set on the `TARGET_KINDS` and on nothing else, which `readChromeStack` enforces
+   * on the way back out of a history entry.
    */
   target?: string
 }
@@ -149,9 +178,10 @@ export function currentState(stack: ChromeStack): ChromeState | null {
  * selection modes. Subtraction rather than a second list, so a kind added to
  * `ChromeStateKind` has to be classified rather than silently become a panel.
  *
- * `term` and `claim` land here on purpose, and they are the reason the subtraction
- * names the two modes instead of "anything to do with a selection": level 1 must
- * not slide a sheet in or freeze the page, and level 2 must do both (§6.3, §6.4).
+ * `term`, `claim` and `reference` land here on purpose, and they are the reason the
+ * subtraction names the two modes instead of "anything to do with a selection":
+ * level 1 must not slide a sheet in or freeze the page, and a picked candidate — or
+ * a pressed reference (§7.1) — must do both (§6.3, §6.4).
  */
 export type ChromePanelKind = Exclude<ChromeStateKind, 'menu' | ChromeSelectionKind>
 
@@ -194,16 +224,16 @@ export function selectionMode(stack: ChromeStack): ChromeSelectionKind | null {
 }
 
 /**
- * The candidate the reader has picked — level 2 — or `null` at every other state,
- * level 1 included.
+ * The thing the reader has picked — a candidate at level 2, or the outgoing
+ * reference they pressed (§7.1) — or `null` at every other state, level 1 included.
  *
- * The value is the selected element's `id` (see `ChromeState.target`), which is
- * both what the body has to light up and what the panel has to show, so one answer
- * serves both.
+ * The value is the handle the selected element carries (see `ChromeState.target`),
+ * which is both what the body has to light up and what the panel has to show, so
+ * one answer serves both.
  */
 export function selectedTarget(stack: ChromeStack): string | null {
   const state = currentState(stack)
-  if (state === null || !isSelectedKind(state.kind)) return null
+  if (state === null || !isTargetKind(state.kind)) return null
   return state.target ?? null
 }
 
@@ -226,10 +256,10 @@ export const CHROME_HISTORY_KEY = 'kbChrome'
  * default state instead of rendering an unknown one.
  *
  * `target` goes through the same treatment, and the pairing is checked in both
- * directions: a level-2 state without one names no candidate, and any other kind
- * with one is not a shape this module produces. Either is a malformed entry rather
- * than a state to render — the alternative is a `term` state that lights nothing up
- * and opens an empty panel.
+ * directions: a state of a `TARGET_KIND` without one names nothing, and any other
+ * kind with one is not a shape this module produces. Either is a malformed entry
+ * rather than a state to render — the alternative is a `term` state that lights
+ * nothing up and opens an empty panel.
  */
 export function readChromeStack(historyState: unknown): ChromeStack {
   if (typeof historyState !== 'object' || historyState === null) return DEFAULT_STACK
@@ -240,7 +270,7 @@ export function readChromeStack(historyState: unknown): ChromeStack {
     if (typeof entry !== 'object' || entry === null) return DEFAULT_STACK
     const { kind, target } = entry as Record<string, unknown>
     if (!STATE_KINDS.includes(kind as ChromeStateKind)) return DEFAULT_STACK
-    if (isSelectedKind(kind as ChromeStateKind)) {
+    if (isTargetKind(kind as ChromeStateKind)) {
       if (typeof target !== 'string' || target === '') return DEFAULT_STACK
       stack.push({ kind: kind as ChromeStateKind, target })
     } else {

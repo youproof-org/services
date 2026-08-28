@@ -208,7 +208,13 @@ body {
    is up. There is no rule for it because there is nothing to switch off.
    --------------------------------------------------------------------------- */
 
-body[data-kb-select] .page-root {
+// Both halves of a selection need it off, and one of them comes without a mode: a
+// pressed outgoing reference is a selection with no level 1 above it (§7.1), so
+// `data-kb-select` is absent there and `data-kb-selected` is the whole of what is
+// up. Everything the note above says about why the drop is safe holds for it too —
+// it is a state of one page, and the transform is back before any navigation.
+body[data-kb-select] .page-root,
+body[data-kb-selected] .page-root {
   transform: none;
 }
 
@@ -276,4 +282,60 @@ body[data-kb-selected] .page-root .claim-block_claim:not([data-kb-selected]) {
   box-shadow: none;
   border-radius: 0;
   cursor: default;
+}
+
+/* ---------------------------------------------------------------------------
+   Outgoing references in the body (sub-plan §7.1)
+
+   A reference keeps the `ref-concept` mark it wears in a chapter (see above): the
+   colour of the prose around it, a dotted grey underline, a subtle hover. It is
+   part of the sentence, and the reader should recognise it from the book — so
+   there is no rule here that restyles one, and that is deliberate.
+
+   What there IS is the other half of §7.1: a reference is actionable ONLY in the
+   page's default state. While the menu is open, while a panel is showing, while a
+   mode is up, whatever mode the page is in owns the reader's next click — at any
+   moment exactly one class of thing on the page is actionable.
+
+   WHY THIS NEEDS A RULE AT ALL, when the dim already absorbs clicks. Two states
+   put a reference back within reach of the pointer, and both are the reveal
+   working as designed:
+
+     - a revealed claim carries its own outgoing references up with it, so at
+       Állítások level 1 and level 2 they are over the dim (§6.3);
+     - a pressed reference is itself revealed, which is how the page says which
+       one the panel is about.
+
+   And a reference is a real `<a href>` (D1), so "nothing listens" is not enough to
+   make it do nothing: the browser would navigate. `pointer-events` is what makes
+   the mark inert, and `components/kb/EntityChrome.tsx` swallows the plain
+   activation for the keyboard, which no stylesheet can reach.
+
+   The hook is `data-kb-chrome` on <body>, published by that component for exactly
+   as long as the chrome is out of its default state — the condition §7.1 states,
+   rather than the two attributes that happen to cover most of it. e2e/kb-reference
+   .test.ts hit-tests every reference on the page against this rule and then deletes
+   it from the live stylesheet and requires the hits to come back.
+   --------------------------------------------------------------------------- */
+
+body[data-kb-chrome] .page-root .ref-concept,
+body[data-kb-chrome] .page-root .ref-link {
+  pointer-events: none;
+}
+
+/* The pressed one, lifted out of the dim so it is visibly what the panel is about
+   (§7.1). The term's treatment, for the same reason a term has it: an inline mark
+   in a paragraph that can wrap across two lines, so the white ground is padded by
+   a spread shadow rather than by padding, and drawn per fragment.
+
+   Not `cursor: pointer` — unlike a revealed term, this is not an offer. It has
+   already been pressed, and the rule above has made it inert. */
+body[data-kb-selected] .page-root a[data-kb-selected] {
+  position: relative;
+  z-index: $z-kb-reveal;
+  background: $white;
+  border-radius: 0.15em;
+  box-shadow: 0 0 0 0.15em $white;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
 }
