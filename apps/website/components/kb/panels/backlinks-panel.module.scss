@@ -26,13 +26,14 @@
   }
 }
 
-// The whole row is the link, so it is the element that has to lay the row out:
-// title on the left, count on the right, both on the same line whatever the title's
-// length. The gap is what stops a long title from touching its own count.
+// The whole row is the link, so it is the element that has to lay the row out: the
+// count leads, then the title with the source's kind under it. Two columns rather
+// than three lines — the counts line up down the left edge, which is what makes a
+// list ordered by count readable as one. The gap is what stops a long title from
+// touching its own count.
 .link {
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
   gap: 0.75rem;
   padding: 0.4rem 0;
   color: $black;
@@ -44,13 +45,6 @@
   }
 }
 
-.title {
-  font-weight: $font-bold;
-  // Wraps rather than truncating: a chapter title the reader cannot read in full is
-  // not an answer to "where is this used?".
-  min-width: 0;
-}
-
 // Secondary to the title: it qualifies the row rather than naming it. `flex: none`
 // keeps the number whole when the title takes the rest of the line, and it is the
 // reason a two-digit count does not get broken across two lines.
@@ -59,6 +53,34 @@
   color: $gray-500;
   font-size: 0.85rem;
   font-variant-numeric: tabular-nums;
+}
+
+// Title and kind as one column, so the kind lands under the title rather than under
+// the count. `min-width: 0` is what lets a long title wrap inside the row instead of
+// pushing the count off it.
+.text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+// Wraps rather than truncating: a chapter title the reader cannot read in full is
+// not an answer to "where is this used?". A block, so the kind below it starts on
+// its own line however short the title is.
+.title {
+  display: block;
+  font-weight: $font-bold;
+}
+
+// The kind of thing the source is, under its title. Secondary to the title, in the
+// count's size — it qualifies the row the same way the count does — but a step
+// darker than the count: $gray-600 (#4b5563) is 7.56:1 on white where $gray-500 is
+// 4.83:1, and this is the label a reader has to READ to tell two rows with one title
+// apart, not a number they scan.
+.kind {
+  display: block;
+  color: $gray-600;
+  font-size: 0.85rem;
+  line-height: 1.4;
 }
 
 // The empty state, which 168 of the 389 shipped pages reach (§9.1 note 3). It reads

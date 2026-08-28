@@ -49,6 +49,8 @@ const PANEL_HEADER = '#kb-panel .panel_header'
  */
 const ROW = '#kb-panel [data-kb-panel-kind="incoming"] .backlinks-panel_link'
 const EMPTY = '#kb-panel [data-kb-panel-kind="incoming"] .backlinks-panel_empty'
+/** The kind label under a row's title — every row has one, whatever kind it is. */
+const KIND = `${ROW} .backlinks-panel_kind`
 
 function stack(page: Page) {
   return page.locator('.menu-stack_stack')
@@ -122,6 +124,68 @@ test.describe('the Bejövő hivatkozások panel', () => {
     )
     await expect(first).toContainText('Gyűrűk alapvető tulajdonságai')
     await expect(first).toContainText('15 hivatkozás')
+  })
+
+  test('every row says in words what kind of thing its source is', async ({ page }) => {
+    await openBacklinks(page, BUSIEST)
+
+    // One label per row rather than one per list: 222 rows, 222 labels.
+    await expect(page.locator(ROW)).toHaveCount(222)
+    await expect(page.locator(KIND)).toHaveCount(222)
+
+    // …and each row's label is its OWN kind. Grouped rather than compared row by
+    // row: a label that disagreed with its row's `data-backlink-source` would put a
+    // second word in that kind's set and fail here, so this is 222 assertions in the
+    // shape of one.
+    const pairs = await page.locator(ROW).evaluateAll((links) =>
+      links.map((link) => [
+        link.getAttribute('data-backlink-source'),
+        link.querySelector('.backlinks-panel_kind')!.textContent!.trim(),
+      ]),
+    )
+    const wordsByKind = new Map<string, Set<string>>()
+    for (const [kind, word] of pairs) {
+      if (!wordsByKind.has(kind!)) wordsByKind.set(kind!, new Set())
+      wordsByKind.get(kind!)!.add(word!)
+    }
+    expect(Object.fromEntries([...wordsByKind].map(([kind, words]) => [kind, [...words]]))).toEqual({
+      chapter: ['fejezet'],
+      section: ['szakasz'],
+      definition: ['definíció'],
+      theorem: ['tétel'],
+      proof: ['bizonyítás'],
+      remark: ['megjegyzés'],
+    })
+  })
+
+  test('two sources with the same title are told apart by their kind', async ({ page }) => {
+    await openBacklinks(page, BUSIEST)
+
+    // The reason the label exists. Eight of `gyuru-test`'s 222 sources share a title
+    // with another source of a different kind; "Oszthatóság" is one of them — the
+    // section of the book that cites this definition 14 times, and the definition of
+    // the same name that cites it twice. Without the label the two rows are the same
+    // title over two different counts, and nothing says which is which.
+    const pair = page
+      .locator(ROW)
+      .filter({ has: page.getByText('Oszthatóság', { exact: true }) })
+    await expect(pair).toHaveCount(2)
+
+    const both = await pair.evaluateAll((links) =>
+      links.map((link) => ({
+        kind: link.querySelector('.backlinks-panel_kind')!.textContent!.trim(),
+        count: link.querySelector('[data-backlink-count]')!.getAttribute('data-backlink-count'),
+        href: link.getAttribute('href'),
+      })),
+    )
+    expect(both).toEqual([
+      {
+        kind: 'szakasz',
+        count: '14',
+        href: '/hu/konyvek/alice-es-bob/fejezetek/alice-es-bob-alaptetele#szakaszok.oszthatosag',
+      },
+      { kind: 'definíció', count: '2', href: '/hu/tudasbazis/definiciok/oszthatosag' },
+    ])
   })
 
   test('the 222 rows scroll inside the panel, under a header that stays put', async ({ page }) => {
@@ -226,6 +290,10 @@ test.describe('the backlink list without JavaScript', () => {
       'href',
       '/hu/tudasbazis/tetelek/vegesen-generalt-idealok-maximumfeltetele',
     )
+    // The kind label is part of that served answer, not something the client adds:
+    // the heaviest source is a section and says so.
+    await expect(page.locator(KIND)).toHaveCount(222)
+    await expect(rows.first()).toContainText('szakasz')
   })
 
   test('an entity nothing cites is served the empty state, not an empty list', async ({ page }) => {
