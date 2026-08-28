@@ -272,16 +272,23 @@ test.describe('the Bejövő hivatkozások panel', () => {
 test.describe('the backlink list without JavaScript', () => {
   test.use({ javaScriptEnabled: false })
 
-  test('all 222 rows are served in the HTML, inside the page and hidden', async ({ page }) => {
+  test('all 222 rows are served in the HTML, inside the page and shown inline', async ({
+    page,
+  }) => {
     await page.goto(BUSIEST)
 
     // Nothing runs here, so this is exactly what a crawler is served (§2.1/D6). The
     // inbound edges of the graph are the reason the panel is server-rendered at all.
     await expect(page.locator(`main ${PANEL}`)).toHaveCount(1)
-    await expect(page.locator(PANEL)).toBeHidden()
+    // And on screen, not behind a sheet that cannot open: §2.1 asks the page to
+    // degrade to a long page with everything visible, and 222 rows is the long case
+    // (`noJsCss` in components/kb/Panel.tsx, census in `e2e/kb-sweep.test.ts`).
+    await expect(page.locator(PANEL)).toBeVisible()
 
     const rows = page.locator(ROW)
     await expect(rows).toHaveCount(222)
+    await expect(rows.first()).toBeVisible()
+    await expect(rows.last()).toBeVisible()
     await expect(rows.first()).toHaveAttribute(
       'href',
       '/hu/konyvek/alice-es-bob/fejezetek/alice-es-bob-az-absztrakcio-utjan#szakaszok.gyuruk-alapveto-tulajdonsagai',

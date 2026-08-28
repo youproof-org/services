@@ -15,6 +15,11 @@ import styles from './panel.module.scss'
  * server, all of them, and opening a panel unhides one. Nothing is fetched, and
  * nothing is built on the client.
  *
+ * **Hidden is for a reader who can open it.** §2.1's other half asks the page to
+ * degrade to a long page with everything visible rather than a broken one, so with
+ * no JavaScript the sheet is not a sheet: it is a block in the flow with every
+ * section showing. See `noJsCss` below.
+ *
  * ## Why the nodes are adopted rather than portalled
  *
  * `app/globals.scss` puts `transform: translateZ(0)` on `.page-root`, and a
@@ -190,6 +195,74 @@ function sectionId(key: ChromePanelKind, target: string | null | undefined): str
 /** `useLayoutEffect` warns when it runs under the server renderer; this does not. */
 const useAdoptionEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect
 
+/**
+ * The stylesheet a reader with no JavaScript gets, and nobody else.
+ *
+ * §2.1 asks for two things and the sections above give only the first. Every panel
+ * content is in the served HTML — that is the rule that overrides layout preference,
+ * and it is met — but the paragraph after it says the page should then "degrade to a
+ * long page with everything visible instead of a broken one", and a sheet fixed off
+ * the bottom edge of the viewport under `visibility: hidden` is not that. Nothing on
+ * the client can put it right, either: unhiding is what JavaScript does here, so for
+ * a reader who has none the page has to arrive already unhidden.
+ *
+ * **Why a `<noscript>` and not a class.** It is the only mechanism that answers "no
+ * JavaScript" while the document is being parsed. A `no-js` class on `<html>` would
+ * need a script to take off, and a class taken off on mount would show every panel's
+ * content to everyone for as long as hydration took. A browser with scripting
+ * enabled does not parse this element's contents as markup at all, so there is
+ * nothing in here that can reach the interactive page — `e2e/kb-sweep.test.ts`
+ * checks that direction as well as this one.
+ *
+ * The selectors are built from the module's own class names rather than written out,
+ * so `panel.module.scss` stays the one place that names these boxes, and from
+ * `PANEL_ID` for the same reason the element carries an id at all.
+ *
+ * Rule by rule:
+ *
+ *   - **the sheet becomes an ordinary block in the flow**, where React rendered it:
+ *     after the article and its ownership chain, inside `<main>`. Its own top border
+ *     is left alone and is what separates it from the body above; the drop shadow of
+ *     something floating over the page goes.
+ *   - **every title and every section is unhidden**, which is the whole point.
+ *   - **each title is put back beside its own content.** The pinned header holds all
+ *     of them at once — it has to, since it is a box that stays put while the
+ *     scroller moves under it (§6.4) — so unhiding it as it stands would stack a
+ *     page's captions in a block above contents they are no longer beside, up to 34
+ *     of each on the busiest page, and a term panel would
+ *     lose the term it is about: the subject of a level-2 panel IS its title
+ *     (`KbEntityPage`). So the two boxes are dissolved with `display: contents` and
+ *     their children become items of one column, paired by `order`.
+ *
+ *     **How the pairing works without a rule per pair.** `order` groups rather than
+ *     sorts: items sharing a value keep their document order, and within one value
+ *     only two elements ever land — the nth title and the nth section, because that
+ *     is what the nth-child selectors below select. The titles come first in the
+ *     document, so the title leads its section. One rule per index, and the index
+ *     count is known here: this stylesheet is built per page, for the sections that
+ *     page actually has.
+ *
+ * A browser too old for `display: contents` gets the titles as one block and the
+ * contents as another — the layout this replaced, which is legible rather than
+ * broken.
+ */
+function noJsCss(sectionCount: number): string {
+  return [
+    `#${PANEL_ID}{position:static;height:auto;transform:none;visibility:visible;box-shadow:none;margin-top:2.5rem;padding:1.25rem 0 2rem}`,
+    `#${PANEL_ID} .${styles.header},#${PANEL_ID} .${styles.body}{display:contents}`,
+    // Both kinds of child, so `hidden` stops hiding them; `> * >` reaches exactly the
+    // titles and the sections and nothing inside a section.
+    `#${PANEL_ID}>*>*{display:block}`,
+    // A title reads as the heading of what follows it, so the space goes above it.
+    `#${PANEL_ID} .${styles.title}{margin:1.75rem 0 .5rem}`,
+    `#${PANEL_ID} .${styles.header}>:first-child{margin-top:0}`,
+    ...Array.from(
+      { length: sectionCount },
+      (_, index) => `#${PANEL_ID}>*>:nth-child(${index + 1}){order:${index + 1}}`,
+    ),
+  ].join('')
+}
+
 export default function Panel({ sections, activeKey, activeTarget = null }: PanelProps) {
   const rootRef = useRef<HTMLElement | null>(null)
   const open = activeKey !== null
@@ -250,49 +323,66 @@ export default function Panel({ sections, activeKey, activeTarget = null }: Pane
   }, [open])
 
   return (
-    <aside
-      ref={rootRef}
-      id={PANEL_ID}
-      className={`${styles.panel}${open ? ` ${styles.open}` : ''}`}
-    >
+    <>
       {/*
-        Pinned: it is a sibling of the scroller, not inside it, so 222 inbound
-        references scroll under a header that stays put (§6.4). Every section's
-        title is here and server-rendered, one unhidden — a single live <h2> would
-        be empty in the served HTML, where no panel is open.
-      */}
-      <div className={styles.header}>
-        {sections.map((section) => (
-          <h2
-            key={sectionId(section.key, section.target)}
-            id={`${PANEL_ID}-title-${sectionId(section.key, section.target)}`}
-            className={styles.title}
-            hidden={sectionId(section.key, section.target) !== shown}
-          >
-            {section.title}
-          </h2>
-        ))}
-      </div>
+        The no-JavaScript reveal (see `noJsCss`). Outside the sheet rather than inside
+        it, so it stays where the server put it when the nodes below are adopted into
+        <body>.
 
-      <div className={styles.body}>
-        {sections.map((section) => (
-          <section
-            key={sectionId(section.key, section.target)}
-            aria-labelledby={`${PANEL_ID}-title-${sectionId(section.key, section.target)}`}
-            /*
-              The two handles the build gate and the browser tests count on. §2.1
-              requires every one of these contents in the served HTML, and "every
-              term panel is there" is a count against the node's terms — so the
-              markup has to say which section is which without being parsed.
-            */
-            data-kb-panel-kind={section.key}
-            data-kb-panel-target={section.target}
-            hidden={sectionId(section.key, section.target) !== shown}
-          >
-            {section.content}
-          </section>
-        ))}
-      </div>
-    </aside>
+        Raw markup rather than a `<style>` element child: a `<noscript>`'s contents
+        are text and not markup to a browser that has scripting, so they are not a
+        subtree to hand to a renderer, and `dangerouslySetInnerHTML` is the form that
+        says the same thing whether this element came from the server pass or from a
+        soft navigation — `e2e/kb-sweep.test.ts` follows an ownership link to check
+        the second.
+      */}
+      <noscript
+        dangerouslySetInnerHTML={{ __html: `<style>${noJsCss(sections.length)}</style>` }}
+      />
+      <aside
+        ref={rootRef}
+        id={PANEL_ID}
+        className={`${styles.panel}${open ? ` ${styles.open}` : ''}`}
+      >
+        {/*
+          Pinned: it is a sibling of the scroller, not inside it, so 222 inbound
+          references scroll under a header that stays put (§6.4). Every section's
+          title is here and server-rendered, one unhidden — a single live <h2> would
+          be empty in the served HTML, where no panel is open.
+        */}
+        <div className={styles.header}>
+          {sections.map((section) => (
+            <h2
+              key={sectionId(section.key, section.target)}
+              id={`${PANEL_ID}-title-${sectionId(section.key, section.target)}`}
+              className={styles.title}
+              hidden={sectionId(section.key, section.target) !== shown}
+            >
+              {section.title}
+            </h2>
+          ))}
+        </div>
+
+        <div className={styles.body}>
+          {sections.map((section) => (
+            <section
+              key={sectionId(section.key, section.target)}
+              aria-labelledby={`${PANEL_ID}-title-${sectionId(section.key, section.target)}`}
+              /*
+                The two handles the build gate and the browser tests count on. §2.1
+                requires every one of these contents in the served HTML, and "every
+                term panel is there" is a count against the node's terms — so the
+                markup has to say which section is which without being parsed.
+              */
+              data-kb-panel-kind={section.key}
+              data-kb-panel-target={section.target}
+              hidden={sectionId(section.key, section.target) !== shown}
+            >
+              {section.content}
+            </section>
+          ))}
+        </div>
+      </aside>
+    </>
   )
 }

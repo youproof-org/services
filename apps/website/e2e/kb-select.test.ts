@@ -938,7 +938,9 @@ test.describe('the level-2 panels without JavaScript', () => {
     // these are the per-term and per-claim narrowings of the inbound-reference list,
     // and nothing runs here, so this is what a crawler is served.
     await expect(page.locator(`main ${PANEL}`)).toHaveCount(1)
-    await expect(page.locator(PANEL)).toBeHidden()
+    // Shown inline, which is the rest of §2.1: see `noJsCss` in
+    // components/kb/Panel.tsx and the census in `e2e/kb-sweep.test.ts`.
+    await expect(page.locator(PANEL)).toBeVisible()
 
     // One per term and one per claim — the same two counts the body carries, which
     // is what "every one of them" has to mean.

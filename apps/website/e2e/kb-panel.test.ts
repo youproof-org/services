@@ -335,7 +335,7 @@ test.describe('the panel under prefers-reduced-motion', () => {
 test.describe('the panel without JavaScript', () => {
   test.use({ javaScriptEnabled: false })
 
-  test('is served with its contents, inside the page and hidden', async ({ page }) => {
+  test('is served with its contents, inside the page and shown inline', async ({ page }) => {
     await page.goto(ENTITY)
 
     // §2.1/D6: the embedding is an edge of the knowledge graph, so it is in the HTML
@@ -343,7 +343,14 @@ test.describe('the panel without JavaScript', () => {
     // exactly what a crawler is served.
     await expect(page.locator(PANEL)).toHaveCount(1)
     await expect(page.locator(`main ${PANEL}`)).toHaveCount(1)
-    await expect(page.locator(PANEL)).toBeHidden()
+
+    // …and it is shown, not merely served: §2.1's other half asks the page to degrade
+    // to a long page with everything visible, so with no JavaScript the sheet is a
+    // block in the flow rather than a sheet fixed off the bottom edge. `noJsCss` in
+    // components/kb/Panel.tsx is what does it, and `e2e/kb-sweep.test.ts` is where the
+    // whole census lives.
+    await expect(page.locator(PANEL)).toBeVisible()
+    await expect(page.locator(PANEL)).toHaveCSS('position', 'static')
 
     const links = page.locator(`${PANEL} .panel_contextLevel a`)
     await expect(links).toHaveCount(3)
