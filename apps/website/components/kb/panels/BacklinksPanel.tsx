@@ -43,6 +43,12 @@ import styles from './backlinks-panel.module.scss'
  * on a deployed build, against a median of 1. There is no second design for the long
  * case: the panel's own scroller takes it, under a header that stays put (§6.4).
  *
+ * **Following a row is not just a link.** §7.2 asks for the page it leads to to mark
+ * the places that cite what the reader was reading, so every row carries
+ * `data-highlight-fqn` — the fully qualified name of what its count is about. The row
+ * does nothing with it; `components/kb/HighlightOnArrival.tsx` is what turns it into a
+ * query parameter at click time and into marks on arrival (D7).
+ *
  * A server component, like `ContextPanel` and for the same two reasons: the graph is
  * a cyclic object graph that cannot cross the client boundary, and §2.1 requires
  * these rows in the served HTML — they are the inbound edges of the knowledge graph
@@ -55,10 +61,11 @@ interface BacklinksPanelProps {
 
 export default function BacklinksPanel({ node }: BacklinksPanelProps) {
   const graph = getContentGraph()
+  const entityFqn = keyForKbNode(node)
   // A missing key and an empty list are the same answer: `buildBacklinkIndex` only
   // records an entity once a source survives the page-existence filter.
-  const sources = graph.backlinks.get(keyForKbNode(node))?.all ?? []
-  return <BacklinkList locale={node.locale} sources={sources} />
+  const sources = graph.backlinks.get(entityFqn)?.all ?? []
+  return <BacklinkList locale={node.locale} sources={sources} target={entityFqn} />
 }
 
 /**
@@ -85,6 +92,17 @@ interface BacklinkListProps {
   locale: string
   /** Already ordered by `buildBacklinkIndex`: count descending, ties by title. */
   sources: readonly KbBacklinkSource[]
+  /**
+   * What these sources cite — the fully qualified name this list is a list OF, which
+   * is `backlinks.byTarget`'s key for the two filtered cases and the entity's own
+   * name for the unfiltered one.
+   *
+   * It is not used to look anything up here. It is what each row hands forward for
+   * the page it leads to to highlight (§7.2, D7): the reader following a row is
+   * leaving to see the places that cite THIS, and this is the only place that knows
+   * what "this" is.
+   */
+  target: string
 }
 
 /**
@@ -101,7 +119,7 @@ interface BacklinkListProps {
  * this term" is the same kind of answer as "nothing references this entity", and a
  * caller that had to write its own would be free to make it read differently.
  */
-export function BacklinkList({ locale, sources }: BacklinkListProps) {
+export function BacklinkList({ locale, sources, target }: BacklinkListProps) {
   if (sources.length === 0) {
     return <p className={styles.empty}>{getLocaleLabel(locale, 'kbPanelIncomingEmpty')}</p>
   }
@@ -116,7 +134,19 @@ export function BacklinkList({ locale, sources }: BacklinkListProps) {
             link — panel content is what the reader is meant to be acting on, so it
             navigates (§6.4).
           */}
-          <Link href={source.href} className={styles.link} data-backlink-source={source.kind}>
+          <Link
+            href={source.href}
+            className={styles.link}
+            data-backlink-source={source.kind}
+            /*
+              What the source's page should mark once this row has been followed
+              (§7.2, D7). Inert markup: the href stays clean, and the parameter that
+              carries this is appended by the client at click time, so a crawler never
+              sees the variant and a copied link never contains it —
+              `components/kb/HighlightOnArrival.tsx` is both halves of that.
+            */
+            data-highlight-fqn={target}
+          >
             {/*
               The count leads the row, and the title with the kind beneath it
               follows — the reader scans the numbers down one edge and reads a row

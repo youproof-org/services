@@ -98,6 +98,23 @@ import styles from './arrival-marker.module.scss'
  * number the loop already computes. And it is what lets the gesture wait for the
  * arrival scroll to finish — see `SETTLE_FRAMES`, which is the one thing about this
  * phase that could not be worked out on paper.
+ *
+ * ## One gesture, one target or many
+ *
+ * `ArrivalMarks` below is the gesture, and it takes a LIST. This component is the
+ * fragment half of §6.2 — one anchor, therefore one element — and
+ * `components/kb/HighlightOnArrival.tsx` is the other caller: arriving from a
+ * "Bejövő hivatkozások" row marks every reference in the source that points back at
+ * where the reader came from (§7.2, D5), which on §7.2's worked case is nine of them
+ * at once.
+ *
+ * One implementation rather than two, and that is not tidiness: D5 says the mark used
+ * for a row arrival is "the same mark" as for an anchor arrival, so two copies of it
+ * would be two chances for the site to make the same promise in two different
+ * shapes. What generalises is only the number of boxes drawn — the wait for the
+ * arrival scroll, the easing, the outsets, the hold, the fade and the reduced-motion
+ * decision are all shared, all computed once per frame, and applied to every box in
+ * the same frame so the marks move as one thing.
  */
 
 /** How long the rectangle takes to close onto its target. */
@@ -178,22 +195,36 @@ function pageLocale(): string {
 }
 
 /**
+ * One thing to frame: the element, and the name the frame says it is marking.
+ *
+ * The element rather than an id, because the two callers find their targets in
+ * different ways — this one by `getElementById` on the fragment, the highlight by
+ * `querySelectorAll` on a validated fully qualified name (`lib/kb/highlight.ts`) —
+ * and the gesture only ever needs to measure it. The name is carried through to
+ * `data-kb-arrival-marker`, which is what a browser test reads to see what was
+ * marked, so it is the anchor for a fragment arrival and the fully qualified name
+ * for a highlight one.
+ */
+export interface ArrivalMark {
+  element: HTMLElement
+  name: string
+}
+
+/**
  * One arrival, as a value that is never equal to another.
  *
- * The counter is what makes it so, and it is needed: two arrivals can name the same
- * anchor — the reader follows a reference into a chapter, goes back, follows it again
- * — and `setState` with an equal value re-renders nothing, which would leave the
- * second arrival unmarked.
+ * A fresh object each time is what makes it so, and that is needed: two arrivals can
+ * name the same anchor — the reader follows a reference into a chapter, goes back,
+ * follows it again — and `setState` with an equal value re-renders nothing, which
+ * would leave the second arrival unmarked.
  */
 interface Arrival {
-  anchor: string
-  n: number
+  marks: readonly ArrivalMark[]
 }
 
 export default function ArrivalMarker() {
   const pathname = usePathname()
   const [arrival, setArrival] = useState<Arrival | null>(null)
-  const box = useRef<HTMLDivElement | null>(null)
   /**
    * The path-and-fragment the marker last acted on, so one arrival is marked once.
    *
@@ -220,14 +251,21 @@ export default function ArrivalMarker() {
     lastArrival.current = key
     // `getElementById`, not `querySelector`: `.` separates an anchor's segments and is
     // a class separator in a selector (see `lib/content/urls.ts`).
-    const marked =
-      anchor !== '' &&
-      anchorMarksTarget(pageLocale(), anchor) &&
-      document.getElementById(anchor) !== null
+    const target =
+      anchor !== '' && anchorMarksTarget(pageLocale(), anchor)
+        ? document.getElementById(anchor)
+        : null
     // Cleared rather than left alone when this arrival is not one to mark, so a
     // section arrival taken while a previous mark is still on screen ends it.
-    setArrival((current) => (marked ? { anchor, n: (current?.n ?? 0) + 1 } : null))
+    setArrival(target ? { marks: [{ element: target, name: anchor }] } : null)
   }, [])
+
+  /**
+   * Stable, so handing it to the gesture does not restart the gesture: it is in the
+   * effect's dependencies down there, and an arrow written at the call site would be
+   * a new value on every render.
+   */
+  const finished = useCallback(() => setArrival(null), [])
 
   useEffect(() => {
     // One frame late on purpose: on a route change the App Router has the new URL and
@@ -275,24 +313,47 @@ export default function ArrivalMarker() {
     }
   }, [check])
 
+  if (!arrival) return null
+  return <ArrivalMarks marks={arrival.marks} onFinished={finished} />
+}
+
+/**
+ * The gesture itself: close onto the target — or onto all of them — hold, fade, gone.
+ *
+ * Shared by both callers (see the note on generalising at the top of this file), and
+ * everything in here is per-arrival rather than per-mark except each box's own
+ * rectangle: one wait for the scroll, one clock, one easing, one outset, one opacity,
+ * written onto every box in the same frame.
+ *
+ * A layout effect, so the first measurement is written before the browser paints the
+ * commit that created the elements — the stylesheet's `opacity: 0` is what would
+ * otherwise be on screen for that frame.
+ *
+ * The targets are re-measured every frame rather than once, because they may still be
+ * moving: `scroll-behavior: smooth` eases a same-page fragment into place, and a
+ * marker fixed to the viewport has to follow it. Re-reading them also means a frame
+ * simply follows a target the reader scrolls away from, instead of being left behind
+ * at a stale position.
+ */
+interface ArrivalMarksProps {
   /**
-   * The gesture: close onto the target, hold, fade, gone.
-   *
-   * A layout effect, so the first measurement is written before the browser paints
-   * the commit that created the element — the stylesheet's `opacity: 0` is what would
-   * otherwise be on screen for that frame.
-   *
-   * The target is re-measured every frame rather than once, because it may still be
-   * moving: `scroll-behavior: smooth` eases a same-page fragment into place, and a
-   * marker fixed to the viewport has to follow it. Re-reading it also means the frame
-   * simply follows a target the reader scrolls away from, instead of being left
-   * behind at a stale position.
+   * What to frame, in the order the reader meets it. The FIRST one is the target the
+   * wait for the arrival scroll watches: whoever put a list here scrolled to that one
+   * (§7.2 sends the reader to the first of the marks, not to the source's own
+   * anchor), so it is the mark whose being on screen means the page has landed.
    */
+  marks: readonly ArrivalMark[]
+  /** Called once, when the gesture is over. Must be stable — it is a dependency. */
+  onFinished: () => void
+}
+
+export function ArrivalMarks({ marks, onFinished }: ArrivalMarksProps) {
+  /** One box per mark, in the same order. */
+  const boxes = useRef<(HTMLDivElement | null)[]>([])
+
   useMarkerEffect(() => {
-    if (!arrival) return
-    const element = document.getElementById(arrival.anchor)
-    const node = box.current
-    if (!element || !node) return
+    const nodes = marks.map((_, index) => boxes.current[index])
+    if (marks.length === 0 || nodes.some((node) => !node)) return
 
     const reduced = prefersReducedMotion()
     // §6.4: the mark appears at its final size and fades. Not removed — showing the
@@ -310,14 +371,18 @@ export default function ArrivalMarker() {
     const waitingSince = performance.now()
 
     const step = (now: number) => {
-      const rect = element.getBoundingClientRect()
+      // Every target, once per frame, before anything is written: the same instant for
+      // all of them, which is what makes the marks move as one thing rather than as a
+      // set of boxes each measured after the previous one was drawn.
+      const rects = marks.map((mark) => mark.element.getBoundingClientRect())
+      const lead = rects[0]
 
       if (started === 0) {
         const y = window.scrollY
         stillFrames = y === previousY ? stillFrames + 1 : 0
         previousY = y
         const landed =
-          stillFrames >= SETTLE_FRAMES && rect.bottom > 0 && rect.top < window.innerHeight
+          stillFrames >= SETTLE_FRAMES && lead.bottom > 0 && lead.top < window.innerHeight
         if (!landed && now - waitingSince < SETTLE_LIMIT_MS) {
           frame = requestAnimationFrame(step)
           return
@@ -335,57 +400,73 @@ export default function ArrivalMarker() {
       const opacity =
         elapsed <= fadeAt ? 1 : Math.max(0, 1 - (elapsed - fadeAt) / FADE_MS)
 
-      const style = node.style
-      style.top = `${rect.top - outset}px`
-      style.left = `${rect.left - outset}px`
-      style.width = `${rect.width + outset * 2}px`
-      style.height = `${rect.height + outset * 2}px`
-      style.opacity = `${opacity}`
+      for (let index = 0; index < rects.length; index += 1) {
+        const rect = rects[index]
+        const style = nodes[index]!.style
+        style.top = `${rect.top - outset}px`
+        style.left = `${rect.left - outset}px`
+        style.width = `${rect.width + outset * 2}px`
+        style.height = `${rect.height + outset * 2}px`
+        style.opacity = `${opacity}`
+      }
 
       if (elapsed >= fadeAt + FADE_MS) {
         // Unmounted rather than left at zero opacity: §6.2 asks for the frame to be
         // gone, and a spent layer left in the DOM is the kind of thing that is
         // eventually found sitting over something.
         done = true
-        setArrival(null)
+        onFinished()
         return
       }
       frame = requestAnimationFrame(step)
     }
 
     // Synchronously first, then per frame. Nothing is drawn by this call — it begins
-    // the wait — and the element stays at the stylesheet's `opacity: 0` until the
+    // the wait — and the elements stay at the stylesheet's `opacity: 0` until the
     // first frame of the gesture writes a box.
     step(performance.now())
     return () => {
       if (!done) cancelAnimationFrame(frame)
     }
-  }, [arrival])
+  }, [marks, onFinished])
 
-  if (!arrival) return null
   return (
-    <div
-      ref={box}
-      className={styles.marker}
-      /*
-        The handle the browser tests reach for, naming what is being marked. A
-        `data-` attribute rather than the CSS-module class for the reason `PANEL_ID`
-        is a literal (`components/kb/Panel.tsx`): `next.config.ts` derives a module
-        class from the FILE NAME, so renaming the stylesheet would silently rename
-        it. Carrying the anchor makes a trace of what the marker did readable rather
-        than merely present.
-      */
-      data-kb-arrival-marker={arrival.anchor}
-      /*
-        Nothing to announce. The marker adds no information a reader gets any other
-        way — it says "the thing you asked for is here", which a reader who cannot
-        see the screen learns from the fragment they followed rather than from a
-        rectangle. `Overlay` is `aria-hidden` for the same reason and records the same
-        thing: the chrome's screen-reader story is a separate piece of work, and this
-        is deliberately not a half of it. No string, and so no label in
-        `lib/i18n/locales.json` either.
-      */
-      aria-hidden="true"
-    />
+    <>
+      {marks.map((mark, index) => (
+        <div
+          /*
+            By position, not by name: a highlight arrival marks several references
+            aimed at the SAME fully qualified name, so the name is not unique within
+            one arrival. The list is a snapshot taken when the arrival was recognised
+            and never reordered, so the position is stable for as long as the boxes
+            live.
+          */
+          key={index}
+          ref={(node) => {
+            boxes.current[index] = node
+          }}
+          className={styles.marker}
+          /*
+            The handle the browser tests reach for, naming what is being marked. A
+            `data-` attribute rather than the CSS-module class for the reason `PANEL_ID`
+            is a literal (`components/kb/Panel.tsx`): `next.config.ts` derives a module
+            class from the FILE NAME, so renaming the stylesheet would silently rename
+            it. Carrying the name makes a trace of what the marker did readable rather
+            than merely present.
+          */
+          data-kb-arrival-marker={mark.name}
+          /*
+            Nothing to announce. The marker adds no information a reader gets any other
+            way — it says "the thing you asked for is here", which a reader who cannot
+            see the screen learns from the fragment they followed rather than from a
+            rectangle. `Overlay` is `aria-hidden` for the same reason and records the same
+            thing: the chrome's screen-reader story is a separate piece of work, and this
+            is deliberately not a half of it. No string, and so no label in
+            `lib/i18n/locales.json` either.
+          */
+          aria-hidden="true"
+        />
+      ))}
+    </>
   )
 }

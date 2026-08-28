@@ -68,7 +68,7 @@ export default function TermPanel({ node, termKey, term }: TermPanelProps) {
       <h3 className={styles.selectionSubhead}>
         {getLocaleLabel(node.locale, 'kbPanelIncoming')}
       </h3>
-      <BacklinkList locale={node.locale} sources={sources} />
+      <BacklinkList locale={node.locale} sources={sources} target={target} />
     </>
   )
 }

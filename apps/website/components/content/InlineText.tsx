@@ -1,6 +1,7 @@
 import React from 'react'
 import { renderKatex } from '@/lib/utils/math'
 import { termAnchorId } from '@/lib/content/urls'
+import { isPathTarget } from '@/lib/content/types'
 import type { RefMap, TermMap, AnchorParent } from '@/lib/content/types'
 
 interface InlineTextProps {
@@ -174,6 +175,22 @@ function parseNormalized(
     } else if (refSlug !== undefined) {
       const ref = refs?.[refSlug]
       if (ref && ref.display) {
+        /*
+          What this reference points at, in the one form that addresses everything in
+          the content model (sub-plan D7). It is written onto every internal
+          reference below — the seven branches that render a link, covering the
+          thirteen path kinds this component knows, from a book down to a term —
+          because a page arrived at from a "Bejövő hivatkozások" row has to be able
+          to find the references pointing back at where the reader came from, and the
+          fully qualified name is what the row names them by (see
+          `lib/kb/highlight.ts`). Nothing is computed for it: `target.fqn` is already
+          on the entry, resolved at graph-build time.
+
+          An external target has no fully qualified name and gets no attribute: it
+          addresses something outside the content model, so there is nothing for a
+          reference list to point back at. `isPathTarget` is that distinction.
+        */
+        const targetFqn = isPathTarget(ref.target) ? ref.target.fqn : undefined
         const textBefore = text.slice(0, match.index).trimEnd()
         const sentenceStart = textBefore.length === 0 || /[.!?]$/.test(textBefore)
         const display = sentenceStart
@@ -189,20 +206,20 @@ function parseNormalized(
           // time via urlForBook — never a hardcoded absolute URL.
           const href = ref.href ?? '#'
           nodes.push(formatSegmentedDisplay(display, counter, (text: React.ReactNode[]) =>
-            <a href={href} target="_blank" className="ref-link">{text}</a>
+            <a href={href} target="_blank" data-target-fqn={targetFqn} className="ref-link">{text}</a>
           ))
         } else if (ref.target.type === 'chapter') {
           // href is resolved at graph-build time via buildLocalizedUrl.
           const href = ref.href ?? '#'
           nodes.push(formatSegmentedDisplay(display, counter, (text: React.ReactNode[]) =>
-            <a href={href} target="_blank" className="ref-link">{text}</a>
+            <a href={href} target="_blank" data-target-fqn={targetFqn} className="ref-link">{text}</a>
           ))
         } else if (ref.target.type === 'section') {
           // href (localized chapter URL + section-slug anchor) is resolved at
           // graph-build time via buildLocalizedUrl.
           const href = ref.href ?? '#'
           nodes.push(formatSegmentedDisplay(display, counter, (text: React.ReactNode[]) =>
-            <a href={href} target="_blank" className="ref-link">{text}</a>
+            <a href={href} target="_blank" data-target-fqn={targetFqn} className="ref-link">{text}</a>
           ))
         } else if (
           ref.target.type === 'article'  || ref.target.type === 'newsletter' ||
@@ -213,19 +230,19 @@ function parseNormalized(
           // urlForStandalone — never a hardcoded absolute URL.
           const href = ref.href ?? '#'
           nodes.push(formatSegmentedDisplay(display, counter, (text: React.ReactNode[]) =>
-            <a href={href} target="_blank" className="ref-link">{text}</a>
+            <a href={href} target="_blank" data-target-fqn={targetFqn} className="ref-link">{text}</a>
           ))
         } else if (ref.target.type === 'claim') {
           // href is always resolved at graph-build time (resolveRefHrefs throws
           // rather than leaving one unset), so there is no id to recompute here.
           const href = ref.href ?? '#'
           nodes.push(formatSegmentedDisplay(display, counter, (text: React.ReactNode[]) =>
-            <a href={href} target="_blank" className="ref-concept">{text}</a>
+            <a href={href} target="_blank" data-target-fqn={targetFqn} className="ref-concept">{text}</a>
           ))
         } else if (ref.target.type === 'term') {
           const href = ref.href ?? '#'
           nodes.push(formatSegmentedDisplay(display, counter, (text: React.ReactNode[]) =>
-            <a href={href} target="_blank" className="ref-concept">{text}</a>
+            <a href={href} target="_blank" data-target-fqn={targetFqn} className="ref-concept">{text}</a>
           ))
         } else if (
           ref.target.type === 'definition' || ref.target.type === 'theorem' ||
@@ -234,7 +251,7 @@ function parseNormalized(
           if (display) {
             const href = ref.href ?? '#'
             nodes.push(formatSegmentedDisplay(display, counter, (text: React.ReactNode[]) =>
-              <a href={href} target="_blank" className="ref-concept">{text}</a>
+              <a href={href} target="_blank" data-target-fqn={targetFqn} className="ref-concept">{text}</a>
             ))
           } else {
             // Fallback if display template is missing or invalid

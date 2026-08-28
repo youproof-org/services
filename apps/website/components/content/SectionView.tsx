@@ -20,7 +20,23 @@ interface SectionViewProps {
 
 export default function SectionView({ slug, locale, title, body, label, embedIndices, figureIndices, refs }: SectionViewProps) {
   return (
-    <section id={sectionAnchorId({ slug, locale })} className={styles.section}>
+    <section
+      id={sectionAnchorId({ slug, locale })}
+      className={styles.section}
+      /*
+        A section owns its own references: `refOwners` in `lib/content/graph.ts` yields
+        a chapter and each of its sections separately — and a standalone item and each
+        of its sections, which is the other caller of this component
+        (`StandalonePage`) — so a reference written here is counted as the SECTION's,
+        and the "Bejövő hivatkozások" row that reports one names the section rather
+        than the chapter (sub-plan §7.2).
+        `components/kb/HighlightOnArrival.tsx` reads this attribute to draw the same
+        boundary in the DOM: a mark inside a section belongs to the section's row, not
+        to the chapter's. Presence is the whole of it — the id above already says
+        WHICH section this is.
+      */
+      data-ref-owner=""
+    >
       <h3 className={styles.heading}>
         <span className={styles['section-label']}>{label}</span>
         <InlineText text={title} />

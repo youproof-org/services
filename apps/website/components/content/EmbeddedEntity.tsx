@@ -21,6 +21,16 @@ interface EmbeddedEntityProps {
   termParent?: AnchorParent
 }
 
+/*
+  Each of the three shapes below carries `data-ref-owner`: an embedded entity owns the
+  references in its body — `refOwners` in `lib/content/graph.ts` counts them as the
+  entity's, and the "Bejövő hivatkozások" row that reports one names the entity and
+  leads to the entity's own page (sub-plan §7.2). So a reference rendered inside this
+  box is not one the surrounding chapter or section made, and
+  `components/kb/HighlightOnArrival.tsx` uses the attribute to keep the two apart when
+  it marks a source's references on arrival. Presence is the whole of it; the `id` is
+  what says which entity.
+*/
 export default function EmbeddedEntity({ entityType, anchorId, body, label, canonicalLabel, embedIndices, figureIndices, showTitle, title, refs, terms, termParent }: EmbeddedEntityProps) {
   const typeLabelRaw = canonicalLabel ?? ENTITY_LABEL_HU[entityType] ?? entityType
   const typeLabel = typeLabelRaw.charAt(0).toUpperCase() + typeLabelRaw.slice(1)
@@ -29,7 +39,7 @@ export default function EmbeddedEntity({ entityType, anchorId, body, label, cano
 
   if (entityType === 'proof') {
     return (
-      <div id={anchorId} className={styles.proof}>
+      <div id={anchorId} className={styles.proof} data-ref-owner="">
         <h4 className={styles['entity-label']}>
           {typeLabel}{showTitle && title ? ` (${title})` : ''}:
         </h4>
@@ -41,7 +51,7 @@ export default function EmbeddedEntity({ entityType, anchorId, body, label, cano
 
   if (entityType === 'remark') {
     return (
-      <div id={anchorId} className={styles.remark}>
+      <div id={anchorId} className={styles.remark} data-ref-owner="">
         <h4 className={styles['entity-label']}>
           {label ? `${label}` : ''}{typeLabel}{showTitle && title ? ` (${title})` : ''}:
         </h4>
@@ -54,7 +64,7 @@ export default function EmbeddedEntity({ entityType, anchorId, body, label, cano
   const boxClass = entityType === 'definition' ? styles.definition : styles.theorem
 
   return (
-    <div id={anchorId} className={boxClass}>
+    <div id={anchorId} className={boxClass} data-ref-owner="">
       <h4 className={styles['entity-label']}>
         {label ? `${label} ` : ''}{typeLabel}{showTitle && title ? ` (${title})` : ''}:
       </h4>

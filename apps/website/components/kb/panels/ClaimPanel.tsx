@@ -97,7 +97,7 @@ export default function ClaimPanel({ node, claim }: ClaimPanelProps) {
       <h3 className={styles.selectionSubhead}>
         {getLocaleLabel(node.locale, 'kbPanelIncoming')}
       </h3>
-      <BacklinkList locale={node.locale} sources={sources} />
+      <BacklinkList locale={node.locale} sources={sources} target={target} />
     </>
   )
 }
