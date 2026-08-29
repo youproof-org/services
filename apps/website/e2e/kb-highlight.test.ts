@@ -115,7 +115,14 @@ const ROW = `${PANEL} [data-kb-panel-kind="term"][data-kb-panel-target="${TERM_A
 const MENU = 'Menü'
 const TERMS = 'Fogalmak'
 
-/** One animation frame of one marker. */
+/**
+ * One animation frame of one marker.
+ *
+ * `scrollY` is part of the frame because a mark now plays when its own target comes
+ * into view, so two marks of one arrival can be drawn at two different scroll
+ * positions: a marker's box is in viewport coordinates, and only `box + scrollY` can
+ * be compared with a target measured later.
+ */
 interface MarkFrame {
   top: number
   left: number
@@ -124,6 +131,9 @@ interface MarkFrame {
   opacity: number
   zIndex: string
   pointerEvents: string
+  scrollY: number
+  /** When it was sampled, which is when the component wrote it. */
+  at: number
 }
 
 interface Recorded {
@@ -154,6 +164,8 @@ async function installRecorder(context: BrowserContext) {
         opacity: Number(computed.opacity),
         zIndex: computed.zIndex,
         pointerEvents: computed.pointerEvents,
+        scrollY: window.scrollY,
+        at: performance.now(),
       })
     }
 
@@ -178,7 +190,15 @@ function recorded(page: Page): Promise<Recorded[]> {
   return page.evaluate(() => (window as unknown as { __marks?: Recorded[] }).__marks ?? [])
 }
 
-/** Every marker this page produced, once they have all finished and gone. */
+/**
+ * Every marker this page produced, once they have all finished and gone.
+ *
+ * A mark plays when its own target comes into view, so an arrival whose marks are not
+ * all on screen only reaches this state after the reader has scrolled past them —
+ * `scrollPastEveryMark`. The boxes leaving the DOM is the second half of the check and
+ * is what says the arrival is over rather than merely quiet: they are unmounted
+ * together, when the last mark has faded.
+ */
 async function completedMarks(page: Page, expected: number): Promise<Recorded[]> {
   await expect.poll(async () => (await recorded(page)).length).toBe(expected)
   await expect(page.locator(MARKER)).toHaveCount(0)
@@ -255,17 +275,71 @@ function ownReferences(page: Page) {
       const own = inSection.filter(
         (element) => element.closest('[data-ref-owner]') === scope && !element.closest('#kb-panel'),
       )
+      const headerBottom = Math.max(
+        0,
+        Math.round(document.querySelector('header')!.getBoundingClientRect().bottom),
+      )
       return {
         onPage: all.length,
         inSection: inSection.length,
+        // In DOCUMENT coordinates, because a mark is drawn whenever its own target
+        // reaches the reader and the page has moved on by the time this is read. A
+        // marker's frame carries the `scrollY` it was written at, so the two are
+        // comparable in this space and in no other.
         own: own.map((element) => {
           const box = element.getBoundingClientRect()
-          return { top: box.top, left: box.left, width: box.width, height: box.height }
+          return {
+            top: box.top + window.scrollY,
+            left: box.left,
+            width: box.width,
+            height: box.height,
+            // Whether the reader can see it right now: below the sticky header, above
+            // the fold. The same gate `ArrivalMarks` applies through its observer's
+            // `rootMargin`, computed here from the DOM rather than taken from it.
+            visible: box.bottom > headerBottom && box.top < window.innerHeight,
+          }
         }),
       }
     },
     [TERM_FQN, SECTION] as const,
   )
+}
+
+/**
+ * Walk the page past the reader in three-quarter-viewport steps, so every mark's
+ * target is in front of them at least once.
+ *
+ * This is what a reader does with a long section, and since a mark plays when its own
+ * target comes into view, it is also the only way an arrival with off-screen marks
+ * ever finishes. Downwards only: the marks are in document order and the arrival
+ * centres the first of them, so nothing to be woken is above where the page landed.
+ *
+ * `instant`, because `:root` carries `scroll-behavior: smooth` and a smooth step would
+ * still be travelling when the next one was issued. Two frames per step, which is what
+ * lets the observer deliver — intersections are delivered after the frame's animation
+ * callbacks have run.
+ *
+ * **It waits for the arrival to have landed first.** The gesture holds off until the
+ * arrival scroll comes to rest (`SETTLE_FRAMES` in `components/kb/ArrivalMarker.tsx`),
+ * and a walk that started before that never lets it: the page would still be moving
+ * when the wait gave up, four seconds later, by which time every mark is above the
+ * viewport and none of them can come into it again. The first mark being drawn is the
+ * signal that the arrival is over and the reader has the page.
+ */
+async function scrollPastEveryMark(page: Page) {
+  await expect.poll(async () => (await recorded(page)).length).toBeGreaterThan(0)
+  await page.evaluate(async () => {
+    const frame = () =>
+      new Promise<void>((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+      )
+    let previous = -1
+    while (window.scrollY !== previous) {
+      previous = window.scrollY
+      window.scrollBy({ top: window.innerHeight * 0.75, behavior: 'instant' as ScrollBehavior })
+      await frame()
+    }
+  })
 }
 
 test.describe('the worked case (§7.2)', () => {
@@ -293,6 +367,9 @@ test.describe('the worked case (§7.2)', () => {
     await expect(page).toHaveURL(new RegExp(`${CHAPTER}#${SECTION.replace(/\./g, '\\.')}$`))
     expect(new URL(page.url()).search).toBe('')
 
+    // Every one of them, which means walking the section: the marks below the fold
+    // wait for the reader to reach them.
+    await scrollPastEveryMark(page)
     const marks = await completedMarks(page, MARKS)
     expect(marks.map((mark) => mark.name)).toEqual(Array(MARKS).fill(TERM_FQN))
 
@@ -304,14 +381,22 @@ test.describe('the worked case (§7.2)', () => {
     expect(references.own).toHaveLength(MARKS)
 
     // Each mark framed a different one of them, tightly (§6.2's OUTSET_TIGHT) — read
-    // off the marker's last frame before the fade, and matched against the elements'
-    // own boxes measured now that the page has come to rest.
-    const settled = marks.map((mark) => mark.frames[mark.frames.length - 1])
+    // off the marker's last frame at full opacity, which is the frame the fade starts
+    // from, and matched against the elements' own boxes.
+    //
+    // In document coordinates: the boxes were written at nine different scroll
+    // positions and are measured at a tenth, so `frame.top + frame.scrollY` is the only
+    // form in which the two are the same quantity.
+    const settled = marks.map((mark) => {
+      const held = mark.frames.filter((entry) => entry.opacity === 1)
+      return held[held.length - 1]
+    })
     const unmatched = [...references.own]
     for (const frame of settled) {
+      const top = frame.top + frame.scrollY
       const index = unmatched.findIndex(
         (target) =>
-          Math.abs(target.top - frame.top - OUTSET_TIGHT) < 1 &&
+          Math.abs(target.top - top - OUTSET_TIGHT) < 1 &&
           Math.abs(target.left - frame.left - OUTSET_TIGHT) < 1 &&
           Math.abs(target.width + OUTSET_TIGHT * 2 - frame.width) < 1 &&
           Math.abs(target.height + OUTSET_TIGHT * 2 - frame.height) < 1,
@@ -333,7 +418,9 @@ test.describe('the worked case (§7.2)', () => {
       .locator(ROW)
       .filter({ has: page.locator(`[data-backlink-count="${ROW_COUNT}"]`) })
       .click()
-    await completedMarks(page, MARKS)
+    // Where the ARRIVAL put the page, so nothing here may scroll it: the marks below
+    // the fold are left waiting, and the gesture that has played is the first one's.
+    await expect.poll(async () => (await recorded(page)).length).toBeGreaterThan(0)
 
     const viewport = page.viewportSize()!
     const where = await page.evaluate(
@@ -470,7 +557,9 @@ test.describe('alongside the two scrubbers already there', () => {
 
     // NewsletterLanding acted…
     await expect(page.getByRole('heading', { name: 'Megerősítés', exact: true })).toBeVisible()
-    // …and so did this phase, on the same load.
+    // …and so did this phase, on the same load. The walk is what lets every mark
+    // play; see `scrollPastEveryMark`.
+    await scrollPastEveryMark(page)
     const marks = await completedMarks(page, MARKS)
     expect(marks.map((mark) => mark.name)).toEqual(Array(MARKS).fill(TERM_FQN))
     // Neither scrubber clobbered the other's parameter, and neither is left behind.
@@ -488,6 +577,7 @@ test.describe('alongside the two scrubbers already there', () => {
     // took effect" checkable without a tag being loaded.
     await page.goto(`${CHAPTER}?ga_debug=exclude&${PARAM}=${TERM_FQN}#${SECTION}`)
 
+    await scrollPastEveryMark(page)
     const marks = await completedMarks(page, MARKS)
     expect(marks.map((mark) => mark.name)).toEqual(Array(MARKS).fill(TERM_FQN))
 
@@ -504,6 +594,7 @@ test.describe('alongside the two scrubbers already there', () => {
     )
 
     await expect(page.getByRole('heading', { name: 'Megerősítés', exact: true })).toBeVisible()
+    await scrollPastEveryMark(page)
     await completedMarks(page, MARKS)
     const cookies = await context.cookies()
     expect(cookies.find((cookie) => cookie.name === 'yp_ga_exclude')?.value).toBe('1')
@@ -511,21 +602,88 @@ test.describe('alongside the two scrubbers already there', () => {
   })
 })
 
-test.describe('the shape of the gesture, with many marks', () => {
-  test('all nine close together, hold, and fade — one gesture, not nine', async ({
+test.describe('a mark plays when the reader can see it, not before', () => {
+  /**
+   * The property this describe block exists for, and the one thing a test can say
+   * about it that a reading of the component cannot: the marks whose targets are
+   * off-screen when the page lands are **not drawn at all**, and are drawn when the
+   * reader reaches them.
+   *
+   * Every number here is derived on the page rather than written down, because how
+   * many of the nine fit on one screen is a fact about a chapter's typography at one
+   * viewport size and would be a hostage to either changing. What is asserted is the
+   * relation: played == visible, waiting == the rest, and waiting > 0 — the last of
+   * which is what makes this section discriminating at all.
+   */
+  test('the ones off-screen wait, and play as they are scrolled in', async ({
     context,
     page,
   }) => {
     await installRecorder(context)
     await page.goto(`${CHAPTER}?${PARAM}=${TERM_FQN}#${SECTION}`)
-    const marks = await completedMarks(page, MARKS)
 
-    // The same frame count for every box, because they are written by one loop: this
-    // is what "the marks move as one thing" means, and it is the property a second
-    // copy of the gesture could not have.
-    const lengths = new Set(marks.map((mark) => mark.frames.length))
-    expect(lengths.size).toBe(1)
-    expect(marks[0].frames.length).toBeGreaterThan(3)
+    // The arrival's own gesture, and only it. Polled to the point where the count
+    // stops growing rather than to a number: it is the marks that fit on the screen
+    // the page came to rest on.
+    await expect.poll(async () => (await recorded(page)).length).toBeGreaterThan(0)
+    const references = await ownReferences(page)
+    const visible = references.own.filter((reference) => reference.visible).length
+    expect(references.own).toHaveLength(MARKS)
+    // The premise: the section is longer than a screen, so some of what was marked is
+    // below the fold. Without this the rest of the test would be vacuous.
+    expect(visible).toBeGreaterThan(0)
+    expect(visible).toBeLessThan(MARKS)
+
+    // Exactly the visible ones have been drawn — and it stays that way: waited out
+    // past the whole length of the gesture, so this is not a race with a box that was
+    // about to start.
+    await page.waitForTimeout(GESTURE_MS * 2)
+    const played = await recorded(page)
+    expect(played).toHaveLength(visible)
+    // The boxes are all still there, the waiting ones included: the arrival is not
+    // over until every mark has played, so nothing has been unmounted.
+    await expect(page.locator(MARKER)).toHaveCount(MARKS)
+
+    // The ones that played, played together and played in full: every first frame
+    // within a frame or two of every other, which is what "the marks on this screen are
+    // one gesture" means now that the arrival no longer starts all nine.
+    const startedAt = played.map((mark) => mark.frames[0].at)
+    expect(Math.max(...startedAt) - Math.min(...startedAt)).toBeLessThan(50)
+    for (const mark of played) {
+      expect(mark.frames.length).toBeGreaterThan(3)
+      expect(mark.frames[mark.frames.length - 1].opacity).toBeLessThan(0.2)
+    }
+
+    // Now the reader walks the section, and the rest play as they arrive in front of
+    // them. Each of the late ones was drawn at a scroll position the arrival never saw,
+    // which is the trace that says it waited rather than merely finished late.
+    await scrollPastEveryMark(page)
+    const marks = await completedMarks(page, MARKS)
+    const arrival = played[0].frames[0]
+    const late = marks.slice(played.length)
+    expect(late).toHaveLength(MARKS - visible)
+    for (const mark of late) {
+      // Later in time than the whole of the arrival's own gesture, and at a scroll
+      // position the arrival never saw — the two traces of having waited.
+      expect(mark.frames[0].at).toBeGreaterThan(arrival.at + GESTURE_MS)
+      expect(mark.frames[0].scrollY).toBeGreaterThan(arrival.scrollY)
+      // And the same gesture when it did come: wide first, tight last.
+      expect(mark.frames[0].width - mark.frames[mark.frames.length - 1].width).toBeCloseTo(
+        (OUTSET_WIDE - OUTSET_TIGHT) * 2,
+        0,
+      )
+    }
+  })
+
+  test('every one of the nine closes, holds and fades the same way', async ({
+    context,
+    page,
+  }) => {
+    await installRecorder(context)
+    await page.goto(`${CHAPTER}?${PARAM}=${TERM_FQN}#${SECTION}`)
+    await scrollPastEveryMark(page)
+    const marks = await completedMarks(page, MARKS)
+    expect(marks).toHaveLength(MARKS)
 
     for (const mark of marks) {
       // Started wide and ended tight, monotonically — not "the first is bigger than
@@ -566,6 +724,10 @@ test.describe('the shape of the gesture, with many marks', () => {
       await page.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches),
     ).toBe(true)
 
+    // Reduced motion removes the closing movement, not the visibility gate: a box
+    // still waits for its target, and appearing at full size in front of the reader is
+    // the point of both rules at once.
+    await scrollPastEveryMark(page)
     const marks = await completedMarks(page, MARKS)
     // Still nine marks: §6.4 removes the movement, not the marker.
     expect(marks.map((mark) => mark.name)).toEqual(Array(MARKS).fill(TERM_FQN))

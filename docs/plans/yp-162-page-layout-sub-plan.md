@@ -11,8 +11,11 @@ what actually landed**, where it diverged from these phases and why, and the fin
 measurements; read it before §10. §§2–7 remain the design, corrected in place at the
 four points where an owner ruling during the build replaced what they said — §7.1's
 per-target-kind panel table, §7.2's panel ordering, §7.2's reference count, and
-§2.1's no-JavaScript reading. §9.1's measurements are likewise corrected where the
-build disagreed with them; the disagreements themselves are listed in §12.
+§2.1's no-JavaScript reading — and again at the points a **post-run review of the
+built pages** changed: those are listed together in
+[§12.7](#127-post-run-review-findings), which is the index to them. §9.1's
+measurements are likewise corrected where the build disagreed with them; the
+disagreements themselves are listed in §12.
 
 §§2–7 describe what the reader sees and does, not how it is built. §10 is the build
 order that followed from it — 21 narrow phases, each written so that a session picking
@@ -218,6 +221,14 @@ points — and each row links to the anchor on the node that introduces that ter
   narrowing as the reader types. Row count is small enough that this is free. With
   every name on its own row, the filter matches row text and nothing special is
   needed to make synonyms findable.
+- **The field stays put while the list scrolls.** *Added by an owner ruling after the
+  run.* It sticks to the top of the viewport just below the breadcrumb row, for as
+  long as any of the list is on screen. This page is 559 rows long; a field that
+  scrolled away with the top of the page would mean scrolling back out of the list
+  before it could be narrowed, which is the opposite of what an immediate filter is
+  for. The offset is the site header's own measured height, so the field lands under
+  the breadcrumb at every width and after every wrap. It applies equally to the two
+  index pages (§5), which share the component.
 - The filter needs an **empty state** ("nincs találat") and a way to clear it in one
   action. With 217 terms a mistyped filter otherwise looks like a broken page.
 - The filter must not be the only way to reach a term: with JavaScript off, the full
@@ -308,7 +319,10 @@ rather than a set of stacked sections underneath the content.
 
 Inside the main area, above everything else:
 
-- **Header** — two lines.
+- **Header** — two lines, and on a proof or a remark page a third above them.
+  - The **link up to the parent**, where the page has one, above the label, under a
+    hairline rule of its own. *Added by an owner ruling after the run; see the
+    ownership-chain links below, from where it moved.*
   - The **label** of the entity, e.g. `1.14. Tétel`. The exact wording depends on
     the type, and it is the same label the entity carries when embedded in a
     chapter. Styled like the chapter page's label (`chapter-page_chapter-label`):
@@ -324,13 +338,20 @@ Inside the main area, above everything else:
 
 #### The ownership-chain links
 
-**Below the body, a short list of links along the ownership chain** — the entity's
-parent, and the entities attached to it:
+**One chain in two places** — *corrected by an owner ruling after the run; this
+subsection used to put both halves below the body.*
 
-- **Up** to the parent: a proof links to the theorem it proves; a remark links to the
-  definition, theorem or proof it is attached to.
-- **Down** to each attached child: a theorem links to each of its proofs and each of
-  its remarks; a definition and a proof link to each of their remarks.
+- **Up** to the parent, **in the header, above the label**: a proof links to the
+  theorem it proves; a remark links to the definition, theorem or proof it is
+  attached to. Only a proof and a remark have one, which is 262 of the 537 pages —
+  and those are exactly the pages whose `<h1>` is the bare type label, so
+  "BIZONYÍTÁS" is all the header said and what is being proved was at the far end of
+  the body. The reader needs it before the argument, not after it. The header takes
+  the same hairline rule the list below the body sits under, so the two halves read
+  as one object.
+- **Down** to each attached child, **below the body**: a theorem links to each of its
+  proofs and each of its remarks; a definition and a proof link to each of their
+  remarks. A page with no children renders nothing here.
 
 Direction is marked with an **arrow in the link** — up for the parent, down for the
 children — so the reader can see which way they are moving in the chain without
@@ -369,6 +390,13 @@ corner — and a **caption extending to the left of it**, on a bar whose left ed
 rounded into a half-circle, so the whole item reads as one pill with the icon at its
 right end. Buttons are right-aligned in the stack, so their icons line up in a
 column regardless of caption length.
+
+**"The same size" is the glyph's, not the circle's.** *Corrected by an owner ruling
+after the run.* The build read it as the circle — a 44px button with a 44px icon
+filling it — against an opener whose shield paints at 16.66 × 13.33 inside the same
+44px circle. The two corners then carried two different families of control. The
+circle is unchanged; the glyph in it is now 1rem, which is the shield's own box to
+within a pixel on its wider side.
 
 **Every icon is black and white**, like the consent opener. No colour anywhere in
 this chrome. The icon set lives in
@@ -424,6 +452,16 @@ Scrolling alone is not enough on these pages. A term is a few words inside a
 paragraph and a claim is one item among several, so a reader who follows a
 cross-reference lands on a screen of text with no indication of which part of it was
 the point.
+
+**A mark plays when its target is in front of the reader, and not before.** *Added by
+an owner ruling after the run.* The gesture already waited for the arrival scroll to
+come to rest, which is enough when there is one target. It is not enough for §7.2's
+row arrival, which marks every reference in a source at once: on a long section most
+of them are below the fold when the page lands, and playing all of them together
+spends the gesture off-screen — the reader scrolls down later and finds the places
+they came for wearing nothing. So each mark waits for its own target to come into
+view, below the sticky header, and plays there. An arrival is over when every one of
+its marks has played, however long the reader takes over the section.
 
 **Only for anchors that name something inside the text:**
 
@@ -535,6 +573,14 @@ step: the button, the browser's Back, Escape, and clicking the dim.
 The narrowing from "all of them" to "just this one" is the whole point of the
 reveal mechanism: it shows the reader what they picked without a highlight colour, a
 scroll-to, or a separate selected-state style. The overlay does the work.
+
+**A revealed thing goes under the sticky header, not over it.** *Corrected by an
+owner ruling after the run.* Lifting a term out from under the dim also lifted it over
+the site header, which is inside the same wrapper, so a term scrolled to the top of
+the page painted across the logo and the breadcrumb. The header is therefore raised
+above the reveal for the duration of a mode — and, being then above the dim as well,
+is given the dim's own wash and made click-through, so it looks and behaves exactly as
+it did underneath it.
 
 Selecting an outgoing reference in the body (§7.1) is the same mechanism entered
 from a different direction: no mode to pick first, so it goes straight to a
@@ -2410,3 +2456,42 @@ of phase 21:
 
 The parent plan's §I, §J, §K and §L carry the same account, and its R3 has been
 re-measured to 439.
+
+### 12.7 Post-run review findings
+
+The owner read the built pages after phase 21 and raised a list of findings. They are
+not divergences from the phases (§12.2) — the phases were built as written — but
+rulings on what the built result should be instead, so each one is corrected in place
+in §§2–7 as well as recorded here. Findings from the same reading are still arriving;
+this section grows with them.
+
+| # | finding | where the design now says it | how it was verified |
+|---|---|---|---|
+| 1 | The filter on the glossary and the two index pages sticks below the breadcrumb while the list scrolls | §4, design notes | `e2e/kb-filter.test.ts` — the field's box against the breadcrumb row's, at the end of all three lists, and narrowing from there |
+| 2 | On a proof or a remark page the link to the parent leads the header, above the label, under a rule; the list below the body keeps only the children | §6.1 | `e2e/kb-sweep.test.ts` — served HTML, geometry rather than DOM order, plus "no up-link below" |
+| 3 | A menu icon is the size of the consent shield's glyph, not of its circle | §6.2 | `e2e/kb-chrome.test.ts` — all five glyphs measured against the shield's own rendered box |
+| 4 | A revealed term or claim scrolled to the top goes under the sticky header | §6.3 | `e2e/kb-select.test.ts` — pixels of the same term under the header and mid-page, so both directions are asserted |
+| 5 | An arrival mark plays when its own target is in view, not when the arrival lands | §6.2 | `e2e/kb-highlight.test.ts` — the off-screen marks are not drawn at all until the reader walks the section, and then are |
+
+Three notes on the shape of these fixes, because each cost more than it looks:
+
+- **The filter's offset is `--header-height`**, published by
+  `components/layout/HeaderHeightProbe.tsx` and already in use by the homepage hero, so
+  no second measurement of the header exists. With no JavaScript the property is absent
+  and the bar parks behind the header, which is harmless: the filter is inert without
+  scripting anyway.
+- **Finding 3 turned on a measurement, not a number in a stylesheet.**
+  `components/consent/consent-fab.module.scss` asks for a 1.125rem shield and does not
+  get it: FontAwesome's own `.svg-inline--fa { height: 1em; width: 1.25em }` wins the
+  cascade, and a `<button>` takes the user agent's 13.33px font rather than the page's
+  16px, so the shield paints **16.66 × 13.33**. The menu glyph is therefore 1rem — that
+  box to within a pixel on its wider side — and the consent button is left exactly as
+  it is. Making the shield's own declaration take effect instead would have changed a
+  control on every page of the site, which nobody asked for.
+- **Finding 4 needed a new layer, not a smaller z-index.** The reveal has to stay above
+  the dim, and the dim is below the reveal, so a header above the reveal is necessarily
+  above the dim too: `$z-kb-header: 730` sits between the reveal and the panel, and
+  `app/globals.scss` gives the header the dim's own 50% wash and `pointer-events: none`
+  for the duration, so it looks and behaves as it did underneath. The existing hit test
+  in `e2e/kb-select.test.ts` still passes unchanged, and it passes for a different
+  reason than before — which is why the note beside it now says so.

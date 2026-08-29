@@ -1,7 +1,7 @@
 import ContentBlocks from '@/components/content/ContentBlocks'
 import InlineText from '@/components/content/InlineText'
 import { getContentGraph } from '@/lib/content'
-import { kbNodeLabel } from '@/lib/content/graph'
+import { kbNodeLabel, kbOwnership } from '@/lib/content/graph'
 import { keyForKbNode } from '@/lib/content/keys'
 import { claimAnchorId, kbRefs, ownPageScope, termAnchorId } from '@/lib/content/urls'
 import { formatLocaleLabel, getLocaleLabel } from '@/lib/i18n/config'
@@ -43,6 +43,14 @@ interface KbEntityPageProps {
 export default function KbEntityPage({ node }: KbEntityPageProps) {
   const graph = getContentGraph()
   const label = kbNodeLabel(graph, node)
+  /**
+   * Whether this page has something above it in the ownership chain — a proof's
+   * theorem, a remark's owner — which is what the header leads with (§6.1 as
+   * amended). Only used here to decide whether the header carries the rule that
+   * separates that link from the breadcrumb above it; `OwnershipLinks` finds the link
+   * itself, so the two cannot disagree about whether there is one.
+   */
+  const owned = kbOwnership(graph, node).parent !== undefined
 
   // Embed and figure numbering is chapter-scoped ("11.3."), so it is built from
   // the chapter that embeds this node — the same numbers the reader saw there,
@@ -116,7 +124,18 @@ export default function KbEntityPage({ node }: KbEntityPageProps) {
   return (
     <>
       <article className={styles.entity}>
-        <header className={styles.header}>
+        {/*
+          The header, and on a proof or a remark page it opens with the link up to
+          what the page is about (§6.1 as amended). That is a change of reading order
+          and not only of position: 262 of the 537 pages have no title of their own,
+          so their <h1> is the bare type label — "BIZONYÍTÁS" — and the theorem it
+          proves is the first thing the reader needs, not the last. The header takes a
+          rule above that link when there is one (`.owned`), the same hairline the
+          ownership list below the body sits under, which is what makes the two halves
+          of the chain read as one object in two places.
+        */}
+        <header className={owned ? `${styles.header} ${styles.owned}` : styles.header}>
+          <OwnershipLinks node={node} placement="header" />
           {node.title ? (
             <>
               <p className={styles.label}>{label}</p>
@@ -151,8 +170,12 @@ export default function KbEntityPage({ node }: KbEntityPageProps) {
           Below the q.e.d., not above it: the glyph closes the body, and the chain is
           not part of the body — it is where this entity sits among the others. §6.1
           puts the links "below the body", and the body ends at the q.e.d.
+
+          The DOWN half only — the proofs and remarks attached to this entity. The one
+          link up moved into the header above, where the reader meets it before the
+          body rather than after it; a page with no children renders nothing here.
         */}
-        <OwnershipLinks node={node} />
+        <OwnershipLinks node={node} placement="body" />
       </article>
 
       {/*

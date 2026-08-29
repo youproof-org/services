@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import sharp from 'sharp'
 
 /**
  * The two selection modes, both levels: pick a mode, see the candidates, pick one
@@ -202,6 +203,43 @@ function coverOf(page: Page, selector: string): Promise<string> {
   }, selector)
 }
 
+/**
+ * The lightest and darkest pixel of the first revealed term, with the term placed
+ * either inside the sticky header's box or in the middle of the page.
+ *
+ * A screenshot clipped to the term's own first client rect — `getClientRects()[0]`
+ * for `hitTest`'s reason: a term can wrap, and the bounding box of a wrapped inline
+ * then includes the gutter between its fragments. `sharp` is the website's own
+ * dependency (`scripts/gen-og-images.mjs` and the menu-icon generator use it), so
+ * reading the pixels back needs nothing new.
+ *
+ * The scroll is relative: the term is moved to a chosen height, and the header's own
+ * box is where "inside the header" is read from rather than a number written here —
+ * the header is 112px at this viewport and taller when the breadcrumb wraps.
+ */
+async function termPixels(page: Page, where: 'header' | 'middle') {
+  const rect = await page.evaluate((position) => {
+    const term = document.querySelector<HTMLElement>('.page-root .term')!
+    const header = document.querySelector('header')!.getBoundingClientRect()
+    const target = position === 'header' ? header.top + header.height / 2 : window.innerHeight * 0.4
+    window.scrollBy({ top: term.getClientRects()[0].top - target, behavior: 'instant' as ScrollBehavior })
+    const box = term.getClientRects()[0]
+    return { x: Math.round(box.left), y: Math.round(box.top), width: Math.round(box.width), height: Math.round(box.height) }
+  }, where)
+
+  // Two frames, as `hitTest` does: the compositor has to have the new scroll position
+  // before the screenshot is taken.
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+      ),
+  )
+  const clip = await page.screenshot({ clip: rect })
+  const { data } = await sharp(clip).raw().toBuffer({ resolveWithObject: true })
+  return { min: Math.min(...data), max: Math.max(...data) }
+}
+
 /** The wrapper's transform, which is what a reveal has to get out of the way of. */
 function pageRootTransform(page: Page): Promise<string> {
   return page.evaluate(() => getComputedStyle(document.querySelector('.page-root')!).transform)
@@ -242,7 +280,40 @@ test.describe('Fogalmak — level 1', () => {
     // lifted out of, so it is the natural thing to come up with them by accident.
     expect(await coverOf(page, `${ARTICLE} h1`)).toBe('overlay_overlay')
     expect(await coverOf(page, `${ARTICLE} ${CLAIM} .claim-block_index`)).toBe('overlay_overlay')
+    // The header is raised above the reveal while a mode is up (see the test below),
+    // so what keeps it unpressable is `pointer-events: none` rather than the dim being
+    // over it — and a hit test is exactly the way to tell: the click still lands on
+    // the dim.
     expect(await coverOf(page, 'header')).toBe('overlay_overlay')
+  })
+
+  test('a revealed term scrolled to the top goes UNDER the sticky header', async ({ page }) => {
+    await openEntity(page)
+    await enterMode(page, TERMS)
+
+    /*
+      Pixels, because nothing weaker can answer this. The question is what a reader
+      sees where the header and a revealed term overlap, and that is the product of
+      four things no computed style contains together: the term is lifted to
+      $z-kb-reveal, the header to $z-kb-header, the dim is a body-level fixed layer at
+      $z-kb-overlay, and `.page-root`'s transform is off for the duration. A z-index
+      comparison would be the mechanism agreeing with itself.
+
+      Two positions for the same term, which is what makes it discriminating rather
+      than a picture of a grey box: inside the header's box it must be invisible, and
+      in the middle of the page it must be lit. The second one fails if the reveal has
+      quietly stopped working, and the first if the header ever loses this rule.
+    */
+    const underHeader = await termPixels(page, 'header')
+    // Nothing lighter than the dim's own wash: the term's white ground (255) and its
+    // glyphs are simply not on screen. The band is the wash over the header's white
+    // and over its breadcrumb text, measured.
+    expect(underHeader.max).toBeLessThan(200)
+
+    const midPage = await termPixels(page, 'middle')
+    // The same term, lit: its white ground and its black glyphs, both present.
+    expect(midPage.max).toBe(255)
+    expect(midPage.min).toBe(0)
   })
 
   test('leaves the page scrolling — a term can be anywhere in the body', async ({ page }) => {

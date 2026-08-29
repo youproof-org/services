@@ -267,7 +267,18 @@ export default function HighlightOnArrival() {
       apply(raw)
       scrub()
     })
-    return () => cancelAnimationFrame(frame)
+    /*
+      The marks go with the page they were about. A mark plays when the reader scrolls
+      its target into view (`ArrivalMarks`), so an arrival can have marks outstanding
+      for as long as the reader stays — and the elements they measure belong to THIS
+      page. Leaving the list up across a route change would leave boxes pointing at
+      detached nodes. This runs on the navigation away, before the next page's own
+      pass, because `pathname` is the dependency.
+    */
+    return () => {
+      cancelAnimationFrame(frame)
+      setMarks(null)
+    }
   }, [pathname])
 
   if (!marks) return null

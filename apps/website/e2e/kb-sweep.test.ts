@@ -339,6 +339,49 @@ test.describe('without JavaScript', () => {
     await expect(page.locator(MARKER)).toHaveCount(0)
   })
 
+  test('a proof page opens with the link up to its theorem, above the label', async ({
+    page,
+  }) => {
+    await page.goto(PROOF_URL)
+
+    /*
+      Reading order, in the served HTML: the one link UP leads the header, above the
+      <h1>, and the list below the body carries only what this page owns (§6.1 as
+      amended). A proof's <h1> is the bare type label — "Bizonyítás" — so the theorem
+      it proves is the first thing the reader needs; at the end of the body it is the
+      last.
+
+      Geometry rather than DOM order, because "above" is the claim: the link's box ends
+      before the heading's begins, and both are inside the article's header.
+    */
+    const order = await page.evaluate(() => {
+      const header = document.querySelector('.kb-entity-page_header')!
+      const link = header.querySelector('.ownership-links_parent .ownership-links_link')
+      const heading = header.querySelector('h1')!
+      const rule = getComputedStyle(header).borderTopWidth
+      return {
+        hasLink: link !== null,
+        href: link?.getAttribute('href') ?? '',
+        arrow: link?.querySelector('.ownership-links_arrow')?.textContent ?? '',
+        above: link!.getBoundingClientRect().bottom <= heading.getBoundingClientRect().top,
+        rule,
+        // The down half, below the body: this proof has a remark of its own on some
+        // pages and none here, and either way no link in it points up.
+        upLinksBelow: [...document.querySelectorAll('.ownership-links_links .ownership-links_arrow')]
+          .filter((element) => element.textContent === '↑').length,
+      }
+    })
+
+    expect(order.hasLink).toBe(true)
+    expect(order.href).toBe(ENTITY)
+    expect(order.arrow).toBe('↑')
+    expect(order.above).toBe(true)
+    // The rule that separates it from the breadcrumb row — the ownership list's own
+    // hairline, repeated on the header (`.owned`).
+    expect(order.rule).toBe('1px')
+    expect(order.upLinksBelow).toBe(0)
+  })
+
   test('the glossary, both index lists and the root page are complete', async ({ page }) => {
     // No panel and no chrome on any of these (§2): the only client component is the
     // filter, and it hides rows of a list the server rendered rather than producing

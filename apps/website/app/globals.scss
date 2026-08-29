@@ -195,12 +195,23 @@ body {
    transform is back before any navigation can start. And nothing else in an entity
    page rises with the terms: of the 899 elements inside `.page-root` on
    /hu/tudasbazis/definiciok/gyuru-test, exactly one is positioned or numbered at
-   all — the sticky site header, at $z-header, which stays under the dim.
-   e2e/kb-select.test.ts checks that header by hit test for the same reason.
+   all — the sticky site header, at $z-header — and that one is dealt with
+   deliberately rather than left to the drop; see the next note.
+   e2e/kb-select.test.ts checks the header by hit test for the same reason.
 
-   A revealed thing does paint over that dimmed header when the reader scrolls it
-   up there, which is level 1 working: in a mode the header is under the dim and
-   inert, and the candidate is the only thing on the page that is not.
+   WHY THE HEADER IS RAISED WITH THEM. Dropping the transform lets a revealed term
+   paint over the sticky header too, once the reader scrolls it up there — and a
+   phrase floating over the site header is the page looking broken, whatever it says
+   about which things are selectable. So for the duration of a mode the header goes
+   to $z-kb-header, above the reveal, and a term scrolled to the top of the page
+   disappears under it exactly as it does in every other state of the site.
+
+   That value is above the dim as well (it has to be: the dim is BELOW the reveal),
+   so the header would otherwise come out from under the wash and back within reach
+   of the pointer. The rule gives it both back: the same 50% black the overlay
+   paints, as a layer of its own over the header's contents, and `pointer-events:
+   none` for the clicks the overlay was absorbing. e2e/kb-select.test.ts hit-tests
+   the header for precisely that — what a click there lands on is still the overlay.
 
    INERT is the other half, and it is the dim doing it: everything that is not
    revealed stays under a layer that absorbs clicks, so an outgoing reference, a
@@ -216,6 +227,38 @@ body {
 body[data-kb-select] .page-root,
 body[data-kb-selected] .page-root {
   transform: none;
+}
+
+/* The sticky header, over the reveal and under everything else — see the note above.
+   Both halves of a selection again, and for the same reason: a pressed outgoing
+   reference is revealed with no mode above it (§7.1).
+
+   `.site-header_header` written out: `next.config.ts` names every CSS-module class of
+   ours `<file>_<local>`, which makes this as stable a handle as the global name it
+   has none of — the same arrangement `.claim-block_claim` above relies on. A bare
+   `header` would also match the entity page's own <header> element, which is part of
+   the article and belongs under the dim. */
+body[data-kb-select] .page-root .site-header_header,
+body[data-kb-selected] .page-root .site-header_header {
+  z-index: $z-kb-header;
+  /* What the overlay was doing for it: absorbing the clicks. The header is above that
+     layer now, so without this its links would be pressable while dimmed — and
+     `elementFromPoint` would report the header rather than the dim. */
+  pointer-events: none;
+
+  /* …and what the overlay was doing to it: the wash. The same colour, over the
+     header's own contents rather than in front of the whole viewport, so the header
+     looks no different from the layer it used to sit under.
+
+     A positioned pseudo-element, last child, no z-index: it paints above `.topRow`
+     (positioned, also no z-index) by document order, and above the breadcrumb row
+     because that is not positioned at all. */
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+  }
 }
 
 body[data-kb-select='terms'] .page-root .term,

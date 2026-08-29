@@ -23,7 +23,7 @@
 
 // One pill. The icon box is 2.75rem = 44px, the consent opener's box, and the
 // border-radius is larger than any height this can take, so both ends round into
-// half-circles — the right one exactly around the icon, the left one closing the
+// half-circles — the right one exactly around the icon box, the left one closing the
 // caption bar. Everything else is the opener's treatment: white, hairline border,
 // the same shadow, black and white only (§6.2).
 .item {
@@ -60,9 +60,34 @@
   white-space: nowrap;
 }
 
-.icon {
-  display: block;
+// The pill's right end: the 2.75rem = 44px circle the border-radius above rounds
+// into, and the minimum comfortable touch target. It is a box and not the image, so
+// the button's size and the glyph's are two separate numbers.
+.iconBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 2.75rem;
   height: 2.75rem;
   flex-shrink: 0;
+}
+
+// The glyph in it, at the size of the consent opener's shield. The two corners of the
+// screen carry the site's only two pieces of fixed chrome, and a 44px icon against
+// that small shield read as two different families of control (§6.2 asks for the
+// opener's treatment, and this is part of that treatment).
+//
+// 1rem = 16px, matched against the shield AS RENDERED and not against a number in a
+// stylesheet: consent-fab.module.scss asks for 1.125rem, but FontAwesome's own
+// `.svg-inline--fa { height: 1em; width: 1.25em }` wins the cascade (its stylesheet is
+// imported by the root layout, see components/consent/ConsentFab.tsx) and a <button>
+// takes the user agent's 13.33px font rather than inheriting the page's — so the shield
+// paints 16.66 × 13.33, measured in the browser. A square icon at 16px is that box to
+// within a pixel on its wider side, and the two corners read as one size.
+//
+// `scripts/gen-kb-menu-icons.mjs` sizes the PNGs from this number.
+.icon {
+  display: block;
+  width: 1rem;
+  height: 1rem;
 }

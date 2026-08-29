@@ -1,10 +1,13 @@
 @use '../../styles/variables' as *;
 
-// The ownership chain below an entity's body (§6.1): one plain link per step, the
-// parent first. A short list — at most two entries anywhere in the content today —
-// so it is a stack of lines rather than a grid, and it sits under a rule that
-// separates it from the q.e.d. that closed the body above it.
+// An entity's ownership chain (§6.1): one plain link per step. Two lists in two
+// places, sharing every row rule below them — the link UP leads the page header
+// (`.parent`), the links DOWN sit below the body (`.links`). A short list either way
+// — at most two entries anywhere in the content today — so it is a stack of lines
+// rather than a grid.
 
+// The down half, under a rule that separates it from the q.e.d. that closed the body
+// above it.
 .links {
   margin: 2rem 0 0;
   padding: 0.8rem 0 0;
@@ -12,6 +15,23 @@
   list-style: none;
   // Tighter than the body's leading, as the index rows are: an entry is one line.
   line-height: 1.5;
+}
+
+// The up half, first thing inside the page header. No rule of its own and no top
+// margin: kb-entity-page.module.scss puts the rule on the header itself, so it spans
+// the header rather than only this list, and this link is the first thing under it.
+// The bottom margin is the gap to the label the link is telling the reader about.
+.parent {
+  margin: 0 0 0.6rem;
+  padding: 0;
+  list-style: none;
+  line-height: 1.5;
+  // The header sets $font-x-bold on itself (kb-entity-page.module.scss), which is the
+  // weight of the page's own name. This is a link about a different page, so the row
+  // keeps its own weight ($font-bold on `.link` below) rather than the header's.
+  font-weight: $font-normal;
+  // Quieter than the label under it, which is 1rem on mobile and 1.5rem from tablet.
+  font-size: 0.9rem;
 }
 
 .item {

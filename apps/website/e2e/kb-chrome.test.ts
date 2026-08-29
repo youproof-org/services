@@ -108,6 +108,52 @@ test.describe('entity chrome', () => {
     expect(box.y + box.height).toBeGreaterThan(viewport.height * 0.8)
   })
 
+  test('every menu glyph is the size of the consent shield, in a 44px button', async ({
+    page,
+  }) => {
+    await openEntity(page)
+    await openMenu(page)
+
+    // The two corners of the screen carry the site's only fixed chrome, and §6.2 asks
+    // for the opener's treatment rather than a second one — which is a statement about
+    // the glyph as much as about the circle around it.
+    const shield = (await page
+      .getByRole('button', { name: 'Süti-beállítások' })
+      .locator('svg')
+      .boundingBox())!
+
+    /*
+      Against the shield AS RENDERED, which is 16.66 × 13.33 and not the 1.125rem
+      square `consent-fab.module.scss` asks for: FontAwesome's own `.svg-inline--fa`
+      wins the cascade, and a <button> takes the user agent's 13.33px font rather than
+      the page's 16. That is exactly why this is a browser test and not a stylesheet
+      read — "the same size as the shield" is a claim about what paints.
+
+      A menu icon is a square PNG, so it is matched against the shield's wider side,
+      to within a pixel. The band is deliberately tight: it excludes both the 44px the
+      icons used to be and any accidental return to 1.125rem.
+    */
+    expect(shield.width).toBeGreaterThan(15)
+    expect(shield.width).toBeLessThan(18)
+
+    const icons = await page.locator('.menu-stack_icon').all()
+    // Five: the four items plus the Menü button itself.
+    expect(icons.length).toBe(5)
+    for (const icon of icons) {
+      const box = (await icon.boundingBox())!
+      expect(box.width).toBe(box.height)
+      expect(Math.abs(box.width - shield.width)).toBeLessThan(1)
+    }
+
+    // …and the button around each of them is still the 44px touch target it was: the
+    // glyph shrank, the pill did not.
+    for (const box of await page.locator('.menu-stack_iconBox').all()) {
+      const rect = (await box.boundingBox())!
+      expect(rect.width).toBe(44)
+      expect(rect.height).toBe(44)
+    }
+  })
+
   test('opening the menu shows the four items and dims the page', async ({ page }) => {
     await openEntity(page)
     await openMenu(page)

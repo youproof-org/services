@@ -43,6 +43,14 @@ $pad-x:            1.5rem;  // px-6
 // it sits above the dim and under everything the reader still has to be able to
 // press (§6.3). Between the overlay and the panel, because level 2 leaves the
 // selection revealed while the sheet is open and the sheet must still cover it.
+// $z-kb-header is what the STICKY SITE HEADER is raised to for the duration of the
+// same modes, and it is above the reveal for one reason: a revealed term scrolled up
+// to the top of the page must disappear under the header, as it does in every other
+// state of the site, rather than paint over it. Being above the reveal puts it above
+// the dim as well, so the rule that raises it (app/globals.scss) also gives it the
+// dim's own wash and takes the pointer off it — the header stays exactly as dimmed
+// and as inert as it was under the overlay. Under $z-kb-panel: the sheet is what the
+// reader is acting on, and it covers everything on the page including this.
 // $z-kb-marker is the other one that is not a layer of the chrome: it is the
 // rectangle components/kb/ArrivalMarker.tsx draws around a fragment's target for a
 // moment after the reader lands on it (§6.2, D5). BELOW every layer here that means
@@ -57,6 +65,7 @@ $z-header:     100;
 $z-kb-marker:  690;
 $z-kb-overlay: 700;
 $z-kb-reveal:  720;
+$z-kb-header:  730;
 $z-kb-panel:   750;
 $z-kb-chrome:  800;
 $z-fab:        900;

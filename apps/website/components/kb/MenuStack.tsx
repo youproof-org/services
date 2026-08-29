@@ -8,9 +8,11 @@ import styles from './menu-stack.module.scss'
  * bottom-right corner (sub-plan §6.2).
  *
  * The corner is the mirror of the cookie-consent opener's, and so is the button
- * treatment — a 2.75rem circle, white on a hairline border, black and white only.
- * Each item extends that circle leftwards into a caption bar with a half-circle
- * left edge, so the whole item reads as one pill with the icon at its right end.
+ * treatment — a 2.75rem circle, white on a hairline border, black and white only,
+ * with a 1rem glyph centred in it, which is the size that opener's shield paints at
+ * (see `.icon` in `menu-stack.module.scss` for the measurement). Each
+ * item extends that circle leftwards into a caption bar with a half-circle left edge,
+ * so the whole item reads as one pill with the icon at its right end.
  * The stack is right-aligned, which is what lines the icons up in a column however
  * long the captions are.
  *
@@ -48,23 +50,35 @@ const ICON_DIR = '/assets/generated/kb-menu'
 
 /**
  * The device-pixel-ratio variants `scripts/gen-kb-menu-icons.mjs` writes: the same
- * icon at 44, 88 and 132 px for the 44 px box, so a retina screen gets a sharp one
+ * icon at 16, 32 and 48 px for the 16 px box, so a retina screen gets a sharp one
  * and nobody downloads the 512 px original.
  */
 const DPRS = [1, 2, 3]
 
+/**
+ * The glyph, and the 2.75rem box it is centred in.
+ *
+ * Two elements rather than one image sized to the button, because the two sizes are
+ * different facts: the box is the pill's right end and the touch target (44px), the
+ * glyph is what the reader looks at (1rem — the consent shield's size, which is what
+ * this now matches). Padding on the image itself would express the same geometry, but
+ * every one of the four numbers would then have to be read together to see either
+ * size.
+ */
 function MenuIcon({ name }: { name: KbMenuIcon }) {
   return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      className={styles.icon}
-      src={`${ICON_DIR}/${name}@1x.png`}
-      srcSet={DPRS.map((dpr) => `${ICON_DIR}/${name}@${dpr}x.png ${dpr}x`).join(', ')}
-      width={44}
-      height={44}
-      // The caption beside it says the same thing, so the icon is decoration.
-      alt=""
-    />
+    <span className={styles.iconBox}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        className={styles.icon}
+        src={`${ICON_DIR}/${name}@1x.png`}
+        srcSet={DPRS.map((dpr) => `${ICON_DIR}/${name}@${dpr}x.png ${dpr}x`).join(', ')}
+        width={16}
+        height={16}
+        // The caption beside it says the same thing, so the icon is decoration.
+        alt=""
+      />
+    </span>
   )
 }
 

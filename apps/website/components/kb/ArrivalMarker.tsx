@@ -111,10 +111,10 @@ import styles from './arrival-marker.module.scss'
  * One implementation rather than two, and that is not tidiness: D5 says the mark used
  * for a row arrival is "the same mark" as for an anchor arrival, so two copies of it
  * would be two chances for the site to make the same promise in two different
- * shapes. What generalises is only the number of boxes drawn — the wait for the
- * arrival scroll, the easing, the outsets, the hold, the fade and the reduced-motion
- * decision are all shared, all computed once per frame, and applied to every box in
- * the same frame so the marks move as one thing.
+ * shapes. What generalises is the number of boxes drawn and the moment each of them
+ * plays — a mark waits for its own target to be in front of the reader — while the
+ * wait for the arrival scroll, the easing, the outsets, the hold, the fade and the
+ * reduced-motion decision are one decision for the whole arrival. See `ArrivalMarks`.
  */
 
 /** How long the rectangle takes to close onto its target. */
@@ -157,16 +157,36 @@ const OUTSET_WIDE = 26
  * Two conditions rather than one, and the viewport half is what makes the pair sound:
  * on a document load the scroll has not started yet when this first runs, so "still"
  * alone would fire immediately, before the page had moved at all.
+ *
+ * What the wait now decides is when the VISIBILITY GATE is armed, not when the boxes
+ * start — a mark plays when its own target reaches the reader (`ArrivalMarks`). The
+ * wait is still needed for exactly the reason above: armed mid-scroll, the gate would
+ * fire for every mark the smooth scroll swept past on its way.
  */
 const SETTLE_FRAMES = 2
 
 /**
  * …and how long it will wait for that. A scroll that has not come to rest in four
- * seconds is not going to, and a mark whose target is off-screen is a smaller failure
- * than no mark at all — the reader who was sent somewhere gets the gesture either way.
+ * seconds is not going to, so the wait gives up and hands over to the visibility gate
+ * below — which is a real answer rather than a fallback: every mark then plays when
+ * the reader has it in front of them, whether the page ever came to rest or not.
  * Four seconds against a measured worst case of about 1.5.
  */
 const SETTLE_LIMIT_MS = 4000
+
+/**
+ * How far into the viewport a mark has to be before its gesture plays: past the
+ * bottom edge of the sticky header, which is the top of the region that belongs to
+ * the reader rather than to the chrome.
+ *
+ * Measured when the gate is armed rather than per entry, for `Panel`'s reason
+ * (`upperHalfScrollTop`): an `IntersectionObserver`'s margins are fixed at
+ * construction, and the header does not change height while a gesture is up.
+ */
+function headerInset(): number {
+  const header = document.querySelector('header')
+  return header ? Math.max(0, Math.round(header.getBoundingClientRect().bottom)) : 0
+}
 
 /**
  * How many frames the fragment is re-read for after a link carrying one is pressed.
@@ -318,12 +338,40 @@ export default function ArrivalMarker() {
 }
 
 /**
- * The gesture itself: close onto the target — or onto all of them — hold, fade, gone.
+ * The gesture itself: close onto the target — or onto each of them — hold, fade, gone.
  *
- * Shared by both callers (see the note on generalising at the top of this file), and
- * everything in here is per-arrival rather than per-mark except each box's own
- * rectangle: one wait for the scroll, one clock, one easing, one outset, one opacity,
- * written onto every box in the same frame.
+ * Shared by both callers (see the note on generalising at the top of this file). The
+ * wait for the arrival scroll, the easing, the outsets, the hold, the fade and the
+ * reduced-motion decision are one decision for the whole arrival; what is per mark is
+ * its rectangle and **when its own gesture plays**.
+ *
+ * ## Each mark plays when the reader can see it
+ *
+ * A row arrival can mark places spread over a whole section — nine on §7.2's worked
+ * case, twenty-two once a section row covers what is embedded in it — and only the
+ * first of them is on screen when the page comes to rest. Playing all of them at once
+ * would spend most of the gesture off-screen: the reader scrolls down half a minute
+ * later and finds the references they came for wearing nothing at all, which is the
+ * failure D5 already names for a mark that animates before its target has arrived,
+ * one step further out.
+ *
+ * So a mark waits for its own target to be in front of the reader, and an
+ * `IntersectionObserver` is what decides that — one registration per target, no
+ * polling, and no work at all for a mark nobody has scrolled to yet. Its top margin
+ * is pulled in by the sticky header's height (`headerInset`), because a reference
+ * underneath the header is not something the reader can see.
+ *
+ * Two consequences worth being explicit about:
+ *
+ *   - **the marks no longer move as one thing** — only the ones that start in the same
+ *     frame do. That property was never the point; it was how "one gesture, not nine"
+ *     was expressed while every box started together. What is still one gesture is the
+ *     shape: same clock length, same easing, same outsets for every box.
+ *   - **a mark the reader never scrolls to never plays**, and its box stays in the DOM,
+ *     empty and `pointer-events: none`, until the arrival ends. That is deliberate:
+ *     there is no deadline after which "show me where they are" stops being the
+ *     question the reader asked. Both callers drop the whole list on the next
+ *     navigation or arrival, so nothing outlives the page it was answering about.
  *
  * A layout effect, so the first measurement is written before the browser paints the
  * commit that created the elements — the stylesheet's `opacity: 0` is what would
@@ -343,7 +391,14 @@ interface ArrivalMarksProps {
    * anchor), so it is the mark whose being on screen means the page has landed.
    */
   marks: readonly ArrivalMark[]
-  /** Called once, when the gesture is over. Must be stable — it is a dependency. */
+  /**
+   * Called once, when every mark has played out. Must be stable — it is a dependency.
+   *
+   * "Every mark", not "the last one to start": a mark whose target the reader has not
+   * reached yet has not played, so an arrival with one of those outstanding is not
+   * over. It ends when the reader has seen all of them, or when the caller replaces
+   * the list.
+   */
   onFinished: () => void
 }
 
@@ -361,72 +416,155 @@ export function ArrivalMarks({ marks, onFinished }: ArrivalMarksProps) {
     // only the closing movement is dropped, so the frame is up for as long.
     const shrinkMs = reduced ? 0 : SHRINK_MS
     const fadeAt = shrinkMs + HOLD_MS
+    const spentAt = fadeAt + FADE_MS
 
+    /**
+     * Per mark: when its own gesture started, or one of three sentinels. One array
+     * rather than three sets — the index is the mark, the box and the state at once.
+     *
+     *   - `WAITING` — its target has not been in front of the reader yet.
+     *   - `STARTING` — it has, and the next frame is its first. The clock is set THERE
+     *     rather than when the gate fires, so a mark's first drawn frame is always its
+     *     frame zero: `OUTSET_WIDE` exactly, at full opacity. Starting the clock in the
+     *     gate's callback would spend the few milliseconds until the next frame, and
+     *     the box would appear already a little way into its own shrink.
+     *   - `SPENT` — it has played out.
+     */
+    const WAITING = 0
+    const SPENT = -1
+    const STARTING = -2
+    const startedAt = marks.map(() => WAITING as number)
+    let spent = 0
+    /** The pending animation frame, or 0 when no frame is scheduled. */
     let frame = 0
-    let done = false
-    /** 0 while the loop is still waiting for the arrival scroll to come to rest. */
-    let started = 0
-    let stillFrames = 0
-    let previousY = Number.NaN
-    const waitingSince = performance.now()
+    let finished = false
+    let observer: IntersectionObserver | null = null
 
+    /**
+     * One frame: every mark that is playing, measured and written at the same instant.
+     *
+     * Only the playing ones. A waiting mark is not measured at all — that is what
+     * makes an arrival with twenty-two marks cost the same per frame as one with two
+     * on screen — and a spent one is left where its last frame put it, at zero
+     * opacity, until the whole arrival ends.
+     *
+     * The loop stops itself when nothing is playing, and the gate below starts it
+     * again when a mark comes into view. `frame` is the handle and the flag: 0 means
+     * nothing is scheduled, which is what the gate tests.
+     */
     const step = (now: number) => {
-      // Every target, once per frame, before anything is written: the same instant for
-      // all of them, which is what makes the marks move as one thing rather than as a
-      // set of boxes each measured after the previous one was drawn.
-      const rects = marks.map((mark) => mark.element.getBoundingClientRect())
-      const lead = rects[0]
+      frame = 0
+      let playing = false
+      for (let index = 0; index < marks.length; index += 1) {
+        if (startedAt[index] === STARTING) startedAt[index] = now
+        const started = startedAt[index]
+        if (started === WAITING || started === SPENT) continue
+        const elapsed = now - started
+        // The same shape and length the panel's slide and its scroll share
+        // (`components/kb/Panel.tsx`): eased out, so the frame decelerates onto the
+        // target rather than stopping dead on it.
+        const closing = shrinkMs === 0 ? 1 : Math.min(1, elapsed / shrinkMs)
+        const eased = 1 - (1 - closing) ** 3
+        const outset = OUTSET_WIDE + (OUTSET_TIGHT - OUTSET_WIDE) * eased
+        const opacity = elapsed <= fadeAt ? 1 : Math.max(0, 1 - (elapsed - fadeAt) / FADE_MS)
 
-      if (started === 0) {
-        const y = window.scrollY
-        stillFrames = y === previousY ? stillFrames + 1 : 0
-        previousY = y
-        const landed =
-          stillFrames >= SETTLE_FRAMES && lead.bottom > 0 && lead.top < window.innerHeight
-        if (!landed && now - waitingSince < SETTLE_LIMIT_MS) {
-          frame = requestAnimationFrame(step)
-          return
-        }
-        started = now
-      }
-
-      const elapsed = now - started
-      // The same shape and length the panel's slide and its scroll share
-      // (`components/kb/Panel.tsx`): eased out, so the frame decelerates onto the
-      // target rather than stopping dead on it.
-      const closing = shrinkMs === 0 ? 1 : Math.min(1, elapsed / shrinkMs)
-      const eased = 1 - (1 - closing) ** 3
-      const outset = OUTSET_WIDE + (OUTSET_TIGHT - OUTSET_WIDE) * eased
-      const opacity =
-        elapsed <= fadeAt ? 1 : Math.max(0, 1 - (elapsed - fadeAt) / FADE_MS)
-
-      for (let index = 0; index < rects.length; index += 1) {
-        const rect = rects[index]
+        const rect = marks[index].element.getBoundingClientRect()
         const style = nodes[index]!.style
         style.top = `${rect.top - outset}px`
         style.left = `${rect.left - outset}px`
         style.width = `${rect.width + outset * 2}px`
         style.height = `${rect.height + outset * 2}px`
         style.opacity = `${opacity}`
+
+        if (elapsed >= spentAt) {
+          startedAt[index] = SPENT
+          spent += 1
+        } else {
+          playing = true
+        }
       }
 
-      if (elapsed >= fadeAt + FADE_MS) {
+      if (spent === marks.length) {
         // Unmounted rather than left at zero opacity: §6.2 asks for the frame to be
         // gone, and a spent layer left in the DOM is the kind of thing that is
         // eventually found sitting over something.
-        done = true
+        finished = true
         onFinished()
         return
       }
-      frame = requestAnimationFrame(step)
+      if (playing) frame = requestAnimationFrame(step)
+    }
+
+    /**
+     * The visibility gate: start each mark when its target reaches the reader.
+     *
+     * Armed once, after the arrival scroll has settled — see `settle` below. Arming it
+     * earlier would start the marks the smooth scroll happens to sweep past on its
+     * way, which is the very thing the wait exists to prevent.
+     *
+     * A mark already on screen starts immediately: an observer delivers its targets'
+     * current state in its first callback, so nothing has to be tested here for the
+     * common case of "the page landed on this one".
+     */
+    const arm = () => {
+      // Keyed by the target element: an observer entry says which element it is about,
+      // and the box to start is the one at that element's position in the list.
+      const index = new Map<Element, number>(
+        marks.map((mark, position) => [mark.element, position]),
+      )
+      observer = new IntersectionObserver(
+        (entries) => {
+          let woke = false
+          for (const entry of entries) {
+            const position = index.get(entry.target)
+            if (position === undefined || !entry.isIntersecting) continue
+            if (startedAt[position] !== WAITING) continue
+            startedAt[position] = STARTING
+            // One play per mark: the reader scrolling back to it is not a second
+            // arrival, and the marker is not a hover effect.
+            observer?.unobserve(entry.target)
+            woke = true
+          }
+          if (woke && frame === 0) frame = requestAnimationFrame(step)
+        },
+        // Below the sticky header, not merely inside the viewport: a reference under
+        // the header is not one the reader can see.
+        { rootMargin: `-${headerInset()}px 0px 0px 0px` },
+      )
+      for (const mark of marks) observer.observe(mark.element)
+    }
+
+    /**
+     * The wait for the arrival scroll to come to rest, watched on the lead mark —
+     * whichever target the caller scrolled to (see `marks`). Unchanged in what it
+     * decides; what changes is what happens next, which is arming the gate rather than
+     * starting every box.
+     */
+    let stillFrames = 0
+    let previousY = Number.NaN
+    const waitingSince = performance.now()
+    const settle = (now: number) => {
+      frame = 0
+      const lead = marks[0].element.getBoundingClientRect()
+      const y = window.scrollY
+      stillFrames = y === previousY ? stillFrames + 1 : 0
+      previousY = y
+      const landed =
+        stillFrames >= SETTLE_FRAMES && lead.bottom > 0 && lead.top < window.innerHeight
+      if (!landed && now - waitingSince < SETTLE_LIMIT_MS) {
+        frame = requestAnimationFrame(settle)
+        return
+      }
+      arm()
     }
 
     // Synchronously first, then per frame. Nothing is drawn by this call — it begins
     // the wait — and the elements stay at the stylesheet's `opacity: 0` until the
-    // first frame of the gesture writes a box.
-    step(performance.now())
+    // first frame of a mark's own gesture writes a box.
+    settle(performance.now())
     return () => {
-      if (!done) cancelAnimationFrame(frame)
+      if (!finished) cancelAnimationFrame(frame)
+      observer?.disconnect()
     }
   }, [marks, onFinished])
 
