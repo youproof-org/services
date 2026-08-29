@@ -66,12 +66,10 @@ const CONTEXT_LEVELS = 3
 const PROOF_URL = '/hu/tudasbazis/tetelek/maradekosztalygyuruk/bizonyitasok/maradekosztalygyuruk-bizonyitas'
 
 /**
- * Two fragment arrivals on the same page, so the marker can be caught twice: once
- * with print as the medium and once on screen. Both are `termAnchorId` output, which
- * is one of the three marked kinds (D5).
+ * The fragment the marker is caught on, once with print as the medium and once on
+ * screen. `termAnchorId` output, which is one of the three marked kinds (D5).
  */
 const MARKED_ANCHOR = 'fogalmak.maradekosztalyok-osszege'
-const MARKED_ANCHOR_2 = 'fogalmak.maradekosztalyok-szorzata'
 
 /** The three list pages and the root, with the row counts of the served HTML. */
 const GLOSSARY = '/hu/tudasbazis/fogalmak'
@@ -224,16 +222,21 @@ test.describe('print', () => {
     await expect.poll(async () => (await markerDisplays(page)).length).toBe(1)
     expect(await markerDisplays(page)).toEqual(['none'])
 
-    // The control, and it is the same assertion on the same recorder: a second
-    // arrival, on screen, has to be drawn — otherwise "display: none" above would be
-    // satisfied by a marker that never fired. Waited out first, because the gesture
-    // ends by removing its own element and a second mark would otherwise reuse the
-    // node the recorder is watching for.
+    /*
+      The control, and it is the same assertion: the same arrival on screen has to be
+      drawn — otherwise "display: none" above would be satisfied by a marker that never
+      fired. Waited out first, because the gesture ends by removing its own element and a
+      second mark would otherwise reuse the node the recorder is watching for.
+
+      A reload rather than a second fragment on the same document: only a load or a press
+      is an arrival now (`components/kb/ArrivalMarker.tsx`), and a reload is a load. The
+      recorder is an init script, so it starts empty on it.
+    */
     await expect(page.locator(MARKER)).toHaveCount(0)
     await page.emulateMedia({ media: 'screen' })
-    await page.goto(`${ENTITY}#${MARKED_ANCHOR_2}`)
-    await expect.poll(async () => (await markerDisplays(page)).length).toBe(2)
-    expect(await markerDisplays(page)).toEqual(['none', 'block'])
+    await page.reload()
+    await expect.poll(async () => (await markerDisplays(page)).length).toBe(1)
+    expect(await markerDisplays(page)).toEqual(['block'])
   })
 })
 
@@ -356,9 +359,10 @@ test.describe('without JavaScript', () => {
     */
     const order = await page.evaluate(() => {
       const header = document.querySelector('.kb-entity-page_header')!
-      const link = header.querySelector('.ownership-links_parent .ownership-links_link')
+      const list = header.querySelector('.ownership-links_parent')!
+      const link = list.querySelector('.ownership-links_link')
       const heading = header.querySelector('h1')!
-      const rule = getComputedStyle(header).borderTopWidth
+      const rule = getComputedStyle(list).borderBottomWidth
       return {
         hasLink: link !== null,
         href: link?.getAttribute('href') ?? '',
@@ -376,8 +380,8 @@ test.describe('without JavaScript', () => {
     expect(order.href).toBe(ENTITY)
     expect(order.arrow).toBe('↑')
     expect(order.above).toBe(true)
-    // The rule that separates it from the breadcrumb row — the ownership list's own
-    // hairline, repeated on the header (`.owned`).
+    // The hairline BELOW the link, closing it off from the label rather than from the
+    // breadcrumb row above it (`ownership-links.module.scss`).
     expect(order.rule).toBe('1px')
     expect(order.upLinksBelow).toBe(0)
   })

@@ -10,11 +10,10 @@ import styles from './menu-stack.module.scss'
  * The corner is the mirror of the cookie-consent opener's, and so is the button
  * treatment — a 2.75rem circle, white on a hairline border, black and white only,
  * with a 1rem glyph centred in it, which is the size that opener's shield paints at
- * (see `.icon` in `menu-stack.module.scss` for the measurement). Each
- * item extends that circle leftwards into a caption bar with a half-circle left edge,
- * so the whole item reads as one pill with the icon at its right end.
- * The stack is right-aligned, which is what lines the icons up in a column however
- * long the captions are.
+ * (see `.icon` in `menu-stack.module.scss` for the measurement). The circle sits ON a
+ * caption bar rather than being that bar's rounded right end: it is complete, and a
+ * shadow of its own lifts it off the bar it is laid on. Every bar is the same width, so
+ * the circles line up in a column whatever the captions measure.
  *
  * The bottom-most button is the constant: **Menü** in the default state and
  * **Vissza** in every other one, in the same place, so the reader always knows
@@ -56,10 +55,10 @@ const ICON_DIR = '/assets/generated/kb-menu'
 const DPRS = [1, 2, 3]
 
 /**
- * The glyph, and the 2.75rem box it is centred in.
+ * The glyph, and the 2.75rem circle it is centred in.
  *
  * Two elements rather than one image sized to the button, because the two sizes are
- * different facts: the box is the pill's right end and the touch target (44px), the
+ * different facts: the circle is the item's right end and the touch target (44px), the
  * glyph is what the reader looks at (1rem — the consent shield's size, which is what
  * this now matches). Padding on the image itself would express the same geometry, but
  * every one of the four numbers would then have to be read together to see either

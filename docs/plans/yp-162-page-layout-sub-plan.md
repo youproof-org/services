@@ -320,7 +320,7 @@ rather than a set of stacked sections underneath the content.
 Inside the main area, above everything else:
 
 - **Header** — two lines, and on a proof or a remark page a third above them.
-  - The **link up to the parent**, where the page has one, above the label, under a
+  - The **link up to the parent**, where the page has one, above the label, over a
     hairline rule of its own. *Added by an owner ruling after the run; see the
     ownership-chain links below, from where it moved.*
   - The **label** of the entity, e.g. `1.14. Tétel`. The exact wording depends on
@@ -346,12 +346,18 @@ subsection used to put both halves below the body.*
   attached to. Only a proof and a remark have one, which is 262 of the 537 pages —
   and those are exactly the pages whose `<h1>` is the bare type label, so
   "BIZONYÍTÁS" is all the header said and what is being proved was at the far end of
-  the body. The reader needs it before the argument, not after it. The header takes
-  the same hairline rule the list below the body sits under, so the two halves read
-  as one object.
+  the body. The reader needs it before the argument, not after it. **The rule sits
+  below the link**, closing it off from the label it is telling the reader about
+  rather than separating it from the breadcrumb row above it, which is a different
+  kind of statement about where the page sits. *Corrected by an owner ruling after
+  the run; the rule was above the link.*
 - **Down** to each attached child, **below the body**: a theorem links to each of its
   proofs and each of its remarks; a definition and a proof link to each of their
-  remarks. A page with no children renders nothing here.
+  remarks. A page with no children renders nothing here. **The rows read exactly as
+  the parent link does** — same size, same weight, same arrow, the hairline mirrored
+  above them so it closes the body off instead of the label. *The parent half is the
+  reference for both, by an owner ruling after the run; the child rows used to take
+  the body's own size and weight.*
 
 Direction is marked with an **arrow in the link** — up for the parent, down for the
 children — so the reader can see which way they are moving in the chain without
@@ -384,12 +390,14 @@ bottom-right corner** — the page's context menu. Which items it contains depen
 the **type of the entity**, on **what that particular entity has** (terms, claims,
 a proof, a remark, a parent), and on the **current state of the menu**.
 
-**Shape of a button.** Each item has two parts: a **circular icon** on the right —
-the same size, weight and treatment as the cookie-consent opener in the bottom-left
-corner — and a **caption extending to the left of it**, on a bar whose left edge is
-rounded into a half-circle, so the whole item reads as one pill with the icon at its
-right end. Buttons are right-aligned in the stack, so their icons line up in a
-column regardless of caption length.
+**Shape of a button.** Each item has two parts: a **complete circular icon** at the
+right end — the same size, weight and treatment as the cookie-consent opener in the
+bottom-left corner, and laid **on** the bar rather than being the bar's own rounded end,
+with a shadow of its own lifting it off — and a **caption bar extending to the left of
+it**, both ends rounded. **Every bar in the stack is the same width**, the widest
+caption's, so the circles line up in a column because the bars end together. *Corrected
+by an owner ruling after the run: the circle used to be the pill's right end, and each
+bar shrank to its own caption.*
 
 **"The same size" is the glyph's, not the circle's.** *Corrected by an owner ruling
 after the run.* The build read it as the circle — a 44px button with a 44px icon
@@ -497,6 +505,16 @@ claim on an entity page. It should not fire when the page moves something into v
 by its own doing — the scroll-into-the-upper-half in §6.4 already has the overlay
 to show what is selected, and a second marker on top of it would be two answers to
 one question.
+
+**Nor should it fire for a fragment nobody asked for.** *Added by an owner ruling
+after the run.* A mark needs a reason as well as a fragment change, and there are two:
+the document loaded on that fragment, or the reader pressed something that led there.
+A **Back or Forward step is neither** — the reader has been where they are going and
+the mark was given there, so marking it again answers a question nobody asked twice.
+The case that showed it: arrive at a term, select it, follow one of its source rows,
+come back, and the term was framed a second time. The one case given up for it is a
+fragment typed into the address bar of the page the reader is already on; the same URL
+pasted into a new tab is a load, and still marked.
 
 #### The items
 
@@ -1737,9 +1755,9 @@ and the corner convention the stack mirrors); `components/consent/ConsentDialog.
 for the existing overlay treatment.
 
 **Do.**
-- A **vertical stack of pill buttons in the bottom-right**: circular icon at the right
-  end, caption on a bar extending left with a half-circle left edge, right-aligned so
-  the icons line up. Black and white only (§6.2).
+- A **vertical stack of buttons in the bottom-right**: a complete circle laid on the
+  right end of a caption bar, every bar the same width so the circles line up. Black and
+  white only (§6.2).
 - The bottom-most button is **Menü** in the default state and **Vissza** in every other
   state, in the same place (§6.2).
 - **The state machine.** A stack of states, not a boolean. "Vissza" pops **one**. The
@@ -2468,12 +2486,16 @@ this section grows with them.
 | # | finding | where the design now says it | how it was verified |
 |---|---|---|---|
 | 1 | The filter on the glossary and the two index pages sticks below the breadcrumb while the list scrolls | §4, design notes | `e2e/kb-filter.test.ts` — the field's box against the breadcrumb row's, at the end of all three lists, and narrowing from there |
-| 2 | On a proof or a remark page the link to the parent leads the header, above the label, under a rule; the list below the body keeps only the children | §6.1 | `e2e/kb-sweep.test.ts` — served HTML, geometry rather than DOM order, plus "no up-link below" |
+| 2 | On a proof or a remark page the link to the parent leads the header, above the label and its rule (see finding 7); the list below the body keeps only the children | §6.1 | `e2e/kb-sweep.test.ts` — served HTML, geometry rather than DOM order, plus "no up-link below" |
 | 3 | A menu icon is the size of the consent shield's glyph, not of its circle | §6.2 | `e2e/kb-chrome.test.ts` — all five glyphs measured against the shield's own rendered box |
 | 4 | A revealed term or claim scrolled to the top goes under the sticky header | §6.3 | `e2e/kb-select.test.ts` — pixels of the same term under the header and mid-page, so both directions are asserted |
 | 5 | An arrival mark plays when its own target is in view, not when the arrival lands | §6.2 | `e2e/kb-highlight.test.ts` — the off-screen marks are not drawn at all until the reader walks the section, and then are |
+| 6 | An arrival mark needs a reason as well as a fragment change: a load, or a press. A Back or Forward step is neither | §6.2 | `e2e/kb-arrival.test.ts` — an unpressed fragment change, then a step back and forward over it; and `e2e/kb-highlight.test.ts` — the reported case end to end |
+| 7 | The parent link's hairline sits below it, closing it off from the label rather than from the breadcrumb | §6.1 | `e2e/kb-sweep.test.ts` — the rule read off the list's own box, with the link still above the heading |
+| 8 | The child links read exactly as the parent link does; the parent half is the reference | §6.1 | the two lists share every rule but placement in `ownership-links.module.scss`, so there is nothing left to diverge |
+| 9 | The icon is a complete circle laid on the caption bar, with a shadow of its own, and every bar is the same width | §6.2 | `e2e/kb-chrome.test.ts` — the circle still measures the 44px touch target, hairline included |
 
-Three notes on the shape of these fixes, because each cost more than it looks:
+Four notes on the shape of these fixes, because each cost more than it looks:
 
 - **The filter's offset is `--header-height`**, published by
   `components/layout/HeaderHeightProbe.tsx` and already in use by the homepage hero, so
@@ -2488,6 +2510,15 @@ Three notes on the shape of these fixes, because each cost more than it looks:
   box to within a pixel on its wider side — and the consent button is left exactly as
   it is. Making the shield's own declaration take effect instead would have changed a
   control on every page of the site, which nobody asked for.
+- **Finding 6 could not be expressed as "ignore `popstate`", which is what it looks
+  like.** Measured in Chromium with the Navigation API alongside: an ordinary fragment
+  navigation fires `popstate` too, with the same `state === null` and the same fragment
+  as the traversal onto that entry, so nothing in the event tells a press from a step
+  back. `navigationType === 'traverse'` does say it, and is deliberately unused — the
+  rule as stated needs no new API and holds in every browser. What carries it instead is
+  a one-shot permit in `components/kb/ArrivalMarker.tsx`, granted by the document's load
+  and by a plain same-tab press on a link with a fragment, and spent by the next arrival
+  whether or not that arrival was a marked kind.
 - **Finding 4 needed a new layer, not a smaller z-index.** The reveal has to stay above
   the dim, and the dim is below the reveal, so a header above the reveal is necessarily
   above the dim too: `$z-kb-header: 730` sits between the reveal and the panel, and

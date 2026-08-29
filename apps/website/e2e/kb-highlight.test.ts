@@ -745,3 +745,45 @@ test.describe('a mark plays when the reader can see it, not before', () => {
     }
   })
 })
+
+test.describe('coming back from a source', () => {
+  test('the term the reader left is not marked again (§6.2)', async ({ context, page }) => {
+    await installRecorder(context)
+
+    /*
+      Arrived at the term by its fragment, so the marker has already answered "here it
+      is" once — a page that had never been marked would pass this by doing nothing at
+      all, exactly as `kb-arrival.test.ts` starts its own §6.2 case from one recorded
+      arrival.
+    */
+    await page.goto(`${THEOREM}#${TERM_ANCHOR}`)
+    await settleConsent(page)
+    await expect.poll(async () => (await recorded(page)).length).toBe(1)
+    await expect(page.locator(MARKER)).toHaveCount(0)
+
+    await chromeButton(page, MENU).click()
+    await chromeButton(page, TERMS).click()
+    await expect(page.locator(OVERLAY)).toBeVisible()
+    // Already in view: the page arrived on this very term, so the reveal needs no
+    // scroll to reach it and the click lands where the fragment left it.
+    await page.locator(`.page-root [id="${TERM_ANCHOR}"]`).click()
+    await expect(page.locator(PANEL)).toBeVisible()
+
+    await page.locator(ROW).nth(2).click()
+    await expect(page).toHaveURL(new RegExp(SECTION))
+    await expect.poll(async () => (await recorded(page)).length).toBeGreaterThan(1)
+
+    /*
+      Back to the theorem, whose URL still names that term. The reader has been here and
+      the term has been marked, so the return marks nothing: one recorded arrival on this
+      page, the one they started from. Before `popstate` claimed the destination, this
+      was two.
+    */
+    const beforeBack = (await recorded(page)).length
+    await page.goBack()
+    await expect(page).toHaveURL(new RegExp(`${THEOREM}#${TERM_ANCHOR}$`))
+    await page.waitForTimeout(GESTURE_MS * 2)
+    expect((await recorded(page)).length).toBe(beforeBack)
+    await expect(page.locator(MARKER)).toHaveCount(0)
+  })
+})

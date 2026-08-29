@@ -1,7 +1,7 @@
 import ContentBlocks from '@/components/content/ContentBlocks'
 import InlineText from '@/components/content/InlineText'
 import { getContentGraph } from '@/lib/content'
-import { kbNodeLabel, kbOwnership } from '@/lib/content/graph'
+import { kbNodeLabel } from '@/lib/content/graph'
 import { keyForKbNode } from '@/lib/content/keys'
 import { claimAnchorId, kbRefs, ownPageScope, termAnchorId } from '@/lib/content/urls'
 import { formatLocaleLabel, getLocaleLabel } from '@/lib/i18n/config'
@@ -43,15 +43,6 @@ interface KbEntityPageProps {
 export default function KbEntityPage({ node }: KbEntityPageProps) {
   const graph = getContentGraph()
   const label = kbNodeLabel(graph, node)
-  /**
-   * Whether this page has something above it in the ownership chain — a proof's
-   * theorem, a remark's owner — which is what the header leads with (§6.1 as
-   * amended). Only used here to decide whether the header carries the rule that
-   * separates that link from the breadcrumb above it; `OwnershipLinks` finds the link
-   * itself, so the two cannot disagree about whether there is one.
-   */
-  const owned = kbOwnership(graph, node).parent !== undefined
-
   // Embed and figure numbering is chapter-scoped ("11.3."), so it is built from
   // the chapter that embeds this node — the same numbers the reader saw there,
   // rather than a second sequence starting at 1 on every entity page. A node with
@@ -129,12 +120,11 @@ export default function KbEntityPage({ node }: KbEntityPageProps) {
           what the page is about (§6.1 as amended). That is a change of reading order
           and not only of position: 262 of the 537 pages have no title of their own,
           so their <h1> is the bare type label — "BIZONYÍTÁS" — and the theorem it
-          proves is the first thing the reader needs, not the last. The header takes a
-          rule above that link when there is one (`.owned`), the same hairline the
-          ownership list below the body sits under, which is what makes the two halves
-          of the chain read as one object in two places.
+          proves is the first thing the reader needs, not the last. The hairline that
+          closes that link off from the label belongs to the link's own list
+          (`ownership-links.module.scss`), so it exists exactly where the link does.
         */}
-        <header className={owned ? `${styles.header} ${styles.owned}` : styles.header}>
+        <header className={styles.header}>
           <OwnershipLinks node={node} placement="header" />
           {node.title ? (
             <>

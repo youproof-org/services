@@ -527,31 +527,36 @@ test.describe('a fragment the site does not mark', () => {
     expect(await recorded(page)).toEqual([])
   })
 
-  test('a back step onto a fragment marks it again', async ({ context, page }) => {
+  test('a fragment change nobody pressed is not an arrival', async ({ context, page }) => {
     await installRecorder(context)
     await page.goto(`${TERM_TARGET}#${UNMARKED_ON_TERM_PAGE}`)
     await page.waitForTimeout(GESTURE_MS * 2)
     expect(await recorded(page)).toEqual([])
 
-    // Setting `location.hash` is what pressing a same-page fragment link does, and it
-    // fires `hashchange` — the marker's second trigger.
+    /*
+      A mark needs a reason as well as a fragment change, and there are two: the document
+      loaded on it, or the reader pressed something that led there (see the note in
+      `components/kb/ArrivalMarker.tsx`). This fragment change has neither — a script
+      writing `location.hash` stands in for every change nobody asked for, which is what a
+      Back or Forward step is, and what the address bar is.
+
+      The scroll is untouched: the marked kinds are about the gesture, never about where
+      the browser puts the page.
+    */
     await page.evaluate((anchor) => {
       window.location.hash = anchor
     }, TERM_ANCHOR)
-    const first = await oneCompletedMarker(page)
-    expect(first.anchor).toBe(TERM_ANCHOR)
+    await page.waitForTimeout(GESTURE_MS * 2)
+    expect(await recorded(page)).toEqual([])
 
-    // Back to the section fragment, which is not marked, and forward again, which is.
+    // And the two history steps over that same fragment, which are the case the owner
+    // reported: neither is a press either.
     await page.goBack()
     await page.waitForTimeout(GESTURE_MS * 2)
-    expect((await recorded(page)).length).toBe(1)
-
     await page.goForward()
-    await expect.poll(async () => (await recorded(page)).length).toBe(2)
+    await expect(page).toHaveURL(new RegExp(`#${TERM_ANCHOR}$`))
+    await page.waitForTimeout(GESTURE_MS * 2)
+    expect(await recorded(page)).toEqual([])
     await expect(page.locator(MARKER)).toHaveCount(0)
-    expect((await recorded(page)).map((entry) => entry.anchor)).toEqual([
-      TERM_ANCHOR,
-      TERM_ANCHOR,
-    ])
   })
 })

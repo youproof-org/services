@@ -19,21 +19,6 @@
   // with the index and glossary titles a reader arrives from.
 }
 
-// A header that opens with the link up to what owns this page — every proof and
-// every attached remark (§6.1 as amended). The rule is the one the ownership list
-// below the body sits under (`ownership-links.module.scss`), repeated at the same
-// weight and the same gap so the two halves of one chain look like one thing: it
-// separates the link from the breadcrumb row above it, which is a different kind of
-// statement about where the page sits.
-//
-// Only where there is such a link. A definition or a theorem opens on its own label,
-// with nothing above it to separate, and a rule there would read as a divider under
-// the breadcrumb rather than as part of this header.
-.owned {
-  padding-top: 0.8rem;
-  border-top: 1px solid $gray-200;
-}
-
 // The label and title treatment of a chapter header, at the same sizes
 // (`chapter-page.module.scss`): the label small, letter-spaced, uppercase and
 // muted, the title above the body in full size. Repeated rather than shared

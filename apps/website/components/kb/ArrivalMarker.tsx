@@ -49,7 +49,7 @@ import styles from './arrival-marker.module.scss'
  *     reference mark opening in a new tab, which is what a body reference does on a
  *     chapter page (`target="_blank"`, see `components/content/InlineText.tsx`);
  *   - **`hashchange`** — a fragment link pressed on the page the reader is already
- *     on, and a Back or Forward step between two entries whose fragments differ;
+ *     on;
  *   - **a route change** — a `<Link>` into another page's fragment, which the App
  *     Router serves without a document load. `usePathname` is what notices it;
  *   - **a click on a link carrying a fragment**, watched for a moment afterwards,
@@ -75,11 +75,31 @@ import styles from './arrival-marker.module.scss'
  * its history entries with no url argument at all, precisely so the address bar keeps
  * the page's single URL — so none of the three sources above can see it.
  *
- * `popstate` is deliberately NOT a fourth source. Every chrome state is a history
- * entry on the same URL, so a back step out of a selection fires `popstate` with the
- * fragment unchanged; taking that as an arrival would mark the page's fragment again
- * every time the reader pressed Vissza. `hashchange` already covers the traversals
- * that DO change the fragment, and `lastArrival` below is the second guard.
+ * ## An arrival has to have been asked for
+ *
+ * The four sources above notice that the fragment changed; they do not say who wanted
+ * it to. Back and Forward change it too, and the reader stepping back has been where
+ * they are going — the mark was already given there, so giving it again is the page
+ * answering a question nobody asked a second time. The owner found it as: arrive at a
+ * term, select it, follow one of its source rows, come back, and the term is framed
+ * again.
+ *
+ * So a mark needs a REASON as well as a change, and there are exactly two: the document
+ * loaded on this fragment, or the reader pressed something that led here. `asked` below
+ * is that permit — granted by the document's own load and by a plain press on a link
+ * carrying a fragment, and spent by the next arrival, whether or not that arrival turned
+ * out to be a marked kind. A Back or Forward step holds no permit, so it marks nothing.
+ *
+ * `popstate` cannot be used to say the same thing, and this was measured rather than
+ * assumed: a fragment navigation fires `popstate` as well, and with the same
+ * `state === null` and the same fragment as the traversal onto that entry, so nothing in
+ * the event tells the two apart. The Navigation API's `navigationType` does say
+ * `traverse`, and is deliberately not used: this rule needs no new API and holds in
+ * every browser.
+ *
+ * One case is given up for it. Editing the fragment in the address bar while already on
+ * the page is a change nobody pressed, so it scrolls as it always did and is not marked;
+ * pasting the same URL into a new tab is a document load and still is.
  *
  * ## Why every frame is drawn from here
  *
@@ -215,6 +235,21 @@ function pageLocale(): string {
 }
 
 /**
+ * The fragment, decoded, because a URL's fragment may be percent-encoded — a copied or
+ * pasted link commonly is — while the `id` it has to be matched against never is. Every
+ * segment of an anchor is ASCII in the one locale that exists today, but both halves are
+ * authored per locale (`lib/content/urls.ts`) and nothing promises the next one will be.
+ */
+function currentAnchor(): string {
+  return decodeURIComponent(window.location.hash.slice(1))
+}
+
+/** One arrival's identity: both halves, because either can change alone. */
+function arrivalKey(anchor: string): string {
+  return `${window.location.pathname}#${anchor}`
+}
+
+/**
  * One thing to frame: the element, and the name the frame says it is marking.
  *
  * The element rather than an id, because the two callers find their targets in
@@ -254,25 +289,31 @@ export default function ArrivalMarker() {
    * on. Both halves are in the key because either can change alone.
    */
   const lastArrival = useRef<string | null>(null)
+  /**
+   * Whether the fragment the marker is about to read is one the reader asked for — see
+   * the note above. It starts granted, which is the document's own load: a page opened
+   * on a fragment is the plainest case of having asked.
+   */
+  const asked = useRef(true)
 
   /**
    * Read the fragment; mark its target if it is one of the marked kinds and this is
    * not the arrival already acted on. All four sources go through this one function.
    */
   const check = useCallback(() => {
-    // Decoded, because a URL's fragment may be percent-encoded — a copied or pasted
-    // link commonly is — while the `id` it has to be matched against never is. Every
-    // segment of an anchor is ASCII in the one locale that exists today, but both
-    // halves are authored per locale (`lib/content/urls.ts`) and nothing promises the
-    // next one will be.
-    const anchor = decodeURIComponent(window.location.hash.slice(1))
-    const key = `${window.location.pathname}#${anchor}`
+    const anchor = currentAnchor()
+    const key = arrivalKey(anchor)
     if (key === lastArrival.current) return
     lastArrival.current = key
+    // Spent here rather than where it is read, so an arrival at a fragment the site does
+    // not mark spends it too: the reader has arrived, and the next fragment change is a
+    // fresh question needing a reason of its own.
+    const requested = asked.current
+    asked.current = false
     // `getElementById`, not `querySelector`: `.` separates an anchor's segments and is
     // a class separator in a selector (see `lib/content/urls.ts`).
     const target =
-      anchor !== '' && anchorMarksTarget(pageLocale(), anchor)
+      requested && anchor !== '' && anchorMarksTarget(pageLocale(), anchor)
         ? document.getElementById(anchor)
         : null
     // Cleared rather than left alone when this arrival is not one to mark, so a
@@ -307,10 +348,23 @@ export default function ArrivalMarker() {
    *
    * On `document`, because what is pressed is a link anywhere on the page — in the
    * prose, in a panel, in the navigation — and none of it is this component's to hand a
-   * handler to. It does not decide anything: it only re-reads the fragment for the next
-   * `CLICK_WATCH_FRAMES` frames, and `check` is what decides, exactly as for the other
-   * three. So a press that navigates nowhere costs half a second of finding nothing
-   * changed.
+   * handler to. It does not decide anything: it grants the permit and re-reads the
+   * fragment for the next `CLICK_WATCH_FRAMES` frames, and `check` is what decides,
+   * exactly as for the other three. So a press that navigates nowhere costs half a
+   * second of finding nothing changed.
+   *
+   * The permit outlives the watch on purpose: a `<Link>` into another page's fragment
+   * can take longer to commit than half a second, and the route change that lands late
+   * is still the press being answered. What the watch is for is the case no event
+   * reports at all.
+   *
+   * **A plain press in this tab only.** A modified click is the reader asking their
+   * browser for a new tab, and every reference mark in a body carries
+   * `target="_blank"` (`components/content/InlineText.tsx`) — so those presses navigate
+   * somewhere else, or, on an entity page, nowhere at all, because `EntityChrome` takes
+   * them to open a panel instead. Either way this tab's fragment is not what the reader
+   * asked about, and a permit granted for it would sit unspent until some later Back
+   * step cashed it in.
    */
   useEffect(() => {
     let frames = 0
@@ -321,7 +375,12 @@ export default function ArrivalMarker() {
     }
     function onClick(event: MouseEvent) {
       if (!(event.target instanceof Element)) return
-      if (!event.target.closest('a[href*="#"]')) return
+      const link = event.target.closest('a[href*="#"]')
+      if (!(link instanceof HTMLAnchorElement) || link.target === '_blank') return
+      if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+        return
+      }
+      asked.current = true
       cancelAnimationFrame(watch)
       frames = 0
       watch = requestAnimationFrame(reread)

@@ -6,32 +6,40 @@
 // — at most two entries anywhere in the content today — so it is a stack of lines
 // rather than a grid.
 
+// Both halves take the same row treatment (§6.1 as amended, and the owner's ruling
+// that the parent list is the reference for the child one): the placement decides
+// only where the list sits and which side its hairline is on.
+.links,
+.parent {
+  padding: 0;
+  list-style: none;
+  // Tighter than the body's leading, as the index rows are: an entry is one line.
+  line-height: 1.5;
+  // The header sets $font-x-bold on itself (kb-entity-page.module.scss), which is the
+  // weight of the page's own name. These are links about other pages, so the rows
+  // keep their own weight ($font-bold on `.link` below) rather than the header's.
+  font-weight: $font-normal;
+  // Quieter than the label beside them, which is 1rem on mobile and 1.5rem from tablet.
+  font-size: 0.9rem;
+}
+
 // The down half, under a rule that separates it from the q.e.d. that closed the body
 // above it.
 .links {
   margin: 2rem 0 0;
-  padding: 0.8rem 0 0;
+  padding-top: 0.8rem;
   border-top: 1px solid $gray-200;
-  list-style: none;
-  // Tighter than the body's leading, as the index rows are: an entry is one line.
-  line-height: 1.5;
 }
 
-// The up half, first thing inside the page header. No rule of its own and no top
-// margin: kb-entity-page.module.scss puts the rule on the header itself, so it spans
-// the header rather than only this list, and this link is the first thing under it.
-// The bottom margin is the gap to the label the link is telling the reader about.
+// The up half, first thing inside the page header, with its hairline BELOW it: the
+// rule closes the link off from the label it is telling the reader about, rather than
+// separating it from the breadcrumb row above, which is a different kind of statement
+// about where the page sits. It is on this list and not on the header
+// (kb-entity-page.module.scss) so that it exists exactly where the link does.
 .parent {
   margin: 0 0 0.6rem;
-  padding: 0;
-  list-style: none;
-  line-height: 1.5;
-  // The header sets $font-x-bold on itself (kb-entity-page.module.scss), which is the
-  // weight of the page's own name. This is a link about a different page, so the row
-  // keeps its own weight ($font-bold on `.link` below) rather than the header's.
-  font-weight: $font-normal;
-  // Quieter than the label under it, which is 1rem on mobile and 1.5rem from tablet.
-  font-size: 0.9rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid $gray-200;
 }
 
 .item {
