@@ -64,9 +64,3 @@
   font-size: 0.85rem;
   color: $gray-500;
 }
-
-// Only a synonym row has both parts, so the separator hangs off the second one.
-.synonymOf + .source::before {
-  content: '·';
-  margin: 0 0.4rem;
-}

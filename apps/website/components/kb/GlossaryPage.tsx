@@ -11,10 +11,10 @@ interface GlossaryPageProps {
 }
 
 /**
- * The text the filter matches a row on: everything the row shows. A synonym row
- * therefore also matches the canonical form it names, and every row matches the
- * title of the node it comes from — which is what "the filter matches row text"
- * means once a row has more than one part.
+ * The text the filter matches a row on: the name, the canonical form a synonym row
+ * names, and the title of the node the row comes from. The source title is matched
+ * but no longer printed — names are not unique, so it stays the only way to narrow
+ * "összeadás" down to the one definition the reader wants.
  */
 function filterTextFor(row: GlossaryRow): string {
   const parts = row.isCanonical ? [row.name] : [row.name, row.canonical]
@@ -30,17 +30,16 @@ function filterTextFor(row: GlossaryRow): string {
  * no-JavaScript view, and the filter above it narrows what is already here rather
  * than producing any of it (§2.1, §4).
  *
- * Three things a row carries, and why:
+ * Two things a row carries, and why:
  *
  *   - **The name is the link.** Only the name, not the whole row, so the anchor text
  *     a crawler reads is the term and nothing else.
  *   - **A synonym row names its canonical form**, because it lands the reader on a
  *     term titled with a different word and without saying so the destination looks
  *     wrong (§4).
- *   - **Every row names its source node.** Names are not unique — "összeadás" is
- *     three rows pointing at three different definitions — so without the source the
- *     reader has no way to tell them apart, and it is what the root page's Fogalmak
- *     card promises the page shows.
+ *
+ * Nothing else. The meta row is the synonym line alone, so a run of rows reads as a
+ * list of names rather than a list of name-and-source pairs.
  *
  * Both counts come from the same two labels that card uses, so the two pages cannot
  * end up advertising different numbers.
@@ -83,20 +82,15 @@ export default function GlossaryPage({ locale }: GlossaryPageProps) {
               <Link href={row.href} className={styles.name}>
                 <InlineText text={row.name} />
               </Link>
-              <span className={styles.meta}>
-                {!row.isCanonical && (
-                  <span className={styles.synonymOf}>
-                    <InlineText
-                      text={formatLocaleLabel(locale, 'kbGlossarySynonymOf', {
-                        name: row.canonical,
-                      })}
-                    />
-                  </span>
-                )}
-                <span className={styles.source}>
-                  <InlineText text={row.ownerTitle} />
+              {!row.isCanonical && (
+                <span className={styles.meta}>
+                  <InlineText
+                    text={formatLocaleLabel(locale, 'kbGlossarySynonymOf', {
+                      name: row.canonical,
+                    })}
+                  />
                 </span>
-              </span>
+              )}
             </li>
           ))}
         </ul>
