@@ -25,9 +25,51 @@
   margin-bottom: 0;
 }
 
-.qed {
-  text-align: right;
-  font-size: 0.875rem;
+// What closes the box: the knowledge-base link and the glyph on one line, the link at
+// the left margin and the glyph at the right. The negative margin was the `.qed`
+// glyph's own and moves here with it — it pulls the whole line up against the last
+// paragraph of the body, as the glyph alone used to be pulled.
+.close {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
   margin-top: -1rem;
+}
+
+.kb-link-row {
+  margin: 0;
+}
+
+// An explicit link out of the narrative, not one of the dotted concept marks the body
+// is full of (`.ref-concept` in app/globals.scss): those reveal something about a word
+// in place, this one leads to another page. So it is underlined like an ordinary link
+// and merely quiet - $gray-600 is 7.56:1 on white, and at this size that is the
+// contrast a link needs to stay legible while staying out of the way.
+//
+// It does not print: on paper it is a promise with no address behind it, and the
+// knowledge base's own chrome does not print either (see panel.module.scss).
+.kb-link {
+  font-size: 0.85rem;
+  color: $gray-400;
+  text-decoration: underline;
+
+  @media print {
+    display: none;
+  }
+}
+
+// The arrow is `inline-block` so the link's underline stops at the end of the words:
+// a text decoration does not propagate into an atomic inline-level box. Inside the
+// link rather than beside it, so it is part of the one target.
+.arrow {
+  display: inline-block;
+  margin-left: 0.35rem;
+}
+
+// `margin-left: auto` rather than `text-align: right`, which says nothing to a flex
+// item: it is what holds the glyph at the right edge whether or not the link is beside
+// it — and there is none for an entity whose page this build does not generate.
+.qed {
+  margin: 0 0 0 auto;
   font-size: 1.6rem;
 }

@@ -101,6 +101,13 @@ export type LabelKey =
   // link to the target's own page. One label for every kind of target, because it is
   // one promise ("the whole thing, on its own page") whatever is on the other end.
   | 'kbPanelReferenceOpen'
+  // The link from an entity embedded in a chapter to that entity's own knowledge-base
+  // page. Its own key rather than `kbPanelReferenceOpen`'s wording: that one is a
+  // second step inside a panel the reader has already opened, this one is the only
+  // way from the narrative into the knowledge base at all — and it is the link that
+  // makes the knowledge base reachable by following links from the homepage, which
+  // nothing else does today.
+  | 'kbEmbeddedPageLink'
 
 export interface LocaleConfig {
   displayName: string

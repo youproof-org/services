@@ -46,7 +46,8 @@
         "kbBacklinkKindRemark": "megjegyzés",
         "kbPanelTermSynonyms": "Szinonimák",
         "kbPanelClaim": "{index}. állítás",
-        "kbPanelReferenceOpen": "Ugrás a hivatkozott lapra"
+        "kbPanelReferenceOpen": "Ugrás a hivatkozott lapra",
+        "kbEmbeddedPageLink": "Megnézem a tudásbázisban"
       },
       "containers": {
         "book": "konyvek",
