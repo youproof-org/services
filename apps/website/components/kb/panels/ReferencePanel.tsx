@@ -2,14 +2,15 @@ import Link from 'next/link'
 import type { ReactNode } from 'react'
 import InlineText from '@/components/content/InlineText'
 import { getContentGraph } from '@/lib/content'
-import { kbNodeByKey, kbNodeLabel, kbNodeTitle } from '@/lib/content/graph'
+import { kbEntityRowLines, kbNodeByKey, kbNodeTitle } from '@/lib/content/graph'
 import { kbRefs } from '@/lib/content/urls'
-import { formatLocaleLabel, getLocaleLabel } from '@/lib/i18n/config'
+import { getChapterIndexLabel, getSectionIndexLabel } from '@/lib/utils/index-helpers'
+import { formatLocaleLabel } from '@/lib/i18n/config'
 import { isPathTarget } from '@/lib/content/types'
 import type { ContentGraph, KbNode, PathRefTarget } from '@/lib/content/types'
 import type { KbPanelSection } from '../Panel'
 import { webClaims } from './ClaimPanel'
-import styles from '../panel.module.scss'
+import styles from './backlinks-panel.module.scss'
 
 /**
  * One outgoing reference from the body, pressed (sub-plan §7.1).
@@ -19,16 +20,26 @@ import styles from '../panel.module.scss'
  * not navigate: it says what the mark points at, next to the prose that leans on it,
  * and offers the target's own page as a second, deliberate step.
  *
- * **What it says.** The thing's own name, the kind of thing it is, and the way
- * there — one arrangement for every target kind:
+ * **What it says: the page the mark leads to, named as a backlink row names it.**
+ * The heading is the target's own name, and the content is one row — the numbered
+ * place that name lives in, and under it, where there is one, which thing hanging off
+ * that place it is. It is a leaf row of the Bejövő hivatkozások tree with its count
+ * dropped (§7.2): the count is the one line that has no meaning here, since a panel
+ * is about one reference rather than about a source that made several. The row is the
+ * link, so the second, deliberate step out of the panel is pressing what it says
+ * rather than a sentence beside it.
  *
- *   - an entity (definition, theorem, proof, remark): its title, and its label
- *     ("15.6. Definíció"), which is what tells the reader whether they are about to
- *     land on a definition or a theorem;
- *   - a claim: its number, and the node that asserts it;
- *   - a term: its canonical form, and the node that defines it;
- *   - a book, a part, a chapter or a section: the title, which is the whole of what
- *     identifies one;
+ * One arrangement for every target kind, because every one of them is a place in the
+ * book:
+ *
+ *   - an entity (definition, theorem, proof, remark): the numbered definition or
+ *     theorem its page hangs off, and the chain below it — `kbEntityRowLines`, the
+ *     same call a backlink row makes, so the two cannot name one entity two ways;
+ *   - a claim or a term: the same two lines for the node that holds it, which is the
+ *     page the reference lands on. The claim's number and the term's canonical form
+ *     are the heading; the row says where they are;
+ *   - a chapter or a section: its number and its title, as a backlink row writes
+ *     them; a book or a part: the title, which is the whole of what identifies one;
  *   - an external URL: no panel at all, so the mark stays an ordinary outbound link.
  *     That is the one case this module answers by declining to build a section.
  *
@@ -45,9 +56,9 @@ import styles from '../panel.module.scss'
  * design.
  *
  * **Identity first, then the rest**, which is the arrangement `TermPanel` and
- * `ClaimPanel` already use: the heading names the thing, and the line under it
- * qualifies it. §7.2 is ambiguous about the order and phase 16 settled it for the
- * two level-2 panels; a third arrangement here would make three panels read as three
+ * `ClaimPanel` already use: the heading names the thing, and what is under it says
+ * where it is. §7.2 is ambiguous about the order and phase 16 settled it for the two
+ * level-2 panels; a third arrangement here would make three panels read as three
  * designs.
  *
  * **A panel per target, not per mark.** `ChromeState.target` for a reference is the
@@ -71,11 +82,14 @@ interface ReferenceSubject {
   href: string
   /** The panel's heading — the target's name, whatever names it. */
   title: ReactNode
-  /**
-   * The line under the heading: what kind of thing this is, or which node holds it.
-   * Null for the book hierarchy, where the title is already the whole answer.
-   */
+  /** The row's first line: the numbered place the reference leads to. */
   label: ReactNode
+  /**
+   * The row's second line, where there is one: which thing hanging off that place it
+   * is — "bizonyítás", or "bizonyítás → megjegyzés". Absent for a target that is its
+   * own chain top, and for the book hierarchy, which hangs off nothing.
+   */
+  ownership?: ReactNode
 }
 
 /**
@@ -108,7 +122,7 @@ export function referencePanels(node: KbNode): KbPanelSection[] {
       key: 'reference',
       target: subject.href,
       title: subject.title,
-      content: <ReferencePanel node={node} subject={subject} />,
+      content: <ReferencePanel subject={subject} />,
     })
   }
 
@@ -116,32 +130,30 @@ export function referencePanels(node: KbNode): KbPanelSection[] {
 }
 
 interface ReferencePanelProps {
-  /** The page the reference was pressed on — its locale labels the link. */
-  node: KbNode
   subject: ReferenceSubject
 }
 
-export default function ReferencePanel({ node, subject }: ReferencePanelProps) {
+/**
+ * The row, which is also the second, deliberate step §7.1 asks for: the whole of it
+ * is the link out to the target's own page. An ordinary link, as every link in a
+ * panel is — panel content is what the reader is meant to be acting on, so it
+ * navigates (§6.4).
+ *
+ * `backlinks-panel.module.scss` rather than rules of its own, because this IS a row
+ * of that list with one line fewer: sharing the stylesheet is what keeps the two
+ * from drifting apart.
+ */
+export default function ReferencePanel({ subject }: ReferencePanelProps) {
   return (
-    <>
-      {subject.label && <p className={styles.referenceLabel}>{subject.label}</p>}
-      {/*
-        The second, deliberate step §7.1 asks for, and now the whole of what the panel
-        offers beyond the name: the thing itself, on its own page. An ordinary link,
-        as every link in a panel is — panel content is what the reader is meant to be
-        acting on, so it navigates (§6.4).
-      */}
-      <p className={styles.referenceOpen}>
-        <Link href={subject.href} className={styles.referenceLink}>
-          {getLocaleLabel(node.locale, 'kbPanelReferenceOpen')}
-        </Link>
-      </p>
-    </>
+    <Link href={subject.href} className={styles.link}>
+      <span className={styles.label}>{subject.label}</span>
+      {subject.ownership && <span className={styles.ownership}>{subject.ownership}</span>}
+    </Link>
   )
 }
 
 /**
- * The name and the label per target kind, one branch each.
+ * The heading and the row's lines per target kind, one branch each.
  *
  * Null where the graph holds nothing to show. For an entity, a claim or a term that
  * cannot happen — `resolveRefHrefs` throws while building the graph unless the
@@ -167,7 +179,7 @@ function subjectOf(
         // none (every proof and every remark), and it is the one name that is
         // always there — the same name a backlink row shows for the same node.
         title: <InlineText text={kbNodeTitle(graph, entity)} />,
-        label: kbNodeLabel(graph, entity),
+        ...rowLines(graph, entity),
       }
     }
 
@@ -183,8 +195,9 @@ function subjectOf(
         href,
         title: formatLocaleLabel(node.locale, 'kbPanelClaim', { index: index + 1 }),
         // Which node asserts it: a claim has no page of its own, so its name is its
-        // number, and a number needs to say what it is a number in.
-        label: kbNodeTitle(graph, owner),
+        // number, and a number needs to say what it is a number in. The owner's own
+        // row, since the owner's page is where this reference lands.
+        ...rowLines(graph, owner),
       }
     }
 
@@ -197,30 +210,45 @@ function subjectOf(
         // The canonical form, which is what `TermPanel` heads its panel with — the
         // glossary's name for the term rather than the words the prose displayed.
         title: <InlineText text={term.canonical} />,
-        label: kbNodeTitle(graph, owner),
+        // …and, as for a claim, the row of the node that defines it: a term has no
+        // page of its own either.
+        ...rowLines(graph, owner),
       }
     }
 
-    // The book hierarchy: the title and the link. A part and a book index are not in
-    // §7.1's wording, which names "a section, chapter or part" — they are the same
-    // kind of thing one and two steps up, and one title is as much as identifies any
-    // of them. The content references one book and one chapter from a knowledge-base
-    // node today, and one section.
+    // The book hierarchy. A part and a book index are not in §7.1's wording, which
+    // names "a section, chapter or part" — they are the same kind of thing one and
+    // two steps up, and one title is as much as identifies a book or a part. A
+    // chapter and a section carry a number as well, and it is the number a backlink
+    // row to the same place shows ("14." and "14.6."), out of `index-helpers.ts` so
+    // that no two places in the site can disagree about which section is 14.6. The
+    // content references one book and one chapter from a knowledge-base node today,
+    // and one section.
     case 'book': {
       const book = graph.books.get(target.fqn)
-      return book ? { href, title: <InlineText text={book.title} />, label: null } : null
+      return book ? { href, title: <InlineText text={book.title} />, label: titleLine(book.title) } : null
     }
     case 'part': {
       const part = graph.parts.get(target.fqn)
-      return part ? { href, title: <InlineText text={part.title} />, label: null } : null
+      return part ? { href, title: <InlineText text={part.title} />, label: titleLine(part.title) } : null
     }
     case 'chapter': {
       const chapter = graph.chapters.get(target.fqn)
-      return chapter ? { href, title: <InlineText text={chapter.title} />, label: null } : null
+      if (!chapter) return null
+      return {
+        href,
+        title: <InlineText text={chapter.title} />,
+        label: titleLine(`${getChapterIndexLabel(chapter)} ${chapter.title}`),
+      }
     }
     case 'section': {
       const section = graph.sections.get(target.fqn)
-      return section ? { href, title: <InlineText text={section.title} />, label: null } : null
+      if (!section) return null
+      return {
+        href,
+        title: <InlineText text={section.title} />,
+        label: titleLine(`${getSectionIndexLabel(section)} ${section.title}`),
+      }
     }
 
     // A standalone item — an article, a newsletter, a custom page, a landing page.
@@ -230,4 +258,26 @@ function subjectOf(
     default:
       return null
   }
+}
+
+/**
+ * A backlink row's two lines for the entity whose page a reference lands on, as
+ * content: `kbEntityRowLines` returns strings, and a title can carry math and the
+ * rest of the narrative's inline markup, which is why both go through `InlineText`
+ * exactly as `BacklinksPanel` sends its own rows through it.
+ */
+function rowLines(
+  graph: ContentGraph,
+  entity: KbNode,
+): { label: ReactNode; ownership?: ReactNode } {
+  const lines = kbEntityRowLines(graph, entity)
+  return {
+    label: <InlineText text={lines.label} />,
+    ...(lines.ownership ? { ownership: <InlineText text={lines.ownership} /> } : {}),
+  }
+}
+
+/** The one-line case: a place named by its title, with nothing hanging off it. */
+function titleLine(text: string): ReactNode {
+  return <InlineText text={text} />
 }

@@ -157,24 +157,36 @@ test.describe('the Kontextus panel', () => {
     expect(topmost).toBe('panel')
   })
 
-  test('shows the embedding as book, chapter and section, all of them links', async ({ page }) => {
+  test('shows the embedding as a numbered chapter and the section nested under it', async ({ page }) => {
     await openEntity(page)
     await openContextPanel(page)
 
-    await expect(page.locator(PANEL).getByRole('heading', { name: 'Hol jelenik meg', exact: true })).toBeVisible()
+    await expect(page.locator(PANEL).getByRole('heading', { name: 'Kontextus', exact: true })).toBeVisible()
 
-    // Three levels, in that order, on an entity whose embedding is known content.
+    // Two levels, in that order, on an entity whose embedding is known content, each
+    // named the way a backlink row names the same place: its number, then its title.
     const links = page.locator(`${PANEL} .panel_contextLevel a`)
-    await expect(links).toHaveCount(3)
-    await expect(links.nth(0)).toHaveAttribute('href', '/hu/konyvek/alice-es-bob')
-    await expect(links.nth(1)).toHaveAttribute(
+    await expect(links).toHaveCount(2)
+    await expect(links.nth(0)).toHaveAttribute(
       'href',
       '/hu/konyvek/alice-es-bob/fejezetek/alice-es-bob-gyuruje',
     )
-    await expect(links.nth(2)).toHaveAttribute(
+    await expect(links.nth(0)).toHaveText(/^14\. /)
+    await expect(links.nth(1)).toHaveAttribute(
       'href',
       '/hu/konyvek/alice-es-bob/fejezetek/alice-es-bob-gyuruje#szakaszok.gyuruk-es-testek',
     )
+    await expect(links.nth(1)).toHaveText(/^14\.6\. /)
+
+    // …and nested, not merely listed: the section's row is inside the chapter's and
+    // steps right of it, which is what says which contains which (§7.2's tree).
+    await expect(
+      page.locator(`${PANEL} .panel_contextLevel .panel_contextNested .panel_contextLink`),
+    ).toHaveCount(1)
+    const [chapterBox, sectionBox] = await links.evaluateAll((nodes) =>
+      nodes.map((node) => node.getBoundingClientRect().left),
+    )
+    expect(sectionBox).toBeGreaterThan(chapterBox)
   })
 
   test('the menu items give way to the panel, and Vissza brings them back', async ({ page }) => {
@@ -223,7 +235,7 @@ test.describe('the Kontextus panel', () => {
     await openEntity(page)
     await openContextPanel(page)
 
-    // Kontextus is three rows and fits. The list that does NOT fit is phase 14's —
+    // Kontextus is two rows and fits. The list that does NOT fit is phase 14's —
     // measured at 222 sources for this very entity, against a median of 2 — so the
     // overflow is given something to overflow with rather than left untested until
     // the content that needs it arrives.
@@ -274,7 +286,7 @@ test.describe('the Kontextus panel', () => {
     // §6.4: links in the panel are ordinary links. This is also the one gesture that
     // unmounts the panel while its nodes are living under <body> — if the adoption
     // did not put them back first, React's own removal would throw here.
-    await page.locator(`${PANEL} .panel_contextLevel a`).nth(1).click()
+    await page.locator(`${PANEL} .panel_contextLevel a`).first().click()
     await expect(page).toHaveURL(/\/hu\/konyvek\/alice-es-bob\/fejezetek\/alice-es-bob-gyuruje$/)
 
     expect(errors, 'navigating away from an open panel threw').toEqual([])
@@ -328,7 +340,7 @@ test.describe('the panel under prefers-reduced-motion', () => {
     expect(closing.running).toEqual([])
     expect(closing.top).toBe(viewport.height)
     await expect(page.locator(PANEL)).toBeHidden()
-    await expect(page.locator(`${PANEL} .panel_contextLevel a`)).toHaveCount(3)
+    await expect(page.locator(`${PANEL} .panel_contextLevel a`)).toHaveCount(2)
   })
 })
 
@@ -353,8 +365,8 @@ test.describe('the panel without JavaScript', () => {
     await expect(page.locator(PANEL)).toHaveCSS('position', 'static')
 
     const links = page.locator(`${PANEL} .panel_contextLevel a`)
-    await expect(links).toHaveCount(3)
-    await expect(links.nth(2)).toHaveAttribute(
+    await expect(links).toHaveCount(2)
+    await expect(links.nth(1)).toHaveAttribute(
       'href',
       '/hu/konyvek/alice-es-bob/fejezetek/alice-es-bob-gyuruje#szakaszok.gyuruk-es-testek',
     )
@@ -373,7 +385,7 @@ test.describe('adoption', () => {
     await expect(page.locator(`main ${PANEL}`)).toHaveCount(0)
 
     // The content travelled with it — the nodes are the served ones, not a rebuild.
-    await expect(page.locator(`${PANEL} .panel_contextLevel a`)).toHaveCount(3)
+    await expect(page.locator(`${PANEL} .panel_contextLevel a`)).toHaveCount(2)
 
     // …and that is what lets it be fixed to the VIEWPORT: `.page-root` carries a
     // transform, which would have made the panel size itself to the document.

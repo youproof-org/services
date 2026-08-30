@@ -2,13 +2,25 @@ import Link from 'next/link'
 import InlineText from '@/components/content/InlineText'
 import { getContentGraph } from '@/lib/content'
 import { keyForKbNode } from '@/lib/content/keys'
-import { sectionAnchorId, urlForBook, urlForChapter } from '@/lib/content/urls'
+import { sectionAnchorId, urlForChapter } from '@/lib/content/urls'
+import { getChapterIndexLabel, getSectionIndexLabel } from '@/lib/utils/index-helpers'
 import type { KbNode } from '@/lib/content/types'
 import styles from '../panel.module.scss'
 
 /**
- * The Kontextus panel: where in the narrative this entity is introduced — book,
- * then chapter, then section (sub-plan §6.4, §6.5).
+ * The Kontextus panel: where in the narrative this entity is introduced — the
+ * chapter, and the section inside it (sub-plan §6.4, §6.5).
+ *
+ * **The same rows the Bejövő hivatkozások panel shows.** A place in the book is a
+ * place in the book whichever question led the reader to it, so a level here reads
+ * as a backlink row does: the numbered name of the place, and the section nested
+ * under the chapter that contains it — "16." over an indented "16.1.". The numbers
+ * come from `lib/utils/index-helpers.ts`, the one place that decides which section
+ * is 16.1., so this panel and a backlink row cannot disagree about it.
+ *
+ * The book is not a level. Nesting is what says where the entity sits, and the two
+ * containers that carry a number are what the reader recognizes; the book above them
+ * is the same book for all 537 entities and is a click away up the chapter's page.
  *
  * **No empty state, by construction.** Every one of the entities is embedded
  * exactly once, and a node that is embedded nowhere gets no page at all
@@ -33,7 +45,7 @@ interface ContextPanelProps {
 
 interface ContextLevel {
   href: string
-  title: string
+  label: string
 }
 
 export default function ContextPanel({ node }: ContextPanelProps) {
@@ -49,24 +61,39 @@ export default function ContextPanel({ node }: ContextPanelProps) {
   const { chapter, section } = embedding
   const chapterUrl = urlForChapter(chapter)
   const levels: ContextLevel[] = [
-    { href: urlForBook(chapter.part.book), title: chapter.part.book.title },
-    { href: chapterUrl, title: chapter.title },
+    { href: chapterUrl, label: `${getChapterIndexLabel(chapter)} ${chapter.title}` },
   ]
   // Absent only for a prologue/epilogue embed, which no content has today (§6.5).
-  // Two levels then, rather than a level with nothing behind it.
+  // The chapter alone then, rather than a level with nothing behind it.
   if (section) {
-    levels.push({ href: `${chapterUrl}#${sectionAnchorId(section)}`, title: section.title })
+    levels.push({
+      href: `${chapterUrl}#${sectionAnchorId(section)}`,
+      label: `${getSectionIndexLabel(section)} ${section.title}`,
+    })
   }
 
+  return <ContextLevels levels={levels} depth={0} />
+}
+
+/**
+ * One level and, inside its own `<li>`, the level below it.
+ *
+ * Nested lists rather than one flat list with an indent per position, for the
+ * reason `BacklinkLevel` nests: the containment is then in the served HTML a
+ * crawler reads (§2.1), and the indent is one rule about nesting instead of a
+ * position the stylesheet has to enumerate.
+ */
+function ContextLevels({ levels, depth }: { levels: readonly ContextLevel[]; depth: number }) {
+  const [level, ...rest] = levels
+  if (!level) return null
   return (
-    <ol className={styles.context}>
-      {levels.map((level) => (
-        <li key={level.href} className={styles.contextLevel}>
-          <Link href={level.href} className={styles.contextLink}>
-            <InlineText text={level.title} />
-          </Link>
-        </li>
-      ))}
-    </ol>
+    <ul className={depth === 0 ? styles.context : styles.contextNested}>
+      <li className={styles.contextLevel}>
+        <Link href={level.href} className={styles.contextLink} data-context-depth={depth}>
+          <InlineText text={level.label} />
+        </Link>
+        {rest.length > 0 && <ContextLevels levels={rest} depth={depth + 1} />}
+      </li>
+    </ul>
   )
 }

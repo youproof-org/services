@@ -1522,6 +1522,32 @@ function kbChainBelowTop(node: KbNode): string | undefined {
 }
 
 /**
+ * The two lines that name an entity as a place in the book: the numbered definition
+ * or theorem its page hangs off, and which thing hanging off that one it is.
+ *
+ * "15.6. Definíció: Oszthatóság", and under it "bizonyítás" or "bizonyítás →
+ * megjegyzés" where the node is not itself the top of its chain. Exported because
+ * two panels name an entity this way and must not be able to disagree about it: a
+ * backlink row (§7.2) and the panel a pressed outgoing reference opens (§7.1), which
+ * names the page that reference leads to with the same two lines.
+ */
+export function kbEntityRowLines(
+  graph: ContentGraph,
+  node: KbNode,
+): { label: string; ownership?: string } {
+  const top = kbChainTop(node)
+  const topLabel = kbNodeLabel(graph, top)
+  const lines: { label: string; ownership?: string } = {
+    label: top.title ? `${topLabel}: ${top.title}` : topLabel,
+  }
+  // Set only when there is one, so a node that is its own chain top has no such line
+  // rather than an empty one.
+  const ownership = kbChainBelowTop(node)
+  if (ownership) lines.ownership = ownership
+  return lines
+}
+
+/**
  * Which backlink row an owner of references produces, or null if it produces none.
  *
  * A row is a link, so a source only earns one when this build generates something
@@ -1556,20 +1582,13 @@ function backlinkRowFor(graph: ContentGraph, owner: RefOwner): BacklinkRow | nul
       if (!kbPageExists(graph, node)) return null
       const href = urlForKbNode(node)
       if (!href) return null
-      const top = kbChainTop(node)
-      const topLabel = kbNodeLabel(graph, top)
-      const row: BacklinkRow = {
+      return {
         kind: owner.kind,
         fqn: keyForKbNode(node),
         title: kbNodeTitle(graph, node),
-        label: top.title ? `${topLabel}: ${top.title}` : topLabel,
         href,
+        ...kbEntityRowLines(graph, node),
       }
-      // Set only when there is one, so a row that is its own chain top has no such
-      // line rather than an empty one.
-      const ownership = kbChainBelowTop(node)
-      if (ownership) row.ownership = ownership
-      return row
     }
     default:
       return null

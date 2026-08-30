@@ -62,7 +62,7 @@ const INCOMING_ROWS = 16
 const TERM_PANELS = 4
 const CLAIM_PANELS = 5
 const REFERENCE_PANELS = 12
-const CONTEXT_LEVELS = 3
+const CONTEXT_LEVELS = 2
 const PROOF_URL = '/hu/tudasbazis/tetelek/maradekosztalygyuruk/bizonyitasok/maradekosztalygyuruk-bizonyitas'
 
 /**

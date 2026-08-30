@@ -44,6 +44,8 @@ const EXTERNAL_COUNT = 2
 /** An entity target displayed 3 times, and the heading its panel is given. */
 const ENTITY_TARGET = '/hu/tudasbazis/tetelek/euler-fermat-tetel'
 const ENTITY_TARGET_TITLE = 'Euler-Fermat tétel'
+/** How a backlink row names that target, which is how its panel's row names it too. */
+const ENTITY_TARGET_LABEL = '20.20. Tétel:'
 /** A term target displayed 6 times — the repeated case, for "which one was pressed". */
 const TERM_TARGET = '/hu/tudasbazis/definiciok/primtulajdonsagu-elem#fogalmak.primtulajdonsagu-elem'
 /** An external URL: an ordinary outbound link, and never a panel (§7.1). */
@@ -62,6 +64,8 @@ const HIERARCHY_ENTITY = '/hu/tudasbazis/definiciok/reszhalmaz/megjegyzesek/resz
 const SECTION_TARGET =
   '/hu/konyvek/alice-es-bob/fejezetek/alice-es-bob-felcsavarja-a-szamegyenest#szakaszok.maradekosztalygyuruk'
 const SECTION_TARGET_TITLE = 'Maradékosztálygyűrűk'
+/** Its number, as the narrative and every reference to it write it. */
+const SECTION_TARGET_LABEL = '18.8.'
 /** Its panels, read off the built HTML: 16, of which that section is the one. */
 const HIERARCHY_PANEL_COUNT = 16
 
@@ -330,15 +334,18 @@ test.describe('a plain click opens the panel instead of navigating', () => {
     await expect(
       page.locator(PANEL).getByRole('heading', { name: ENTITY_TARGET_TITLE, exact: true }),
     ).toBeVisible()
-    // …and the second, deliberate step out is offered inside it — which is the whole
-    // of what the panel offers beyond the name and the label line, so it is also the
-    // only link in there. Nothing of the target's own content is copied in; the
-    // served-HTML census at the bottom of this file is where that is pinned down.
+    // …and under it the one row the panel is: the target named as a backlink row
+    // names the same place — its number, its kind and its title — and the row IS the
+    // second, deliberate step out, so it is also the only link in there. Nothing of
+    // the target's own content is copied in; the served-HTML census at the bottom of
+    // this file is where that is pinned down.
     const shown = page.locator(`${PANEL} section:not([hidden])`)
-    await expect(
-      shown.getByRole('link', { name: 'Ugrás a hivatkozott lapra', exact: true }),
-    ).toBeVisible()
-    await expect(shown.getByRole('link')).toHaveCount(1)
+    const row = shown.getByRole('link')
+    await expect(row).toHaveCount(1)
+    await expect(row).toHaveAttribute('href', ENTITY_TARGET)
+    await expect(row.locator('span.backlinks-panel_label')).toHaveText(
+      `${ENTITY_TARGET_LABEL} ${ENTITY_TARGET_TITLE}`,
+    )
 
     // D2: the panel opened from the body puts the menu in its open state, with the
     // one Vissza button — the same state a menu item's panel produces.
@@ -510,7 +517,7 @@ test.describe('an external reference is an ordinary outbound link (§7.1)', () =
 })
 
 test.describe('a reference into the book hierarchy (§7.1)', () => {
-  test('the section reference is intercepted too, and its panel is a title and a link', async ({
+  test('the section reference is intercepted too, and its panel is the numbered section', async ({
     page,
     context,
   }) => {
@@ -534,13 +541,16 @@ test.describe('a reference into the book hierarchy (§7.1)', () => {
     await expect(
       page.locator(PANEL).getByRole('heading', { name: SECTION_TARGET_TITLE, exact: true }),
     ).toBeVisible()
-    // The narrowest panel the component makes: no label line, because a section is
-    // named by its title and by nothing else, so the title and the way there are the
-    // whole of it. Every other target kind adds one line to that and no more.
-    await expect(section.locator('p.panel_referenceLabel')).toHaveCount(0)
+    // The row names the section the way a backlink row to it does — its number, then
+    // its title — and carries no second line: a section hangs off nothing, so there
+    // is no ownership chain to write under it.
     const links = section.getByRole('link')
     await expect(links).toHaveCount(1)
     await expect(links).toHaveAttribute('href', SECTION_TARGET)
+    await expect(links.locator('span.backlinks-panel_label')).toHaveText(
+      `${SECTION_TARGET_LABEL} ${SECTION_TARGET_TITLE}`,
+    )
+    await expect(links.locator('span.backlinks-panel_ownership')).toHaveCount(0)
     // …and the mark is revealed, which is the same rule a `ref-concept` gets.
     expect(await lifted(page)).toEqual(['ref-link'])
   })
@@ -743,9 +753,9 @@ test.describe('the reference panels without JavaScript', () => {
    * the served HTML, so every citing page carried a copy of everything it cited.
    * Measured over the export, that was 52 KiB of the average knowledge-base page
    * (177.0 KiB with the previews, 124.9 KiB without), 0.67 MB of the largest, and
-   * 6938 of the 29532 internal fragment links `check-anchors` walked. A name, a
-   * label and a link are now the whole payload, and the rest is on the target's own
-   * page.
+   * 6938 of the 29532 internal fragment links `check-anchors` walked. One row — the
+   * numbered place the reference leads to, and the chain below it where there is one
+   * — is now the whole payload, and the rest is on the target's own page.
    *
    * An exact census of the elements rather than a search for the markup that used to
    * be there: `panel_referenceBody` no longer exists, so a test looking for it would
@@ -753,18 +763,19 @@ test.describe('the reference panels without JavaScript', () => {
    * would come back per target kind — the entity, claim and term panels are here,
    * and the one section reference in the content is on the second page.
    */
-  test('a reference panel is a name, a label and a link, and nothing else', async ({ page }) => {
+  test('a reference panel is one backlink row and nothing else', async ({ page }) => {
     // `next.config.ts` names every CSS-module class `<file>_<local>`, so the two
-    // shapes `ReferencePanel` can produce can be written out in full. The heading is
-    // not in here: every section's title lives in the panel's pinned header.
-    const LABELLED = 'p.panel_referenceLabel p.panel_referenceOpen a.panel_referenceLink'
-    const TITLE_ONLY = 'p.panel_referenceOpen a.panel_referenceLink'
+    // shapes `ReferencePanel` can produce can be written out in full — and they are
+    // the Bejövő hivatkozások row's own classes, minus its count. The heading is not
+    // in here: every section's title lives in the panel's pinned header.
+    const ROW = 'a.backlinks-panel_link span.backlinks-panel_label'
+    const WITH_OWNERSHIP = `${ROW} span.backlinks-panel_ownership`
 
-    // The book hierarchy is the one kind with no label line, and one reference into
-    // it exists in the content — on the second page.
-    for (const [url, total, titleOnly] of [
+    // The second line appears only where the reference lands on a proof or a remark,
+    // which is 3 of the 16 panels on the second page and none of the 7 on the first.
+    for (const [url, total, owned] of [
       [ENTITY, PANEL_COUNT, 0],
-      [HIERARCHY_ENTITY, HIERARCHY_PANEL_COUNT, 1],
+      [HIERARCHY_ENTITY, HIERARCHY_PANEL_COUNT, 3],
     ] as const) {
       await page.goto(url)
       const census = await page
@@ -777,8 +788,8 @@ test.describe('the reference panels without JavaScript', () => {
           ),
         )
       expect(census).toHaveLength(total)
-      expect(census.filter((shape) => shape === TITLE_ONLY)).toHaveLength(titleOnly)
-      expect(census.filter((shape) => shape === LABELLED)).toHaveLength(total - titleOnly)
+      expect(census.filter((shape) => shape === WITH_OWNERSHIP)).toHaveLength(owned)
+      expect(census.filter((shape) => shape === ROW)).toHaveLength(total - owned)
     }
   })
 })

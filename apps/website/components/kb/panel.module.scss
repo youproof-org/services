@@ -97,35 +97,40 @@
 
 // ── Kontextus (components/kb/panels/ContextPanel.tsx) ──
 //
-// Book → chapter → section, one link per level. Indented by position rather than
-// by a class per level, because the position IS the hierarchy: the list is the
-// chain from the outermost container inwards, so the nth row is the nth level.
+// Chapter, then the section inside it — the rows of the Bejövő hivatkozások list
+// (`panels/backlinks-panel.module.scss`) with nothing but their first line, because
+// they answer with the same kind of thing: a numbered place in the book. Same
+// leading, same indent, same link treatment, so the two panels read as one design.
 .context {
   margin: 0;
   padding: 0;
   list-style: none;
-  // Tighter than the body's leading, as the ownership chain is: a level is one line.
-  line-height: 1.5;
+}
+
+// The section under its chapter. One rule rather than a class per level, because the
+// markup nests — `ContextLevels` renders the inner `<ul>` inside the `<li>` it
+// belongs to, so this compounds by itself, and it is the 1.5rem a backlink row's
+// child is stepped in by.
+.contextNested {
+  margin: 0;
+  padding-left: 1.5rem;
+  list-style: none;
 }
 
 .contextLevel {
-  padding: 0.2rem 0;
-
-  &:nth-child(2) {
-    padding-left: 1.25rem;
-  }
-
-  &:nth-child(3) {
-    padding-left: 2.5rem;
-  }
+  list-style: none;
 }
 
-// Reads like the ownership-chain links below the body: body colour, bold,
-// underlined only on hover.
+// The whole row is the link, as a backlink row is: body colour, bold, underlined
+// only on hover — the treatment the ownership-chain links below the body already
+// have.
 .contextLink {
+  display: block;
+  padding: 0.4rem 0;
   color: $black;
   text-decoration: none;
   font-weight: $font-bold;
+  line-height: 1.5;
 
   &:hover {
     text-decoration: underline;
@@ -157,40 +162,10 @@
 
 // ── A pressed outgoing reference (panels/ReferencePanel.tsx) ──
 //
-// What the mark points at is named, and then linked: the heading is the target's own
-// name, one line under it says what kind of thing that is, and one link leads to the
-// whole of it. Nothing of the target's content is shown here (see
-// panels/ReferencePanel.tsx for why), so three rules are the whole treatment.
-
-// The line under the heading that says what kind of thing this is, or which node
-// holds it: "15.6. Definíció" for an entity, the owning node's name for a claim or a
-// term. Secondary to the heading, which is the thing's own name.
-.referenceLabel {
-  margin: 0 0 0.5rem;
-  font-size: 0.85rem;
-  font-weight: $font-bold;
-  line-height: 1.3;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: $gray-500;
-}
-
-.referenceOpen {
-  margin: 0.75rem 0 0;
-}
-
-// The ownership-chain treatment, which is what every "leave the page" link in a
-// panel already looks like (`.contextLink` above): body colour, bold, underlined on
-// hover rather than always.
-.referenceLink {
-  color: $black;
-  text-decoration: none;
-  font-weight: $font-bold;
-
-  &:hover {
-    text-decoration: underline;
-  }
-}
+// Nothing here: the panel's content is one row of the Bejövő hivatkozások list with
+// its count dropped, so it wears that list's own rules
+// (`panels/backlinks-panel.module.scss`) rather than a second set that would be free
+// to drift from them.
 
 // Reduced motion: the panel appears and disappears without the slide, and nothing
 // else about it changes. The convention `root-page.module.scss` and

@@ -526,7 +526,7 @@ condition holds — see §6.5 for what that works out to per type.
 | **Bejövő hivatkozások** | `incoming.png` | always | opens the panel with **every** inbound reference to this entity, grouped by source — §7.2 |
 | **Fogalmak** | `star.png` | the entity defines ≥ 1 term | dims the page and reveals the terms in the body, making them selectable — §6.3 |
 | **Állítások** | `paragraph.png` — `§` | the entity contains ≥ 1 claim | same, for claims — §6.3 |
-| **Kontextus** | `target.png` — crosshair | always | opens the panel with the entity's embedding context ("hol jelenik meg") |
+| **Kontextus** | `target.png` — crosshair | always | opens the panel with the entity's embedding context — the panel is headed "Kontextus" too (finding 14) |
 
 **Every menu item acts on this page; none of them navigate away.** Movement along
 the ownership chain — to a proof, a remark, or a parent — is a set of plain links
@@ -544,7 +544,7 @@ reference, §7.1). Each fills the same panel with different content:
 | **Bejövő hivatkozások** | all inbound references to the entity, grouped by source — §7.2 |
 | a **term** selected in Fogalmak mode | the term's canonical form and its synonyms, plus the inbound references targeting *that term* |
 | a **claim** selected in Állítások mode | the claim, plus the inbound references targeting *that claim* |
-| **Kontextus** | where the entity is embedded — book → chapter → section |
+| **Kontextus** | where the entity is embedded — the numbered chapter, and the numbered section nested under it, laid out as the rows of the Bejövő hivatkozások list (finding 14) |
 | an **outgoing reference** in the body (§7.1) | details of what that reference points at |
 
 *Panel layout for Bejövő hivatkozások and Kontextus will be fine-tuned during
@@ -761,17 +761,24 @@ Actually going to the referenced node is available from the panel, as a second,
 deliberate step.
 
 **What the panel shows** — **one arrangement, not five. Corrected by an owner ruling
-during phase 17; the table this subsection used to carry is superseded.**
+during phase 17, and again by finding 15; the table this subsection used to carry is
+superseded.**
 
-Every kind renders the same three things: **the target's own name, the kind of thing
-it is, and a link to its page.** No body, no excerpt, no claim text, no synonyms.
+The heading is **the target's own name**, and the content is **one row: the place the
+reference leads to, named exactly as a leaf row of the Bejövő hivatkozások tree names
+it** (§7.2) — its number and title on the first line, the chain below it
+("bizonyítás", "bizonyítás → megjegyzés") on a second where there is one, and no
+count, which is the one line of that row with nothing to say here. The row is the
+link, so the second, deliberate step out is pressing what it says. No body, no
+excerpt, no claim text, no synonyms.
 
-| the reference points at | the panel shows |
+| the reference points at | the row says |
 |---|---|
-| a definition, theorem, proof or remark | its title, its label (`15.6. Definíció`), and a link to its page |
-| a claim | its number, the node that asserts it, and a link to that node's page at the claim |
-| a term | its canonical form, the node that defines it, and a link to that node's page at the term |
-| a book, part, chapter or section | its title and a link to it |
+| a definition, theorem, proof or remark | the numbered definition or theorem its page hangs off (`15.6. Definíció: Oszthatóság`), and the chain below it |
+| a claim | the same two lines for the node that asserts it — the claim's number is the heading |
+| a term | the same two lines for the node that defines it — the canonical form is the heading |
+| a chapter or a section | its number and its title (`18.8. Maradékosztálygyűrűk`) |
+| a book or a part | its title, which is the whole of what identifies one |
 | an external URL | nothing; it is an ordinary outbound link and never opens a panel |
 
 *What the table said before, and what the build measured.* It gave each kind its own
@@ -2566,6 +2573,8 @@ this section grows with them.
 | 11 | Pressing a row marks every reference inside it, entities embedded in it included, so the marks match the accumulated count | §7.2 | `e2e/kb-highlight.test.ts` — 22 marks on the worked case against 22 in-section references derived independently from the DOM, and 108 on the page that are not marked |
 | 12 | Two revealed claims are separated, rather than merging into one white slab | §6.3 | `e2e/kb-select.test.ts` still passes unchanged — the hit test and the census are about what is lifted, and the gap changes neither |
 | 13 | A backlink row is three stacked lines — the numbered place it leads to, the ownership chain below it, the count — and carries no kind word | §7.2 | `test/kb-graph.test.mjs` — the two lines of a chapter, a section, a theorem, a proof, a remark and a remark on a proof, off a fixture that owns all six; `e2e/kb-backlinks.test.ts` — 236 first lines and 96 ownership lines in the served HTML, the number shape and the type word asserted per kind, and all 236 rows reading differently from one another |
+| 14 | The Kontextus panel is headed "Kontextus", and its two levels are laid out as the rows of the Bejövő hivatkozások tree: the numbered chapter, the numbered section indented under it, no book | §6.2, §6.4 | `e2e/kb-panel.test.ts` — the heading, the two hrefs, the numbers each row starts with, and the section's row read as nested and stepped right of the chapter's; `e2e/kb-sweep.test.ts` — two levels in the served HTML |
+| 15 | A pressed outgoing reference shows the target as a leaf row of the Bejövő hivatkozások tree — label and ownership lines, no count, no "Ugrás a hivatkozott lapra" — and the row is the link | §7.1 | `e2e/kb-reference.test.ts` — the row's label read against the number a backlink row gives the same target, the one link per panel, and an exact element census of all 23 reference panels on the two worked pages, 3 of them carrying the second line |
 
 Four notes on the shape of these fixes, because each cost more than it looks:
 

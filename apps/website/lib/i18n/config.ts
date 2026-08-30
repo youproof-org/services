@@ -65,11 +65,11 @@ export type LabelKey =
   // shared key would tie the page's title to the button's caption.
   | 'kbMenuOpen' | 'kbMenuBack'
   | 'kbMenuIncoming' | 'kbMenuTerms' | 'kbMenuClaims' | 'kbMenuContext'
-  // The panel's pinned header, one label per content (§6.4). Separate from the
-  // menu captions on purpose: the caption names the action ("Kontextus"), the
-  // header answers the question the panel is answering ("Hol jelenik meg") — §6.2
-  // gives that wording for this one; "Hol hivatkoznak rá" answers §7.2's "where is
-  // this used?" the same way.
+  // The panel's pinned header, one label per content (§6.4). Kept separate from the
+  // menu captions even where the words now agree — Kontextus names the same thing on
+  // the button and over the panel, and a shared key would tie the two surfaces
+  // together; "Hol hivatkoznak rá" answers §7.2's "where is this used?" over a list
+  // the item calls "Bejövő hivatkozások".
   | 'kbPanelContext' | 'kbPanelIncoming'
   // Bejövő hivatkozások (§7.2). The count is per row — one source citing this entity
   // five times is one row saying five — and the empty state is a legitimate answer
@@ -96,18 +96,12 @@ export type LabelKey =
   // list narrowed, and they say so by asking the reader's question in the same
   // words (§7.2).
   | 'kbPanelTermSynonyms' | 'kbPanelClaim'
-  // A pressed outgoing reference (§7.1). The panel answers "what is this?" out of
-  // the target itself — a label, a title, a body, a claim, a canonical form — so the
-  // only words the code supplies are the ones on the second, deliberate step: the
-  // link to the target's own page. One label for every kind of target, because it is
-  // one promise ("the whole thing, on its own page") whatever is on the other end.
-  | 'kbPanelReferenceOpen'
   // The link from an entity embedded in a chapter to that entity's own knowledge-base
-  // page. Its own key rather than `kbPanelReferenceOpen`'s wording: that one is a
-  // second step inside a panel the reader has already opened, this one is the only
-  // way from the narrative into the knowledge base at all — and it is the link that
-  // makes the knowledge base reachable by following links from the homepage, which
-  // nothing else does today.
+  // page. The one place the code supplies words for a link out of the narrative: a
+  // pressed outgoing reference needs none, since its panel's row is the link and the
+  // row says the name of the place it leads to (§7.1). And this link is the only way
+  // from the narrative into the knowledge base at all — the one that makes the
+  // knowledge base reachable by following links from the homepage.
   | 'kbEmbeddedPageLink'
 
 export interface LocaleConfig {

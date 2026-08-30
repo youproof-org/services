@@ -35,7 +35,7 @@
         "kbMenuTerms": "Fogalmak",
         "kbMenuClaims": "Állítások",
         "kbMenuContext": "Kontextus",
-        "kbPanelContext": "Hol jelenik meg",
+        "kbPanelContext": "Kontextus",
         "kbPanelIncoming": "Hol hivatkoznak rá",
         "kbPanelIncomingCount": "{count} hivatkozás",
         "kbPanelIncomingEmpty": "Nincs rá hivatkozás",
@@ -43,7 +43,6 @@
         "kbBacklinkKindRemark": "megjegyzés",
         "kbPanelTermSynonyms": "Szinonimák",
         "kbPanelClaim": "{index}. állítás",
-        "kbPanelReferenceOpen": "Ugrás a hivatkozott lapra",
         "kbEmbeddedPageLink": "Megnézem a tudásbázisban"
       },
       "containers": {
