@@ -26,6 +26,8 @@ import type {
   KbNode,
   EmbeddingContext,
   GlossaryEntry,
+  KbBacklinkSource,
+  KbBacklinks,
 } from './types'
 import {
   getContentDir,
@@ -53,7 +55,8 @@ const STANDALONE_DIRS: Record<StandaloneKind, string> = {
 }
 import { buildContext, resolveTemplate, ENTITY_LABEL_HU } from './display-template'
 import { buildLocalizedUrl } from '@/lib/i18n/url'
-import { resolveContainerKey } from '@/lib/i18n/config'
+import { getLocaleLabel, resolveContainerKey } from '@/lib/i18n/config'
+import type { LabelKey } from '@/lib/i18n/config'
 import {
   urlForBook,
   urlForStandalone,
@@ -66,6 +69,7 @@ import {
   ownPageScope,
   embeddedScope,
 } from './urls'
+import { compareHu } from './collate'
 import {
   bookKey,
   partKey,
@@ -78,9 +82,15 @@ import {
   remarkKey,
   keyForKbNode,
   keyForChapter,
+  keyForSection,
 } from './keys'
 import { fqnJoin } from './fqn'
-import { getChapterIndex, walkFigureBlocks } from '@/lib/utils/index-helpers'
+import {
+  getChapterIndex,
+  getChapterIndexLabel,
+  getSectionIndexLabel,
+  walkFigureBlocks,
+} from '@/lib/utils/index-helpers'
 
 // ---------------------------------------------------------------------------
 // Key helpers
@@ -606,6 +616,7 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
     landings:    new Map(),
     embedding:   new Map(),
     glossary:    [],
+    backlinks:   new Map(),
   }
 
   // Pass 0: resolve ownership, because a key needs it.
@@ -857,6 +868,7 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
   resolveSelfReferenceDisplayTemplates(graph)
   resolveRefHrefs(graph)
   graph.glossary = buildGlossary(graph)
+  graph.backlinks = buildBacklinkIndex(graph)
   validateReferences(graph)
   validateTermInsertions(graph)
   validateKbLinks(graph)
@@ -1045,15 +1057,70 @@ export function kbPageExists(graph: ContentGraph, node: KbNode): boolean {
   return isDeployedEnv ? embedding.chapter.published : true
 }
 
+/** What sits above and below one node in the ownership chain. */
+export interface KbOwnership {
+  /** The entity this one belongs to: a proof's theorem, a remark's owner. */
+  parent?: KbNode
+  /** The proofs attached to this one, in authored order. Only a theorem has any. */
+  proofs: ProofNode[]
+  /** The remarks attached to this one, in authored order. A remark has none. */
+  remarks: RemarkNode[]
+}
+
+/**
+ * The ownership chain around one node: the entity above it, and the entities
+ * attached to it. This is what an entity page lists below its body (sub-plan
+ * §6.1), so the chain sits in the served HTML as ordinary links.
+ *
+ *   definition   -               down: its remarks
+ *   theorem      -               down: its proofs, then its remarks
+ *   proof        up: its theorem down: its remarks
+ *   remark       up: its owner   -
+ *
+ * Both directions are gated on `kbPageExists`, so nothing here can point at a page
+ * this environment did not generate. It prunes nothing on today's content - every
+ * chain shares one chapter, so publication takes a chain whole (measured: on the
+ * staging build 0 links are dropped from a page that exists). It is not therefore
+ * decoration: an owner and its children are separate embed blocks, so a chain
+ * split across two chapters is a content edit away, and it is the parent link on a
+ * proof page and the child links on a theorem's that would 404.
+ */
+export function kbOwnership(graph: ContentGraph, node: KbNode): KbOwnership {
+  const shown = <T extends KbNode>(nodes: T[]): T[] => nodes.filter((n) => kbPageExists(graph, n))
+  const parentOf = (owner: KbNode | undefined): KbNode | undefined =>
+    owner && kbPageExists(graph, owner) ? owner : undefined
+
+  switch (node.type) {
+    case 'definition':
+      return { proofs: [], remarks: shown(node.remarks) }
+    case 'theorem':
+      return { proofs: shown(node.proofs), remarks: shown(node.remarks) }
+    case 'proof':
+      return { parent: parentOf(node.proves), proofs: [], remarks: shown(node.remarks) }
+    case 'remark':
+      // A remark owns nothing (sub-plan §6.5), so its chain is the one link up.
+      return { parent: parentOf(node.attachedTo), proofs: [], remarks: [] }
+  }
+}
+
 /** Every knowledge-base node, in one iterable. */
-function* kbNodes(graph: ContentGraph): Generator<KbNode> {
+export function* kbNodes(graph: ContentGraph): Generator<KbNode> {
   yield* graph.definitions.values()
   yield* graph.theorems.values()
   yield* graph.proofs.values()
   yield* graph.remarks.values()
 }
 
-function kbNodeByKey(graph: ContentGraph, key: string): KbNode | undefined {
+/**
+ * The node one fully qualified name addresses, or undefined when it addresses
+ * something that is not a knowledge-base node.
+ *
+ * Exported because a reference target is an FQN and a renderer has to get from it
+ * to the node it points at — `components/kb/panels/ReferencePanel.tsx` resolves
+ * exactly what `resolveRefHrefs` below resolved an href for, and a second lookup
+ * of its own could disagree with this one about which maps are searched.
+ */
+export function kbNodeByKey(graph: ContentGraph, key: string): KbNode | undefined {
   return graph.definitions.get(key) ?? graph.theorems.get(key)
     ?? graph.proofs.get(key) ?? graph.remarks.get(key)
 }
@@ -1283,24 +1350,43 @@ function termAnchorsForKey(parent: KbNode, termKey: string): AnchorPair | null {
 }
 
 
+/** The type label of a node, capitalized: authored if it has one, else the default. */
+function kbTypeLabel(node: KbNode): string {
+  const label = node.labels?.canonical ?? ENTITY_LABEL_HU[node.type] ?? node.type
+  return label.charAt(0).toUpperCase() + label.slice(1)
+}
+
+/**
+ * Where a node sits in the book, as the reader sees it written beside it in the
+ * narrative: the chapter-scoped index plus the type label, e.g. "15.6. Tétel".
+ *
+ * Falls back to the bare type label for a node with no embedding - which has no
+ * page either (`kbPageExists`), so nothing links to it, but a label of "undefined
+ * Tétel" would be worse than a vague one if that ever changes.
+ */
+export function kbNodeLabel(graph: ContentGraph, node: KbNode): string {
+  const capital = kbTypeLabel(node)
+  const index = graph.embedding.get(keyForKbNode(node))?.index
+  return index ? `${index} ${capital}` : capital
+}
+
 /**
  * Display title for a knowledge-base node.
  *
  * Definitions and theorems carry an authored `title`. Proofs and remarks normally
  * do not - they take one derived from their owner, which reads better than a bare
  * label and is why authoring 262 more titles was left out of the content
- * migration. Last resort is the chapter-scoped index plus the type label.
+ * migration. Last resort is the node's own label.
  */
 export function kbNodeTitle(graph: ContentGraph, node: KbNode): string {
   if (node.title) return node.title
-  const label = node.labels?.canonical ?? ENTITY_LABEL_HU[node.type] ?? node.type
-  const capital = label.charAt(0).toUpperCase() + label.slice(1)
 
-  if (node.type === 'proof') return `${capital}: ${kbNodeTitle(graph, node.proves)}`
-  if (node.type === 'remark' && node.attachedTo) return `${capital}: ${kbNodeTitle(graph, node.attachedTo)}`
+  if (node.type === 'proof') return `${kbTypeLabel(node)}: ${kbNodeTitle(graph, node.proves)}`
+  if (node.type === 'remark' && node.attachedTo) {
+    return `${kbTypeLabel(node)}: ${kbNodeTitle(graph, node.attachedTo)}`
+  }
 
-  const index = graph.embedding.get(keyForKbNode(node))?.index
-  return index ? `${index} ${capital}` : capital
+  return kbNodeLabel(graph, node)
 }
 
 /**
@@ -1312,6 +1398,11 @@ export function kbNodeTitle(graph: ContentGraph, node: KbNode): string {
  * four node types, proofs included: no content defines a term on a proof today,
  * but it is supported end to end and expected, so nothing here may assume
  * otherwise.
+ *
+ * Each row carries the term's authored synonyms verbatim; the row itself stays one
+ * per (defining node, term key), so a synonym is data on a row rather than a row of
+ * its own. The glossary PAGE is an index of names and does want one row per synonym:
+ * that expansion is `glossaryRows` in glossary-rows.ts, over these entries.
  */
 function buildGlossary(graph: ContentGraph): GlossaryEntry[] {
   const entries: GlossaryEntry[] = []
@@ -1327,13 +1418,356 @@ function buildGlossary(graph: ContentGraph): GlossaryEntry[] {
         ownerName: node.name,
         ownerTitle: kbNodeTitle(graph, node),
         href: `${pageUrl}#${anchor}`,
+        synonyms: term.synonyms ?? [],
       })
     }
   }
   return entries.sort(
-    (a, b) =>
-      a.canonical.localeCompare(b.canonical, 'hu') || a.ownerTitle.localeCompare(b.ownerTitle, 'hu'),
+    (a, b) => compareHu(a.canonical, b.canonical) || compareHu(a.ownerTitle, b.ownerTitle),
   )
+}
+
+/** A backlink row before its place in the tree is known - identity and display lines. */
+type BacklinkRow = Omit<KbBacklinkSource, 'count' | 'children'>
+
+/**
+ * Does this build render the chapter's body, or only a stub in its place?
+ *
+ * The same environment rule `kbPageExists` applies to an embedded node, one level
+ * up: on staging/production an unpublished chapter's route returns
+ * `NotMigratedStub`/`UnavailableStub` instead of the chapter's content, while
+ * locally it renders normally so drafts are previewable (see
+ * app/[locale]/[[...path]]/page.tsx). The chapter URL resolves either way, so this
+ * is not a question of whether a link is dead - it is whether there is anything
+ * there to arrive at.
+ */
+function chapterBodyIsRendered(chapter: ChapterNode): boolean {
+  return isDeployedEnv ? chapter.published : true
+}
+
+/**
+ * The row a chapter gets, whether or not the chapter's own narrative cites anything.
+ *
+ * Split out of `backlinkRowFor` because grouping needs it for a chapter that is
+ * purely a container: a chapter earns a node in the tree as soon as one of its
+ * sections or one of the entities embedded in it cites the target.
+ */
+function chapterBacklinkRow(chapter: ChapterNode): BacklinkRow | null {
+  if (!chapterBodyIsRendered(chapter)) return null
+  return {
+    kind: 'chapter',
+    fqn: keyForChapter(chapter),
+    title: chapter.title,
+    label: `${getChapterIndexLabel(chapter)} ${chapter.title}`,
+    href: chapterUrlOf(chapter),
+  }
+}
+
+/** The same for a section, and for the same reason. */
+function sectionBacklinkRow(section: SectionNode, chapter: ChapterNode): BacklinkRow | null {
+  if (!chapterBodyIsRendered(chapter)) return null
+  return {
+    kind: 'section',
+    fqn: keyForSection(section),
+    title: section.title,
+    label: `${getSectionIndexLabel(section)} ${section.title}`,
+    href: `${chapterUrlOf(chapter)}#${sectionAnchorId(section)}`,
+  }
+}
+
+/**
+ * The definition or theorem an entity's page hangs off: itself, or the one at the top
+ * of its ownership chain.
+ *
+ * A proof answers with its theorem and a remark with its owner's answer, so a remark
+ * on a proof answers with the theorem two steps above it. That is what a backlink row
+ * puts on its first line: the reader recognizes a place in the book by the numbered
+ * definition or theorem it belongs to, and "Bizonyítás" on its own names 190 different
+ * pages. An owner-less remark - which the model permits and no content has - is the top
+ * of its own chain and answers with itself.
+ */
+function kbChainTop(node: KbNode): KbNode {
+  if (node.type === 'proof') return kbChainTop(node.proves)
+  if (node.type === 'remark' && node.attachedTo) return kbChainTop(node.attachedTo)
+  return node
+}
+
+/** What the ownership line calls one step of the chain, per type it can be. */
+const OWNED_TYPE_LABELS: Record<'proof' | 'remark', LabelKey> = {
+  proof: 'kbBacklinkKindProof',
+  remark: 'kbBacklinkKindRemark',
+}
+
+/**
+ * The chain BELOW the definition or theorem a row's first line names, or undefined
+ * when the row's source IS that definition or theorem.
+ *
+ * Read from the node upwards and written top-down, so a remark on a proof reads
+ * "bizonyítás → megjegyzés": the row's first line names the theorem, and this says
+ * which of the things hanging off it the row actually leads to. The type word is the
+ * node's own - authored `labels.canonical` if it has one, else the locale's word for
+ * the type - and an authored title follows it in parentheses. No proof or remark in
+ * the content has either today, so today every one of these lines is one or two bare
+ * words; both fields are in the model and authored ones must read as themselves rather
+ * than as "bizonyítás".
+ */
+function kbChainBelowTop(node: KbNode): string | undefined {
+  if (node.type !== 'proof' && node.type !== 'remark') return undefined
+  const above = node.type === 'proof' ? node.proves : node.attachedTo
+  if (!above) return undefined
+  const word = node.labels?.canonical ?? getLocaleLabel(node.locale, OWNED_TYPE_LABELS[node.type])
+  const segment = node.title ? `${word} (${node.title})` : word
+  const higher = kbChainBelowTop(above)
+  return higher ? `${higher} → ${segment}` : segment
+}
+
+/**
+ * The two lines that name an entity as a place in the book: the numbered definition
+ * or theorem its page hangs off, and which thing hanging off that one it is.
+ *
+ * "15.6. Definíció: Oszthatóság", and under it "bizonyítás" or "bizonyítás →
+ * megjegyzés" where the node is not itself the top of its chain. Exported because
+ * two panels name an entity this way and must not be able to disagree about it: a
+ * backlink row (§7.2) and the panel a pressed outgoing reference opens (§7.1), which
+ * names the page that reference leads to with the same two lines.
+ */
+export function kbEntityRowLines(
+  graph: ContentGraph,
+  node: KbNode,
+): { label: string; ownership?: string } {
+  const top = kbChainTop(node)
+  const topLabel = kbNodeLabel(graph, top)
+  const lines: { label: string; ownership?: string } = {
+    label: top.title ? `${topLabel}: ${top.title}` : topLabel,
+  }
+  // Set only when there is one, so a node that is its own chain top has no such line
+  // rather than an empty one.
+  const ownership = kbChainBelowTop(node)
+  if (ownership) lines.ownership = ownership
+  return lines
+}
+
+/**
+ * Which backlink row an owner of references produces, or null if it produces none.
+ *
+ * A row is a link, so a source only earns one when this build generates something
+ * for the row to land on. That drops an entity whose `kbPageExists` is false - the
+ * row would be a 404, exactly the class of link `validateKbLinks` exists to
+ * prevent - and, for the same reason one step weaker, a chapter or section whose
+ * chapter renders as a stub: the URL resolves, but the chapter's body is not
+ * there, so neither is the section anchor, and the row answers "where is this
+ * used?" with a stub.
+ *
+ * Standalone items (articles, newsletters, pages, landings) and their sections are
+ * skipped: a source is a place in the book that leans on this entity. No
+ * standalone content cites a knowledge-base node today, so nothing is lost by it -
+ * revisit if any ever does.
+ *
+ * The row's display lines are built HERE rather than in the panel, because §2.1 wants
+ * these rows in the served HTML and the component that renders them is handed an
+ * array of rows, not the graph: the number of a section and the theorem above a
+ * proof are graph questions, and the three lists §7.2 asks for share one renderer.
+ */
+function backlinkRowFor(graph: ContentGraph, owner: RefOwner): BacklinkRow | null {
+  switch (owner.kind) {
+    case 'chapter':
+      return chapterBacklinkRow(owner.node)
+    case 'section':
+      return sectionBacklinkRow(owner.node, owner.parent)
+    case 'definition':
+    case 'theorem':
+    case 'proof':
+    case 'remark': {
+      const node = owner.node
+      if (!kbPageExists(graph, node)) return null
+      const href = urlForKbNode(node)
+      if (!href) return null
+      return {
+        kind: owner.kind,
+        fqn: keyForKbNode(node),
+        title: kbNodeTitle(graph, node),
+        href,
+        ...kbEntityRowLines(graph, node),
+      }
+    }
+    default:
+      return null
+  }
+}
+
+/**
+ * Where a backlink row sits in the book: the chapters and sections above it.
+ *
+ * A chapter is at the top and answers with nothing above it; a section answers with
+ * its chapter; an embedded entity answers with the chapter and the section it is
+ * embedded in, which `graph.embedding` already recorded. Every one of the 537
+ * entities is embedded in a section today, so the tree is three levels deep in
+ * practice - but a chapter prologue/epilogue embed has no section (see
+ * `EmbeddingContext`), and such an entity is simply a child of its chapter.
+ *
+ * A null anywhere in the chain leaves the row at the top level rather than dropping
+ * it. It cannot happen on a row that got this far - `chapterBodyIsRendered` and
+ * `kbPageExists` ask the same question of the same chapter - but a row lost to a
+ * grouping step would be a reference the panel silently stopped reporting, and
+ * un-nested is the harmless way to be wrong.
+ */
+function backlinkAncestors(
+  graph: ContentGraph,
+  row: BacklinkRow,
+  chapterOfSection: Map<string, ChapterNode>,
+): BacklinkRow[] {
+  if (row.kind === 'chapter') return []
+  if (row.kind === 'section') {
+    const chapter = chapterOfSection.get(row.fqn)
+    const chapterRow = chapter && chapterBacklinkRow(chapter)
+    return chapterRow ? [chapterRow] : []
+  }
+  const embedding = graph.embedding.get(row.fqn)
+  if (!embedding) return []
+  const chapterRow = chapterBacklinkRow(embedding.chapter)
+  if (!chapterRow) return []
+  if (!embedding.section) return [chapterRow]
+  const sectionRow = sectionBacklinkRow(embedding.section, embedding.chapter)
+  return sectionRow ? [chapterRow, sectionRow] : [chapterRow]
+}
+
+/** A node of the tree under construction: the row, what it cites itself, and its children. */
+interface BacklinkBranch {
+  row: BacklinkRow
+  own: number
+  children: Map<string, BacklinkBranch>
+}
+
+/**
+ * One flat list of counted sources, grouped into the tree the panel renders.
+ *
+ * Each source is filed under its ancestors (`backlinkAncestors`), which creates the
+ * containers it needs on the way; then every node's count is its own references plus
+ * everything filed beneath it, bubbled up from the leaves. So a section speaks for
+ * the entities embedded in it as well as for its own narrative, and a chapter speaks
+ * for all of its sections.
+ *
+ * A container that cites nothing itself is a node with `own` 0 and a count that is
+ * entirely its children's. That is not a rounding error in the display - it is the
+ * answer: the reader asking where an entity is used wants to be told which chapter,
+ * whether or not the chapter's own prose joins in.
+ */
+function groupBacklinks(
+  graph: ContentGraph,
+  rows: Iterable<{ row: BacklinkRow; count: number }>,
+  chapterOfSection: Map<string, ChapterNode>,
+): KbBacklinkSource[] {
+  const roots = new Map<string, BacklinkBranch>()
+
+  const descend = (into: Map<string, BacklinkBranch>, row: BacklinkRow) => {
+    let branch = into.get(row.fqn)
+    if (!branch) into.set(row.fqn, (branch = { row, own: 0, children: new Map() }))
+    return branch
+  }
+
+  for (const { row, count } of rows) {
+    let level = roots
+    for (const ancestor of backlinkAncestors(graph, row, chapterOfSection)) {
+      level = descend(level, ancestor).children
+    }
+    descend(level, row).own += count
+  }
+
+  // The site's one Hungarian collation (compareHu), so two lists of the same titles
+  // cannot disagree about their order. Applied at every level, on the ACCUMULATED
+  // count - the number the row shows is the number it is sorted by.
+  const order = (a: KbBacklinkSource, b: KbBacklinkSource) =>
+    b.count - a.count || compareHu(a.title, b.title)
+
+  const finish = (level: Map<string, BacklinkBranch>): KbBacklinkSource[] =>
+    Array.from(level.values(), (branch) => {
+      const children = finish(branch.children)
+      const count = children.reduce((total, child) => total + child.count, branch.own)
+      return { ...branch.row, count, children }
+    }).sort(order)
+
+  return finish(roots)
+}
+
+/**
+ * Incoming references, keyed by the entity that OWNS the target.
+ *
+ * A reference aimed at a claim or a term is a reference to the entity holding it:
+ * claims and terms have no page, so the owning entity's page is the only place an
+ * incoming reference to them can be shown. Hence one index, keyed by the owning
+ * entity, with `byTarget` keyed by the full target name carrying the per-claim and
+ * per-term narrowings - no second index, and no filtering at render time.
+ *
+ * A row is a (target, source) pair with a count rather than one row per reference:
+ * a section citing an entity five times is one row saying five, because five rows
+ * would bury every other source and one row without a count would throw away how
+ * heavily that section leans on the entity.
+ *
+ * Those rows are then GROUPED by where in the book they are - chapter, section,
+ * embedded entity - and their counts accumulated bottom-up (`groupBacklinks`), so
+ * the panel can answer "which chapter?" before "which paragraph of it?". Ordering
+ * is by count descending, ties broken by title, at every level of the tree.
+ */
+function buildBacklinkIndex(graph: ContentGraph): Map<string, KbBacklinks> {
+  // owning entity -> target -> source -> row+count. The unfiltered `all` list
+  // accumulates under ALL_TARGETS, which cannot collide with a real target: every
+  // fully qualified name is a series of `container.name` pairs, so it has a dot.
+  const ALL_TARGETS = '*'
+  const counted = new Map<string, Map<string, Map<string, { row: BacklinkRow; count: number }>>>()
+
+  const bump = (entityFqn: string, targetFqn: string, row: BacklinkRow) => {
+    let byTarget = counted.get(entityFqn)
+    if (!byTarget) counted.set(entityFqn, (byTarget = new Map()))
+    let bySource = byTarget.get(targetFqn)
+    if (!bySource) byTarget.set(targetFqn, (bySource = new Map()))
+    const existing = bySource.get(row.fqn)
+    if (existing) existing.count += 1
+    else bySource.set(row.fqn, { row, count: 1 })
+  }
+
+  for (const owner of refOwners(graph)) {
+    const refs = Object.values(owner.node.references)
+    if (refs.length === 0) continue
+    const row = backlinkRowFor(graph, owner)
+    if (!row) continue
+
+    for (const { target } of refs) {
+      if (target.type === 'external') continue
+      // The owning entity is the target itself when the target IS an entity, and
+      // the target minus its trailing `.claims.{c}` / `.terms.{t}` step otherwise
+      // - which is exactly `parentFqn`, already parsed. Everything else (a book, a
+      // chapter, a section, a standalone item) is not a knowledge-base target.
+      const entity = kbNodeByKey(graph, target.fqn)
+        ?? (target.type === 'claim' || target.type === 'term'
+          ? kbNodeByKey(graph, target.parentFqn)
+          : undefined)
+      if (!entity) continue
+      const entityFqn = keyForKbNode(entity)
+      bump(entityFqn, ALL_TARGETS, row)
+      bump(entityFqn, target.fqn, row)
+    }
+  }
+
+  // A section's fqn names its chapter, but parsing one back out of a string is the
+  // kind of thing `lib/content/fqn.ts` exists to stop; the graph knows the answer,
+  // so it is asked once here rather than per row.
+  const chapterOfSection = new Map<string, ChapterNode>()
+  for (const chapter of graph.chapters.values()) {
+    for (const section of chapter.sections) chapterOfSection.set(keyForSection(section), chapter)
+  }
+
+  const index = new Map<string, KbBacklinks>()
+  for (const [entityFqn, byTargetCounts] of counted) {
+    let all: KbBacklinkSource[] = []
+    const byTarget = new Map<string, KbBacklinkSource[]>()
+    for (const [targetFqn, bySource] of byTargetCounts) {
+      const tree = groupBacklinks(graph, bySource.values(), chapterOfSection)
+      if (targetFqn === ALL_TARGETS) all = tree
+      else byTarget.set(targetFqn, tree)
+    }
+    index.set(entityFqn, { all, byTarget })
+  }
+  return index
 }
 
 /**

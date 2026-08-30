@@ -9,8 +9,12 @@ import type {
   KbNode,
   RefMap,
 } from './types'
-import { buildLocalizedUrl } from '@/lib/i18n/url'
-import { getContainerSegment, type ContainerKey } from '@/lib/i18n/config'
+import { buildLocalizedUrl, type UrlKey } from '@/lib/i18n/url'
+import {
+  getContainerSegment,
+  resolveContainerKey,
+  type ContainerKey,
+} from '@/lib/i18n/config'
 
 // Node → public URL helpers. Each node carries its own `locale` and `slug`, so a
 // node's URL is derived from the node itself (and, for cross-references, always
@@ -75,26 +79,49 @@ export function urlForProof(node: ProofNode): string {
  * rather than inventing a path for it.
  */
 export function urlForRemark(node: RemarkNode): string | null {
-  const owner = node.attachedTo
-  if (!owner) return null
-  switch (owner.type) {
+  const ref = kbUrlRef(node)
+  return ref ? buildLocalizedUrl(node.locale, ref.key, ...ref.slugPath) : null
+}
+
+/**
+ * Which URL key a node's own page is built from, and with which slugs.
+ *
+ * Separate from `urlForKbNode` because a caller that needs the pair rather than
+ * the string cannot take it apart again: `generateMetadata` passes the key and the
+ * slug path to `buildPageMeta`, which builds the canonical and the hreflang set
+ * from them (one URL per locale, so it needs the parts and not one locale's
+ * string). Deriving them there would be a second copy of the remark's
+ * owner-dependent shape.
+ *
+ * Null for an owner-less remark, which has no page — see `urlForRemark`.
+ */
+export function kbUrlRef(node: KbNode): { key: UrlKey; slugPath: string[] } | null {
+  switch (node.type) {
     case 'definition':
-      return buildLocalizedUrl(node.locale, 'definition-remark', owner.slug, node.slug)
+      return { key: 'definition', slugPath: [node.slug] }
     case 'theorem':
-      return buildLocalizedUrl(node.locale, 'theorem-remark', owner.slug, node.slug)
+      return { key: 'theorem', slugPath: [node.slug] }
     case 'proof':
-      return buildLocalizedUrl(node.locale, 'proof-remark', owner.proves.slug, owner.slug, node.slug)
+      return { key: 'proof', slugPath: [node.proves.slug, node.slug] }
+    case 'remark': {
+      const owner = node.attachedTo
+      if (!owner) return null
+      switch (owner.type) {
+        case 'definition':
+          return { key: 'definition-remark', slugPath: [owner.slug, node.slug] }
+        case 'theorem':
+          return { key: 'theorem-remark', slugPath: [owner.slug, node.slug] }
+        case 'proof':
+          return { key: 'proof-remark', slugPath: [owner.proves.slug, owner.slug, node.slug] }
+      }
+    }
   }
 }
 
 /** The canonical page URL of any knowledge-base node, or null if it has none. */
 export function urlForKbNode(node: KbNode): string | null {
-  switch (node.type) {
-    case 'definition': return urlForDefinition(node)
-    case 'theorem':    return urlForTheorem(node)
-    case 'proof':      return urlForProof(node)
-    case 'remark':     return urlForRemark(node)
-  }
+  const ref = kbUrlRef(node)
+  return ref ? buildLocalizedUrl(node.locale, ref.key, ...ref.slugPath) : null
 }
 
 // ---------------------------------------------------------------------------
@@ -202,6 +229,72 @@ export function claimAnchorId(scope: AnchorScope, claim: { name: string; slug?: 
 /** A term's anchor. Same fallback rule as a claim's, with the map key as the name. */
 export function termAnchorId(scope: AnchorScope, termKey: string, term: { slug?: string }): string {
   return join(scope.prefix, `${seg(scope.locale, 'term')}.${term.slug ?? termKey}`)
+}
+
+/**
+ * Which kinds of anchor get an arrival mark, and which merely scroll (§6.2, D5).
+ *
+ * The classification is here, beside the five builders above, because it is their
+ * inverse: `kbAnchorPath` (an embedded entity), `termAnchorId` and `claimAnchorId`
+ * are marked; `sectionAnchorId` and `partAnchorId` are not. Anywhere else and the
+ * two could drift — a sixth builder would be added without anything asking what
+ * arriving at it should do.
+ *
+ * Exhaustive by construction, the same device `ROUTABLE_AT_ROOT` uses in
+ * `lib/i18n/config.ts`: it is a `Record<ContainerKey, boolean>`, so a new container
+ * key is a COMPILE error until it has been classified. The keys that never appear
+ * in a fragment at all are listed `false` rather than omitted — `false` is also the
+ * right answer for them, since a fragment naming one would not be an anchor this
+ * table has an opinion about.
+ *
+ * Marked: a term is a few words inside a paragraph and a claim one item among
+ * several, so scrolling alone does not say which part of the screen was the point.
+ * Not marked: a section or a part anchor lands on a heading bearing its own name,
+ * where the mark would be noise.
+ */
+const MARKED_ON_ARRIVAL = {
+  // The knowledge-base entity types — the leaves `kbAnchorPath` ends on.
+  definition: true,
+  theorem: true,
+  proof: true,
+  remark: true,
+  // `termAnchorId` and `claimAnchorId`.
+  term: true,
+  claim: true,
+  // Page-structural: `sectionAnchorId` and `partAnchorId` (D5).
+  section: false,
+  part: false,
+  // Never a fragment segment — these are URL path segments only.
+  book: false,
+  chapter: false,
+  article: false,
+  newsletter: false,
+  landing: false,
+  'knowledge-base': false,
+} as const satisfies Record<ContainerKey, boolean>
+
+/**
+ * True when arriving at this fragment should mark its target (§6.2, D5).
+ *
+ * The anchor's KIND is the container its last pair names, which is why this reads
+ * the tail rather than the head: `definiciok.{d}.fogalmak.{t}` is a term inside an
+ * embedded definition and `tetelek.{t}.bizonyitasok.{p}` is a proof, and it is the
+ * last segment pair that says what the reader was actually sent to.
+ *
+ * Every id the five builders produce is a run of `container.slug` pairs — `.` is
+ * the separator and `validateIdentifiers` forbids it inside a name or a slug — so
+ * an odd number of segments is not one of ours. Anything else the page happens to
+ * have an id for answers false: the homepage's `#articles` and `#news` are nav
+ * scroll targets rather than content references, and the dialog and form ids are
+ * accessibility wiring (§6.2's inventory).
+ *
+ * `locale` is the page's, because both halves of an anchor are localized.
+ */
+export function anchorMarksTarget(locale: string, anchorId: string): boolean {
+  const segments = anchorId.split('.')
+  if (segments.length < 2 || segments.length % 2 !== 0) return false
+  const key = resolveContainerKey(locale, segments[segments.length - 2])
+  return key !== null && MARKED_ON_ARRIVAL[key]
 }
 
 /**

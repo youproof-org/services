@@ -161,3 +161,249 @@ body {
   justify-content: center;
   align-items: center;
 }
+
+/* ---------------------------------------------------------------------------
+   Selection modes on a knowledge-base entity page (sub-plan §6.3)
+
+   Fogalmak and Állítások do not open anything. They dim the page and lift one
+   class of thing in the body — every term, or every claim — out from under the
+   dim, so what the reader can act on is unambiguous: "these, right now."
+
+   The state is published by components/kb/EntityChrome.tsx as `data-kb-select`
+   on <body>, and nothing else about it is rendered. It can be expressed here
+   because the markup already carries the handles: a term is
+   `<span class="term" id="fogalmak.…">` (components/content/InlineText.tsx) and a
+   claim is the <div> of components/content/blocks/ClaimBlock.tsx. That div's class
+   comes from a CSS module, but next.config.ts names every one of ours
+   `<file>_<local>`, which makes `claim-block_claim` as stable a handle as a global
+   name — the same handle the browser tests reach for. e2e/kb-select.test.ts counts
+   what these rules reveal, so renaming the file fails there rather than silently
+   turning the mode off.
+
+   WHY THE TRANSFORM COMES OFF. `.page-root` above carries `transform:
+   translateZ(0)`, and a transform makes the element a stacking context: nothing
+   inside it can paint above a layer outside it, whatever z-index it is given. The
+   dim is outside it — components/kb/Overlay.tsx is portalled to <body> at
+   $z-kb-overlay — so with the transform in place a revealed term is simply
+   unreachable, at any z-index. Dropping the transform for the duration of the mode
+   lets the term take part in the root stacking context, which is what makes the
+   lift (and the hit-testing that goes with "selectable") work at all.
+
+   That is safe here, and only here. The transform is a Chromium stale-tile fix for
+   SOFT NAVIGATIONS (see the note above), and a selection mode performs none: it is
+   a state of one page, its own four back gestures stay inside that page, and the
+   transform is back before any navigation can start. And nothing else in an entity
+   page rises with the terms: of the 899 elements inside `.page-root` on
+   /hu/tudasbazis/definiciok/gyuru-test, exactly one is positioned or numbered at
+   all — the sticky site header, at $z-header — and that one is dealt with
+   deliberately rather than left to the drop; see the next note.
+   e2e/kb-select.test.ts checks the header by hit test for the same reason.
+
+   WHY THE HEADER IS RAISED WITH THEM. Dropping the transform lets a revealed term
+   paint over the sticky header too, once the reader scrolls it up there — and a
+   phrase floating over the site header is the page looking broken, whatever it says
+   about which things are selectable. So for the duration of a mode the header goes
+   to $z-kb-header, above the reveal, and a term scrolled to the top of the page
+   disappears under it exactly as it does in every other state of the site.
+
+   That value is above the dim as well (it has to be: the dim is BELOW the reveal),
+   so the header would otherwise come out from under the wash and back within reach
+   of the pointer. The rule gives it both back: the same 50% black the overlay
+   paints, as a layer of its own over the header's contents, and `pointer-events:
+   none` for the clicks the overlay was absorbing. e2e/kb-select.test.ts hit-tests
+   the header for precisely that — what a click there lands on is still the overlay.
+
+   INERT is the other half, and it is the dim doing it: everything that is not
+   revealed stays under a layer that absorbs clicks, so an outgoing reference, a
+   claim during Fogalmak or a term during Állítások cannot be pressed while a mode
+   is up. There is no rule for it because there is nothing to switch off.
+   --------------------------------------------------------------------------- */
+
+// Both halves of a selection need it off, and one of them comes without a mode: a
+// pressed outgoing reference is a selection with no level 1 above it (§7.1), so
+// `data-kb-select` is absent there and `data-kb-selected` is the whole of what is
+// up. Everything the note above says about why the drop is safe holds for it too —
+// it is a state of one page, and the transform is back before any navigation.
+body[data-kb-select] .page-root,
+body[data-kb-selected] .page-root {
+  transform: none;
+}
+
+/* The sticky header, over the reveal and under everything else — see the note above.
+   Both halves of a selection again, and for the same reason: a pressed outgoing
+   reference is revealed with no mode above it (§7.1).
+
+   `.site-header_header` written out: `next.config.ts` names every CSS-module class of
+   ours `<file>_<local>`, which makes this as stable a handle as the global name it
+   has none of — the same arrangement `.claim-block_claim` above relies on. A bare
+   `header` would also match the entity page's own <header> element, which is part of
+   the article and belongs under the dim. */
+body[data-kb-select] .page-root .site-header_header,
+body[data-kb-selected] .page-root .site-header_header {
+  z-index: $z-kb-header;
+  /* What the overlay was doing for it: absorbing the clicks. The header is above that
+     layer now, so without this its links would be pressable while dimmed — and
+     `elementFromPoint` would report the header rather than the dim. */
+  pointer-events: none;
+
+  /* …and what the overlay was doing to it: the wash. The same colour, over the
+     header's own contents rather than in front of the whole viewport, so the header
+     looks no different from the layer it used to sit under.
+
+     A positioned pseudo-element, last child, no z-index: it paints above `.topRow`
+     (positioned, also no z-index) by document order, and above the breadcrumb row
+     because that is not positioned at all. */
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+  }
+}
+
+body[data-kb-select='terms'] .page-root .term,
+body[data-kb-select='claims'] .page-root .claim-block_claim {
+  position: relative;
+  z-index: $z-kb-reveal;
+  /* Lit rather than merely uncovered: the page behind is a 50% black wash, so a
+     revealed thing carries its own white ground out from under it. `box-shadow`
+     with spread and no offset pads that ground without changing the layout —
+     padding on an inline span would reflow the paragraph it sits in. */
+  background: $white;
+  cursor: pointer;
+}
+
+body[data-kb-select='terms'] .page-root .term {
+  border-radius: 0.15em;
+  box-shadow: 0 0 0 0.15em $white;
+  /* A term can wrap across two lines; without this the ground and the rounding
+     would be drawn once around the whole span instead of around each fragment. */
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+body[data-kb-select='claims'] .page-root .claim-block_claim {
+  border-radius: 0.35rem;
+  box-shadow: 0 0 0 0.25rem $white;
+}
+
+/* Two claims in a row are two candidates, and the reveal has to say so.
+
+   Consecutive claims sit flush — `blocks/claim-block.module.scss` gives them no
+   vertical margin, because as a numbered list they need none — so two white grounds
+   0.25rem deep meet with nothing between them and four lit claims come out as one
+   white slab with four numbers in it. Whatever the reader is being asked to pick,
+   it does not look like four separate things.
+
+   A gap is the only thing that fixes it: the grounds cannot be pulled in far enough
+   to part without uncovering the text they are lit against, so the boxes themselves
+   have to move. 0.75rem against 2 × 0.25rem of ground leaves 0.25rem of the dim
+   showing between one card and the next.
+
+   Scoped to a claim that FOLLOWS a claim, so this reflows only where there is
+   something to separate: a lone claim, which is the common case, does not move at
+   all when the mode opens. Level 2 keeps the mode's attribute on <body> (see
+   `selectionMode` in lib/kb/chrome-state.ts), so nothing moves again between
+   picking a mode and picking a claim — which is what the panel's scroll depends on.
+
+   Only claims. Terms are inline, a term's ground is 0.15em, and neither two terms
+   in one sentence nor two on consecutive lines come close enough to merge. */
+body[data-kb-select='claims'] .page-root .claim-block_claim + .claim-block_claim {
+  margin-top: 0.75rem;
+}
+
+/* ---------------------------------------------------------------------------
+   Level 2: one of them picked (§6.3)
+
+   Selecting a candidate keeps it lit and drops all the others back under the dim,
+   so the page shows the reader what they chose by being the only thing left
+   showing. That narrowing is the whole point of the mechanism, and it is what
+   replaces a highlight colour, a scroll-to and a selected-state style — there is
+   deliberately no rule here that ADDS anything to the selection. It simply keeps
+   what level 1 gave it while everything else loses it.
+
+   Published by components/kb/EntityChrome.tsx as a pair: `data-kb-selected` on
+   <body> naming the selection, and the same attribute on the element that is it.
+   The body half is what gates this block, so level 1 is untouched; the element
+   half is what this subtracts around. Both are needed, because "one is picked" and
+   "this is the one" are different facts and the rule is about the first deciding
+   what happens to everything that is not the second.
+
+   The mode's own attribute stays on <body> across the step (see `selectionMode` in
+   lib/kb/chrome-state.ts), so the reveal above still applies and `.page-root` keeps
+   its transform off — which is what the selection is still relying on to paint over
+   the dim, and what the panel's scroll needs the layout NOT to change during.
+
+   Specificity is what makes this an override rather than a duplicate: (0,4,1)
+   against the reveal's (0,3,1), so it wins wherever both apply without !important
+   and without repeating the reveal's own declarations in a second place.
+   e2e/kb-select.test.ts checks the drop by hit-testing every candidate, and checks
+   it is this block doing it: the rule is deleted from the live stylesheet and the
+   eleven that had dropped are required to come straight back up.
+   --------------------------------------------------------------------------- */
+
+body[data-kb-selected] .page-root .term:not([data-kb-selected]),
+body[data-kb-selected] .page-root .claim-block_claim:not([data-kb-selected]) {
+  position: static;
+  z-index: auto;
+  background: none;
+  box-shadow: none;
+  border-radius: 0;
+  cursor: default;
+}
+
+/* ---------------------------------------------------------------------------
+   Outgoing references in the body (sub-plan §7.1)
+
+   A reference keeps the `ref-concept` mark it wears in a chapter (see above): the
+   colour of the prose around it, a dotted grey underline, a subtle hover. It is
+   part of the sentence, and the reader should recognise it from the book — so
+   there is no rule here that restyles one, and that is deliberate.
+
+   What there IS is the other half of §7.1: a reference is actionable ONLY in the
+   page's default state. While the menu is open, while a panel is showing, while a
+   mode is up, whatever mode the page is in owns the reader's next click — at any
+   moment exactly one class of thing on the page is actionable.
+
+   WHY THIS NEEDS A RULE AT ALL, when the dim already absorbs clicks. Two states
+   put a reference back within reach of the pointer, and both are the reveal
+   working as designed:
+
+     - a revealed claim carries its own outgoing references up with it, so at
+       Állítások level 1 and level 2 they are over the dim (§6.3);
+     - a pressed reference is itself revealed, which is how the page says which
+       one the panel is about.
+
+   And a reference is a real `<a href>` (D1), so "nothing listens" is not enough to
+   make it do nothing: the browser would navigate. `pointer-events` is what makes
+   the mark inert, and `components/kb/EntityChrome.tsx` swallows the plain
+   activation for the keyboard, which no stylesheet can reach.
+
+   The hook is `data-kb-chrome` on <body>, published by that component for exactly
+   as long as the chrome is out of its default state — the condition §7.1 states,
+   rather than the two attributes that happen to cover most of it. e2e/kb-reference
+   .test.ts hit-tests every reference on the page against this rule and then deletes
+   it from the live stylesheet and requires the hits to come back.
+   --------------------------------------------------------------------------- */
+
+body[data-kb-chrome] .page-root .ref-concept,
+body[data-kb-chrome] .page-root .ref-link {
+  pointer-events: none;
+}
+
+/* The pressed one, lifted out of the dim so it is visibly what the panel is about
+   (§7.1). The term's treatment, for the same reason a term has it: an inline mark
+   in a paragraph that can wrap across two lines, so the white ground is padded by
+   a spread shadow rather than by padding, and drawn per fragment.
+
+   Not `cursor: pointer` — unlike a revealed term, this is not an offer. It has
+   already been pressed, and the rule above has made it inert. */
+body[data-kb-selected] .page-root a[data-kb-selected] {
+  position: relative;
+  z-index: $z-kb-reveal;
+  background: $white;
+  border-radius: 0.15em;
+  box-shadow: 0 0 0 0.15em $white;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}

@@ -1,6 +1,6 @@
 import 'server-only'
 import type { RefTarget, ContentGraph, StandaloneNode } from './types'
-import { getChapterIndex } from '../utils/index-helpers'
+import { getChapterIndexLabel, getSectionIndexLabel } from '../utils/index-helpers'
 
 // ---------------------------------------------------------------------------
 // Context types
@@ -325,10 +325,9 @@ export function buildContext(
   if (target.type === 'chapter') {
     const chapter = graph.chapters.get(target.fqn)
     if (!chapter) return null
-    const chapterIdx = getChapterIndex(chapter)
     return {
       target: {
-        index: `${chapterIdx}.`,
+        index: getChapterIndexLabel(chapter),
         name: chapter.name,
         title: chapter.title,
         type: 'chapter',
@@ -393,11 +392,9 @@ export function buildContext(
   if (target.type === 'section') {
     const section = graph.sections.get(target.fqn)
     if (!section) return null
-    const chapterIdx = getChapterIndex(section.chapter)
-    const sectionIdx = section.chapter.sections.indexOf(section) + 1
     return {
       target: {
-        index: `${chapterIdx}.${sectionIdx}.`,
+        index: getSectionIndexLabel(section),
         name: section.name,
         title: section.title,
         type: 'section',

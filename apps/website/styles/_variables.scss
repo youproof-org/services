@@ -31,10 +31,46 @@ $pad-x:            1.5rem;  // px-6
 // just have names now. The consent banner sits BELOW the modal overlay on
 // purpose: a first visit landing on a newsletter-confirm URL should show the
 // banner behind the scrim, not competing with it.
-$z-header: 100;
-$z-fab:    900;
-$z-banner: 950;
-$z-dialog: 1000;
+// The knowledge-base entity chrome sits BELOW $z-fab, all three layers of it: the
+// dim covers the page but not the consent button, and the consent dialog opens
+// above everything here (sub-plan §2, §6.3). Within the three the overlay is the
+// lowest, the panel sits over it so it stays legible while the page is dimmed
+// (§6.4), and the menu stack is over both — its bottom-most button is Vissza while
+// a panel is open, and §6.2 keeps that button in the same corner whatever state the
+// page is in, which means over the panel rather than under it.
+// $z-kb-reveal is the one value that is not a layer of the chrome: it is what a
+// term or a claim IN THE PAGE is raised to while a selection mode is up, so that
+// it sits above the dim and under everything the reader still has to be able to
+// press (§6.3). Between the overlay and the panel, because level 2 leaves the
+// selection revealed while the sheet is open and the sheet must still cover it.
+// $z-kb-header is what the STICKY SITE HEADER is raised to for the duration of the
+// same modes, and it is above the reveal for one reason: a revealed term scrolled up
+// to the top of the page must disappear under the header, as it does in every other
+// state of the site, rather than paint over it. Being above the reveal puts it above
+// the dim as well, so the rule that raises it (app/globals.scss) also gives it the
+// dim's own wash and takes the pointer off it — the header stays exactly as dimmed
+// and as inert as it was under the overlay. Under $z-kb-panel: the sheet is what the
+// reader is acting on, and it covers everything on the page including this.
+// $z-kb-marker is the other one that is not a layer of the chrome: it is the
+// rectangle components/kb/ArrivalMarker.tsx draws around a fragment's target for a
+// moment after the reader lands on it (§6.2, D5). BELOW every layer here that means
+// "deal with this now" — the dim, the panel, the menu, the consent button, the
+// banner, a dialog — because it is a transient decoration and any of those owns the
+// reader's attention while it is up. It is nonetheless above the page's own content
+// including the sticky header, and that is not this number's doing: the marker is a
+// sibling of `.page-root`, which carries a transform and is therefore a stacking
+// context, so $z-header's 100 is scoped inside it and cannot be compared with a
+// value out here at all (see the note in app/globals.scss).
+$z-header:     100;
+$z-kb-marker:  690;
+$z-kb-overlay: 700;
+$z-kb-reveal:  720;
+$z-kb-header:  730;
+$z-kb-panel:   750;
+$z-kb-chrome:  800;
+$z-fab:        900;
+$z-banner:     950;
+$z-dialog:     1000;
 
 $chapter-width-mobile: 92%;
 $chapter-width-tablet: 75%;

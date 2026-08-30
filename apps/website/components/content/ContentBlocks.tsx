@@ -9,7 +9,8 @@ import type {
   AnchorParent,
 } from '@/lib/content/types'
 import { getContentGraph } from '@/lib/content'
-import { kbAnchorPath, embeddedScope } from '@/lib/content/urls'
+import { kbPageExists } from '@/lib/content/graph'
+import { kbAnchorPath, embeddedScope, urlForKbNode } from '@/lib/content/urls'
 
 type AnyEntity = DefinitionNode | TheoremNode | ProofNode | RemarkNode
 import InlineText from './InlineText'
@@ -145,6 +146,12 @@ export default function ContentBlocks({ blocks, embedIndices, figureIndices, ref
               )
             }
 
+            // `urlForKbNode` is null-typed for a node it cannot address; `kbPageExists`
+            // already rules that out here, so the coalesce is only about the type.
+            const kbHref = kbPageExists(graph, entity)
+              ? urlForKbNode(entity) ?? undefined
+              : undefined
+
             return (
               <EmbeddedEntity
                 key={i}
@@ -160,6 +167,8 @@ export default function ContentBlocks({ blocks, embedIndices, figureIndices, ref
                 terms={entity.terms}
                 anchorId={kbAnchorPath(entity)}
                 termParent={embeddedScope(entity)}
+                locale={entity.locale}
+                kbHref={kbHref}
               />
             )
           }

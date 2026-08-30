@@ -449,6 +449,97 @@ export interface GlossaryEntry {
   // page-relative form because that is the page this links to, where the term is
   // rendered without its node in the path.
   href: string
+  // The term's authored synonyms, copied from `TermDefinition.synonyms`. Always an
+  // array: a term with no synonyms gets an empty one, so a reader never has to
+  // distinguish "none authored" from "field absent".
+  synonyms: string[]
+}
+
+/**
+ * One row of an "incoming references" list: a single source that cites an entity,
+ * with how many times it does so.
+ *
+ * A source is whatever carried the reference — one of the four knowledge-base
+ * entity types, or a chapter or a section of the book, because the narrative cites
+ * entities too and a reader asking "where is this used?" wants the chapter as much
+ * as the theorem. A source appears ONCE with a count, not once per reference.
+ *
+ * **A source is also a place, and places nest.** An entity is embedded in a section
+ * and a section belongs to a chapter, so the sources of one entity form a tree —
+ * chapter, then its sections, then the entities embedded in them — and that is the
+ * shape this type carries. A container earns a node even when it cites nothing
+ * itself: the chapter a citing section sits in is part of the answer to "where is
+ * this used?" whether or not the chapter's own narrative joins in.
+ */
+export interface KbBacklinkSource {
+  kind: 'chapter' | 'section' | 'definition' | 'theorem' | 'proof' | 'remark'
+  /** Fully qualified name of the source node — the row's identity. */
+  fqn: string
+  /**
+   * The source's own title, unnumbered — not displayed, but what a level of the tree
+   * is ordered by once two rows carry the same count.
+   *
+   * The numbers on `label` cannot be that tie-breaker: "16.10." sorts before "16.9."
+   * in any collation, so a tie would come out in an order the reader reads as random.
+   */
+  title: string
+  /**
+   * The row's first line: the numbered name of the place it leads to, as the book
+   * writes it — "16. Alice és Bob alaptétele" for a chapter, "16.1. Oszthatóság" for
+   * a section, "16.8. Tétel: Az asszociáltság tulajdonságai" for an entity.
+   *
+   * For a proof or a remark this names the definition or theorem at the top of its
+   * ownership chain rather than the node itself, because that is what the page it
+   * leads to is about; `ownership` is the rest of the chain. So the number format and
+   * the type word are what tell the six kinds apart, which is why no row carries the
+   * kind as a word of its own: measured over the local export's backlink lists, no
+   * two rows of one list share these two lines, where 10 groups of rows shared a
+   * title and a kind under the previous design.
+   */
+  label: string
+  /**
+   * The row's second line, on a proof or a remark only: the ownership chain BELOW the
+   * definition or theorem `label` names — "bizonyítás", "megjegyzés", or "bizonyítás →
+   * megjegyzés" for a remark on a proof. Each segment carries the node's authored
+   * title in parentheses when it has one; no content authors one today.
+   */
+  ownership?: string
+  /** The source's page, plus a fragment when the source is a section. */
+  href: string
+  /**
+   * References aimed at this row's target from this source AND from everything
+   * nested under it — the accumulated count, bubbled up from the leaves.
+   *
+   * So a section's count covers the entities embedded in it as well as its own
+   * narrative, and a chapter's covers all of its sections. That is what the row
+   * leads to: following it marks every reference inside that place
+   * (`components/kb/HighlightOnArrival.tsx`), and a count that only spoke for the
+   * container's own narrative would promise fewer marks than the reader gets.
+   */
+  count: number
+  /** The sources nested inside this one, ordered like their parent's level. */
+  children: KbBacklinkSource[]
+}
+
+/**
+ * Everything that cites one entity, in the two shapes a page needs.
+ *
+ * `all` is the unfiltered list shown for the entity as a whole. It includes
+ * references aimed at the entity's claims and terms, because those have no page of
+ * their own and the entity's page is the only place they can be shown.
+ *
+ * `byTarget` is keyed by the FULL target name — the entity's own name for a
+ * reference to the entity, `{entity}.claims.{c}` or `{entity}.terms.{t}` for one
+ * aimed inside it — so selecting a claim or a term narrows the list by a lookup
+ * rather than by filtering `all` at render time.
+ *
+ * Both are trees of chapters, sections and embedded entities (see
+ * `KbBacklinkSource`), and every level of both is ordered by `count` descending,
+ * ties broken by title.
+ */
+export interface KbBacklinks {
+  all: KbBacklinkSource[]
+  byTarget: Map<string, KbBacklinkSource[]>
 }
 
 // ---------------------------------------------------------------------------
@@ -490,4 +581,10 @@ export interface ContentGraph {
   embedding:   Map<string, EmbeddingContext>
   /** Every term definition in the knowledge base, sorted by `canonical`. */
   glossary:    GlossaryEntry[]
+  /**
+   * Owning-entity key -> everything that cites it. Only entities with at least one
+   * source that survives the page-existence filter get an entry, so a page with no
+   * incoming references is a missing key rather than an empty list.
+   */
+  backlinks:   Map<string, KbBacklinks>
 }
