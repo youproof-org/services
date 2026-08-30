@@ -15,14 +15,12 @@ interface KbRootPageProps {
   locale: string
 }
 
-// One of the three section cards: the section name, its count in words, an optional
-// second count line, and its one-line description (sub-plan §3).
+// One of the three section cards: the section name and its count in words (sub-plan
+// §3). Nothing else — see the component's note on why the descriptions went.
 interface SectionCard {
   href: string
   nameKey: LabelKey
   count: string
-  countNote?: string
-  descriptionKey: LabelKey
 }
 
 /**
@@ -49,11 +47,17 @@ function publishedCount(
  * Knowledge-base root page body: the orienting paragraph and the three section
  * cards, with no listing of individual nodes — that is the index pages' job (§3).
  *
- * Fogalmak has two true counts, and the card gives both. The glance number is the
- * ROW count (341), because that is what the glossary page itself lists and the one
- * the reader can check; the term count (217) follows it as the thing those rows are
- * names of. "341 fogalom" would be false — 341 counts names, canonical forms plus
- * synonyms — and "217" alone would be the number the index visibly contradicts.
+ * **A card is a name and a number.** §3 also gave each card a one-line description
+ * and Fogalmak a second count under its first, and the ruling is that neither earns
+ * its space: the three descriptions restate what "Definíciók", "Tételek" and
+ * "Fogalmak" already say to a reader who has just read `kbIntro` above them, and
+ * three sentences of it push the numbers — the part of the card that is actually
+ * news — down the page. The count stays, quieter than it was, because a card that
+ * leads with a number reads as a statistic rather than as a way in.
+ *
+ * Fogalmak's number is the ROW count — canonical forms plus synonyms, 341 of them —
+ * because that is what the glossary page itself lists and the one the reader can
+ * check against it. The 217 terms those rows name are counted on the glossary page.
  *
  * The glossary is not filtered by locale here because a `GlossaryEntry` has no
  * locale of its own; it is derived from `graph.glossary`, exactly as the glossary
@@ -61,7 +65,6 @@ function publishedCount(
  */
 export default function KbRootPage({ locale }: KbRootPageProps) {
   const graph = getContentGraph()
-  const glossaryTerms = graph.glossary.length
   const glossaryNames = glossaryRows(graph.glossary).length
 
   const cards: SectionCard[] = [
@@ -71,7 +74,6 @@ export default function KbRootPage({ locale }: KbRootPageProps) {
       count: formatLocaleLabel(locale, 'kbDefinitionsCount', {
         count: publishedCount(graph, graph.definitions, locale),
       }),
-      descriptionKey: 'kbDefinitionsDescription',
     },
     {
       href: urlForTheoremsIndex(locale),
@@ -79,14 +81,11 @@ export default function KbRootPage({ locale }: KbRootPageProps) {
       count: formatLocaleLabel(locale, 'kbTheoremsCount', {
         count: publishedCount(graph, graph.theorems, locale),
       }),
-      descriptionKey: 'kbTheoremsDescription',
     },
     {
       href: urlForGlossary(locale),
       nameKey: 'glossary',
       count: formatLocaleLabel(locale, 'kbGlossaryCount', { count: glossaryNames }),
-      countNote: formatLocaleLabel(locale, 'kbGlossaryCountNote', { count: glossaryTerms }),
-      descriptionKey: 'kbGlossaryDescription',
     },
   ]
 
@@ -100,8 +99,6 @@ export default function KbRootPage({ locale }: KbRootPageProps) {
             <Link href={card.href} className={styles.card}>
               <h2 className={styles.name}>{getLocaleLabel(locale, card.nameKey)}</h2>
               <p className={styles.count}>{card.count}</p>
-              {card.countNote && <p className={styles.countNote}>{card.countNote}</p>}
-              <p className={styles.description}>{getLocaleLabel(locale, card.descriptionKey)}</p>
             </Link>
           </li>
         ))}

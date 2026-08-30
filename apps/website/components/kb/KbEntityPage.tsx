@@ -15,7 +15,7 @@ import BacklinksPanel from './panels/BacklinksPanel'
 import ClaimPanel, { webClaims } from './panels/ClaimPanel'
 import ContextPanel from './panels/ContextPanel'
 import { referencePanels } from './panels/ReferencePanel'
-import TermPanel from './panels/TermPanel'
+import TermPanel, { TermPanelTitle } from './panels/TermPanel'
 import styles from './kb-entity-page.module.scss'
 
 interface KbEntityPageProps {
@@ -91,7 +91,8 @@ export default function KbEntityPage({ node }: KbEntityPageProps) {
       target: termAnchorId(scope, termKey, term),
       // The term itself heads its panel: it is the subject, and the reveal has
       // already lit it in the body (§6.3), so the two agree by naming the same thing.
-      title: <InlineText text={term.canonical} />,
+      // Its synonyms come with it, on a second line — they name the same term.
+      title: <TermPanelTitle locale={node.locale} term={term} />,
       content: <TermPanel node={node} termKey={termKey} term={term} />,
     })),
     ...claims.map((claim, index) => ({

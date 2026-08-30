@@ -40,7 +40,7 @@
 
 // One card, framed like the article/book boxes (`card-frame`). `height: 100%` on
 // the anchor so the three cards are the same height once they sit side by side and
-// their descriptions wrap to different numbers of lines.
+// one of their names wraps where the others do not.
 .card {
   @include card-frame;
   display: flex;
@@ -68,26 +68,14 @@
   }
 }
 
-// The count is the useful part of the card, so it reads at a glance rather than
-// being buried in the description sentence (§3).
+// The whole of the card under its name (see KbRootPage): how much is in there. It
+// used to be set as large and as heavy as the name, which read as the card's subject
+// once the description below it went — so it is quieter than the name now, the size
+// and colour of the intro paragraph above the cards.
 .count {
-  margin: 0.6rem 0 0;
-  font-size: 1.35rem;
-  font-weight: $font-x-bold;
-  line-height: 1.2;
-}
-
-// Fogalmak's second number: the terms the rows above are the names of.
-.countNote {
-  margin: 0.2rem 0 0;
-  font-size: 0.85rem;
-  color: $gray-500;
-}
-
-// Last in the card, below the count, so the number is what the eye lands on first.
-.description {
-  margin: 0.9rem 0 0;
+  margin: 0.5rem 0 0;
   font-size: 0.95rem;
-  line-height: 1.55;
+  font-weight: $font-normal;
+  line-height: 1.4;
   color: $gray-600;
 }

@@ -68,6 +68,24 @@
   line-height: 1.3;
 }
 
+// The synonyms of a selected term (panels/TermPanel.tsx `TermPanelTitle`), on a
+// second line of the heading rather than at the top of the content: they are other
+// names for the subject the line above names. Smaller and grey, and the heading's
+// own weight is undone here — this qualifies the term rather than naming it.
+.titleSynonyms {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
+  font-weight: $font-normal;
+  line-height: 1.4;
+  color: $gray-500;
+}
+
+.titleSynonymsLabel {
+  font-weight: $font-bold;
+  color: $black;
+}
+
 .body {
   flex: 1 1 auto;
   overflow-y: auto;
@@ -116,42 +134,17 @@
 
 // ── A selected term or claim (panels/TermPanel.tsx, panels/ClaimPanel.tsx) ──
 //
-// Level 2 of a selection mode (§6.3): the thing the reader picked, then the same
-// reference list the unfiltered panel shows, narrowed to it. Both panels use these,
-// which is the layout half of §7.2's "one list rather than three designs" — the
-// list itself is literally the same component.
-//
-// The subject sits above the list, so the space between them is what separates the
-// two halves; nothing here boxes or tints either of them.
-
-// The claim's own text, restated over its references.
-.selectionClaim {
-  margin: 0 0 0.75rem;
-  line-height: 1.6;
-}
-
-// A claim's display formula, matching the leading it has in the body.
-.selectionFormula {
-  margin: 0.5rem 0 0;
-  overflow-x: auto;
-}
-
-// The synonyms line under a term. Secondary to the term itself, which is the
-// panel's own heading — this qualifies it rather than naming it.
-.selectionMeta {
-  margin: 0 0 0.75rem;
-  line-height: 1.5;
-  color: $gray-500;
-}
-
-.selectionMetaLabel {
-  font-weight: $font-bold;
-  color: $black;
-}
+// Level 2 of a selection mode (§6.3): the same reference list the unfiltered panel
+// shows, narrowed to the thing the reader picked. Neither panel restates that thing
+// in its content — the reveal lights it in the body, which the panel deliberately
+// leaves visible — so the subject is the panel's heading (`.title` above, plus
+// `.titleSynonyms` for a term) and the content is the list under one label. One rule,
+// shared by both panels, which is the layout half of §7.2's "one list rather than
+// three designs"; the list itself is literally the same component.
 
 // "Hol hivatkoznak rá" over the narrowed list — the same words the unfiltered
 // panel puts in its header, because it is the same question. Smaller than that
-// header: there it is the panel's title, here it labels the second half of one.
+// header: there it is the panel's title, here it labels the list under one.
 .selectionSubhead {
   margin: 0 0 0.25rem;
   font-size: 0.85rem;

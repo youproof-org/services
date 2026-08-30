@@ -15,7 +15,7 @@ test('substitutes a placeholder with the value given', () => {
 })
 
 test('the two glossary counts read as rows and the terms they name', () => {
-  assert.equal(formatLocaleLabel('hu', 'kbGlossaryCount', { count: 341 }), '341 szócikk')
+  assert.equal(formatLocaleLabel('hu', 'kbGlossaryCount', { count: 341 }), '341 fogalom')
   assert.equal(
     formatLocaleLabel('hu', 'kbGlossaryCountNote', { count: 217 }),
     '217 fogalom nevei és szinonimái',

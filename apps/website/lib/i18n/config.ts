@@ -36,11 +36,12 @@ export type ContainerKey =
 export type LabelKey =
   | 'home' | 'articlesIndex' | 'newsletterIndex'
   | 'knowledgeBase' | 'definitionsIndex' | 'theoremsIndex' | 'glossary'
-  // Knowledge-base root page: the orienting paragraph, and per section its
-  // one-line description and the wording around its count. The count labels
-  // carry a `{count}` placeholder — see `formatLocaleLabel`.
+  // Knowledge-base root page: the orienting paragraph, and per section the wording
+  // around its count — a card says a name and a number and nothing else, so there
+  // is no per-section description. The count labels carry a `{count}` placeholder
+  // — see `formatLocaleLabel`. `kbGlossaryCountNote` is the glossary page's own
+  // second line, counting the terms its rows are the names of.
   | 'kbIntro'
-  | 'kbDefinitionsDescription' | 'kbTheoremsDescription' | 'kbGlossaryDescription'
   | 'kbDefinitionsCount' | 'kbTheoremsCount'
   | 'kbGlossaryCount' | 'kbGlossaryCountNote'
   // Glossary page: the wording a synonym row uses to name the canonical form it

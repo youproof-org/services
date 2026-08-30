@@ -16,6 +16,10 @@ import styles from '../panel.module.scss'
  * picked (§6.3) — so this is the part that is not on the page: the name the term
  * has in the glossary, the other names it goes by, and who leans on it.
  *
+ * The first two of those are the panel's heading rather than its content, which is
+ * what `TermPanelTitle` below is: a name and the other names for it belong on the
+ * same line of a page, so the content starts at the reference list.
+ *
  * **The list is `all` narrowed, not a second list.** `backlinks.byTarget` is keyed
  * by the full target name, so a reference aimed at this term is one lookup away and
  * the rows are the same rows the unfiltered Bejövő hivatkozások panel shows — the
@@ -47,14 +51,40 @@ export default function TermPanel({ node, termKey, term }: TermPanelProps) {
   // container segment comes from the one place that owns the grammar.
   const target = fqnJoin(entityFqn, 'term', termKey)
   const sources = graph.backlinks.get(entityFqn)?.byTarget.get(target) ?? []
-  const synonyms = term.synonyms ?? []
 
   return (
     <>
+      <h3 className={styles.selectionSubhead}>
+        {getLocaleLabel(node.locale, 'kbPanelIncoming')}
+      </h3>
+      <BacklinkList locale={node.locale} sources={sources} target={target} />
+    </>
+  )
+}
+
+/**
+ * The panel's heading for a selected term: the canonical form, and under it the
+ * other names it goes by.
+ *
+ * **Why the synonyms are part of the heading.** They name the same term the line
+ * above names — a second line of the subject, not the first line of what is said
+ * about it — so they sit inside the header's `<h2>`, above the rule that closes the
+ * header off from the scrolling content. A term with 222 inbound references then
+ * keeps its other names in view while the list scrolls under them, which is the
+ * whole reason the header is pinned (§6.4).
+ *
+ * Phrasing content only, because an `<h2>` may hold nothing else: the line is a
+ * `<span>` made a block by the stylesheet.
+ */
+export function TermPanelTitle({ locale, term }: { locale: string; term: TermDefinition }) {
+  const synonyms = term.synonyms ?? []
+  return (
+    <>
+      <InlineText text={term.canonical} />
       {synonyms.length > 0 && (
-        <p className={styles.selectionMeta}>
-          <span className={styles.selectionMetaLabel}>
-            {getLocaleLabel(node.locale, 'kbPanelTermSynonyms')}
+        <span className={styles.titleSynonyms}>
+          <span className={styles.titleSynonymsLabel}>
+            {getLocaleLabel(locale, 'kbPanelTermSynonyms')}:
           </span>{' '}
           {/*
             One line, comma-separated, because a synonym is a name and not an entry:
@@ -62,13 +92,8 @@ export default function TermPanel({ node, termKey, term }: TermPanelProps) {
             (kbGlossaryCountNote), and this is the term saying which names those are.
           */}
           <InlineText text={synonyms.join(', ')} />
-        </p>
+        </span>
       )}
-
-      <h3 className={styles.selectionSubhead}>
-        {getLocaleLabel(node.locale, 'kbPanelIncoming')}
-      </h3>
-      <BacklinkList locale={node.locale} sources={sources} target={target} />
     </>
   )
 }
