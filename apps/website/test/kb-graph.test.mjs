@@ -216,24 +216,53 @@ async function deployedGraph(data) {
   return (await deployedModule()).buildGraphFromRaw(data)
 }
 
-const rowsOf = (list) => list.map((r) => [r.kind, r.fqn, r.count])
+/**
+ * The tree flattened depth-first: one entry per row, `[kind, fqn, count, depth]`.
+ *
+ * Depth-first is the order the panel renders in, so an expectation written this way
+ * reads as the list a reader would see, indents included.
+ */
+const rowsOf = (list, depth = 0) =>
+  list.flatMap((r) => [[r.kind, r.fqn, r.count, depth], ...rowsOf(r.children, depth + 1)])
 
-test('backlinks group every source of one entity into one count-ordered list', () => {
+/** Every node of a tree, whatever its depth. */
+const nodesOf = (list) => list.flatMap((r) => [r, ...nodesOf(r.children)])
+
+test('backlinks group every source of one entity by where in the book it is', () => {
   const g = buildGraphFromRaw(backlinkFixture())
   const b = g.backlinks.get('definitions.def-egy')
-  // Count first, then title in Hungarian collation — so the chapter's two
-  // references collapse to a single row that leads, and the four one-reference
-  // sources follow as "Első tétel", "Második szakasz", "Második tétel", "Szakasz".
+  // Chapter, then its sections, then the entities embedded in them. The fixture's
+  // theorems are embedded in the two sections, so neither is a top-level row: the
+  // first chapter cites the definition twice itself and holds a section that cites
+  // it once and a theorem that cites it once, which is 4; the second chapter cites
+  // nothing itself and is here only because what it contains does.
   assert.deepEqual(rowsOf(b.all), [
-    ['chapter', 'books.konyv.chapters.fejezet', 2],
-    ['theorem', 'theorems.tetel-egy', 1],
-    ['section', 'books.konyv.chapters.masodik.sections.masodik-szakasz', 1],
-    ['theorem', 'theorems.tetel-ketto', 1],
-    ['section', 'books.konyv.chapters.fejezet.sections.szakasz', 1],
+    ['chapter', 'books.konyv.chapters.fejezet', 4, 0],
+    ['section', 'books.konyv.chapters.fejezet.sections.szakasz', 2, 1],
+    ['theorem', 'theorems.tetel-egy', 1, 2],
+    ['chapter', 'books.konyv.chapters.masodik', 2, 0],
+    ['section', 'books.konyv.chapters.masodik.sections.masodik-szakasz', 2, 1],
+    ['theorem', 'theorems.tetel-ketto', 1, 2],
   ])
+})
+
+test('a count is never less than the counts nested under it', () => {
+  const g = buildGraphFromRaw(backlinkFixture())
+  const b = g.backlinks.get('definitions.def-egy')
+  // The accumulation rule, as an invariant over every node rather than as the two
+  // numbers above: a container speaks for everything under it, so its count is its
+  // children's total plus whatever its own narrative added.
+  for (const node of nodesOf(b.all)) {
+    const nested = node.children.reduce((total, child) => total + child.count, 0)
+    assert.ok(node.count >= nested, `${node.fqn} counts ${node.count} over ${nested} nested`)
+    assert.ok(
+      node.children.every((child, i) => i === 0 || node.children[i - 1].count >= child.count),
+      `${node.fqn}'s children are not ordered by count`,
+    )
+  }
   assert.ok(
     b.all.every((row, i) => i === 0 || b.all[i - 1].count >= row.count),
-    'the list is ordered by count, highest first',
+    'the top level is ordered by count, highest first',
   )
 })
 
@@ -242,55 +271,69 @@ test('a reference to a claim or a term is a reference to the entity that owns it
   const b = g.backlinks.get('definitions.def-egy')
   // Neither the claim nor the term has a page, so both land under the definition —
   // and `byTarget`, keyed by the FULL target name, narrows the same list to each.
-  assert.deepEqual(
-    rowsOf(b.byTarget.get('definitions.def-egy.claims.def-claim')),
-    [['section', 'books.konyv.chapters.fejezet.sections.szakasz', 1]],
-  )
-  assert.deepEqual(
-    rowsOf(b.byTarget.get('definitions.def-egy.terms.first-term')),
-    [['theorem', 'theorems.tetel-egy', 1]],
-  )
-  // The entity's own name is a target like any other, not the whole list.
+  // The narrowed lists are grouped too, so the one section that cites the claim is
+  // still shown inside the chapter it belongs to.
+  assert.deepEqual(rowsOf(b.byTarget.get('definitions.def-egy.claims.def-claim')), [
+    ['chapter', 'books.konyv.chapters.fejezet', 1, 0],
+    ['section', 'books.konyv.chapters.fejezet.sections.szakasz', 1, 1],
+  ])
+  assert.deepEqual(rowsOf(b.byTarget.get('definitions.def-egy.terms.first-term')), [
+    ['chapter', 'books.konyv.chapters.fejezet', 1, 0],
+    ['section', 'books.konyv.chapters.fejezet.sections.szakasz', 1, 1],
+    ['theorem', 'theorems.tetel-egy', 1, 2],
+  ])
+  // The entity's own name is a target like any other, not the whole list. Both
+  // chapters count 2 here, and the tie goes to the title in Hungarian collation.
   assert.deepEqual(rowsOf(b.byTarget.get('definitions.def-egy')), [
-    ['chapter', 'books.konyv.chapters.fejezet', 2],
-    ['section', 'books.konyv.chapters.masodik.sections.masodik-szakasz', 1],
-    ['theorem', 'theorems.tetel-ketto', 1],
+    ['chapter', 'books.konyv.chapters.fejezet', 2, 0],
+    ['chapter', 'books.konyv.chapters.masodik', 2, 0],
+    ['section', 'books.konyv.chapters.masodik.sections.masodik-szakasz', 2, 1],
+    ['theorem', 'theorems.tetel-ketto', 1, 2],
   ])
   assert.equal(b.byTarget.size, 3)
 })
 
 test('a backlink row links to the source: an entity page, a chapter, or a section anchor', () => {
   const g = buildGraphFromRaw(backlinkFixture())
-  const byFqn = new Map(g.backlinks.get('definitions.def-egy').all.map((r) => [r.fqn, r]))
+  const byFqn = new Map(nodesOf(g.backlinks.get('definitions.def-egy').all).map((r) => [r.fqn, r]))
+  const shapeOf = (fqn) => {
+    const { children, ...row } = byFqn.get(fqn)
+    return row
+  }
+  assert.deepEqual(shapeOf('books.konyv.chapters.fejezet'), {
+    kind: 'chapter',
+    fqn: 'books.konyv.chapters.fejezet',
+    title: 'Fejezet',
+    href: '/hu/konyvek/konyv/fejezetek/fejezet',
+    count: 4,
+  })
+  assert.deepEqual(shapeOf('books.konyv.chapters.fejezet.sections.szakasz'), {
+    kind: 'section',
+    fqn: 'books.konyv.chapters.fejezet.sections.szakasz',
+    title: 'Szakasz',
+    href: `/hu/konyvek/konyv/fejezetek/fejezet#${sectionAnchorId({ slug: 'szakasz', locale: 'hu' })}`,
+    count: 2,
+  })
+  assert.deepEqual(shapeOf('theorems.tetel-egy'), {
+    kind: 'theorem',
+    fqn: 'theorems.tetel-egy',
+    title: 'Első tétel',
+    href: '/hu/tudasbazis/tetelek/tetel-egy',
+    count: 1,
+  })
+})
+
+test('a container earns a row even though it cites nothing itself', () => {
+  const g = buildGraphFromRaw(backlinkFixture())
+  const b = g.backlinks.get('definitions.def-egy')
+  // The second chapter's own narrative has no reference to the definition at all —
+  // the section inside it and the theorem embedded in that section are what cite it.
+  // A reader asking where the definition is used still wants to be told the chapter.
+  const second = b.all.find((row) => row.fqn === 'books.konyv.chapters.masodik')
+  assert.equal(second.count, 2)
   assert.deepEqual(
-    { ...byFqn.get('books.konyv.chapters.fejezet') },
-    {
-      kind: 'chapter',
-      fqn: 'books.konyv.chapters.fejezet',
-      title: 'Fejezet',
-      href: '/hu/konyvek/konyv/fejezetek/fejezet',
-      count: 2,
-    },
-  )
-  assert.deepEqual(
-    { ...byFqn.get('books.konyv.chapters.fejezet.sections.szakasz') },
-    {
-      kind: 'section',
-      fqn: 'books.konyv.chapters.fejezet.sections.szakasz',
-      title: 'Szakasz',
-      href: `/hu/konyvek/konyv/fejezetek/fejezet#${sectionAnchorId({ slug: 'szakasz', locale: 'hu' })}`,
-      count: 1,
-    },
-  )
-  assert.deepEqual(
-    { ...byFqn.get('theorems.tetel-egy') },
-    {
-      kind: 'theorem',
-      fqn: 'theorems.tetel-egy',
-      title: 'Első tétel',
-      href: '/hu/tudasbazis/tetelek/tetel-egy',
-      count: 1,
-    },
+    second.children.map((c) => c.fqn),
+    ['books.konyv.chapters.masodik.sections.masodik-szakasz'],
   )
 })
 
@@ -302,16 +345,17 @@ test('an entity with no incoming reference has no entry at all', () => {
 test('a source whose page this build does not generate is dropped', async () => {
   const g = await deployedGraph(backlinkFixture())
   const b = g.backlinks.get('definitions.def-egy')
-  // Both sources inside the unpublished chapter go: the theorem's own page is not
-  // generated at all, and the section's anchor lives in a chapter body that a
-  // deployed build replaces with a stub.
+  // Both sources inside the unpublished chapter go, and the chapter they were
+  // grouped under goes with them: the theorem's own page is not generated at all,
+  // and the section's anchor lives in a chapter body that a deployed build replaces
+  // with a stub.
   assert.deepEqual(rowsOf(b.all), [
-    ['chapter', 'books.konyv.chapters.fejezet', 2],
-    ['theorem', 'theorems.tetel-egy', 1],
-    ['section', 'books.konyv.chapters.fejezet.sections.szakasz', 1],
+    ['chapter', 'books.konyv.chapters.fejezet', 4, 0],
+    ['section', 'books.konyv.chapters.fejezet.sections.szakasz', 2, 1],
+    ['theorem', 'theorems.tetel-egy', 1, 2],
   ])
   assert.deepEqual(rowsOf(b.byTarget.get('definitions.def-egy')), [
-    ['chapter', 'books.konyv.chapters.fejezet', 2],
+    ['chapter', 'books.konyv.chapters.fejezet', 2, 0],
   ])
 })
 

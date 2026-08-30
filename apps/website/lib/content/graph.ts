@@ -1421,8 +1421,8 @@ function buildGlossary(graph: ContentGraph): GlossaryEntry[] {
   )
 }
 
-/** A backlink row before its count is known - the source's identity and label. */
-type BacklinkRow = Omit<KbBacklinkSource, 'count'>
+/** A backlink row before its place in the tree is known - identity and label. */
+type BacklinkRow = Omit<KbBacklinkSource, 'count' | 'children'>
 
 /**
  * Does this build render the chapter's body, or only a stub in its place?
@@ -1437,6 +1437,34 @@ type BacklinkRow = Omit<KbBacklinkSource, 'count'>
  */
 function chapterBodyIsRendered(chapter: ChapterNode): boolean {
   return isDeployedEnv ? chapter.published : true
+}
+
+/**
+ * The row a chapter gets, whether or not the chapter's own narrative cites anything.
+ *
+ * Split out of `backlinkRowFor` because grouping needs it for a chapter that is
+ * purely a container: a chapter earns a node in the tree as soon as one of its
+ * sections or one of the entities embedded in it cites the target.
+ */
+function chapterBacklinkRow(chapter: ChapterNode): BacklinkRow | null {
+  if (!chapterBodyIsRendered(chapter)) return null
+  return {
+    kind: 'chapter',
+    fqn: keyForChapter(chapter),
+    title: chapter.title,
+    href: chapterUrlOf(chapter),
+  }
+}
+
+/** The same for a section, and for the same reason. */
+function sectionBacklinkRow(section: SectionNode, chapter: ChapterNode): BacklinkRow | null {
+  if (!chapterBodyIsRendered(chapter)) return null
+  return {
+    kind: 'section',
+    fqn: keyForSection(section),
+    title: section.title,
+    href: `${chapterUrlOf(chapter)}#${sectionAnchorId(section)}`,
+  }
 }
 
 /**
@@ -1458,21 +1486,9 @@ function chapterBodyIsRendered(chapter: ChapterNode): boolean {
 function backlinkRowFor(graph: ContentGraph, owner: RefOwner): BacklinkRow | null {
   switch (owner.kind) {
     case 'chapter':
-      if (!chapterBodyIsRendered(owner.node)) return null
-      return {
-        kind: 'chapter',
-        fqn: keyForChapter(owner.node),
-        title: owner.node.title,
-        href: chapterUrlOf(owner.node),
-      }
+      return chapterBacklinkRow(owner.node)
     case 'section':
-      if (!chapterBodyIsRendered(owner.parent)) return null
-      return {
-        kind: 'section',
-        fqn: keyForSection(owner.node),
-        title: owner.node.title,
-        href: `${chapterUrlOf(owner.parent)}#${sectionAnchorId(owner.node)}`,
-      }
+      return sectionBacklinkRow(owner.node, owner.parent)
     case 'definition':
     case 'theorem':
     case 'proof':
@@ -1489,6 +1505,100 @@ function backlinkRowFor(graph: ContentGraph, owner: RefOwner): BacklinkRow | nul
 }
 
 /**
+ * Where a backlink row sits in the book: the chapters and sections above it.
+ *
+ * A chapter is at the top and answers with nothing above it; a section answers with
+ * its chapter; an embedded entity answers with the chapter and the section it is
+ * embedded in, which `graph.embedding` already recorded. Every one of the 537
+ * entities is embedded in a section today, so the tree is three levels deep in
+ * practice - but a chapter prologue/epilogue embed has no section (see
+ * `EmbeddingContext`), and such an entity is simply a child of its chapter.
+ *
+ * A null anywhere in the chain leaves the row at the top level rather than dropping
+ * it. It cannot happen on a row that got this far - `chapterBodyIsRendered` and
+ * `kbPageExists` ask the same question of the same chapter - but a row lost to a
+ * grouping step would be a reference the panel silently stopped reporting, and
+ * un-nested is the harmless way to be wrong.
+ */
+function backlinkAncestors(
+  graph: ContentGraph,
+  row: BacklinkRow,
+  chapterOfSection: Map<string, ChapterNode>,
+): BacklinkRow[] {
+  if (row.kind === 'chapter') return []
+  if (row.kind === 'section') {
+    const chapter = chapterOfSection.get(row.fqn)
+    const chapterRow = chapter && chapterBacklinkRow(chapter)
+    return chapterRow ? [chapterRow] : []
+  }
+  const embedding = graph.embedding.get(row.fqn)
+  if (!embedding) return []
+  const chapterRow = chapterBacklinkRow(embedding.chapter)
+  if (!chapterRow) return []
+  if (!embedding.section) return [chapterRow]
+  const sectionRow = sectionBacklinkRow(embedding.section, embedding.chapter)
+  return sectionRow ? [chapterRow, sectionRow] : [chapterRow]
+}
+
+/** A node of the tree under construction: the row, what it cites itself, and its children. */
+interface BacklinkBranch {
+  row: BacklinkRow
+  own: number
+  children: Map<string, BacklinkBranch>
+}
+
+/**
+ * One flat list of counted sources, grouped into the tree the panel renders.
+ *
+ * Each source is filed under its ancestors (`backlinkAncestors`), which creates the
+ * containers it needs on the way; then every node's count is its own references plus
+ * everything filed beneath it, bubbled up from the leaves. So a section speaks for
+ * the entities embedded in it as well as for its own narrative, and a chapter speaks
+ * for all of its sections.
+ *
+ * A container that cites nothing itself is a node with `own` 0 and a count that is
+ * entirely its children's. That is not a rounding error in the display - it is the
+ * answer: the reader asking where an entity is used wants to be told which chapter,
+ * whether or not the chapter's own prose joins in.
+ */
+function groupBacklinks(
+  graph: ContentGraph,
+  rows: Iterable<{ row: BacklinkRow; count: number }>,
+  chapterOfSection: Map<string, ChapterNode>,
+): KbBacklinkSource[] {
+  const roots = new Map<string, BacklinkBranch>()
+
+  const descend = (into: Map<string, BacklinkBranch>, row: BacklinkRow) => {
+    let branch = into.get(row.fqn)
+    if (!branch) into.set(row.fqn, (branch = { row, own: 0, children: new Map() }))
+    return branch
+  }
+
+  for (const { row, count } of rows) {
+    let level = roots
+    for (const ancestor of backlinkAncestors(graph, row, chapterOfSection)) {
+      level = descend(level, ancestor).children
+    }
+    descend(level, row).own += count
+  }
+
+  // The site's one Hungarian collation (compareHu), so two lists of the same titles
+  // cannot disagree about their order. Applied at every level, on the ACCUMULATED
+  // count - the number the row shows is the number it is sorted by.
+  const order = (a: KbBacklinkSource, b: KbBacklinkSource) =>
+    b.count - a.count || compareHu(a.title, b.title)
+
+  const finish = (level: Map<string, BacklinkBranch>): KbBacklinkSource[] =>
+    Array.from(level.values(), (branch) => {
+      const children = finish(branch.children)
+      const count = children.reduce((total, child) => total + child.count, branch.own)
+      return { ...branch.row, count, children }
+    }).sort(order)
+
+  return finish(roots)
+}
+
+/**
  * Incoming references, keyed by the entity that OWNS the target.
  *
  * A reference aimed at a claim or a term is a reference to the entity holding it:
@@ -1502,14 +1612,17 @@ function backlinkRowFor(graph: ContentGraph, owner: RefOwner): BacklinkRow | nul
  * would bury every other source and one row without a count would throw away how
  * heavily that section leans on the entity.
  *
- * Ordering is by count descending, ties broken by title.
+ * Those rows are then GROUPED by where in the book they are - chapter, section,
+ * embedded entity - and their counts accumulated bottom-up (`groupBacklinks`), so
+ * the panel can answer "which chapter?" before "which paragraph of it?". Ordering
+ * is by count descending, ties broken by title, at every level of the tree.
  */
 function buildBacklinkIndex(graph: ContentGraph): Map<string, KbBacklinks> {
   // owning entity -> target -> source -> row+count. The unfiltered `all` list
   // accumulates under ALL_TARGETS, which cannot collide with a real target: every
   // fully qualified name is a series of `container.name` pairs, so it has a dot.
   const ALL_TARGETS = '*'
-  const counted = new Map<string, Map<string, Map<string, KbBacklinkSource>>>()
+  const counted = new Map<string, Map<string, Map<string, { row: BacklinkRow; count: number }>>>()
 
   const bump = (entityFqn: string, targetFqn: string, row: BacklinkRow) => {
     let byTarget = counted.get(entityFqn)
@@ -1518,7 +1631,7 @@ function buildBacklinkIndex(graph: ContentGraph): Map<string, KbBacklinks> {
     if (!bySource) byTarget.set(targetFqn, (bySource = new Map()))
     const existing = bySource.get(row.fqn)
     if (existing) existing.count += 1
-    else bySource.set(row.fqn, { ...row, count: 1 })
+    else bySource.set(row.fqn, { row, count: 1 })
   }
 
   for (const owner of refOwners(graph)) {
@@ -1544,19 +1657,22 @@ function buildBacklinkIndex(graph: ContentGraph): Map<string, KbBacklinks> {
     }
   }
 
-  // The site's one Hungarian collation (compareHu), so two lists of the same titles
-  // cannot disagree about their order.
-  const order = (a: KbBacklinkSource, b: KbBacklinkSource) =>
-    b.count - a.count || compareHu(a.title, b.title)
+  // A section's fqn names its chapter, but parsing one back out of a string is the
+  // kind of thing `lib/content/fqn.ts` exists to stop; the graph knows the answer,
+  // so it is asked once here rather than per row.
+  const chapterOfSection = new Map<string, ChapterNode>()
+  for (const chapter of graph.chapters.values()) {
+    for (const section of chapter.sections) chapterOfSection.set(keyForSection(section), chapter)
+  }
 
   const index = new Map<string, KbBacklinks>()
   for (const [entityFqn, byTargetCounts] of counted) {
     let all: KbBacklinkSource[] = []
     const byTarget = new Map<string, KbBacklinkSource[]>()
     for (const [targetFqn, bySource] of byTargetCounts) {
-      const rows = Array.from(bySource.values()).sort(order)
-      if (targetFqn === ALL_TARGETS) all = rows
-      else byTarget.set(targetFqn, rows)
+      const tree = groupBacklinks(graph, bySource.values(), chapterOfSection)
+      if (targetFqn === ALL_TARGETS) all = tree
+      else byTarget.set(targetFqn, tree)
     }
     index.set(entityFqn, { all, byTarget })
   }

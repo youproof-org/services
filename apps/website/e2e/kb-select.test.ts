@@ -67,23 +67,25 @@ const PROOF =
 /**
  * The candidates level 2 is checked on, and the row counts their panels must show.
  *
- * Every number here is `graph.backlinks.get('definitions.gyuru-test')` read off the
- * built graph: `all.length` is 222 and `byTarget.get(fqn).length` is the rest. They
- * are the assertion, not a sample of it — "the filtered list is the unfiltered one
- * narrowed" is only worth checking against the exact figure the index holds.
+ * Every number here is `graph.backlinks.get('definitions.gyuru-test')` rendered off
+ * the built graph, counted as ROWS: the lists are grouped chapter → section →
+ * embedded entity, so each one carries the containers its sources sit in as well as
+ * the sources. They are the assertion, not a sample of it — "the filtered list is the
+ * unfiltered one narrowed" is only worth checking against the exact figure the index
+ * holds.
  *
  * `SELECTED_TERM` is the busiest term on the busiest entity, so a filter that did
- * nothing would show 222 rows instead of 150 and a filter that matched nothing
+ * nothing would show 236 rows instead of 154 and a filter that matched nothing
  * would show 0. `BELOW_FOLD_TERM` is the last term in the body, 1911px down a
  * 2884px page: it is off-screen when the page opens and in the half the panel is
  * about to cover when it is pressed, which is the case §6.4's scroll exists for.
  */
 const SELECTED_TERM = 'fogalmak.gyuru'
-const SELECTED_TERM_ROWS = 150
+const SELECTED_TERM_ROWS = 154
 const BELOW_FOLD_TERM = 'fogalmak.nullgyuru'
 const SELECTED_CLAIM = 'allitasok.szorzas-disztributiv'
-const SELECTED_CLAIM_ROWS = 16
-const UNFILTERED_ROWS = 222
+const SELECTED_CLAIM_ROWS = 33
+const UNFILTERED_ROWS = 236
 
 const MENU = 'Menü'
 const BACK = 'Vissza'
@@ -780,13 +782,20 @@ test.describe('Fogalmak — level 2', () => {
     expect(SELECTED_TERM_ROWS).toBeLessThan(UNFILTERED_ROWS)
 
     // Same rows as the unfiltered list, so the two are one list rather than two: the
-    // ordering is by count descending and the row is still the whole link.
-    const counts = await panelRows(page, 'term', SELECTED_TERM).evaluateAll((links) =>
-      links.map((link) =>
-        Number(link.querySelector('[data-backlink-count]')!.getAttribute('data-backlink-count')),
-      ),
+    // ordering is by count descending WITHIN a level — the list is a tree, and the
+    // narrowed one is grouped exactly as the unfiltered one is — and the row is still
+    // the whole link.
+    const rendered = await panelRows(page, 'term', SELECTED_TERM).evaluateAll((links) =>
+      links.map((link) => ({
+        depth: Number(link.getAttribute('data-backlink-depth')),
+        count: Number(link.querySelector('[data-backlink-count]')!.getAttribute('data-backlink-count')),
+      })),
     )
-    expect([...counts].sort((a, b) => b - a)).toEqual(counts)
+    for (const [i, row] of rendered.entries()) {
+      const previous = rendered[i - 1]
+      if (previous?.depth === row.depth) expect(previous.count).toBeGreaterThanOrEqual(row.count)
+    }
+    expect(rendered.filter((row) => row.depth === 0).length).toBeGreaterThan(0)
   })
 
   test('the selection lands comfortably in the free upper half, panel over the rest', async ({

@@ -51,14 +51,14 @@ import { expect, test, type BrowserContext, type Page } from '@playwright/test'
  * 12 reference panels, with one link down to its proof. Every count below is read off
  * the built HTML.
  *
- * The busier pages the other suites use — `gyuru-test` with its 222 inbound rows — are
+ * The busier pages the other suites use — `gyuru-test` with its 236 inbound rows — are
  * definitions with nothing above or below them (48 of the 84 are), so the ownership
  * half of the gate cannot be asked there.
  */
 const ENTITY = '/hu/tudasbazis/tetelek/maradekosztalygyuruk'
 const ENTITY_TITLE = 'Maradékosztálygyűrűk'
 const SECTION_COUNT = 23
-const INCOMING_ROWS = 13
+const INCOMING_ROWS = 16
 const TERM_PANELS = 4
 const CLAIM_PANELS = 5
 const REFERENCE_PANELS = 12

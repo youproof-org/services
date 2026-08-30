@@ -600,6 +600,16 @@ above the reveal for the duration of a mode — and, being then above the dim as
 is given the dim's own wash and made click-through, so it looks and behaves exactly as
 it did underneath it.
 
+**Two revealed claims are two candidates, and have to look like it.** *Corrected by
+an owner ruling after the run.* Consecutive claims sit flush — as a numbered list they
+need no gap — so lighting them put two white grounds edge to edge and four revealed
+claims came out as one white slab with four numbers in it, which is not a page asking
+the reader to pick one of four. A claim that follows a claim is therefore given a
+0.75rem gap for as long as the mode is up, against 0.25rem of ground on each side, so
+a strip of the dim shows between one card and the next. Only claims: a term's ground
+is 0.15em and neither two terms in a sentence nor two on consecutive lines come close
+enough to merge.
+
 Selecting an outgoing reference in the body (§7.1) is the same mechanism entered
 from a different direction: no mode to pick first, so it goes straight to a
 single revealed element with the panel open.
@@ -811,10 +821,31 @@ appears **once**, with a count of 5 — not five rows. Grouping without a count 
 throw away how heavily a source leans on this entity; five rows would bury the other
 sources.
 
-**Rows are ordered by that count, highest first** — provisionally. It is the only
-ordering available without inventing a relevance notion, and the heaviest user of a
-node is a reasonable guess at the most useful one. Revisit once the page exists and
-it is clear whether it reads well.
+**The rows are a tree: chapter → section → embedded entity.** *Added by an owner
+ruling after the run.* A source is a place in the book, and places nest — an entity is
+embedded in a section, a section belongs to a chapter — so a flat list ordered by
+count scattered one chapter's sections and the entities inside them across two hundred
+rows, and the reader had to reassemble the book from it. The rows are therefore
+indented by containment. A container earns a row **even when its own narrative cites
+nothing**: the chapter is part of the answer whether or not its prose joins in.
+
+Three levels exactly, and that is a fact about the content rather than a cap: all 537
+entities are embedded in a section, none directly in a chapter. A chapter
+prologue/epilogue embed would be a child of its chapter, and proofs and remarks sit at
+the entity level beside the theorem they belong to, because they are their own embed
+blocks.
+
+**A count is accumulated from the bottom up.** A section's count is its own
+references plus every embedded entity's; a chapter's is its own plus all its
+sections'. So on `gyuru-test`'s list the fourteen chapter rows account for all 548
+references between them, and pressing a row promises exactly the marks it will get
+(see *Going to a source* below) — a count that spoke only for the container's own
+narrative would promise fewer.
+
+**Rows are ordered by that count, highest first, within each level** — provisionally.
+It is the only ordering available without inventing a relevance notion, and the
+heaviest user of a node is a reasonable guess at the most useful one. Revisit once the
+page exists and it is clear whether it reads well.
 
 **Each row also names what kind of thing the source is**, in words — definíció,
 tétel, bizonyítás, megjegyzés, fejezet, szakasz. *Added by an owner ruling during
@@ -831,10 +862,11 @@ inbound references, `gyuru-test`, is cited by **222 distinct sources** (**548**
 references — the 549 this subsection carried until phase 14 was one too many, see
 [§9.1 note 2](#91-notes-from-deriving-10--measured-not-assumed)), while the median
 entity has **2** — **1** counting only the sources whose rows the panel actually
-renders, which is what §9.1 note 1 measures. The design has to hold both without
-branching — hence the panel's
-internal scroll (§6.4). Sizing the layout for the median case and letting the 222-row
-case degrade is the failure mode to avoid.
+renders, which is what §9.1 note 1 measures. Grouping makes those 222 sources **236
+rows** — 14 chapters, 60 sections, 162 entities — because of the containers that cite
+nothing themselves. The design has to hold both ends without branching — hence the
+panel's internal scroll (§6.4). Sizing the layout for the median case and letting the
+236-row case degrade is the failure mode to avoid.
 
 The filtered variants use the same list, narrowed:
 
@@ -856,7 +888,8 @@ three should look like one list rather than three designs. They are literally th
 component — `BacklinkList`, called with a different array.
 
 *Row layout will be fine-tuned during implementation.* What is settled: grouped by
-source, one row per source, a count per row, a kind per row, and book sections and
+source, one row per source, nested by where in the book that source is, a count per
+row accumulated over everything nested under it, a kind per row, and book sections and
 chapters included alongside entities.
 
 #### Going to a source
@@ -865,26 +898,35 @@ A row is a link. Following it takes the reader to the source — and **on arriva
 reference in that source that points back here is marked**, with the same shrinking
 rectangle used for an ordinary anchor arrival (§6.2).
 
-The worked case: the reader has selected a term on a theorem page, and the panel says
-a particular section references it five times. Following that row opens the chapter
-page, and all of that section's references to the term are marked.
+**What gets marked is everything inside what was pressed.** *Corrected by an owner
+ruling after the run.* The first build attributed a reference to whichever owner wrote
+it and marked only those, so a section row lit the section's own nine and left the
+thirteen written by the theorem and proof embedded in it dark. But the row's count is
+accumulated over exactly those too, so the row promised more than the page delivered.
+The marks are now the whole subtree the row names — which is also what makes a chapter
+row, whose page has no fragment at all, mark its whole chapter.
 
-> **The worked case marks nine elements where the row reports five. That is not a
+The worked case: the reader has selected a term on a theorem page, and the panel says
+a particular section references it thirteen times. Following that row opens the chapter
+page, and all 22 renderings of those references are marked — the section's own and the
+embedded theorem's, proof's and remark's alike.
+
+> **The worked case marks 22 elements where the row reports 13. That is not a
 > defect** — recorded here so the next reader does not treat it as one. A row's count
-> is over reference *entries* (the section's `refs` map), while a mark is a *rendered*
-> link, and that section writes its five entries **3, 3, 1, 1 and 1** times: 9 marks.
-> Both numbers are right about different things. `e2e/kb-highlight.test.ts` asserts
-> nine, from the five the row counted, and says so in its own header comment.
+> is over reference *entries*, while a mark is a *rendered* link, and the section alone
+> writes its five entries **3, 3, 1, 1 and 1** times. Both numbers are right about
+> different things. `e2e/kb-highlight.test.ts` asserts both, and says so in its own
+> header comment.
 
 **The page scrolls to the first of those references**, not to the section heading.
 The section anchor was only ever a proxy for "the references are somewhere in there";
-on a long section it would leave the reader at the top with all five marks animating
+on a long section it would leave the reader at the top with the marks animating
 off-screen, so the effect would fire and they would see nothing.
 
 *Why mark them at all:* a reader who arrives from this panel is not asking "what is
 this section about?" They already know the answer to that — they came here for the
-five specific places this section leans on the thing they were reading. Dropping them
-at the section start and leaving them to find those places is the panel answering a
+specific places this section leans on the thing they were reading. Dropping them at
+the section start and leaving them to find those places is the panel answering a
 question and then withholding the answer.
 
 This is the counterpart of §7.1. Outgoing: see what a reference points at, without
@@ -2494,6 +2536,9 @@ this section grows with them.
 | 7 | The parent link's hairline sits below it, closing it off from the label rather than from the breadcrumb | §6.1 | `e2e/kb-sweep.test.ts` — the rule read off the list's own box, with the link still above the heading |
 | 8 | The child links read exactly as the parent link does; the parent half is the reference | §6.1 | the two lists share every rule but placement in `ownership-links.module.scss`, so there is nothing left to diverge |
 | 9 | The icon is a complete circle laid on the caption bar, with a shadow of its own, and every bar is the same width | §6.2 | `e2e/kb-chrome.test.ts` — the circle still measures the 44px touch target, hairline included |
+| 10 | The incoming-references list is grouped chapter → section → embedded entity, counts accumulated bottom-up | §7.2 | `test/kb-graph.test.mjs` — the tree and the accumulation as invariants over a fixture that exercises every branch; `e2e/kb-backlinks.test.ts` — 236 rows over three levels, ordered within each, and the 14 chapter rows summing to all 548 references |
+| 11 | Pressing a row marks every reference inside it, entities embedded in it included, so the marks match the accumulated count | §7.2 | `e2e/kb-highlight.test.ts` — 22 marks on the worked case against 22 in-section references derived independently from the DOM, and 108 on the page that are not marked |
+| 12 | Two revealed claims are separated, rather than merging into one white slab | §6.3 | `e2e/kb-select.test.ts` still passes unchanged — the hit test and the census are about what is lifted, and the gap changes neither |
 
 Four notes on the shape of these fixes, because each cost more than it looks:
 

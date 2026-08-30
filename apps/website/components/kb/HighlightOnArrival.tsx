@@ -20,10 +20,11 @@ import { PANEL_ID } from './Panel'
  * A row says "this section references this 5 times". §7.2's objection to dropping the
  * reader at the section heading is that the panel would then have answered a question
  * and withheld the answer — they already know what the section is about; they came for
- * those five places. So on arrival every reference in the page pointing back at what
- * they came from is marked with phase 18's gesture, and the page is scrolled to the
- * first of them rather than to the source's own anchor: on a long section the marks
- * would otherwise animate off-screen and the effect would fire invisibly (D5).
+ * those five places. So on arrival every reference INSIDE what they pressed — the
+ * whole section, entities embedded in it included, which is what its count is over —
+ * is marked with phase 18's gesture, and the page is scrolled to the first of them
+ * rather than to the source's own anchor: on a long section the marks would otherwise
+ * animate off-screen and the effect would fire invisibly (D5).
  *
  * ## The three parts of D7, and where each of them is
  *
@@ -78,8 +79,9 @@ import { PANEL_ID } from './Panel'
  *
  * The document when there is no fragment, when the fragment names nothing on this
  * page, or when what it names is not a reference owner at all — a term's anchor, or
- * the newsletter form's section. That keeps one invariant for the filter below: the
- * scope is either a `data-ref-owner` element or the page.
+ * the newsletter form's section. A term's anchor is a span of a few words, and
+ * scoping the search to it would find one reference or none; requiring
+ * `data-ref-owner` keeps the scope a place in the book, which is what a row names.
  */
 function sourceScope(): Element | Document {
   // Decoded for `ArrivalMarker`'s reason: a copied or pasted URL commonly percent-
@@ -90,33 +92,31 @@ function sourceScope(): Element | Document {
 }
 
 /**
- * Every reference the SOURCE makes at `fqn`, as rendered on this page.
+ * Every reference to `fqn` inside the place the row named, as rendered on this page.
  *
- * Three filters, and the middle one is the substance of it.
+ * Two filters, and the first one is the substance of it.
  *
  * **The scope**, above: a section row's marks are inside that section. Without it,
  * following a row about one section of `alice-bob-es-a-kinaiak` would mark all 108 of
  * that chapter's references to the term and scroll the reader to the first of them,
  * which is in a different section from the one they pressed.
  *
- * **The owner boundary.** A reference belongs to whatever wrote it, and the same
- * boundaries the graph counts by (`refOwners` in `lib/content/graph.ts`) are in the
- * markup as `data-ref-owner`: a chapter's sections (`components/content/SectionView.tsx`)
- * and every embedded entity (`components/content/EmbeddedEntity.tsx`). A match belongs
- * to the source only if the nearest boundary above it IS the scope — so the references
- * an embedded theorem makes are not attributed to the section it sits in, and a
- * chapter row does not claim its sections' references. Both of those have rows of
- * their own in the same list, leading to their own pages; marking them here would be
- * this page answering a question the reader did not press.
+ * **The whole of the scope, though — not only what the scope wrote itself.** A row's
+ * count is accumulated over everything nested inside it (`KbBacklinkSource.count`): a
+ * section speaks for the entities embedded in it, a chapter for all of its sections.
+ * The marks have to be the same set the count is over, or the row promises five
+ * references and the page lights nine, or twenty-two. So there is deliberately no
+ * owner-boundary test here — `data-ref-owner` decides which row a reference is
+ * COUNTED under (`refOwners` in `lib/content/graph.ts`), and those inner owners have
+ * rows of their own further down the same tree, indented under this one. Pressing the
+ * outer row is the reader asking for all of it.
  *
  * Measured on §7.2's worked case — section `a-kinai-maradektetel` of
- * `alice-bob-es-a-kinaiak`, whose row reports 5 references to
+ * `alice-bob-es-a-kinaiak`, whose row reports references to
  * `theorems.egesz-szamok-maradekosztalyai.terms.residue-class-modulo-m`: 108 matches
- * on the page, 22 inside that section, **9 the section itself made**. Nine rather than
- * five because a row's count is over reference ENTRIES while a mark is a rendered
- * link: the section has five entries aiming at that term and writes them 3, 3, 1, 1
- * and 1 times in its narrative. All five are marked; the nine marks are their
- * renderings.
+ * on the page and 22 inside that section, which is what this marks. Nine of the
+ * twenty-two are the section's own narrative and the other thirteen were written by
+ * an embedded theorem and its proof, whose rows sit under the section's in the panel.
  *
  * **Not the panel.** §2.1 puts every panel's content in the served HTML, so an entity
  * page carries a second, hidden copy of any reference inside a claim or a term panel
@@ -129,11 +129,7 @@ function findMarks(fqn: string): ArrivalMark[] {
   // "the first of them" below mean the first one the reader would meet.
   const matches = [...scope.querySelectorAll<HTMLElement>(highlightSelector(fqn))]
   return matches
-    .filter((element) => {
-      if (element.closest(`#${PANEL_ID}`)) return false
-      const owner = element.closest('[data-ref-owner]')
-      return owner === (scope instanceof Element ? scope : null)
-    })
+    .filter((element) => !element.closest(`#${PANEL_ID}`))
     .map((element) => ({ element, name: fqn }))
 }
 

@@ -68,7 +68,7 @@ import { expect, test, type BrowserContext, type Page } from '@playwright/test'
 const THEOREM = '/hu/tudasbazis/tetelek/egesz-szamok-maradekosztalyai'
 const TERM_ANCHOR = 'fogalmak.modulo-m-maradekosztaly'
 const TERM_FQN = 'theorems.egesz-szamok-maradekosztalyai.terms.residue-class-modulo-m'
-const ROW_COUNT = 5
+const ROW_COUNT = 13
 const CHAPTER = '/hu/konyvek/alice-es-bob/fejezetek/alice-bob-es-a-kinaiak'
 const SECTION = 'szakaszok.a-kinai-maradektetel'
 const ROW_HREF = `${CHAPTER}#${SECTION}`
@@ -76,19 +76,23 @@ const ROW_HREF = `${CHAPTER}#${SECTION}`
 /**
  * What the arrival must mark, and the two numbers that make that a real claim.
  *
- * `MARKS` is what the section itself wrote: 9 rendered references, from the 5
- * reference entries the row counted — the section uses those five slugs 3, 3, 1, 1 and
- * 1 times in its narrative (`Object.entries(section.references)` filtered by target,
- * against the `[slug]` uses in its body). A row's count is over ENTRIES; a mark is a
- * rendered link, and the two are different quantities on this content.
+ * `MARKS` is every rendered reference to the term inside that section — the section's
+ * own narrative and the entities embedded in it alike, because the row's count is
+ * accumulated over exactly that (`KbBacklinkSource.count`) and the marks have to be
+ * the set the count is over. Nine of the twenty-two are the section's own; the other
+ * thirteen were written by an embedded theorem, its proof and a remark, which have
+ * rows of their own indented under the section's in the same list.
  *
- * `IN_SECTION` is every reference to the term inside that section, embedded entities
- * included, and `ON_PAGE` is every one in the chapter. Both are what the marks must
- * NOT be: the 13 extra inside the section were written by an embedded theorem and its
- * proof, which have rows of their own in the same list, and the 86 beyond it belong to
- * other sections.
+ * `ROW_COUNT` is 13 against 22 marks because a row's count is over reference ENTRIES
+ * while a mark is a rendered link: the section alone uses its five slugs 3, 3, 1, 1
+ * and 1 times in its narrative. The two are different quantities on this content, and
+ * that is why both are here.
+ *
+ * `ON_PAGE` is every reference to the term in the whole chapter, and it is what the
+ * marks must NOT be: the 86 beyond this section belong to other sections, which have
+ * rows of their own.
  */
-const MARKS = 9
+const MARKS = 22
 const IN_SECTION = 22
 const ON_PAGE = 108
 
@@ -171,8 +175,8 @@ async function installRecorder(context: BrowserContext) {
 
     new MutationObserver((records) => {
       // Every marker in the batch, once each: the component writes five style
-      // properties per box per frame, and with nine boxes up they arrive as
-      // forty-five records of one frame.
+      // properties per box per frame, so a frame with N boxes up arrives as 5N
+      // records.
       const done = new Set<Element>()
       for (const record of records) {
         const element = record.target
@@ -259,22 +263,22 @@ async function selectTerm(page: Page) {
 
 /**
  * What the marks should have framed, measured on the arrived-at page: every
- * reference the SECTION itself made at the term.
+ * reference to the term anywhere inside the SECTION, embedded entities included.
  *
  * Re-derived here from plain DOM queries rather than taken from the component, so
  * this is a second opinion about the same set and not the implementation agreeing
- * with itself.
+ * with itself. The panel copy is excluded and nothing else is: §2.1 serves every
+ * panel's content inline, and a mark there would frame something behind a closed
+ * sheet.
  */
-function ownReferences(page: Page) {
+function sectionReferences(page: Page) {
   return page.evaluate(
     ([fqn, section]) => {
       const selector = `[data-target-fqn="${fqn}"], [data-target-fqn^="${fqn}."]`
       const scope = document.getElementById(section)!
       const all = [...document.querySelectorAll<HTMLElement>(selector)]
       const inSection = all.filter((element) => scope.contains(element))
-      const own = inSection.filter(
-        (element) => element.closest('[data-ref-owner]') === scope && !element.closest('#kb-panel'),
-      )
+      const toMark = inSection.filter((element) => !element.closest('#kb-panel'))
       const headerBottom = Math.max(
         0,
         Math.round(document.querySelector('header')!.getBoundingClientRect().bottom),
@@ -286,7 +290,7 @@ function ownReferences(page: Page) {
         // reaches the reader and the page has moved on by the time this is read. A
         // marker's frame carries the `scrollY` it was written at, so the two are
         // comparable in this space and in no other.
-        own: own.map((element) => {
+        toMark: toMark.map((element) => {
           const box = element.getBoundingClientRect()
           return {
             top: box.top + window.scrollY,
@@ -343,7 +347,7 @@ async function scrollPastEveryMark(page: Page) {
 }
 
 test.describe('the worked case (§7.2)', () => {
-  test('a section row reporting five references lands on all of them, marked', async ({
+  test('a section row lands on every reference inside that section, marked', async ({
     context,
     page,
   }) => {
@@ -373,25 +377,26 @@ test.describe('the worked case (§7.2)', () => {
     const marks = await completedMarks(page, MARKS)
     expect(marks.map((mark) => mark.name)).toEqual(Array(MARKS).fill(TERM_FQN))
 
-    // The discriminating numbers: 108 references to this term are on the page and 22
-    // are inside this section, and neither is what was marked.
-    const references = await ownReferences(page)
+    // The discriminating numbers: 22 references to this term are inside this section
+    // and 108 are on the page. The first is what was marked; the second is not.
+    const references = await sectionReferences(page)
     expect(references.onPage).toBe(ON_PAGE)
     expect(references.inSection).toBe(IN_SECTION)
-    expect(references.own).toHaveLength(MARKS)
+    expect(references.toMark).toHaveLength(MARKS)
 
     // Each mark framed a different one of them, tightly (§6.2's OUTSET_TIGHT) — read
     // off the marker's last frame at full opacity, which is the frame the fade starts
     // from, and matched against the elements' own boxes.
     //
-    // In document coordinates: the boxes were written at nine different scroll
-    // positions and are measured at a tenth, so `frame.top + frame.scrollY` is the only
-    // form in which the two are the same quantity.
+    // In document coordinates: the boxes were written at as many different scroll
+    // positions as there are marks and are measured at one more, so
+    // `frame.top + frame.scrollY` is the only form in which the two are the same
+    // quantity.
     const settled = marks.map((mark) => {
       const held = mark.frames.filter((entry) => entry.opacity === 1)
       return held[held.length - 1]
     })
-    const unmatched = [...references.own]
+    const unmatched = [...references.toMark]
     for (const frame of settled) {
       const top = frame.top + frame.scrollY
       const index = unmatched.findIndex(
@@ -427,8 +432,11 @@ test.describe('the worked case (§7.2)', () => {
       ([fqn, section]) => {
         const selector = `[data-target-fqn="${fqn}"], [data-target-fqn^="${fqn}."]`
         const scope = document.getElementById(section)!
-        const first = [...document.querySelectorAll<HTMLElement>(selector)].find(
-          (element) => element.closest('[data-ref-owner]') === scope,
+        // The first the reader would meet inside the section, embedded entities
+        // included — the same set `findMarks` marks, so "the first of the marks" here
+        // means what the component means by it.
+        const first = [...scope.querySelectorAll<HTMLElement>(selector)].find(
+          (element) => !element.closest('#kb-panel'),
         )!
         return {
           first: first.getBoundingClientRect().top,
@@ -610,7 +618,7 @@ test.describe('a mark plays when the reader can see it, not before', () => {
    * reader reaches them.
    *
    * Every number here is derived on the page rather than written down, because how
-   * many of the nine fit on one screen is a fact about a chapter's typography at one
+   * many of the marks fit on one screen is a fact about a chapter's typography at one
    * viewport size and would be a hostage to either changing. What is asserted is the
    * relation: played == visible, waiting == the rest, and waiting > 0 — the last of
    * which is what makes this section discriminating at all.
@@ -626,9 +634,9 @@ test.describe('a mark plays when the reader can see it, not before', () => {
     // stops growing rather than to a number: it is the marks that fit on the screen
     // the page came to rest on.
     await expect.poll(async () => (await recorded(page)).length).toBeGreaterThan(0)
-    const references = await ownReferences(page)
-    const visible = references.own.filter((reference) => reference.visible).length
-    expect(references.own).toHaveLength(MARKS)
+    const references = await sectionReferences(page)
+    const visible = references.toMark.filter((reference) => reference.visible).length
+    expect(references.toMark).toHaveLength(MARKS)
     // The premise: the section is longer than a screen, so some of what was marked is
     // below the fold. Without this the rest of the test would be vacuous.
     expect(visible).toBeGreaterThan(0)
@@ -646,7 +654,7 @@ test.describe('a mark plays when the reader can see it, not before', () => {
 
     // The ones that played, played together and played in full: every first frame
     // within a frame or two of every other, which is what "the marks on this screen are
-    // one gesture" means now that the arrival no longer starts all nine.
+    // one gesture" means now that the arrival no longer starts all of them.
     const startedAt = played.map((mark) => mark.frames[0].at)
     expect(Math.max(...startedAt) - Math.min(...startedAt)).toBeLessThan(50)
     for (const mark of played) {
@@ -675,7 +683,7 @@ test.describe('a mark plays when the reader can see it, not before', () => {
     }
   })
 
-  test('every one of the nine closes, holds and fades the same way', async ({
+  test('every one of the marks closes, holds and fades the same way', async ({
     context,
     page,
   }) => {
@@ -711,7 +719,7 @@ test.describe('a mark plays when the reader can see it, not before', () => {
     }
   })
 
-  test('under prefers-reduced-motion there is no shrink and there are still nine marks', async ({
+  test('under prefers-reduced-motion there is no shrink and the marks are all still there', async ({
     context,
     page,
   }) => {
@@ -729,11 +737,11 @@ test.describe('a mark plays when the reader can see it, not before', () => {
     // the point of both rules at once.
     await scrollPastEveryMark(page)
     const marks = await completedMarks(page, MARKS)
-    // Still nine marks: §6.4 removes the movement, not the marker.
+    // Still every mark: §6.4 removes the movement, not the marker.
     expect(marks.map((mark) => mark.name)).toEqual(Array(MARKS).fill(TERM_FQN))
 
-    const references = await ownReferences(page)
-    expect(references.own).toHaveLength(MARKS)
+    const references = await sectionReferences(page)
+    expect(references.toMark).toHaveLength(MARKS)
 
     // And no shrink: every box is at its final size on its very first frame. The
     // discriminating trace against the animated case above, which starts 44px wider.
@@ -769,7 +777,9 @@ test.describe('coming back from a source', () => {
     await page.locator(`.page-root [id="${TERM_ANCHOR}"]`).click()
     await expect(page.locator(PANEL)).toBeVisible()
 
-    await page.locator(ROW).nth(2).click()
+    // The worked case's section row, by what it says rather than by position: the
+    // list is a tree, so the third row is whatever happens to be nested where.
+    await page.locator(ROW).filter({ has: page.locator(`[data-backlink-count="${ROW_COUNT}"]`) }).click()
     await expect(page).toHaveURL(new RegExp(SECTION))
     await expect.poll(async () => (await recorded(page)).length).toBeGreaterThan(1)
 

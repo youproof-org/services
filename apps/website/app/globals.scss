@@ -284,7 +284,32 @@ body[data-kb-select='terms'] .page-root .term {
 
 body[data-kb-select='claims'] .page-root .claim-block_claim {
   border-radius: 0.35rem;
-  box-shadow: 0 0 0 0.35rem $white;
+  box-shadow: 0 0 0 0.25rem $white;
+}
+
+/* Two claims in a row are two candidates, and the reveal has to say so.
+
+   Consecutive claims sit flush — `blocks/claim-block.module.scss` gives them no
+   vertical margin, because as a numbered list they need none — so two white grounds
+   0.25rem deep meet with nothing between them and four lit claims come out as one
+   white slab with four numbers in it. Whatever the reader is being asked to pick,
+   it does not look like four separate things.
+
+   A gap is the only thing that fixes it: the grounds cannot be pulled in far enough
+   to part without uncovering the text they are lit against, so the boxes themselves
+   have to move. 0.75rem against 2 × 0.25rem of ground leaves 0.25rem of the dim
+   showing between one card and the next.
+
+   Scoped to a claim that FOLLOWS a claim, so this reflows only where there is
+   something to separate: a lone claim, which is the common case, does not move at
+   all when the mode opens. Level 2 keeps the mode's attribute on <body> (see
+   `selectionMode` in lib/kb/chrome-state.ts), so nothing moves again between
+   picking a mode and picking a claim — which is what the panel's scroll depends on.
+
+   Only claims. Terms are inline, a term's ground is 0.15em, and neither two terms
+   in one sentence nor two on consecutive lines come close enough to merge. */
+body[data-kb-select='claims'] .page-root .claim-block_claim + .claim-block_claim {
+  margin-top: 0.75rem;
 }
 
 /* ---------------------------------------------------------------------------

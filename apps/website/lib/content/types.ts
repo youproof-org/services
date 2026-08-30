@@ -463,6 +463,13 @@ export interface GlossaryEntry {
  * entity types, or a chapter or a section of the book, because the narrative cites
  * entities too and a reader asking "where is this used?" wants the chapter as much
  * as the theorem. A source appears ONCE with a count, not once per reference.
+ *
+ * **A source is also a place, and places nest.** An entity is embedded in a section
+ * and a section belongs to a chapter, so the sources of one entity form a tree —
+ * chapter, then its sections, then the entities embedded in them — and that is the
+ * shape this type carries. A container earns a node even when it cites nothing
+ * itself: the chapter a citing section sits in is part of the answer to "where is
+ * this used?" whether or not the chapter's own narrative joins in.
  */
 export interface KbBacklinkSource {
   kind: 'chapter' | 'section' | 'definition' | 'theorem' | 'proof' | 'remark'
@@ -471,8 +478,19 @@ export interface KbBacklinkSource {
   title: string
   /** The source's page, plus a fragment when the source is a section. */
   href: string
-  /** How many references this source aims at the target this row sits under. */
+  /**
+   * References aimed at this row's target from this source AND from everything
+   * nested under it — the accumulated count, bubbled up from the leaves.
+   *
+   * So a section's count covers the entities embedded in it as well as its own
+   * narrative, and a chapter's covers all of its sections. That is what the row
+   * leads to: following it marks every reference inside that place
+   * (`components/kb/HighlightOnArrival.tsx`), and a count that only spoke for the
+   * container's own narrative would promise fewer marks than the reader gets.
+   */
   count: number
+  /** The sources nested inside this one, ordered like their parent's level. */
+  children: KbBacklinkSource[]
 }
 
 /**
@@ -487,7 +505,9 @@ export interface KbBacklinkSource {
  * aimed inside it — so selecting a claim or a term narrows the list by a lookup
  * rather than by filtering `all` at render time.
  *
- * Both lists are ordered by `count` descending, ties broken by title.
+ * Both are trees of chapters, sections and embedded entities (see
+ * `KbBacklinkSource`), and every level of both is ordered by `count` descending,
+ * ties broken by title.
  */
 export interface KbBacklinks {
   all: KbBacklinkSource[]

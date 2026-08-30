@@ -30,9 +30,14 @@ import styles from './backlinks-panel.module.scss'
  *
  * **One row per source, with a count.** A section citing this entity five times is
  * one row saying five: five rows would bury every other source, and one row without
- * a count would throw away how heavily that section leans on this entity. Ordering
- * is by count descending, ties broken by title (`buildBacklinkIndex`) — provisional
- * per §7.2, and the only ordering available without inventing a relevance notion.
+ * a count would throw away how heavily that section leans on this entity.
+ *
+ * **And the rows are a tree, not a list.** A source is a place in the book, and
+ * places nest: a chapter, its sections, the entities embedded in them. So the rows
+ * are grouped and indented that way, and each one's count is accumulated from
+ * everything under it — a section speaks for the entities embedded in it as well as
+ * for its own narrative. `buildBacklinkIndex` does the grouping; this renders it.
+ * Ordering is by count descending, ties broken by title, at every level.
  *
  * **The empty state is an answer, not a failure.** The menu item is on every entity
  * page (§6.5), and 168 of the 389 pages a deployed build ships have nothing citing
@@ -90,7 +95,10 @@ const KIND_LABELS: Record<KbBacklinkSource['kind'], LabelKey> = {
 
 interface BacklinkListProps {
   locale: string
-  /** Already ordered by `buildBacklinkIndex`: count descending, ties by title. */
+  /**
+   * The top level of the tree, already ordered by `buildBacklinkIndex`: count
+   * descending, ties by title, at this level and every one below it.
+   */
   sources: readonly KbBacklinkSource[]
   /**
    * What these sources cite — the fully qualified name this list is a list OF, which
@@ -124,8 +132,29 @@ export function BacklinkList({ locale, sources, target }: BacklinkListProps) {
     return <p className={styles.empty}>{getLocaleLabel(locale, 'kbPanelIncomingEmpty')}</p>
   }
 
+  return <BacklinkLevel locale={locale} sources={sources} target={target} depth={0} />
+}
+
+/**
+ * One level of the tree and, under each of its rows, the level below it.
+ *
+ * Nested `<ul>`s rather than one flat list with an indent class, because that IS the
+ * structure: a crawler reading the served HTML (§2.1) gets the containment for free,
+ * and the indent becomes one rule about nesting instead of a depth the server has to
+ * count and the stylesheet has to enumerate.
+ *
+ * `depth` is carried only as far as the markup: it is written on the row so a
+ * checker reading the built HTML can tell a chapter's row from a section's without
+ * walking the DOM up, which is what `e2e/kb-backlinks.test.ts` does with it.
+ */
+function BacklinkLevel({
+  locale,
+  sources,
+  target,
+  depth,
+}: BacklinkListProps & { depth: number }) {
   return (
-    <ul className={styles.sources}>
+    <ul className={depth === 0 ? styles.sources : styles.nested}>
       {sources.map((source) => (
         <li key={source.fqn} className={styles.source}>
           {/*
@@ -138,12 +167,17 @@ export function BacklinkList({ locale, sources, target }: BacklinkListProps) {
             href={source.href}
             className={styles.link}
             data-backlink-source={source.kind}
+            data-backlink-depth={depth}
             /*
               What the source's page should mark once this row has been followed
               (§7.2, D7). Inert markup: the href stays clean, and the parameter that
               carries this is appended by the client at click time, so a crawler never
               sees the variant and a copied link never contains it —
               `components/kb/HighlightOnArrival.tsx` is both halves of that.
+
+              A container row hands forward the same target as its children, and the
+              page it leads to marks every reference inside it — which is exactly the
+              count this row shows.
             */
             data-highlight-fqn={target}
           >
@@ -174,6 +208,14 @@ export function BacklinkList({ locale, sources, target }: BacklinkListProps) {
               </span>
             </span>
           </Link>
+          {source.children.length > 0 && (
+            <BacklinkLevel
+              locale={locale}
+              sources={source.children}
+              target={target}
+              depth={depth + 1}
+            />
+          )}
         </li>
       ))}
     </ul>

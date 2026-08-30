@@ -4,7 +4,7 @@ import { expect, test, type Page } from '@playwright/test'
  * Bejövő hivatkozások: the panel's hardest content (sub-plan §7.2).
  *
  * What needs a browser here is the two ends of the range. The list is one design
- * for two rows and for two hundred and twenty-two, and whether that actually holds
+ * for five rows and for two hundred and thirty-six, and whether that actually holds
  * is a question about a live layout: does the long list scroll inside the panel
  * rather than moving the page, does its last row come to rest clear of the Vissza
  * pill that sits over the sheet, and does the header stay put while it does. The
@@ -18,14 +18,22 @@ import { expect, test, type Page } from '@playwright/test'
  * (see package.json). A deployed build drops the sources whose own page it does not
  * generate, which takes `gyuru-test` from 222 sources to 207 (§9.1 notes 2–3).
  *
+ * A row is not the same thing as a source any more. The list is grouped chapter →
+ * section → embedded entity, and a container that cites nothing itself still earns a
+ * row, so `gyuru-test`'s 222 sources are 236 rows: 14 chapters, 60 sections and 162
+ * entities.
+ *
  * Conventions from `kb-panel.test.ts`: settle the consent decision first, scope the
  * chrome's buttons to the stack, and match accessible names exactly — the site
  * header's hamburger is also called "Menü".
  */
 
-/** The entity with the most inbound references in the content: 222 sources, 548 references. */
+/**
+ * The entity with the most inbound references in the content: 222 sources in 236
+ * rows, 548 references.
+ */
 const BUSIEST = '/hu/tudasbazis/definiciok/gyuru-test'
-/** Two sources, one reference each — the short end of the same list. */
+/** Two sources, one reference each, in five rows — the short end of the same list. */
 const TWO_ROWS = '/hu/tudasbazis/definiciok/csoporthomomorfizmus'
 /** Nothing cites it, which is 244 of the 537 pages this build generates (§9.1 note 1). */
 const NOTHING_CITES_IT = '/hu/tudasbazis/definiciok/csoporthomomorfizmus-magja-es-kepe'
@@ -48,6 +56,8 @@ const PANEL_HEADER = '#kb-panel .panel_header'
  * counted; everything here is about the unfiltered case.
  */
 const ROW = '#kb-panel [data-kb-panel-kind="incoming"] .backlinks-panel_link'
+/** Only the chapters: the top level of the tree, whatever is nested under them. */
+const TOP_ROW = `${ROW}[data-backlink-depth="0"]`
 const EMPTY = '#kb-panel [data-kb-panel-kind="incoming"] .backlinks-panel_empty'
 /** The kind label under a row's title — every row has one, whatever kind it is. */
 const KIND = `${ROW} .backlinks-panel_kind`
@@ -85,7 +95,7 @@ async function openBacklinks(page: Page, url: string) {
 }
 
 test.describe('the Bejövő hivatkozások panel', () => {
-  test('is one row per source, count first, with chapters and sections among the entities', async ({
+  test('is one row per source, grouped chapter → section → embedded entity', async ({
     page,
   }) => {
     await openBacklinks(page, BUSIEST)
@@ -95,18 +105,59 @@ test.describe('the Bejövő hivatkozások panel', () => {
     ).toBeVisible()
 
     const rows = page.locator(ROW)
-    await expect(rows).toHaveCount(222)
+    await expect(rows).toHaveCount(236)
 
-    // Ordered by count descending (§7.2). Read off the rendered rows rather than
-    // asserted one by one: the point is the ordering, not 222 individual numbers.
-    const counts = await rows.evaluateAll((links) =>
-      links.map((link) => Number(link.querySelector('[data-backlink-count]')!.getAttribute('data-backlink-count'))),
+    // Three levels and no more, and each one is the kind of place it should be: a
+    // chapter at the top, its sections under it, the entities embedded in them under
+    // those. Every one of the 537 entities is embedded in a section, which is why no
+    // entity comes out at depth 1.
+    const byDepth = await rows.evaluateAll((links) => {
+      const seen: Record<string, Set<string>> = {}
+      for (const link of links) {
+        const depth = link.getAttribute('data-backlink-depth')!
+        ;(seen[depth] ??= new Set()).add(link.getAttribute('data-backlink-source')!)
+      }
+      return Object.fromEntries(Object.entries(seen).map(([depth, kinds]) => [depth, [...kinds].sort()]))
+    })
+    expect(byDepth).toEqual({
+      '0': ['chapter'],
+      '1': ['section'],
+      '2': ['definition', 'proof', 'remark', 'theorem'],
+    })
+
+    // Ordered by count descending WITHIN a level (§7.2) — the tree is not one ordered
+    // list, and a check that read the counts straight down the rendered rows would be
+    // asserting the wrong thing. Read off the rendered rows rather than asserted one
+    // by one: the point is the ordering, not 236 individual numbers.
+    const rendered = await rows.evaluateAll((links) =>
+      links.map((link) => ({
+        depth: Number(link.getAttribute('data-backlink-depth')),
+        count: Number(link.querySelector('[data-backlink-count]')!.getAttribute('data-backlink-count')),
+      })),
     )
-    expect(counts[0]).toBe(15)
-    expect(counts.at(-1)).toBe(1)
-    expect([...counts].sort((a, b) => b - a)).toEqual(counts)
-    // …and the counts are per source, not per row: 222 sources, 548 references.
-    expect(counts.reduce((total, count) => total + count, 0)).toBe(548)
+    for (const [i, row] of rendered.entries()) {
+      const previous = rendered[i - 1]
+      if (previous?.depth === row.depth) {
+        expect(previous.count, `row ${i} is out of order within its level`).toBeGreaterThanOrEqual(row.count)
+      }
+    }
+
+    // The accumulation, as the one sum that can check it: every reference is counted
+    // exactly once at the top level, because every source is inside some chapter.
+    // 222 sources, 548 references, 14 chapters holding all of them.
+    const top = rendered.filter((row) => row.depth === 0)
+    expect(top).toHaveLength(14)
+    expect(top.reduce((total, row) => total + row.count, 0)).toBe(548)
+    expect(top[0].count).toBe(135)
+
+    // …and no row promises less than what is nested under it. Walked as a stack,
+    // because "nested under" is depth in the rendered order.
+    const ancestors: number[] = []
+    for (const row of rendered) {
+      ancestors.length = row.depth
+      for (const above of ancestors) expect(above).toBeGreaterThanOrEqual(row.count)
+      ancestors.push(row.count)
+    }
 
     // A source is an entity, a section OR a chapter, all in one list (§7.2).
     const kinds = await rows.evaluateAll((links) =>
@@ -114,28 +165,27 @@ test.describe('the Bejövő hivatkozások panel', () => {
     )
     expect(kinds).toEqual(['chapter', 'definition', 'proof', 'remark', 'section', 'theorem'])
 
-    // The heaviest source is a section, and its row is a link to the section's
-    // anchor on its chapter page — the count is inside the link, so the whole row
-    // is the target.
+    // The heaviest place is a chapter, and its row is a link to the chapter page —
+    // the count is inside the link, so the whole row is the target.
     const first = rows.first()
     await expect(first).toHaveAttribute(
       'href',
-      '/hu/konyvek/alice-es-bob/fejezetek/alice-es-bob-az-absztrakcio-utjan#szakaszok.gyuruk-alapveto-tulajdonsagai',
+      '/hu/konyvek/alice-es-bob/fejezetek/alice-es-bob-alaptetele',
     )
-    await expect(first).toContainText('Gyűrűk alapvető tulajdonságai')
-    await expect(first).toContainText('15 hivatkozás')
+    await expect(first).toContainText('Alice és Bob alaptétele')
+    await expect(first).toContainText('135 hivatkozás')
   })
 
   test('every row says in words what kind of thing its source is', async ({ page }) => {
     await openBacklinks(page, BUSIEST)
 
-    // One label per row rather than one per list: 222 rows, 222 labels.
-    await expect(page.locator(ROW)).toHaveCount(222)
-    await expect(page.locator(KIND)).toHaveCount(222)
+    // One label per row rather than one per list: 236 rows, 236 labels.
+    await expect(page.locator(ROW)).toHaveCount(236)
+    await expect(page.locator(KIND)).toHaveCount(236)
 
     // …and each row's label is its OWN kind. Grouped rather than compared row by
     // row: a label that disagreed with its row's `data-backlink-source` would put a
-    // second word in that kind's set and fail here, so this is 222 assertions in the
+    // second word in that kind's set and fail here, so this is 236 assertions in the
     // shape of one.
     const pairs = await page.locator(ROW).evaluateAll((links) =>
       links.map((link) => [
@@ -163,9 +213,10 @@ test.describe('the Bejövő hivatkozások panel', () => {
 
     // The reason the label exists. Eight of `gyuru-test`'s 222 sources share a title
     // with another source of a different kind; "Oszthatóság" is one of them — the
-    // section of the book that cites this definition 14 times, and the definition of
-    // the same name that cites it twice. Without the label the two rows are the same
-    // title over two different counts, and nothing says which is which.
+    // section of the book, whose 34 include the 14 its own narrative writes, and the
+    // definition of the same name, which cites it twice. Without the label the two
+    // rows are the same title over two different counts, and nothing says which is
+    // which.
     const pair = page
       .locator(ROW)
       .filter({ has: page.getByText('Oszthatóság', { exact: true }) })
@@ -181,14 +232,14 @@ test.describe('the Bejövő hivatkozások panel', () => {
     expect(both).toEqual([
       {
         kind: 'szakasz',
-        count: '14',
+        count: '34',
         href: '/hu/konyvek/alice-es-bob/fejezetek/alice-es-bob-alaptetele#szakaszok.oszthatosag',
       },
       { kind: 'definíció', count: '2', href: '/hu/tudasbazis/definiciok/oszthatosag' },
     ])
   })
 
-  test('the 222 rows scroll inside the panel, under a header that stays put', async ({ page }) => {
+  test('the 236 rows scroll inside the panel, under a header that stays put', async ({ page }) => {
     await openBacklinks(page, BUSIEST)
 
     const body = page.locator(PANEL_BODY)
@@ -226,13 +277,21 @@ test.describe('the Bejövő hivatkozások panel', () => {
     expect(lastRow.y + lastRow.height).toBeLessThanOrEqual(pill.y)
   })
 
-  test('two sources are the same list, just shorter', async ({ page }) => {
+  test('two sources are the same list, just shorter — and still in their places', async ({
+    page,
+  }) => {
     await openBacklinks(page, TWO_ROWS)
 
+    // Two sources, but five rows: a proof and a section, each shown inside the
+    // section and the chapter it belongs to. Grouping is not a treatment reserved for
+    // the long case — there is one design (§6.4).
     const rows = page.locator(ROW)
-    await expect(rows).toHaveCount(2)
-    // No separate design for the short case (§6.4): the same row, the same count.
+    await expect(rows).toHaveCount(5)
+    await expect(page.locator(TOP_ROW)).toHaveCount(2)
+    // No separate design for the short case: the same row, the same count, and a
+    // container that carries the one reference under it.
     await expect(rows.first()).toContainText('1 hivatkozás')
+    await expect(rows.first()).toContainText('fejezet')
     await expect(page.locator(EMPTY)).toHaveCount(0)
   })
 
@@ -263,7 +322,7 @@ test.describe('the Bejövő hivatkozások panel', () => {
     await page.locator(ROW).first().click()
 
     await expect(page).toHaveURL(
-      /\/hu\/konyvek\/alice-es-bob\/fejezetek\/alice-es-bob-az-absztrakcio-utjan#szakaszok\.gyuruk-alapveto-tulajdonsagai$/,
+      /\/hu\/konyvek\/alice-es-bob\/fejezetek\/alice-es-bob-alaptetele$/,
     )
     expect(errors, 'navigating away from an open panel threw').toEqual([])
   })
@@ -272,7 +331,7 @@ test.describe('the Bejövő hivatkozások panel', () => {
 test.describe('the backlink list without JavaScript', () => {
   test.use({ javaScriptEnabled: false })
 
-  test('all 222 rows are served in the HTML, inside the page and shown inline', async ({
+  test('all 236 rows are served in the HTML, inside the page and shown inline', async ({
     page,
   }) => {
     await page.goto(BUSIEST)
@@ -281,26 +340,32 @@ test.describe('the backlink list without JavaScript', () => {
     // inbound edges of the graph are the reason the panel is server-rendered at all.
     await expect(page.locator(`main ${PANEL}`)).toHaveCount(1)
     // And on screen, not behind a sheet that cannot open: §2.1 asks the page to
-    // degrade to a long page with everything visible, and 222 rows is the long case
+    // degrade to a long page with everything visible, and 236 rows is the long case
     // (`noJsCss` in components/kb/Panel.tsx, census in `e2e/kb-sweep.test.ts`).
     await expect(page.locator(PANEL)).toBeVisible()
 
     const rows = page.locator(ROW)
-    await expect(rows).toHaveCount(222)
+    await expect(rows).toHaveCount(236)
     await expect(rows.first()).toBeVisible()
     await expect(rows.last()).toBeVisible()
     await expect(rows.first()).toHaveAttribute(
       'href',
-      '/hu/konyvek/alice-es-bob/fejezetek/alice-es-bob-az-absztrakcio-utjan#szakaszok.gyuruk-alapveto-tulajdonsagai',
+      '/hu/konyvek/alice-es-bob/fejezetek/alice-es-bob-alaptetele',
     )
     await expect(rows.last()).toHaveAttribute(
       'href',
-      '/hu/tudasbazis/tetelek/vegesen-generalt-idealok-maximumfeltetele',
+      '/hu/tudasbazis/tetelek/miller-rabin-szorzat/bizonyitasok/miller-rabin-szorzat-bizonyitas',
     )
+    // The grouping is served too, not something the client builds: the nesting is
+    // `<ul>`s inside `<li>`s, which is the containment a crawler reads (§2.1).
+    await expect(page.locator(TOP_ROW)).toHaveCount(14)
+    await expect(
+      page.locator('#kb-panel [data-kb-panel-kind="incoming"] .backlinks-panel_nested'),
+    ).toHaveCount(57)
     // The kind label is part of that served answer, not something the client adds:
-    // the heaviest source is a section and says so.
-    await expect(page.locator(KIND)).toHaveCount(222)
-    await expect(rows.first()).toContainText('szakasz')
+    // the heaviest place is a chapter and says so.
+    await expect(page.locator(KIND)).toHaveCount(236)
+    await expect(rows.first()).toContainText('fejezet')
   })
 
   test('an entity nothing cites is served the empty state, not an empty list', async ({ page }) => {

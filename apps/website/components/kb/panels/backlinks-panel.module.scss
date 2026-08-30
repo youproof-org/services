@@ -15,10 +15,25 @@
   list-style: none;
 }
 
+// A chapter's sections, and the entities embedded in a section: the list is a tree
+// (§7.2), and the indent is what says so. One rule rather than a class per depth,
+// because the markup nests — `BacklinkLevel` renders a `<ul>` inside the `<li>` it
+// belongs to, so this compounds by itself.
+//
+// The indent moves the whole row, count column included, so the numbers step right
+// as the tree goes down and a glance at that edge reads as the shape of the answer.
+.nested {
+  margin: 0;
+  padding-left: 1.5rem;
+  list-style: none;
+}
+
 .source {
   // A hairline between rows rather than around them: 222 boxes would read as 222
   // objects, while 222 lines read as one list. The last one is dropped so the list
-  // does not end on a rule that separates it from nothing.
+  // does not end on a rule that separates it from nothing — and because a row's
+  // nested list is INSIDE its `<li>`, that same rule puts the line after a whole
+  // group rather than between a container and its own children.
   border-bottom: 1px solid $gray-200;
 
   &:last-child {
