@@ -60,6 +60,9 @@
         "claim": "allitasok",
         "part": "reszek",
         "section": "szakaszok"
+      },
+      "sitemapGroups": {
+        "page": "oldalak"
       }
     }
   }

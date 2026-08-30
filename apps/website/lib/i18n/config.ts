@@ -115,6 +115,11 @@ export interface LocaleConfig {
   defaultDescription: string      // meta-description fallback for this locale
   labels: Record<LabelKey, string>
   containers: Record<ContainerKey, string>
+  // Child-sitemap file names for the URL groups that have no container of their
+  // own. Read only by scripts/split-sitemap.mjs, which names every other group's
+  // file after its `containers` segment; `page` covers the home page, the
+  // knowledge-base root and the standalone pages, none of which carry a segment.
+  sitemapGroups: Record<string, string>
 }
 
 const DATA = localesData as {
