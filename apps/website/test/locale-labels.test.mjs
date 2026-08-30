@@ -28,18 +28,13 @@ test('a backlink row counts the references one source aims at the entity', () =>
   assert.equal(formatLocaleLabel('hu', 'kbPanelIncomingCount', { count: 5 }), '5 hivatkozás')
 })
 
-test('names every kind a backlink source can be, in the project\'s own words', () => {
-  // A row says what kind of thing its source is, because two sources of different
-  // kinds can carry one title (57 such pairs in the local export) and the title alone
-  // then does not tell the reader which row goes where. The four entity words are
-  // `ENTITY_LABEL_HU`'s (lib/content/display-template.ts); the two container words
-  // are the singular of the `chapter`/`section` segments in locales.json.
-  assert.equal(getLocaleLabel('hu', 'kbBacklinkKindDefinition'), 'definíció')
-  assert.equal(getLocaleLabel('hu', 'kbBacklinkKindTheorem'), 'tétel')
+test('names what hangs off a definition or a theorem, in the project\'s own words', () => {
+  // The second line of a backlink row for a proof or a remark: its first line names
+  // the definition or theorem the page belongs to, and these are what say which of
+  // that node's children the row leads to. The words are `ENTITY_LABEL_HU`'s
+  // (lib/content/display-template.ts), lowercase like it.
   assert.equal(getLocaleLabel('hu', 'kbBacklinkKindProof'), 'bizonyítás')
   assert.equal(getLocaleLabel('hu', 'kbBacklinkKindRemark'), 'megjegyzés')
-  assert.equal(getLocaleLabel('hu', 'kbBacklinkKindChapter'), 'fejezet')
-  assert.equal(getLocaleLabel('hu', 'kbBacklinkKindSection'), 'szakasz')
 })
 
 test('numbers a sibling in the ownership chain the way a label reads', () => {

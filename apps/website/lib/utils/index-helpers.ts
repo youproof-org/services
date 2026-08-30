@@ -1,4 +1,4 @@
-import type { ContentGraph, ChapterNode, BookNode, ContentBlock, EmbedBlock, FigureBlock } from '../content/types'
+import type { ContentGraph, ChapterNode, SectionNode, BookNode, ContentBlock, EmbedBlock, FigureBlock } from '../content/types'
 import { toRoman } from './roman'
 
 // ---------------------------------------------------------------------------
@@ -35,6 +35,25 @@ export function getChapterIndex(chapter: ChapterNode): number {
     }
   }
   return 0
+}
+
+// ---------------------------------------------------------------------------
+// The two container numbers, as the narrative and every reference to them write
+// them: "16." for a chapter, "16.1." for its first section. One place, because a
+// chapter page's heading, a reference label (`buildContext` in
+// lib/content/display-template.ts) and a backlink row (`buildBacklinkIndex` in
+// lib/content/graph.ts) must not be able to disagree about which section is 16.1.
+// A section's number is its position among its chapter's sections; nothing counts
+// sections a second time.
+// ---------------------------------------------------------------------------
+
+export function getChapterIndexLabel(chapter: ChapterNode): string {
+  return `${getChapterIndex(chapter)}.`
+}
+
+export function getSectionIndexLabel(section: SectionNode): string {
+  const chapter = section.chapter
+  return `${getChapterIndex(chapter)}.${chapter.sections.indexOf(section) + 1}.`
 }
 
 // ---------------------------------------------------------------------------

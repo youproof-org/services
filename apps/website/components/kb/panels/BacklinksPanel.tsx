@@ -3,7 +3,6 @@ import InlineText from '@/components/content/InlineText'
 import { getContentGraph } from '@/lib/content'
 import { keyForKbNode } from '@/lib/content/keys'
 import { formatLocaleLabel, getLocaleLabel } from '@/lib/i18n/config'
-import type { LabelKey } from '@/lib/i18n/config'
 import type { KbBacklinkSource, KbNode } from '@/lib/content/types'
 import styles from './backlinks-panel.module.scss'
 
@@ -21,16 +20,22 @@ import styles from './backlinks-panel.module.scss'
  * **A source is not only another entity.** Chapters and sections of the book cite
  * entities too and share the list with them, because a reader asking "where is this
  * used?" wants the chapter as much as the theorem. What kind of thing a source is is
- * therefore part of the answer, and is written on the row in words: 57 times across
- * the local export's backlink lists, two rows of one list share a title and are
- * different kinds, and without the label those two rows are identical except for
- * where they lead. Eight of them are in `gyuru-test`'s list — "Oszthatóság" among
- * them, a section citing it 14 times and a definition of that name citing it twice.
- * `data-backlink-source` carries the same kind for markup that needs to target it.
+ * therefore part of the answer, and the row's first line is where it is said: the
+ * number tells a chapter's "16." from a section's "16.1.", and an entity carries its
+ * type word inside its label ("16.1. Definíció: Oszthatóság"). No row needs the kind
+ * as a word of its own — measured over the local export's backlink lists, no two rows
+ * of one list share their lines, where 10 groups of rows shared a title and a kind
+ * when the kind was a line. "Oszthatóság" is the case that used to need it: in
+ * `gyuru-test`'s list the section citing it 34 times now reads "16.1. Oszthatóság"
+ * against the definition's "16.1. Definíció: Oszthatóság".
+ * `data-backlink-source` carries the kind for markup that needs to target it.
  *
  * **One row per source, with a count.** A section citing this entity five times is
  * one row saying five: five rows would bury every other source, and one row without
- * a count would throw away how heavily that section leans on this entity.
+ * a count would throw away how heavily that section leans on this entity. The count
+ * is the row's last line, under the name of the place it counts, in the smaller
+ * secondary size: the reader picks a row by reading where it leads and takes the
+ * number as a qualifier of it (§7.2).
  *
  * **And the rows are a tree, not a list.** A source is a place in the book, and
  * places nest: a chapter, its sections, the entities embedded in them. So the rows
@@ -71,26 +76,6 @@ export default function BacklinksPanel({ node }: BacklinksPanelProps) {
   // records an entity once a source survives the page-existence filter.
   const sources = graph.backlinks.get(entityFqn)?.all ?? []
   return <BacklinkList locale={node.locale} sources={sources} target={entityFqn} />
-}
-
-/**
- * What each kind of source is called, one label per member of
- * `KbBacklinkSource['kind']`.
- *
- * A `Record` over the union rather than a lookup with a fallback, so a seventh kind
- * of source is a compile error here instead of a row whose label is silently blank.
- * The words are the project's own: the four entity types read as
- * `ENTITY_LABEL_HU` (lib/content/display-template.ts) writes them, which is also
- * what `kbNodeLabel` puts beside an entity in the narrative, and a chapter and a
- * section read as the singular of their localized container segments.
- */
-const KIND_LABELS: Record<KbBacklinkSource['kind'], LabelKey> = {
-  definition: 'kbBacklinkKindDefinition',
-  theorem: 'kbBacklinkKindTheorem',
-  proof: 'kbBacklinkKindProof',
-  remark: 'kbBacklinkKindRemark',
-  chapter: 'kbBacklinkKindChapter',
-  section: 'kbBacklinkKindSection',
 }
 
 interface BacklinkListProps {
@@ -158,8 +143,8 @@ function BacklinkLevel({
       {sources.map((source) => (
         <li key={source.fqn} className={styles.source}>
           {/*
-            The row IS the link (§7.2): the whole of it is the target, not just the
-            title, so the count is part of what the reader presses. An ordinary
+            The row IS the link (§7.2): the whole of it is the target, not just its
+            first line, so the count is part of what the reader presses. An ordinary
             link — panel content is what the reader is meant to be acting on, so it
             navigates (§6.4).
           */}
@@ -182,30 +167,31 @@ function BacklinkLevel({
             data-highlight-fqn={target}
           >
             {/*
-              The count leads the row, and the title with the kind beneath it
-              follows — the reader scans the numbers down one edge and reads a row
-              as "14 references, from the section Oszthatóság".
+              Three stacked lines: where the row leads, then — on a proof or a remark
+              — which thing hanging off that definition or theorem it is, then how
+              many references it accounts for. Both display strings are built at
+              graph-build time (`backlinkRowFor` in lib/content/graph.ts), because
+              §2.1 puts these rows in the served HTML and this component is handed an
+              array rather than the graph.
 
+              Through `InlineText` because both are content: a title can carry math
+              and the rest of the narrative's inline markup.
+            */}
+            <span className={styles.label}>
+              <InlineText text={source.label} />
+            </span>
+            {source.ownership && (
+              <span className={styles.ownership}>
+                <InlineText text={source.ownership} />
+              </span>
+            )}
+            {/*
               The count as a number as well as as a sentence: the wording is
               localized, so the digits are the only part of it a checker reading the
               built HTML can rely on.
             */}
             <span className={styles.count} data-backlink-count={source.count}>
               {formatLocaleLabel(locale, 'kbPanelIncomingCount', { count: source.count })}
-            </span>
-            <span className={styles.text}>
-              <span className={styles.title}>
-                <InlineText text={source.title} />
-              </span>
-              {/*
-                What kind of thing the source is, in words rather than only in
-                `data-backlink-source`: two sources of different kinds can carry the
-                same title, and then the title alone does not tell the reader which
-                row goes where.
-              */}
-              <span className={styles.kind}>
-                {getLocaleLabel(locale, KIND_LABELS[source.kind])}
-              </span>
             </span>
           </Link>
           {source.children.length > 0 && (

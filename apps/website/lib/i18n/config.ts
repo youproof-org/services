@@ -75,19 +75,18 @@ export type LabelKey =
   // to the reader's question rather than a failure, which is why it is a sentence
   // and not a dash.
   | 'kbPanelIncomingCount' | 'kbPanelIncomingEmpty'
-  // What kind of thing a backlink row's source is, one label per kind a source can
-  // be (`KbBacklinkSource['kind']`). Without them two sources sharing a title are
-  // two identical rows going to different places, which the content does produce —
-  // see the count and the example in `BacklinksPanel.tsx`. The four entity words
+  // The two things that hang off a definition or a theorem, as a backlink row names
+  // them on its second line: a row for a proof or a remark leads to a page whose
+  // first line is its theorem's, and this is what says which of the theorem's
+  // children it actually is (`kbChainBelowTop` in lib/content/graph.ts). A proof or
+  // remark carrying an authored `labels.canonical` reads as that instead. The words
   // are the ones the content model already uses for those types (`ENTITY_LABEL_HU`
-  // in lib/content/display-template.ts, which is what `kbNodeLabel` writes beside
-  // an entity in the narrative); the two container words are the singular of the
-  // localized `chapter`/`section` segments in locales.json. Lowercase, like
-  // `ENTITY_LABEL_HU`: a row's label sits under a title rather than starting a
-  // sentence.
-  | 'kbBacklinkKindDefinition' | 'kbBacklinkKindTheorem'
+  // in lib/content/display-template.ts, which is what `kbNodeLabel` writes beside an
+  // entity in the narrative), and lowercase like it: the line qualifies the name
+  // above it rather than starting a sentence. The other four kinds a source can be
+  // need no word — a chapter's "16." and a section's "16.1." tell those two apart,
+  // and a definition's and a theorem's own label carries its type word already.
   | 'kbBacklinkKindProof' | 'kbBacklinkKindRemark'
-  | 'kbBacklinkKindChapter' | 'kbBacklinkKindSection'
   // A selected term or claim, level 2 of a selection mode (§6.3, §7.2). A term
   // panel is headed by the term itself, which is content and needs no label, so
   // only the synonyms line does; a claim has no name of its own and is headed by

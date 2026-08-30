@@ -55,7 +55,8 @@ const STANDALONE_DIRS: Record<StandaloneKind, string> = {
 }
 import { buildContext, resolveTemplate, ENTITY_LABEL_HU } from './display-template'
 import { buildLocalizedUrl } from '@/lib/i18n/url'
-import { resolveContainerKey } from '@/lib/i18n/config'
+import { getLocaleLabel, resolveContainerKey } from '@/lib/i18n/config'
+import type { LabelKey } from '@/lib/i18n/config'
 import {
   urlForBook,
   urlForStandalone,
@@ -84,7 +85,12 @@ import {
   keyForSection,
 } from './keys'
 import { fqnJoin } from './fqn'
-import { getChapterIndex, walkFigureBlocks } from '@/lib/utils/index-helpers'
+import {
+  getChapterIndex,
+  getChapterIndexLabel,
+  getSectionIndexLabel,
+  walkFigureBlocks,
+} from '@/lib/utils/index-helpers'
 
 // ---------------------------------------------------------------------------
 // Key helpers
@@ -1421,7 +1427,7 @@ function buildGlossary(graph: ContentGraph): GlossaryEntry[] {
   )
 }
 
-/** A backlink row before its place in the tree is known - identity and label. */
+/** A backlink row before its place in the tree is known - identity and display lines. */
 type BacklinkRow = Omit<KbBacklinkSource, 'count' | 'children'>
 
 /**
@@ -1452,6 +1458,7 @@ function chapterBacklinkRow(chapter: ChapterNode): BacklinkRow | null {
     kind: 'chapter',
     fqn: keyForChapter(chapter),
     title: chapter.title,
+    label: `${getChapterIndexLabel(chapter)} ${chapter.title}`,
     href: chapterUrlOf(chapter),
   }
 }
@@ -1463,8 +1470,55 @@ function sectionBacklinkRow(section: SectionNode, chapter: ChapterNode): Backlin
     kind: 'section',
     fqn: keyForSection(section),
     title: section.title,
+    label: `${getSectionIndexLabel(section)} ${section.title}`,
     href: `${chapterUrlOf(chapter)}#${sectionAnchorId(section)}`,
   }
+}
+
+/**
+ * The definition or theorem an entity's page hangs off: itself, or the one at the top
+ * of its ownership chain.
+ *
+ * A proof answers with its theorem and a remark with its owner's answer, so a remark
+ * on a proof answers with the theorem two steps above it. That is what a backlink row
+ * puts on its first line: the reader recognizes a place in the book by the numbered
+ * definition or theorem it belongs to, and "Bizonyítás" on its own names 190 different
+ * pages. An owner-less remark - which the model permits and no content has - is the top
+ * of its own chain and answers with itself.
+ */
+function kbChainTop(node: KbNode): KbNode {
+  if (node.type === 'proof') return kbChainTop(node.proves)
+  if (node.type === 'remark' && node.attachedTo) return kbChainTop(node.attachedTo)
+  return node
+}
+
+/** What the ownership line calls one step of the chain, per type it can be. */
+const OWNED_TYPE_LABELS: Record<'proof' | 'remark', LabelKey> = {
+  proof: 'kbBacklinkKindProof',
+  remark: 'kbBacklinkKindRemark',
+}
+
+/**
+ * The chain BELOW the definition or theorem a row's first line names, or undefined
+ * when the row's source IS that definition or theorem.
+ *
+ * Read from the node upwards and written top-down, so a remark on a proof reads
+ * "bizonyítás → megjegyzés": the row's first line names the theorem, and this says
+ * which of the things hanging off it the row actually leads to. The type word is the
+ * node's own - authored `labels.canonical` if it has one, else the locale's word for
+ * the type - and an authored title follows it in parentheses. No proof or remark in
+ * the content has either today, so today every one of these lines is one or two bare
+ * words; both fields are in the model and authored ones must read as themselves rather
+ * than as "bizonyítás".
+ */
+function kbChainBelowTop(node: KbNode): string | undefined {
+  if (node.type !== 'proof' && node.type !== 'remark') return undefined
+  const above = node.type === 'proof' ? node.proves : node.attachedTo
+  if (!above) return undefined
+  const word = node.labels?.canonical ?? getLocaleLabel(node.locale, OWNED_TYPE_LABELS[node.type])
+  const segment = node.title ? `${word} (${node.title})` : word
+  const higher = kbChainBelowTop(above)
+  return higher ? `${higher} → ${segment}` : segment
 }
 
 /**
@@ -1482,6 +1536,11 @@ function sectionBacklinkRow(section: SectionNode, chapter: ChapterNode): Backlin
  * skipped: a source is a place in the book that leans on this entity. No
  * standalone content cites a knowledge-base node today, so nothing is lost by it -
  * revisit if any ever does.
+ *
+ * The row's display lines are built HERE rather than in the panel, because §2.1 wants
+ * these rows in the served HTML and the component that renders them is handed an
+ * array of rows, not the graph: the number of a section and the theorem above a
+ * proof are graph questions, and the three lists §7.2 asks for share one renderer.
  */
 function backlinkRowFor(graph: ContentGraph, owner: RefOwner): BacklinkRow | null {
   switch (owner.kind) {
@@ -1497,7 +1556,20 @@ function backlinkRowFor(graph: ContentGraph, owner: RefOwner): BacklinkRow | nul
       if (!kbPageExists(graph, node)) return null
       const href = urlForKbNode(node)
       if (!href) return null
-      return { kind: owner.kind, fqn: keyForKbNode(node), title: kbNodeTitle(graph, node), href }
+      const top = kbChainTop(node)
+      const topLabel = kbNodeLabel(graph, top)
+      const row: BacklinkRow = {
+        kind: owner.kind,
+        fqn: keyForKbNode(node),
+        title: kbNodeTitle(graph, node),
+        label: top.title ? `${topLabel}: ${top.title}` : topLabel,
+        href,
+      }
+      // Set only when there is one, so a row that is its own chain top has no such
+      // line rather than an empty one.
+      const ownership = kbChainBelowTop(node)
+      if (ownership) row.ownership = ownership
+      return row
     }
     default:
       return null

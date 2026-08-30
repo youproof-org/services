@@ -475,7 +475,35 @@ export interface KbBacklinkSource {
   kind: 'chapter' | 'section' | 'definition' | 'theorem' | 'proof' | 'remark'
   /** Fully qualified name of the source node — the row's identity. */
   fqn: string
+  /**
+   * The source's own title, unnumbered — not displayed, but what a level of the tree
+   * is ordered by once two rows carry the same count.
+   *
+   * The numbers on `label` cannot be that tie-breaker: "16.10." sorts before "16.9."
+   * in any collation, so a tie would come out in an order the reader reads as random.
+   */
   title: string
+  /**
+   * The row's first line: the numbered name of the place it leads to, as the book
+   * writes it — "16. Alice és Bob alaptétele" for a chapter, "16.1. Oszthatóság" for
+   * a section, "16.8. Tétel: Az asszociáltság tulajdonságai" for an entity.
+   *
+   * For a proof or a remark this names the definition or theorem at the top of its
+   * ownership chain rather than the node itself, because that is what the page it
+   * leads to is about; `ownership` is the rest of the chain. So the number format and
+   * the type word are what tell the six kinds apart, which is why no row carries the
+   * kind as a word of its own: measured over the local export's backlink lists, no
+   * two rows of one list share these two lines, where 10 groups of rows shared a
+   * title and a kind under the previous design.
+   */
+  label: string
+  /**
+   * The row's second line, on a proof or a remark only: the ownership chain BELOW the
+   * definition or theorem `label` names — "bizonyítás", "megjegyzés", or "bizonyítás →
+   * megjegyzés" for a remark on a proof. Each segment carries the node's authored
+   * title in parentheses when it has one; no content authors one today.
+   */
+  ownership?: string
   /** The source's page, plus a fragment when the source is a section. */
   href: string
   /**

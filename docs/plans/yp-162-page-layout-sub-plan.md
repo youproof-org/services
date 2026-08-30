@@ -847,15 +847,38 @@ It is the only ordering available without inventing a relevance notion, and the
 heaviest user of a node is a reasonable guess at the most useful one. Revisit once the
 page exists and it is clear whether it reads well.
 
-**Each row also names what kind of thing the source is**, in words — definíció,
-tétel, bizonyítás, megjegyzés, fejezet, szakasz. *Added by an owner ruling during
-phase 14.* Two sources of different kinds can carry the same title, and then the title
-alone does not tell the reader which row goes where: measured over the local export's
-backlink lists, **57 same-title groups span more than one kind**, eight of them in
-`gyuru-test`'s own list — "Oszthatóság" among them, a *section* citing it 14 times
-next to a *definition* of that name citing it twice. Without the label those two rows
-read alike and lead elsewhere. `data-backlink-source` carries the same kind for
-markup that needs to target it.
+**A row is three stacked lines: where it leads, what it is, then how many.**
+*Replaced by an owner ruling after the run.* Until then the count led the row from a
+left-hand column, with the source's title beside it and its kind — definíció, tétel,
+bizonyítás, megjegyzés, fejezet, szakasz — in words underneath. A row now reads top to
+bottom:
+
+- the **numbered name of the place it leads to**, at the body size, as the book writes
+  that name: `16. Alice és Bob alaptétele` for a chapter, `16.1. Oszthatóság` for a
+  section, `16.8. Tétel: Az asszociáltság tulajdonságai` for an entity. A proof's and a
+  remark's first line names the **definition or theorem at the top of its ownership
+  chain**, because that is what its page belongs to and what the reader recognizes —
+  "Bizonyítás" on its own is the name of 190 different pages;
+- on those rows only, **the rest of that chain**, smaller: `bizonyítás`, `megjegyzés`,
+  or `bizonyítás → megjegyzés` for a remark attached to a proof. Each segment carries
+  the node's authored title in parentheses when it has one; no proof or remark in the
+  content has one today, so today every one of these lines is one or two bare words.
+  96 of `gyuru-test`'s 236 rows have this line;
+- the **count**, last, in that same smaller size and a lighter grey. It qualifies a
+  place the reader has already read rather than leading the row.
+
+**The kind is no longer a word of its own** — the ruling above supersedes phase 14's,
+which added one. The lines say it: a chapter's number is `16.` where a section's is
+`16.1.`, and an entity's name carries its type word, the *authored* one where the
+content has one (three of `gyuru-test`'s rows read `Lemma` and one `Következmény`
+rather than `Tétel`). Measured over the local export's backlink lists, **no two rows of
+one list share these lines**, where **10 groups of rows shared a title and a kind**
+under the previous design. "Oszthatóság", the case phase 14's label was added for, is
+now three rows that read differently: `16.1. Oszthatóság` (the section, 34), `16.1.
+Definíció: Oszthatóság` (the definition, 2), and the same over `megjegyzés` (the remark
+on that definition, 2) — the number alone does not separate the first two, since
+chapter 16's first section and its first definition are both "16.1.".
+`data-backlink-source` still carries the kind for markup that needs to target it.
 
 **The list can be very long.** Measured on the content: the entity with the most
 inbound references, `gyuru-test`, is cited by **222 distinct sources** (**548**
@@ -887,10 +910,11 @@ So the Bejövő hivatkozások panel is the unfiltered case of the same thing, an
 three should look like one list rather than three designs. They are literally the same
 component — `BacklinkList`, called with a different array.
 
-*Row layout will be fine-tuned during implementation.* What is settled: grouped by
-source, one row per source, nested by where in the book that source is, a count per
-row accumulated over everything nested under it, a kind per row, and book sections and
-chapters included alongside entities.
+*Row layout was fine-tuned after the run, and the three lines above are where it
+landed.* What is settled: grouped by source, one row per source, nested by where in
+the book that source is, a count per row accumulated over everything nested under it,
+each row naming the numbered place it leads to, and book sections and chapters included
+alongside entities.
 
 #### Going to a source
 
@@ -2319,7 +2343,9 @@ is the baseline every "before" figure below is measured against.
   megjegyzés / fejezet / szakasz — by an owner ruling that landed as `7eac0f0`, after
   phase 17 had started rather than inside phase 14. **57 same-title groups in the
   backlink data span more than one kind**, eight of them in `gyuru-test`'s own list, so
-  without the label two rows could read alike and lead elsewhere. Recorded in §7.2.
+  without the label two rows could read alike and lead elsewhere. Superseded after the
+  run by [§12.7](#127-post-run-review-findings) finding 13, which puts the same
+  information in the row's numbered name instead. Recorded in §7.2.
 - **§2.1's no-JavaScript reading was ambiguous, and phase 20 settled it.** Phase 13
   served every panel's content and left it `hidden`, which satisfies §2.1's letter.
   Phase 20 ruled that "shows every panel's content inline" requires visibility, and
@@ -2539,6 +2565,7 @@ this section grows with them.
 | 10 | The incoming-references list is grouped chapter → section → embedded entity, counts accumulated bottom-up | §7.2 | `test/kb-graph.test.mjs` — the tree and the accumulation as invariants over a fixture that exercises every branch; `e2e/kb-backlinks.test.ts` — 236 rows over three levels, ordered within each, and the 14 chapter rows summing to all 548 references |
 | 11 | Pressing a row marks every reference inside it, entities embedded in it included, so the marks match the accumulated count | §7.2 | `e2e/kb-highlight.test.ts` — 22 marks on the worked case against 22 in-section references derived independently from the DOM, and 108 on the page that are not marked |
 | 12 | Two revealed claims are separated, rather than merging into one white slab | §6.3 | `e2e/kb-select.test.ts` still passes unchanged — the hit test and the census are about what is lifted, and the gap changes neither |
+| 13 | A backlink row is three stacked lines — the numbered place it leads to, the ownership chain below it, the count — and carries no kind word | §7.2 | `test/kb-graph.test.mjs` — the two lines of a chapter, a section, a theorem, a proof, a remark and a remark on a proof, off a fixture that owns all six; `e2e/kb-backlinks.test.ts` — 236 first lines and 96 ownership lines in the served HTML, the number shape and the type word asserted per kind, and all 236 rows reading differently from one another |
 
 Four notes on the shape of these fixes, because each cost more than it looks:
 

@@ -23,6 +23,10 @@ import { expect, test, type Page } from '@playwright/test'
  * row, so `gyuru-test`'s 222 sources are 236 rows: 14 chapters, 60 sections and 162
  * entities.
  *
+ * A row reads as three lines — the numbered name of the place it leads to, the
+ * ownership chain below it on the 96 rows that have one, then the count — so what used
+ * to be asserted about a kind label is asserted about that first line here.
+ *
  * Conventions from `kb-panel.test.ts`: settle the consent decision first, scope the
  * chrome's buttons to the stack, and match accessible names exactly — the site
  * header's hamburger is also called "Menü".
@@ -59,8 +63,10 @@ const ROW = '#kb-panel [data-kb-panel-kind="incoming"] .backlinks-panel_link'
 /** Only the chapters: the top level of the tree, whatever is nested under them. */
 const TOP_ROW = `${ROW}[data-backlink-depth="0"]`
 const EMPTY = '#kb-panel [data-kb-panel-kind="incoming"] .backlinks-panel_empty'
-/** The kind label under a row's title — every row has one, whatever kind it is. */
-const KIND = `${ROW} .backlinks-panel_kind`
+/** A row's first line: the numbered name of the place it leads to. Every row has one. */
+const LABEL = `${ROW} .backlinks-panel_label`
+/** Its second line, on the proof and remark rows that have an ownership chain below them. */
+const OWNERSHIP = `${ROW} .backlinks-panel_ownership`
 
 function stack(page: Page) {
   return page.locator('.menu-stack_stack')
@@ -172,71 +178,139 @@ test.describe('the Bejövő hivatkozások panel', () => {
       'href',
       '/hu/konyvek/alice-es-bob/fejezetek/alice-es-bob-alaptetele',
     )
-    await expect(first).toContainText('Alice és Bob alaptétele')
+    await expect(first).toContainText('16. Alice és Bob alaptétele')
     await expect(first).toContainText('135 hivatkozás')
   })
 
-  test('every row says in words what kind of thing its source is', async ({ page }) => {
+  test('every row names the place it leads to, numbered as the book numbers it', async ({
+    page,
+  }) => {
     await openBacklinks(page, BUSIEST)
 
-    // One label per row rather than one per list: 236 rows, 236 labels.
+    // One first line per row rather than one per list: 236 rows, 236 names. And 96
+    // second lines — the proofs and the remarks, which are the rows whose page hangs
+    // off a definition or a theorem rather than being one.
     await expect(page.locator(ROW)).toHaveCount(236)
-    await expect(page.locator(KIND)).toHaveCount(236)
+    await expect(page.locator(LABEL)).toHaveCount(236)
+    await expect(page.locator(OWNERSHIP)).toHaveCount(96)
 
-    // …and each row's label is its OWN kind. Grouped rather than compared row by
-    // row: a label that disagreed with its row's `data-backlink-source` would put a
-    // second word in that kind's set and fail here, so this is 236 assertions in the
-    // shape of one.
-    const pairs = await page.locator(ROW).evaluateAll((links) =>
-      links.map((link) => [
-        link.getAttribute('data-backlink-source'),
-        link.querySelector('.backlinks-panel_kind')!.textContent!.trim(),
-      ]),
-    )
-    const wordsByKind = new Map<string, Set<string>>()
-    for (const [kind, word] of pairs) {
-      if (!wordsByKind.has(kind!)) wordsByKind.set(kind!, new Set())
-      wordsByKind.get(kind!)!.add(word!)
-    }
-    expect(Object.fromEntries([...wordsByKind].map(([kind, words]) => [kind, [...words]]))).toEqual({
-      chapter: ['fejezet'],
-      section: ['szakasz'],
-      definition: ['definíció'],
-      theorem: ['tétel'],
-      proof: ['bizonyítás'],
-      remark: ['megjegyzés'],
+    // What kind of thing a source is is still on the row — that is what the row's
+    // number format and its type word say — so this is the same property the kind
+    // label used to carry, read off the lines that carry it now. Grouped rather than
+    // compared row by row: a row whose lines disagreed with its `data-backlink-source`
+    // would put a second entry in that kind's set and fail here, which makes this 236
+    // assertions in the shape of one.
+    //
+    // `number` is the leading index with its digits blanked, so the shape is asserted
+    // and not 236 particular numbers; `typeWord` is what stands between the index and
+    // the title, which only an entity has.
+    const linesByKind = await page.locator(ROW).evaluateAll((links) => {
+      const seen: Record<string, Record<string, Set<string>>> = {}
+      for (const link of links) {
+        const kind = link.getAttribute('data-backlink-source')!
+        const label = link.querySelector('.backlinks-panel_label')!.textContent!.trim()
+        const ownership = link.querySelector('.backlinks-panel_ownership')?.textContent?.trim()
+        const index = /^\d+(?:\.\d+)*\./.exec(label)
+        const entry = (seen[kind] ??= { number: new Set(), typeWord: new Set(), ownership: new Set() })
+        entry.number.add(index ? index[0].replace(/\d+/g, 'n') : '(none)')
+        entry.typeWord.add(/^\d+(?:\.\d+)*\.\s([^:]+):/.exec(label)?.[1] ?? '(none)')
+        entry.ownership.add(ownership ?? '(none)')
+      }
+      return Object.fromEntries(
+        Object.entries(seen).map(([kind, sets]) => [
+          kind,
+          Object.fromEntries(Object.entries(sets).map(([key, values]) => [key, [...values].sort()])),
+        ]),
+      )
+    })
+    expect(linesByKind).toEqual({
+      // A chapter's number is a single index and a section's is two, which is what
+      // tells those two apart now that neither says its kind in words.
+      chapter: { number: ['n.'], typeWord: ['(none)'], ownership: ['(none)'] },
+      section: { number: ['n.n.'], typeWord: ['(none)'], ownership: ['(none)'] },
+      // An entity carries its type word inside its label, and it is the AUTHORED one
+      // where the content has one: three of these rows are a Lemma and one a
+      // Következmény rather than a Tétel (`labels.canonical`, via `kbNodeLabel`).
+      definition: { number: ['n.n.'], typeWord: ['Definíció'], ownership: ['(none)'] },
+      theorem: {
+        number: ['n.n.'],
+        typeWord: ['Következmény', 'Lemma', 'Tétel'],
+        ownership: ['(none)'],
+      },
+      // A proof and a remark name the definition or theorem their page belongs to, so
+      // their first line is one of those and the second line is which of its children
+      // the row leads to. One remark in this list is attached to a proof rather than
+      // to the theorem, and its line carries the whole chain.
+      proof: {
+        number: ['n.n.'],
+        typeWord: ['Következmény', 'Lemma', 'Tétel'],
+        ownership: ['bizonyítás'],
+      },
+      remark: {
+        number: ['n.n.'],
+        typeWord: ['Definíció', 'Tétel'],
+        ownership: ['bizonyítás → megjegyzés', 'megjegyzés'],
+      },
     })
   })
 
-  test('two sources with the same title are told apart by their kind', async ({ page }) => {
+  test('rows that share a title are told apart by the lines above their counts', async ({
+    page,
+  }) => {
     await openBacklinks(page, BUSIEST)
 
-    // The reason the label exists. Eight of `gyuru-test`'s 222 sources share a title
-    // with another source of a different kind; "Oszthatóság" is one of them — the
-    // section of the book, whose 34 include the 14 its own narrative writes, and the
-    // definition of the same name, which cites it twice. Without the label the two
-    // rows are the same title over two different counts, and nothing says which is
-    // which.
-    const pair = page
-      .locator(ROW)
-      .filter({ has: page.getByText('Oszthatóság', { exact: true }) })
-    await expect(pair).toHaveCount(2)
+    // The case that used to need a kind label. Three of `gyuru-test`'s rows are titled
+    // "Oszthatóság": the section of the book, whose 34 include the 14 its own narrative
+    // writes, the definition of that name, which cites it twice, and the remark on that
+    // definition, which cites it twice as well. The number does not separate them —
+    // chapter 16's first section and its first definition are both "16.1." — the type
+    // word and the ownership line do.
+    const titled = page.locator(ROW).filter({
+      has: page.locator('.backlinks-panel_label', {
+        hasText: /^16\.1\. (Definíció: )?Oszthatóság$/,
+      }),
+    })
+    await expect(titled).toHaveCount(3)
 
-    const both = await pair.evaluateAll((links) =>
+    const lines = await titled.evaluateAll((links) =>
       links.map((link) => ({
-        kind: link.querySelector('.backlinks-panel_kind')!.textContent!.trim(),
+        label: link.querySelector('.backlinks-panel_label')!.textContent!.trim(),
+        ownership: link.querySelector('.backlinks-panel_ownership')?.textContent?.trim() ?? null,
         count: link.querySelector('[data-backlink-count]')!.getAttribute('data-backlink-count'),
         href: link.getAttribute('href'),
       })),
     )
-    expect(both).toEqual([
+    expect(lines).toEqual([
       {
-        kind: 'szakasz',
+        label: '16.1. Oszthatóság',
+        ownership: null,
         count: '34',
         href: '/hu/konyvek/alice-es-bob/fejezetek/alice-es-bob-alaptetele#szakaszok.oszthatosag',
       },
-      { kind: 'definíció', count: '2', href: '/hu/tudasbazis/definiciok/oszthatosag' },
+      {
+        label: '16.1. Definíció: Oszthatóság',
+        ownership: 'megjegyzés',
+        count: '2',
+        href: '/hu/tudasbazis/definiciok/oszthatosag/megjegyzesek/oszthatosag-megjegyzes',
+      },
+      {
+        label: '16.1. Definíció: Oszthatóság',
+        ownership: null,
+        count: '2',
+        href: '/hu/tudasbazis/definiciok/oszthatosag',
+      },
     ])
+    // No two rows of the list read alike: measured over the local export, no list has
+    // two rows sharing these lines, where 10 groups of rows shared a title and a kind
+    // under the previous design.
+    const readings = await page.locator(ROW).evaluateAll((links) =>
+      links.map(
+        (link) =>
+          `${link.querySelector('.backlinks-panel_label')!.textContent}|` +
+          `${link.querySelector('.backlinks-panel_ownership')?.textContent ?? ''}`,
+      ),
+    )
+    expect(new Set(readings).size).toBe(readings.length)
   })
 
   test('the 236 rows scroll inside the panel, under a header that stays put', async ({ page }) => {
@@ -291,7 +365,11 @@ test.describe('the Bejövő hivatkozások panel', () => {
     // No separate design for the short case: the same row, the same count, and a
     // container that carries the one reference under it.
     await expect(rows.first()).toContainText('1 hivatkozás')
-    await expect(rows.first()).toContainText('fejezet')
+    await expect(rows.first()).toContainText('25. Alice és Bob fontos párhuzamokat talál')
+    // …including the third row, a proof, which names its theorem and then says it is
+    // the proof of it — the same two lines the long list's proof rows carry.
+    await expect(rows.nth(2)).toContainText('25.22. Tétel: Ciklikus csoportok struktúratétele')
+    await expect(rows.nth(2)).toContainText('bizonyítás')
     await expect(page.locator(EMPTY)).toHaveCount(0)
   })
 
@@ -362,10 +440,12 @@ test.describe('the backlink list without JavaScript', () => {
     await expect(
       page.locator('#kb-panel [data-kb-panel-kind="incoming"] .backlinks-panel_nested'),
     ).toHaveCount(57)
-    // The kind label is part of that served answer, not something the client adds:
-    // the heaviest place is a chapter and says so.
-    await expect(page.locator(KIND)).toHaveCount(236)
-    await expect(rows.first()).toContainText('fejezet')
+    // Both display lines are part of that served answer rather than something the
+    // client adds: 236 names, 96 ownership lines, and the heaviest place named and
+    // numbered as chapter 16.
+    await expect(page.locator(LABEL)).toHaveCount(236)
+    await expect(page.locator(OWNERSHIP)).toHaveCount(96)
+    await expect(rows.first()).toContainText('16. Alice és Bob alaptétele')
   })
 
   test('an entity nothing cites is served the empty state, not an empty list', async ({ page }) => {

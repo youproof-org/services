@@ -300,10 +300,14 @@ test('a backlink row links to the source: an entity page, a chapter, or a sectio
     const { children, ...row } = byFqn.get(fqn)
     return row
   }
+  // `label` is the row's first line and `title` is what its level is ordered by, so
+  // both are on every row: the numbers cannot be the tie-breaker ("1.10." sorts
+  // before "1.9."), and the title alone is not what the reader is shown.
   assert.deepEqual(shapeOf('books.konyv.chapters.fejezet'), {
     kind: 'chapter',
     fqn: 'books.konyv.chapters.fejezet',
     title: 'Fejezet',
+    label: '1. Fejezet',
     href: '/hu/konyvek/konyv/fejezetek/fejezet',
     count: 4,
   })
@@ -311,6 +315,7 @@ test('a backlink row links to the source: an entity page, a chapter, or a sectio
     kind: 'section',
     fqn: 'books.konyv.chapters.fejezet.sections.szakasz',
     title: 'Szakasz',
+    label: '1.1. Szakasz',
     href: `/hu/konyvek/konyv/fejezetek/fejezet#${sectionAnchorId({ slug: 'szakasz', locale: 'hu' })}`,
     count: 2,
   })
@@ -318,9 +323,60 @@ test('a backlink row links to the source: an entity page, a chapter, or a sectio
     kind: 'theorem',
     fqn: 'theorems.tetel-egy',
     title: 'Első tétel',
+    label: '1.2. Tétel: Első tétel',
     href: '/hu/tudasbazis/tetelek/tetel-egy',
     count: 1,
   })
+})
+
+/** The same fixture, with the proof and two remarks citing the definition as well. */
+function ownedSourceFixture() {
+  const data = backlinkFixture()
+  const citesTheDefinition = { 'r-def': ref('a definíció', 'definitions.def-egy') }
+  data.proofs[0].references = citesTheDefinition
+  data.proofs[0].remarkSlugs = ['rem-ketto']
+  data.remarks[0].references = citesTheDefinition
+  data.remarks.push({
+    ...hu,
+    name: 'rem-ketto',
+    slug: 'rem-ketto',
+    body: [narrative('Megjegyzés a bizonyításhoz.')],
+    references: citesTheDefinition,
+  })
+  data.books[0].parts[0].chapters[0].sections[0].body.push(
+    embed('theorems.tetel-egy.proofs.biz-egy.remarks.rem-ketto'),
+  )
+  return data
+}
+
+test('a proof or a remark row names the definition or theorem its page belongs to', () => {
+  const g = buildGraphFromRaw(ownedSourceFixture())
+  const byFqn = new Map(nodesOf(g.backlinks.get('definitions.def-egy').all).map((r) => [r.fqn, r]))
+  const linesOf = (fqn) => {
+    const row = byFqn.get(fqn)
+    return [row.label, row.ownership]
+  }
+  // A proof's own name is "Bizonyítás", which names nothing: what the reader
+  // recognizes is the numbered theorem, and the second line says which of the things
+  // hanging off it this row leads to.
+  assert.deepEqual(linesOf('theorems.tetel-egy.proofs.biz-egy'), [
+    '1.2. Tétel: Első tétel',
+    'bizonyítás',
+  ])
+  assert.deepEqual(linesOf('definitions.def-egy.remarks.rem-egy'), [
+    '1.1. Definíció: Első definíció',
+    'megjegyzés',
+  ])
+  // Two steps down the chain, and the whole chain is on the line: the row leads to
+  // the remark, whose page is one of the theorem's.
+  assert.deepEqual(linesOf('theorems.tetel-egy.proofs.biz-egy.remarks.rem-ketto'), [
+    '1.2. Tétel: Első tétel',
+    'bizonyítás → megjegyzés',
+  ])
+  // …and a definition or a theorem has no second line at all, rather than an empty
+  // one: it IS the top of its chain.
+  assert.deepEqual(linesOf('theorems.tetel-egy'), ['1.2. Tétel: Első tétel', undefined])
+  assert.equal('ownership' in byFqn.get('theorems.tetel-egy'), false)
 })
 
 test('a container earns a row even though it cites nothing itself', () => {

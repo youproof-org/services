@@ -42,12 +42,8 @@
         "kbPanelIncoming": "Hol hivatkoznak rá",
         "kbPanelIncomingCount": "{count} hivatkozás",
         "kbPanelIncomingEmpty": "Nincs rá hivatkozás",
-        "kbBacklinkKindDefinition": "definíció",
-        "kbBacklinkKindTheorem": "tétel",
         "kbBacklinkKindProof": "bizonyítás",
         "kbBacklinkKindRemark": "megjegyzés",
-        "kbBacklinkKindChapter": "fejezet",
-        "kbBacklinkKindSection": "szakasz",
         "kbPanelTermSynonyms": "Szinonimák",
         "kbPanelClaim": "{index}. állítás",
         "kbPanelReferenceOpen": "Ugrás a hivatkozott lapra"
