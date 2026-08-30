@@ -2,8 +2,8 @@ import type { BreadcrumbItem } from '@/components/layout/Breadcrumb'
 import { getLocaleLabel } from '@/lib/i18n/config'
 import type { ContentGraph, KbNode } from './types'
 import { kbNodeTitle } from './graph'
+import { homeCrumb } from './breadcrumbs'
 import {
-  homeUrl,
   urlForKbRoot,
   urlForDefinitionsIndex,
   urlForTheoremsIndex,
@@ -35,11 +35,6 @@ import {
 
 /** The knowledge-base pages that list rather than render a node. */
 export type KbListPage = 'kb-root' | 'definitions-index' | 'theorems-index' | 'glossary'
-
-const homeCrumb = (locale: string): BreadcrumbItem => ({
-  label: getLocaleLabel(locale, 'home'),
-  href: homeUrl(locale),
-})
 
 const kbRootCrumb = (locale: string): BreadcrumbItem => ({
   label: getLocaleLabel(locale, 'knowledgeBase'),

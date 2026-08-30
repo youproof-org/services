@@ -3,11 +3,20 @@ import Breadcrumb, { type BreadcrumbItem } from './Breadcrumb'
 import BrandLockup from './BrandLockup'
 import SiteNav from './SiteNav'
 import HeaderHeightProbe from './HeaderHeightProbe'
-import { DEFAULT_LOCALE } from '@/lib/i18n/config'
-import { buildLocalizedUrl } from '@/lib/i18n/url'
+import { DEFAULT_LOCALE, getLocaleLabel, type LabelKey } from '@/lib/i18n/config'
+import { buildLocalizedUrl, type UrlKey } from '@/lib/i18n/url'
 import styles from './site-header.module.scss'
 
 export type HeaderMode = 'root' | 'inner' | 'minimal'
+
+// The primary nav, in reading order: the knowledge base leads, as it does on the
+// homepage. Every label comes from the locale dictionary and every href from
+// `buildLocalizedUrl`, so nothing here spells a word or a path.
+const NAV_ITEMS: { labelKey: LabelKey; urlKey: UrlKey }[] = [
+  { labelKey: 'knowledgeBase', urlKey: 'kb-root' },
+  { labelKey: 'articlesIndex', urlKey: 'articles-index' },
+  { labelKey: 'newsletterIndex', urlKey: 'newsletter-index' },
+]
 
 interface SiteHeaderProps {
   // 'root'    — homepage: lockup + nav + search, no breadcrumb row.
@@ -19,10 +28,10 @@ interface SiteHeaderProps {
 }
 
 export default function SiteHeader({ mode = 'inner', breadcrumbs, locale = DEFAULT_LOCALE }: SiteHeaderProps) {
-  const navLinks = [
-    { label: 'Cikkek', href: buildLocalizedUrl(locale, 'articles-index') },
-    { label: 'Hírek', href: buildLocalizedUrl(locale, 'newsletter-index') },
-  ]
+  const navLinks = NAV_ITEMS.map(({ labelKey, urlKey }) => ({
+    label: getLocaleLabel(locale, labelKey),
+    href: buildLocalizedUrl(locale, urlKey),
+  }))
   return (
     <header className={styles.header}>
       <HeaderHeightProbe />

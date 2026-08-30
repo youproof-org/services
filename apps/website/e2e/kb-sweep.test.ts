@@ -405,7 +405,7 @@ test.describe('without JavaScript', () => {
     }
 
     await page.goto(ROOT)
-    const cards = page.locator('.kb-root-page_card')
+    const cards = page.locator('.kb-section-cards_card')
     await expect(cards).toHaveCount(3)
     await expect(cards.first()).toBeVisible()
     await expect(page.locator(STACK)).toHaveCount(0)

@@ -24,7 +24,7 @@ interface KbTypeIndexPageProps {
  * only where the content genuinely does, and this is the whole of that difference:
  * below this table there is one page.
  *
- * The count label is the root page's own (`kb-root-page`), not a second one saying
+ * The count label is the root page's own (`kb-sections`), not a second one saying
  * the same thing differently: this page and the card linking to it must not
  * advertise different numbers or different words for them (§3).
  */
@@ -58,9 +58,9 @@ interface IndexRow {
 /**
  * The rows of one index, in Hungarian title order.
  *
- * Gated on `kbPageExists` and on this locale, which is what the root page's card
- * counts — so the number here and the number there are the same number, and a row
- * is never a link to a page this environment did not generate.
+ * Gated on `kbPageExists` and on this locale, which is what the section cards count
+ * (`kb-sections`) — so the number here and the number there are the same number,
+ * and a row is never a link to a page this environment did not generate.
  *
  * `kbNodeTitle`, not `node.title`: every definition and theorem carries an authored
  * title today (84/84 and 191/191, measured), so the fallback cannot fire — but an

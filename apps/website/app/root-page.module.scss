@@ -163,6 +163,16 @@
 }
 
 
+/* Tudásbázis — the orienting line above the three section cards, matching the
+   same paragraph on the knowledge-base root page (kb-root-page.module.scss). */
+.kbIntro {
+  margin: 0 0 1.5rem;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: $gray-600;
+}
+
+
 /* Article rows */
 .rows {
   display: flex;

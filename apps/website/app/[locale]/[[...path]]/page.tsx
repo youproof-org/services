@@ -23,7 +23,7 @@ import {
 } from '@/lib/i18n/config'
 import { buildPageMeta, type OgType, type PageMetaNode } from '@/lib/i18n/metadata'
 import type { UrlKey } from '@/lib/i18n/url'
-import { homeUrl, urlForBook, urlForChapter, urlForKbNode, kbUrlRef } from '@/lib/content/urls'
+import { urlForBook, urlForChapter, urlForKbNode, kbUrlRef } from '@/lib/content/urls'
 import { kbExcerpt } from '@/lib/content/kb-excerpt'
 import { kbNodes, kbNodeTitle, kbPageExists } from '@/lib/content/graph'
 import { getBookRomanIndex, getChapterIndex } from '@/lib/utils/index-helpers'
@@ -42,6 +42,7 @@ import KbTypeIndexPage from '@/components/kb/KbTypeIndexPage'
 import GlossaryPage from '@/components/kb/GlossaryPage'
 import KbEntityPage from '@/components/kb/KbEntityPage'
 import { kbEntityBreadcrumbs, kbListBreadcrumbs } from '@/lib/content/kb-breadcrumbs'
+import { homeCrumb, articlesIndexCrumb, newsletterIndexCrumb } from '@/lib/content/breadcrumbs'
 import styles from './page.module.scss'
 
 // Static export: only enumerated paths are generated; anything else 404s.
@@ -435,7 +436,7 @@ export default async function LocalizedRoute({ params }: RouteProps) {
     case 'landing-index':
       return (
         <div className="book-shell">
-          <SiteHeader breadcrumbs={[{ label: 'Főoldal', href: homeUrl(locale) }]} locale={locale} />
+          <SiteHeader breadcrumbs={[homeCrumb(locale)]} locale={locale} />
           <main className="stub-main">
             <UnavailableStub />
           </main>
@@ -446,26 +447,20 @@ export default async function LocalizedRoute({ params }: RouteProps) {
     case 'articles-index':
       return (
         <StandaloneIndex
-          title="Cikkek"
+          title={getLocaleLabel(locale, 'articlesIndex')}
           locale={locale}
           items={Array.from(graph.articles.values()).filter((a) => a.locale === locale)}
-          breadcrumbs={[
-            { label: 'Főoldal', href: homeUrl(locale) },
-            { label: 'Cikkek', href: `/${locale}/${getContainerSegment(locale, 'article')}` },
-          ]}
+          breadcrumbs={[homeCrumb(locale), articlesIndexCrumb(locale)]}
         />
       )
 
     case 'newsletter-index':
       return (
         <StandaloneIndex
-          title="Hírek"
+          title={getLocaleLabel(locale, 'newsletterIndex')}
           locale={locale}
           items={Array.from(graph.newsletters.values()).filter((n) => n.locale === locale && n.published)}
-          breadcrumbs={[
-            { label: 'Főoldal', href: homeUrl(locale) },
-            { label: 'Hírek', href: `/${locale}/${getContainerSegment(locale, 'newsletter')}` },
-          ]}
+          breadcrumbs={[homeCrumb(locale), newsletterIndexCrumb(locale)]}
         />
       )
 
@@ -521,10 +516,7 @@ export default async function LocalizedRoute({ params }: RouteProps) {
         <div className="book-shell">
           <SiteHeader
             locale={locale}
-            breadcrumbs={[
-              { label: 'Főoldal', href: homeUrl(locale) },
-              { label: book.title, href: urlForBook(book) },
-            ]}
+            breadcrumbs={[homeCrumb(locale), { label: book.title, href: urlForBook(book) }]}
           />
           {book.thumbnail ? (
             <div className={styles.thumbnail}>
@@ -546,7 +538,7 @@ export default async function LocalizedRoute({ params }: RouteProps) {
       const { book, chapter } = resolved
       const chapterIndex = getChapterIndex(chapter)
       const breadcrumbs = [
-        { label: 'Főoldal', href: homeUrl(locale) },
+        homeCrumb(locale),
         { label: book.title, href: urlForBook(book) },
         { label: `${chapterIndex}. ${chapter.title}`, href: urlForChapter(chapter) },
       ]
@@ -591,12 +583,12 @@ export default async function LocalizedRoute({ params }: RouteProps) {
       const { node } = resolved
       const parentCrumb =
         resolved.kind === 'article'
-          ? [{ label: 'Cikkek', href: `/${locale}/${getContainerSegment(locale, 'article')}` }]
+          ? [articlesIndexCrumb(locale)]
           : resolved.kind === 'newsletter'
-          ? [{ label: 'Hírek', href: `/${locale}/${getContainerSegment(locale, 'newsletter')}` }]
+          ? [newsletterIndexCrumb(locale)]
           : []
       const breadcrumbs = [
-        { label: 'Főoldal', href: homeUrl(locale) },
+        homeCrumb(locale),
         ...parentCrumb,
         { label: node.title, href: `/${locale}/${path.join('/')}` },
       ]
