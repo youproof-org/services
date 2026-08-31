@@ -11,7 +11,7 @@ import {
   isSuppressed,
   getSubscriptionByEmail,
 } from "../src/lib/db.ts";
-import { FakeD1, makeDeps } from "./helpers/fake-d1.mjs";
+import { FakeD1, FIXTURE_NOW, makeDeps } from "./helpers/fake-d1.mjs";
 
 const input = {
   name: "Anna",
@@ -135,8 +135,8 @@ test("updated: re-submitting while pending restarts the confirmation window", as
   // has to restart with it — otherwise the sweep could erase the row days after
   // we handed out a fresh link.
   assert.equal(again.kind, "updated");
-  assert.equal(db.rows.get(id).subscribed_at, "2026-07-24T00:00:00.000Z");
-  assert.equal(again.subscription.subscribed_at, "2026-07-24T00:00:00.000Z", "and the returned row agrees");
+  assert.equal(db.rows.get(id).subscribed_at, FIXTURE_NOW);
+  assert.equal(again.subscription.subscribed_at, FIXTURE_NOW, "and the returned row agrees");
   assert.equal(db.rows.get(id).status, "pending");
   assert.equal(db.rows.get(id).name, "Anna B");
 });
