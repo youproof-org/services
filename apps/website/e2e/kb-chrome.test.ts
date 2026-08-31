@@ -88,6 +88,26 @@ async function openMenu(page: Page) {
   await expect(page.locator(OVERLAY)).toBeVisible()
 }
 
+/**
+ * The CSS animations running on the bottom-most button, by name.
+ *
+ * `{ subtree: true }` is the whole point of reading it this way: the attention ring
+ * is painted on `.iconBox::after`, which has no element to locate and no computed
+ * style Playwright can be asked for — the animation registered on the pseudo-element
+ * is the only handle on it.
+ */
+async function buttonAnimations(page: Page, caption: string): Promise<string[]> {
+  return page.evaluate((label) => {
+    const button = Array.from(
+      document.querySelectorAll<HTMLButtonElement>('.menu-stack_item'),
+    ).find((candidate) => candidate.textContent?.trim() === label)
+    if (!button) throw new Error(`no chrome button captioned '${label}'`)
+    return button
+      .getAnimations({ subtree: true })
+      .map((animation) => String((animation as CSSAnimation).animationName ?? ''))
+  }, caption)
+}
+
 /** Assert the page is back in its default state: no dim, and the button reads Menü. */
 async function expectClosed(page: Page) {
   await expect(page.locator(OVERLAY)).toHaveCount(0)
@@ -107,6 +127,26 @@ test.describe('entity chrome', () => {
     // stack in the one corner that leaves it alone.
     expect(box.x).toBeGreaterThan(viewport.width / 2)
     expect(box.y + box.height).toBeGreaterThan(viewport.height * 0.8)
+  })
+
+  test('the Menü button pulses until it is pressed, and never again on that page', async ({
+    page,
+  }) => {
+    await openEntity(page)
+
+    // On arrival it is asking to be noticed: the corner is far from the column the
+    // reader is reading, and a still white pill there was being missed.
+    expect(await buttonAnimations(page, MENU)).toContain('menu-stack_hint-pulse')
+
+    await openMenu(page)
+    await page.goBack()
+    await expectClosed(page)
+
+    // The hint ends on the press and not on a timer, so it is gone even though the
+    // reader is back in the state they arrived in — they have found the menu, and it
+    // is the finding that the pulse was for. The dim is down and the caption reads
+    // Menü again (`expectClosed`), so this is the same button in the same state.
+    expect(await buttonAnimations(page, MENU)).toEqual([])
   })
 
   test('every menu glyph is the size of the consent shield, in a 44px button', async ({
@@ -324,5 +364,58 @@ test.describe('without JavaScript', () => {
     await expect(chromeButton(page, MENU)).toHaveCount(0)
     await expect(page.locator(OVERLAY)).toHaveCount(0)
     await expect(page.locator('.menu-stack_stack')).toHaveCount(0)
+  })
+})
+
+test.describe('the menu hint under prefers-reduced-motion', () => {
+  test('does not pulse, and is still a hint', async ({ page }) => {
+    // `page.emulateMedia` rather than the `reducedMotion` fixture: on Playwright
+    // 1.62.1 a `test.use({ reducedMotion: 'reduce' })` in this describe leaves
+    // `matchMedia('(prefers-reduced-motion: reduce)')` false in the page, so the
+    // test would have passed by never enabling the thing it is about.
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    await openEntity(page)
+
+    expect(await buttonAnimations(page, MENU)).toEqual([])
+
+    // Reduced motion removes the movement, not the hint: the unpressed button wears
+    // the hover treatment's black outline instead, so the control the reader was
+    // missing is still the one thing that stands out in that corner.
+    await expect(chromeButton(page, MENU)).toHaveCSS('border-color', 'rgb(0, 0, 0)')
+    await expect(chromeButton(page, MENU).locator('.menu-stack_iconBox')).toHaveCSS(
+      'border-color',
+      'rgb(0, 0, 0)',
+    )
+  })
+})
+
+test.describe('the menu hint across a soft navigation', () => {
+  /**
+   * One hint per page, and a client-side navigation is a new page.
+   *
+   * The flow is the one that actually reaches a second entity page without a
+   * document load: the menu, a panel, and a link out of it — which is also the flow
+   * that has already spent this page's hint. Worth its own test because "per page"
+   * is carried by `EntityChrome` being remounted on the route change and by nothing
+   * else; a hint kept in a store, or a chrome hoisted above the route, would leave
+   * the second page's button still.
+   */
+  test('the next entity page hints again', async ({ page }) => {
+    await openEntity(page)
+    await chromeButton(page, MENU).click()
+    await chromeButton(page, 'Bejövő hivatkozások').click()
+
+    // Scoped to the section that is up: every one of the five panel contents is in
+    // the HTML from the first byte (§2.1), so the panel is full of links the reader
+    // cannot see.
+    const link = page
+      .locator('#kb-panel [data-kb-panel-kind="incoming"] a[href^="/hu/tudasbazis/"]')
+      .first()
+    const href = (await link.getAttribute('href'))!
+    await link.click()
+    await expect(page).toHaveURL(new RegExp(`${href}$`))
+    await expect(chromeButton(page, MENU)).toBeVisible()
+
+    expect(await buttonAnimations(page, MENU)).toContain('menu-stack_hint-pulse')
   })
 })

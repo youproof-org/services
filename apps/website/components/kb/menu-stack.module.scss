@@ -120,3 +120,132 @@ $circle-overhang: 0.25rem;
   width: 1rem;
   height: 1rem;
 }
+
+// ── The unpressed menu button ──
+//
+// On a wide screen the stack sits a long way from the column the reader is reading,
+// and a motionless white pill in the far corner is easy to land on a page without
+// ever seeing: readers were missing that an entity page has a menu at all. So the
+// bottom-most button pulses until it has been pressed once — a ring radiating off
+// its circle, then a rest longer than the pulse, which is what keeps a hint with no
+// time limit from reading as a strobe.
+//
+// It ends on the press, not on a timer: `EntityChrome` drops this class the first
+// time the reader opens the menu and does not put it back for the life of the page.
+.hint .iconBox {
+  position: relative;
+  // The circle darkens to the hover treatment's black on each beat and settles back
+  // to its hairline. A change of contrast on a shape that is already there carries
+  // further across a wide screen than the ring does on its own, and it costs the
+  // reader nothing to look at when it is at rest.
+  animation: hint-mark 3.2s ease-out infinite;
+
+  &::after {
+    content: '';
+    position: absolute;
+    // Over the circle's own hairline rather than inside it, so the ring leaves the
+    // border it grows out of instead of appearing a pixel in from it.
+    inset: -1px;
+    border-radius: 50%;
+    // 3px, and it thickens as it goes: `transform` scales the stroke with the ring, so
+    // what leaves the circle at 3px is 8px wide by the time it is out at arm's length,
+    // which is most of what makes it visible from the far side of a wide screen.
+    border: 3px solid $black;
+    opacity: 0;
+    animation: hint-pulse 3.2s ease-out infinite;
+  }
+}
+
+// A pointer on the button, or the keyboard focus on it, is the reader having found
+// it, which is all the pulse was ever asking for: it stops, and the hover treatment
+// underneath — black bar, black circle — is what they see instead.
+.hint:hover,
+.hint:focus-visible {
+  .iconBox,
+  .iconBox::after {
+    animation: none;
+  }
+}
+
+// Two rings out of the one circle, one straight after the other, and then a rest of
+// about the same length. A single ring is easy to miss out of the corner of the eye,
+// and an unbroken train of them is hard to read past.
+//
+// **It grows to nearly three times the circle**, 44px out to 123px. Peripheral vision
+// is caught by how far a thing travels, and two smaller, politer versions of this were
+// both reported as still not noticeable.
+//
+// That is bigger than the corner strictly holds: the circle's bottom edge sits 20px
+// off the foot of the viewport ($pad-x less the overhang) and its right edge 23px off
+// the side, so from about twice its size the ring meets the screen's edges and
+// finishes as an arc rather than a circle. That is deliberate rather than tolerated —
+// it reads as radiating out of the corner, and the alternative is a ring small enough
+// to be missed, which is the bug this is fixing.
+//
+// It holds most of its ink until it is most of the way out, which is the other half of
+// being seen — a curve that spends the opacity early leaves only the small end of the
+// movement visible.
+//
+// The second ring is the fainter: the eye is caught by the start of the movement, and
+// a trailing ring that matched the first would read as a repeat rather than as the end
+// of one gesture.
+@keyframes hint-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  18% {
+    transform: scale(2);
+    opacity: 0.55;
+  }
+  30% {
+    transform: scale(2.8);
+    opacity: 0;
+  }
+  30.01% {
+    transform: scale(1);
+    opacity: 0.65;
+  }
+  48% {
+    transform: scale(2);
+    opacity: 0.36;
+  }
+  60% {
+    transform: scale(2.8);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(2.8);
+    opacity: 0;
+  }
+}
+
+// On the rings' own rhythm: black under each of the two, back to the hairline for the
+// rest.
+@keyframes hint-mark {
+  0%,
+  30.01% {
+    border-color: $black;
+  }
+  24%,
+  60%,
+  100% {
+    border-color: $gray-300;
+  }
+}
+
+// Reduced motion: no ring, and the hint becomes a still one — the unpressed button
+// wears the hover treatment's black outline, so the control is still the thing that
+// stands out in the corner. The convention the other three animations follow (§6.4):
+// one trailing block that switches the movement off.
+@media (prefers-reduced-motion: reduce) {
+  .hint .iconBox,
+  .hint .iconBox::after {
+    animation: none;
+  }
+
+  .hint,
+  .hint .iconBox {
+    border-color: $black;
+  }
+}
