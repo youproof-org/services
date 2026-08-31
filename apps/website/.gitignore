@@ -32,7 +32,18 @@ public/assets/generated/
 # LaTeX compilation temp files
 .tmp/
 
+# Playwright (browser tests). The browser binaries live outside the repo, in
+# ~/.cache/ms-playwright (macOS: ~/Library/Caches/ms-playwright); these are the
+# per-run artifacts it writes here.
+test-results/
+playwright-report/
+blob-report/
+.playwright/
+
 # Debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Derived from the content graph by the browser suite's global setup.
+e2e/.generated/

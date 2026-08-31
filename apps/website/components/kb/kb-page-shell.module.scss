@@ -1,0 +1,18 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+// The main area of every knowledge-base page. Centered and width-capped like the
+// article/newsletter index (`standalone-index.module.scss`) rather than via the
+// global `.page-content`, whose negative top margin exists to overlap a thumbnail
+// hero these pages do not have.
+.main {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: $max-width-narrow;
+  margin: 0 auto;
+  padding: 2.5rem $pad-x 4rem;
+
+  @include wide {
+    max-width: 52rem;
+  }
+}

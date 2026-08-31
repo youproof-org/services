@@ -7,9 +7,10 @@ import BrandLockup from '@/components/layout/BrandLockup'
 import SectionHeading from '@/components/layout/SectionHeading'
 import BookCard from '@/components/book/BookCard'
 import ContentRow from '@/components/content/ContentRow'
+import KbSectionCards from '@/components/kb/KbSectionCards'
 import { getContentGraph, listAll, listPublished } from '@/lib/content'
-import { urlForBook, urlForStandalone } from '@/lib/content/urls'
-import { getLocaleConfig } from '@/lib/i18n/config'
+import { urlForBook, urlForStandalone, urlForKbRoot } from '@/lib/content/urls'
+import { getLocaleConfig, getLocaleLabel } from '@/lib/i18n/config'
 import styles from '@/app/root-page.module.scss'
 
 // ISO datetime → "YYYY. MM. DD." (deterministic; no locale dependency).
@@ -76,6 +77,20 @@ export default function RootHome({ locale }: { locale: string }) {
             </div>
           </section>
         )}
+
+        {/* Tudásbázis — the three ways in, the same cards the knowledge-base root
+            page offers, so the knowledge base is reachable from the homepage (and
+            therefore from a crawl seeded with it) in one hop, and each index in
+            two. Plain links: nothing here may need JavaScript. */}
+        <section className={styles.section}>
+          <SectionHeading
+            label={getLocaleLabel(locale, 'knowledgeBase')}
+            labelHref={urlForKbRoot(locale)}
+            id="knowledge-base"
+          />
+          <p className={styles.kbIntro}>{getLocaleLabel(locale, 'kbIntro')}</p>
+          <KbSectionCards locale={locale} headingLevel="h3" />
+        </section>
 
         {/* Legutóbbi cikkek */}
         {articles.length > 0 && (

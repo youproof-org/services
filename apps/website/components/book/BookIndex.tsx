@@ -1,4 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { partAnchorId } from '@/lib/content/urls'
 import { faQuestion } from '@fortawesome/free-solid-svg-icons'
 import type { BookNode } from '@/lib/content/types'
 import ContentBlocks from '@/components/content/ContentBlocks'
@@ -53,7 +54,7 @@ export default function BookIndex({ book, episode }: BookIndexProps) {
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>Tartalom</h2>
         {book.parts.map((part, i) => (
-          <div key={part.name} className={styles.part}>
+          <div key={part.name} id={partAnchorId(part)} className={styles.part}>
             <h3 className={styles.partTitle}>
               <span className={styles.partNumber}>{toRoman(i + 1)}.</span> {part.title}
             </h3>

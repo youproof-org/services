@@ -1,0 +1,400 @@
+// The entity page's context menu: what a back step means, what a history entry is
+// allowed to restore, and which items an entity carries.
+//
+// The chrome itself is browser work — a portal, `history.pushState`, `popstate`,
+// Escape — and none of that is here. What is here is the part all four ways of
+// stepping back go through (`reduceChrome`), the validation standing between a
+// history entry and the rendered state (`readChromeStack`), and the availability
+// rules of §6.2/§6.5 (`kbMenuItems`). Those are the pieces that can be wrong
+// without a browser showing it.
+import { test } from 'node:test'
+import assert from 'node:assert/strict'
+
+import * as chromeModule from '../lib/kb/chrome-state.ts'
+import * as menuModule from '../lib/kb/menu-items.ts'
+import * as graphModule from '../lib/content/graph.ts'
+import { hu, claim, narrative, raw } from './support/raw-graph.mjs'
+
+const {
+  CHROME_HISTORY_KEY,
+  DEFAULT_STACK,
+  SELECTED_KINDS,
+  SELECTION_KINDS,
+  TARGET_KINDS,
+  currentState,
+  isDefaultState,
+  openPanel,
+  readChromeStack,
+  reduceChrome,
+  selectedTarget,
+  selectionMode,
+} = chromeModule.default ?? chromeModule
+const { kbMenuItems } = menuModule.default ?? menuModule
+const { buildGraphFromRaw } = graphModule.default ?? graphModule
+
+const MENU = { kind: 'menu' }
+const CONTEXT = { kind: 'context' }
+const INCOMING = { kind: 'incoming' }
+const TERMS = { kind: 'terms' }
+const CLAIMS = { kind: 'claims' }
+// Level 2: one candidate picked, named by the id it carries in the body.
+const TERM = { kind: 'term', target: 'fogalmak.gyuru' }
+const CLAIM = { kind: 'claim', target: 'allitasok.elso' }
+const LEVEL_TWO = [
+  [TERMS, TERM, 'terms'],
+  [CLAIMS, CLAIM, 'claims'],
+]
+// A pressed outgoing reference (§7.1), named by the mark's href — a reference has no
+// id, and the href is what says what the panel is about.
+const REFERENCE = {
+  kind: 'reference',
+  target: '/hu/tudasbazis/definiciok/gyuru-test#fogalmak.gyuru',
+}
+const open = (stack, state = MENU) => reduceChrome(stack, { type: 'open', state })
+const back = (stack) => reduceChrome(stack, { type: 'back' })
+
+// ---------------------------------------------------------------------------
+// The state stack
+// ---------------------------------------------------------------------------
+
+test('the default state is the empty stack, and nothing else is', () => {
+  assert.deepEqual(DEFAULT_STACK, [])
+  assert.equal(isDefaultState(DEFAULT_STACK), true)
+  assert.equal(currentState(DEFAULT_STACK), null)
+  assert.equal(isDefaultState(open(DEFAULT_STACK)), false)
+  assert.deepEqual(currentState(open(DEFAULT_STACK)), MENU)
+})
+
+test('a back step pops exactly one state, however deep the stack is', () => {
+  const two = open(open(DEFAULT_STACK), MENU)
+  assert.equal(two.length, 2)
+  assert.equal(back(two).length, 1)
+  assert.equal(back(back(two)).length, 0)
+})
+
+test('stepping back from the default state is a no-op, not an error', () => {
+  // The reader's Back belongs to the browser again once the page is default;
+  // the machine must not go negative if something asks anyway.
+  assert.deepEqual(back(DEFAULT_STACK), [])
+})
+
+test('repeated back steps walk to the default state and stay there', () => {
+  let stack = open(open(open(DEFAULT_STACK)))
+  for (let i = 0; i < 5; i += 1) stack = back(stack)
+  assert.equal(isDefaultState(stack), true)
+})
+
+test('a step never mutates the stack it was given, so a history entry keeps its own', () => {
+  const one = open(DEFAULT_STACK)
+  const two = open(one)
+  back(two)
+  assert.equal(one.length, 1, 'the entry pushed first still describes one state')
+  assert.equal(two.length, 2)
+})
+
+test('restore replaces the stack wholesale — this is what Back and Forward both do', () => {
+  const two = open(open(DEFAULT_STACK))
+  assert.deepEqual(reduceChrome(two, { type: 'restore', stack: DEFAULT_STACK }), [])
+  // Forward re-applies what Back undid: the same action, the other entry's stack.
+  assert.deepEqual(reduceChrome(DEFAULT_STACK, { type: 'restore', stack: two }), two)
+})
+
+// ---------------------------------------------------------------------------
+// What a history entry may restore
+// ---------------------------------------------------------------------------
+
+test('the stack survives a round trip through a history entry', () => {
+  const stack = open(DEFAULT_STACK)
+  // The entry the component pushes: our key beside whatever else is in there.
+  const entry = { __NA: true, [CHROME_HISTORY_KEY]: stack }
+  assert.deepEqual(readChromeStack(entry), stack)
+})
+
+test('an entry that is not ours reads as the default state', () => {
+  // The entry the page loaded on, an entry the router pushed, and a document the
+  // browser has no state for — every one of them means "default", not "unknown".
+  assert.deepEqual(readChromeStack(null), [])
+  assert.deepEqual(readChromeStack(undefined), [])
+  assert.deepEqual(readChromeStack({ __NA: true }), [])
+})
+
+test('a malformed entry reads as the default state rather than an unknown one', () => {
+  for (const value of ['menu', 42, {}, [{}], [{ kind: 'panel' }], [{ kind: 'menu' }, null]]) {
+    assert.deepEqual(
+      readChromeStack({ [CHROME_HISTORY_KEY]: value }),
+      [],
+      `${JSON.stringify(value)} should not restore a state`,
+    )
+  }
+})
+
+// ---------------------------------------------------------------------------
+// Which state is a panel (§6.4)
+// ---------------------------------------------------------------------------
+
+test('no panel is open in the default state or with the menu up', () => {
+  assert.equal(openPanel(DEFAULT_STACK), null)
+  assert.equal(openPanel(open(DEFAULT_STACK, MENU)), null)
+})
+
+test('a panel state names the panel that is open', () => {
+  // Opened from the menu, so the stack is menu-then-panel: the panel is the top.
+  const stack = open(open(DEFAULT_STACK, MENU), CONTEXT)
+  assert.equal(openPanel(stack), 'context')
+  // One step back is the open menu again, with no panel — which is what closing
+  // the panel and unlocking the page comes down to.
+  assert.equal(openPanel(back(stack)), null)
+  assert.deepEqual(currentState(back(stack)), MENU)
+})
+
+test('a panel state survives a history entry, and an unknown kind still does not', () => {
+  const stack = open(open(DEFAULT_STACK, MENU), CONTEXT)
+  assert.deepEqual(readChromeStack({ [CHROME_HISTORY_KEY]: stack }), stack)
+  // …and the panel that landed with it.
+  const incoming = open(open(DEFAULT_STACK, MENU), INCOMING)
+  assert.deepEqual(readChromeStack({ [CHROME_HISTORY_KEY]: incoming }), incoming)
+  // The kinds are a closed set, and a name that is not one of them restores nothing
+  // — an entry written by a build that named its states differently, or by anything
+  // else on the page. `outgoing` is the section heading §7.1 carries; the state it
+  // describes is called `reference`, and this is the difference mattering.
+  assert.deepEqual(readChromeStack({ [CHROME_HISTORY_KEY]: [{ kind: 'outgoing' }] }), [])
+})
+
+// ---------------------------------------------------------------------------
+// Which state is a selection mode (§6.3)
+// ---------------------------------------------------------------------------
+
+test('the two selection modes are states, so one back step undoes one of them', () => {
+  // Level 1 is entered from the open menu, and "Vissza" returns to the open menu —
+  // which is what makes it a push rather than a mode flag (§6.3).
+  for (const mode of [TERMS, CLAIMS]) {
+    const stack = open(open(DEFAULT_STACK, MENU), mode)
+    assert.deepEqual(currentState(stack), mode)
+    assert.deepEqual(currentState(back(stack)), MENU)
+    assert.equal(isDefaultState(back(back(stack))), true)
+  }
+})
+
+test('a selection mode is not a panel: nothing slides in and nothing scroll-locks', () => {
+  // The distinction the page acts on. `openPanel` is what opens the sheet and what
+  // freezes the page behind it, and level 1 does neither — picking a term means
+  // finding it first, so the page has to stay scrollable (§6.3).
+  for (const mode of [TERMS, CLAIMS]) {
+    assert.equal(openPanel(open(open(DEFAULT_STACK, MENU), mode)), null)
+  }
+})
+
+test('selectionMode names the mode, and answers null for every other state', () => {
+  assert.equal(selectionMode(DEFAULT_STACK), null)
+  assert.equal(selectionMode(open(DEFAULT_STACK, MENU)), null)
+  assert.equal(selectionMode(open(open(DEFAULT_STACK, MENU), CONTEXT)), null)
+  assert.equal(selectionMode(open(open(DEFAULT_STACK, MENU), TERMS)), 'terms')
+  assert.equal(selectionMode(open(open(DEFAULT_STACK, MENU), CLAIMS)), 'claims')
+  // …and it is the TOP of the stack that decides, not any state below it.
+  assert.equal(selectionMode(back(open(open(DEFAULT_STACK, MENU), TERMS))), null)
+})
+
+test('a selection mode survives a history entry', () => {
+  // Same guarantee the panels have: Back and Forward both restore what the entry
+  // recorded, so the reveal comes back exactly as the reader left it.
+  for (const mode of [TERMS, CLAIMS]) {
+    const stack = open(open(DEFAULT_STACK, MENU), mode)
+    assert.deepEqual(readChromeStack({ [CHROME_HISTORY_KEY]: stack }), stack)
+  }
+})
+
+test('the selection kinds are exactly the two menu items that reveal', () => {
+  // The list EntityChrome hands the menu as live items, and the list globals.scss
+  // has a reveal rule for. Two entries, and the same two names the items carry.
+  assert.deepEqual([...SELECTION_KINDS], ['terms', 'claims'])
+})
+
+// ---------------------------------------------------------------------------
+// Level 2: one of them picked (§6.3)
+// ---------------------------------------------------------------------------
+
+test('the selected kinds are the two modes in the singular', () => {
+  // The counterpart of the list above, and the one EntityChrome subtracts to find
+  // the panels a menu item can open. Same two things, one of each.
+  assert.deepEqual([...SELECTED_KINDS], ['term', 'claim'])
+})
+
+test('picking one is a state on top of its mode, so Vissza lands back on level 1', () => {
+  // The whole reason level 2 is a state and not a flag: one back step returns the
+  // reader to "pick one" with every candidate revealed again, and the second to the
+  // open menu (§6.3).
+  for (const [mode, picked] of LEVEL_TWO) {
+    const stack = open(open(open(DEFAULT_STACK, MENU), mode), picked)
+    assert.deepEqual(currentState(stack), picked)
+    assert.deepEqual(currentState(back(stack)), mode)
+    assert.deepEqual(currentState(back(back(stack))), MENU)
+    assert.equal(isDefaultState(back(back(back(stack)))), true)
+  }
+})
+
+test('a selected state IS a panel, which is the whole difference between the levels', () => {
+  // Level 1 opens nothing and must not scroll-lock; level 2 slides the sheet in
+  // with the selection's details (§6.3, §6.4). `openPanel` is what both come down
+  // to, so this is the one assertion that separates them.
+  for (const [mode, picked] of LEVEL_TWO) {
+    const level1 = open(open(DEFAULT_STACK, MENU), mode)
+    assert.equal(openPanel(level1), null)
+    const level2 = open(level1, picked)
+    assert.equal(openPanel(level2), picked.kind)
+    // …and stepping back closes it again, which is what unlocks the page.
+    assert.equal(openPanel(back(level2)), null)
+  }
+})
+
+test('the mode stays named at level 2, and the target says which candidate', () => {
+  // The reveal is what shows the reader their selection, so the body has to stay in
+  // the mode across the step — the narrowing is level 2, not a different mode
+  // (§6.3). `selectedTarget` is the only thing that distinguishes the two levels.
+  for (const [mode, picked, name] of LEVEL_TWO) {
+    const level1 = open(open(DEFAULT_STACK, MENU), mode)
+    assert.equal(selectionMode(level1), name)
+    assert.equal(selectedTarget(level1), null)
+
+    const level2 = open(level1, picked)
+    assert.equal(selectionMode(level2), name)
+    assert.equal(selectedTarget(level2), picked.target)
+
+    // …and stepping back gives up the selection while keeping the mode.
+    assert.equal(selectionMode(back(level2)), name)
+    assert.equal(selectedTarget(back(level2)), null)
+  }
+  // No other state names a candidate, whatever else is on the stack.
+  assert.equal(selectedTarget(DEFAULT_STACK), null)
+  assert.equal(selectedTarget(open(open(DEFAULT_STACK, MENU), CONTEXT)), null)
+})
+
+test('a selection survives a history entry, target and all', () => {
+  for (const [mode, picked] of LEVEL_TWO) {
+    const stack = open(open(open(DEFAULT_STACK, MENU), mode), picked)
+    assert.deepEqual(readChromeStack({ [CHROME_HISTORY_KEY]: stack }), stack)
+  }
+})
+
+test('a state and a target that do not belong together read as the default state', () => {
+  // Both directions, because both are shapes this module never produces and both
+  // would render as something: a `term` with no target lights nothing up and opens
+  // an empty panel, and a target on any other kind is an entry from somewhere else.
+  for (const value of [
+    [{ kind: 'term' }],
+    [{ kind: 'claim' }],
+    [{ kind: 'reference' }],
+    [{ kind: 'term', target: '' }],
+    [{ kind: 'term', target: 42 }],
+    [{ kind: 'reference', target: '' }],
+    [{ kind: 'menu', target: 'fogalmak.gyuru' }],
+    [{ kind: 'context', target: 'fogalmak.gyuru' }],
+    [{ kind: 'terms', target: 'fogalmak.gyuru' }],
+  ]) {
+    assert.deepEqual(
+      readChromeStack({ [CHROME_HISTORY_KEY]: value }),
+      [],
+      `${JSON.stringify(value)} should not restore a state`,
+    )
+  }
+})
+
+// ---------------------------------------------------------------------------
+// A pressed outgoing reference (§7.1)
+// ---------------------------------------------------------------------------
+
+test('the kinds that name a thing are the two singulars plus a reference', () => {
+  // The list `ChromeState.target` follows, and the one EntityChrome subtracts to
+  // find the panels a MENU item can open. Wider than SELECTED_KINDS by exactly one:
+  // a reference is a selection that no mode revealed.
+  assert.deepEqual([...TARGET_KINDS], ['term', 'claim', 'reference'])
+  assert.deepEqual([...SELECTED_KINDS], ['term', 'claim'])
+})
+
+test('a reference is a panel state opened straight from the default state', () => {
+  // No mode above it (§7.1): the reader points at a mark in the prose, so the stack
+  // is one deep and one back step is the whole way out. It is a panel all the same —
+  // the sheet arrives and the page freezes behind it (§6.4).
+  const stack = open(DEFAULT_STACK, REFERENCE)
+  assert.deepEqual(currentState(stack), REFERENCE)
+  assert.equal(openPanel(stack), 'reference')
+  assert.equal(isDefaultState(back(stack)), true)
+  assert.equal(openPanel(back(stack)), null)
+})
+
+test('a reference names its target and belongs to no selection mode', () => {
+  const stack = open(DEFAULT_STACK, REFERENCE)
+  assert.equal(selectedTarget(stack), REFERENCE.target)
+  // The one respect in which it is not a level-2 state: nothing revealed a class of
+  // things for it to be one of, so the body is in no mode. `app/globals.scss` reads
+  // this difference — the reveal for a reference is gated on the selection alone.
+  assert.equal(selectionMode(stack), null)
+})
+
+test('a reference state survives a history entry, href and all', () => {
+  // The positive half of the closed-set check above, and the one that matters for
+  // Forward: the entry has to bring back the same reference, not merely a reference.
+  const stack = open(DEFAULT_STACK, REFERENCE)
+  assert.deepEqual(readChromeStack({ [CHROME_HISTORY_KEY]: stack }), stack)
+  // …and from under the menu too, which is where D2 says it leaves the reader.
+  const fromMenu = open(open(DEFAULT_STACK, MENU), REFERENCE)
+  assert.deepEqual(readChromeStack({ [CHROME_HISTORY_KEY]: fromMenu }), fromMenu)
+})
+
+// ---------------------------------------------------------------------------
+// Which items an entity carries (§6.2, §6.5)
+// ---------------------------------------------------------------------------
+
+const keysOf = (node) => kbMenuItems(node).map((item) => item.key)
+
+test('Bejövő hivatkozások and Kontextus are on every entity', () => {
+  const g = buildGraphFromRaw(raw())
+  for (const node of [
+    g.definitions.get('definitions.def-egy'),
+    g.theorems.get('theorems.tetel-egy'),
+    g.proofs.get('theorems.tetel-egy.proofs.biz-egy'),
+    g.remarks.get('definitions.def-egy.remarks.rem-egy'),
+  ]) {
+    const keys = keysOf(node)
+    assert.ok(keys.includes('incoming'), `${node.type} has no incoming item`)
+    assert.ok(keys.includes('context'), `${node.type} has no context item`)
+  }
+})
+
+test('Fogalmak follows the terms and Állítások the claims, in menu order', () => {
+  const g = buildGraphFromRaw(raw())
+  // The fixture definition defines one term and asserts one claim.
+  assert.deepEqual(keysOf(g.definitions.get('definitions.def-egy')), [
+    'incoming',
+    'terms',
+    'claims',
+    'context',
+  ])
+  // The theorem has neither, and a short menu is the common case (§6.5).
+  assert.deepEqual(keysOf(g.theorems.get('theorems.tetel-egy')), ['incoming', 'context'])
+})
+
+test('a node with an empty terms map has no Fogalmak item', () => {
+  const g = buildGraphFromRaw(raw({ terms: {} }))
+  assert.ok(!keysOf(g.definitions.get('definitions.def-egy')).includes('terms'))
+})
+
+test('Állítások never appears on a proof, even if one carries a claim', () => {
+  // Forbidden by the identifiers sub-plan's D3, so this cannot come from content —
+  // it is the type rule of §6.5 written down where the menu can be wrong.
+  const proof = { ...hu, type: 'proof', name: 'p', slug: 'p', body: [narrative('B.'), claim('c', 'c')] }
+  assert.deepEqual(keysOf(proof), ['incoming', 'context'])
+})
+
+test('every item carries its localized caption and its icon', () => {
+  const g = buildGraphFromRaw(raw())
+  const items = kbMenuItems(g.definitions.get('definitions.def-egy'))
+  assert.deepEqual(
+    items.map((item) => [item.key, item.icon, item.label]),
+    [
+      ['incoming', 'incoming', 'Bejövő hivatkozások'],
+      ['terms', 'star', 'Fogalmak'],
+      ['claims', 'paragraph', 'Állítások'],
+      ['context', 'target', 'Kontextus'],
+    ],
+  )
+})

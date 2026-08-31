@@ -1,6 +1,6 @@
 import 'server-only'
 import type { RefTarget, ContentGraph, StandaloneNode } from './types'
-import { getChapterIndex } from '../utils/index-helpers'
+import { getChapterIndexLabel, getSectionIndexLabel } from '../utils/index-helpers'
 
 // ---------------------------------------------------------------------------
 // Context types
@@ -272,15 +272,17 @@ export function resolveTemplate(template: string, ctx: TemplateContext): string 
  * Returns null if the target type does not support template fields.
  * Extend this function to add context for new target types.
  */
-type EntityChapterInfo = Map<string, { chapterUrl: string; index?: string }>
+// Embedding info is read straight off the graph (graph.embedding) rather than
+// passed in: it is built before any display template is resolved, and threading it
+// through as an optional argument made it possible to call this with the argument
+// missing and silently lose every `{target.index}`.
 
 export function buildContext(
   target: RefTarget,
   graph: ContentGraph,
-  entityChapterInfo?: EntityChapterInfo,
 ): TemplateContext | null {
   if (target.type === 'book') {
-    const book = graph.books.get(`/books/${target.name}`)
+    const book = graph.books.get(target.fqn)
     if (!book) return null
     // No `index`: a book is the top of the numbering, not a numbered item within it.
     return {
@@ -321,13 +323,11 @@ export function buildContext(
   }
 
   if (target.type === 'chapter') {
-    const key = `/books/${target.book}/${target.part}/${target.name}`
-    const chapter = graph.chapters.get(key)
+    const chapter = graph.chapters.get(target.fqn)
     if (!chapter) return null
-    const chapterIdx = getChapterIndex(chapter)
     return {
       target: {
-        index: `${chapterIdx}.`,
+        index: getChapterIndexLabel(chapter),
         name: chapter.name,
         title: chapter.title,
         type: 'chapter',
@@ -336,8 +336,7 @@ export function buildContext(
   }
 
   if (target.type === 'claim') {
-    const ns = target.parent.namespace.startsWith('/') ? target.parent.namespace.slice(1) : target.parent.namespace
-    const parentKey = `/entities/${ns}/${target.parent.name}`
+    const parentKey = target.parentFqn
     const parentEntity =
       graph.definitions.get(parentKey) ??
       graph.theorems.get(parentKey) ??
@@ -353,7 +352,7 @@ export function buildContext(
       }
     }
     if (!found) return null
-    const parentInfo = entityChapterInfo?.get(`${target.parent.namespace}/${target.parent.name}`)
+    const parentInfo = graph.embedding.get(target.parentFqn)
     const parentFallbackLabel = ENTITY_LABEL_HU[parentEntity.type] ?? parentEntity.type
     return {
       target: {
@@ -369,15 +368,14 @@ export function buildContext(
   }
 
   if (target.type === 'term') {
-    const ns = target.parent.namespace.startsWith('/') ? target.parent.namespace.slice(1) : target.parent.namespace
-    const parentKey = `/entities/${ns}/${target.parent.name}`
+    const parentKey = target.parentFqn
     const parentEntity =
       graph.definitions.get(parentKey) ??
       graph.theorems.get(parentKey)   ??
       graph.proofs.get(parentKey)     ??
       graph.remarks.get(parentKey)
     if (!parentEntity) return null
-    const parentInfo = entityChapterInfo?.get(`${target.parent.namespace}/${target.parent.name}`)
+    const parentInfo = graph.embedding.get(target.parentFqn)
     const parentFallbackLabel = ENTITY_LABEL_HU[parentEntity.type] ?? parentEntity.type
     return {
       target: {
@@ -392,14 +390,11 @@ export function buildContext(
   }
 
   if (target.type === 'section') {
-    const key = `/books/${target.book}/${target.part}/${target.chapter}/${target.name}`
-    const section = graph.sections.get(key)
+    const section = graph.sections.get(target.fqn)
     if (!section) return null
-    const chapterIdx = getChapterIndex(section.chapter)
-    const sectionIdx = section.chapter.sections.indexOf(section) + 1
     return {
       target: {
-        index: `${chapterIdx}.${sectionIdx}.`,
+        index: getSectionIndexLabel(section),
         name: section.name,
         title: section.title,
         type: 'section',
@@ -411,13 +406,12 @@ export function buildContext(
     target.type === 'definition' || target.type === 'theorem' ||
     target.type === 'proof'       || target.type === 'remark'
   ) {
-    const ns = target.namespace.startsWith('/') ? target.namespace.slice(1) : target.namespace
-    const entityKey = `/entities/${ns}/${target.name}`
+    const entityKey = target.fqn
     const entity =
       graph.definitions.get(entityKey) ?? graph.theorems.get(entityKey) ??
       graph.proofs.get(entityKey)     ?? graph.remarks.get(entityKey)
     if (!entity) return null
-    const info = entityChapterInfo?.get(`${target.namespace}/${target.name}`)
+    const info = graph.embedding.get(target.fqn)
     const fallbackLabel = ENTITY_LABEL_HU[target.type] ?? target.type
     return {
       target: {

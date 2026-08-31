@@ -1,4 +1,4 @@
-import type { RefMap, TermMap } from '@/lib/content/types'
+import type { RefMap, TermMap, AnchorParent } from '@/lib/content/types'
 import InlineText from '../InlineText'
 import styles from './list-block.module.scss'
 
@@ -8,7 +8,7 @@ interface ListBlockProps {
   items: string[]
   refs?: RefMap
   terms?: TermMap
-  termParent?: { type: string; namespace: string; name: string }
+  termParent?: AnchorParent
 }
 
 export default function ListBlock({ type, leadIn, items, refs, terms, termParent }: ListBlockProps) {

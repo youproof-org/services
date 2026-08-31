@@ -6,8 +6,11 @@ import type {
   RemarkNode,
   RefMap,
   TermMap,
+  AnchorParent,
 } from '@/lib/content/types'
 import { getContentGraph } from '@/lib/content'
+import { kbPageExists } from '@/lib/content/graph'
+import { kbAnchorPath, embeddedScope, urlForKbNode } from '@/lib/content/urls'
 
 type AnyEntity = DefinitionNode | TheoremNode | ProofNode | RemarkNode
 import InlineText from './InlineText'
@@ -30,9 +33,9 @@ interface ContentBlocksProps {
   refs?: RefMap
   context: 'web' | 'latex'
   dropCapFirst?: boolean
-  parentEntity?: { type: string; namespace: string; name: string }
+  parentEntity?: AnchorParent
   terms?: TermMap
-  termParent?: { type: string; namespace: string; name: string }
+  termParent?: AnchorParent
 }
 
 export default function ContentBlocks({ blocks, embedIndices, figureIndices, refs, context, dropCapFirst, parentEntity, terms, termParent }: ContentBlocksProps) {
@@ -110,9 +113,7 @@ export default function ContentBlocks({ blocks, embedIndices, figureIndices, ref
             )
           case 'embed': {
             const graph = getContentGraph()
-            const { type: entityType, name, namespace } = block.target
-            const ns = namespace.startsWith('/') ? namespace.slice(1) : namespace
-            const entityKey = `/entities/${ns}/${name}`
+            const { type: entityType, name, fqn: entityKey } = block.target
             const label = embedIndices?.[entityKey]
 
             let entity: AnyEntity | undefined =
@@ -145,12 +146,16 @@ export default function ContentBlocks({ blocks, embedIndices, figureIndices, ref
               )
             }
 
+            // `urlForKbNode` is null-typed for a node it cannot address; `kbPageExists`
+            // already rules that out here, so the coalesce is only about the type.
+            const kbHref = kbPageExists(graph, entity)
+              ? urlForKbNode(entity) ?? undefined
+              : undefined
+
             return (
               <EmbeddedEntity
                 key={i}
                 entityType={entity.type}
-                namespace={entity.namespace}
-                name={entity.name}
                 body={entity.body}
                 label={label}
                 embedIndices={embedIndices}
@@ -160,7 +165,10 @@ export default function ContentBlocks({ blocks, embedIndices, figureIndices, ref
                 canonicalLabel={entity.labels?.canonical}
                 refs={entity.references}
                 terms={entity.terms}
-                termParent={{ type: entity.type, namespace: entity.namespace, name: entity.name }}
+                anchorId={kbAnchorPath(entity)}
+                termParent={embeddedScope(entity)}
+                locale={entity.locale}
+                kbHref={kbHref}
               />
             )
           }
@@ -171,6 +179,7 @@ export default function ContentBlocks({ blocks, embedIndices, figureIndices, ref
                 key={i}
                 index={claimIndex}
                 name={block.name}
+                slug={block.slug}
                 content={block.content}
                 formula={block.formula}
                 refs={refs}

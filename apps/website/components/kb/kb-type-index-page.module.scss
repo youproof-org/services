@@ -1,0 +1,72 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+// The definitions and theorems indexes: one dense line per node, title first, its
+// label trailing in grey (§5). One stylesheet, because there is one page — the two
+// routes differ in the nodes they pass it. Row layout is provisional, as §5 says.
+
+// Matches the root page's title (kb-root-page.module.scss).
+.title {
+  margin: 0;
+  font-size: 1.5rem;
+
+  @include tablet {
+    font-size: 2.5rem;
+  }
+}
+
+// The count, in the root page card's wording and weight, as the glossary's is.
+.count {
+  margin: 0.8rem 0 1.2rem;
+  font-size: 1.35rem;
+  font-weight: $font-x-bold;
+  line-height: 1.2;
+}
+
+.rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  // Tighter than the body's 1.9: a row is one line, and at body leading 191 of
+  // them scan like paragraphs rather than like a list.
+  line-height: 1.5;
+}
+
+// Kebab-case on purpose, unlike the camelCase locals around it: `getLocalIdent` in
+// next.config.ts emits `<stylesheet>_<local>` verbatim, so this is the one class
+// name that survives the build unhashed and readable — it is how a row is found in
+// the exported HTML.
+.index-row {
+  padding: 0.4rem 0;
+  border-bottom: 1px solid $gray-200;
+
+  &:first-child {
+    border-top: 1px solid $gray-200;
+  }
+}
+
+.name {
+  font-weight: $font-bold;
+  color: $black;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// De-emphasised, not faint: this is the only cue on the page to where a node sits
+// in the book, so it takes $gray-600 (7.56:1 on white) rather than the $gray-500
+// (4.83:1) the glossary's secondary line uses. The em dash is the separator from
+// §5's `Euler-Fermat tetel - 15.6. Tetel`; it is punctuation between two rendered
+// values, so it lives here and not as a literal in the component.
+.label {
+  font-size: 0.9rem;
+  color: $gray-600;
+  white-space: nowrap;
+
+  &::before {
+    content: '\2014';
+    margin: 0 0.4rem;
+  }
+}

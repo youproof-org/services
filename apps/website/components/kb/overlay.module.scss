@@ -1,0 +1,19 @@
+@use 'variables' as *;
+
+// The same scrim as the modal shell's (`ui/modal.module.scss`), which is the dim
+// the reader already knows from the consent dialog — sub-plan §6.3 asks for that
+// treatment, not a second one.
+//
+// No `overflow-y` and nothing on <body>: the page keeps scrolling underneath while
+// the dim is up (§6.3). The layer does absorb clicks, which is the point — a click
+// anywhere on it is one step back.
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: $z-kb-overlay;
+  background: rgba(0, 0, 0, 0.5);
+
+  @media print {
+    display: none;
+  }
+}

@@ -177,12 +177,23 @@ export function extractSeo(html) {
 }
 
 const LOC_RE = /<loc>\s*([^<\s][^<]*?)\s*<\/loc>/gi;
+const SITEMAP_INDEX_RE = /<sitemapindex[\s>]/i;
 
 /**
- * Extract page URLs from a sitemap.xml body. Handles a plain <urlset> and, since
- * a <sitemapindex> uses the same <loc> element, returns nested-sitemap URLs too
- * (callers cross-reference by path, so index entries simply won't match a page
- * and are harmless). Returns an array of raw URL strings (deduped).
+ * True when a sitemap body is a <sitemapindex> — its <loc> values are CHILD
+ * SITEMAPS, not pages — rather than a <urlset> of pages. The two are
+ * indistinguishable from their <loc> elements alone, so a caller that needs page
+ * URLs (the crawler's orphan check) must branch on this and fetch the children.
+ */
+export function isSitemapIndex(xml) {
+  return SITEMAP_INDEX_RE.test(xml);
+}
+
+/**
+ * Extract the <loc> values from a sitemap.xml body, deduped. For a <urlset>
+ * these are page URLs; for a <sitemapindex> they are child-sitemap URLs — the
+ * element is the same in both, so pair this with isSitemapIndex() to know which.
+ * Returns an array of raw URL strings.
  */
 export function parseSitemapLocs(xml) {
   const out = new Set();

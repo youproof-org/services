@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import { buildReport, buildCrawlerSuite, buildSmokeSuite } from "../lib/report.mjs";
-import { extractMathErrors, parseSitemapLocs } from "../lib/extract.mjs";
+import { extractMathErrors, parseSitemapLocs, isSitemapIndex } from "../lib/extract.mjs";
 
 test("buildReport: clean crawl + all-green smoke => overall pass, schema shape", () => {
   const report = buildReport({
@@ -27,7 +27,7 @@ test("buildReport: clean crawl + all-green smoke => overall pass, schema shape",
   assert.equal(report.suites.crawler.status, "pass");
   assert.equal(report.suites.crawler.pagesCrawled, 12);
   // Every crawler finding key present, defaulted to [].
-  for (const k of ["brokenInternal", "brokenExternal", "legacyLeaks", "mathErrors", "orphanPages", "redirectLoops", "slowPages", "langErrors", "seoErrors", "robotsErrors", "seoWarnings"]) {
+  for (const k of ["brokenInternal", "brokenExternal", "legacyLeaks", "mathErrors", "orphanPages", "redirectLoops", "slowPages", "langErrors", "seoErrors", "robotsErrors", "crawlLimits", "seoWarnings"]) {
     assert.deepEqual(report.suites.crawler[k], [], `crawler.${k}`);
   }
 });
@@ -42,6 +42,9 @@ test("buildCrawlerSuite: each fatal category fails the suite; warnings do not", 
     { langErrors: [{ url: "/en/x", found: "hu", expected: "en" }] },
     { seoErrors: [{ url: "/x", missing: ["og:image"] }] },
     { robotsErrors: [{ detail: "production robots.txt Disallow: /" }] },
+    // A truncated crawl is fatal: the pages it never reached are missing from every
+    // other category and would be reported as orphans.
+    { crawlLimits: [{ detail: "crawl stopped at MAX_PAGES=1000" }] },
   ];
   for (const c of fatalCases) {
     assert.equal(buildCrawlerSuite(c).status, "fail", JSON.stringify(c));
@@ -85,6 +88,28 @@ test("extractMathErrors counts katex-error spans and returns a snippet", () => {
   const r = extractMathErrors(broken);
   assert.equal(r.count, 2);
   assert.match(r.snippet, /katex-error/);
+});
+
+test("isSitemapIndex tells a <sitemapindex> from a <urlset>", () => {
+  assert.equal(
+    isSitemapIndex(`<?xml version="1.0"?>
+      <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+        <sitemap><loc>https://youproof.org/sitemap-tetelek.xml</loc></sitemap>
+      </sitemapindex>`),
+    true,
+  );
+  assert.equal(
+    isSitemapIndex(`<?xml version="1.0"?>
+      <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+        <url><loc>https://youproof.org/hu</loc></url>
+      </urlset>`),
+    false,
+  );
+  // The word appearing inside a <loc> is not the root element.
+  assert.equal(
+    isSitemapIndex(`<urlset><url><loc>https://youproof.org/sitemapindex-notes</loc></url></urlset>`),
+    false,
+  );
 });
 
 test("parseSitemapLocs extracts absolute page URLs, deduped, entity-decoded", () => {
