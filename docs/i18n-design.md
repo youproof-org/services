@@ -27,7 +27,10 @@ The set of supported locales is a **config list**, `['hu']` today. Each locale h
 The config lives in one place, `apps/website/lib/i18n/config.ts`, backed by a
 plain-data file `apps/website/lib/i18n/locales.json` so it can also be read by the
 legacy-redirect manifest generator (a standalone `.mjs`, see §7). `DEFAULT_LOCALE`
-is `hu`.
+is not in that file: it comes from the build-time env var of the same name — the
+same GitHub Environment variable that drives the Cloudflare apex redirect — so the
+default lives in exactly one place across app and infra, and falls back to the
+first configured locale (`hu`) in local dev.
 
 ---
 
@@ -42,6 +45,10 @@ is `hu`.
 | Newsletter | `/{locale}/{newsletter-container}/{slug}` |
 | Landing | `/{locale}/{landing-container}/{slug}` |
 | Custom page | `/{locale}/{slug}` — **no container segment** |
+| Listing page | `/{locale}/{container}` |
+| KB root / type index | `/{locale}/{kb-container}` / `/{locale}/{kb-container}/{type-container}` |
+| Definition, theorem | `/{locale}/{kb-container}/{type-container}/{slug}` — flat (§4a) |
+| Proof, remark | `…/{owner-slug}/{type-container}/{slug}` — nested under the owner (§4a) |
 | Site root | `/` → **301 → `/{DEFAULT_LOCALE}`** (§6) |
 
 Parts and sections are **not** in the public URL. Both nonetheless render as
@@ -60,8 +67,19 @@ Concrete `hu` examples (from §3):
 /hu/hirek/{slug}
 /hu/landing/{slug}
 /hu/{page-slug}
+/hu/tudasbazis
+/hu/tudasbazis/definiciok
+/hu/tudasbazis/definiciok/{definition-slug}
+/hu/tudasbazis/tetelek/{theorem-slug}
+/hu/tudasbazis/tetelek/{theorem-slug}/bizonyitasok/{proof-slug}
+/hu/tudasbazis/tetelek/{theorem-slug}/bizonyitasok/{proof-slug}/megjegyzesek/{remark-slug}
 /  → 301 → /hu
 ```
+
+The full set of shapes is the `UrlKey` union in `lib/i18n/url.ts` — one key per
+shape, so a remark gets three (its parent chain differs in length depending on
+whether a definition, a theorem or a proof owns it) and each key's segment count
+stays exact.
 
 ---
 
@@ -72,20 +90,34 @@ A per-locale map from a **canonical, language-independent container key** to the
 mechanism that generalizes routing and the manifest generator — nothing like
 `konyvek` is hardcoded anywhere outside it.
 
-| canonical key | English (today) | `hu` segment |
-|---|---|---|
-| `book` | books | **konyvek** |
-| `chapter` | chapters | **fejezetek** |
-| `article` | articles | **cikkek** |
-| `newsletter` | newsletter | **hirek** |
-| `landing` | landing | **landing** *(kept as-is)* |
-| `page` | (root) | *(no container)* |
+| canonical key | English (today) | `hu` segment | appears in |
+|---|---|---|---|
+| `book` | books | **konyvek** | URL |
+| `chapter` | chapters | **fejezetek** | URL (nested under its book) |
+| `article` | articles | **cikkek** | URL |
+| `newsletter` | newsletter | **hirek** | URL |
+| `landing` | landing | **landing** *(kept as-is)* | URL |
+| `page` | (root) | *(no container)* | — |
+| `knowledge-base` | knowledge base | **tudasbazis** | URL (the outer KB segment) |
+| `definition` | definitions | **definiciok** | URL + anchor |
+| `theorem` | theorems | **tetelek** | URL + anchor |
+| `proof` | proofs | **bizonyitasok** | URL + anchor |
+| `remark` | remarks | **megjegyzesek** | URL + anchor |
+| `term` | terms | **fogalmak** | URL (the glossary index) + anchor |
+| `claim` | claims | **allitasok** | anchor only |
+| `part` | parts | **reszek** | anchor only |
+| `section` | sections | **szakaszok** | anchor only |
+
+The last three name a container that is addressed by a **fragment** rather than by
+a path, so they never appear in a URL. They live in the same dictionary anyway,
+for two reasons: they are the same words — an anchor segment and a URL segment for
+one concept must not be able to drift apart (§4b) — and being here reserves them
+against a colliding custom-page slug (§9).
 
 Data shape (`locales.json`):
 
 ```json
 {
-  "defaultLocale": "hu",
   "locales": {
     "hu": {
       "displayName": "Magyar",
@@ -94,17 +126,38 @@ Data shape (`locales.json`):
         "chapter": "fejezetek",
         "article": "cikkek",
         "newsletter": "hirek",
-        "landing": "landing"
+        "landing": "landing",
+        "knowledge-base": "tudasbazis",
+        "definition": "definiciok",
+        "theorem": "tetelek",
+        "proof": "bizonyitasok",
+        "remark": "megjegyzesek",
+        "term": "fogalmak",
+        "claim": "allitasok",
+        "part": "reszek",
+        "section": "szakaszok"
       }
     }
   }
 }
 ```
 
+Each locale entry carries more than its containers — the display and brand
+strings, the UI `labels` dictionary for text that belongs to no content object,
+and `sitemapGroups` (§7). `lib/i18n/config.ts` is the typed reader.
+
 `page` has no entry (routes at `/{locale}/{slug}`). The app exposes
 `getContainerSegment(locale, key)` and the inverse `resolveContainerKey(locale,
 segment)`; all URL construction goes through `buildLocalizedUrl(locale,
 contentTypeKey, ...slugPath)`.
+
+A third reader, `isRoutableAtRoot(key)`, says which keys may be the **first**
+segment after the locale. It is what makes `/hu/definiciok` a 404 rather than the
+definitions index: the per-type KB segments are reserved and localized, but they
+are addressed only nested inside `tudasbazis`. Both it and the anchor
+classification are exhaustive `Record<ContainerKey, …>` tables, so adding a
+container key without classifying it is a compile error rather than a silently
+mis-routed path.
 
 ---
 
@@ -234,11 +287,34 @@ so it is correct the moment a second locale exists — no code change.
 
 ### Sitemap
 
-A single sitemap containing **all** locales' URLs (via `buildLocalizedUrl`),
-keeping today's published-gating and landing-exclusion. Each entry carries
-hreflang alternates via Next's `MetadataRoute.Sitemap` per-entry
-`alternates.languages` field, driven by the **same availability logic as the
-hreflang head tags**. Today: `/hu/...` URLs, each with a single `hu` alternate.
+`app/sitemap.ts` is the **one enumerator** of the site's public URLs across all
+locales (via `buildLocalizedUrl`), keeping the published-gating and the
+landing-exclusion. Each entry carries hreflang alternates via Next's
+`MetadataRoute.Sitemap` per-entry `alternates.languages` field, driven by the
+**same availability logic as the hreflang head tags**, plus a per-item `lastmod`
+from the source file's last commit date. Today: `/hu/...` URLs, each with a single
+`hu` alternate.
+
+That single `<urlset>` is then **split by a postbuild step** —
+`scripts/split-sitemap.mjs` — into one child sitemap per URL group, with
+`out/sitemap.xml` rewritten as the `<sitemapindex>` that lists them. Next cannot
+express an index through its metadata convention (`generateSitemaps` emits
+per-id files with no index at all), so splitting the file it produced is what lets
+both exist: one place decides which URLs are public, another decides how they are
+packaged for crawlers, and `robots.txt` still points at `/sitemap.xml`.
+
+Grouping is derived from each URL's **own** locale's container dictionary, so
+nothing in the splitter knows a Hungarian word. Outside the knowledge base a URL
+groups with the container it opens with (a chapter lists with its book); inside it
+with its **deepest** container, which is the type whose index page lists it (a
+proof groups with proofs, not with the theorem it proves). Anything with no
+container of its own — the home page, the knowledge-base root, the standalone
+pages — groups as `page`, whose file name comes from the `sitemapGroups` block
+rather than from `containers`. A group may also be held **out** of the index
+(`landing` is), and a URL shape no rule matches is a hard error rather than a
+silent drop. On `hu` today the index lists eight children:
+`sitemap-konyvek/hirek/oldalak/definiciok/tetelek/bizonyitasok/megjegyzesek/fogalmak.xml`.
+A second locale gets its own files, named in its own words.
 
 ### Legacy redirect manifest (youproof.hu → youproof.org)
 
@@ -366,8 +442,11 @@ same shape of string, differing only in language.
   `/hu/cikkek/pi-nap`.
 - A custom page with slug `konyvek` — collides with the `book` container segment
   at the locale root (`/hu/konyvek`). This is the multi-locale generalization of
-  today's `RESERVED_SLUGS` guard, and it now also covers the anchor-only segments
-  `allitasok`, `szakaszok` and `reszek`.
+  today's `RESERVED_SLUGS` guard, and the reserved set is **every** segment in the
+  locale's container dictionary (§3) — so it covers the knowledge-base segments
+  `tudasbazis`, `definiciok`, `tetelek`, `bizonyitasok`, `megjegyzesek` and
+  `fogalmak`, and the anchor-only `allitasok`, `szakaszok` and `reszek`, even
+  though nothing but `tudasbazis` among them may start a path.
 - Two chapters **in the same book** both with slug `bevezetes`.
 - Two sections **in the same chapter** both with slug `attekintes` — duplicate
   in-page anchor.

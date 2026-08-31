@@ -1227,7 +1227,7 @@ checked yet.
 > 11 086 across 46.
 
 **6. Where the shell work already has an owner.** The nav item and the homepage entry
-block that §2 assumes are parent phases [J.1 and J.2](yp-162-knowledge-graph-urls-implementation-plan.md#j-phase-7--navigation-discovery-internal-linking-services--j1j2-not-started);
+block that §2 assumes are parent phases [J.1 and J.2](yp-162-knowledge-graph-urls-implementation-plan.md#j-phase-7--navigation-discovery-internal-linking-services--done-529f953);
 §10 does not duplicate them. Breadcrumb chains are inseparable from the pages that
 carry them, so they land in phases 5 and 9 — which discharges parent J.3.
 
@@ -2297,7 +2297,7 @@ Written at the end of phase 21, on branch `feat/yp-162-page-layout-design` in
 `services`. Everything below was measured on that branch, not carried over from the
 phase texts — correcting the phase texts where they disagreed was the point of the
 phase, and the disagreements are named. The parent plan's
-[§Shipped](yp-162-knowledge-graph-urls-implementation-plan.md#shipped--phases-15) is
+[§Shipped](yp-162-knowledge-graph-urls-implementation-plan.md#shipped--all-nine-phases) is
 the model for this format and carries the same account of phase 5 as a whole.
 
 ### 12.1 The 21 phases and their commits

@@ -5,10 +5,12 @@
 - [`yp-162-identifiers-and-anchors-sub-plan.md`](yp-162-identifiers-and-anchors-sub-plan.md) — name/slug constraints, the hierarchical anchor grammar, and fully qualified reference targets. **Shipped**, between phase 4 and phase 5; it supersedes [D4](#d4--replace-the-base64-anchor-ids-with-readable-ones-settled--shipped-in-phase-4)'s flat prefixed anchors and E.3's slug-uniqueness table.
 - [`yp-162-page-layout-sub-plan.md`](yp-162-page-layout-sub-plan.md) — the knowledge-base page layout. **Shipped**, as phase 5: all 21 of its phases are built. It replaced §7 of the design plan and the layout half of phase 5, and its §10 was the build order for §H below; **[its §12](yp-162-page-layout-sub-plan.md#12-what-actually-landed) is what actually landed there**, and §Shipped below summarizes it.
 **Repos touched:** `youproof-org/services`, `youproof-org/content`, `youproof-org/editor`
-**Status:** Revision 4 — **phases 1–5 are shipped**; every decision below is now
-settled. **Phases 6–9 remain**, and §Shipped records what phase 5 left them owing.
-The phases were renumbered in revision 3: the URL layer, planned as its own phase, had
-to be absorbed into phase 4 (see §Shipped), so what follows counts one lower than in
+**Status:** Revision 4 — **all nine phases are built**; every decision below is
+settled. §Shipped indexes all nine, and §§C–L carry their close-outs. **One item is
+open in the whole plan: §K item 5**, a crawl of a live staging deploy, which cannot
+run until this branch reaches `development`. The
+phases were renumbered in revision 3: the URL layer, planned as its own phase, had to
+be absorbed into phase 4 (see §Shipped), so what follows counts one lower than in
 revision 2.
 
 **The identifiers-and-anchors sub-plan has shipped.** It replaced the flat
@@ -25,9 +27,15 @@ outgoing-reference panel, the arrival marker, and the print / no-JavaScript /
 reduced-motion sweep. §H below is marked done; H.1 and H.4 survived as requirements,
 H.2's component table and H.3's interaction sketch did not.
 
-**Next up: phase 6, sitemaps** (§I) — and then §J's nav item, which is what makes the
-knowledge base reachable from the homepage at all. Nothing in the knowledge base is
-sitemapped or linked from the site's navigation yet; see the note at the head of §I.
+**Phases 6–9 have shipped**, in four commits: the sitemap index (§I, `e75d4ee`), the
+nav item and homepage block that make the knowledge base reachable from the homepage
+at all (§J, `529f953`), the deploy gate and the environment-agnostic browser tests
+(§K, `30005db`), and the documentation (§L). Each of those four sections was rewritten
+as a close-out during phase 9 — what was asked, what landed, and where the two
+diverged — and the numbers in them were measured for that pass rather than carried
+forward. Two predictions in this plan turned out to be wrong and are corrected there:
+the sitemap's child file list is not fixed (§I item 2) and the deepest page is 3 hops
+from the homepage, not 5 (§K item 1).
 
 > ### Working agreement
 >
@@ -43,13 +51,14 @@ sitemapped or linked from the site's navigation yet; see the note at the head of
 
 §A is what the code and content looked like when this plan was written, measured
 against the design — kept as the record of why each choice was made, not as a
-description of the code today. §B is the decision log. §Shipped records what
-actually landed in phases 1–4 and where it diverged from the plan. §C onward is
-the remaining build.
+description of the code today. §B is the decision log. §Shipped is the one-line-per-
+phase index of what landed, and §§C–L are the phases themselves — each one now a
+close-out of what was asked, what landed and where the two diverged, rather than a
+prediction.
 
 ---
 
-## Shipped — phases 1–5
+## Shipped — all nine phases
 
 | phase | what landed | commits |
 |---|---|---|
@@ -58,6 +67,10 @@ the remaining build.
 | 3 | 537 entity slugs, 178 titles, 367 claim/term slugs, content-model doc | `content 72fcfab`, `883267b`, `a9459b9`, `e01e56d`, `21f61d0` |
 | 4 | KB node URLs, localized anchors, graph derivation, 20 tests, version 2.2.0 | `services ccd5322`, `caace9c`, `51469c5` |
 | 5 | Every knowledge-base page and its whole interactive layer — the 21 phases of the [page-layout sub-plan](yp-162-page-layout-sub-plan.md#10-phases) | `services 629c8b9` … `d4aa639`, 24 commits on `feat/yp-162-page-layout-design`; per-phase table in [its §12.1](yp-162-page-layout-sub-plan.md#121-the-21-phases-and-their-commits) |
+| 6 | The 541 KB URLs in the sitemap, the postbuild splitter and its `<sitemapindex>`, type-aware single-pass `lastmod` (§I) | `services e75d4ee` |
+| 7 | The Tudásbázis nav item and the homepage KB block — 434 of 439 pages now reachable from `/hu` (§J) | `services 529f953` |
+| 8 | Crawler caps + fatal truncation, the orphan check under a sitemap index, environment-agnostic browser tests, both suites in CI (§K) — **item 5, the live staging crawl, still open** | `services 30005db` |
+| 9 | The two normal docs, the content model's page gate, and the close-outs for 6–9 (§L) | *this change* |
 
 Plus three follow-ups: `content 4167543` (two mistyped reference targets),
 `content 8a9a364` (renamed the generated tables off the ticket number), and
@@ -977,126 +990,238 @@ recorded in [the sub-plan's §12.5](yp-162-page-layout-sub-plan.md#125-unresolve
 
 ---
 
-## I. Phase 6 — Sitemaps, robots, lastmod (`services`) — **NOT STARTED**
+## I. Phase 6 — Sitemaps, robots, lastmod (`services`) — **DONE** (`e75d4ee`)
 
-> **Nothing in the knowledge base is sitemapped.** Verified at the end of phase 5:
-> `app/sitemap.ts` contains no KB URLs, `scripts/split-sitemap.mjs` does not exist, and
-> `out/sitemap.xml` carries **31** `<loc>` entries against **587** pages in the export.
-> This is now the first thing standing between 541 knowledge-base pages and being
-> indexed at all.
+> **Where it started.** At the end of phase 5 `out/sitemap.xml` carried **31** `<loc>`
+> entries against **587** pages, `app/sitemap.ts` contained no knowledge-base URLs and
+> `scripts/split-sitemap.mjs` did not exist — the sitemap was the first thing standing
+> between 541 knowledge-base pages and being indexed at all. It now carries **572**
+> URLs locally and **424** on staging, behind an index of 8 child sitemaps.
 
-1. **`app/sitemap.ts`** — add the KB URLs (entity pages filtered by `kbPageExists`, KB
-   root, both indexes, glossary), each with the same self-alternate + `lastmod`
-   treatment as existing entries. Landing pages stay excluded; claims and terms are
-   **not** separately sitemapped (§6.4).
-2. **`scripts/split-sitemap.mjs`** (new `postbuild` step, per A12) — buckets
-   `out/sitemap.xml` into
-   `out/sitemap-{konyvek,cikkek,hirek,oldalak,definiciok,tetelek,bizonyitasok,megjegyzesek,fogalmak}.xml`
-   by URL shape derived from `locales.json`, then rewrites `out/sitemap.xml` as the
-   `<sitemapindex>`. Include a per-type allowlist so a type can be held out of the
-   index without touching `app/sitemap.ts`. Unit-test the splitter on a fixture XML.
-3. **`scripts/gen-content-lastmod.mjs`** (A13) — detect the type from the YAML's `type`
-   field instead of the filename, and replace the per-file `git log` with a single
-   `git log --name-only --format=%cI` pass.
-4. **`app/robots.ts`** — unchanged; `/sitemap.xml` is now the index.
-5. **No Terraform change** — `.xml` is already an asset extension (A12).
+1. **`app/sitemap.ts`** — **done as specified.** The entity pages are filtered by
+   `kbPageExists`, and the knowledge-base root, both type indexes and the glossary are
+   listed alongside them; landing pages stay excluded and claims and terms are not
+   separately sitemapped, each being a fragment of a page that is. One addition the
+   item did not ask for: those four pages have no source file of their own, so each
+   carries the **latest `lastmod` of what it lists** (`latestOf`) rather than none —
+   the glossary's is computed over the nodes that actually define a term.
+2. **`scripts/split-sitemap.mjs`** — **done, and split in two.** The postbuild script
+   is a thin wrapper; the grouping rules and the group table live in a pure
+   **`scripts/lib/sitemap-split.mjs`**, which is what let the **11 unit tests** run on
+   a fixture XML with no export present. Four divergences from the prediction, all in
+   the same direction — nothing about a particular language ended up in the script:
+   - **The file list is not fixed.** Each group's file is named after that group's
+     segment *in the URL's own locale*, so a second locale writes its own files
+     instead of sharing `hu`'s words. `sitemap-cikkek.xml` does not exist today
+     because no article is published — **8 children, not the 9 predicted**.
+   - **Grouping is by depth, not by "URL shape".** Outside the knowledge base a URL
+     groups with the container it *opens* with (a chapter lists with its book); inside
+     it, with its **deepest** container — the type whose index page lists it — so a
+     proof groups with proofs and not with the theorem it proves.
+   - **`locales.json` gained a `sitemapGroups` block** (typed in `lib/i18n/config.ts`).
+     The `page` group covers the home page, the knowledge-base root and the standalone
+     pages, none of which carry a container segment, so there was no name to derive its
+     file from. Unforeseen, and the only new data this phase added.
+   - **An unclassifiable URL is a hard error**, not a silent drop. The predicted
+     allowlist exists as `SITEMAP_GROUPS` with `landing` present and `inIndex: false`,
+     so a landing page reaching the sitemap is held out rather than indexed by
+     accident; and the script is idempotent — a `postbuild` re-run over an
+     already-split export detects the index and exits.
+3. **`scripts/gen-content-lastmod.mjs`** — **done as specified.** The type comes from
+   the document's own `type` field (a knowledge-base file is named after its entity, so
+   a filename map saw none of them) and the per-file `git log` is now a single
+   `git log --name-only --format=%x00%cI` pass, with the date line NUL-prefixed so it
+   cannot be mistaken for a path. **806 entries**, knowledge-base entities included.
+4. **`app/robots.ts`** — **unchanged, as predicted.** `/sitemap.xml` is still the
+   entry point; it is now the index.
+5. **No Terraform change** — confirmed: `.xml` is already an asset extension, so the
+   child sitemaps are served without the `.html`-append transform.
 
-**Review gate.** `out/sitemap.xml` validates as a sitemap index; every `<loc>` in every
-child file exists in the export; child entries sum to the pre-split count.
-
----
-
-## J. Phase 7 — Navigation, discovery, internal linking (`services`) — **J.1–J.2 NOT STARTED**
-
-> **No knowledge-base page is reachable from the site's navigation or its homepage.**
-> Verified at the end of phase 5: `SiteHeader`'s `navLinks` is still the two hardcoded
-> literals `'Cikkek'` and `'Hírek'` and there is no knowledge-base block on the locale
-> homepage. **The page-layout sub-plan's §2 assumes the nav item exists**, and its §9.1
-> note 6 assigned it here rather than duplicating it — so J.1 and J.2 are the difference
-> between 541 built pages and 541 *discoverable* pages, and they gate the crawler in
-> §K as well: the crawl starts from the homepage seed and cannot reach anything it does
-> not link to.
-
-1. `SiteHeader` — add a "Tudásbázis" nav link from `locales.json.labels.knowledgeBase`
-   (and move the existing hardcoded `'Cikkek'`/`'Hírek'` to the same mechanism — A16).
-   **Not started.** The `knowledgeBase` label already exists in `locales.json`; the four
-   KB list pages built in sub-plan phase 5 use it.
-2. `RootHome` — a knowledge-base entry block, so the KB root is reachable from the
-   locale homepage and therefore from the crawler's seed. **Not started.**
-3. ~~Breadcrumbs — §7's chains for all seven KB page kinds, using `locales.json` labels
-   rather than literals.~~ **Moved.** A breadcrumb chain is inseparable from the page
-   that carries it, so the chains land with the pages: the builder handles all seven
-   kinds in **sub-plan phase 5**, which is also where the four list pages start using
-   it, and **sub-plan phase 9** adds no breadcrumb code when the entity routes appear.
-   Labels come from `locales.json` as specified here. This item is discharged there —
-   **done**, as `lib/content/kb-breadcrumbs.ts` with 7 tests, all seven kinds.
-4. Verify D3 end-to-end: an entity reference inside a chapter page still resolves to
-   the in-page anchor, and the same reference on the node's KB page resolves to the
-   target's KB page. **Done** — this is R6, and it is discharged; see §N.
-
-**Review gate.** For J.1–J.2, the two remaining items.
+**Review gate — passed, re-verified for §L.** On the staging export: `out/sitemap.xml`
+is a `<sitemapindex>` listing **8** children, the children hold **424** unique `<loc>`
+entries, **every one of them resolves to a file in the export**, and 424 is exactly the
+pre-split count the splitter reported. Locally the same holds at 572.
 
 ---
 
-## K. Phase 8 — Quality gate and tests — **items 1, 2 and 5 remain**
+## J. Phase 7 — Navigation, discovery, internal linking (`services`) — **DONE** (`529f953`)
+
+> **Where it started.** At the end of phase 5 no knowledge-base page was reachable from
+> the site's navigation or its homepage: `SiteHeader`'s `navLinks` were the two
+> hardcoded literals `'Cikkek'` and `'Hírek'`, and the locale homepage had no
+> knowledge-base block. J.1 and J.2 were the difference between 541 *built* pages and
+> 541 *discoverable* ones, and they gated §K as well — the crawl seeds at the homepage
+> and cannot reach what nothing links to. **Measured now on the staging export: 434 of
+> its 439 pages are reachable from `/hu` by following links, and the deepest sits 3 hops
+> from it.**
+
+1. **`SiteHeader`** — **done, and generalized further than asked.** The nav is a
+   `NAV_ITEMS` table of `{ labelKey, urlKey }` pairs — the knowledge base first, as on
+   the homepage — so every label comes from the locale dictionary and every href from
+   `buildLocalizedUrl`: nothing in the component spells a word or a path. That
+   discharges A16 for the nav.
+2. **`RootHome`** — **done, as three cards rather than a link.** The homepage block is
+   the same card set the knowledge-base root page offers, which is why the phase also
+   produced **`lib/content/kb-sections.ts`**: the set is derived once and rendered
+   twice (`KbSectionCards`), so the two surfaces cannot disagree about what the
+   knowledge base contains. The counts come from `kbPageExists`, the same predicate the
+   entity routes are gated on, so a card cannot advertise a number the page it links to
+   contradicts. Plain links throughout — nothing here needs JavaScript. `SectionHeading`
+   gained a `labelHref` so the heading itself leads to the knowledge-base root, which
+   makes the root **one** hop from the homepage and each index two.
+   **7 new unit tests** (`kb-sections`, plus `kb-sections-deployed` for the
+   environment-gated counts).
+3. ~~Breadcrumbs~~ — **moved to sub-plan phase 5 and discharged there**, as
+   `lib/content/kb-breadcrumbs.ts` with 7 tests covering all seven chains. This phase
+   added the piece that was left: **`lib/content/breadcrumbs.ts`**, so the three crumbs
+   that are nobody's own page — the site root and the two standalone index pages — take
+   their labels from the locale dictionary in one place instead of as literals at each
+   call site. That is the rest of A16.
+4. **Verify D3 end-to-end** — **done**; it is R6, discharged in §N. The end-to-end
+   evidence is now larger than when that was written: `check-anchors` resolves
+   **23 958** internal fragment links across the 587-page local export with **0 broken**.
+
+**Review gate — passed, re-verified for §L.** A link-graph walk of the staging export
+from `/hu`: **434 pages reachable, maximum depth 3, zero sitemap URLs unreachable
+(no orphans), and zero link targets with no exported page.** The 5 unreachable files are
+all deliberate — `404.html`, the root redirect stub, the two noindex container roots
+(`/hu/konyvek`, `/hu/landing`) and the unlisted landing page — and none of them is
+sitemapped, so none would surface as an orphan finding.
+
+---
+
+## K. Phase 8 — Quality gate and tests — **items 1–4 DONE (`30005db`); item 5 REMAINS**
 
 > **The test half of this phase happened during phase 5 instead**, phase by phase, and
-> came out larger than this list. **202 unit tests pass** against a baseline of 96, and
-> **114 browser tests in 8 files** exist that this list never anticipated — Playwright
-> was added mid-run because the menu's history contract cannot be asserted outside a
-> browser. What is *not* done is the deploy-facing half: the crawler caps, the SEO
-> check on the new page kinds, and a crawl of a live staging deploy. Those three are
-> what this phase still is.
+> came out larger than this list ever asked for. The counts as of this close-out:
+> **223 unit tests** against a baseline of 96, and **126 browser tests in 10 files**
+> that this list never anticipated — Playwright was added mid-run because the menu's
+> history contract cannot be asserted outside a browser. What this phase itself did is
+> the deploy-facing half: the crawler caps, the orphan check under a sitemap index, the
+> SEO confirmation, and the CI wiring for both suites. **Only item 5 — a crawl of a live
+> staging deploy — is still owed, and it is the last thing this whole plan owes.**
 
-1. **`tools/smoke-tests/scripts/crawl.mjs`** (A14) — raise `MAX_PAGES` to 1000 and
-   `MAX_DEPTH` to 7; assert `cappedAtMaxPages === false` as a **fatal** finding so a
-   future overflow fails loudly instead of degrading into false orphan reports. No DFS
-   refactor: the `enqueued` Set already guarantees one visit per page. Measure crawl
-   wall-clock and raise `CONCURRENCY` only if the gate becomes slow.
-   **Not started, and now measured rather than predicted:** `MAX_PAGES` is still `500`
-   against **439** pages on staging (R3), `MAX_DEPTH` is still `5`, and
-   `cappedAtMaxPages` is a `console.log`, not a finding. On the depth: `maxDepth` counts
-   **link hops from the seed**, and the shortest chain to the deepest entity page is
-   homepage → KB root → theorem index → theorem → proof → its remark, i.e. depth 5
-   — exactly at the limit, with no margin, which is why this item asks for 7. Note the cap is only half the
-   problem: with §J.1–J.2 unbuilt nothing links to the knowledge base, so the crawl
-   would report 541 orphans rather than overflow.
-2. Confirm `checkSeo` passes on each new page kind: self-referential canonical,
-   hreflang + `x-default`, title/description within the warning thresholds, `og:image`
-   resolving. **Not started.** The per-node `excerpt` this needs is built
-   (`lib/content/kb-excerpt.ts`, 17 tests), so the duplicate-description risk H.1 flagged
-   is addressed; the check itself has not been run against the new kinds.
-3. New unit tests in `apps/website/test/`: URL-helper shapes, KB slug uniqueness,
-   `kbPageExists` across both env modes, anchor helpers, sitemap splitter, `kbRefs`
-   remapping. **Done, except the sitemap splitter, which has no code to test yet
-   (§I).** Reconciled against what exists, all 15 files and 202 tests:
+1. **`tools/smoke-tests/scripts/crawl.mjs`** — **done, and the prediction behind the
+   depth number was wrong.** `MAX_PAGES` is `1000` (against 439 pages on staging, 587
+   once the five unpublished chapters ship) and `MAX_DEPTH` is `7`. But the reason
+   given here for 7 does not hold: the shortest chain to the deepest entity page is
+   *not* 5 hops down the ownership chain, because **the type index lists link every
+   entity page directly**. Measured on the staging export, **every one of its 434 linked
+   pages sits within 3 hops of `/hu`** (17 at depth 1, 230 at depth 2, 186 at depth 3),
+   so 7 is headroom for a nav that grows rather than a fix for an at-the-limit depth.
+   `cappedAtMaxPages` is gone: truncation is now a **`crawlLimits` finding**, summed
+   into `buildCrawlerSuite`'s fatal count and printed in the quality-gate summary, so it
+   lands in the JSON artifact and fails the suite instead of being a `console.log`.
+   `CONCURRENCY` stayed at 5 — the crawl did not become slow.
 
-   | this list asked for | where it landed |
-   |---|---|
-   | URL-helper shapes | `kb-graph.test.mjs` — flat vs. nested URLs, no namespace in a URL |
-   | KB slug uniqueness | `kb-graph.test.mjs` + `identifiers.test.mjs` (23) — two definitions sharing a slug fails the build; two proofs of *different* theorems may share one |
-   | `kbPageExists` in both env modes | `kb-graph.test.mjs` — embedded-in-published has a page, embedded-nowhere never does, and a source/child whose page this build omits is dropped |
-   | anchor helpers | `identifiers.test.mjs` + `anchor-kind.test.mjs` (7) — localized dotted paths, page-relative claim/term anchors, no English segment survives |
-   | sitemap splitter | **nothing — §I is not built** |
-   | `kbRefs` remapping | `kb-graph.test.mjs` — two hrefs per reference, and `kbRefs` swaps in the KB one and leaves other entries alone (R6) |
-   | backlink index (moved to sub-plan phase 2) | `kb-graph.test.mjs` — grouping and count order, claim/term references counting for their owner, row hrefs, no entry at all when nothing cites, page-existence filtering |
-   | glossary (moved to sub-plan phases 3–4) | `kb-graph.test.mjs` + `glossary-rows.test.mjs` (9) — synonyms on the projection, one row per name, Hungarian collation, and the six strings that are both a synonym and someone's canonical form |
+   **And one thing this list did not foresee, which phase 6 made mandatory: the orphan
+   check had to learn the sitemap index.** An index's `<loc>` values are child
+   *sitemaps*, not pages, so cross-referencing them against crawled pages would have
+   matched nothing and reported **every child sitemap as an orphan** — the gate would
+   have gone red on a correct site. `collectSitemapPages` follows the index one level
+   down and unions the children's pages, re-basing each child URL onto the crawl's own
+   origin (the sitemap advertises the canonical host; the crawl may be running against a
+   per-environment one), and it *reports* an unusable child rather than dropping it.
+   `isSitemapIndex` in `lib/extract.mjs` is the branch, because a `<urlset>` and a
+   `<sitemapindex>` are indistinguishable from their `<loc>` elements alone. **6 new
+   tests** in `tools/smoke-tests/tests/orphan-check.test.mjs`, and `report.test.mjs`
+   extended for the new fatal category.
+2. **Confirm `checkSeo` passes on each new page kind** — **the fatal half passes; the
+   warning half does not, for a reason that predates the knowledge base.** Replaying the
+   crawler's own rules over the staging export: **435 of 439 pages carry a canonical and
+   were checked, with 0 fatal findings** — across all six entity-page shapes and the
+   four list pages, no page is missing a `<title>`, a meta description, an
+   `hreflang`, the `x-default`, or any of the seven required OpenGraph properties, and
+   every `og:image` resolves to a file in the export.
 
-   **And eight test files this list did not ask for**, one per phase that needed one:
-   `kb-chrome` (32 — the chrome state machine and D2's one-back-step contract),
-   `kb-excerpt` (17), `highlight-param` (8 — D7's validation, the one place a URL value
-   reaches a selector), `locale-labels` (7), `kb-breadcrumbs` (7), `filter-text` (6),
-   plus `fqn` (14) and `doc-examples` (1) from earlier phases.
-4. Assert `<html lang>` on the new pages (`set-html-lang.mjs` is path-driven so
-   `/hu/tudasbazis/...` is already covered — assert rather than assume).
-   **Covered, not asserted.** `set-html-lang.mjs` reports `scanned 587 HTML file(s),
-   rewrote lang on 0` — every page already carries the right `lang`, which is evidence
-   rather than an assertion. A dedicated assertion was not added.
-5. Run the crawler against a staging deploy and confirm zero orphans and zero broken
-   internal links, especially the D3/D9 fallback links into unpublished chapters.
-   **Not started**, and blocked on §J.1–J.2 — see item 1.
+   The thresholds are the finding. **341 of those 435 pages have a `<title>` over the
+   70-character warning threshold, 307 of them knowledge-base pages** — and that is structural rather than a
+   content problem: the `<title>` is `{page title} | {brand}`, the brand string alone is
+   39 characters, so 42 of the 70 are spent before the page's own title begins and
+   anything over 28 characters warns. It is pre-existing — **34 of the 44
+   non-knowledge-base pages under `/hu` already warn**, every chapter of the book among
+   them — and the knowledge base took the count from 34 to 341. Descriptions, by
+   contrast, are almost all in band — **20 of 435 out of range** (11 over 160, 9 under
+   50; 17 of the 20 knowledge-base), which discharges the duplicate-description risk
+   H.1 flagged: `lib/content/kb-excerpt.ts` is producing distinct, correctly sized
+   descriptions. None of this fails the gate — they are warnings — so shortening the
+   brand suffix or raising the crawler's threshold is a backlog item, not a blocker.
+3. **New unit tests in `apps/website/test/`** — **done, and the one gap is closed.** The
+   sitemap splitter now has the 11 tests it could not have before §I existed. The
+   reconciliation table below still holds; the total is **223 tests in 18 files**, up
+   from the 202 in 15 recorded when this list was written.
+4. **Assert `<html lang>` on the new pages** — **unchanged: covered, not asserted at
+   build time.** `set-html-lang.mjs` reports `scanned 587 HTML file(s), rewrote lang on
+   0` locally and 439/0 on staging — every page already carries the right `lang`, which
+   is evidence rather than an assertion. The live crawler asserts it per page, fatally,
+   which is where the guarantee actually lives.
+5. **Run the crawler against a staging deploy** — **NOT DONE, and it is the only item
+   left in this plan.** It cannot be done from here: no CI deploy has run since
+   2026-08-18 and this branch has never been deployed, so no staging environment
+   contains any of phases 5–8. Everything about it that *can* be checked offline has
+   been, and is clean — the link-graph walk in §J found **zero orphans and zero link
+   targets with no exported page** on the staging export, which is what the crawl's two
+   fatal categories look for. What only the live crawl can add is HTTP-level truth:
+   real status codes, redirect behaviour, `<html lang>` as served through R2 and the
+   CDN, `og:image` fetches, response times, and the caps under real concurrency.
 
-**Review gate.** For items 1, 2 and 5.
+**Three things this list did not ask for, which the phase delivered anyway:**
+
+- **`check-anchors.mjs` stopped failing the build on a correct forward reference.** An
+  unpublished chapter's page *is* in the export, but it renders the not-migrated stub
+  and none of the chapter's own anchors — so a reference into a section of such a
+  chapter was being reported as id drift. It is now skipped by detecting `data-stub`,
+  and counted in its own skip category. This is what retired **the two accepted anchors**
+  §N/R5 records: on the staging export the script now reports **23 429 fragment links
+  checked, 0 broken, 2 skipped because the target page is a stub**, and exits 0.
+- **The browser suite became environment-agnostic.** `e2e/support/derive-fixtures.mjs`
+  plus a Playwright `globalSetup` derive the expected row counts and the fixture
+  entities from the content graph under the same `SITE_ENV` that built the export, so
+  the same 126 tests pass against a 587-page local export and a 439-page deployed one.
+  They previously hardcoded entities that exist only locally, which is why they could
+  not run in CI at all. **Confirmed for §L: 126/126 pass in 53 s against a
+  `SITE_ENV=staging` export**, which is the case that did not work before.
+- **Both suites are now wired into CI.** The consent-only unit step became the whole
+  `node:test` suite in `deploy.yml` and `deploy-to-cloudflare.yml`, and the browser
+  suite runs inside the deploy's website job — between the build and the R2 upload, so
+  a failure blocks the deploy rather than merely reporting it — with the Playwright
+  report uploaded as an artifact on failure. It is deliberately absent from
+  `deploy-to-cloudflare.yml`, which has neither a content clone nor TeX Live to build an
+  export from.
+
+**Item 3's reconciliation table, with its one gap now closed:**
+
+| this list asked for | where it landed |
+|---|---|
+| URL-helper shapes | `kb-graph.test.mjs` — flat vs. nested URLs, no namespace in a URL |
+| KB slug uniqueness | `kb-graph.test.mjs` + `identifiers.test.mjs` (23) — two definitions sharing a slug fails the build; two proofs of *different* theorems may share one |
+| `kbPageExists` in both env modes | `kb-graph.test.mjs` — embedded-in-published has a page, embedded-nowhere never does, and a source/child whose page this build omits is dropped |
+| anchor helpers | `identifiers.test.mjs` + `anchor-kind.test.mjs` (7) — localized dotted paths, page-relative claim/term anchors, no English segment survives |
+| sitemap splitter | `sitemap-split.test.mjs` (11) — grouping by opening vs. deepest container, per-locale file names, a held-out group, and four inputs it refuses to guess at |
+| `kbRefs` remapping | `kb-graph.test.mjs` — two hrefs per reference, and `kbRefs` swaps in the KB one and leaves other entries alone (R6) |
+| backlink index (moved to sub-plan phase 2) | `kb-graph.test.mjs` — grouping and count order, claim/term references counting for their owner, row hrefs, no entry at all when nothing cites, page-existence filtering |
+| glossary (moved to sub-plan phases 3–4) | `kb-graph.test.mjs` + `glossary-rows.test.mjs` (9) — synonyms on the projection, one row per name, Hungarian collation, and the six strings that are both a synonym and someone's canonical form |
+
+**And ten test files this list did not ask for**, one per phase that needed one:
+`kb-chrome` (32 — the chrome state machine and D2's one-back-step contract),
+`kb-excerpt` (17), `highlight-param` (8 — D7's validation, the one place a URL value
+reaches a selector), `locale-labels` (7), `kb-breadcrumbs` (7), `filter-text` (6),
+`kb-sections` (5) and `kb-sections-deployed` (2) from §J, plus `fqn` (14) and
+`doc-examples` (1) from earlier phases. On the smoke-test side, `orphan-check` (6) is
+new and `report` (6) grew.
+
+**One trap found while re-running the browser suite for §L, worth knowing before
+someone loses an afternoon to it.** Every one of those tests dismisses the cookie
+banner unconditionally (`settleConsent` clicks *Elutasítom* and waits for it to
+disappear), so the suite **requires an export built with a GA measurement id**. Build
+with `NEXT_PUBLIC_GA_MEASUREMENT_ID=` — the documented way to disable analytics — and
+the banner is compiled out entirely, the click waits for a button that will never
+exist, and **85 tests fail on a 30-second timeout each** for a reason that has nothing
+to do with what they assert. CI is unaffected (the id is a per-environment variable),
+and the failure is loud rather than silent, so this is a note and not a defect.
+
+**Review gate.** Items 1 and 2 are discharged above. **Item 5 is the open one**, and it
+unblocks the moment this branch reaches `development` and the staging deploy runs.
 
 **One gate this run never had, and it is worth knowing: `pnpm lint` is unusable.**
 `next lint` is deprecated in this Next version and drops into an interactive ESLint
@@ -1111,31 +1236,107 @@ mismatch against an unset id. Out of scope this run.
 
 ---
 
-## L. Phase 9 — Documentation — **NOT STARTED**
+## L. Phase 9 — Documentation — **DONE**
 
-> **Both normal docs still describe a knowledge base whose entities are
-> non-addressable.** 537 of them now have pages. Item 4's plan-document work is done —
-> the design plan's §7 was amended by sub-plan phase 1 and its remaining wording by this
-> phase's own close-out — so what is left is items 1, 2 and the re-verification in 3.
+> **The premise at the head of this phase was half wrong by the time it ran.**
+> `docs/i18n-design.md` no longer described non-addressable entities: its §4a, its
+> field-summary table and its §9 uniqueness table were corrected mid-run by the
+> [identifiers-and-anchors sub-plan](yp-162-identifiers-and-anchors-sub-plan.md)
+> (`570460d`, `0770d54`). What was actually owed there was different, and larger:
+> **five other parts of that document had gone stale or incomplete** — §2 and §3
+> against the URL layer of phases 4–5, §7 against phase 6's sitemap index, §9 against
+> the widened reserved-slug set, and §1 against a `locales.json` key that never
+> existed. Only reading the document against the shipped code surfaced them.
 
-1. `docs/i18n-design.md` — supersede §4a and correct the field-summary table
-   (definition/theorem/proof/remark move to "Addressable"); extend §9's slug uniqueness
-   table with the KB rules.
-2. `docs/content-site-and-static-generation.md` — extend the [canonical URL
-   rule](../content-site-and-static-generation.md#canonical-url-rule) with the KB
-   paths; document the D9 published-gate and the page count going from ~46 to ~439
-   (staging/production) / ~587 (development).
-3. `content/docs/content-model.md` — per Phase 3.3 (already done in that phase;
-   re-verify against the shipped behaviour).
-4. `docs/plans/yp-162-knowledge-graph-urls-plan.md` — record the design changes this
-   review produced: §3.3 term/claim slugs are authored Hungarian; §7.2 loses
-   "Consequences"; a new "which entities get a page" rule (D9). Keep §5 (JSON-LD) and
-   §6 (redirects) marked out of scope.
-   **Two items dropped from this list.** §4's per-claim grouping is not replaced by
-   F2's interactive highlighting — F2 is superseded (§H.3) — and §7.3 does not gain a
-   "Defined terms" block, since no entity page has one. §7 of the design plan was
-   amended by **sub-plan phase 1**, which carries the supersession notes; what remains
-   for this phase is the §3.3 and D9 wording.
+1. **`docs/i18n-design.md`** — the two items as listed were already done (above). Six
+   corrections were owed instead:
+   - **§2's URL-shape table listed none of the ten knowledge-base shapes**, though
+     `lib/i18n/url.ts` cites §2 as where they are stated. Added, with the `hu`
+     examples and a pointer to the `UrlKey` union — one key per shape, which is why a
+     remark has three.
+   - **§3's container dictionary listed 6 of the 14 keys.** Completed, with a column
+     saying whether each appears in a URL, an anchor, or both, and the `locales.json`
+     snippet extended to match.
+   - §3 gained `isRoutableAtRoot` — the rule that makes `/hu/definiciok` a 404 while
+     `definiciok` is still a reserved, localized segment.
+   - **§7's "Sitemap" still said "a single sitemap".** Rewritten for what phase 6
+     built: one enumerator, a postbuild splitter, the `<sitemapindex>`, the
+     deepest-container grouping rule, `sitemapGroups`, the held-out `landing` group,
+     and the eight `hu` children.
+   - §9's rejected-slug example named three reserved anchor segments; the reserved set
+     is the whole container dictionary, knowledge-base segments included.
+   - Two **pre-existing errors**, unrelated to this ticket and fixed on the way:
+     `locales.json` has no `defaultLocale` key — `DEFAULT_LOCALE` is a build-time env
+     var, shared with the Cloudflare apex redirect — but §1 and the data-shape snippet
+     both said it did.
+2. **`docs/content-site-and-static-generation.md`** — this one was as stale as the
+   phase predicted: it still said "the routes that would serve them are not generated
+   yet, so the export currently contains no knowledge-base pages". Replaced by a
+   **"Knowledge-base pages, and which entities get one"** section carrying the
+   two-address model, D9's two conditions and the single function they live in, the
+   measured page-set table, and the three layers that stop the divergence from
+   producing dead links. The canonical-URL table gained seven knowledge-base rows;
+   `SITE_ENV` and the chapter `published` field now say they gate the page set and not
+   only the noindex; the noindex section points at the sitemap index. Both of
+   `docs/README.md`'s summary rows were updated with it.
+3. **`content/docs/content-model.md`** — re-verified against the shipped behaviour
+   and found accurate, including the four URL shapes, the uniqueness table and the
+   correction that `terms` applies to proofs. Two additions: the **page gate** an
+   author needs (publishing the embedding chapter is what publishes the entity's
+   page), and the proof/remark **title derivation spelled out** — the type label is
+   the authored `labels.canonical` when there is one, an untitled remark on an
+   untitled proof reads `Megjegyzés: Bizonyítás: {tétel címe}`, and an owner-less
+   remark falls back to its narrative label.
+4. **The plan documents.** Two pieces, one owed and one found.
+
+   **Owed:** `docs/plans/yp-162-knowledge-graph-urls-plan.md` — the §3.3 and D9 wording
+   this phase carried. §3.3 gains an amendment note: the anchor form is not the draft's
+   `#claim-{slug}` but the page-relative dotted path, and a claim's and a term's
+   `slug` is **authored Hungarian** rather than derived from its English key — which
+   is why the editor had to stop deleting them. A new §3.6 records D9 with the
+   measured page counts. §7 was already amended by sub-plan phase 1, and its status
+   line now reads Built rather than "through phase 5".
+
+   **Found:** **§§I, J and K of this document still read as predictions.** Phases 6–8
+   had shipped in `e75d4ee`, `529f953` and `30005db` without their sections being
+   closed out, so the plan claimed "NOT STARTED" over work that was live in the branch
+   — and one of them ("`MAX_PAGES` is still 500") was actively misleading. All three are
+   now close-outs in the same form as this one, with every number re-measured rather
+   than carried forward. That surfaced **two wrong predictions** (§I item 2's fixed
+   child-sitemap file list; §K item 1's 5-hop depth), **one unforeseen requirement that
+   phase 6 imposed on phase 8** (the orphan check had to learn the sitemap index, or the
+   gate would have gone red on a correct site), **one finding** (§K item 2's title
+   lengths), and **one item that is genuinely still open** — §K item 5, the live staging
+   crawl. R3 and R5 in §N were updated to match; R3 is now discharged.
+
+**Verified, not copied.** Every number in the new prose — in the docs and in the four
+close-outs — was measured during this phase:
+
+- **Two clean builds.** `pnpm build` → **587** HTML pages, **541** knowledge-base, 8
+  child sitemaps, 572 sitemap URLs, 806 `lastmod` entries; `SITE_ENV=staging pnpm build`
+  → **439** and **393**, 424 sitemap URLs. The staging run's `postbuild` exits 1 at
+  `check-analytics-build` — **confirmed to be the gap recorded at the end of §K and not
+  a build problem**: the measurement id is in `.env.local`, `next build` inlines it, and
+  that one script reads `process.env` without importing `load-env.mjs`, so it alone sees
+  it as empty. It fails *after* the export and the sitemap split, so the counts come
+  from a complete export.
+- **The sitemap index** (§I's review gate): 8 children, 424 unique `<loc>`s, every one
+  resolving to a file in the export, summing to the pre-split count.
+- **A link-graph walk of the staging export** from `/hu` (§J's review gate, and the
+  whole-path half of R5): **434 reachable, max depth 3, 0 orphans, 0 link targets with
+  no exported page.** The 5 unreachable files are `404.html`, the root redirect stub,
+  the two noindex container roots and the unlisted landing page — none sitemapped.
+- **The crawler's `checkSeo` rules replayed over the export** (§K item 2): 435 pages
+  checked, **0 fatal**, and the title-length finding above.
+- **`check-anchors` in both env modes**: 23 958 fragment links / 0 broken locally,
+  23 429 / 0 broken / 2 stub skips on staging.
+- **The suites**: 223 unit tests pass; the 12 pure smoke-test units pass
+  (`redirects.test.mjs` needs a live `WORKER_DOMAIN`, is unrelated, and did not run);
+  and **all 126 browser tests pass in 53 s against the 439-page staging export**, which
+  is the first independent confirmation of §K's derive-fixtures work — the same suite
+  that was written against a 587-page local one.
+- **Every relative link and `#anchor`** in the touched documents resolved against its
+  target file.
 
 **Review gate.**
 
@@ -1182,9 +1383,9 @@ Added by this analysis:
 |---|---|---|
 | ~~R1~~ | **Title generation quality** — *discharged.* 178 proposed, 88 overridden on review, all applied from the reviewed table | — |
 | R2 | **Thin content** — most proof/remark pages have no inbound references at all | Accepted (David), but **the mitigation recorded here is void**: it leant on "Uses" and "Defined terms", and the page-layout sub-plan builds neither ("Uses" is its D8; defined terms become the Fogalmak mode). What is left is real: an explicit empty state — "Nincs rá hivatkozás" — in the inbound-reference panel ([sub-plan §7.2](yp-162-page-layout-sub-plan.md#72-incoming-references)), and **Kontextus**, which is available on every one of the 537 entities because each is embedded exactly once (A2b). Re-measured against what the panel would actually render (sub-plan §9.1 note 3): **244 of 537** pages locally and **168 of 389** deployed reach that empty state — the earlier 257 counted authored references, including ones from sources that get no page. **Confirmed on the built export: 244 of the 537 entity pages render "Nincs rá hivatkozás", and 168 of 389 on staging.** Both mitigations exist as described |
-| R3 | **Crawler caps** (A14) degrade the production promotion gate into false orphan findings | Phase 8 raises the caps and makes `cappedAtMaxPages` fatal. **Re-measured on the finished build: `SITE_ENV=staging` produces 439 HTML pages, so 439 of the 500 cap** — the earlier estimate of 435 counted 389 + 46 and missed the 4 list pages. Overflows as soon as the 5 unpublished chapters ship. `MAX_DEPTH = 5` leaves no margin either: the shortest link chain to the deepest entity page (homepage → KB root → theorem index → theorem → proof → remark) is exactly 5 hops. **Still open**, and note it is not the binding constraint today — with §J.1–J.2 unbuilt the crawl reaches no KB page at all |
+| ~~R3~~ | **Crawler caps** (A14) degrade the production promotion gate into false orphan findings — *discharged.* | Phase 8 raised `MAX_PAGES` to **1000** against 439 pages on staging and 587 once the 5 unpublished chapters ship, and turned truncation into a **fatal `crawlLimits` finding** in the JSON artifact rather than a `console.log`, so a future overflow fails the gate instead of degrading it into false orphans. `MAX_DEPTH` went to 7, and the depth worry recorded here turned out to be unfounded: the ownership chain is not how the deepest pages are reached, because the type index lists link every entity page directly. **Measured on the staging export: all 434 linked pages sit within 3 hops of `/hu`** (17 / 230 / 186 by depth). Phase 6 also introduced a cap-adjacent failure this risk did not anticipate — an index's `<loc>`s are child sitemaps, so the orphan check would have called every child an orphan; it now follows the index one level down (§K item 1) |
 | ~~R4~~ | **Editor data loss** on claim/term `slug` — *discharged.* Fixed and installed before phase 3, and verified on the real tree: on a sample the old writer destroyed all 27 claim and 19 term slugs, the new one loses none | — |
-| R5 | **Dev/deployed page-set divergence** (D9) — a KB link that works locally 404s on staging | `validateKbLinks` ships and passes in both env modes; the crawler on live staging is the second layer (phase 8, **not yet run**). **Two more layers arrived with phase 5**: `buildBacklinkIndex` filters every backlink row by `kbPageExists`, and the ownership-chain links drop a child whose page this build does not generate — both with tests. `SITE_ENV=staging pnpm build` is green on the page set apart from the two accepted anchors. **Note `check-anchors` validates fragment links only, not whole-path links**, so a link to a page that simply does not exist would pass it; that is what the live crawl is for |
+| R5 | **Dev/deployed page-set divergence** (D9) — a KB link that works locally 404s on staging | Four layers, all shipped. `validateKbLinks` throws on a cross-reference resolving to a page this build does not generate; `buildBacklinkIndex` filters every backlink row by `kbPageExists` and the ownership-chain links drop a child whose page is absent — the optional links are dropped, the authored ones are fatal (both with tests); `check-anchors` resolves the fragment links against the export. **The two accepted anchors are gone**: they were forward references into an unpublished chapter's stub, which the script now classifies as a skip rather than id drift, so `SITE_ENV=staging` reports 23 429 links checked, **0 broken**, 2 skipped, and exits 0. `check-anchors` still validates fragment links only, so the whole-path case was checked separately for §L by walking the staging export's link graph: **0 link targets with no exported page, 0 sitemap URLs unreachable.** Live-crawl confirmation over real HTTP remains — §K item 5, the plan's last open item |
 | ~~R6~~ | **Two-href complexity** (A20) — a reference rendered in the wrong context links to the wrong place, silently — *discharged.* | The machinery held. Both hrefs are resolved at build time, `kbRefs` remaps at one page boundary, and three tests in `kb-graph.test.mjs` pin it: a reference gets a chapter href *and* a KB href, a claim reference resolves to the slug anchor in both contexts, and `kbRefs` swaps in the KB href while leaving other entries alone. The end-to-end evidence is the postbuild gate at the new scale: **22 594 internal fragment links across 587 pages, 0 broken and 0 skipped** locally, and 22 335 on staging with only the two accepted. A reference rendered into the wrong context at that volume would have produced a broken fragment |
 | ~~R7~~ | **Stale dev graph cache** — *discharged.* `RawGraphData.version`, invalidated on mismatch | — |
 | ~~R8~~ | Build time growth (A18) — ~11× the page count — *discharged.* | Re-measured on the finished build: **`pnpm build` including `prebuild` and `postbuild` is 22.780 s for 587 pages locally and 21.811 s for 439 on staging**, against a pre-phase-5 baseline of **14.3 s for 46**. So **12.8× the pages cost 1.59× the wall time** — the per-page cost fell by roughly an order of magnitude, because the fixed `prebuild` generators dominate a 46-page build and are amortised over 587. `next build` itself compiles in 4.7 s. Not a risk |

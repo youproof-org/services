@@ -1,10 +1,12 @@
 # Knowledge Graph Node URLs & Redirect Infrastructure — Plan
 
-Status: **Built, through implementation-plan phase 5.** Every knowledge-base page this
-design calls for exists, with the arrangement settled by the
-[page-layout sub-plan](yp-162-page-layout-sub-plan.md) rather than by §7 below.
-Sitemaps, the navigation entry, the crawler gate and the doc updates remain —
-implementation-plan phases 6–9. §5 (JSON-LD) and §6 (redirects) stay out of scope.
+Status: **Built.** Every knowledge-base page this design calls for exists, with the
+arrangement settled by the [page-layout sub-plan](yp-162-page-layout-sub-plan.md)
+rather than by §7 below, and it is sitemapped, reachable from the site navigation,
+covered by the deploy gate and documented — implementation-plan phases 1–9. One check
+is still outstanding: a crawl of a live staging deploy, which needs the branch merged
+([implementation plan §K item 5](yp-162-knowledge-graph-urls-implementation-plan.md#k-phase-8--quality-gate-and-tests--items-14-done-30005db-item-5-remains)).
+§5 (JSON-LD) and §6 (redirects) stay out of scope.
 Audience: Claude Code (implementation), with full repo context (`youproof-org/services`, `youproof-org/content`, `youproof-org/editor`)
 Repos affected: `services` (routing, D1/manifest, Terraform), `content` (YAML schema, slugs)
 Implementation plan: [`yp-162-knowledge-graph-urls-implementation-plan.md`](yp-162-knowledge-graph-urls-implementation-plan.md) — codebase analysis, open decisions, and phased build derived from this design
@@ -69,6 +71,26 @@ Constant path segments (`tudasbazis`, `definiciok`, `tetelek`, `bizonyitasok`, `
 
 ### 3.3 Claims and terms: no standalone pages — embedded + anchors
 
+> **Amended by the build, in two respects; the conclusion below stands.**
+>
+> **The anchor form is not `#claim-{slug}`.** Every anchor on the site is a dotted
+> path of `{localized-container}.{slug}` steps taken *relative to the page it is
+> rendered on*, so a claim is `#allitasok.{claim-slug}` on its owner's own page and
+> `#definiciok.{def-slug}.allitasok.{claim-slug}` on a chapter that embeds the owner
+> — the same identity, addressed from two pages. A term is `fogalmak.{term-slug}` on
+> the same rule. The `claim-`/`term-` prefixes in the URL examples below are the
+> earlier draft's; read them as `allitasok.`/`fogalmak.`. The grammar and its
+> uniqueness scopes are specified in
+> [i18n design §9](../i18n-design.md#9-identifier-rules--names-and-slugs) and, for
+> authors, in the content repo's `docs/content-model.md`.
+>
+> **A claim's and a term's `slug` is authored Hungarian, not derived from its key.**
+> A claim's `name` and a term's map key stay the language-independent English id
+> that cross-references resolve against (`natural-number`); the `slug` beside it is
+> the Hungarian word that appears in the fragment (`termeszetes-szam`). That is why
+> phase 2 of the implementation plan had to stop the editor from deleting these
+> sub-field slugs on save: there is no rule that could regenerate them.
+
 Revised conclusion after discussion (see §9 for the reasoning trail):
 
 - **Claims** (axioms in a definition's axiom list, individual claims in a multi-claim theorem, claims embedded in a remark, etc.) do **not** get their own URL or page. They render as an anchored section within whichever node actually owns them (definition, theorem, or remark):
@@ -92,6 +114,27 @@ Revised conclusion after discussion (see §9 for the reasoning trail):
 
 - The URLs in 3.1/3.2 are **canonical** — used in `<link rel="canonical">`, sitemaps, and every internally-generated link (breadcrumbs, cross-references, nav). Claims/terms use their anchor form as the citable target (no separate canonical needed, since there's no separate page — see §3.3).
 - **No namespace-path URL (e.g. `/{locale}/algebra/linear-algebra/tetelek/{slug}`) is ever emitted anywhere on the site.** This is intentional: if YouProof never generates such a link, nobody has one to backlink, so no redirect burden is created for namespace reshuffles. (Decided against an earlier draft that considered making namespace-path URLs routable-but-non-canonical — rejected because it still requires permalink-stability guarantees for URLs the site itself never promised to keep stable.)
+
+### 3.6 Which entities get a page *(added after review — D9)*
+
+Not every entity in the knowledge base gets one. Two conditions, and they are the
+reason the local and the deployed page sets differ:
+
+1. the entity is **embedded in a chapter**. Embedding is universal, single and
+   always inside a section in today's content, but an entity rendered nowhere in the
+   narrative would have no "Kontextus" to show and nothing linking to it;
+2. on `staging`/`production`, that **chapter is `published`**. A local build ignores
+   this, so drafts are previewable.
+
+So publishing the embedding chapter is what publishes the entity's page. The
+measured consequence: **537 entity pages locally, 389 deployed** — 541 and 393
+including the root, the two type indexes and the glossary, against 46 non-knowledge-base
+pages in both. Because the two sets differ, the rule lives in exactly one function
+(`kbPageExists`), which routing, the indexes, the glossary, the backlink index, the
+ownership-chain links and the sitemap all ask; a build-time validator then fails on
+any internally generated link to a page this environment does not generate. Written
+up for the operational record in
+[content site & static generation](../content-site-and-static-generation.md#knowledge-base-pages).
 
 ---
 
