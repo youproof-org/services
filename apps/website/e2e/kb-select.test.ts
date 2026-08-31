@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 import { fixtures, incomingRows } from './support/fixtures'
 import sharp from 'sharp'
+import { collectConsoleNoise } from './support/console-noise'
 
 /**
  * The two selection modes, both levels: pick a mode, see the candidates, pick one
@@ -465,13 +466,7 @@ test.describe('where the modes are absent (§6.5)', () => {
 
 test.describe('a selection mode logs nothing', () => {
   test('entering and leaving both modes produces no console noise', async ({ page }) => {
-    const noise: string[] = []
-    page.on('console', (message) => {
-      if (message.type() === 'error' || message.type() === 'warning') {
-        noise.push(`${message.type()}: ${message.text()}`)
-      }
-    })
-    page.on('pageerror', (error) => noise.push(`pageerror: ${error.message}`))
+    const noise = collectConsoleNoise(page)
 
     await openEntity(page)
     for (const mode of [TERMS, CLAIMS]) {
@@ -989,13 +984,7 @@ test.describe('level 2 under prefers-reduced-motion', () => {
 
 test.describe('picking one logs nothing', () => {
   test('entering and leaving level 2 in both modes produces no console noise', async ({ page }) => {
-    const noise: string[] = []
-    page.on('console', (message) => {
-      if (message.type() === 'error' || message.type() === 'warning') {
-        noise.push(`${message.type()}: ${message.text()}`)
-      }
-    })
-    page.on('pageerror', (error) => noise.push(`pageerror: ${error.message}`))
+    const noise = collectConsoleNoise(page)
 
     await openEntity(page)
     for (const [mode, candidate] of [

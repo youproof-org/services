@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { collectConsoleNoise } from './support/console-noise'
 
 /**
  * The entity page's panel: the geometry, the slide, the scroll lock, and the one
@@ -298,13 +299,7 @@ test.describe('the Kontextus panel', () => {
   })
 
   test('opening and closing the panel logs no error or warning', async ({ page }) => {
-    const noise: string[] = []
-    page.on('console', (message) => {
-      if (message.type() === 'error' || message.type() === 'warning') {
-        noise.push(`${message.type()}: ${message.text()}`)
-      }
-    })
-    page.on('pageerror', (error) => noise.push(`pageerror: ${error.message}`))
+    const noise = collectConsoleNoise(page)
 
     await openEntity(page)
     await openContextPanel(page)

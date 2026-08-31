@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { collectConsoleNoise } from './support/console-noise'
 
 /**
  * Outgoing references in the body: pressed, modified-clicked, and inert
@@ -688,13 +689,7 @@ test.describe('the back step out of a reference panel (D2)', () => {
   })
 
   test('opening and closing a reference panel produces no console noise', async ({ page }) => {
-    const noise: string[] = []
-    page.on('console', (message) => {
-      if (message.type() === 'error' || message.type() === 'warning') {
-        noise.push(`${message.type()}: ${message.text()}`)
-      }
-    })
-    page.on('pageerror', (error) => noise.push(`pageerror: ${error.message}`))
+    const noise = collectConsoleNoise(page)
 
     await openEntity(page)
     for (const target of [ENTITY_TARGET, TERM_TARGET]) {
