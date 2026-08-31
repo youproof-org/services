@@ -1,4 +1,4 @@
-import type { RefMap, TermMap } from '@/lib/content/types'
+import type { RefMap, TermMap, AnchorParent } from '@/lib/content/types'
 import InlineText from '../InlineText'
 import styles from './figure-block.module.scss'
 
@@ -17,7 +17,7 @@ interface FigureBlockProps {
   height?: number
   refs?: RefMap
   terms?: TermMap
-  termParent?: { type: string; namespace: string; name: string }
+  termParent?: AnchorParent
 }
 
 export default function FigureBlock({ leadIn, selfRefDisplay, src, alt, caption, figureIndex, size, width, height, refs, terms, termParent }: FigureBlockProps) {

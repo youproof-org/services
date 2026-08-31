@@ -94,7 +94,10 @@ writes it to `REPORT_OUT` and exits non-zero iff `overall !== "pass"`.
 - **Fatal:** broken **internal** links/assets, broken **external** links, **dead
   migration targets** (a migrated redirect's `.org` target not returning `200`),
   legacy-host leaks (only when crawling the `.hu` worker), **math render errors**
-  (KaTeX `katex-error`), **redirect loops**, and any failed smoke case.
+  (KaTeX `katex-error`), **redirect loops**, a wrong per-locale `<html lang>`
+  (`langErrors`), a content page missing a required meta/OG/canonical/hreflang tag
+  (`seoErrors`), a `robots.txt` wrong for the environment (`robotsErrors`), a
+  **truncated crawl** (`crawlLimits`), and any failed smoke case.
 - **Warnings (never fail the gate):** **orphan pages**, **slow pages**, and external
   `403`/`429` rate-limited hosts (the last are tracked by the crawler but not
   emitted — the schema has no field for them).
@@ -108,7 +111,8 @@ Beyond the broken-link / asset / legacy-leak checks:
 | Migrated targets | `brokenInternal` (via `migration manifest target`) | yes | Each `.org` path the worker manifest redirects to must return `200`; passed in via `migrationTargets` (the manifest artifact). Catches manifest/route drift. |
 | Math render     | `mathErrors`    | yes    | Scans page HTML for `class="katex-error"`; page URL + count + snippet. |
 | Redirect loops  | `redirectLoops` | yes    | Follows internal 3xx chains; flags a cycle or `> 5` hops (`MAX_REDIRECT_HOPS`). |
-| Orphan pages    | `orphanPages`   | no     | `/sitemap.xml` `<loc>`s not reached by any crawled link (path-keyed, host-agnostic). Skipped with a console note if there is no usable sitemap. |
+| Orphan pages    | `orphanPages`   | no     | Sitemap page URLs not reached by any crawled link (path-keyed, host-agnostic). When `/sitemap.xml` is a `<sitemapindex>` the child sitemaps are fetched and their pages unioned — an index's `<loc>`s are child sitemaps, not pages, so comparing them directly would report every child as an orphan. Skipped with a console note if no usable sitemap yields any page URL. |
+| Crawl truncated | `crawlLimits`   | yes    | The crawl hit `MAX_PAGES` (1000). Fatal because the pages it never reached are absent from every other category and would surface as orphans — raising the cap is forced, not optional. `MAX_DEPTH` is 7 link hops from the seed. |
 | Slow pages      | `slowPages`     | no     | Internal `200`s slower than `3000ms` (`SLOW_PAGE_MS`).       |
 | Broken images   | `brokenInternal` / `brokenExternal` | yes | Covered by the existing asset check (`img`/`srcset`/…); both internal and external are fatal. |
 
@@ -133,7 +137,8 @@ Beyond the broken-link / asset / legacy-leak checks:
       "pagesCrawled": 0,
       "brokenInternal": [], "brokenExternal": [], "legacyLeaks": [],
       "mathErrors": [], "orphanPages": [], "redirectLoops": [],
-      "slowPages": []
+      "slowPages": [], "langErrors": [], "seoErrors": [], "robotsErrors": [],
+      "crawlLimits": [], "seoWarnings": []
     }
   }
 }

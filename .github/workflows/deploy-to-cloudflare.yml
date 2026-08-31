@@ -159,7 +159,11 @@ jobs:
       # generator writes a valid version-0 file in that case).
       - name: Typecheck
         run: pnpm --filter @youproof.org/website run typecheck
-      - name: Unit tests (consent logic)
+      # The whole node:test suite over the site's pure modules, not just consent.
+      # The browser suite is deliberately absent: it drives the static export, and
+      # this job has no content clone and no TeX Live to build one. It runs in the
+      # deploy's website job, where an export already exists.
+      - name: Unit tests (website)
         run: pnpm --filter @youproof.org/website run test
 
   # NOTE: zone-purity enforcement lives in the dedicated, always-run

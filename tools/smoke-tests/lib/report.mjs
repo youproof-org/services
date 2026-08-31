@@ -6,8 +6,10 @@
 //   - A suite is "pass" iff its FATAL categories are all empty.
 //   - Crawler fatal categories: brokenInternal, brokenExternal, legacyLeaks,
 //     mathErrors, redirectLoops, langErrors, seoErrors (a content page missing a
-//     required meta/OG/canonical/hreflang tag, or the pipeline emitting none) and
-//     robotsErrors (robots.txt wrong for the environment). brokenExternal is fatal
+//     required meta/OG/canonical/hreflang tag, or the pipeline emitting none),
+//     robotsErrors (robots.txt wrong for the environment) and crawlLimits (the
+//     crawl hit its page cap, so no category above is complete and the pages it
+//     never reached would surface as orphans). brokenExternal is fatal
 //     because this is a mathematical portal: every outbound link must resolve, or
 //     the content is stale (SEO / consistency risk). Warnings (do NOT fail):
 //     orphanPages, slowPages, seoWarnings (over-long title/description,
@@ -49,6 +51,7 @@ export function buildCrawlerSuite(crawl = {}) {
   const langErrors = crawl.langErrors ?? [];
   const seoErrors = crawl.seoErrors ?? [];
   const robotsErrors = crawl.robotsErrors ?? [];
+  const crawlLimits = crawl.crawlLimits ?? [];
 
   const fatal =
     brokenInternal.length +
@@ -58,7 +61,8 @@ export function buildCrawlerSuite(crawl = {}) {
     redirectLoops.length +
     langErrors.length +
     seoErrors.length +
-    robotsErrors.length;
+    robotsErrors.length +
+    crawlLimits.length;
 
   return {
     status: fatal > 0 ? "fail" : "pass",
@@ -73,6 +77,7 @@ export function buildCrawlerSuite(crawl = {}) {
     langErrors,
     seoErrors,
     robotsErrors,
+    crawlLimits,
     seoWarnings: crawl.seoWarnings ?? [],
   };
 }

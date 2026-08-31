@@ -1,0 +1,104 @@
+@use 'variables' as *;
+
+// Bejövő hivatkozások (components/kb/panels/BacklinksPanel.tsx), inside the panel's
+// own scroller — `panel.module.scss` owns the sheet, the pinned header and the
+// bottom padding that keeps the last row out from under the Vissza pill.
+//
+// The list is sized for the middle rather than for the median (sub-plan §9.1 note
+// 1): 129 of the 537 entities need more than five rows and 56 more than twenty, so
+// a row is its own lines of text with as little vertical padding as still separates
+// two of them — two lines for a chapter, a section, a definition or a theorem, three
+// where an ownership line stands between them. Nothing here caps the list or pages
+// it — one list, internally scrolled, no separate design for the 222-row case (§6.4).
+.sources {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// A chapter's sections, and the entities embedded in a section: the list is a tree
+// (§7.2), and the indent is what says so. One rule rather than a class per depth,
+// because the markup nests — `BacklinkLevel` renders a `<ul>` inside the `<li>` it
+// belongs to, so this compounds by itself.
+//
+// The indent moves the whole row, so every line of it steps right as the tree goes
+// down and a glance at that edge reads as the shape of the answer.
+.nested {
+  margin: 0;
+  padding-left: 1.5rem;
+  list-style: none;
+}
+
+.source {
+  // A hairline between rows rather than around them: 222 boxes would read as 222
+  // objects, while 222 lines read as one list. The last one is dropped so the list
+  // does not end on a rule that separates it from nothing — and because a row's
+  // nested list is INSIDE its `<li>`, that same rule puts the line after a whole
+  // group rather than between a container and its own children.
+  border-bottom: 1px solid $gray-200;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+// The whole row is the link, so it is the element that has to lay the row out — and
+// what it lays out is a stack, not two columns: the name of the place the row leads
+// to, then what is left of the ownership chain below it, then the count. The reader
+// reads a row rather than scanning a column of numbers, and the number is the last
+// thing on it because it qualifies a place they have already read (§7.2).
+//
+// A block rather than a flex column: three block children in source order are
+// already the stack, and a flex box would only add a way for one of them to shrink.
+.link {
+  display: block;
+  padding: 0.4rem 0;
+  color: $black;
+  text-decoration: none;
+  line-height: 1.5;
+
+  &:hover .label {
+    text-decoration: underline;
+  }
+}
+
+// The row's first line, and the whole of what the reader picks a row by: the numbered
+// name of the place it leads to. Wraps rather than truncating — a chapter title the
+// reader cannot read in full is not an answer to "where is this used?".
+.label {
+  display: block;
+  font-weight: $font-bold;
+}
+
+// Which thing hanging off that definition or theorem the row is — "bizonyítás", or
+// "bizonyítás → megjegyzés" — on the proof and remark rows that have one. In the
+// secondary size, and a step darker than the count: $gray-600 (#4b5563) is 7.56:1 on
+// white where $gray-500 is 4.83:1, and this is a line a reader has to READ to tell a
+// theorem's proof from the theorem itself, not a number they scan.
+.ownership {
+  display: block;
+  color: $gray-600;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  font-weight: 600;
+}
+
+// The count closes the row, in the same secondary size but the lighter grey ($gray-500,
+// 4.83:1 on white): it is the one part of a row that is not a name, and the lightest
+// thing on the row because it is read last, after the place it is a count of. No
+// tabular figures any more — they were there to line a column of numbers up, and the
+// numbers are not a column.
+.count {
+  display: block;
+  color: $gray-500;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+// The empty state, which 168 of the 389 shipped pages reach (§9.1 note 3). It reads
+// as the answer it is — the panel's own text, in the body colour, not a greyed-out
+// apology for a missing list (§7.2).
+.empty {
+  margin: 0;
+  line-height: 1.5;
+}

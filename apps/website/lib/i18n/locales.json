@@ -12,14 +12,57 @@
       "labels": {
         "home": "Főoldal",
         "articlesIndex": "Cikkek",
-        "newsletterIndex": "Hírek"
+        "newsletterIndex": "Hírek",
+        "knowledgeBase": "Tudásbázis",
+        "definitionsIndex": "Definíciók",
+        "theoremsIndex": "Tételek",
+        "glossary": "Fogalmak",
+        "kbIntro": "A cikkekben szereplő definíciók, tételek és fogalmak gyűjteménye, kereszthivatkozásokkal összekötve.",
+        "kbDefinitionsCount": "{count} definíció",
+        "kbTheoremsCount": "{count} tétel",
+        "kbGlossaryCount": "{count} fogalom",
+        "kbGlossaryCountNote": "{count} fogalom nevei és szinonimái",
+        "kbGlossarySynonymOf": "{name} szinonimája",
+        "kbFilterPlaceholder": "Szűrés a listában",
+        "kbFilterEmpty": "Nincs találat",
+        "kbFilterClear": "Szűrés törlése",
+        "kbOwnershipUp": "Fölérendelt lap:",
+        "kbOwnershipDown": "Alárendelt lap:",
+        "kbOwnershipSibling": "{index}. {label}",
+        "kbMenuOpen": "Menü",
+        "kbMenuBack": "Vissza",
+        "kbMenuIncoming": "Bejövő hivatkozások",
+        "kbMenuTerms": "Fogalmak",
+        "kbMenuClaims": "Állítások",
+        "kbMenuContext": "Kontextus",
+        "kbPanelContext": "Kontextus",
+        "kbPanelIncoming": "Hol hivatkoznak rá",
+        "kbPanelIncomingCount": "{count} hivatkozás",
+        "kbPanelIncomingEmpty": "Nincs rá hivatkozás",
+        "kbBacklinkKindProof": "bizonyítás",
+        "kbBacklinkKindRemark": "megjegyzés",
+        "kbPanelTermSynonyms": "Szinonimák",
+        "kbPanelClaim": "{index}. állítás",
+        "kbEmbeddedPageLink": "Megnézem a tudásbázisban"
       },
       "containers": {
         "book": "konyvek",
         "chapter": "fejezetek",
         "article": "cikkek",
         "newsletter": "hirek",
-        "landing": "landing"
+        "landing": "landing",
+        "knowledge-base": "tudasbazis",
+        "definition": "definiciok",
+        "theorem": "tetelek",
+        "proof": "bizonyitasok",
+        "remark": "megjegyzesek",
+        "term": "fogalmak",
+        "claim": "allitasok",
+        "part": "reszek",
+        "section": "szakaszok"
+      },
+      "sitemapGroups": {
+        "page": "oldalak"
       }
     }
   }

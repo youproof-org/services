@@ -1,17 +1,19 @@
 {
   "name": "@youproof.org/website",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "private": true,
   "scripts": {
     "postinstall": "node scripts/check-latex.mjs",
-    "predev": "node scripts/sync-figures.mjs && node scripts/gen-og-images.mjs && node scripts/gen-wordmark-font.mjs && node scripts/gen-content-lastmod.mjs && node scripts/gen-cookie-policy-version.mjs",
+    "predev": "node scripts/sync-figures.mjs && node scripts/gen-og-images.mjs && node scripts/gen-kb-menu-icons.mjs && node scripts/gen-wordmark-font.mjs && node scripts/gen-content-lastmod.mjs && node scripts/gen-cookie-policy-version.mjs",
     "dev": "next dev",
-    "prebuild": "node scripts/sync-figures.mjs && node scripts/gen-og-images.mjs && node scripts/gen-wordmark-font.mjs && node scripts/gen-content-lastmod.mjs && node scripts/gen-cookie-policy-version.mjs",
+    "prebuild": "node scripts/sync-figures.mjs && node scripts/gen-og-images.mjs && node scripts/gen-kb-menu-icons.mjs && node scripts/gen-wordmark-font.mjs && node scripts/gen-content-lastmod.mjs && node scripts/gen-cookie-policy-version.mjs",
     "build": "next build",
     "//typecheck": "Generates first: lib/consent/version.ts imports .generated/consent-policy.json, which is gitignored, so a fresh clone has nothing to resolve until the generator has run.",
     "typecheck": "node scripts/gen-cookie-policy-version.mjs && tsc --noEmit",
-    "postbuild": "node scripts/set-html-lang.mjs && node scripts/check-build-version.mjs && node scripts/check-analytics-build.mjs",
-    "test": "node --import tsx --test \"test/*.test.mjs\"",
+    "postbuild": "node scripts/set-html-lang.mjs && node scripts/split-sitemap.mjs && node scripts/check-build-version.mjs && node scripts/check-analytics-build.mjs && node scripts/check-anchors.mjs",
+    "test": "node --import tsx --import ./test/support/register.mjs --test \"test/*.test.mjs\"",
+    "//test:e2e": "Browser tests, deliberately NOT part of `test`: they need a browser binary and a built `out/`. Run `pnpm build` first — the config serves the export and refuses to start without it.",
+    "test:e2e": "playwright test",
     "gen:logo": "node scripts/gen-logo-lockup.mjs",
     "start": "next start",
     "lint": "next lint"
@@ -30,6 +32,7 @@
     "sharp": "catalog:"
   },
   "devDependencies": {
+    "@playwright/test": "catalog:",
     "@types/js-yaml": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:",

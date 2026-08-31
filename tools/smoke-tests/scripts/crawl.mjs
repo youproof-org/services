@@ -21,8 +21,13 @@
 //                       (fatal — a math content site must render its math).
 //   - redirect loops  — cyclic or excessively long (> MAX_REDIRECT_HOPS) redirect
 //                       chains (fatal).
-//   - orphan pages    — URLs present in /sitemap.xml but linked from nowhere in the
+//   - orphan pages    — URLs present in the sitemap but linked from nowhere in the
 //                       crawl (warning; best-effort, skipped when no sitemap).
+//                       /sitemap.xml may be a <sitemapindex>, in which case the
+//                       child sitemaps are fetched and their pages unioned.
+//   - crawl truncated — the crawl hit MAX_PAGES, so every page it never reached
+//                       would be reported as an orphan and every link out of them
+//                       goes unchecked (fatal — the findings are not trustworthy).
 //   - slow pages      — internal 200s slower than SLOW_PAGE_MS (warning).
 //   - legacy leaks    — ONLY when LEGACY_PROXY_HOST is set (i.e. crawling the .hu
 //                       worker): the legacy origin host leaking to the browser in
@@ -55,12 +60,21 @@ import {
   findHeaderLeaks,
   extractMathErrors,
   parseSitemapLocs,
+  isSitemapIndex,
   extractHtmlLang,
   extractSeo,
 } from "../lib/extract.mjs";
 
-const MAX_PAGES = 500;
-const MAX_DEPTH = 5;
+// Headroom over the real page count: the export is 439 pages on staging today and
+// 587 once the five unpublished chapters ship. A truncated crawl reports the pages
+// it never reached as orphans, so overflowing this cap is a fatal finding
+// (`crawlLimits`) rather than a silent degradation.
+const MAX_PAGES = 1000;
+// Link hops from the seed. Measured against the built staging export, every one
+// of its 434 linked pages sits within 3 hops of a locale homepage — the deepest
+// entity pages are reached through the index lists rather than down the ownership
+// chain. 7 leaves room for a nav path that grows.
+const MAX_DEPTH = 7;
 const CONCURRENCY = 5;
 // A same-origin 200 slower than this is flagged (warning). CI runners + a
 // cold CDN edge make sub-second thresholds flaky; 3s is a generous "something
@@ -88,6 +102,75 @@ const pathKey = (url) => {
   const p = u.pathname.replace(/\/+$/, "") || "/";
   return p + u.search;
 };
+
+/**
+ * The page URLs a site advertises, following one level of <sitemapindex>.
+ *
+ * /sitemap.xml is an index here (split-sitemap.mjs writes one child per section)
+ * and an index's <loc> values are child SITEMAPS, not pages. Both document types
+ * use the same element, so the branch is on the root element rather than on
+ * whether a <loc> happens to look like a page. Child URLs are re-based onto
+ * `start`'s origin, since the sitemap advertises the canonical host while the
+ * crawl may be running against a per-env one.
+ *
+ * @returns {{ pageLocs: string[], note: string }} — an empty `pageLocs` means the
+ *   caller must skip orphan detection rather than treat every page as an orphan.
+ */
+async function collectSitemapPages(start) {
+  const res = await request(new URL("/sitemap.xml", start).toString(), { retries: 1, timeoutMs: 15000 });
+  if (res.status !== 200) {
+    return { pageLocs: [], note: `no usable sitemap.xml (status ${res.status}) — orphan detection skipped` };
+  }
+  const xml = await res.text();
+
+  if (!isSitemapIndex(xml)) {
+    const locs = parseSitemapLocs(xml);
+    return locs.length > 0
+      ? { pageLocs: locs, note: "" }
+      : { pageLocs: [], note: "sitemap.xml found but contained no <loc> page entries" };
+  }
+
+  const children = parseSitemapLocs(xml);
+  if (children.length === 0) {
+    return { pageLocs: [], note: "sitemap.xml is a <sitemapindex> listing no child sitemaps — orphan detection skipped" };
+  }
+
+  const pageLocs = new Set();
+  const unusable = [];
+  for (const child of children) {
+    let childUrl;
+    try {
+      childUrl = new URL(pathKey(child), start).toString();
+    } catch {
+      unusable.push(`${child} (not a URL)`);
+      continue;
+    }
+    let childRes;
+    try {
+      childRes = await request(childUrl, { retries: 1, timeoutMs: 15000 });
+    } catch (err) {
+      unusable.push(`${childUrl} (${err?.message ?? err})`);
+      continue;
+    }
+    if (childRes.status !== 200) {
+      unusable.push(`${childUrl} (status ${childRes.status})`);
+      continue;
+    }
+    const childXml = await childRes.text();
+    // One level only: a child that is itself an index would need recursion, which
+    // the sitemap protocol does not allow and this site does not produce.
+    if (isSitemapIndex(childXml)) {
+      unusable.push(`${childUrl} (nested <sitemapindex>, not followed)`);
+      continue;
+    }
+    for (const loc of parseSitemapLocs(childXml)) pageLocs.add(loc);
+  }
+
+  const notes = [`<sitemapindex>: ${children.length} child sitemap(s), ${pageLocs.size} page URL(s)`];
+  if (unusable.length > 0) notes.push(`unusable: ${unusable.join("; ")}`);
+  if (pageLocs.size === 0) notes.push("no page URLs found — orphan detection skipped");
+  return { pageLocs: [...pageLocs], note: notes.join("; ") };
+}
 
 /**
  * Crawl the site under test and collect all findings. Pure of console output and
@@ -140,6 +223,7 @@ export async function runCrawl({
   const seoErrors = []; // content pages missing required meta/OG/canonical (fatal)
   const seoWarnings = []; // over-long title/description, non-self-canonical (warning)
   const robotsErrors = []; // robots.txt wrong for the environment (fatal)
+  const crawlLimits = []; // the crawl hit a cap, so its findings are incomplete (fatal)
   let seoChecked = 0; // content pages (with a canonical) that got SEO-checked
   let orphanPages = [];
   let sitemapNote = "";
@@ -411,31 +495,40 @@ export async function runCrawl({
     }
   }
 
-  // Orphan detection: URLs advertised in /sitemap.xml but reached by no link.
+  // Truncation: past maxPages the queue is abandoned, so the pages never fetched
+  // are missing from `discoveredPaths` and the orphan check below would report all
+  // of them. Fatal, so raising the cap is forced rather than optional.
+  if (pageCount >= maxPages) {
+    crawlLimits.push({
+      detail:
+        `crawl stopped at MAX_PAGES=${maxPages} with ${queue.length} page(s) still queued — ` +
+        `raise the cap; findings (orphans especially) are incomplete until then`,
+    });
+  }
+
+  // Orphan detection: URLs advertised in the sitemap but reached by no link.
+  //
+  // /sitemap.xml is a <sitemapindex> here (split-sitemap.mjs writes one child per
+  // section), and an index's <loc> values are child SITEMAPS, not pages — so
+  // cross-referencing them against crawled pages would match nothing and report
+  // every child as an orphan. Follow the index one level down and union the
+  // children's pages instead.
   try {
-    const sitemapUrl = new URL("/sitemap.xml", start).toString();
-    const res = await request(sitemapUrl, { retries: 1, timeoutMs: 15000 });
-    if (res.status === 200) {
-      const xml = await res.text();
-      const locs = parseSitemapLocs(xml);
-      if (locs.length === 0) {
-        sitemapNote = "sitemap.xml found but contained no <loc> page entries";
-      } else {
-        orphanPages = locs
-          .filter((loc) => {
-            try {
-              return !discoveredPaths.has(pathKey(loc));
-            } catch {
-              return false;
-            }
-          })
-          .map((loc) => ({ url: loc }));
-      }
-    } else {
-      sitemapNote = `no usable sitemap.xml (status ${res.status}) — orphan detection skipped`;
+    const { pageLocs, note } = await collectSitemapPages(start);
+    sitemapNote = note;
+    if (pageLocs.length > 0) {
+      orphanPages = pageLocs
+        .filter((loc) => {
+          try {
+            return !discoveredPaths.has(pathKey(loc));
+          } catch {
+            return false;
+          }
+        })
+        .map((loc) => ({ url: loc }));
     }
-  } catch {
-    sitemapNote = "sitemap.xml unreachable — orphan detection skipped";
+  } catch (err) {
+    sitemapNote = `sitemap.xml unreachable (${err?.message ?? err}) — orphan detection skipped`;
   }
 
   return {
@@ -453,9 +546,9 @@ export async function runCrawl({
     seoErrors,
     seoWarnings,
     robotsErrors,
+    crawlLimits,
     seoChecked,
     sitemapNote,
-    cappedAtMaxPages: pageCount >= maxPages,
   };
 }
 
@@ -467,7 +560,6 @@ async function cli() {
   const r = await runCrawl();
 
   console.log(`\nCrawled ${r.pageCount} page(s); checked ${r.checked.size} URL(s) from ${baseUrl}`);
-  if (r.cappedAtMaxPages) console.log(`(stopped at MAX_PAGES=${MAX_PAGES} cap)`);
   if (r.sitemapNote) console.log(`(orphan check: ${r.sitemapNote})`);
 
   const report = (title, items, fmt) => {
@@ -489,6 +581,7 @@ async function cli() {
     report("Missing SEO/OG tags (fatal)", r.seoErrors, (it) => `[missing: ${it.missing.join(", ")}] ${it.url}`);
   }
   if (r.robotsErrors?.length) report("robots.txt problems (fatal)", r.robotsErrors, (it) => it.detail);
+  if (r.crawlLimits?.length) report("Crawl truncated (fatal)", r.crawlLimits, (it) => it.detail);
   if (r.seoWarnings?.length) {
     report("SEO warnings (warning)", r.seoWarnings, (it) => `[${it.warnings.join("; ")}] ${it.url}`);
   }
@@ -499,7 +592,7 @@ async function cli() {
 
   const fatal =
     r.leaks.length + r.brokenInternal.length + r.mathErrors.length + r.redirectLoops.length + r.langErrors.length +
-    (r.seoErrors?.length ?? 0) + (r.robotsErrors?.length ?? 0);
+    (r.seoErrors?.length ?? 0) + (r.robotsErrors?.length ?? 0) + (r.crawlLimits?.length ?? 0);
   const warnings =
     r.brokenExternal.length + r.blockedExternal.length + r.orphanPages.length + r.slowPages.length +
     (r.seoWarnings?.length ?? 0);

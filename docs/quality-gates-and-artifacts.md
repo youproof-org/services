@@ -77,8 +77,13 @@ knowledge base:
   exposed).
 - **Math-render errors** (malformed math output).
 - **Redirect loops** (e.g. between the `.hu` redirect worker and `.org`).
-- **Orphan pages** (unreachable from the link graph).
+- **Orphan pages** (unreachable from the link graph). `/sitemap.xml` is a
+  `<sitemapindex>`, so the child sitemaps are fetched and their page URLs unioned
+  before the comparison — an index's `<loc>`s are child sitemaps, not pages.
 - **Slow pages** (response-time / availability outliers).
+- **A truncated crawl** (fatal) — hitting `MAX_PAGES` leaves the unreached pages
+  out of every other category and turns them into orphan reports, so it fails the
+  gate instead of degrading it.
 
 ## Test artifact schema
 
@@ -103,7 +108,8 @@ Reports are JSON, `schemaVersion: 1`:
       "pagesCrawled": 0,
       "brokenInternal": [], "brokenExternal": [], "legacyLeaks": [],
       "mathErrors": [], "orphanPages": [], "redirectLoops": [],
-      "slowPages": []
+      "slowPages": [], "langErrors": [], "seoErrors": [], "robotsErrors": [],
+      "crawlLimits": [], "seoWarnings": []
     }
   }
 }
@@ -112,7 +118,8 @@ Reports are JSON, `schemaVersion: 1`:
 - `overall == "pass"` **iff** every suite's `status == "pass"`.
 - A suite is `pass` **iff** its **fatal** categories are empty. Crawler fatal
   categories: `brokenInternal`, `brokenExternal`, `legacyLeaks`, `mathErrors`,
-  `redirectLoops`. `brokenExternal` is **fatal** — this is a mathematical portal,
+  `redirectLoops`, `langErrors`, `seoErrors`, `robotsErrors`, `crawlLimits`.
+  `brokenExternal` is **fatal** — this is a mathematical portal,
   so every outbound link must resolve; a broken one means the content is stale
   (SEO / consistency risk) and should be fixed. Only `orphanPages`, `slowPages`,
   and external `403`/`429` rate-limited hosts (bot-block/rate-limit, dropped, not

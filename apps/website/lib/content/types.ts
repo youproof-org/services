@@ -1,3 +1,5 @@
+import type { RefTargetKind } from './fqn'
+
 // ---------------------------------------------------------------------------
 // Content blocks
 // ---------------------------------------------------------------------------
@@ -30,10 +32,14 @@ export interface FigureBlock {
   height?: number
 }
 
+/**
+ * An `embed` or `recall` block's target: always a knowledge-base entity, addressed
+ * by the same parsed path as a cross-reference (see PathRefTarget).
+ */
 export interface EmbedTarget {
-  type: string
+  type: RefTargetKind
   name: string
-  namespace: string
+  fqn: string
 }
 
 export interface EmbedBlock {
@@ -45,6 +51,11 @@ export interface EmbedBlock {
 export interface ClaimBlock {
   type: 'claim'
   name: string
+  // Localized fragment identifier: a claim has no page of its own, so it is cited
+  // as `#claim-{slug}` on whichever node asserts it. Falls back to `name` when
+  // absent (see claimAnchorId) — `name` stays the language-independent id that
+  // cross-references resolve against.
+  slug?: string
   content: string
   formula?: string
 }
@@ -114,69 +125,51 @@ export interface ExternalRefTarget {
   url: string
 }
 
-export interface KnowledgeBaseRefTarget {
-  type: 'definition' | 'theorem' | 'proof' | 'remark'
+/**
+ * An internal cross-reference target: a parsed fully qualified name (see fqn.ts).
+ *
+ * One shape for all fourteen kinds, replacing the eight hand-written interfaces
+ * this used to be. Those carried the parentage each kind happened to need —
+ * `namespace` on an entity, `book` + `part` on a chapter, a nested `parent` object
+ * on a claim — which meant the shape of a target depended on what it pointed at,
+ * and adding a kind meant adding an interface. The path already encodes parentage,
+ * so it is read off the path instead.
+ *
+ * `type` keeps its name so the many `target.type === 'book'` checks still read the
+ * same, and there is no `type` field in the YAML any more: the leading container
+ * decides the root type and the last one decides the leaf's, so a declared type
+ * could only ever duplicate or contradict the path.
+ */
+export interface PathRefTarget {
+  type: RefTargetKind
+  /** Leaf key — a `name`, never a slug. */
   name: string
-  namespace: string
+  /** The path as authored, e.g. "theorems.t.proofs.p". Also the graph's map key. */
+  fqn: string
+  /** The path minus its last step; '' when the leaf sits at the root. */
+  parentFqn: string
+  /** Kind of the parent, or null at the root. Lets a consumer branch without re-parsing. */
+  parentKind: RefTargetKind | null
 }
 
-// A book's index page. Addressed by the language-independent `name` (parts are
-// flattened out of URLs, so no further parentage is needed); resolution goes
-// through urlForBook, which supplies the book's own locale + slug.
-export interface BookRefTarget {
-  type: 'book'
-  name: string
-}
+export type RefTarget = ExternalRefTarget | PathRefTarget
 
-export interface ChapterRefTarget {
-  type: 'chapter'
-  book: string
-  part: string
-  name: string
+/** True for every target except an external URL — i.e. everything with an `fqn`. */
+export function isPathTarget(target: RefTarget): target is PathRefTarget {
+  return target.type !== 'external'
 }
-
-export interface SectionRefTarget {
-  type: 'section'
-  book: string
-  part: string
-  chapter: string
-  name: string
-}
-
-export interface ClaimRefTarget {
-  type: 'claim'
-  name: string
-  parent: KnowledgeBaseRefTarget
-}
-
-export interface TermRefTarget {
-  type: 'term'
-  name: string
-  parent: KnowledgeBaseRefTarget
-}
-
-// A standalone item (article/newsletter/page/landing). Addressed by the
-// language-independent `name`, not the localized `slug`, so the href stays correct
-// if the slug is ever localized — resolution goes through urlForStandalone, which
-// supplies the target's own locale + slug.
-export interface StandaloneRefTarget {
-  type: StandaloneKind
-  name: string
-}
-
-export type RefTarget =
-  | ExternalRefTarget
-  | KnowledgeBaseRefTarget
-  | ClaimRefTarget
-  | TermRefTarget
-  | BookRefTarget
-  | ChapterRefTarget
-  | SectionRefTarget
-  | StandaloneRefTarget
 
 export interface RefEntry {
   display: string
+  // Resolved at graph-build time, in two variants, because the SAME references map
+  // is rendered in two places and must point somewhere different in each:
+  //   href   — used on a chapter page (and inside an entity embedded there): the
+  //            in-page/cross-chapter anchor, i.e. today's behaviour, unchanged.
+  //   kbHref — used on a standalone knowledge-base page: the target's own KB page.
+  // A KB page therefore remaps its refs (see kbRefs) rather than threading a
+  // "which context am I in" flag through every block component.
   href?: string
+  kbHref?: string
   target: RefTarget
 }
 
@@ -203,6 +196,9 @@ export interface EntityLabels {
 export interface TermDefinition {
   display: string
   canonical: string
+  // Localized fragment identifier, as for a claim: `#term-{slug}` on the node that
+  // introduces the term. Falls back to the term's map key when absent.
+  slug?: string
   synonyms?: string[]
 }
 
@@ -215,7 +211,9 @@ export type TermMap = Record<string, TermDefinition>
 export interface DefinitionNode {
   type: 'definition'
   name: string
-  namespace: string               // e.g. "/primalitas"
+  slug: string                    // localized URL segment (flat, namespace-independent)
+  locale: string
+  namespace: string               // e.g. "/primalitas" — grouping only, never in the URL
   title?: string
   labels?: EntityLabels
   terms?: TermMap
@@ -227,6 +225,8 @@ export interface DefinitionNode {
 export interface TheoremNode {
   type: 'theorem'
   name: string
+  slug: string                    // localized URL segment (flat, namespace-independent)
+  locale: string
   namespace: string
   title?: string
   labels?: EntityLabels
@@ -240,6 +240,8 @@ export interface TheoremNode {
 export interface ProofNode {
   type: 'proof'
   name: string
+  slug: string                    // localized URL segment, nested under its theorem
+  locale: string
   namespace: string
   title?: string
   labels?: EntityLabels
@@ -253,6 +255,8 @@ export interface ProofNode {
 export interface RemarkNode {
   type: 'remark'
   name: string
+  slug: string                    // localized URL segment, nested under its owner
+  locale: string
   namespace: string
   title?: string
   labels?: EntityLabels
@@ -318,8 +322,14 @@ export interface ChapterNode {
   meta?: MetaInfo                  // optional crawler/social metadata (kebab: meta)
 }
 
+// A part has no URL — it is flattened out of chapter paths — but it IS anchored,
+// on its book's index page, and is a cross-reference target. So it carries a slug
+// like every other addressable node, plus a locale to localize that anchor's
+// container segment with.
 export interface PartNode {
-  name: string
+  name: string                    // language-independent internal id (cross-refs)
+  slug: string                    // localized in-page anchor segment (not a URL segment)
+  locale: string
   title: string
   book: BookNode                  // parent reference
   chapters: ChapterNode[]
@@ -386,13 +396,168 @@ export interface StandaloneNode {
 }
 
 // ---------------------------------------------------------------------------
+// Knowledge-base graph derivatives
+// ---------------------------------------------------------------------------
+
+/** Any knowledge-base entity. */
+export type KbNode = DefinitionNode | TheoremNode | ProofNode | RemarkNode
+
+/**
+ * The knowledge-base node a claim or term belongs to, threaded through the
+ * renderers so a nested block can build its own anchor id.
+ *
+ * `locale` is what makes the anchor prefix localizable: a claim and a term carry no
+ * locale of their own, so the owner supplies it (see claimAnchorId/termAnchorId).
+ */
+export interface AnchorParent {
+  locale: string
+  /**
+   * Dotted anchor path of the node owning these claims/terms, RELATIVE to the page
+   * being rendered — the node's full path inside a chapter that embeds it, and
+   * empty on the node's own page, where the node drops out of the path. Built by
+   * `embeddedScope`/`ownPageScope` in lib/content/urls.ts; the components only
+   * thread it through.
+   */
+  prefix: string
+}
+
+/**
+ * Where in the narrative a knowledge-base node is introduced: the chapter that
+ * embeds it and the section within that chapter. Every node is embedded exactly
+ * once today, and a node only gets a page at all if it IS embedded (see
+ * kbPageExists), so a KB page can always show this.
+ */
+export interface EmbeddingContext {
+  chapter: ChapterNode
+  section?: SectionNode           // absent only for a chapter prologue/epilogue embed
+  index?: string                  // chapter-scoped label, e.g. "11.3."
+}
+
+
+/**
+ * One row of the glossary. A term has no page, so the entry points at the anchor
+ * on whichever node introduces it. Note that a term key may legitimately be
+ * defined by more than one node (8 keys are today), so an entry is identified by
+ * the (owner, key) pair, not by the key alone.
+ */
+export interface GlossaryEntry {
+  termKey: string                 // language-independent key, e.g. "natural-number"
+  canonical: string               // Hungarian display form
+  ownerName: string
+  ownerTitle: string
+  // Owner's KB page + the page-relative term anchor ("#fogalmak.{slug}") — the
+  // page-relative form because that is the page this links to, where the term is
+  // rendered without its node in the path.
+  href: string
+  // The term's authored synonyms, copied from `TermDefinition.synonyms`. Always an
+  // array: a term with no synonyms gets an empty one, so a reader never has to
+  // distinguish "none authored" from "field absent".
+  synonyms: string[]
+}
+
+/**
+ * One row of an "incoming references" list: a single source that cites an entity,
+ * with how many times it does so.
+ *
+ * A source is whatever carried the reference — one of the four knowledge-base
+ * entity types, or a chapter or a section of the book, because the narrative cites
+ * entities too and a reader asking "where is this used?" wants the chapter as much
+ * as the theorem. A source appears ONCE with a count, not once per reference.
+ *
+ * **A source is also a place, and places nest.** An entity is embedded in a section
+ * and a section belongs to a chapter, so the sources of one entity form a tree —
+ * chapter, then its sections, then the entities embedded in them — and that is the
+ * shape this type carries. A container earns a node even when it cites nothing
+ * itself: the chapter a citing section sits in is part of the answer to "where is
+ * this used?" whether or not the chapter's own narrative joins in.
+ */
+export interface KbBacklinkSource {
+  kind: 'chapter' | 'section' | 'definition' | 'theorem' | 'proof' | 'remark'
+  /** Fully qualified name of the source node — the row's identity. */
+  fqn: string
+  /**
+   * The source's own title, unnumbered — not displayed, but what a level of the tree
+   * is ordered by once two rows carry the same count.
+   *
+   * The numbers on `label` cannot be that tie-breaker: "16.10." sorts before "16.9."
+   * in any collation, so a tie would come out in an order the reader reads as random.
+   */
+  title: string
+  /**
+   * The row's first line: the numbered name of the place it leads to, as the book
+   * writes it — "16. Alice és Bob alaptétele" for a chapter, "16.1. Oszthatóság" for
+   * a section, "16.8. Tétel: Az asszociáltság tulajdonságai" for an entity.
+   *
+   * For a proof or a remark this names the definition or theorem at the top of its
+   * ownership chain rather than the node itself, because that is what the page it
+   * leads to is about; `ownership` is the rest of the chain. So the number format and
+   * the type word are what tell the six kinds apart, which is why no row carries the
+   * kind as a word of its own: measured over the local export's backlink lists, no
+   * two rows of one list share these two lines, where 10 groups of rows shared a
+   * title and a kind under the previous design.
+   */
+  label: string
+  /**
+   * The row's second line, on a proof or a remark only: the ownership chain BELOW the
+   * definition or theorem `label` names — "bizonyítás", "megjegyzés", or "bizonyítás →
+   * megjegyzés" for a remark on a proof. Each segment carries the node's authored
+   * title in parentheses when it has one; no content authors one today.
+   */
+  ownership?: string
+  /** The source's page, plus a fragment when the source is a section. */
+  href: string
+  /**
+   * References aimed at this row's target from this source AND from everything
+   * nested under it — the accumulated count, bubbled up from the leaves.
+   *
+   * So a section's count covers the entities embedded in it as well as its own
+   * narrative, and a chapter's covers all of its sections. That is what the row
+   * leads to: following it marks every reference inside that place
+   * (`components/kb/HighlightOnArrival.tsx`), and a count that only spoke for the
+   * container's own narrative would promise fewer marks than the reader gets.
+   */
+  count: number
+  /** The sources nested inside this one, ordered like their parent's level. */
+  children: KbBacklinkSource[]
+}
+
+/**
+ * Everything that cites one entity, in the two shapes a page needs.
+ *
+ * `all` is the unfiltered list shown for the entity as a whole. It includes
+ * references aimed at the entity's claims and terms, because those have no page of
+ * their own and the entity's page is the only place they can be shown.
+ *
+ * `byTarget` is keyed by the FULL target name — the entity's own name for a
+ * reference to the entity, `{entity}.claims.{c}` or `{entity}.terms.{t}` for one
+ * aimed inside it — so selecting a claim or a term narrows the list by a lookup
+ * rather than by filtering `all` at render time.
+ *
+ * Both are trees of chapters, sections and embedded entities (see
+ * `KbBacklinkSource`), and every level of both is ordered by `count` descending,
+ * ties broken by title.
+ */
+export interface KbBacklinks {
+  all: KbBacklinkSource[]
+  byTarget: Map<string, KbBacklinkSource[]>
+}
+
+// ---------------------------------------------------------------------------
 // Content graph
-// Map keys:
-//   Entities:     "/entities/{namespace}/{name}"
-//   Books:        "/books/{book}"
-//   Parts:        "/books/{book}/{part}"
-//   Chapters:     "/books/{book}/{part}/{chapter}"
-//   Sections:     "/books/{book}/{part}/{chapter}/{section}"
+//
+// Every map is keyed by the node's fully qualified name — the same string a
+// cross-reference target is — so a lookup is `graph.theorems.get(target.fqn)` with
+// no key construction. See keys.ts for the builders and fqn.ts for the grammar:
+//
+//   books.{book}
+//   books.{book}.parts.{part}
+//   books.{book}.chapters.{chapter}                    (no part: it is not in the address)
+//   books.{book}.chapters.{chapter}.sections.{section}
+//   articles.{name} / newsletters.{name} / pages.{name} / landings.{name}
+//   definitions.{name}
+//   theorems.{name}
+//   theorems.{theorem}.proofs.{proof}
+//   {owner}.remarks.{remark}                           (owner: definition, theorem or proof)
 // ---------------------------------------------------------------------------
 
 export interface ContentGraph {
@@ -410,4 +575,16 @@ export interface ContentGraph {
   newsletters: Map<string, StandaloneNode>
   pages:       Map<string, StandaloneNode>
   landings:    Map<string, StandaloneNode>
+
+  // ── Derived, built once at graph-build time ──
+  /** Entity key -> where the node is embedded in the narrative. */
+  embedding:   Map<string, EmbeddingContext>
+  /** Every term definition in the knowledge base, sorted by `canonical`. */
+  glossary:    GlossaryEntry[]
+  /**
+   * Owning-entity key -> everything that cites it. Only entities with at least one
+   * source that survives the page-existence filter get an entry, so a page with no
+   * incoming references is a missing key rather than an empty list.
+   */
+  backlinks:   Map<string, KbBacklinks>
 }

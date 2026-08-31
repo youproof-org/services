@@ -5,7 +5,8 @@ import styles from './stub-page.module.scss'
 // pages whose YAML is `published: false` with no `legacy-path`.
 export default function UnavailableStub() {
   return (
-    <div className={styles.stub}>
+    // See NotMigratedStub for what `data-stub` is for.
+    <div className={styles.stub} data-stub="unavailable">
       <h1 className={styles.title}>Sajnáljuk, ez az oldal nem érhető el</h1>
       <p className={styles.message}>
         A keresett oldal nem található, vagy még nem elérhető.
