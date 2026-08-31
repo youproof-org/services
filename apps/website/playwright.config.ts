@@ -40,6 +40,10 @@ if (!existsSync(OUT)) {
 
 export default defineConfig({
   testDir: './e2e',
+  // Derives the expected row counts and fixture entities from the content graph, so
+  // the suite passes against a local export and a deployed one — the two build
+  // different page sets. See e2e/support/derive-fixtures.mjs.
+  globalSetup: require.resolve('./e2e/support/global-setup'),
   // The repo names its suites `*.test.*`; there is no reason for these to be the
   // one exception.
   testMatch: '**/*.test.ts',

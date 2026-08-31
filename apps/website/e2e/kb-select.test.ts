@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { fixtures, incomingRows } from './support/fixtures'
 import sharp from 'sharp'
 
 /**
@@ -57,26 +58,28 @@ const CLAIM_COUNT = 8
 
 /**
  * A proof, for the two items that must NOT be there (§6.5): no proof in the content
- * defines a term (measured: 0 of 190), and Állítások is ruled out for the type
- * rather than for the content — the identifiers sub-plan's D3 makes a claim inside
- * a proof a build error, so the menu states the rule instead of counting.
+ * defines a term, and Állítások is ruled out for the type rather than for the content
+ * — the identifiers sub-plan's D3 makes a claim inside a proof a build error, so the
+ * menu states the rule instead of counting.
+ *
+ * Taken from the graph rather than named: a deployed build gives no page to a proof
+ * under an unpublished chapter, and this needs one that has a page here.
  */
-const PROOF =
-  '/hu/tudasbazis/tetelek/egesz-kitevos-hatvanyozas-azonossagai/bizonyitasok/egesz-kitevos-hatvanyozas-azonossagai-bizonyitas'
+const PROOF = fixtures.termlessProof.url
 
 /**
  * The candidates level 2 is checked on, and the row counts their panels must show.
  *
  * Every number here is `graph.backlinks.get('definitions.gyuru-test')` rendered off
- * the built graph, counted as ROWS: the lists are grouped chapter → section →
+ * the graph, counted as ROWS: the lists are grouped chapter → section →
  * embedded entity, so each one carries the containers its sources sit in as well as
  * the sources. They are the assertion, not a sample of it — "the filtered list is the
  * unfiltered one narrowed" is only worth checking against the exact figure the index
  * holds.
  *
  * `SELECTED_TERM` is the busiest term on the busiest entity, so a filter that did
- * nothing would show 236 rows instead of 154 and a filter that matched nothing
- * would show 0. `BELOW_FOLD_TERM` is the last term in the body, 1911px down a
+ * nothing would show the whole unfiltered list instead of 154 and a filter that
+ * matched nothing would show 0. `BELOW_FOLD_TERM` is the last term in the body, 1911px down a
  * 2884px page: it is off-screen when the page opens and in the half the panel is
  * about to cover when it is pressed, which is the case §6.4's scroll exists for.
  */
@@ -85,7 +88,13 @@ const SELECTED_TERM_ROWS = 154
 const BELOW_FOLD_TERM = 'fogalmak.nullgyuru'
 const SELECTED_CLAIM = 'allitasok.szorzas-disztributiv'
 const SELECTED_CLAIM_ROWS = 33
-const UNFILTERED_ROWS = 236
+/**
+ * The unfiltered list this entity serves in THIS build. The two filtered figures above
+ * are counted from `byTarget`, which the page-existence filter leaves alone at this
+ * scale; `all` is what shrinks on a deployed build, and it is also the number the two
+ * are compared against, so it comes from the graph.
+ */
+const UNFILTERED_ROWS = incomingRows(ENTITY)
 
 const MENU = 'Menü'
 const BACK = 'Vissza'

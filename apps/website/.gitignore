@@ -44,3 +44,6 @@ blob-report/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Derived from the content graph by the browser suite's global setup.
+e2e/.generated/

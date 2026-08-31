@@ -19,6 +19,14 @@
  * pointing at a page the export does not contain are skipped: an unpublished
  * chapter or a not-yet-routed knowledge-base page is a different concern, owned by
  * validateKbLinks and the crawler.
+ *
+ * An unpublished chapter is skipped the same way even though its page IS in the
+ * export, because that page is a stub (`data-stub`) — it renders the "not yet
+ * migrated" notice and a link to the legacy site, and none of the chapter's own
+ * anchors. A forward reference into a section of such a chapter is correct content
+ * whose target simply is not built yet, which is the same concern as above and not
+ * id drift. Nothing is masked: a stub renders no anchors at all, so there is no
+ * mismatch it could hide.
  */
 import { readdirSync, readFileSync, existsSync } from 'node:fs'
 import path from 'node:path'
@@ -44,6 +52,8 @@ function htmlFiles(dir) {
 const idsByPath = new Map()
 /** URL pathname -> the file it came from, for error messages. */
 const fileByPath = new Map()
+/** URL pathnames whose page is a stub, and so renders no content anchors. */
+const stubPaths = new Set()
 
 const toPathname = (file) => {
   const rel = path.relative(OUT, file).replace(/\\/g, '/')
@@ -58,10 +68,12 @@ for (const file of files) {
   const pathname = toPathname(file)
   idsByPath.set(pathname, ids)
   fileByPath.set(pathname, file)
+  if (/\sdata-stub="/.test(html)) stubPaths.add(pathname)
 }
 
 let checked = 0
-let skipped = 0
+let skippedAbsent = 0
+let skippedStub = 0
 const broken = []
 
 for (const file of files) {
@@ -77,7 +89,8 @@ for (const file of files) {
     if (!fragment) continue
 
     const ids = idsByPath.get(target)
-    if (!ids) { skipped++; continue }
+    if (!ids) { skippedAbsent++; continue }
+    if (stubPaths.has(target)) { skippedStub++; continue }
 
     checked++
     if (!ids.has(fragment)) {
@@ -96,9 +109,14 @@ for (const b of broken) {
   else grouped.set(key, { ...b, count: 1 })
 }
 
+const skips = [
+  skippedAbsent ? `${skippedAbsent} target page not in this export` : '',
+  skippedStub ? `${skippedStub} target page is a stub` : '',
+].filter(Boolean)
+
 console.log(
   `[check-anchors] ${checked} internal fragment link(s) checked across ${files.length} page(s)` +
-    `${skipped ? `, ${skipped} skipped (target page not in this export)` : ''}.`,
+    `${skips.length ? `, skipped: ${skips.join(', ')}` : ''}.`,
 )
 
 if (grouped.size > 0) {

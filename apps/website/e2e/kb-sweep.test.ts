@@ -1,4 +1,5 @@
 import { expect, test, type BrowserContext, type Page } from '@playwright/test'
+import { fixtures, incomingRows } from './support/fixtures'
 
 /**
  * The three cross-cutting rules, checked once on the finished pages: print, no
@@ -48,17 +49,19 @@ import { expect, test, type BrowserContext, type Page } from '@playwright/test'
 /**
  * The one entity page in the export that carries all five panel contents AND an
  * ownership link: 1 incoming list, 1 context chain, 4 term panels, 5 claim panels and
- * 12 reference panels, with one link down to its proof. Every count below is read off
- * the built HTML.
+ * 12 reference panels, with one link down to its proof.
  *
- * The busier pages the other suites use — `gyuru-test` with its 236 inbound rows — are
- * definitions with nothing above or below them (48 of the 84 are), so the ownership
- * half of the gate cannot be asked there.
+ * The panel census is written down because it is a property of this node's own body —
+ * its terms, its claims, its outgoing references — which is the same in every build.
+ * Its INBOUND list is not: a deployed build drops the sources whose own page it does
+ * not generate, so that count comes from the graph.
+ *
+ * The busier pages the other suites use are definitions with nothing above or below
+ * them, so the ownership half of the gate cannot be asked there.
  */
 const ENTITY = '/hu/tudasbazis/tetelek/maradekosztalygyuruk'
 const ENTITY_TITLE = 'Maradékosztálygyűrűk'
 const SECTION_COUNT = 23
-const INCOMING_ROWS = 16
 const TERM_PANELS = 4
 const CLAIM_PANELS = 5
 const REFERENCE_PANELS = 12
@@ -71,13 +74,10 @@ const PROOF_URL = '/hu/tudasbazis/tetelek/maradekosztalygyuruk/bizonyitasok/mara
  */
 const MARKED_ANCHOR = 'fogalmak.maradekosztalyok-osszege'
 
-/** The three list pages and the root, with the row counts of the served HTML. */
+/** The three list pages and the root; the row counts from the graph, per env mode. */
 const GLOSSARY = '/hu/tudasbazis/fogalmak'
-const GLOSSARY_ROWS = 341
 const DEFINITIONS = '/hu/tudasbazis/definiciok'
-const DEFINITION_ROWS = 84
 const THEOREMS = '/hu/tudasbazis/tetelek'
-const THEOREM_ROWS = 191
 const ROOT = '/hu/tudasbazis'
 
 const MENU = 'Menü'
@@ -290,7 +290,7 @@ test.describe('without JavaScript', () => {
 
     // …and the contents inside them, not merely the boxes: the three counts this
     // phase records, and the context chain's links.
-    await expect(page.locator(INCOMING_ROW)).toHaveCount(INCOMING_ROWS)
+    await expect(page.locator(INCOMING_ROW)).toHaveCount(incomingRows(ENTITY))
     await expect(page.locator(INCOMING_ROW).first()).toBeVisible()
     await expect(page.locator(CONTEXT_LINK)).toHaveCount(CONTEXT_LEVELS)
     await expect(page.locator(CONTEXT_LINK).first()).toBeVisible()
@@ -391,9 +391,9 @@ test.describe('without JavaScript', () => {
     // filter, and it hides rows of a list the server rendered rather than producing
     // one. With nothing to hide them, every row is on the page.
     for (const [url, rows] of [
-      [GLOSSARY, GLOSSARY_ROWS],
-      [DEFINITIONS, DEFINITION_ROWS],
-      [THEOREMS, THEOREM_ROWS],
+      [GLOSSARY, fixtures.lists.glossaryRows],
+      [DEFINITIONS, fixtures.lists.definitionRows],
+      [THEOREMS, fixtures.lists.theoremRows],
     ] as const) {
       await page.goto(url)
       await expect(page.locator(ROW)).toHaveCount(rows)

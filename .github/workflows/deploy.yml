@@ -573,15 +573,41 @@ jobs:
       - name: Install dependencies (website subtree)
         run: pnpm install --frozen-lockfile --filter @youproof.org/website...
 
-      # Consent logic (expiry, policy-version comparison, cookie parsing) decides
-      # whether analytics may run, so a regression there has legal consequences
-      # rather than cosmetic ones. Runs before the build so a failure costs a
-      # 30-second job, not a deploy.
-      - name: Unit tests (consent logic)
+      # The whole node:test suite over the site's pure modules — consent logic,
+      # the knowledge-base URL/graph layer, the chrome state machine. Consent is
+      # the part with legal consequences rather than cosmetic ones. Runs before
+      # the build so a failure costs a 30-second job, not a deploy.
+      - name: Unit tests (website)
         run: pnpm --filter @youproof.org/website run test
 
       - name: Build static export
         run: pnpm --filter @youproof.org/website build
+
+      # The browser suite runs in THIS job, not its own, because it needs both of the
+      # expensive things this job already has: the static export it drives, and the
+      # content clone its expected values are derived from (SITE_ENV decides the page
+      # set, and the job sets the same value for both). A separate job would have to
+      # rebuild all of it — TeX Live, the clone, hundreds of pages. Sitting between the
+      # build and the R2 upload is also what makes a failure block the deploy rather
+      # than merely report it.
+      - name: Install Chromium for the browser tests
+        run: pnpm --filter @youproof.org/website exec playwright install --with-deps chromium
+
+      - name: Browser tests (knowledge-base interaction contract)
+        run: pnpm --filter @youproof.org/website run test:e2e
+
+      # Traces (retain-on-failure) and the HTML report are the only way to see why
+      # a headless run failed on a runner that no longer exists.
+      - name: Upload browser-test report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ inputs.environment }}
+          path: |
+            apps/website/playwright-report
+            apps/website/test-results
+          retention-days: 7
+          if-no-files-found: ignore
 
       # Read AFTER the build, so this is the list the deployed bundle actually
       # links. Absent file => the consent feature is off in this build; the gate

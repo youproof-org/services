@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { fixtures } from './support/fixtures'
 
 /**
  * Bejövő hivatkozások: the panel's hardest content (sub-plan §7.2).
@@ -14,17 +15,17 @@ import { expect, test, type Page } from '@playwright/test'
  * knowledge graph, so §2.1 puts them in the page from the first byte, and the
  * JavaScript-disabled case below is what a crawler is served.
  *
- * Row counts are the LOCAL export's — `pnpm test:e2e` runs against `pnpm build`
- * (see package.json). A deployed build drops the sources whose own page it does not
- * generate, which takes `gyuru-test` from 222 sources to 207 (§9.1 notes 2–3).
+ * Every count comes from the content graph (`e2e/support/derive-fixtures.mjs`). A
+ * deployed build drops the sources whose own page it does not generate, so the same
+ * list is 236 rows locally and 212 on staging; a number written down here would pin
+ * the suite to one of the two, and one read off the page under test would compare the
+ * page to itself.
  *
- * A row is not the same thing as a source any more. The list is grouped chapter →
- * section → embedded entity, and a container that cites nothing itself still earns a
- * row, so `gyuru-test`'s 222 sources are 236 rows: 14 chapters, 60 sections and 162
- * entities.
+ * A row is not the same thing as a source. The list is grouped chapter → section →
+ * embedded entity, and a container that cites nothing itself still earns a row.
  *
  * A row reads as three lines — the numbered name of the place it leads to, the
- * ownership chain below it on the 96 rows that have one, then the count — so what used
+ * ownership chain below it on the rows that have one, then the count — so what used
  * to be asserted about a kind label is asserted about that first line here.
  *
  * Conventions from `kb-panel.test.ts`: settle the consent decision first, scope the
@@ -32,15 +33,19 @@ import { expect, test, type Page } from '@playwright/test'
  * header's hamburger is also called "Menü".
  */
 
+/** The longest inbound list in the build, and everything the graph says about it. */
+const LONGEST = fixtures.busiest
+const BUSIEST = LONGEST.url
+/** The short end of the same list: a handful of rows, still grouped, with a proof in it. */
+const SHORT = fixtures.shortList
+/** Nothing cites it — the empty state, which is most of the pages this build generates. */
+const NOTHING_CITES_IT = fixtures.uncited.url
 /**
- * The entity with the most inbound references in the content: 222 sources in 236
- * rows, 548 references.
+ * `gyuru-test` specifically, for the one case below that is about ITS data rather than
+ * about the shape of a list: three of its rows are titled "Oszthatóság". It has a page
+ * in every build mode, so naming it costs nothing.
  */
-const BUSIEST = '/hu/tudasbazis/definiciok/gyuru-test'
-/** Two sources, one reference each, in five rows — the short end of the same list. */
-const TWO_ROWS = '/hu/tudasbazis/definiciok/csoporthomomorfizmus'
-/** Nothing cites it, which is 244 of the 537 pages this build generates (§9.1 note 1). */
-const NOTHING_CITES_IT = '/hu/tudasbazis/definiciok/csoporthomomorfizmus-magja-es-kepe'
+const SHARED_TITLES = '/hu/tudasbazis/definiciok/gyuru-test'
 
 const MENU = 'Menü'
 const BACK = 'Vissza'
@@ -111,12 +116,12 @@ test.describe('the Bejövő hivatkozások panel', () => {
     ).toBeVisible()
 
     const rows = page.locator(ROW)
-    await expect(rows).toHaveCount(236)
+    await expect(rows).toHaveCount(LONGEST.rows)
 
     // Three levels and no more, and each one is the kind of place it should be: a
     // chapter at the top, its sections under it, the entities embedded in them under
-    // those. Every one of the 537 entities is embedded in a section, which is why no
-    // entity comes out at depth 1.
+    // those. Every entity is embedded in a section, which is why no entity comes out
+    // at depth 1.
     const byDepth = await rows.evaluateAll((links) => {
       const seen: Record<string, Set<string>> = {}
       for (const link of links) {
@@ -125,16 +130,12 @@ test.describe('the Bejövő hivatkozások panel', () => {
       }
       return Object.fromEntries(Object.entries(seen).map(([depth, kinds]) => [depth, [...kinds].sort()]))
     })
-    expect(byDepth).toEqual({
-      '0': ['chapter'],
-      '1': ['section'],
-      '2': ['definition', 'proof', 'remark', 'theorem'],
-    })
+    expect(byDepth).toEqual(LONGEST.kindsByDepth)
 
     // Ordered by count descending WITHIN a level (§7.2) — the tree is not one ordered
     // list, and a check that read the counts straight down the rendered rows would be
     // asserting the wrong thing. Read off the rendered rows rather than asserted one
-    // by one: the point is the ordering, not 236 individual numbers.
+    // by one: the point is the ordering, not each individual number.
     const rendered = await rows.evaluateAll((links) =>
       links.map((link) => ({
         depth: Number(link.getAttribute('data-backlink-depth')),
@@ -150,11 +151,10 @@ test.describe('the Bejövő hivatkozások panel', () => {
 
     // The accumulation, as the one sum that can check it: every reference is counted
     // exactly once at the top level, because every source is inside some chapter.
-    // 222 sources, 548 references, 14 chapters holding all of them.
     const top = rendered.filter((row) => row.depth === 0)
-    expect(top).toHaveLength(14)
-    expect(top.reduce((total, row) => total + row.count, 0)).toBe(548)
-    expect(top[0].count).toBe(135)
+    expect(top).toHaveLength(LONGEST.topRows)
+    expect(top.reduce((total, row) => total + row.count, 0)).toBe(LONGEST.topCountSum)
+    expect(top[0].count).toBe(LONGEST.topFirstCount)
 
     // …and no row promises less than what is nested under it. Walked as a stack,
     // because "nested under" is depth in the rendered order.
@@ -169,17 +169,18 @@ test.describe('the Bejövő hivatkozások panel', () => {
     const kinds = await rows.evaluateAll((links) =>
       [...new Set(links.map((link) => link.getAttribute('data-backlink-source')))].sort(),
     )
-    expect(kinds).toEqual(['chapter', 'definition', 'proof', 'remark', 'section', 'theorem'])
+    expect(kinds).toEqual(LONGEST.kinds)
 
     // The heaviest place is a chapter, and its row is a link to the chapter page —
-    // the count is inside the link, so the whole row is the target.
+    // the count is inside the link, so the whole row is the target. Its name is
+    // asserted as far as its number: the rest goes through `InlineText`, so a title
+    // carrying math is elements rather than the string the graph holds.
     const first = rows.first()
-    await expect(first).toHaveAttribute(
-      'href',
-      '/hu/konyvek/alice-es-bob/fejezetek/alice-es-bob-alaptetele',
+    await expect(first).toHaveAttribute('href', LONGEST.firstHref!)
+    await expect(first.locator('.backlinks-panel_label')).toHaveText(
+      new RegExp(`^${LONGEST.firstNumberPrefix.replace(/\./g, '\\.')}\\s`),
     )
-    await expect(first).toContainText('16. Alice és Bob alaptétele')
-    await expect(first).toContainText('135 hivatkozás')
+    await expect(first).toContainText(`${LONGEST.topFirstCount} hivatkozás`)
   })
 
   test('every row names the place it leads to, numbered as the book numbers it', async ({
@@ -187,22 +188,22 @@ test.describe('the Bejövő hivatkozások panel', () => {
   }) => {
     await openBacklinks(page, BUSIEST)
 
-    // One first line per row rather than one per list: 236 rows, 236 names. And 96
-    // second lines — the proofs and the remarks, which are the rows whose page hangs
-    // off a definition or a theorem rather than being one.
-    await expect(page.locator(ROW)).toHaveCount(236)
-    await expect(page.locator(LABEL)).toHaveCount(236)
-    await expect(page.locator(OWNERSHIP)).toHaveCount(96)
+    // One first line per row rather than one per list, and a second line only on the
+    // proofs and the remarks — the rows whose page hangs off a definition or a theorem
+    // rather than being one.
+    await expect(page.locator(ROW)).toHaveCount(LONGEST.rows)
+    await expect(page.locator(LABEL)).toHaveCount(LONGEST.rows)
+    await expect(page.locator(OWNERSHIP)).toHaveCount(LONGEST.ownershipRows)
 
     // What kind of thing a source is is still on the row — that is what the row's
     // number format and its type word say — so this is the same property the kind
     // label used to carry, read off the lines that carry it now. Grouped rather than
     // compared row by row: a row whose lines disagreed with its `data-backlink-source`
-    // would put a second entry in that kind's set and fail here, which makes this 236
-    // assertions in the shape of one.
+    // would put a second entry in that kind's set and fail here, which makes this one
+    // assertion per row in the shape of one.
     //
     // `number` is the leading index with its digits blanked, so the shape is asserted
-    // and not 236 particular numbers; `typeWord` is what stands between the index and
+    // and not the particular numbers; `typeWord` is what stands between the index and
     // the title, which only an entity has.
     const linesByKind = await page.locator(ROW).evaluateAll((links) => {
       const seen: Record<string, Record<string, Set<string>>> = {}
@@ -223,41 +224,18 @@ test.describe('the Bejövő hivatkozások panel', () => {
         ]),
       )
     })
-    expect(linesByKind).toEqual({
-      // A chapter's number is a single index and a section's is two, which is what
-      // tells those two apart now that neither says its kind in words.
-      chapter: { number: ['n.'], typeWord: ['(none)'], ownership: ['(none)'] },
-      section: { number: ['n.n.'], typeWord: ['(none)'], ownership: ['(none)'] },
-      // An entity carries its type word inside its label, and it is the AUTHORED one
-      // where the content has one: three of these rows are a Lemma and one a
-      // Következmény rather than a Tétel (`labels.canonical`, via `kbNodeLabel`).
-      definition: { number: ['n.n.'], typeWord: ['Definíció'], ownership: ['(none)'] },
-      theorem: {
-        number: ['n.n.'],
-        typeWord: ['Következmény', 'Lemma', 'Tétel'],
-        ownership: ['(none)'],
-      },
-      // A proof and a remark name the definition or theorem their page belongs to, so
-      // their first line is one of those and the second line is which of its children
-      // the row leads to. One remark in this list is attached to a proof rather than
-      // to the theorem, and its line carries the whole chain.
-      proof: {
-        number: ['n.n.'],
-        typeWord: ['Következmény', 'Lemma', 'Tétel'],
-        ownership: ['bizonyítás'],
-      },
-      remark: {
-        number: ['n.n.'],
-        typeWord: ['Definíció', 'Tétel'],
-        ownership: ['bizonyítás → megjegyzés', 'megjegyzés'],
-      },
-    })
+    // The graph's own projection of the same rows, so this compares what the page
+    // renders against what the data layer says — a chapter's number is a single index
+    // and a section's is two, which is what tells those two apart now that neither
+    // says its kind in words, and an entity's type word is the AUTHORED one where the
+    // content has one (a Lemma or a Következmény rather than a Tétel).
+    expect(linesByKind).toEqual(LONGEST.linesByKind)
   })
 
   test('rows that share a title are told apart by the lines above their counts', async ({
     page,
   }) => {
-    await openBacklinks(page, BUSIEST)
+    await openBacklinks(page, SHARED_TITLES)
 
     // The case that used to need a kind label. Three of `gyuru-test`'s rows are titled
     // "Oszthatóság": the section of the book, whose 34 include the 14 its own narrative
@@ -300,9 +278,9 @@ test.describe('the Bejövő hivatkozások panel', () => {
         href: '/hu/tudasbazis/definiciok/oszthatosag',
       },
     ])
-    // No two rows of the list read alike: measured over the local export, no list has
-    // two rows sharing these lines, where 10 groups of rows shared a title and a kind
-    // under the previous design.
+    // No two rows of the list read alike: measured over the export, no list has two
+    // rows sharing these lines, where 10 groups of rows shared a title and a kind under
+    // the previous design.
     const readings = await page.locator(ROW).evaluateAll((links) =>
       links.map(
         (link) =>
@@ -313,7 +291,7 @@ test.describe('the Bejövő hivatkozások panel', () => {
     expect(new Set(readings).size).toBe(readings.length)
   })
 
-  test('the 236 rows scroll inside the panel, under a header that stays put', async ({ page }) => {
+  test('the long list scrolls inside the panel, under a header that stays put', async ({ page }) => {
     await openBacklinks(page, BUSIEST)
 
     const body = page.locator(PANEL_BODY)
@@ -354,22 +332,29 @@ test.describe('the Bejövő hivatkozások panel', () => {
   test('two sources are the same list, just shorter — and still in their places', async ({
     page,
   }) => {
-    await openBacklinks(page, TWO_ROWS)
+    await openBacklinks(page, SHORT.url)
 
-    // Two sources, but five rows: a proof and a section, each shown inside the
+    // A couple of sources, but more rows than that: each one is shown inside the
     // section and the chapter it belongs to. Grouping is not a treatment reserved for
     // the long case — there is one design (§6.4).
     const rows = page.locator(ROW)
-    await expect(rows).toHaveCount(5)
-    await expect(page.locator(TOP_ROW)).toHaveCount(2)
+    await expect(rows).toHaveCount(SHORT.rows)
+    await expect(page.locator(TOP_ROW)).toHaveCount(SHORT.topRows)
     // No separate design for the short case: the same row, the same count, and a
-    // container that carries the one reference under it.
-    await expect(rows.first()).toContainText('1 hivatkozás')
-    await expect(rows.first()).toContainText('25. Alice és Bob fontos párhuzamokat talál')
-    // …including the third row, a proof, which names its theorem and then says it is
-    // the proof of it — the same two lines the long list's proof rows carry.
-    await expect(rows.nth(2)).toContainText('25.22. Tétel: Ciklikus csoportok struktúratétele')
-    await expect(rows.nth(2)).toContainText('bizonyítás')
+    // container that carries the references under it.
+    await expect(rows.first()).toContainText(`${SHORT.firstCount} hivatkozás`)
+    await expect(rows.first().locator('.backlinks-panel_label')).toHaveText(
+      new RegExp(`^${SHORT.firstNumberPrefix.replace(/\./g, '\\.')}\\s`),
+    )
+    // …including its proof row, which names the theorem its page belongs to — number
+    // and type word — and then says it is the proof of it, the same two lines the long
+    // list's proof rows carry.
+    const proof = rows.nth(SHORT.proofRow.index)
+    await expect(proof).toHaveAttribute('data-backlink-source', 'proof')
+    await expect(proof.locator('.backlinks-panel_label')).toHaveText(
+      new RegExp(`^${SHORT.proofRow.numberPrefix.replace(/\./g, '\\.')}\\s${SHORT.proofRow.typeWord}:`),
+    )
+    await expect(proof.locator('.backlinks-panel_ownership')).toHaveText(SHORT.proofRow.ownership)
     await expect(page.locator(EMPTY)).toHaveCount(0)
   })
 
@@ -409,7 +394,7 @@ test.describe('the Bejövő hivatkozások panel', () => {
 test.describe('the backlink list without JavaScript', () => {
   test.use({ javaScriptEnabled: false })
 
-  test('all 236 rows are served in the HTML, inside the page and shown inline', async ({
+  test('every row is served in the HTML, inside the page and shown inline', async ({
     page,
   }) => {
     await page.goto(BUSIEST)
@@ -418,34 +403,31 @@ test.describe('the backlink list without JavaScript', () => {
     // inbound edges of the graph are the reason the panel is server-rendered at all.
     await expect(page.locator(`main ${PANEL}`)).toHaveCount(1)
     // And on screen, not behind a sheet that cannot open: §2.1 asks the page to
-    // degrade to a long page with everything visible, and 236 rows is the long case
+    // degrade to a long page with everything visible, and this is the long case
     // (`noJsCss` in components/kb/Panel.tsx, census in `e2e/kb-sweep.test.ts`).
     await expect(page.locator(PANEL)).toBeVisible()
 
     const rows = page.locator(ROW)
-    await expect(rows).toHaveCount(236)
+    await expect(rows).toHaveCount(LONGEST.rows)
     await expect(rows.first()).toBeVisible()
     await expect(rows.last()).toBeVisible()
-    await expect(rows.first()).toHaveAttribute(
-      'href',
-      '/hu/konyvek/alice-es-bob/fejezetek/alice-es-bob-alaptetele',
-    )
-    await expect(rows.last()).toHaveAttribute(
-      'href',
-      '/hu/tudasbazis/tetelek/miller-rabin-szorzat/bizonyitasok/miller-rabin-szorzat-bizonyitas',
-    )
+    // First and last in the served order, which is the tree walked pre-order: `<li>`s
+    // with their nested `<ul>`s inside them.
+    await expect(rows.first()).toHaveAttribute('href', LONGEST.firstHref!)
+    await expect(rows.last()).toHaveAttribute('href', LONGEST.lastHref!)
     // The grouping is served too, not something the client builds: the nesting is
     // `<ul>`s inside `<li>`s, which is the containment a crawler reads (§2.1).
-    await expect(page.locator(TOP_ROW)).toHaveCount(14)
+    await expect(page.locator(TOP_ROW)).toHaveCount(LONGEST.topRows)
     await expect(
       page.locator('#kb-panel [data-kb-panel-kind="incoming"] .backlinks-panel_nested'),
-    ).toHaveCount(57)
+    ).toHaveCount(LONGEST.nestedRows)
     // Both display lines are part of that served answer rather than something the
-    // client adds: 236 names, 96 ownership lines, and the heaviest place named and
-    // numbered as chapter 16.
-    await expect(page.locator(LABEL)).toHaveCount(236)
-    await expect(page.locator(OWNERSHIP)).toHaveCount(96)
-    await expect(rows.first()).toContainText('16. Alice és Bob alaptétele')
+    // client adds, and the heaviest place is named with its number.
+    await expect(page.locator(LABEL)).toHaveCount(LONGEST.rows)
+    await expect(page.locator(OWNERSHIP)).toHaveCount(LONGEST.ownershipRows)
+    await expect(rows.first().locator('.backlinks-panel_label')).toHaveText(
+      new RegExp(`^${LONGEST.firstNumberPrefix.replace(/\./g, '\\.')}\\s`),
+    )
   })
 
   test('an entity nothing cites is served the empty state, not an empty list', async ({ page }) => {

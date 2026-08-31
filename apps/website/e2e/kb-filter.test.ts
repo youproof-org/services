@@ -1,10 +1,11 @@
 import { expect, test, type Page } from '@playwright/test'
+import { fixtures } from './support/fixtures'
 
 /**
  * The filter above a knowledge-base list, in a browser (sub-plan §4, §5).
  *
  * What only a browser can answer about it is where the field IS once the reader has
- * scrolled into the list. These pages are 341, 84 and 191 rows long, and the field is
+ * scrolled into the list. These pages are hundreds of rows long, and the field is
  * the only control on them: it stays put under the sticky header, so narrowing the
  * list never means scrolling back out of it first. That is a `position: sticky` whose
  * offset is a custom property published at runtime by
@@ -18,11 +19,15 @@ import { expect, test, type Page } from '@playwright/test'
  * under it while it holds that position.
  */
 
-/** The three pages that carry the filter, and how many rows each serves. */
+/**
+ * The three pages that carry the filter, and how many rows each serves — the row
+ * counts from the graph, because a deployed build gives no page to an entity in an
+ * unpublished chapter and both index lists are shorter there.
+ */
 const LISTS = [
-  { name: 'the glossary', url: '/hu/tudasbazis/fogalmak', rows: 341 },
-  { name: 'the definitions index', url: '/hu/tudasbazis/definiciok', rows: 84 },
-  { name: 'the theorems index', url: '/hu/tudasbazis/tetelek', rows: 191 },
+  { name: 'the glossary', url: '/hu/tudasbazis/fogalmak', rows: fixtures.lists.glossaryRows },
+  { name: 'the definitions index', url: '/hu/tudasbazis/definiciok', rows: fixtures.lists.definitionRows },
+  { name: 'the theorems index', url: '/hu/tudasbazis/tetelek', rows: fixtures.lists.theoremRows },
 ] as const
 
 /** `next.config.ts` names every CSS-module class of ours `<file>_<local>`. */
@@ -74,8 +79,8 @@ function geometry(page: Page) {
  * the newsletter form and the footer that follow it. Correct, and not what this is
  * about: the claim is about a reader who is INSIDE the list, and the last row is the
  * furthest point that is still inside it. It is also the strongest position for the
- * claim — the shortest of the three pages has 84 rows, and this reaches the end of
- * them.
+ * claim — the shortest of the three pages is dozens of rows long, and this reaches
+ * the end of them.
  */
 async function scrollDeepIntoList(page: Page) {
   const scrolled = await page.evaluate((row) => {
