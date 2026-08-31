@@ -419,10 +419,18 @@ class Stmt {
   }
 }
 
+/**
+ * The instant every fixture is stamped with. Frozen for determinism, but derived
+ * from the real clock rather than written as a literal: `handleScheduled` dates
+ * its retention cutoffs off `Date.now()`, so a pinned date silently ages past
+ * the 30-day pending window and the cron purges the fixture mid-test.
+ */
+export const FIXTURE_NOW = new Date().toISOString();
+
 export function makeDeps() {
   let n = 0;
   return {
-    now: () => "2026-07-24T00:00:00.000Z",
+    now: () => FIXTURE_NOW,
     newId: () => `id-${++n}`,
     newToken: () => `tok-${++n}`,
   };

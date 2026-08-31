@@ -148,6 +148,7 @@ console.log(
     `internal=${crawler.brokenInternal.length} leaks=${crawler.leaks.length} ` +
     `math=${crawler.mathErrors.length} loops=${crawler.redirectLoops.length} ` +
     `lang=${crawler.langErrors.length} seo=${crawler.seoErrors?.length ?? 0} robots=${crawler.robotsErrors?.length ?? 0} ` +
+    `limits=${crawler.crawlLimits?.length ?? 0} ` +
     `external=${crawler.brokenExternal.length} orphans=${crawler.orphanPages.length} slow=${crawler.slowPages.length} ` +
     `(seoChecked=${crawler.seoChecked ?? 0}, seoWarn=${crawler.seoWarnings?.length ?? 0})`,
 );

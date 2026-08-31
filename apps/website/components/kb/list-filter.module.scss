@@ -1,0 +1,91 @@
+@use '../../styles/variables' as *;
+
+// The filter above a knowledge-base list (sub-plan §4). Shared by the glossary and
+// the two index pages, so it styles the controls and the empty state only — the
+// rows belong to the page that renders them.
+
+.filter {
+  margin: 0 0 1.5rem;
+}
+
+// Stays put under the sticky site header while the list scrolls past it. These
+// pages are 191, 84 and 559 rows long, and the field is the only control on them: a
+// reader who has scrolled into the list should not have to scroll back out of it to
+// narrow it.
+//
+// `--header-height` is published on <html> by components/layout/HeaderHeightProbe.tsx
+// and kept in sync with the header's real box — breadcrumb row included — so the bar
+// comes to rest just below the breadcrumb at every width and after every wrap. The
+// fallback is 0, which is what a reader with no JavaScript gets: no custom property
+// is published for them, and no filtering either (this whole component is inert
+// without it), so the bar simply parks behind the header, which is sticky at 0 too.
+.controls {
+  position: sticky;
+  top: var(--header-height, 0px);
+  // Over the rows that pass under it, and under the header. The header is a sticky
+  // sibling at $z-header inside the same stacking context, so 1 is enough to clear
+  // the list and cannot reach past it.
+  z-index: 1;
+  // What makes "under" mean covered rather than seen through: an opaque ground the
+  // width of the column, padded so a row disappears at the field's own spacing
+  // rather than touching it. The padding replaces the bottom margin this had.
+  background: $white;
+  padding: 0.75rem 0;
+  display: flex;
+  align-items: stretch;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+// Metrics mirror newsletter-form.module.scss's .input so the field feels like the
+// rest of the site's forms.
+.input {
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  min-width: 0;
+  font: inherit;
+  font-weight: $font-normal;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid $gray-400;
+  background: $white;
+  color: $black;
+
+  &:focus {
+    outline: none;
+    border-color: $black;
+    box-shadow: 0 0 0 1px $black;
+  }
+
+  // One clear affordance, not two: the button beside the field works with the
+  // keyboard and in every browser, so WebKit's own cancel button steps aside.
+  &::-webkit-search-cancel-button {
+    appearance: none;
+  }
+}
+
+// The site's outline button, at the field's height rather than the dialog's.
+.clear {
+  font: inherit;
+  font-weight: $font-bold;
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+  background: $white;
+  color: $black;
+  border: 1px solid $black;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.empty {
+  margin: 0 0 1rem;
+  font-weight: $font-bold;
+  color: $gray-600;
+}
+
+// The filter hides a row by setting `hidden` on it, and a row is laid out by its
+// own page's stylesheet — the user-agent rule for `[hidden]` loses to any `display`
+// a class sets, so it is re-asserted here with the weight of a class plus an
+// attribute. This is why the filter can hide rows it did not create.
+.filter [hidden] {
+  display: none;
+}

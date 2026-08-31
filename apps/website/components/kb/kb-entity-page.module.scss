@@ -1,0 +1,55 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+// One knowledge-base entity as a page (§6.1). The body is `ContentBlocks`, which
+// brings its own typography, so this stylesheet is only the header and the q.e.d.
+
+.entity {
+  // The shell already caps and centers the column (kb-page-shell.module.scss), so
+  // the article takes the width it is given — unlike `chapter-page.module.scss`,
+  // whose `.chapter` sets its own width inside the full-bleed `.page-content`.
+  margin: 0;
+}
+
+.header {
+  margin: 0 0 2rem;
+  font-weight: $font-x-bold;
+  // Left-aligned, unlike the chapter header's tablet-and-up centering: this is a
+  // reference page in the narrow knowledge-base column, and its two lines line up
+  // with the index and glossary titles a reader arrives from.
+}
+
+// The label and title treatment of a chapter header, at the same sizes
+// (`chapter-page.module.scss`): the label small, letter-spaced, uppercase and
+// muted, the title above the body in full size. Repeated rather than shared
+// because the two headers are the same design and not the same element — a
+// chapter's label is its position in the book, this one is the entity's type.
+.label {
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: $gray-400;
+  margin: 0;
+  font-size: 1rem;
+
+  @include tablet {
+    font-size: 1.5rem;
+  }
+}
+
+.title {
+  font-size: 1.5rem;
+  margin: 0;
+
+  @include tablet {
+    font-size: 2.5rem;
+  }
+}
+
+// The embedded rendering's q.e.d. (`embedded-entity.module.scss`), without its
+// negative top margin: there the glyph is pulled up against the box it closes,
+// here it closes the page.
+.qed {
+  text-align: right;
+  font-size: 1.6rem;
+  margin-top: 0;
+}

@@ -24,6 +24,7 @@ catalog:
   sharp: 0.35.3
   # dev / build
   '@cloudflare/workers-types': 4.20260630.1
+  '@playwright/test': 1.62.1
   ajv: 8.20.0
   esbuild: 0.28.1
   '@types/js-yaml': 4.0.9

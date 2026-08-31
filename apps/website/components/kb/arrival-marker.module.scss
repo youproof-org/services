@@ -1,0 +1,56 @@
+@use 'variables' as *;
+
+// The arrival marker (sub-plan §6.2, D5): the rectangle that shrinks onto whatever
+// a fragment sent the reader to, frames it for a moment, and goes.
+//
+// EVERYTHING THAT MOVES IS WRITTEN HERE FROM JAVASCRIPT, not from a transition or a
+// keyframe animation, and the reason is that the box has to keep up with a target it
+// does not share a coordinate system with. The marker is `position: fixed` — it has
+// to be: it mounts outside `.page-root`, whose transform would otherwise make it
+// position against the document — so it is placed in viewport coordinates around an
+// element placed in document ones, and any movement of the page between two frames
+// makes it wrong. Nothing stops that movement while the mark is up: the page is not
+// scroll-locked (that is the panel's behaviour, §6.4) and a chapter is still settling
+// for a few hundred milliseconds after it arrives — measured, `alice-es-bob-gyuruje`
+// grows 168px taller over the first 300ms as fonts and formulas land. So
+// components/kb/ArrivalMarker.tsx re-measures and rewrites
+// `top`/`left`/`width`/`height`/`opacity` on every frame, and this file holds only
+// what does not change.
+//
+// That is also what makes the reduced-motion case a property of the script rather
+// than of a `@media` block here: there is no transition to switch off. §6.4 asks for
+// the mark to appear at its final size and fade, and "final size" is a number the
+// loop computes — see `prefersReducedMotion` in lib/utils/motion.ts, which the
+// selection scroll reads from the same place.
+.marker {
+  position: fixed;
+  z-index: $z-kb-marker;
+  // So that the four numbers the loop writes mean exactly "the target's box, grown
+  // by the current outset": with `border-box` the border is drawn inside them, and
+  // there is no border width to subtract at three of the four edges.
+  box-sizing: border-box;
+  // Purely decorative, and the page underneath stays live: a reader whose eye has
+  // already found the target must be able to press what is inside the frame while
+  // it is still up.
+  pointer-events: none;
+  // Invisible until measured. The loop's first frame runs in a layout effect, so it
+  // sets a real box before the browser paints the commit that created the element —
+  // this is the belt to that braces: nothing can put an unpositioned 0×0 box in the
+  // top-left corner on screen, whatever else changes about when the loop starts.
+  opacity: 0;
+  // $blue-500 is the site's one accent colour: every link wears it, and so does a
+  // `.ref-link` reference mark (app/globals.scss). A `.ref-concept` mark — the one a
+  // term, a claim or an entity reference wears — is prose-coloured with a dotted
+  // grey underline instead, so this is the site's accent rather than an echo of the
+  // mark the reader pressed.
+  border: 2px solid $blue-500;
+  border-radius: 0.25rem;
+  // A soft outer wash, so the frame reads against dark prose and against the white
+  // page equally. No offset: it is a halo around the frame, not a drop shadow.
+  box-shadow: 0 0 0 3px rgba($blue-500, 0.14);
+
+  // A "here" gesture for a reader who is looking at the screen. Nothing on paper.
+  @media print {
+    display: none;
+  }
+}

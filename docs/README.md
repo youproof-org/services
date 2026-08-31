@@ -12,6 +12,27 @@ runbooks removed; what remains is the ongoing operational reference.
 Historical planfiles for the work that produced this system live under
 [`plans/`](plans/) and are not part of this reference.
 
+## Local prerequisites
+
+**Node 24.18.0.** Run `nvm use` from the repo root before anything else — the
+version is pinned in [`.nvmrc`](../.nvmrc), and `engines.node` in
+[`package.json`](../package.json) requires `>=24.18.0`. `pnpm@10.12.1` is pinned
+via `packageManager`, so Corepack selects it automatically.
+
+```sh
+nvm use          # reads .nvmrc
+pnpm install
+```
+
+Any shell that has not sourced nvm — a fresh terminal, an editor task, a
+`bash -c` invocation — starts on whatever Node is on `PATH`, and the resulting
+failure names the wrong floor: `pnpm` reports `ERROR: This version of pnpm
+requires at least Node.js v22.13`, which is pnpm's own minimum, not this repo's.
+Satisfying that message alone can still leave you below `engines.node`. Reaching
+for `node` directly to work around it is worse: the website's test suite loads
+through a different resolver path depending on the Node version, so it can fail to
+load entirely on one version and pass on another.
+
 ## Contents
 
 | Doc | Topic |
@@ -24,9 +45,9 @@ Historical planfiles for the work that produced this system live under
 | [Newsletter worker](newsletter.md) | The `youproof.org/api/v1/newsletter/*` Worker: architecture, D1, two-phase deploy, and the setup + end-to-end verification checklists. |
 | [Brevo setup (newsletter)](brevo-setup.md) | Provisioning Brevo for the newsletter worker — sender/domain auth, list, transactional webhook — via the setup script and the manual runbook. |
 | [Legacy re-permission campaign](newsletter-legacy-repermission.md) | One-shot re-consent of the addresses inherited from the old site's newsletter: the `legacy_contacts` table, the D1-console import runbook, and the decommission checklist. |
-| [Content site & static generation](content-site-and-static-generation.md) | The `youproof.org` static export: `published`/`legacy-path`, stubs, canonical paths, staging noindex. |
+| [Content site & static generation](content-site-and-static-generation.md) | The `youproof.org` static export: `published`/`legacy-path`, stubs, canonical paths, the knowledge-base page set, staging noindex. |
 | [Analytics & cookie consent](analytics-and-consent.md) | GA4 behind a self-built consent gate: the no-load-before-consent invariant, the content-authored policy version, the cookies, the GA4 admin settings the privacy policy asserts. |
-| [Multi-language content & URL model](i18n-design.md) | Locale model, the `/{locale}/{container}/{slug}` URL shape, the container dictionary, canonical/hreflang, and the root redirect. |
+| [Multi-language content & URL model](i18n-design.md) | Locale model, the `/{locale}/{container}/{slug}` URL shape, the container dictionary, canonical/hreflang, the sitemap index, and the root redirect. |
 | [CDN & R2](cdn-and-r2.md) | Serving the `.org` site from R2: custom domain, `.html` stripping, cache rules, deploy-time purge, custom-404 limitation. |
 | [Branching & branch protection](branching-and-branch-protection.md) | The branch model across both repos, the promotion rules, and merge-commit-only. |
 | [Deploy pipeline & cross-repo triggers](deploy-pipeline.md) | The ordered deploy steps and the `content` → `services` `repository_dispatch` mechanism. |

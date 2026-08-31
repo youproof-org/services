@@ -1,0 +1,65 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+// The three knowledge-base section cards (sub-plan §3), shared by the
+// knowledge-base root page and the homepage entry block. The cards are the root
+// page, so they carry the weight — not a bulleted list of links.
+
+// Stacked on mobile, the three cards side by side on desktop (§3). Equal columns
+// rather than auto-fit: the three sections are of equal weight, so none of them may
+// end up wider than the others. The three-up starts at the desktop breakpoint
+// because the main column caps at 48rem, which leaves each card about 14rem.
+.cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @include desktop {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+// One card, framed like the article/book boxes (`card-frame`). `height: 100%` on
+// the anchor so the three cards are the same height once they sit side by side and
+// one of their names wraps where the others do not.
+.card {
+  @include card-frame;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 1.25rem;
+  text-decoration: none;
+  color: inherit;
+  transition: box-shadow 0.15s ease;
+
+  &:hover {
+    box-shadow: 0 0 20px 0 #666;
+  }
+}
+
+// Matches the section titles elsewhere (section-heading.module.scss).
+.name {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: $font-x-bold;
+
+  @include tablet {
+    font-size: 1.5rem;
+  }
+}
+
+// The whole of the card under its name: how much is in there. It used to be set as
+// large and as heavy as the name, which read as the card's subject once the
+// description below it went — so it is quieter than the name now, the size and
+// colour of the intro paragraph above the cards.
+.count {
+  margin: 0.5rem 0 0;
+  font-size: 0.95rem;
+  font-weight: $font-normal;
+  line-height: 1.4;
+  color: $gray-600;
+}

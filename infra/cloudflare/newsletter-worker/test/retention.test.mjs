@@ -250,6 +250,20 @@ test("keeps a never-confirmed subscription inside the 30-day window", async () =
   assert.equal(db.rows.has(id), true);
 });
 
+// The tripwire for the fixture clock itself. Every seeder above stamps its rows
+// with makeDeps() and then ages them by an offset from the real clock, while the
+// handler derives its cutoffs from the real clock alone. This row gets no ageing,
+// so if the two clocks ever drift more than a retention window apart it fails
+// here, loudly, instead of as an unexplained purge in some unrelated test.
+test("a row stamped by the fixture clock is inside every retention window", async () => {
+  const db = new FakeD1();
+  const c = await subscribeUpsert(db, { ...input, email: "fresh@example.com" }, "sha", makeDeps());
+
+  await handleScheduled(env(db));
+
+  assert.equal(db.rows.has(c.subscription.id), true, "the fixture clock must agree with the handler's");
+});
+
 test("the pending sweep does not touch a long-standing confirmed subscriber", async () => {
   const db = new FakeD1();
   const id = await seedPendingAged(db, 400 * DAY);

@@ -1,4 +1,4 @@
-import type { ContentGraph, ChapterNode, BookNode, ContentBlock, EmbedBlock, FigureBlock } from '../content/types'
+import type { ContentGraph, ChapterNode, SectionNode, BookNode, ContentBlock, EmbedBlock, FigureBlock } from '../content/types'
 import { toRoman } from './roman'
 
 // ---------------------------------------------------------------------------
@@ -38,6 +38,25 @@ export function getChapterIndex(chapter: ChapterNode): number {
 }
 
 // ---------------------------------------------------------------------------
+// The two container numbers, as the narrative and every reference to them write
+// them: "16." for a chapter, "16.1." for its first section. One place, because a
+// chapter page's heading, a reference label (`buildContext` in
+// lib/content/display-template.ts) and a backlink row (`buildBacklinkIndex` in
+// lib/content/graph.ts) must not be able to disagree about which section is 16.1.
+// A section's number is its position among its chapter's sections; nothing counts
+// sections a second time.
+// ---------------------------------------------------------------------------
+
+export function getChapterIndexLabel(chapter: ChapterNode): string {
+  return `${getChapterIndex(chapter)}.`
+}
+
+export function getSectionIndexLabel(section: SectionNode): string {
+  const chapter = section.chapter
+  return `${getChapterIndex(chapter)}.${chapter.sections.indexOf(section) + 1}.`
+}
+
+// ---------------------------------------------------------------------------
 // Embed label map for a chapter
 // Maps entity name (slug) → "n.k" label
 // Only definitions, theorems, and independent remarks are indexed.
@@ -47,12 +66,10 @@ function isIndexedEmbed(
   graph: ContentGraph,
   block: EmbedBlock
 ): boolean {
-  const { type: entityType, name, namespace } = block.target
+  const { type: entityType, fqn } = block.target
   if (entityType === 'definition' || entityType === 'theorem') return true
   if (entityType === 'remark') {
-    const ns = namespace.startsWith('/') ? namespace.slice(1) : namespace
-    const key = `/entities/${ns}/${name}`
-    const remark = graph.remarks.get(key)
+    const remark = graph.remarks.get(fqn)
     return remark !== undefined && remark.attachedTo === undefined
   }
   return false
@@ -72,9 +89,7 @@ export function walkFigureBlocks(
         count++
         onFigure(block as FigureBlock, `${chapterIndex}.${count}.`)
       } else if (block.type === 'embed') {
-        const { name, namespace } = (block as EmbedBlock).target
-        const ns = namespace.startsWith('/') ? namespace.slice(1) : namespace
-        const key = `/entities/${ns}/${name}`
+        const key = (block as EmbedBlock).target.fqn
         const content =
           graph.definitions.get(key)?.body ??
           graph.theorems.get(key)?.body ??
@@ -116,9 +131,7 @@ export function buildChapterEmbedIndices(
     for (const block of blocks) {
       if (block.type !== 'embed') continue
       if (!isIndexedEmbed(graph, block as EmbedBlock)) continue
-      const { name, namespace } = (block as EmbedBlock).target
-      const ns = namespace.startsWith('/') ? namespace.slice(1) : namespace
-      const entityKey = `/entities/${ns}/${name}`
+      const entityKey = (block as EmbedBlock).target.fqn
       if (!(entityKey in labels)) {
         k++
         labels[entityKey] = `${chapterIndex}.${k}.`

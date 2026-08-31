@@ -51,6 +51,7 @@ export default function StandalonePage({ node }: StandalonePageProps) {
             )}
             <SectionView
               slug={section.slug}
+              locale={node.locale}
               title={section.title}
               body={section.body}
               label={`${i + 1}.`}
