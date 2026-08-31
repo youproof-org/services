@@ -17,7 +17,8 @@ import styles from './menu-stack.module.scss'
  *
  * The bottom-most button is the constant: **Menü** in the default state and
  * **Vissza** in every other one, in the same place, so the reader always knows
- * where the control is.
+ * where the control is. It also pulses while `hint` is set — the corner is far from
+ * the column being read, and a still white pill there was going unnoticed.
  *
  * The items above it show in the open-menu state only. A panel is opened from the
  * menu and never opens another one (§6.4), so once a panel is up the stack is that
@@ -36,6 +37,12 @@ interface MenuStackProps {
   showItems: boolean
   /** The items that have behaviour behind them; the rest render disabled. */
   liveItems: readonly KbMenuItemKey[]
+  /**
+   * The reader has not opened the menu on this page yet, so the bottom-most button
+   * pulses to say it is there (`.hint` in `menu-stack.module.scss`). Only ever true
+   * in the default state: what pulses is an offer to open the menu, not Vissza.
+   */
+  hint: boolean
   /** Caption of the bottom-most button in the default state. */
   openLabel: string
   /** …and in every other state. */
@@ -86,6 +93,7 @@ export default function MenuStack({
   open,
   showItems,
   liveItems,
+  hint,
   openLabel,
   backLabel,
   onOpen,
@@ -111,7 +119,11 @@ export default function MenuStack({
           )
         })}
 
-      <button type="button" className={styles.item} onClick={open ? onBack : onOpen}>
+      <button
+        type="button"
+        className={`${styles.item}${hint ? ` ${styles.hint}` : ''}`}
+        onClick={open ? onBack : onOpen}
+      >
         <span className={styles.caption}>{open ? backLabel : openLabel}</span>
         <MenuIcon name={open ? 'back' : 'menu'} />
       </button>
