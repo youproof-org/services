@@ -1,5 +1,6 @@
 import { expect, test, type BrowserContext, type Page } from '@playwright/test'
 import { fixtures, incomingRows } from './support/fixtures'
+import { collectConsoleNoise } from './support/console-noise'
 
 /**
  * The three cross-cutting rules, checked once on the finished pages: print, no
@@ -458,13 +459,7 @@ test.describe('with JavaScript', () => {
   test('a soft navigation to another entity page renders it without complaint', async ({
     page,
   }) => {
-    const noise: string[] = []
-    page.on('console', (message) => {
-      if (message.type() === 'error' || message.type() === 'warning') {
-        noise.push(`${message.type()}: ${message.text()}`)
-      }
-    })
-    page.on('pageerror', (error) => noise.push(`pageerror: ${error.message}`))
+    const noise = collectConsoleNoise(page)
 
     await openEntity(page)
     await page.locator(OWNERSHIP).click()
