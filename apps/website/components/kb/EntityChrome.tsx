@@ -192,6 +192,20 @@ export default function EntityChrome({
 }: EntityChromeProps) {
   const [stack, setStack] = useState<ChromeStack>(DEFAULT_STACK)
   const [mounted, setMounted] = useState(false)
+  /**
+   * Whether the reader has pressed the Menü button on this page.
+   *
+   * It is what ends the button's pulse (`MenuStack`'s `hint`), and it is a fact
+   * about this reader rather than about the state, so it is deliberately NOT in the
+   * stack: a back step, Forward and a `popstate` all restore a state, and none of
+   * them should restore not having found the menu yet. It resets on navigation
+   * because the component is per page — which is the rule, one hint per page.
+   *
+   * Only the button's own press sets it. Opening a reference panel from the body
+   * (§7.1) reaches an open state without going near the menu, so the hint is still
+   * owed once the reader steps back out of it.
+   */
+  const [menuPressed, setMenuPressed] = useState(false)
   const open = !isDefaultState(stack)
   // The menu's items show in the `menu` state only. A panel is opened FROM the
   // menu, and §6.4 rules out a panel opening a nested panel, so once one is up the
@@ -537,9 +551,13 @@ export default function EntityChrome({
               open={open}
               showItems={menuOpen}
               liveItems={liveItems}
+              hint={!menuPressed && !open}
               openLabel={openLabel}
               backLabel={backLabel}
-              onOpen={() => openState({ kind: 'menu' })}
+              onOpen={() => {
+                setMenuPressed(true)
+                openState({ kind: 'menu' })
+              }}
               onSelect={onSelect}
               onBack={stepBack}
             />
