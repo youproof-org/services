@@ -22,6 +22,15 @@ import Module from 'node:module'
 import { register } from 'node:module'
 import { fileURLToPath } from 'node:url'
 
+// The deploy job exports SITE_ENV for the build, and the unit-test step inherits it.
+// `graph.ts` reads it once at module evaluation to choose between the local and the
+// deployed page-existence rules, so an inherited value silently flips the rules under
+// every test file that does not pin them — the suite then passes locally and fails in
+// CI. Clearing it here gives every file the local baseline; a file wanting the
+// deployed rules sets it itself before its own imports, which run after this preload
+// (see kb-sections-deployed.test.mjs).
+delete process.env.SITE_ENV
+
 const STUBBED = new Set(['server-only'])
 const STUB_PATH = fileURLToPath(new URL('./empty-module.cjs', import.meta.url))
 
