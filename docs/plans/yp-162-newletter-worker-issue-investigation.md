@@ -6,8 +6,8 @@ of that release, and the runbook does not mention it at all, so it had to be est
 whether the release had caused it and whether it blocked the promotion.
 
 **Verdict: pre-existing, unrelated to YP-162, blocks nothing, mutates nothing — but it is a
-real defect that turns every deploy run red, and it is still unfixed.** This document
-records the evidence so the fix does not have to re-derive it. Every `file:line` below was
+real defect that turns every deploy run red. Fixed on 2026-08-31 — see *Fix applied* below.**
+This document records the evidence the fix was derived from. Every `file:line` below was
 re-checked against the working tree at the time of writing.
 
 ## What fails
@@ -165,24 +165,59 @@ Same on `youproof.org`. A genuine static miss would return `404 text/html`.
 3. **The same failure will hit production.** Harmlessly, by the same argument as above, but
    it will make the production run red too.
 
-## Suggested fix — not yet applied or verified
+## Fix applied
 
-Derive the fixture's subscription timestamp from the real clock, the way `FRESH()` already
-does at `legacy-invite.test.mjs:16`, instead of the hardcoded date in `makeDeps()`.
+Taken on 2026-08-31. The suite's frozen instant is now *derived* from the real clock instead
+of written as a literal, which keeps the determinism the helper was frozen for while removing
+the drift:
 
-Two cautions for whoever picks this up:
+```js
+// test/helpers/fake-d1.mjs
+export const FIXTURE_NOW = new Date().toISOString();
+```
 
-- `makeDeps()` is shared by other tests in this suite. Changing its `now` outright has an
-  unexamined blast radius; check every caller before changing the helper rather than the
-  one test.
-- Some tests may legitimately want a frozen clock (deterministic ids and tokens come from
-  the same helper). The property that actually matters is that a fixture's timestamps and
-  the code's retention cutoff use the *same* clock — freezing both would work equally well
-  as making both real, and is arguably the better fix, since it also pins the retention
-  behaviour under test.
+`makeDeps().now()` returns `FIXTURE_NOW`, so every instance of the helper — across every test
+file — agrees on one timestamp, and that timestamp is always inside the handler's retention
+windows.
 
-A regression guard worth adding either way: a test that fails if any fixture timestamp is
-more than one retention window away from the clock the handler uses.
+The blast radius the section above warned about turned out to be exactly one assertion:
+`db.test.mjs` pinned the literal `"2026-07-24T00:00:00.000Z"` when checking that re-submitting
+a pending signup restarts the confirmation window; it now compares against `FIXTURE_NOW`.
+
+### A second bomb found by the same sweep
+
+Re-running the suite under stubbed future clocks surfaced the identical defect with a longer
+fuse in `reconcile.test.mjs`. *"reconciles a failed UNSUBSCRIBE propagation"* stamped
+`unsubscribed_at` as the literal `2026-07-24T03:00:00.000Z`, which crosses the five-year
+`UNSUBSCRIBED_RETENTION_MS` on **2031-07-24** — after which `purgeExpiredSubscriptions` erases
+the row mid-test and the next read dereferences `null`. Both of that file's hardcoded stamps
+are now offsets from `FIXTURE_NOW` (`afterSignup(1)`, `afterSignup(3)`).
+
+The remaining hardcoded `2026-07-xx` dates elsewhere in the suite are harmless: `grep -n
+handleScheduled test/*.mjs` shows only `legacy-invite`, `reconcile` and `retention` drive the
+cron, and nothing else exposes a fixture to a retention cutoff.
+
+### Regression guard
+
+`retention.test.mjs` gained *"a row stamped by the fixture clock is inside every retention
+window"* — a pending subscription seeded straight from `makeDeps()` with **no** ageing offset
+applied, asserted to survive a `handleScheduled` tick. Every other seeder in that file ages its
+rows deliberately; this one exists so that the two clocks drifting apart fails loudly here
+rather than as an unexplained purge in an unrelated test.
+
+### Verification
+
+160/160 pass (was 158/159 — the guard is the new test), `pnpm typecheck` and `pnpm build`
+clean. Re-run with `Date` stubbed, the fix holds at every clock the pre-fix suite failed at:
+
+| Pinned clock | Before | After |
+| --- | --- | --- |
+| 2026-08-22T23:59:59Z | pass | pass |
+| 2026-08-23T00:00:01Z | **fail** | pass |
+| 2027-06-01 | **fail** | pass |
+| 2031-08-01 (past the 5-year window) | **fail** | pass |
+| 2099-12-31 | **fail** | pass |
+| 2130-01-01 | **fail** | pass |
 
 ## Reproducing
 

@@ -7,7 +7,11 @@ import {
   unsubscribeSubscription,
   getSubscriptionByEmail,
 } from "../src/lib/db.ts";
-import { FakeD1, makeDeps } from "./helpers/fake-d1.mjs";
+import { FakeD1, FIXTURE_NOW, makeDeps } from "./helpers/fake-d1.mjs";
+
+const HOUR = 60 * 60 * 1000;
+/** Relative to the fixture clock, so these rows never age past a retention window. */
+const afterSignup = (hours) => new Date(Date.parse(FIXTURE_NOW) + hours * HOUR).toISOString();
 
 const input = {
   name: "Anna",
@@ -38,7 +42,7 @@ afterEach(() => {
 async function seedConfirmedUnsynced() {
   const db = new FakeD1();
   const c = await subscribeUpsert(db, input, "sha", makeDeps());
-  await confirmSubscription(db, c.subscription.id, "2026-07-24T01:00:00.000Z");
+  await confirmSubscription(db, c.subscription.id, afterSignup(1));
   return { db, id: c.subscription.id };
 }
 
@@ -96,7 +100,7 @@ test("reconciles a failed UNSUBSCRIBE propagation (blacklist), then succeeds", a
   await handleScheduled(env(db)); // sync the confirm first (POST /contacts)
 
   // Our-endpoint unsubscribe enqueues a blacklist propagation.
-  await unsubscribeSubscription(db, id, "2026-07-24T03:00:00.000Z");
+  await unsubscribeSubscription(db, id, afterSignup(3));
   let row = await getSubscriptionByEmail(db, input.email);
   assert.equal(row.status, "unsubscribed");
   assert.equal(row.brevo_synced_at, null, "unsubscribe owes Brevo a blacklist");
