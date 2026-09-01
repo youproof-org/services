@@ -15,7 +15,7 @@ const { buildGraphFromRaw } = graphModule.default ?? graphModule
 
 import { hu, narrative, raw } from './support/raw-graph.mjs'
 
-const remark = (name) => ({ ...hu, name, slug: name, body: [narrative('Megjegyzés.')], references: {} })
+const remark = (name) => ({ ...hu, name, body: [narrative('Megjegyzés.')], references: {} })
 
 /**
  * The shared fixture plus a remark on the theorem, one on the proof, and one owned

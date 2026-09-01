@@ -356,9 +356,6 @@ export function loadProof(filePath: string, namespace: string): RawProof {
       node: {
         type: 'proof',
         name: raw.name as string,
-        // `slug` falls back to a lowercased `name` (readSlug), so a knowledge-base
-        // file authored before the slug backfill still loads and still gets a URL.
-        slug: readSlug(raw, raw.name as string),
         locale: readLocale(raw),
         namespace,
         title: raw.title as string | undefined,
@@ -379,9 +376,6 @@ export function loadRemark(filePath: string, namespace: string): RawRemark {
       node: {
         type: 'remark',
         name: raw.name as string,
-        // `slug` falls back to a lowercased `name` (readSlug), so a knowledge-base
-        // file authored before the slug backfill still loads and still gets a URL.
-        slug: readSlug(raw, raw.name as string),
         locale: readLocale(raw),
         namespace,
         title: raw.title as string | undefined,

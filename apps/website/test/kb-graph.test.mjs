@@ -339,7 +339,6 @@ function ownedSourceFixture() {
   data.remarks.push({
     ...hu,
     name: 'rem-ketto',
-    slug: 'rem-ketto',
     body: [narrative('Megjegyzés a bizonyításhoz.')],
     references: citesTheDefinition,
   })
@@ -431,50 +430,50 @@ function rawWithThreeProofs() {
   const data = raw()
   data.theorems[0].proofSlugs = ['biz-egy', 'biz-ketto', 'biz-harom']
   for (const name of ['biz-ketto', 'biz-harom']) {
-    data.proofs.push({ ...hu, name, slug: name, body: [narrative('Bizonyítás.')], references: {}, remarkSlugs: [] })
+    data.proofs.push({ ...hu, name, body: [narrative('Bizonyítás.')], references: {}, remarkSlugs: [] })
     data.books[0].parts[0].chapters[0].sections[0].body.push(embed(`theorems.tetel-egy.proofs.${name}`))
   }
   return data
 }
 
-const slugsOf = (nodes) => nodes.map((n) => n.slug)
+const namesOf = (nodes) => nodes.map((n) => n.name)
 
 test('a theorem owns its proofs and its remarks, and has no parent', () => {
   const g = buildGraphFromRaw(raw())
   const o = kbOwnership(g, thm(g))
   assert.equal(o.parent, undefined, 'a theorem is the top of its chain')
-  assert.deepEqual(slugsOf(o.proofs), ['biz-egy'])
-  assert.deepEqual(slugsOf(o.remarks), [])
+  assert.deepEqual(namesOf(o.proofs), ['biz-egy'])
+  assert.deepEqual(namesOf(o.remarks), [])
 })
 
 test('a theorem with three proofs owns all three, in authored order', () => {
   const g = buildGraphFromRaw(rawWithThreeProofs())
   // The point of D4: no "first one" is picked, so nothing here is length 1.
-  assert.deepEqual(slugsOf(kbOwnership(g, thm(g)).proofs), ['biz-egy', 'biz-ketto', 'biz-harom'])
+  assert.deepEqual(namesOf(kbOwnership(g, thm(g)).proofs), ['biz-egy', 'biz-ketto', 'biz-harom'])
 })
 
 test('a definition owns its remarks and nothing else', () => {
   const g = buildGraphFromRaw(raw())
   const o = kbOwnership(g, def(g))
   assert.equal(o.parent, undefined)
-  assert.deepEqual(slugsOf(o.proofs), [])
-  assert.deepEqual(slugsOf(o.remarks), ['rem-egy'])
+  assert.deepEqual(namesOf(o.proofs), [])
+  assert.deepEqual(namesOf(o.remarks), ['rem-egy'])
 })
 
 test('a proof links up to its theorem and down to its own remarks', () => {
   const g = buildGraphFromRaw(raw())
   const o = kbOwnership(g, prf(g))
   assert.equal(o.parent, thm(g))
-  assert.deepEqual(slugsOf(o.proofs), [])
-  assert.deepEqual(slugsOf(o.remarks), [])
+  assert.deepEqual(namesOf(o.proofs), [])
+  assert.deepEqual(namesOf(o.remarks), [])
 })
 
 test('a remark owns nothing, so its chain is the one link up to its owner', () => {
   const g = buildGraphFromRaw(raw())
   const o = kbOwnership(g, rem(g))
   assert.equal(o.parent, def(g))
-  assert.deepEqual(slugsOf(o.proofs), [])
-  assert.deepEqual(slugsOf(o.remarks), [])
+  assert.deepEqual(namesOf(o.proofs), [])
+  assert.deepEqual(namesOf(o.remarks), [])
 })
 
 test('a child whose page this build does not generate is dropped, not linked', async () => {
@@ -482,13 +481,13 @@ test('a child whose page this build does not generate is dropped, not linked', a
   // build, so this asserts the filter from both ends: no parent, no children.
   const { buildGraphFromRaw: build, kbOwnership: ownership } = await deployedModule()
   const g = build(raw({ published: false }))
-  assert.deepEqual(slugsOf(ownership(g, thm(g)).proofs), [], 'the proof has no page on staging')
+  assert.deepEqual(namesOf(ownership(g, thm(g)).proofs), [], 'the proof has no page on staging')
   assert.equal(ownership(g, prf(g)).parent, undefined, 'nor does the theorem above it')
   assert.equal(ownership(g, rem(g)).parent, undefined)
   // Locally the same fixture keeps every link, which is what makes the drop a
   // filter rather than a missing relation.
   const local = buildGraphFromRaw(raw({ published: false }))
-  assert.deepEqual(slugsOf(kbOwnership(local, thm(local)).proofs), ['biz-egy'])
+  assert.deepEqual(namesOf(kbOwnership(local, thm(local)).proofs), ['biz-egy'])
 })
 
 test('the glossary points at the page-relative term anchor of the owner\'s page', () => {
@@ -577,23 +576,6 @@ test('two claims on one node sharing a slug fail the build', () => {
   assert.throws(() => buildGraphFromRaw(data), /Identifier collision/)
 })
 
-test('two proofs of DIFFERENT theorems may share a slug', () => {
-  const data = raw()
-  data.theorems.push({
-    ...hu, name: 'tetel-ketto', slug: 'tetel-ketto', title: 'Második tétel',
-    body: [], references: {}, proofSlugs: ['biz-ketto'], remarkSlugs: [],
-  })
-  data.proofs.push({ ...hu, name: 'biz-ketto', slug: 'biz-egy', body: [], references: {}, remarkSlugs: [] })
-  data.books[0].parts[0].chapters[0].sections[0].body.push(
-    embed('theorems.tetel-ketto'),
-    embed('theorems.tetel-ketto.proofs.biz-ketto'),
-  )
-  const g = buildGraphFromRaw(data)
-  // The shared slug reaches neither URL: each proof is addressed by its position in
-  // the theorem that owns it, so both are the first proof of a different theorem.
-  assert.equal(urlForProof(g.proofs.get('theorems.tetel-ketto.proofs.biz-ketto')), '/hu/tudasbazis/tetelek/tetel-ketto/bizonyitasok/1')
-})
-
 test('a reference to a node embedded nowhere fails the build', () => {
   const data = raw({
     references: { 'r-arva': ref('árva', 'definitions.arva') },
@@ -669,7 +651,7 @@ function rawWithTwoRemarksOnTheProof() {
   const data = raw()
   data.proofs[0].remarkSlugs = ['rem-biz-egy', 'rem-biz-ketto']
   for (const name of ['rem-biz-egy', 'rem-biz-ketto']) {
-    data.remarks.push({ ...hu, name, slug: name, body: [narrative('Megjegyzés.')], references: {} })
+    data.remarks.push({ ...hu, name, body: [narrative('Megjegyzés.')], references: {} })
     data.books[0].parts[0].chapters[0].sections[0].body.push(
       embed(`theorems.tetel-egy.proofs.biz-egy.remarks.${name}`),
     )
@@ -688,7 +670,6 @@ function rawWithUnpublishedFirstProof() {
   data.proofs.push({
     ...hu,
     name: 'biz-ketto',
-    slug: 'biz-ketto',
     body: [narrative('Másik bizonyítás.')],
     references: {},
     remarkSlugs: [],
@@ -772,7 +753,6 @@ test('an owner-less remark has no position, so its anchor keeps its name', () =>
   data.remarks.push({
     ...hu,
     name: 'rem-arva',
-    slug: 'rem-arva-megjegyzes',
     body: [narrative('Megjegyzés.')],
     references: {},
   })

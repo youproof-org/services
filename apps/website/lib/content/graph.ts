@@ -160,7 +160,6 @@ export interface RawTheoremEntry {
 
 export interface RawProofEntry {
   name: string
-  slug: string
   locale: string
   namespace: string
   title?: string
@@ -173,7 +172,6 @@ export interface RawProofEntry {
 
 export interface RawRemarkEntry {
   name: string
-  slug: string
   locale: string
   namespace: string
   title?: string
@@ -258,7 +256,7 @@ export interface RawStandaloneEntry {
  * schema, so a cache written by an older build would otherwise rehydrate nodes
  * that silently lack the new fields.
  */
-export const RAW_GRAPH_VERSION = 3
+export const RAW_GRAPH_VERSION = 4
 
 export interface RawGraphData {
   version: number
@@ -344,7 +342,6 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
               const loaded = loadProof(file, namespace)
               raw.proofs.push({
                 name: loaded.node.name,
-                slug: loaded.node.slug,
                 locale: loaded.node.locale,
                 namespace,
                 title: loaded.node.title,
@@ -358,7 +355,6 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
               const loaded = loadRemark(file, namespace)
               raw.remarks.push({
                 name: loaded.node.name,
-                slug: loaded.node.slug,
                 locale: loaded.node.locale,
                 namespace,
                 title: loaded.node.title,
@@ -695,7 +691,6 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
     graph.proofs.set(key, {
       type: 'proof',
       name: e.name,
-      slug: e.slug,
       locale: e.locale,
       namespace: e.namespace,
       title: e.title,
@@ -713,7 +708,6 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
     graph.remarks.set(ownerKey ? remarkKey(ownerKey, e.name) : fqnJoin('', 'remark', e.name), {
       type: 'remark',
       name: e.name,
-      slug: e.slug,
       locale: e.locale,
       namespace: e.namespace,
       title: e.title,
@@ -1161,19 +1155,26 @@ export function kbNodeByKey(graph: ContentGraph, key: string): KbNode | undefine
  * in that a slug is unique per locale (a future `en` file may reuse an `hu` slug)
  * while a name is unique across locales - it is the same id in every language.
  *
+ * A proof and a remark carry no slug: their public address is their position in
+ * the owner's list, so only their names are identifiers and only their names are
+ * checked here.
+ *
  * Each scope is the identifier's position in the reference grammar: what
  * disambiguates a reference is what disambiguates the identifier. Consequences
  * that look like gaps but are deliberate: a definition and a theorem may share
  * either identifier (different container segments); two sections in different
- * chapters may (the anchor is page-scoped); two proofs of different theorems may;
- * and a claim may share a slug with a term on the same node, since they sit under
- * distinct `allitasok.`/`fogalmak.` segments.
+ * chapters may (the anchor is page-scoped); two proofs of different theorems may
+ * share a name; and a claim may share a slug with a term on the same node, since
+ * they sit under distinct `allitasok.`/`fogalmak.` segments.
  *
  * The same function also checks the authored `proofs:` / `remarks:` lists, which
  * are the other half of the identifier contract: a name is only useful if exactly
  * one parent claims it and it names a file that was loaded. Those lists are read
  * from the raw entries rather than the built graph, because the built arrays are
- * what a bad list silently degrades into.
+ * what a bad list silently degrades into. That check is stricter than the scope
+ * above allows for: an entry is a bare name and a proof or remark file does not
+ * name its owner, so ownership resolves through one global name -> owner map and
+ * two parents cannot list the same name even though their scopes are separate.
  *
  * See docs/i18n-design.md §9 and the content repo's docs/content-model.md.
  */
@@ -1211,14 +1212,19 @@ function validateIdentifiers(graph: ContentGraph, raw: RawGraphData): void {
     }
   }
 
-  // A name is scoped without the locale, a slug with it. Everything below claims
-  // both in one call so a new type cannot be added to one table and forgotten in
-  // the other.
+  // A name is scoped without the locale, a slug with it. A type that carries both
+  // claims them in one call, so it cannot be added to one table and forgotten in
+  // the other; the two types with no slug take `nameOnly` instead.
   const both = (scope: string, node: { name: string; slug: string; locale: string }, owner: string) => {
     shape('name', owner, node.name)
     shape('slug', owner, node.slug)
     claim(`${scope} names`, node.name, owner)
     claim(`${scope} slugs in locale '${node.locale}'`, node.slug, owner)
+  }
+
+  const nameOnly = (scope: string, node: { name: string }, owner: string) => {
+    shape('name', owner, node.name)
+    claim(`${scope} names`, node.name, owner)
   }
 
   // ── Books, parts, chapters, sections ──
@@ -1298,13 +1304,12 @@ function validateIdentifiers(graph: ContentGraph, raw: RawGraphData): void {
     if (node.type === 'definition' || node.type === 'theorem') {
       both(`all ${node.type}s`, node, id)
     } else if (node.type === 'proof') {
-      both(`proofs of theorem '${node.proves.name}'`, node, id)
+      nameOnly(`proofs of theorem '${node.proves.name}'`, node, id)
     } else if (node.type === 'remark' && node.attachedTo) {
-      both(`remarks of ${node.attachedTo.type} '${node.attachedTo.name}'`, node, id)
+      nameOnly(`remarks of ${node.attachedTo.type} '${node.attachedTo.name}'`, node, id)
     } else {
       // An owner-less remark: not addressable, but still validate its shape.
       shape('name', id, node.name)
-      shape('slug', id, node.slug)
     }
 
     // Claims and terms sit under distinct anchor segments, so they get distinct

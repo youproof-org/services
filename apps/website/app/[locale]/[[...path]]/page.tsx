@@ -227,7 +227,7 @@ function resolveKbEntity(
   return null
 }
 
-function findKbBySlug<T extends KbNode>(
+function findKbBySlug<T extends DefinitionNode | TheoremNode>(
   nodes: Iterable<T>,
   locale: string,
   slug: string | undefined,

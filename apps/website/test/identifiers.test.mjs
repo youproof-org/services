@@ -216,16 +216,6 @@ test('a definition and a theorem may share a name and a slug', () => {
   assert.equal(g.theorems.size, 2)
 })
 
-test('two remarks on the same owner sharing a slug fail', () => {
-  const data = raw()
-  data.definitions[0].remarkSlugs = ['rem-egy', 'rem-ketto']
-  data.remarks.push({
-    ...hu, name: 'rem-ketto', slug: 'rem-egy', body: [narrative('M.')], references: {},
-  })
-  chapterOf(data).sections[0].body.push(embed('definitions.def-egy.remarks.rem-ketto'))
-  assert.throws(() => build(data), /Identifier collision: 'rem-egy'.*remarks of definition 'def-egy'/s)
-})
-
 test('a claim and a term on one node MAY share a slug — distinct anchor segments', () => {
   // This is a deliberate relaxation: before the anchor grammar nested them under
   // `allitasok.`/`fogalmak.`, both were flat and shared one per-node namespace.
@@ -366,7 +356,6 @@ test('a theorem may list two proofs — both attach, in the authored order', () 
   data.proofs.push({
     ...hu,
     name: 'biz-ketto',
-    slug: 'biz-ketto',
     body: [narrative('Másik bizonyítás.')],
     references: {},
     remarkSlugs: [],
@@ -385,7 +374,6 @@ test('two parents may each own a remark, as long as they are different remarks',
   data.remarks.push({
     ...hu,
     name: 'rem-ketto',
-    slug: 'rem-ketto',
     body: [narrative('Megjegyzés.')],
     references: {},
   })
