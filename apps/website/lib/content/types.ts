@@ -240,7 +240,6 @@ export interface TheoremNode {
 export interface ProofNode {
   type: 'proof'
   name: string
-  slug: string                    // localized URL segment, nested under its theorem
   locale: string
   namespace: string
   title?: string
@@ -255,7 +254,6 @@ export interface ProofNode {
 export interface RemarkNode {
   type: 'remark'
   name: string
-  slug: string                    // localized URL segment, nested under its owner
   locale: string
   namespace: string
   title?: string
