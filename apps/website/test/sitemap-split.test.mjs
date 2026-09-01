@@ -43,9 +43,9 @@ const EVERY_SHAPE = [
   '/hu/tudasbazis/tetelek',
   '/hu/tudasbazis/tetelek/fermat-kis-tetele',
   '/hu/tudasbazis/fogalmak',
-  '/hu/tudasbazis/tetelek/fermat-kis-tetele/bizonyitasok/fermat-kis-tetele-bizonyitas',
-  '/hu/tudasbazis/definiciok/prim/megjegyzesek/prim-megjegyzes',
-  '/hu/tudasbazis/tetelek/fermat-kis-tetele/bizonyitasok/fermat-kis-tetele-bizonyitas/megjegyzesek/lepes',
+  '/hu/tudasbazis/tetelek/fermat-kis-tetele/bizonyitasok/1',
+  '/hu/tudasbazis/definiciok/prim/megjegyzesek/1',
+  '/hu/tudasbazis/tetelek/fermat-kis-tetele/bizonyitasok/1/megjegyzesek/1',
   '/hu/impresszum',
 ]
 

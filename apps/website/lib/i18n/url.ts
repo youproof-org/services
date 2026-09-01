@@ -27,10 +27,16 @@ import { getContainerSegment } from './config'
  *   glossary           /{locale}/{kb}/{term}
  *   definition         /{locale}/{kb}/{definition}/{slug}
  *   theorem            /{locale}/{kb}/{theorem}/{slug}
- *   proof              /{locale}/{kb}/{theorem}/{thm}/{proof}/{slug}
- *   definition-remark  /{locale}/{kb}/{definition}/{def}/{remark}/{slug}
- *   theorem-remark     /{locale}/{kb}/{theorem}/{thm}/{remark}/{slug}
- *   proof-remark       /{locale}/{kb}/{theorem}/{thm}/{proof}/{prf}/{remark}/{slug}
+ *   proof              /{locale}/{kb}/{theorem}/{thm}/{proof}/{i}
+ *   definition-remark  /{locale}/{kb}/{definition}/{def}/{remark}/{i}
+ *   theorem-remark     /{locale}/{kb}/{theorem}/{thm}/{remark}/{i}
+ *   proof-remark       /{locale}/{kb}/{theorem}/{thm}/{proof}/{i}/{remark}/{j}
+ *
+ * A proof and a remark are addressed by `{i}`, their 1-based position in the list
+ * of the node that owns them (lib/content/urls.ts, kbOwnedIndex), where every other
+ * type is addressed by its slug. Nothing here has to know that: an index reaches
+ * this as the string it is spelled with, and `req`'s empty-segment guard holds for
+ * it exactly as it does for a slug.
  *
  * A remark gets three keys rather than one variable-arity key so that `req`'s
  * exact segment count stays exact — a remark's parent chain differs in length
@@ -99,25 +105,25 @@ export function buildLocalizedUrl(locale: string, key: UrlKey, ...slugPath: stri
     case 'theorem':
       return `${base}/${kb(locale)}/${getContainerSegment(locale, 'theorem')}/${req(slugPath, 1, key)[0]}`
     case 'proof': {
-      const [theoremSlug, proofSlug] = req(slugPath, 2, key)
+      const [theoremSlug, proofIndex] = req(slugPath, 2, key)
       return `${base}/${kb(locale)}/${getContainerSegment(locale, 'theorem')}/${theoremSlug}` +
-        `/${getContainerSegment(locale, 'proof')}/${proofSlug}`
+        `/${getContainerSegment(locale, 'proof')}/${proofIndex}`
     }
     case 'definition-remark': {
-      const [defSlug, remarkSlug] = req(slugPath, 2, key)
+      const [defSlug, remarkIndex] = req(slugPath, 2, key)
       return `${base}/${kb(locale)}/${getContainerSegment(locale, 'definition')}/${defSlug}` +
-        `/${getContainerSegment(locale, 'remark')}/${remarkSlug}`
+        `/${getContainerSegment(locale, 'remark')}/${remarkIndex}`
     }
     case 'theorem-remark': {
-      const [theoremSlug, remarkSlug] = req(slugPath, 2, key)
+      const [theoremSlug, remarkIndex] = req(slugPath, 2, key)
       return `${base}/${kb(locale)}/${getContainerSegment(locale, 'theorem')}/${theoremSlug}` +
-        `/${getContainerSegment(locale, 'remark')}/${remarkSlug}`
+        `/${getContainerSegment(locale, 'remark')}/${remarkIndex}`
     }
     case 'proof-remark': {
-      const [theoremSlug, proofSlug, remarkSlug] = req(slugPath, 3, key)
+      const [theoremSlug, proofIndex, remarkIndex] = req(slugPath, 3, key)
       return `${base}/${kb(locale)}/${getContainerSegment(locale, 'theorem')}/${theoremSlug}` +
-        `/${getContainerSegment(locale, 'proof')}/${proofSlug}` +
-        `/${getContainerSegment(locale, 'remark')}/${remarkSlug}`
+        `/${getContainerSegment(locale, 'proof')}/${proofIndex}` +
+        `/${getContainerSegment(locale, 'remark')}/${remarkIndex}`
     }
   }
 }

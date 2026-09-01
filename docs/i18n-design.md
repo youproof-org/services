@@ -48,7 +48,7 @@ first configured locale (`hu`) in local dev.
 | Listing page | `/{locale}/{container}` |
 | KB root / type index | `/{locale}/{kb-container}` / `/{locale}/{kb-container}/{type-container}` |
 | Definition, theorem | `/{locale}/{kb-container}/{type-container}/{slug}` — flat (§4a) |
-| Proof, remark | `…/{owner-slug}/{type-container}/{slug}` — nested under the owner (§4a) |
+| Proof, remark | `…/{owner-slug}/{type-container}/{index}` — nested under the owner, addressed by position (§4a) |
 | Site root | `/` → **301 → `/{DEFAULT_LOCALE}`** (§6) |
 
 Parts and sections are **not** in the public URL. Both nonetheless render as
@@ -71,8 +71,8 @@ Concrete `hu` examples (from §3):
 /hu/tudasbazis/definiciok
 /hu/tudasbazis/definiciok/{definition-slug}
 /hu/tudasbazis/tetelek/{theorem-slug}
-/hu/tudasbazis/tetelek/{theorem-slug}/bizonyitasok/{proof-slug}
-/hu/tudasbazis/tetelek/{theorem-slug}/bizonyitasok/{proof-slug}/megjegyzesek/{remark-slug}
+/hu/tudasbazis/tetelek/{theorem-slug}/bizonyitasok/{proof-index}
+/hu/tudasbazis/tetelek/{theorem-slug}/bizonyitasok/{proof-index}/megjegyzesek/{remark-index}
 /  → 301 → /hu
 ```
 
@@ -107,6 +107,11 @@ mechanism that generalizes routing and the manifest generator — nothing like
 | `claim` | claims | **allitasok** | anchor only |
 | `part` | parts | **reszek** | anchor only |
 | `section` | sections | **szakaszok** | anchor only |
+
+`bizonyitasok` and `megjegyzesek` are followed by an **index** rather than a slug:
+a proof and a remark are addressed by their 1-based position in the owning node's
+`proofs:` / `remarks:` list (§4a). Only the segment after the container differs —
+the container segment itself comes from this dictionary like every other.
 
 The last three name a container that is addressed by a **fragment** rather than by
 a path, so they never appear in a URL. They live in the same dictionary anyway,
@@ -182,7 +187,9 @@ The same conceptual entity (e.g. "the cryptography book") will be represented as
 KB entity types are `definition`, `theorem`, `proof`, `remark`, plus `namespace`
 (a grouping node). **There are no `lemmas`.**
 
-All four entity types are **addressable** and carry both `locale` and `slug`. Their
+All four entity types are **addressable** and carry `locale`. A definition and a
+theorem carry a `slug` too; a proof and a remark have none, and are addressed by
+their **1-based position** in the owning node's `proofs:` / `remarks:` list. Their
 URLs are deliberately **independent of namespace position** — namespaces are
 expected to be reorganized, and a node's URL must not move when that happens — so a
 definition or theorem sits at a flat path and a proof or remark nests under the node
@@ -225,7 +232,8 @@ language-independent internal ID that cross-references resolve against. See
 
 | category | types | `locale` | `slug` |
 |---|---|---|---|
-| Addressable (own URL) | `book`, `chapter`, `article`, `newsletter`, `landing`, `page`, `definition`, `theorem`, `proof`, `remark` | ✔ | ✔ (URL segment) |
+| Addressable (own URL) | `book`, `chapter`, `article`, `newsletter`, `landing`, `page`, `definition`, `theorem` | ✔ | ✔ (URL segment) |
+| Addressable by position (own URL) | `proof`, `remark` | ✔ | — (the last URL segment is the index in the owner's list) |
 | Anchored (no URL, in-page anchor) | `part`, `section`, `claim` block, `terms` entry | ✔ (the entity's; a claim/term takes its owner's) | ✔ (anchor segment) |
 | Structural (no URL, no anchor) | `namespace` | ✔ | — |
 
@@ -409,8 +417,8 @@ same shape of string, differing only in language.
 | `section` | its **parent chapter** or standalone item | anchor `szakaszok.{slug}` |
 | `definition` | all definitions | URL `/{loc}/tudasbazis/definiciok/{slug}` — flat, so the slug carries no namespace |
 | `theorem` | all theorems | URL `/{loc}/tudasbazis/tetelek/{slug}` |
-| `proof` | its **owning theorem** | URL nests under the theorem |
-| `remark` | its **owning** definition / theorem / proof | URL nests under the owner |
+| `proof` (name only) | its **owning theorem** | no slug — the URL segment is its index in the theorem's `proofs:` list |
+| `remark` (name only) | its **owning** definition / theorem / proof | likewise, indexed under its owner |
 | `claim` | its owning definition / theorem / remark | anchor `…allitasok.{slug}` |
 | `terms` entry | its owning node | anchor `…fogalmak.{slug}` |
 | `namespace` (name only) | its parent namespace | appears in no URL, anchor or reference |
@@ -450,6 +458,9 @@ same shape of string, differing only in language.
 - Two chapters **in the same book** both with slug `bevezetes`.
 - Two sections **in the same chapter** both with slug `attekintes` — duplicate
   in-page anchor.
+- Two theorems both listing a proof named `gyuru-bizonyitas`. The scope above
+  would allow it, but a `proofs:` entry is a bare name and a proof file does not
+  name its theorem, so one name can only ever resolve to one owner.
 - Any name or slug containing a `.` — it would split into two grammar segments.
 
 ---

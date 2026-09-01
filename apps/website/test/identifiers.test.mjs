@@ -216,16 +216,6 @@ test('a definition and a theorem may share a name and a slug', () => {
   assert.equal(g.theorems.size, 2)
 })
 
-test('two remarks on the same owner sharing a slug fail', () => {
-  const data = raw()
-  data.definitions[0].remarkSlugs = ['rem-egy', 'rem-ketto']
-  data.remarks.push({
-    ...hu, name: 'rem-ketto', slug: 'rem-egy', body: [narrative('M.')], references: {},
-  })
-  chapterOf(data).sections[0].body.push(embed('definitions.def-egy.remarks.rem-ketto'))
-  assert.throws(() => build(data), /Identifier collision: 'rem-egy'.*remarks of definition 'def-egy'/s)
-})
-
 test('a claim and a term on one node MAY share a slug — distinct anchor segments', () => {
   // This is a deliberate relaxation: before the anchor grammar nested them under
   // `allitasok.`/`fogalmak.`, both were flat and shared one per-node namespace.
@@ -284,4 +274,116 @@ test('a part carries slug and locale through to the graph', () => {
   const part = g.parts.get('books.konyv.parts.resz')
   assert.equal(part.slug, 'resz')
   assert.equal(part.locale, 'hu')
+})
+
+// ---------------------------------------------------------------------------
+// Authored ownership lists
+// ---------------------------------------------------------------------------
+//
+// A `proofs:` / `remarks:` entry is the only thing that attaches a child to its
+// parent, and every way of getting one wrong is silent during wiring. The positive
+// cases matter as much as the negative ones here: the scope is deliberately global
+// per child type (one file, one owner), and nothing about it may start rejecting a
+// parent that legitimately owns several children.
+
+test('a theorem listing a proof no file answers to fails, naming the parent and the entry', () => {
+  const data = raw()
+  data.theorems[0].proofSlugs = ['biz-egy', 'biz-hianyzik']
+  assert.throws(
+    () => build(data),
+    /theorem tetel-egy lists 'biz-hianyzik' as proofs entry 2.*no proof of that name was loaded/s,
+  )
+})
+
+test('a definition listing a remark no file answers to fails', () => {
+  const data = raw()
+  data.definitions[0].remarkSlugs = ['rem-egy', 'rem-hianyzik']
+  assert.throws(
+    () => build(data),
+    /definition def-egy lists 'rem-hianyzik' as remarks entry 2.*no remark of that name was loaded/s,
+  )
+})
+
+test('a proof listing a remark no file answers to fails — a proof is a parent too', () => {
+  const data = raw()
+  data.proofs[0].remarkSlugs = ['rem-hianyzik']
+  assert.throws(() => build(data), /proof biz-egy lists 'rem-hianyzik' as remarks entry 1/)
+})
+
+test('two theorems listing the same proof fail — one file cannot have two owners', () => {
+  // Wiring keeps the last claimant, so the other theorem's list silently loses the
+  // proof; the collision has to be reported instead of the losing entry looking
+  // like a missing file.
+  const data = raw()
+  data.theorems.push({
+    ...hu,
+    name: 'tetel-ketto',
+    slug: 'tetel-ketto',
+    title: 'Második tétel',
+    body: [narrative('Tétel.')],
+    references: {},
+    proofSlugs: ['biz-egy'],
+    remarkSlugs: [],
+  })
+  chapterOf(data).sections[0].body.push(embed('theorems.tetel-ketto'))
+  assert.throws(
+    () => build(data),
+    /Identifier collision: 'biz-egy'.*theorem tetel-egy \(proofs entry 1\).*theorem tetel-ketto \(proofs entry 1\).*within proof ownership/s,
+  )
+})
+
+test('a definition and a theorem listing the same remark fail — one ownership scope', () => {
+  const data = raw()
+  data.theorems[0].remarkSlugs = ['rem-egy']
+  assert.throws(
+    () => build(data),
+    /Identifier collision: 'rem-egy'.*definition def-egy.*theorem tetel-egy.*within remark ownership/s,
+  )
+})
+
+test('a parent listing one child twice fails — the entry number tells the two apart', () => {
+  const data = raw()
+  data.theorems[0].proofSlugs = ['biz-egy', 'biz-egy']
+  assert.throws(
+    () => build(data),
+    /Identifier collision: 'biz-egy'.*theorem tetel-egy \(proofs entry 1\).*theorem tetel-egy \(proofs entry 2\)/s,
+  )
+})
+
+test('a theorem may list two proofs — both attach, in the authored order', () => {
+  const data = raw()
+  data.theorems[0].proofSlugs = ['biz-egy', 'biz-ketto']
+  data.proofs.push({
+    ...hu,
+    name: 'biz-ketto',
+    body: [narrative('Másik bizonyítás.')],
+    references: {},
+    remarkSlugs: [],
+  })
+  chapterOf(data).sections[0].body.push(embed('theorems.tetel-egy.proofs.biz-ketto'))
+  const g = build(data)
+  assert.deepEqual(
+    g.theorems.get('theorems.tetel-egy').proofs.map(p => p.name),
+    ['biz-egy', 'biz-ketto'],
+  )
+})
+
+test('two parents may each own a remark, as long as they are different remarks', () => {
+  const data = raw()
+  data.proofs[0].remarkSlugs = ['rem-ketto']
+  data.remarks.push({
+    ...hu,
+    name: 'rem-ketto',
+    body: [narrative('Megjegyzés.')],
+    references: {},
+  })
+  const g = build(data)
+  assert.deepEqual(
+    g.definitions.get('definitions.def-egy').remarks.map(r => r.name),
+    ['rem-egy'],
+  )
+  assert.deepEqual(
+    g.proofs.get('theorems.tetel-egy.proofs.biz-egy').remarks.map(r => r.name),
+    ['rem-ketto'],
+  )
 })

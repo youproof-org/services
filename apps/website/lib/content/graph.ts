@@ -160,7 +160,6 @@ export interface RawTheoremEntry {
 
 export interface RawProofEntry {
   name: string
-  slug: string
   locale: string
   namespace: string
   title?: string
@@ -173,7 +172,6 @@ export interface RawProofEntry {
 
 export interface RawRemarkEntry {
   name: string
-  slug: string
   locale: string
   namespace: string
   title?: string
@@ -258,7 +256,7 @@ export interface RawStandaloneEntry {
  * schema, so a cache written by an older build would otherwise rehydrate nodes
  * that silently lack the new fields.
  */
-export const RAW_GRAPH_VERSION = 3
+export const RAW_GRAPH_VERSION = 4
 
 export interface RawGraphData {
   version: number
@@ -344,7 +342,6 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
               const loaded = loadProof(file, namespace)
               raw.proofs.push({
                 name: loaded.node.name,
-                slug: loaded.node.slug,
                 locale: loaded.node.locale,
                 namespace,
                 title: loaded.node.title,
@@ -358,7 +355,6 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
               const loaded = loadRemark(file, namespace)
               raw.remarks.push({
                 name: loaded.node.name,
-                slug: loaded.node.slug,
                 locale: loaded.node.locale,
                 namespace,
                 title: loaded.node.title,
@@ -695,7 +691,6 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
     graph.proofs.set(key, {
       type: 'proof',
       name: e.name,
-      slug: e.slug,
       locale: e.locale,
       namespace: e.namespace,
       title: e.title,
@@ -713,7 +708,6 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
     graph.remarks.set(ownerKey ? remarkKey(ownerKey, e.name) : fqnJoin('', 'remark', e.name), {
       type: 'remark',
       name: e.name,
-      slug: e.slug,
       locale: e.locale,
       namespace: e.namespace,
       title: e.title,
@@ -863,7 +857,7 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
   // which chapter a node lives in. Then hrefs, since the glossary links to term
   // anchors and the validators check the hrefs those produce.
   graph.embedding = buildEmbedding(graph)
-  validateIdentifiers(graph)
+  validateIdentifiers(graph, raw)
   resolveDisplayTemplates(graph)
   resolveSelfReferenceDisplayTemplates(graph)
   resolveRefHrefs(graph)
@@ -1087,19 +1081,41 @@ export interface KbOwnership {
  */
 export function kbOwnership(graph: ContentGraph, node: KbNode): KbOwnership {
   const shown = <T extends KbNode>(nodes: T[]): T[] => nodes.filter((n) => kbPageExists(graph, n))
-  const parentOf = (owner: KbNode | undefined): KbNode | undefined =>
-    owner && kbPageExists(graph, owner) ? owner : undefined
+  const owner = kbOwner(node)
+  const { proofs, remarks } = kbOwnedChildren(node)
+  return {
+    parent: owner && kbPageExists(graph, owner) ? owner : undefined,
+    proofs: shown(proofs),
+    remarks: shown(remarks),
+  }
+}
 
+/** The entity one node belongs to: a proof's theorem, a remark's owner. */
+export function kbOwner(node: KbNode): KbNode | undefined {
+  if (node.type === 'proof') return node.proves
+  if (node.type === 'remark') return node.attachedTo
+  return undefined
+}
+
+/**
+ * The children one node owns, as authored — the lists `kbOwnership` filters.
+ *
+ * Exported unfiltered because a child's address is its position in this list and a
+ * build that publishes only some of the siblings must still number them from it
+ * (§5 D6). Splitting the two apart would let the numbering read one list while the
+ * URL reads another.
+ */
+export function kbOwnedChildren(node: KbNode): { proofs: ProofNode[]; remarks: RemarkNode[] } {
   switch (node.type) {
     case 'definition':
-      return { proofs: [], remarks: shown(node.remarks) }
+      return { proofs: [], remarks: node.remarks }
     case 'theorem':
-      return { proofs: shown(node.proofs), remarks: shown(node.remarks) }
+      return { proofs: node.proofs, remarks: node.remarks }
     case 'proof':
-      return { parent: parentOf(node.proves), proofs: [], remarks: shown(node.remarks) }
+      return { proofs: [], remarks: node.remarks }
     case 'remark':
       // A remark owns nothing (sub-plan §6.5), so its chain is the one link up.
-      return { parent: parentOf(node.attachedTo), proofs: [], remarks: [] }
+      return { proofs: [], remarks: [] }
   }
 }
 
@@ -1139,19 +1155,32 @@ export function kbNodeByKey(graph: ContentGraph, key: string): KbNode | undefine
  * in that a slug is unique per locale (a future `en` file may reuse an `hu` slug)
  * while a name is unique across locales - it is the same id in every language.
  *
+ * A proof and a remark carry no slug: their public address is their position in
+ * the owner's list, so only their names are identifiers and only their names are
+ * checked here.
+ *
  * Each scope is the identifier's position in the reference grammar: what
  * disambiguates a reference is what disambiguates the identifier. Consequences
  * that look like gaps but are deliberate: a definition and a theorem may share
  * either identifier (different container segments); two sections in different
- * chapters may (the anchor is page-scoped); two proofs of different theorems may;
- * and a claim may share a slug with a term on the same node, since they sit under
- * distinct `allitasok.`/`fogalmak.` segments.
+ * chapters may (the anchor is page-scoped); two proofs of different theorems may
+ * share a name; and a claim may share a slug with a term on the same node, since
+ * they sit under distinct `allitasok.`/`fogalmak.` segments.
+ *
+ * The same function also checks the authored `proofs:` / `remarks:` lists, which
+ * are the other half of the identifier contract: a name is only useful if exactly
+ * one parent claims it and it names a file that was loaded. Those lists are read
+ * from the raw entries rather than the built graph, because the built arrays are
+ * what a bad list silently degrades into. That check is stricter than the scope
+ * above allows for: an entry is a bare name and a proof or remark file does not
+ * name its owner, so ownership resolves through one global name -> owner map and
+ * two parents cannot list the same name even though their scopes are separate.
  *
  * See docs/i18n-design.md §9 and the content repo's docs/content-model.md.
  */
 const IDENTIFIER_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 
-function validateIdentifiers(graph: ContentGraph): void {
+function validateIdentifiers(graph: ContentGraph, raw: RawGraphData): void {
   // Every (scope, identifier) may be claimed exactly ONCE. There is deliberately no
   // "same owner may re-claim" tolerance: every node below is visited once, so a
   // repeat claim is always a collision. Tolerating it by comparing owner labels
@@ -1183,14 +1212,19 @@ function validateIdentifiers(graph: ContentGraph): void {
     }
   }
 
-  // A name is scoped without the locale, a slug with it. Everything below claims
-  // both in one call so a new type cannot be added to one table and forgotten in
-  // the other.
+  // A name is scoped without the locale, a slug with it. A type that carries both
+  // claims them in one call, so it cannot be added to one table and forgotten in
+  // the other; the two types with no slug take `nameOnly` instead.
   const both = (scope: string, node: { name: string; slug: string; locale: string }, owner: string) => {
     shape('name', owner, node.name)
     shape('slug', owner, node.slug)
     claim(`${scope} names`, node.name, owner)
     claim(`${scope} slugs in locale '${node.locale}'`, node.slug, owner)
+  }
+
+  const nameOnly = (scope: string, node: { name: string }, owner: string) => {
+    shape('name', owner, node.name)
+    claim(`${scope} names`, node.name, owner)
   }
 
   // ── Books, parts, chapters, sections ──
@@ -1270,13 +1304,12 @@ function validateIdentifiers(graph: ContentGraph): void {
     if (node.type === 'definition' || node.type === 'theorem') {
       both(`all ${node.type}s`, node, id)
     } else if (node.type === 'proof') {
-      both(`proofs of theorem '${node.proves.name}'`, node, id)
+      nameOnly(`proofs of theorem '${node.proves.name}'`, node, id)
     } else if (node.type === 'remark' && node.attachedTo) {
-      both(`remarks of ${node.attachedTo.type} '${node.attachedTo.name}'`, node, id)
+      nameOnly(`remarks of ${node.attachedTo.type} '${node.attachedTo.name}'`, node, id)
     } else {
       // An owner-less remark: not addressable, but still validate its shape.
       shape('name', id, node.name)
-      shape('slug', id, node.slug)
     }
 
     // Claims and terms sit under distinct anchor segments, so they get distinct
@@ -1306,6 +1339,89 @@ function validateIdentifiers(graph: ContentGraph): void {
       shape('name', owner, termKey)
       if (term.slug !== undefined) shape('slug', owner, term.slug)
       claim(`term slugs of ${id}`, term.slug ?? termKey, owner)
+    }
+  }
+
+  // ── Authored ownership lists ──
+  // Ownership is declared only on the parent, so a `proofs:` / `remarks:` entry is
+  // the sole thing that attaches a child to it. Every way such a list can be wrong
+  // fails in silence during wiring: a name no file answers to is skipped, a name
+  // two parents claim is wired to whichever parent pass 0 visited last, and a name
+  // listed twice pushes one child into the array twice. In each case the parent's
+  // built list stops matching the list the author wrote.
+  const childKindOf = (container: 'proofs' | 'remarks') =>
+    container === 'proofs' ? 'proof' : 'remark'
+
+  const proofsByName = new Map([...graph.proofs.values()].map(p => [p.name, p]))
+
+  const ownershipLists: Array<{
+    parent: string
+    container: 'proofs' | 'remarks'
+    entries: string[]
+    attached: KbNode[]
+  }> = []
+
+  for (const e of raw.definitions) {
+    const node = graph.definitions.get(definitionKey(e.name))
+    if (!node) continue
+    ownershipLists.push({
+      parent: `definition ${e.name}`,
+      container: 'remarks',
+      entries: e.remarkSlugs,
+      attached: node.remarks,
+    })
+  }
+  for (const e of raw.theorems) {
+    const node = graph.theorems.get(theoremKey(e.name))
+    if (!node) continue
+    ownershipLists.push({
+      parent: `theorem ${e.name}`,
+      container: 'proofs',
+      entries: e.proofSlugs,
+      attached: node.proofs,
+    })
+    ownershipLists.push({
+      parent: `theorem ${e.name}`,
+      container: 'remarks',
+      entries: e.remarkSlugs,
+      attached: node.remarks,
+    })
+  }
+  for (const e of raw.proofs) {
+    // An orphan proof is not in the graph at all (pass 1 warns and skips it), so
+    // its own remarks have no parent to be listed by.
+    const node = proofsByName.get(e.name)
+    if (!node) continue
+    ownershipLists.push({
+      parent: `proof ${e.name}`,
+      container: 'remarks',
+      entries: e.remarkSlugs,
+      attached: node.remarks,
+    })
+  }
+
+  // Duplicates first, across every list, before any list is checked for resolution:
+  // a name two parents claim also fails to resolve for the parent that lost it, and
+  // "claimed twice" is the diagnosis that names both offenders.
+  for (const { parent, container, entries } of ownershipLists) {
+    for (const [index, entry] of entries.entries()) {
+      claim(
+        `${childKindOf(container)} ownership`,
+        entry,
+        `${parent} (${container} entry ${index + 1})`,
+      )
+    }
+  }
+
+  for (const { parent, container, entries, attached } of ownershipLists) {
+    for (const [index, entry] of entries.entries()) {
+      if (attached.some(child => child.name === entry)) continue
+      throw new Error(
+        `${parent} lists '${entry}' as ${container} entry ${index + 1}, but no ` +
+          `${childKindOf(container)} of that name was loaded. Add the file or remove the ` +
+          `entry: an entry that resolves to nothing is dropped from the parent's list, so ` +
+          `every later entry sits one position earlier than the file says.`,
+      )
     }
   }
 }
