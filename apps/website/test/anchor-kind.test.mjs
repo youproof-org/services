@@ -25,12 +25,16 @@ import {
 const hu = 'hu'
 
 // The four knowledge-base node types, as the minimum `kbAnchorPath` reads: its own
-// `type`, `locale` and `slug`, plus the owner a proof and a remark hang off.
+// `type` and `locale`, a `slug` for the two types addressed by one, and for a proof
+// and a remark the owner they hang off — whose list has to hold them, since their
+// address is their position in it.
 const definition = { type: 'definition', locale: hu, slug: 'gyuru-test' }
-const theorem = { type: 'theorem', locale: hu, slug: 'oszthatosag-tulajdonsagai' }
-const proof = { type: 'proof', locale: hu, slug: 'oszthatosag-bizonyitas', proves: theorem }
-const remark = { type: 'remark', locale: hu, slug: 'oszthatosag-megjegyzes', attachedTo: proof }
-const orphanRemark = { type: 'remark', locale: hu, slug: 'sehova-nem-tartozo', attachedTo: null }
+const theorem = { type: 'theorem', locale: hu, slug: 'oszthatosag-tulajdonsagai', proofs: [] }
+const proof = { type: 'proof', locale: hu, proves: theorem, remarks: [] }
+const remark = { type: 'remark', locale: hu, attachedTo: proof }
+const orphanRemark = { type: 'remark', locale: hu, name: 'sehova-nem-tartozo', attachedTo: null }
+theorem.proofs.push(proof)
+proof.remarks.push(remark)
 
 const section = { locale: hu, slug: 'linearis-kongruenciak' }
 const part = { locale: hu, slug: 'a-szamelmelet-alapjai' }

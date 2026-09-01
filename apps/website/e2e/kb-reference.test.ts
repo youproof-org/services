@@ -37,7 +37,7 @@ import { collectConsoleNoise } from './support/console-noise'
  * "the mark the reader pressed is the one revealed" a question with a wrong answer
  * available.
  */
-const ENTITY = '/hu/tudasbazis/tetelek/kis-fermat-tetel/megjegyzesek/kis-fermat-tetel-megjegyzes'
+const ENTITY = '/hu/tudasbazis/tetelek/kis-fermat-tetel/megjegyzesek/1'
 const MARK_COUNT = 22
 const PANEL_COUNT = 7
 const EXTERNAL_COUNT = 2
@@ -61,7 +61,7 @@ const EXTERNAL_TARGET = 'https://oeis.org/A001567'
  * section, and this is it — so it is the only page on which a `ref-link` opens a
  * panel, and the only place the class-independence of the interception can be shown.
  */
-const HIERARCHY_ENTITY = '/hu/tudasbazis/definiciok/reszhalmaz/megjegyzesek/reszhalmaz-megjegyzes'
+const HIERARCHY_ENTITY = '/hu/tudasbazis/definiciok/reszhalmaz/megjegyzesek/1'
 const SECTION_TARGET =
   '/hu/konyvek/alice-es-bob/fejezetek/alice-es-bob-felcsavarja-a-szamegyenest#szakaszok.maradekosztalygyuruk'
 const SECTION_TARGET_TITLE = 'Maradékosztálygyűrűk'

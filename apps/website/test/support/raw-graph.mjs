@@ -63,14 +63,13 @@ export function raw({ published = true, references = {}, extraDefinitions = [], 
       {
         ...hu,
         name: 'biz-egy',
-        slug: 'biz-egy',
         body: [narrative('Bizonyítás.')],
         references: {},
         remarkSlugs: [],
       },
     ],
     remarks: [
-      { ...hu, name: 'rem-egy', slug: 'rem-egy', body: [narrative('Megjegyzés.')], references: {} },
+      { ...hu, name: 'rem-egy', body: [narrative('Megjegyzés.')], references: {} },
     ],
     books: [
       {

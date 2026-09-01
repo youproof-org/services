@@ -269,7 +269,7 @@ test.describe('the Bejövő hivatkozások panel', () => {
         label: '16.1. Definíció: Oszthatóság',
         ownership: 'megjegyzés',
         count: '2',
-        href: '/hu/tudasbazis/definiciok/oszthatosag/megjegyzesek/oszthatosag-megjegyzes',
+        href: '/hu/tudasbazis/definiciok/oszthatosag/megjegyzesek/1',
       },
       {
         label: '16.1. Definíció: Oszthatóság',
