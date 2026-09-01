@@ -863,7 +863,7 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
   // which chapter a node lives in. Then hrefs, since the glossary links to term
   // anchors and the validators check the hrefs those produce.
   graph.embedding = buildEmbedding(graph)
-  validateIdentifiers(graph)
+  validateIdentifiers(graph, raw)
   resolveDisplayTemplates(graph)
   resolveSelfReferenceDisplayTemplates(graph)
   resolveRefHrefs(graph)
@@ -1147,11 +1147,17 @@ export function kbNodeByKey(graph: ContentGraph, key: string): KbNode | undefine
  * and a claim may share a slug with a term on the same node, since they sit under
  * distinct `allitasok.`/`fogalmak.` segments.
  *
+ * The same function also checks the authored `proofs:` / `remarks:` lists, which
+ * are the other half of the identifier contract: a name is only useful if exactly
+ * one parent claims it and it names a file that was loaded. Those lists are read
+ * from the raw entries rather than the built graph, because the built arrays are
+ * what a bad list silently degrades into.
+ *
  * See docs/i18n-design.md §9 and the content repo's docs/content-model.md.
  */
 const IDENTIFIER_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 
-function validateIdentifiers(graph: ContentGraph): void {
+function validateIdentifiers(graph: ContentGraph, raw: RawGraphData): void {
   // Every (scope, identifier) may be claimed exactly ONCE. There is deliberately no
   // "same owner may re-claim" tolerance: every node below is visited once, so a
   // repeat claim is always a collision. Tolerating it by comparing owner labels
@@ -1306,6 +1312,89 @@ function validateIdentifiers(graph: ContentGraph): void {
       shape('name', owner, termKey)
       if (term.slug !== undefined) shape('slug', owner, term.slug)
       claim(`term slugs of ${id}`, term.slug ?? termKey, owner)
+    }
+  }
+
+  // ── Authored ownership lists ──
+  // Ownership is declared only on the parent, so a `proofs:` / `remarks:` entry is
+  // the sole thing that attaches a child to it. Every way such a list can be wrong
+  // fails in silence during wiring: a name no file answers to is skipped, a name
+  // two parents claim is wired to whichever parent pass 0 visited last, and a name
+  // listed twice pushes one child into the array twice. In each case the parent's
+  // built list stops matching the list the author wrote.
+  const childKindOf = (container: 'proofs' | 'remarks') =>
+    container === 'proofs' ? 'proof' : 'remark'
+
+  const proofsByName = new Map([...graph.proofs.values()].map(p => [p.name, p]))
+
+  const ownershipLists: Array<{
+    parent: string
+    container: 'proofs' | 'remarks'
+    entries: string[]
+    attached: KbNode[]
+  }> = []
+
+  for (const e of raw.definitions) {
+    const node = graph.definitions.get(definitionKey(e.name))
+    if (!node) continue
+    ownershipLists.push({
+      parent: `definition ${e.name}`,
+      container: 'remarks',
+      entries: e.remarkSlugs,
+      attached: node.remarks,
+    })
+  }
+  for (const e of raw.theorems) {
+    const node = graph.theorems.get(theoremKey(e.name))
+    if (!node) continue
+    ownershipLists.push({
+      parent: `theorem ${e.name}`,
+      container: 'proofs',
+      entries: e.proofSlugs,
+      attached: node.proofs,
+    })
+    ownershipLists.push({
+      parent: `theorem ${e.name}`,
+      container: 'remarks',
+      entries: e.remarkSlugs,
+      attached: node.remarks,
+    })
+  }
+  for (const e of raw.proofs) {
+    // An orphan proof is not in the graph at all (pass 1 warns and skips it), so
+    // its own remarks have no parent to be listed by.
+    const node = proofsByName.get(e.name)
+    if (!node) continue
+    ownershipLists.push({
+      parent: `proof ${e.name}`,
+      container: 'remarks',
+      entries: e.remarkSlugs,
+      attached: node.remarks,
+    })
+  }
+
+  // Duplicates first, across every list, before any list is checked for resolution:
+  // a name two parents claim also fails to resolve for the parent that lost it, and
+  // "claimed twice" is the diagnosis that names both offenders.
+  for (const { parent, container, entries } of ownershipLists) {
+    for (const [index, entry] of entries.entries()) {
+      claim(
+        `${childKindOf(container)} ownership`,
+        entry,
+        `${parent} (${container} entry ${index + 1})`,
+      )
+    }
+  }
+
+  for (const { parent, container, entries, attached } of ownershipLists) {
+    for (const [index, entry] of entries.entries()) {
+      if (attached.some(child => child.name === entry)) continue
+      throw new Error(
+        `${parent} lists '${entry}' as ${container} entry ${index + 1}, but no ` +
+          `${childKindOf(container)} of that name was loaded. Add the file or remove the ` +
+          `entry: an entry that resolves to nothing is dropped from the parent's list, so ` +
+          `every later entry sits one position earlier than the file says.`,
+      )
     }
   }
 }
