@@ -67,7 +67,7 @@ const TERM_PANELS = 4
 const CLAIM_PANELS = 5
 const REFERENCE_PANELS = 12
 const CONTEXT_LEVELS = 2
-const PROOF_URL = '/hu/tudasbazis/tetelek/maradekosztalygyuruk/bizonyitasok/maradekosztalygyuruk-bizonyitas'
+const PROOF_URL = '/hu/tudasbazis/tetelek/maradekosztalygyuruk/bizonyitasok/1'
 
 /**
  * The fragment the marker is caught on, once with print as the medium and once on

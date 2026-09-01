@@ -74,7 +74,7 @@ test('a proof carries its theorem above it', () => {
     KB,
     THEOREMS,
     'Első tétel @ /hu/tudasbazis/tetelek/tetel-egy',
-    'Bizonyítás: Első tétel @ /hu/tudasbazis/tetelek/tetel-egy/bizonyitasok/biz-egy',
+    'Bizonyítás: Első tétel @ /hu/tudasbazis/tetelek/tetel-egy/bizonyitasok/1',
   ])
 })
 
@@ -84,14 +84,14 @@ test("a remark's chain follows its actual ownership, definition or theorem", () 
     KB,
     DEFINITIONS,
     'Első definíció @ /hu/tudasbazis/definiciok/def-egy',
-    'Megjegyzés: Első definíció @ /hu/tudasbazis/definiciok/def-egy/megjegyzesek/rem-egy',
+    'Megjegyzés: Első definíció @ /hu/tudasbazis/definiciok/def-egy/megjegyzesek/1',
   ])
   assert.deepEqual(chain(kbEntityBreadcrumbs(g, byName(g.remarks, 'rem-tetel'))), [
     HOME,
     KB,
     THEOREMS,
     'Első tétel @ /hu/tudasbazis/tetelek/tetel-egy',
-    'Megjegyzés: Első tétel @ /hu/tudasbazis/tetelek/tetel-egy/megjegyzesek/rem-tetel',
+    'Megjegyzés: Első tétel @ /hu/tudasbazis/tetelek/tetel-egy/megjegyzesek/1',
   ])
 })
 
@@ -103,8 +103,8 @@ test('a remark on a proof carries the theorem AND the proof above it', () => {
     KB,
     THEOREMS,
     'Első tétel @ /hu/tudasbazis/tetelek/tetel-egy',
-    'Bizonyítás: Első tétel @ /hu/tudasbazis/tetelek/tetel-egy/bizonyitasok/biz-egy',
-    'Megjegyzés: Bizonyítás: Első tétel @ /hu/tudasbazis/tetelek/tetel-egy/bizonyitasok/biz-egy/megjegyzesek/rem-biz',
+    'Bizonyítás: Első tétel @ /hu/tudasbazis/tetelek/tetel-egy/bizonyitasok/1',
+    'Megjegyzés: Bizonyítás: Első tétel @ /hu/tudasbazis/tetelek/tetel-egy/bizonyitasok/1/megjegyzesek/1',
   ])
 })
 

@@ -1087,19 +1087,41 @@ export interface KbOwnership {
  */
 export function kbOwnership(graph: ContentGraph, node: KbNode): KbOwnership {
   const shown = <T extends KbNode>(nodes: T[]): T[] => nodes.filter((n) => kbPageExists(graph, n))
-  const parentOf = (owner: KbNode | undefined): KbNode | undefined =>
-    owner && kbPageExists(graph, owner) ? owner : undefined
+  const owner = kbOwner(node)
+  const { proofs, remarks } = kbOwnedChildren(node)
+  return {
+    parent: owner && kbPageExists(graph, owner) ? owner : undefined,
+    proofs: shown(proofs),
+    remarks: shown(remarks),
+  }
+}
 
+/** The entity one node belongs to: a proof's theorem, a remark's owner. */
+export function kbOwner(node: KbNode): KbNode | undefined {
+  if (node.type === 'proof') return node.proves
+  if (node.type === 'remark') return node.attachedTo
+  return undefined
+}
+
+/**
+ * The children one node owns, as authored — the lists `kbOwnership` filters.
+ *
+ * Exported unfiltered because a child's address is its position in this list and a
+ * build that publishes only some of the siblings must still number them from it
+ * (§5 D6). Splitting the two apart would let the numbering read one list while the
+ * URL reads another.
+ */
+export function kbOwnedChildren(node: KbNode): { proofs: ProofNode[]; remarks: RemarkNode[] } {
   switch (node.type) {
     case 'definition':
-      return { proofs: [], remarks: shown(node.remarks) }
+      return { proofs: [], remarks: node.remarks }
     case 'theorem':
-      return { proofs: shown(node.proofs), remarks: shown(node.remarks) }
+      return { proofs: node.proofs, remarks: node.remarks }
     case 'proof':
-      return { parent: parentOf(node.proves), proofs: [], remarks: shown(node.remarks) }
+      return { proofs: [], remarks: node.remarks }
     case 'remark':
       // A remark owns nothing (sub-plan §6.5), so its chain is the one link up.
-      return { parent: parentOf(node.attachedTo), proofs: [], remarks: [] }
+      return { proofs: [], remarks: [] }
   }
 }
 

@@ -7,7 +7,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 
 import * as graphModule from '../lib/content/graph.ts'
-import { urlForDefinition, urlForTheorem, urlForProof, urlForRemark, kbRefs, claimAnchorId, termAnchorId, kbAnchorPath, sectionAnchorId, partAnchorId, ownPageScope, embeddedScope } from '../lib/content/urls.ts'
+import { urlForDefinition, urlForTheorem, urlForProof, urlForRemark, kbRefs, claimAnchorId, termAnchorId, kbAnchorPath, kbOwnedIndex, kbNodeAtIndex, sectionAnchorId, partAnchorId, ownPageScope, embeddedScope } from '../lib/content/urls.ts'
 
 const { buildGraphFromRaw, kbPageExists, kbNodeTitle, kbNodeLabel, kbOwnership } = graphModule.default ?? graphModule
 
@@ -24,8 +24,8 @@ test('URLs are flat for definitions/theorems and nested for owned types', () => 
   const g = buildGraphFromRaw(raw())
   assert.equal(urlForDefinition(def(g)), '/hu/tudasbazis/definiciok/def-egy')
   assert.equal(urlForTheorem(thm(g)), '/hu/tudasbazis/tetelek/tetel-egy')
-  assert.equal(urlForProof(prf(g)), '/hu/tudasbazis/tetelek/tetel-egy/bizonyitasok/biz-egy')
-  assert.equal(urlForRemark(rem(g)), '/hu/tudasbazis/definiciok/def-egy/megjegyzesek/rem-egy')
+  assert.equal(urlForProof(prf(g)), '/hu/tudasbazis/tetelek/tetel-egy/bizonyitasok/1')
+  assert.equal(urlForRemark(rem(g)), '/hu/tudasbazis/definiciok/def-egy/megjegyzesek/1')
 })
 
 test('a URL does not contain the namespace, so reorganizing namespaces cannot move it', () => {
@@ -589,7 +589,9 @@ test('two proofs of DIFFERENT theorems may share a slug', () => {
     embed('theorems.tetel-ketto.proofs.biz-ketto'),
   )
   const g = buildGraphFromRaw(data)
-  assert.equal(urlForProof(g.proofs.get('theorems.tetel-ketto.proofs.biz-ketto')), '/hu/tudasbazis/tetelek/tetel-ketto/bizonyitasok/biz-egy')
+  // The shared slug reaches neither URL: each proof is addressed by its position in
+  // the theorem that owns it, so both are the first proof of a different theorem.
+  assert.equal(urlForProof(g.proofs.get('theorems.tetel-ketto.proofs.biz-ketto')), '/hu/tudasbazis/tetelek/tetel-ketto/bizonyitasok/1')
 })
 
 test('a reference to a node embedded nowhere fails the build', () => {
@@ -608,8 +610,8 @@ test('an anchor is the localized dotted path of the node, rooted at its own type
   assert.equal(kbAnchorPath(d), 'definiciok.def-egy')
   assert.equal(kbAnchorPath(thm(g)), 'tetelek.tetel-egy')
   // An owned type carries its owner's path, exactly as its URL does.
-  assert.equal(kbAnchorPath(prf(g)), 'tetelek.tetel-egy.bizonyitasok.biz-egy')
-  assert.equal(kbAnchorPath(rem(g)), 'definiciok.def-egy.megjegyzesek.rem-egy')
+  assert.equal(kbAnchorPath(prf(g)), 'tetelek.tetel-egy.bizonyitasok.1')
+  assert.equal(kbAnchorPath(rem(g)), 'definiciok.def-egy.megjegyzesek.1')
   assert.equal(sectionAnchorId({ slug: 'szakasz', locale: 'hu' }), 'szakaszok.szakasz')
   assert.equal(partAnchorId({ slug: 'resz', locale: 'hu' }), 'reszek.resz')
 })
@@ -649,4 +651,135 @@ test('every anchor segment is localized — no English container name survives',
 
 test('an unknown locale fails loudly rather than emitting a bare anchor', () => {
   assert.throws(() => sectionAnchorId({ slug: 's', locale: 'xx' }), /Unknown locale/)
+})
+
+// ---------------------------------------------------------------------------
+// Indexed addresses for the owned types
+// ---------------------------------------------------------------------------
+//
+// A proof and a remark are addressed by their position in the list of the node that
+// owns them, so every case below needs a list with more than one entry — which the
+// content has nowhere (190 theorems with exactly one proof, 72 nodes with exactly
+// one remark, measured). Today's content therefore exercises the number 1 and
+// nothing else, and these fixtures are the only place the design is put under the
+// load it was chosen for.
+
+/** The shared fixture with two remarks on its proof, both embedded so both exist. */
+function rawWithTwoRemarksOnTheProof() {
+  const data = raw()
+  data.proofs[0].remarkSlugs = ['rem-biz-egy', 'rem-biz-ketto']
+  for (const name of ['rem-biz-egy', 'rem-biz-ketto']) {
+    data.remarks.push({ ...hu, name, slug: name, body: [narrative('Megjegyzés.')], references: {} })
+    data.books[0].parts[0].chapters[0].sections[0].body.push(
+      embed(`theorems.tetel-egy.proofs.biz-egy.remarks.${name}`),
+    )
+  }
+  return data
+}
+
+/**
+ * The shared fixture with a second proof listed FIRST and embedded in a chapter that
+ * is not published, so a deployed build generates a page for the second entry of the
+ * list and not for the first.
+ */
+function rawWithUnpublishedFirstProof() {
+  const data = raw()
+  data.theorems[0].proofSlugs = ['biz-ketto', 'biz-egy']
+  data.proofs.push({
+    ...hu,
+    name: 'biz-ketto',
+    slug: 'biz-ketto',
+    body: [narrative('Másik bizonyítás.')],
+    references: {},
+    remarkSlugs: [],
+  })
+  data.books[0].parts[0].chapters.push({
+    name: 'masodik',
+    slug: 'masodik',
+    locale: 'hu',
+    title: 'Második fejezet',
+    publishedAt: undefined,
+    abstract: [],
+    prologue: [],
+    epilogue: [],
+    references: {},
+    sections: [
+      {
+        name: 'masodik-szakasz',
+        slug: 'masodik-szakasz',
+        locale: 'hu',
+        title: 'Második szakasz',
+        references: {},
+        body: [embed('theorems.tetel-egy.proofs.biz-ketto')],
+      },
+    ],
+  })
+  return data
+}
+
+test('the proofs of one theorem are addressed 1, 2, 3 — in the URL and in the anchor', () => {
+  const g = buildGraphFromRaw(rawWithThreeProofs())
+  const proofs = thm(g).proofs
+  assert.deepEqual(proofs.map((p) => kbOwnedIndex(p)), [1, 2, 3])
+  assert.deepEqual(proofs.map((p) => urlForProof(p)), [
+    '/hu/tudasbazis/tetelek/tetel-egy/bizonyitasok/1',
+    '/hu/tudasbazis/tetelek/tetel-egy/bizonyitasok/2',
+    '/hu/tudasbazis/tetelek/tetel-egy/bizonyitasok/3',
+  ])
+  assert.deepEqual(proofs.map((p) => kbAnchorPath(p)), [
+    'tetelek.tetel-egy.bizonyitasok.1',
+    'tetelek.tetel-egy.bizonyitasok.2',
+    'tetelek.tetel-egy.bizonyitasok.3',
+  ])
+})
+
+test("a remark of a proof carries both positions: its owner's and its own", () => {
+  const g = buildGraphFromRaw(rawWithTwoRemarksOnTheProof())
+  const second = prf(g).remarks[1]
+  assert.equal(
+    urlForRemark(second),
+    '/hu/tudasbazis/tetelek/tetel-egy/bizonyitasok/1/megjegyzesek/2',
+  )
+  assert.equal(kbAnchorPath(second), 'tetelek.tetel-egy.bizonyitasok.1.megjegyzesek.2')
+})
+
+test('an unpublished first sibling keeps its place, so the visible proof is still the second', async () => {
+  // The index counts the authored list, not the built one: publishing the missing
+  // chapter later must not renumber a page that was already live, and a link the
+  // reader can see must not disagree with the address it points at.
+  const { buildGraphFromRaw: build, kbOwnership: ownership } = await deployedModule()
+  const g = build(rawWithUnpublishedFirstProof())
+  const visible = ownership(g, thm(g)).proofs
+  assert.deepEqual(visible.map((p) => p.name), ['biz-egy'], 'only the published proof is linkable')
+  assert.equal(kbOwnedIndex(visible[0]), 2)
+  assert.equal(urlForProof(visible[0]), '/hu/tudasbazis/tetelek/tetel-egy/bizonyitasok/2')
+})
+
+test('an index segment addresses one node, and every other spelling addresses none', () => {
+  // One spelling per address: a padded, signed, fractional or zero-based segment is
+  // not a second way to reach the page, it is a 404. The segment comes off the
+  // address bar, so none of these is hypothetical.
+  const g = buildGraphFromRaw(rawWithThreeProofs())
+  const proofs = thm(g).proofs
+  assert.equal(kbNodeAtIndex(proofs, '2'), proofs[1])
+  for (const segment of ['0', '01', '4', '1.0', '-1', '+1', ' 1', '1a', '', undefined]) {
+    assert.equal(kbNodeAtIndex(proofs, segment), undefined, `'${segment}' must address nothing`)
+  }
+})
+
+test('an owner-less remark has no position, so its anchor keeps its name', () => {
+  const data = raw()
+  data.remarks.push({
+    ...hu,
+    name: 'rem-arva',
+    slug: 'rem-arva-megjegyzes',
+    body: [narrative('Megjegyzés.')],
+    references: {},
+  })
+  const g = buildGraphFromRaw(data)
+  const orphan = [...g.remarks.values()].find((r) => r.name === 'rem-arva')
+  assert.equal(orphan.attachedTo, undefined)
+  assert.equal(kbOwnedIndex(orphan), null)
+  assert.equal(urlForRemark(orphan), null)
+  assert.equal(kbAnchorPath(orphan), 'megjegyzesek.rem-arva')
 })

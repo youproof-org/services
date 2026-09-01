@@ -46,6 +46,11 @@ export function urlForStandalone(node: StandaloneNode): string {
 // owned types, from its owner's slug — never from its namespace. Namespaces are
 // expected to be reorganized, and moving a node between them must not move its
 // URL; that is the whole reason definitions and theorems sit at a flat path.
+//
+// A proof and a remark have no slug of their own: their address is their position
+// in the list of the node that owns them (see kbOwnedIndex). What they are called
+// stays in the reference grammar, which is keyed by `name` and is not positional,
+// so reordering a list moves URLs and moves no reference.
 
 export function urlForKbRoot(locale: string): string {
   return buildLocalizedUrl(locale, 'kb-root')
@@ -68,8 +73,70 @@ export function urlForTheorem(node: TheoremNode): string {
   return buildLocalizedUrl(node.locale, 'theorem', node.slug)
 }
 
+/**
+ * A proof's or a remark's 1-based position in the `proofs:` / `remarks:` list of
+ * the node that owns it. That position is its public address — the last segment of
+ * its URL and of its anchor — while its `name` stays the key every reference,
+ * backlink and highlight uses.
+ *
+ * Derived from the node alone, exactly as `kbAnchorPath` walks the ownership chain,
+ * so building an address never needs the graph.
+ *
+ * Null only for an owner-less remark: the model permits one, no content has one, and
+ * it has no owner to hold a position in — the same case `urlForRemark` has no URL
+ * for. A node that DOES have an owner and is missing from its list throws instead,
+ * because that is a wiring bug rather than a shape the content can be in: the graph
+ * build only ever pushes children it resolved, and validateIdentifiers rejects an
+ * authored list naming a child twice or naming one no file answers to. Returning
+ * null there would hand the caller a wrong address instead of a broken build.
+ */
+export function kbOwnedIndex(node: ProofNode | RemarkNode): number | null {
+  if (node.type === 'proof') return positionOf(node, node.proves.proofs)
+  return node.attachedTo ? positionOf(node, node.attachedTo.remarks) : null
+}
+
+function positionOf<T extends KbNode>(node: T, siblings: T[]): number {
+  const at = siblings.indexOf(node)
+  if (at < 0) {
+    throw new Error(`${node.type} '${node.name}' is missing from the list of the node that owns it`)
+  }
+  return at + 1
+}
+
+/**
+ * The node an index segment addresses, or undefined when it addresses none.
+ *
+ * The inverse of `kbOwnedIndex`, and it lives beside it rather than beside the route
+ * that calls it for the reason `anchorMarksTarget` does: two halves of one grammar
+ * kept apart drift.
+ *
+ * `^[1-9][0-9]*$` and nothing else, so `0`, `01`, `1.0` and ` 1` address nothing
+ * rather than becoming second spellings of a page that already has one. The segment
+ * arrives from the address bar, where anything can be typed.
+ */
+export function kbNodeAtIndex<T extends KbNode>(
+  nodes: T[],
+  segment: string | undefined,
+): T | undefined {
+  if (!segment || !/^[1-9][0-9]*$/.test(segment)) return undefined
+  return nodes[Number(segment) - 1]
+}
+
+/**
+ * The address segment of an owned node: its index, as text.
+ *
+ * The refusal is unreachable — a proof always has the theorem that owns it, and every
+ * remark call site below has already established the owner — but a `null` stringifies
+ * into a URL as the word, and a wrong address is worse than a loud one.
+ */
+function ownedIndexSegment(node: ProofNode | RemarkNode): string {
+  const index = kbOwnedIndex(node)
+  if (index === null) throw new Error(`${node.type} '${node.name}' has no owner, so it has no index`)
+  return String(index)
+}
+
 export function urlForProof(node: ProofNode): string {
-  return buildLocalizedUrl(node.locale, 'proof', node.proves.slug, node.slug)
+  return buildLocalizedUrl(node.locale, 'proof', node.proves.slug, ownedIndexSegment(node))
 }
 
 /**
@@ -102,17 +169,20 @@ export function kbUrlRef(node: KbNode): { key: UrlKey; slugPath: string[] } | nu
     case 'theorem':
       return { key: 'theorem', slugPath: [node.slug] }
     case 'proof':
-      return { key: 'proof', slugPath: [node.proves.slug, node.slug] }
+      return { key: 'proof', slugPath: [node.proves.slug, ownedIndexSegment(node)] }
     case 'remark': {
       const owner = node.attachedTo
       if (!owner) return null
       switch (owner.type) {
         case 'definition':
-          return { key: 'definition-remark', slugPath: [owner.slug, node.slug] }
+          return { key: 'definition-remark', slugPath: [owner.slug, ownedIndexSegment(node)] }
         case 'theorem':
-          return { key: 'theorem-remark', slugPath: [owner.slug, node.slug] }
+          return { key: 'theorem-remark', slugPath: [owner.slug, ownedIndexSegment(node)] }
         case 'proof':
-          return { key: 'proof-remark', slugPath: [owner.proves.slug, owner.slug, node.slug] }
+          return {
+            key: 'proof-remark',
+            slugPath: [owner.proves.slug, ownedIndexSegment(owner), ownedIndexSegment(node)],
+          }
       }
     }
   }
@@ -136,14 +206,15 @@ export function urlForKbNode(node: KbNode): string | null {
 //   book index page      reszek.{part}
 //   chapter page         szakaszok.{section}
 //                        definiciok.{d}.fogalmak.{term}
-//                        tetelek.{t}.bizonyitasok.{p}.megjegyzesek.{r}
+//                        tetelek.{t}.bizonyitasok.{i}.megjegyzesek.{j}
 //   a definition's page  fogalmak.{term}          (the page node drops out)
 //
 // Both halves are localized. The segments come from the same `containers`
 // dictionary the URL segments come from — one word, one place, so an anchor and a
-// URL for the same concept cannot drift apart — and the key is the node's `slug`.
-// A fragment is URL text a reader sees and copies, so it must read in the page's
-// language.
+// URL for the same concept cannot drift apart — and the key is the node's `slug`,
+// or, for a proof and a remark, its 1-based position in its owner's list, so that
+// the anchor and the URL address it the same way. A fragment is URL text a reader
+// sees and copies, so it must read in the page's language.
 //
 // `.` is the separator, which is why no name or slug may contain one (enforced by
 // validateIdentifiers). A `.` in an HTML id is valid and needs no URL encoding, but
@@ -158,9 +229,10 @@ const seg = (locale: string, key: ContainerKey): string => getContainerSegment(l
  * chapter instead of the node's own page.
  *
  * Recursive through the ownership chain, so a remark on a proof reads
- * `tetelek.{t}.bizonyitasok.{p}.megjegyzesek.{r}` — the same shape as its URL. An
+ * `tetelek.{t}.bizonyitasok.{i}.megjegyzesek.{j}` — the same shape as its URL. An
  * owner-less remark (permitted by the model, absent from the content) roots at its
- * own container rather than inventing a parent.
+ * own container rather than inventing a parent, and is keyed by its `name`: it holds
+ * no position anywhere, so there is no index to key it by.
  */
 export function kbAnchorPath(node: KbNode): string {
   switch (node.type) {
@@ -169,11 +241,11 @@ export function kbAnchorPath(node: KbNode): string {
     case 'theorem':
       return `${seg(node.locale, 'theorem')}.${node.slug}`
     case 'proof':
-      return `${kbAnchorPath(node.proves)}.${seg(node.locale, 'proof')}.${node.slug}`
+      return `${kbAnchorPath(node.proves)}.${seg(node.locale, 'proof')}.${ownedIndexSegment(node)}`
     case 'remark':
       return node.attachedTo
-        ? `${kbAnchorPath(node.attachedTo)}.${seg(node.locale, 'remark')}.${node.slug}`
-        : `${seg(node.locale, 'remark')}.${node.slug}`
+        ? `${kbAnchorPath(node.attachedTo)}.${seg(node.locale, 'remark')}.${ownedIndexSegment(node)}`
+        : `${seg(node.locale, 'remark')}.${node.name}`
   }
 }
 
@@ -278,15 +350,16 @@ const MARKED_ON_ARRIVAL = {
  *
  * The anchor's KIND is the container its last pair names, which is why this reads
  * the tail rather than the head: `definiciok.{d}.fogalmak.{t}` is a term inside an
- * embedded definition and `tetelek.{t}.bizonyitasok.{p}` is a proof, and it is the
+ * embedded definition and `tetelek.{t}.bizonyitasok.{i}` is a proof, and it is the
  * last segment pair that says what the reader was actually sent to.
  *
- * Every id the five builders produce is a run of `container.slug` pairs — `.` is
- * the separator and `validateIdentifiers` forbids it inside a name or a slug — so
- * an odd number of segments is not one of ours. Anything else the page happens to
- * have an id for answers false: the homepage's `#articles` and `#news` are nav
- * scroll targets rather than content references, and the dialog and form ids are
- * accessibility wiring (§6.2's inventory).
+ * Every id the five builders produce is a run of `container.key` pairs, the key
+ * being a slug, a name or an index — `.` is the separator and `validateIdentifiers`
+ * forbids it inside a name or a slug — so an odd number of segments is not one of
+ * ours. Anything else the page happens to have an id for answers false: the
+ * homepage's `#articles` and `#news` are nav scroll targets rather than content
+ * references, and the dialog and form ids are accessibility wiring (§6.2's
+ * inventory).
  *
  * `locale` is the page's, because both halves of an anchor are localized.
  */

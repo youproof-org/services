@@ -23,7 +23,7 @@ import {
 } from '@/lib/i18n/config'
 import { buildPageMeta, type OgType, type PageMetaNode } from '@/lib/i18n/metadata'
 import type { UrlKey } from '@/lib/i18n/url'
-import { urlForBook, urlForChapter, urlForKbNode, kbUrlRef } from '@/lib/content/urls'
+import { urlForBook, urlForChapter, urlForKbNode, kbUrlRef, kbNodeAtIndex } from '@/lib/content/urls'
 import { kbExcerpt } from '@/lib/content/kb-excerpt'
 import { kbNodes, kbNodeTitle, kbPageExists } from '@/lib/content/graph'
 import { getBookRomanIndex, getChapterIndex } from '@/lib/utils/index-helpers'
@@ -184,9 +184,10 @@ function resolvePath(locale: string, path: string[]): Resolved | null {
  * takes them apart, and `generateStaticParams` enumerates them by asking
  * `urlForKbNode` rather than by assembling them again.
  *
- * A node is looked up within its owner, not globally: a proof's slug is unique
- * among the proofs of its theorem and a remark's among the remarks of its owner
- * (see validateIdentifiers), so the owner is what makes the lookup unambiguous.
+ * A node is looked up within its owner, not globally: a definition and a theorem
+ * are found by slug, and a proof and a remark by their position in the owner's list,
+ * which is what their last segment is. Either way the owner is what makes the lookup
+ * unambiguous.
  */
 function resolveKbEntity(
   graph: ContentGraph,
@@ -199,7 +200,7 @@ function resolveKbEntity(
     if (!definition) return null
     if (rest.length === 1) return kbEntity(graph, definition)
     if (rest.length === 3 && resolveContainerKey(locale, rest[1]) === 'remark') {
-      return kbEntity(graph, findKbBySlug(definition.remarks, locale, rest[2]))
+      return kbEntity(graph, findByIndex(definition.remarks, locale, rest[2]))
     }
     return null
   }
@@ -210,14 +211,14 @@ function resolveKbEntity(
     if (rest.length === 1) return kbEntity(graph, theorem)
     const ownedKey = rest.length >= 3 ? resolveContainerKey(locale, rest[1]) : null
     if (rest.length === 3 && ownedKey === 'remark') {
-      return kbEntity(graph, findKbBySlug(theorem.remarks, locale, rest[2]))
+      return kbEntity(graph, findByIndex(theorem.remarks, locale, rest[2]))
     }
     if (ownedKey === 'proof') {
-      const proof = findKbBySlug(theorem.proofs, locale, rest[2])
+      const proof = findByIndex(theorem.proofs, locale, rest[2])
       if (!proof) return null
       if (rest.length === 3) return kbEntity(graph, proof)
       if (rest.length === 5 && resolveContainerKey(locale, rest[3]) === 'remark') {
-        return kbEntity(graph, findKbBySlug(proof.remarks, locale, rest[4]))
+        return kbEntity(graph, findByIndex(proof.remarks, locale, rest[4]))
       }
     }
     return null
@@ -235,6 +236,21 @@ function findKbBySlug<T extends KbNode>(
   for (const node of nodes) {
     if (node.locale === locale && node.slug === slug) return node
   }
+}
+
+/**
+ * The same lookup for the owned types, whose segment is a position rather than a
+ * slug. `kbNodeAtIndex` holds the accepted spelling of an index, next to the builder
+ * that emits it; the locale check is the one `findKbBySlug` makes, kept because an
+ * owner's list is no more guaranteed to be single-locale than a map's values are.
+ */
+function findByIndex<T extends KbNode>(
+  nodes: T[],
+  locale: string,
+  segment: string | undefined,
+): T | undefined {
+  const node = kbNodeAtIndex(nodes, segment)
+  return node && node.locale === locale ? node : undefined
 }
 
 /**

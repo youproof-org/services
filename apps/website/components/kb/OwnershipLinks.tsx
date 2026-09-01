@@ -1,10 +1,10 @@
 import Link from 'next/link'
 import InlineText from '@/components/content/InlineText'
 import { getContentGraph } from '@/lib/content'
-import { kbNodeLabel, kbOwnership } from '@/lib/content/graph'
-import { urlForKbNode } from '@/lib/content/urls'
+import { kbNodeLabel, kbOwnedChildren, kbOwnership } from '@/lib/content/graph'
+import { kbOwnedIndex, urlForKbNode } from '@/lib/content/urls'
 import { formatLocaleLabel, getLocaleLabel, type LabelKey } from '@/lib/i18n/config'
-import type { ContentGraph, KbNode } from '@/lib/content/types'
+import type { ContentGraph, KbNode, ProofNode, RemarkNode } from '@/lib/content/types'
 import styles from './ownership-links.module.scss'
 
 interface OwnershipLinksProps {
@@ -90,12 +90,24 @@ function ownershipLinks(
   if (direction === 'up') {
     if (parent) add(parent, 'up')
   } else {
-    for (const siblings of [proofs, remarks]) {
-      siblings.forEach((child, i) => add(child, 'down', siblings.length > 1 ? i + 1 : undefined))
-    }
+    const authored = kbOwnedChildren(node)
+    for (const child of proofs) add(child, 'down', ordinalOf(child, authored.proofs))
+    for (const child of remarks) add(child, 'down', ordinalOf(child, authored.remarks))
   }
 
   return links
+}
+
+/**
+ * The number the reader sees, which is the number in the link's URL and not its
+ * place in the list of links (D6): an unpublished sibling is missing from the links
+ * and still holds its position in every address, so a rendered list of one can
+ * legitimately be "2. Bizonyítás". The "is it worth numbering at all" test reads the
+ * authored list for the same reason — a lone link labelled "Bizonyítás" pointing at
+ * `/bizonyitasok/2` is worse than one labelled "2. Bizonyítás".
+ */
+function ordinalOf(child: ProofNode | RemarkNode, authored: KbNode[]): number | undefined {
+  return authored.length > 1 ? kbOwnedIndex(child) ?? undefined : undefined
 }
 
 /**
