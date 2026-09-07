@@ -19,7 +19,13 @@ export default function robots(): MetadataRoute.Robots {
   }
 
   return {
-    rules: { userAgent: '*', allow: '/' },
+    // The `*.txt` files are Next's RSC payloads: a second, complete copy of every
+    // page's content, fetched only by a client-side navigation and linked from
+    // nothing. Keeping them out of a crawl costs a reader nothing and removes
+    // ~21 MiB of duplicate content. The pattern nominally covers `robots.txt`
+    // itself, which is harmless — a crawler fetches it before it has any rules to
+    // apply — and the sitemaps are `.xml`.
+    rules: { userAgent: '*', allow: ['/'], disallow: ['/*.txt'] },
     sitemap: `${SITE_URL}/sitemap.xml`,
   }
 }
