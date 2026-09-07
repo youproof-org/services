@@ -157,6 +157,48 @@ markup to this rule, and `scripts/check-anchors.mjs` reads hrefs out of the payl
 as well as the markup, which is what keeps the deferred rows' fragment targets
 checked.
 
+### The structured data a knowledge-base page carries
+
+What the markup states in Hungarian prose and CSS classes, every knowledge-base page
+also states in a form that needs no inference: one `application/ld+json` block,
+holding a single `@graph` of nodes whose `@id`s are the canonical URLs of the things
+they describe (`lib/content/structured-data.ts` builds it,
+`components/kb/StructuredData.tsx` renders it, and a browser neither executes nor
+draws it). An entity page describes itself as a `WebPage` whose main entity is a
+`CreativeWork` — carrying the Wikidata concept URI for "theorem", "proof" or
+"mathematical definition" as its `additionalType`, because schema.org has no type for
+any of them — plus its `BreadcrumbList`, `Chapter` and `Book` stubs for the place in
+the narrative it was lifted from, and a `DefinedTerm` for each term it introduces. The
+four index pages are `CollectionPage`s: the definition and theorem indexes over an
+`ItemList` that is named and counted but whose members are not enumerated, the
+glossary over the `DefinedTermSet` those terms belong to, and the knowledge-base root
+over nothing but its trail. The locale root carries the two site-scope nodes,
+`Organization` and `WebSite`, that every other page's `isPartOf` points at. That is 542
+blocks in a full export: 537 entity pages, the 4 index pages, and the locale root.
+
+Two rules govern what may go in. It is **derived, never authored** — every string
+comes from the graph through the same helpers the visible page uses, so no content
+file will ever grow a `jsonld:` field and the block cannot disagree with the page it
+sits on. And it states **outgoing edges only**: no page declares what cites it, for
+the same reason the inbound lists are held out of the markup above. The whole graph is
+still recoverable in both directions by reading the pages, and the busiest page's
+block stays a couple of kilobytes instead of a couple of hundred.
+`scripts/check-structured-data.mjs` holds the export to both — it parses every block,
+requires exactly one per page that serves the entity panel, requires each `@id` to be
+declared once, resolves every address on our own origin against the files the export
+actually contains, and rejects an edge the page's own markup does not already make,
+which is what an inbound reference would be.
+
+`llms.txt` is the other machine-facing artefact of this kind and works the same way: a
+short curated map of the site written from the graph at prebuild by
+`scripts/gen-llms-txt.mjs`, shipped as an ordinary file in `public/`, and checked
+after the build by `scripts/check-llms-txt.mjs` — every link resolves in the export
+and every count in it is re-derived from the graph, because a generated file whose
+generator stopped running looks exactly like one that is current. On production it is
+also the one `.txt` path `app/robots.ts` allows: everything else matching `/*.txt` is
+disallowed, because that is how a page's RSC payload is served and it is a second
+complete copy of the page rather than a document worth indexing.
+
 <a id="anchor-rule"></a>
 ## Anchor rule
 

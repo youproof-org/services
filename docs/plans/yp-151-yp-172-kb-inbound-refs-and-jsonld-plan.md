@@ -560,14 +560,72 @@ follow-up is simply done, and this plan is where that is recorded.
 | the rows still arrive on open | the existing `e2e/kb-backlinks.test.ts` suite, unchanged in its with-JavaScript half: 236 rows on `gyuru-test`, the tree's depths, the counts, the ordering |
 | the arrival highlight still works | `e2e/kb-highlight.test.ts` — a row followed still lands with the parameter |
 | no-JavaScript pages are not broken | `e2e/kb-sweep.test.ts`, reworked: the three sections are hidden or carry their line, and nothing else about the page changes |
-| every page has exactly one valid JSON-LD block | postbuild gate: parse it, one script per page, `@context` present |
-| the ids join up | postbuild gate: every absolute `@id`/`item`/`citation` URL either exists in the export or is a fragment on the page that declares it — the shape of `check-anchors.mjs`, over JSON instead of hrefs |
-| the vocabulary is right | Google Rich Results Test and validator.schema.org on one page of each kind, on staging, by hand |
+| every page has exactly one valid JSON-LD block | postbuild gate `scripts/check-structured-data.mjs`: parse it, one script per page, `@context` present |
+| the ids join up | the same gate: every absolute `@id`/`item`/`citation`/`url` URL on our own origin resolves to a file in the export — the shape of `check-anchors.mjs`, over JSON instead of hrefs. The "or it is a fragment on the page that declares it" alternative is not implemented: read literally it is subsumed (the page being read is in the export by definition), and read loosely it would exempt every `#theorem` and `#breadcrumb` id from the base check, which is the drift the rule exists to catch. Off-origin URLs — the four Wikipedia and OEIS references the prose makes — are counted and skipped |
+| the vocabulary is right | Google Rich Results Test and validator.schema.org on one page of each kind, on staging, by hand — the checklist is §8.1, and it is **still outstanding** |
 | the mathematics survives extraction | a postbuild check that every `<span class="katex">` in the export carries an `<annotation encoding="application/x-tex">`, and that a tag-strip of one known formula contains its authored LaTeX verbatim |
 | the page still looks the same | the e2e suite, plus one screenshot comparison on a math-dense chapter — the MathML must stay clipped |
 | `llms.txt` is true | postbuild gate: it exists, every link in it resolves to a file in the export, and every count in it matches the graph |
 | `llms.txt` is reachable | `curl` it on staging, and check `robots.txt` allows it while a page's `.txt` payload is disallowed |
 | the byte effect | re-run §2's measurements and write the numbers into §10 |
+
+### 8.1 The manual validation pass — **not done**
+
+Everything else in the table is automated. This one is not, and cannot be: the two
+tools are hosted, they need a reachable URL or a paste box, and what they check is
+whether the vocabulary says what we meant — which is a judgement, not an assertion.
+`scripts/check-structured-data.mjs` deliberately stops short of it (its own header
+says so). **Status: outstanding.** It is the one item of phase 6 that is not finished,
+and it is a few minutes' work for a person with a browser once the branch is on
+staging.
+
+**Before you start.** Staging is `noindex` and its `robots.txt` is `Disallow: /`, so
+the Rich Results Test's *URL* mode will report the page as unavailable to Google. Use
+its **Code** tab instead: open the page, view source, copy the contents of the
+`<script type="application/ld+json">` element, and paste that. `validator.schema.org`
+has the same choice and the same reason to prefer the paste box. Run URL mode against
+production instead, after release, as a separate confirmation that the deployed bytes
+are the ones that were validated.
+
+Eight pages, one per kind the builder has a branch for:
+
+| # | page | kind | what the block should hold |
+|---|---|---|---|
+| 1 | `/hu/tudasbazis/tetelek/kis-fermat-tetel` | theorem | `WebPage` → `CreativeWork` (Wikidata Q65943), `hasPart` its proofs and remarks, `citation`, `Chapter` + `Book`, `BreadcrumbList` |
+| 2 | `/hu/tudasbazis/tetelek/kis-fermat-tetel/bizonyitasok/1` | proof | `CreativeWork` (Q11538) whose `isPartOf` is the theorem |
+| 3 | `/hu/tudasbazis/tetelek/kis-fermat-tetel/megjegyzesek/1` | remark | a `CreativeWork` with **no** `additionalType`, and the off-site `citation`s |
+| 4 | `/hu/tudasbazis/definiciok/oszthatosag` | definition with terms | `CreativeWork` (Q114425676), `about` + `teaches`, and four `DefinedTerm`s whose `inDefinedTermSet` is the glossary |
+| 5 | `/hu/tudasbazis/tetelek` | index | `CollectionPage` → `ItemList`, named and counted, members not enumerated |
+| 6 | `/hu/tudasbazis/fogalmak` | glossary | `CollectionPage` → `DefinedTermSet` |
+| 7 | `/hu/tudasbazis` | knowledge-base root | `CollectionPage` with its trail and nothing else |
+| 8 | `/hu` | locale root | `Organization` + `WebSite`, and the `logo` |
+
+**Google Rich Results Test** — <https://search.google.com/test/rich-results>
+
+- [ ] Pages 1–7: **Breadcrumbs** is detected as one valid item, with **0 errors**.
+- [ ] Page 8: **0 errors**. A `Logo` item may or may not be detected; either is fine,
+      the `Organization` node is there for consumers rather than for a rich result.
+- [ ] Every page: no item is reported *invalid*. "No items detected" for
+      `CreativeWork`, `ItemList` or `DefinedTerm` is **expected and not a failure** —
+      the tool only reports the types Google has a rich result for, and none of those
+      do. This is the trap to avoid reading as a problem.
+- [ ] Any warning is written down here with a decision beside it.
+
+**`validator.schema.org`** — <https://validator.schema.org/>
+
+- [ ] All eight pages: **0 errors**.
+- [ ] Every warning is one we chose. §7 of the [JSON-LD
+      design](yp-151-yp-172-kb-jsonld-structure-sub-plan.md#7-what-we-leave-out-and-why)
+      lists what is deliberately absent, so a warning about a missing optional property
+      is expected; a warning about a property used on a type that does not take it is a
+      finding, and belongs in §10 of the design or in a fix.
+- [ ] The Wikidata `additionalType` URIs are accepted as written —
+      `http://www.wikidata.org/entity/…`, `entity` not `wiki`, `http` not `https`
+      ([§6 of the design](yp-151-yp-172-kb-jsonld-structure-sub-plan.md#6-the-type-mapping-and-the-wikidata-uris)
+      has the reasoning; a validator that rewrites them is telling us something).
+
+Record the outcome in this section: eight lines, page and verdict. If nothing is
+wrong, that is still the record that it was looked at.
 
 ---
 
