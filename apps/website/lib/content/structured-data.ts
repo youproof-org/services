@@ -1,9 +1,16 @@
 import type { BreadcrumbItem } from '@/components/layout/Breadcrumb'
-import { getLocaleConfig } from '@/lib/i18n/config'
-import { absoluteUrl, pageTitleOf, toIsoTime } from '@/lib/i18n/metadata'
+import { getLocaleConfig, getLocaleLabel, type LabelKey } from '@/lib/i18n/config'
+import {
+  OG_IMAGE_DEFAULT,
+  SITE_URL,
+  absoluteUrl,
+  pageTitleOf,
+  toIsoTime,
+} from '@/lib/i18n/metadata'
 import { kbNodeTitle, kbOwnership } from './graph'
-import { kbEntityBreadcrumbs } from './kb-breadcrumbs'
+import { kbEntityBreadcrumbs, kbListBreadcrumbs, type KbListPage } from './kb-breadcrumbs'
 import { kbExcerpt } from './kb-excerpt'
+import { kbPublishedCount } from './kb-sections'
 import { keyForKbNode } from './keys'
 import { contentLastmod, kbLastmodKey } from './lastmod'
 import type { BookNode, ChapterNode, ContentGraph, KbNode, TermDefinition } from './types'
@@ -13,8 +20,11 @@ import {
   termAnchorId,
   urlForBook,
   urlForChapter,
+  urlForDefinitionsIndex,
   urlForGlossary,
   urlForKbNode,
+  urlForKbRoot,
+  urlForTheoremsIndex,
 } from './urls'
 
 /**
@@ -56,12 +66,11 @@ import {
  *
  * ## How this file grows
  *
- * One exported builder per page kind, over shared node builders. The knowledge base
- * has eight page kinds: the four entity kinds this file serves today, and the four
- * list pages (the root, the two indexes, the glossary), which are the same `WebPage`
- * and `BreadcrumbList` nodes with `CollectionPage` in place of `WebPage` and an
- * `ItemList` or `DefinedTermSet` as the main entity. The site-level `Organization`
- * and `WebSite` nodes are another such builder, one page only.
+ * One exported builder per page kind, over shared node builders. Three of them exist:
+ * `kbEntityStructuredData` for the four entity kinds, `kbListStructuredData` for the
+ * four list pages — the same page-and-trail pair with `CollectionPage` in place of
+ * `WebPage` and an `ItemList` or a `DefinedTermSet` as the main entity — and
+ * `siteStructuredData` for the two site-scope nodes, which one page carries.
  *
  * A whole-graph projection — every entity, term, chapter and book in a single
  * document — is the same node builders walked over `graph` instead of over one page,
@@ -176,9 +185,13 @@ const ENTITY_FRAGMENT = {
 /** The trail, which is a thing on the page rather than the page. */
 const BREADCRUMB_FRAGMENT = 'breadcrumb'
 
-/** The site, and the vocabulary its terms belong to — both named once, site-wide. */
+/** The site, its publisher, and the vocabulary its terms belong to — each named once, site-wide. */
 const WEBSITE_FRAGMENT = 'website'
+const ORGANIZATION_FRAGMENT = 'organization'
 const GLOSSARY_FRAGMENT = 'glossary'
+
+/** The list an index page is a browsing surface over, named on that page. */
+const LIST_FRAGMENT = 'list'
 
 /** The canonical absolute URL of a knowledge-base page — the page's own `@id`. */
 function kbPageId(node: KbNode): string {
@@ -230,6 +243,15 @@ export function siteId(): string {
   return fragmentId(absoluteUrl('/'), WEBSITE_FRAGMENT)
 }
 
+/**
+ * Who publishes the site. Origin-rooted for the reasons `siteId` gives, and for one
+ * more of its own: a publisher is not a property of a locale, so naming it after
+ * `/hu` would give a second locale a second publisher.
+ */
+export function organizationId(): string {
+  return fragmentId(absoluteUrl('/'), ORGANIZATION_FRAGMENT)
+}
+
 /** The glossary as a controlled vocabulary — what every `DefinedTerm` belongs to. */
 export function glossaryId(locale: string): string {
   return fragmentId(absoluteUrl(urlForGlossary(locale)), GLOSSARY_FRAGMENT)
@@ -259,17 +281,26 @@ function oneOrMany(ids: string[]): JsonLdValue {
  * Nothing here is new information — `<title>`, `<meta name="description">` and
  * `<link rel="canonical">` already say it. It is worth the bytes because the other
  * nodes hang off it: `mainEntity` is what joins a page to the work it documents.
+ *
+ * `type` is `CollectionPage` on a page whose subject is a set of other pages, which
+ * is the one distinction schema.org draws between our two families of page and the
+ * only difference between them here.
+ *
+ * `mainEntity` is optional because one page has no single subject: the
+ * knowledge-base root carries three ways in rather than a list, and a `mainEntity`
+ * naming one of them would be false about the other two.
  */
 function webPageNode(args: {
+  type?: 'WebPage' | 'CollectionPage'
   url: string
   name: string
   description?: string
   inLanguage: string
-  mainEntity: string
+  mainEntity?: string
   breadcrumb: string
 }): JsonLdNode {
   return {
-    '@type': 'WebPage',
+    '@type': args.type ?? 'WebPage',
     '@id': args.url,
     url: args.url,
     name: args.name,
@@ -277,7 +308,7 @@ function webPageNode(args: {
     inLanguage: args.inLanguage,
     isPartOf: ref(siteId()),
     breadcrumb: ref(args.breadcrumb),
-    mainEntity: ref(args.mainEntity),
+    ...(args.mainEntity ? { mainEntity: ref(args.mainEntity) } : {}),
   }
 }
 
@@ -466,6 +497,202 @@ export function kbEntityStructuredData(graph: ContentGraph, node: KbNode): JsonL
       ...terms.map((entry) => definedTermNode(entry.id, entry.termKey, entry.term, node.locale)),
       ...(chapter ? [chapterNode(chapter), bookNode(chapter.part.book)] : []),
       breadcrumbNode(breadcrumbId, kbEntityBreadcrumbs(graph, node)),
+    ],
+  }
+}
+
+// ---------------------------------------------------------------------------
+// The list pages
+// ---------------------------------------------------------------------------
+
+/**
+ * Which page each list kind is, and what it is called — the same two facts
+ * `kb-breadcrumbs.ts` builds each list page's crumb from, so a page's `@id` and the
+ * href in its own breadcrumb trail are one string by construction.
+ *
+ * Exhaustive over `KbListPage`, so a fifth list page cannot be added without a
+ * decision about what its block says.
+ */
+const KB_LIST_PAGES = {
+  'kb-root': { url: urlForKbRoot, nameKey: 'knowledgeBase' },
+  'definitions-index': { url: urlForDefinitionsIndex, nameKey: 'definitionsIndex' },
+  'theorems-index': { url: urlForTheoremsIndex, nameKey: 'theoremsIndex' },
+  glossary: { url: urlForGlossary, nameKey: 'glossary' },
+} as const satisfies Record<KbListPage, { url: (locale: string) => string; nameKey: LabelKey }>
+
+/**
+ * "The members are in the order this page presents them, ascending."
+ *
+ * True of both indexes: `KbTypeIndexPage` sorts its rows by Hungarian title and
+ * renders them in that order, so a consumer told the order is ascending and then
+ * given the anchors in document order gets the same sequence twice.
+ */
+const ASCENDING = 'https://schema.org/ItemListOrderAscending'
+
+/**
+ * The index of one entity type, named and counted — deliberately **not** enumerated.
+ *
+ * Every other node in this file states something the markup only implies. A list of
+ * the members would be the exception: the class membership is already stated by each
+ * of those pages, in its own block, via `additionalType`; the markup already carries
+ * every title and URL as a named link in this same order; and a text extraction — the
+ * pipeline this design is written for — loses a list of named links less completely
+ * than it loses anything else on the page. Measured before it was dropped: 34.5 KiB
+ * on the theorems index, +51% of its markup, for a second copy of what the reader can
+ * already see.
+ *
+ * What the markup does NOT give a reader without counting is how many there are, and
+ * that is the whole of what this node adds. The count comes from `kbPublishedCount`,
+ * the function the root page's cards and the index page's own count line are built
+ * from, so the number here cannot be one a reader can contradict by scrolling.
+ */
+function itemListNode(id: string, name: string, numberOfItems: number): JsonLdNode {
+  return {
+    '@type': 'ItemList',
+    '@id': id,
+    name,
+    numberOfItems,
+    itemListOrder: ASCENDING,
+  }
+}
+
+/**
+ * The glossary as the one controlled vocabulary the site's terms belong to.
+ *
+ * **No `hasDefinedTerm`**, for the mirror of the reason the indexes carry no members:
+ * the set has 341 rows over 217 terms, and every one of those terms already names
+ * this set from the page that introduces it (`definedTermNode`). Membership is one
+ * statement either way, and the side with 217 statements to make is the wrong side to
+ * make them from — roughly 30 KiB of JSON on a page that serves 106 KiB of markup.
+ *
+ * This node is what makes those 217 references resolve: without it, every
+ * `inDefinedTermSet` on the site points at an id nothing declares.
+ */
+function definedTermSetNode(id: string, pageUrl: string, name: string, inLanguage: string): JsonLdNode {
+  return {
+    '@type': 'DefinedTermSet',
+    '@id': id,
+    name,
+    url: pageUrl,
+    inLanguage,
+  }
+}
+
+/**
+ * The block for one of the four knowledge-base list pages.
+ *
+ * The graph it returns, in order: the page, whatever the page is a surface over, and
+ * the breadcrumb trail. Three of the four have a main entity — the two indexes name
+ * their list, the glossary names its vocabulary — and the root has none, because
+ * three cards are not a list of things.
+ *
+ * No description, unlike an entity page: all four take the locale's default
+ * description in their `<meta>`, and restating one sentence about the site on four
+ * pages describes none of them.
+ */
+export function kbListStructuredData(
+  graph: ContentGraph,
+  locale: string,
+  page: KbListPage,
+): JsonLdDocument {
+  const { url, nameKey } = KB_LIST_PAGES[page]
+  const pageId = absoluteUrl(url(locale))
+  const breadcrumbId = fragmentId(pageId, BREADCRUMB_FRAGMENT)
+  const inLanguage = getLocaleConfig(locale).htmlLang
+  const name = getLocaleLabel(locale, nameKey)
+
+  const subject = ((): JsonLdNode | undefined => {
+    switch (page) {
+      case 'kb-root':
+        return undefined
+      case 'definitions-index':
+        return itemListNode(
+          fragmentId(pageId, LIST_FRAGMENT),
+          name,
+          kbPublishedCount(graph, graph.definitions, locale),
+        )
+      case 'theorems-index':
+        return itemListNode(
+          fragmentId(pageId, LIST_FRAGMENT),
+          name,
+          kbPublishedCount(graph, graph.theorems, locale),
+        )
+      case 'glossary':
+        return definedTermSetNode(glossaryId(locale), pageId, name, inLanguage)
+    }
+  })()
+
+  return {
+    '@context': CONTEXT,
+    '@graph': [
+      webPageNode({
+        type: 'CollectionPage',
+        url: pageId,
+        name,
+        inLanguage,
+        ...(subject ? { mainEntity: subject['@id'] as string } : {}),
+        breadcrumb: breadcrumbId,
+      }),
+      ...(subject ? [subject] : []),
+      breadcrumbNode(breadcrumbId, kbListBreadcrumbs(locale, page)),
+    ],
+  }
+}
+
+// ---------------------------------------------------------------------------
+// The site
+// ---------------------------------------------------------------------------
+
+/**
+ * The two site-scope nodes: what this site is, and who publishes it.
+ *
+ * Emitted on the locale home page and nowhere else. They describe the site rather
+ * than a page, so a second copy on any other page would be the same two statements
+ * repeated several hundred times — and every knowledge-base page already reaches them
+ * by id through its `isPartOf`. This builder is what makes that id resolve.
+ *
+ * ## Two constraints a second locale would break
+ *
+ * Both ids are origin-rooted (`siteId`, `organizationId`) because they name one site
+ * and one publisher however many languages those come in. The node bodies, though,
+ * are built from one locale's configuration, and two of their keys would then be a
+ * contradiction rather than a translation:
+ *
+ *   - **`inLanguage`.** The site is Hungarian-only today, so `"hu"` is a true
+ *     statement about it. Add a second locale and two home pages would describe one
+ *     `#website` with two different languages. The key has to become a list, or move
+ *     off the node onto the pages that already each carry their own.
+ *   - **`name`.** Same shape, smaller stakes: it is the locale's `siteName`, which is
+ *     the same wordmark in every locale we would plausibly add.
+ *
+ * Written down rather than designed around, because designing for a locale that does
+ * not exist would mean choosing today between a list of one and a key on the wrong
+ * node, with nothing to check the choice against.
+ */
+export function siteStructuredData(locale: string): JsonLdDocument {
+  const config = getLocaleConfig(locale)
+  return {
+    '@context': CONTEXT,
+    '@graph': [
+      {
+        '@type': 'Organization',
+        '@id': organizationId(),
+        name: config.siteName,
+        url: SITE_URL,
+        // The generic 1200×630 social card, standing in for a logo we do not have:
+        // there is no square brand asset in the repo, and inventing one here would be
+        // a picture nobody designed. Replacing it is a one-line change once there is
+        // something to point at.
+        logo: absoluteUrl(OG_IMAGE_DEFAULT),
+      },
+      {
+        '@type': 'WebSite',
+        '@id': siteId(),
+        name: config.siteName,
+        url: SITE_URL,
+        inLanguage: config.htmlLang,
+        publisher: ref(organizationId()),
+      },
     ],
   }
 }

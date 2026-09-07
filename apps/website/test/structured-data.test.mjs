@@ -22,11 +22,29 @@ import * as breadcrumbsModule from '../lib/content/kb-breadcrumbs.ts'
 import * as keysModule from '../lib/content/keys.ts'
 
 const pick = (m) => m.default ?? m
-const { kbEntityStructuredData, kbEntityId, siteId, glossaryId } = pick(structuredDataModule)
-const { buildGraphFromRaw, kbNodeTitle } = pick(graphModule)
-const { urlForKbNode, urlForChapter, urlForBook, ownPageScope, termAnchorId } = pick(urlsModule)
-const { absoluteUrl, toIsoTime } = pick(metadataModule)
-const { kbEntityBreadcrumbs } = pick(breadcrumbsModule)
+const {
+  kbEntityStructuredData,
+  kbListStructuredData,
+  siteStructuredData,
+  kbEntityId,
+  siteId,
+  organizationId,
+  glossaryId,
+} = pick(structuredDataModule)
+const { buildGraphFromRaw, kbNodeTitle, kbPageExists } = pick(graphModule)
+const {
+  urlForKbNode,
+  urlForChapter,
+  urlForBook,
+  urlForKbRoot,
+  urlForDefinitionsIndex,
+  urlForTheoremsIndex,
+  urlForGlossary,
+  ownPageScope,
+  termAnchorId,
+} = pick(urlsModule)
+const { absoluteUrl, toIsoTime, SITE_URL, OG_IMAGE_DEFAULT } = pick(metadataModule)
+const { kbEntityBreadcrumbs, kbListBreadcrumbs } = pick(breadcrumbsModule)
 const { keyForKbNode } = pick(keysModule)
 
 import { embed, hu, narrative, raw, ref } from './support/raw-graph.mjs'
@@ -480,6 +498,246 @@ test('a node with no page has no structured data, rather than a block with a bro
   const orphan = byName(withOrphan.remarks, 'rem-arva')
   assert.equal(orphan.attachedTo, undefined)
   assert.throws(() => kbEntityStructuredData(withOrphan, orphan), /has no page URL/)
+})
+
+// ---------------------------------------------------------------------------
+// The list pages
+// ---------------------------------------------------------------------------
+//
+// Four pages, three shapes: the root is a page and a trail, the two indexes add an
+// `ItemList`, and the glossary adds the `DefinedTermSet` every term on the site
+// already points at.
+
+const LIST_PAGES = ['kb-root', 'definitions-index', 'theorems-index', 'glossary']
+const INDEX_PAGES = ['definitions-index', 'theorems-index']
+
+const listUrls = {
+  'kb-root': urlForKbRoot,
+  'definitions-index': urlForDefinitionsIndex,
+  'theorems-index': urlForTheoremsIndex,
+  glossary: urlForGlossary,
+}
+
+const listDoc = (page, graph = g) => kbListStructuredData(graph, 'hu', page)
+const listPageUrl = (page) => absoluteUrl(listUrls[page]('hu'))
+
+/** What an index page lists, counted off the graph rather than read from the builder. */
+function pagedNodeCount(graph, nodes, locale = 'hu') {
+  return [...nodes.values()].filter((n) => n.locale === locale && kbPageExists(graph, n)).length
+}
+
+const INDEXED_NODES = {
+  'definitions-index': (graph) => graph.definitions,
+  'theorems-index': (graph) => graph.theorems,
+}
+
+test('a list page is a CollectionPage naming itself, in the site, with a trail', () => {
+  for (const page of LIST_PAGES) {
+    const doc = listDoc(page)
+    assert.equal(doc['@context'], 'https://schema.org')
+    const collection = nodeOfType(doc, 'CollectionPage')
+    assert.equal(collection['@id'], listPageUrl(page))
+    assert.equal(collection.url, listPageUrl(page))
+    assert.equal(collection.inLanguage, 'hu')
+    assert.equal(collection.isPartOf['@id'], siteId())
+    assert.equal(collection.breadcrumb['@id'], `${listPageUrl(page)}#breadcrumb`)
+    // The name is the one the visible page and its own breadcrumb crumb carry.
+    const crumbs = kbListBreadcrumbs('hu', page)
+    assert.equal(collection.name, crumbs[crumbs.length - 1].label)
+  }
+})
+
+test('each list kind carries exactly the nodes its design calls for, in order', () => {
+  const shapes = {
+    'kb-root': ['CollectionPage', 'BreadcrumbList'],
+    'definitions-index': ['CollectionPage', 'ItemList', 'BreadcrumbList'],
+    'theorems-index': ['CollectionPage', 'ItemList', 'BreadcrumbList'],
+    glossary: ['CollectionPage', 'DefinedTermSet', 'BreadcrumbList'],
+  }
+  for (const page of LIST_PAGES) {
+    assert.deepEqual(listDoc(page)['@graph'].map((entry) => entry['@type']), shapes[page])
+  }
+})
+
+test('the knowledge-base root is about nothing in particular: three cards are not a list', () => {
+  const doc = listDoc('kb-root')
+  assert.equal(nodeOfType(doc, 'CollectionPage').mainEntity, undefined)
+  assert.equal(nodesOfType(doc, 'ItemList').length, 0)
+  assert.equal(nodesOfType(doc, 'DefinedTermSet').length, 0)
+})
+
+test('an index page is about its list, named by a fragment on the page', () => {
+  for (const page of INDEX_PAGES) {
+    const doc = listDoc(page)
+    const list = nodeOfType(doc, 'ItemList')
+    assert.equal(list['@id'], `${listPageUrl(page)}#list`)
+    assert.equal(nodeOfType(doc, 'CollectionPage').mainEntity['@id'], list['@id'])
+    assert.equal(list.name, nodeOfType(doc, 'CollectionPage').name)
+    assert.equal(list.itemListOrder, 'https://schema.org/ItemListOrderAscending')
+  }
+})
+
+test('an index counts what the graph gives a page to, and the two indexes count different things', () => {
+  for (const page of INDEX_PAGES) {
+    assert.equal(
+      nodeOfType(listDoc(page), 'ItemList').numberOfItems,
+      pagedNodeCount(g, INDEXED_NODES[page](g)),
+    )
+  }
+  // The fixture has two definitions and one theorem, so a swapped mapping would not
+  // pass the assertion above by accident.
+  assert.notEqual(
+    nodeOfType(listDoc('definitions-index'), 'ItemList').numberOfItems,
+    nodeOfType(listDoc('theorems-index'), 'ItemList').numberOfItems,
+  )
+})
+
+test('the count is what has a page, not what is in the map', () => {
+  // A node the narrative never introduces gets no page, so the index does not link
+  // to it and must not count it either — the same predicate the rows are gated on,
+  // and the reason this number is derived rather than written down.
+  const withUnlisted = buildGraphFromRaw(
+    raw({
+      extraDefinitions: [
+        {
+          ...hu,
+          name: 'def-harom',
+          slug: 'def-harom',
+          title: 'Harmadik definíció',
+          terms: {},
+          body: [narrative('Sehol nem szerepel.')],
+          references: {},
+          remarkSlugs: [],
+        },
+      ],
+    }),
+  )
+  const paged = pagedNodeCount(withUnlisted, withUnlisted.definitions)
+  assert.equal(withUnlisted.definitions.size, paged + 1, 'the fixture must hold a node with no page')
+  assert.equal(
+    nodeOfType(listDoc('definitions-index', withUnlisted), 'ItemList').numberOfItems,
+    paged,
+  )
+})
+
+test('an index names and counts its members without enumerating them', () => {
+  for (const page of INDEX_PAGES) {
+    const list = nodeOfType(listDoc(page), 'ItemList')
+    assert.equal(list.itemListElement, undefined)
+    // And no title of a listed node appears anywhere in the block: the markup
+    // already carries all of them, as links, in this order.
+    const serialized = JSON.stringify(listDoc(page))
+    for (const node of INDEXED_NODES[page](g).values()) {
+      assert.ok(!serialized.includes(node.slug), `${page} enumerates ${node.slug}`)
+    }
+  }
+})
+
+test('the glossary declares the vocabulary, and does not list its members', () => {
+  const doc = listDoc('glossary')
+  const set = nodeOfType(doc, 'DefinedTermSet')
+  assert.equal(set['@id'], glossaryId('hu'))
+  assert.equal(set.url, listPageUrl('glossary'))
+  assert.equal(set.inLanguage, 'hu')
+  assert.equal(set.hasDefinedTerm, undefined)
+  assert.equal(nodeOfType(doc, 'CollectionPage').mainEntity['@id'], set['@id'])
+})
+
+test('the id every DefinedTerm on the site points at is the one the glossary page declares', () => {
+  // The join the whole design turns on: 217 terms name a set from their own pages,
+  // and exactly one page declares it. Before this builder existed, that id was
+  // referenced everywhere and declared nowhere.
+  const declared = nodeOfType(listDoc('glossary'), 'DefinedTermSet')['@id']
+  let referenced = 0
+  for (const node of EVERY_KIND) {
+    for (const term of nodesOfType(docFor(node), 'DefinedTerm')) {
+      assert.equal(term.inDefinedTermSet['@id'], declared)
+      referenced += 1
+    }
+  }
+  assert.ok(referenced > 0, 'the fixture must introduce a term for this to mean anything')
+})
+
+test('a list page trail is the one the visible breadcrumb row renders', () => {
+  for (const page of LIST_PAGES) {
+    const crumbs = kbListBreadcrumbs('hu', page)
+    const list = nodeOfType(listDoc(page), 'BreadcrumbList')
+    assert.equal(list['@id'], `${listPageUrl(page)}#breadcrumb`)
+    assert.deepEqual(
+      list.itemListElement.map((item) => item.name),
+      crumbs.map((crumb) => crumb.label),
+    )
+    assert.deepEqual(
+      list.itemListElement.map((item) => item.item),
+      crumbs.map((crumb, index) =>
+        index < crumbs.length - 1 ? absoluteUrl(crumb.href) : undefined,
+      ),
+    )
+  }
+})
+
+test('a list page states no @id twice, and every id in it is absolute', () => {
+  for (const page of LIST_PAGES) {
+    const doc = listDoc(page)
+    const ids = doc['@graph'].map((entry) => entry['@id'])
+    assert.deepEqual([...new Set(ids)], ids, `${page} declares an @id twice`)
+    for (const url of everyUrlIn(doc)) {
+      assert.match(url, /^https?:\/\//, `${url} is not an absolute URL`)
+    }
+    assert.deepEqual(JSON.parse(JSON.stringify(doc)), doc)
+  }
+})
+
+// ---------------------------------------------------------------------------
+// The site nodes
+// ---------------------------------------------------------------------------
+
+test('the site names itself and its publisher, each once, by an origin-rooted id', () => {
+  const doc = siteStructuredData('hu')
+  assert.equal(doc['@context'], 'https://schema.org')
+  assert.deepEqual(doc['@graph'].map((entry) => entry['@type']), ['Organization', 'WebSite'])
+
+  const org = nodeOfType(doc, 'Organization')
+  const site = nodeOfType(doc, 'WebSite')
+  assert.equal(org['@id'], organizationId())
+  assert.equal(site['@id'], siteId())
+  assert.equal(site.publisher['@id'], org['@id'])
+  assert.match(org['@id'], /^https:\/\/[^/]+\/#organization$/)
+  assert.match(site['@id'], /^https:\/\/[^/]+\/#website$/)
+  // An origin-rooted id, not a locale's home page: one site, however many languages.
+  assert.ok(!site['@id'].includes('/hu'))
+  assert.ok(!org['@id'].includes('/hu'))
+})
+
+test('the site node is what every page\'s isPartOf has been naming all along', () => {
+  const declared = nodeOfType(siteStructuredData('hu'), 'WebSite')['@id']
+  let referenced = 0
+  for (const doc of [...EVERY_KIND.map(docFor), ...LIST_PAGES.map((page) => listDoc(page))]) {
+    const page = doc['@graph'][0]
+    assert.equal(page.isPartOf['@id'], declared, `${page['@id']} is part of something else`)
+    referenced += 1
+  }
+  assert.equal(referenced, EVERY_KIND.length + LIST_PAGES.length)
+})
+
+test('the site nodes carry the locale root\'s language, url and stand-in logo', () => {
+  const doc = siteStructuredData('hu')
+  const org = nodeOfType(doc, 'Organization')
+  const site = nodeOfType(doc, 'WebSite')
+  assert.equal(org.url, SITE_URL)
+  assert.equal(site.url, SITE_URL)
+  assert.equal(org.logo, absoluteUrl(OG_IMAGE_DEFAULT))
+  assert.equal(org.name, site.name)
+  assert.equal(site.inLanguage, 'hu')
+})
+
+test('no other page declares the site nodes; they reference them', () => {
+  // Two statements repeated on 541 pages would be 541 chances to disagree, and the
+  // ids are what make one declaration reach all of them.
+  for (const doc of [...EVERY_KIND.map(docFor), ...LIST_PAGES.map((page) => listDoc(page))]) {
+    assert.deepEqual(nodesOfType(doc, 'WebSite'), [])
+    assert.deepEqual(nodesOfType(doc, 'Organization'), [])
+  }
 })
 
 /** The chapter the narrative introduces a node in, read off the graph rather than named. */
