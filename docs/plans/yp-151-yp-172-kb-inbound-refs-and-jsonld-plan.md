@@ -233,6 +233,40 @@ served HTML?" stays readable off a single constant.
   capture phase for `data-highlight-fqn`, precisely because it could not be handed a
   handler by a server-rendered row. A row that appears later is still a row it sees.
 
+### 4.4 What it actually saved, measured
+
+Measured on the local export after phase 2, the same way §2.1 was measured: *markup*
+is a page's served bytes minus its `self.__next_f` script elements, over all 588 HTML
+files the build produces.
+
+| | before phase 2 | after phase 2 |
+|---|---|---|
+| markup, all 588 HTML files | 55.53 MiB | **50.31 MiB** (−5.22 MiB, −9.4%) |
+| backlink rows in the markup | 14417 | **3515** |
+| the same rows in the RSC payload | 14401 | 14401 — unchanged, as §4.1 A predicted |
+| `gyuru-test` served bytes | 1359614 | **924870** (−32.0%) |
+| `gyuru-test` backlink rows in the markup | 891 | **7** |
+
+Both columns are measured on a build that already carries the MathML of phase 1a, so
+the difference is phase 2's alone.
+
+**The 3515 rows that stay are all `reference` panels** — one row each, naming an
+outgoing target the body already links to (§3.3), rendered by the same component from
+the same stylesheet. That is why the gate §8 describes as "no `backlinks-panel_link`
+remains" is not the gate that was built: as written it would fail on a correct
+export. `scripts/check-deferred-panels.mjs` scopes the rule by `data-kb-panel-kind`
+instead, and requires the reference and context panels to still have their content —
+so a change that emptied every panel on the site fails it rather than passing.
+
+A second thing the measurement turned up: `check-anchors.mjs` went from checking
+24353 fragment links to 20455, because the deferred rows' hrefs left the markup with
+the rows. They did not leave the export — they are in the payload, which is where the
+check now reads them too, so both channels are covered (44808 links, 20455 in the
+markup and 24353 in the payload).
+
+The whole-export figures of §2 are not rewritten here; that is phase 7's job, and it
+has the MathML half to fold in as well.
+
 ---
 
 ## 5. The second half: structured data for machines
@@ -522,7 +556,7 @@ follow-up is simply done, and this plan is where that is recorded.
 
 | what | how |
 |---|---|
-| the rows are gone from the markup | strip `self.__next_f` scripts from every built page, then assert no `backlinks-panel_link` remains — the same measurement §2.1 was made with, as a postbuild gate |
+| the rows are gone from the markup | strip `self.__next_f` scripts from every built page, then assert the sections whose `data-kb-panel-kind` is deferred carry nothing but the no-JavaScript line, while the ones that are not deferred still carry their content — `scripts/check-deferred-panels.mjs`. **Not** "no `backlinks-panel_link` remains", which was this row's first wording and would fail on a correct export: §4.4 has the 3515 legitimate ones and the reason |
 | the rows still arrive on open | the existing `e2e/kb-backlinks.test.ts` suite, unchanged in its with-JavaScript half: 236 rows on `gyuru-test`, the tree's depths, the counts, the ordering |
 | the arrival highlight still works | `e2e/kb-highlight.test.ts` — a row followed still lands with the parameter |
 | no-JavaScript pages are not broken | `e2e/kb-sweep.test.ts`, reworked: the three sections are hidden or carry their line, and nothing else about the page changes |

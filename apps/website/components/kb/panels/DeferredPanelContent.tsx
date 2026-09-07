@@ -20,7 +20,7 @@ import { useState, type ReactNode } from 'react'
  * `tudasbazis/definiciok/gyuru-test`, went from 891 backlink rows in its markup to
  * 7 and from 1,359,614 to 924,870 served bytes, while its payload kept all 891 rows
  * and grew by 526 bytes. Across all 588 pages the markup fell from 55.53 MiB to
- * 50.27 MiB. The 7 that stay are `panels/ReferencePanel.tsx`, which wears the same
+ * 50.31 MiB. The 7 that stay are `panels/ReferencePanel.tsx`, which wears the same
  * stylesheet and is not an inbound list.
  *
  * **Why anything is deferred at all.** An inbound-reference list is the transpose

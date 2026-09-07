@@ -133,6 +133,30 @@ is the last layer — it is the only one that sees whole-path links, which
 `check-anchors` does not validate (see
 [quality gates](quality-gates-and-artifacts.md)).
 
+### What an entity page serves in its markup, and what it does not
+
+Anything a crawler should follow is in the served HTML, with one exception: an
+inbound-reference list. The three panel contents that are such a list — `incoming`
+(the whole entity), `term` (one selected term) and `claim` (one selected claim) —
+are still built on the server and still travel in the RSC payload, but they are held
+out of the HTML pass until the reader opens the panel
+(`components/kb/panels/DeferredPanelContent.tsx`, wired in
+`components/kb/Panel.tsx`; `DEFERRED_PANEL_KINDS` in
+`components/kb/KbEntityPage.tsx` is the one place that says which contents those
+are). They are the transpose of edges the citing pages already state in their own
+markup, so serving them here repeats what a crawler can already read, at length: on
+the busiest entity page they were most of the document. Everything else is served as
+it always was — the body, the ownership chain, the `context` panel, the `reference`
+panels, the indexes, the glossary, and every section's own shell, heading and data
+attributes. Two consequences follow. A reader with no JavaScript loses the three
+lists and is given one sentence saying so in the `incoming` section, rather than the
+same sentence under every empty section (`KbPanelSection.noJsNote` and `noJsCss` in
+`components/kb/Panel.tsx`). And the rows have changed channel rather than left the
+export, so both channels are gated: `scripts/check-deferred-panels.mjs` holds the
+markup to this rule, and `scripts/check-anchors.mjs` reads hrefs out of the payload
+as well as the markup, which is what keeps the deferred rows' fragment targets
+checked.
+
 <a id="anchor-rule"></a>
 ## Anchor rule
 

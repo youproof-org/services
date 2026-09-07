@@ -20,8 +20,9 @@ import { collectConsoleNoise } from './support/console-noise'
  * **No JavaScript** is also checked per content type in `kb-panel`, `kb-select`,
  * `kb-backlinks`, `kb-reference` and `kb-chrome`, each against the content that phase
  * added. What is here is the whole-page census — the body, the ownership chain, all
- * five panel kinds and their counts on one page — plus the list pages, which have no
- * client behaviour to lose but are the other half of "every page degrades".
+ * five panel kinds and their counts on one page, which of them carry their content
+ * and which are dropped with one line in their place — plus the list pages, which
+ * have no client behaviour to lose but are the other half of "every page degrades".
  *
  * **Reduced motion** is NOT re-tested here. All three animations already have a
  * frame-level test in the suite that owns them, and re-asserting them in a fifth file
@@ -96,6 +97,22 @@ const PANEL_TITLE = `${PANEL} .panel_title`
 const SECTION = `${PANEL} [data-kb-panel-kind]`
 const INCOMING_ROW = `${PANEL} [data-kb-panel-kind="incoming"] .backlinks-panel_link`
 const CONTEXT_LINK = `${PANEL} [data-kb-panel-kind="context"] .panel_contextLink`
+/**
+ * The one line a reader with no JavaScript is given in the inbound lists' place.
+ * `Panel.tsx` puts it in the `incoming` section only, so it speaks for the term and
+ * claim sections as well as for that one.
+ */
+const NO_JS_NOTE = `${PANEL} .panel_noJsNote`
+/**
+ * The panel contents held out of the served HTML until the reader opens them —
+ * `DEFERRED_PANEL_KINDS` in `components/kb/KbEntityPage.tsx`, and the count of each
+ * on this page. `incoming` keeps its box because it carries the line; the other two
+ * have nothing to show and `noJsCss` drops them outright.
+ */
+const DROPPED_WITHOUT_JS = [
+  ...Array<string>(TERM_PANELS).fill('term'),
+  ...Array<string>(CLAIM_PANELS).fill('claim'),
+].sort()
 const FAB = '.consent-fab_fab'
 const MARKER = '[data-kb-arrival-marker]'
 const ROW = '[data-filter-text]'
@@ -244,7 +261,7 @@ test.describe('print', () => {
 test.describe('without JavaScript', () => {
   test.use({ javaScriptEnabled: false })
 
-  test('one entity page shows its body, its chain and all five panel contents inline', async ({
+  test('one entity page shows its body, its chain and every served panel content inline', async ({
     page,
   }) => {
     await page.goto(ENTITY)
@@ -281,20 +298,35 @@ test.describe('without JavaScript', () => {
     ] as const) {
       await expect(page.locator(`${PANEL} [data-kb-panel-kind="${kind}"]`)).toHaveCount(count)
     }
-    // Not one of them is hidden — asked of all 23 at once rather than one at a time,
-    // so a section that stayed hidden cannot pass by being skipped.
+    // Which of them are on screen, asked of all 23 at once rather than one at a time,
+    // so a section that stayed hidden cannot pass by being skipped. The nine that are
+    // not are exactly the term and claim sections: their content is an inbound
+    // reference list, which is produced when the reader opens the panel and so is not
+    // here to reveal, and `noJsCss` drops an empty box rather than showing it.
     expect(
       await sections.evaluateAll((nodes) =>
-        nodes.filter((node) => (node as HTMLElement).offsetParent === null).length,
+        nodes
+          .filter((node) => (node as HTMLElement).offsetParent === null)
+          .map((node) => node.getAttribute('data-kb-panel-kind'))
+          .sort(),
       ),
-    ).toBe(0)
+    ).toEqual(DROPPED_WITHOUT_JS)
 
-    // …and the contents inside them, not merely the boxes: the three counts this
-    // phase records, and the context chain's links.
-    await expect(page.locator(INCOMING_ROW)).toHaveCount(incomingRows(ENTITY))
-    await expect(page.locator(INCOMING_ROW).first()).toBeVisible()
+    // …and the contents inside them, not merely the boxes. The context chain's links
+    // are served as they always were; the inbound rows are not served at all, and one
+    // line stands for all three lists that are missing — once on the page, in the
+    // `incoming` section, rather than once per empty section.
     await expect(page.locator(CONTEXT_LINK)).toHaveCount(CONTEXT_LEVELS)
     await expect(page.locator(CONTEXT_LINK).first()).toBeVisible()
+    // The graph says this page has an inbound list, so 0 rows is the deferral rather
+    // than an entity nothing cites.
+    expect(incomingRows(ENTITY)).toBeGreaterThan(0)
+    await expect(page.locator(INCOMING_ROW)).toHaveCount(0)
+    await expect(page.locator(NO_JS_NOTE)).toHaveCount(1)
+    await expect(page.locator(NO_JS_NOTE)).toBeVisible()
+    await expect(
+      page.locator(`${PANEL} [data-kb-panel-kind="incoming"] .panel_noJsNote`),
+    ).toHaveCount(1)
 
     // The markup is unchanged by all this: the sections still carry `hidden`, and the
     // reveal is a stylesheet a browser with scripting enabled never parses. So a
@@ -309,6 +341,12 @@ test.describe('without JavaScript', () => {
     // them: title, its own section, the next title. The subject of a level-2 panel IS
     // its title, so a term panel that lost it would be a list of references to
     // nothing.
+    //
+    // A dropped section takes its own title down with it, which is the other half of
+    // "one line instead of 34": a term heading over nothing would ask the reader the
+    // question the missing list answers. So the pairing is asked of the sections that
+    // survive, in their own order, and the nine that do not are required to be gone at
+    // both ends.
     await expect(page.locator(PANEL_TITLE)).toHaveCount(SECTION_COUNT)
     await expect(page.locator(PANEL_HEADER)).toHaveCSS('display', 'contents')
     const pairs = await page.evaluate(
@@ -316,26 +354,42 @@ test.describe('without JavaScript', () => {
         const panel = document.getElementById(panelId)!
         const titles = [...panel.querySelectorAll<HTMLElement>(`.${titleClass}`)]
         const sections = [...panel.querySelectorAll<HTMLElement>('[data-kb-panel-kind]')]
-        return titles.map((title, index) => {
+        const all = titles.map((title, index) => {
           const titleBox = title.getBoundingClientRect()
           const sectionBox = sections[index].getBoundingClientRect()
-          const nextTitle = titles[index + 1]?.getBoundingClientRect()
           return {
+            kind: sections[index].getAttribute('data-kb-panel-kind'),
             labelled: sections[index].getAttribute('aria-labelledby') === title.id,
-            shown: titleBox.height > 0,
-            leadsIt: titleBox.bottom <= sectionBox.top,
-            andEndsBeforeTheNext: nextTitle ? sectionBox.bottom <= nextTitle.top : true,
+            // A `display: none` box measures zero at the origin, so this is the one
+            // question that has to be asked before any of the geometry below.
+            shown: titleBox.height > 0 && sectionBox.height > 0,
+            titleTop: titleBox.top,
+            titleBottom: titleBox.bottom,
+            sectionTop: sectionBox.top,
+            sectionBottom: sectionBox.bottom,
           }
         })
+        const shown = all.filter((pair) => pair.shown)
+        return {
+          count: all.length,
+          labelled: all.filter((pair) => pair.labelled).length,
+          droppedKinds: all.filter((pair) => !pair.shown).map((pair) => pair.kind).sort(),
+          placed: shown.filter(
+            (pair, index) =>
+              pair.titleBottom <= pair.sectionTop &&
+              (shown[index + 1] ? pair.sectionBottom <= shown[index + 1].titleTop : true),
+          ).length,
+          shown: shown.length,
+        }
       },
       { panelId: 'kb-panel', titleClass: 'panel_title' },
     )
-    expect(pairs).toHaveLength(SECTION_COUNT)
-    expect(
-      pairs.filter(
-        (pair) => pair.labelled && pair.shown && pair.leadsIt && pair.andEndsBeforeTheNext,
-      ),
-    ).toHaveLength(SECTION_COUNT)
+    expect(pairs.count).toBe(SECTION_COUNT)
+    // The <h2> still names its own section whether or not either is drawn.
+    expect(pairs.labelled).toBe(SECTION_COUNT)
+    expect(pairs.droppedKinds).toEqual(DROPPED_WITHOUT_JS)
+    expect(pairs.shown).toBe(SECTION_COUNT - DROPPED_WITHOUT_JS.length)
+    expect(pairs.placed).toBe(pairs.shown)
 
     // And none of the interactive layer, which is client-only by construction.
     await expect(page.locator(STACK)).toHaveCount(0)
