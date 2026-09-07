@@ -1679,10 +1679,13 @@ export function kbEntityRowLines(
  * standalone content cites a knowledge-base node today, so nothing is lost by it -
  * revisit if any ever does.
  *
- * The row's display lines are built HERE rather than in the panel, because §2.1 wants
- * these rows in the served HTML and the component that renders them is handed an
- * array of rows, not the graph: the number of a section and the theorem above a
- * proof are graph questions, and the three lists §7.2 asks for share one renderer.
+ * The row's display lines are built HERE rather than in the panel, because the
+ * component that renders them is handed an array of rows, not the graph: the number
+ * of a section and the theorem above a proof are graph questions, and the three
+ * lists §7.2 asks for share one renderer. It also keeps a row's text independent of
+ * when the row lands — these lists reach the page on open rather than in the served
+ * HTML (`components/kb/panels/DeferredPanelContent.tsx`), and the answer must not
+ * depend on that.
  */
 function backlinkRowFor(graph: ContentGraph, owner: RefOwner): BacklinkRow | null {
   switch (owner.kind) {

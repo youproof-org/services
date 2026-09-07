@@ -39,6 +39,7 @@
         "kbPanelIncoming": "Hol hivatkoznak rá",
         "kbPanelIncomingCount": "{count} hivatkozás",
         "kbPanelIncomingEmpty": "Nincs rá hivatkozás",
+        "kbPanelNoJs": "A hivatkozások listájához JavaScript szükséges. Ugyanez igaz az egyes fogalmakra és állításokra szűkített listákra is.",
         "kbBacklinkKindProof": "bizonyítás",
         "kbBacklinkKindRemark": "megjegyzés",
         "kbPanelTermSynonyms": "Szinonimák",

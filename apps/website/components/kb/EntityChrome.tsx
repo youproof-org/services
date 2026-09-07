@@ -78,9 +78,12 @@ import Panel, { scrollSelectionIntoUpperHalf, type KbPanelSection } from './Pane
  * `app/globals.scss` expresses the reveal from there — the note beside those rules
  * explains why the lift needs the page's own stacking context out of the way.
  *
- * **The panel is the exception, and it is not portalled.** §2.1 requires its
- * contents in the HTML from the first byte, and a portal renders nothing on the
- * server. So `Panel` is rendered here unconditionally — inside `<main>`, beside the
+ * **The panel is the exception, and it is not portalled.** Its section shells, its
+ * headings and every content but the inbound-reference lists belong in the HTML from
+ * the first byte, and a portal renders nothing on the server — it would take the
+ * whole panel out of the served markup, not only the part
+ * `components/kb/panels/DeferredPanelContent.tsx` deliberately holds back. So `Panel`
+ * is rendered here unconditionally — inside `<main>`, beside the
  * article, where this component itself sits — and moves its own already-rendered
  * nodes out to `<body>` on mount; see the note there. Everything below the
  * `mounted` guard is client-only by construction, and the panel is deliberately

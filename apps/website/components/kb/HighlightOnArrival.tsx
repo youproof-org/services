@@ -37,10 +37,13 @@ import { PANEL_ID } from './Panel'
  *
  * ## Why the click is intercepted here rather than by the row
  *
- * The row is server-rendered (§2.1 requires it: the rows are the inbound edges of the
- * graph and a crawler has to see them), and the panel it sits in is server-rendered
- * with it. A handler cannot be handed to it from there. So this is the same shape
- * `components/kb/EntityChrome.tsx` uses for the body's reference marks and
+ * The row is built by a server component — the graph it comes from cannot cross the
+ * client boundary — and so is the panel it sits in. A handler cannot be handed to it
+ * from there. That the row now arrives when the panel opens rather than in the served
+ * HTML (`components/kb/panels/DeferredPanelContent.tsx`) changes nothing about this:
+ * it is still markup the server produced, still without a listener of its own, and a
+ * row that appears later is still a row a listener on `document` sees. So this is the
+ * same shape `components/kb/EntityChrome.tsx` uses for the body's reference marks and
  * `components/kb/ArrivalMarker.tsx` for its fourth trigger — one listener on
  * `document`, which decides nothing until something matching is actually pressed.
  *
@@ -118,10 +121,13 @@ function sourceScope(): Element | Document {
  * twenty-two are the section's own narrative and the other thirteen were written by
  * an embedded theorem and its proof, whose rows sit under the section's in the panel.
  *
- * **Not the panel.** §2.1 puts every panel's content in the served HTML, so an entity
- * page carries a second, hidden copy of any reference inside a claim or a term panel
- * (`components/kb/panels/ClaimPanel.tsx`). Marking one would draw a rectangle around
- * a thing behind a closed sheet.
+ * **Not the panel.** A panel's content is a second, hidden copy of things the article
+ * also carries — a reference inside a Kontextus row, or inside a claim or term panel
+ * the reader has already opened (`components/kb/panels/ClaimPanel.tsx`). Marking one
+ * would draw a rectangle around a thing behind a closed sheet. The filter stays even
+ * though the inbound lists now arrive on open rather than in the served HTML: an
+ * arrival can follow an open panel on the same page, and "behind a sheet" is a fact
+ * about the DOM at the moment of marking, not about the served bytes.
  */
 function findMarks(fqn: string): ArrivalMark[] {
   const scope = sourceScope()
