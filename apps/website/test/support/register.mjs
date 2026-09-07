@@ -1,4 +1,7 @@
-// Test-only shims, loaded via `--import` before anything else.
+// Shims for everything that loads the content graph outside Next, loaded via
+// `--import` before anything else: the unit suite, the browser suite's fixture
+// derivation, and the build-time scripts that read the graph (gen-llms-txt.mjs
+// and check-llms-txt.mjs). It lives here because the suite was the first of them.
 //
 // `server-only` is not an installed package: Next resolves it at bundle time to
 // enforce that a module never reaches the client. Under plain Node nothing can
