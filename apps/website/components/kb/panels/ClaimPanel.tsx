@@ -23,7 +23,10 @@ import styles from '../panel.module.scss'
  * restatement needed an anchor namespace of its own to avoid a duplicate id.
  *
  * A server component, like every other panel content: the graph cannot cross the
- * client boundary, and §2.1 requires these rows in the served HTML.
+ * client boundary. Its rows are not in the served HTML — the same rule that takes
+ * the unfiltered list and the per-term ones out of it, since a narrowing of a
+ * transpose is still a transpose (`DEFERRED_PANEL_KINDS` in
+ * `components/kb/KbEntityPage.tsx`).
  */
 
 /**

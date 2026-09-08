@@ -76,6 +76,14 @@ export type LabelKey =
   // to the reader's question rather than a failure, which is why it is a sentence
   // and not a dash.
   | 'kbPanelIncomingCount' | 'kbPanelIncomingEmpty'
+  // The line a reader with no JavaScript is shown where the inbound-reference rows
+  // would be. Those rows are produced when the panel opens
+  // (`components/kb/panels/DeferredPanelContent.tsx`), which is the one thing that
+  // cannot happen without scripting, so the sentence is the whole answer rather than
+  // a caption above a list. It sits in the Bejövő hivatkozások section and speaks for
+  // the per-term and per-claim lists too, which are hidden outright: a page carries up
+  // to 34 of those, and one explanation per page is the point.
+  | 'kbPanelNoJs'
   // The two things that hang off a definition or a theorem, as a backlink row names
   // them on its second line: a row for a proof or a remark leads to a page whose
   // first line is its theorem's, and this is what says which of the theorem's

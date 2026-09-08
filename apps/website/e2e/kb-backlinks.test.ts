@@ -11,9 +11,12 @@ import { fixtures } from './support/fixtures'
  * pill that sits over the sheet, and does the header stay put while it does. The
  * stylesheet cannot be read for those answers.
  *
- * The rest is about what is in the served HTML: the rows are inbound edges of the
- * knowledge graph, so §2.1 puts them in the page from the first byte, and the
- * JavaScript-disabled case below is what a crawler is served.
+ * The rest is about WHEN the rows reach the page. They are the transpose of edges
+ * the citing pages already state in their own markup, so they are the one panel
+ * content held out of the served HTML until the reader opens the panel
+ * (`DEFERRED_PANEL_KINDS` in components/kb/KbEntityPage.tsx). Every assertion above
+ * the JavaScript-disabled block is therefore about a list the reader has opened;
+ * the block itself is what a crawler is served, which is the shell and one line.
  *
  * Every count comes from the content graph (`e2e/support/derive-fixtures.mjs`). A
  * deployed build drops the sources whose own page it does not generate, so the same
@@ -68,6 +71,14 @@ const ROW = '#kb-panel [data-kb-panel-kind="incoming"] .backlinks-panel_link'
 /** Only the chapters: the top level of the tree, whatever is nested under them. */
 const TOP_ROW = `${ROW}[data-backlink-depth="0"]`
 const EMPTY = '#kb-panel [data-kb-panel-kind="incoming"] .backlinks-panel_empty'
+/**
+ * The one line a reader with no JavaScript is shown in the list's place, and the
+ * text of it. `Panel.tsx` puts it in the `incoming` section and nowhere else, so it
+ * speaks for the per-term and per-claim lists too.
+ */
+const NO_JS_NOTE = '#kb-panel [data-kb-panel-kind="incoming"] .panel_noJsNote'
+const NO_JS_TEXT =
+  'A hivatkozások listájához JavaScript szükséges. Ugyanez igaz az egyes fogalmakra és állításokra szűkített listákra is.'
 /** A row's first line: the numbered name of the place it leads to. Every row has one. */
 const LABEL = `${ROW} .backlinks-panel_label`
 /** Its second line, on the proof and remark rows that have an ownership chain below them. */
@@ -394,46 +405,66 @@ test.describe('the Bejövő hivatkozások panel', () => {
 test.describe('the backlink list without JavaScript', () => {
   test.use({ javaScriptEnabled: false })
 
-  test('every row is served in the HTML, inside the page and shown inline', async ({
-    page,
-  }) => {
+  test('the section is served and shown inline; not one row of it is', async ({ page }) => {
     await page.goto(BUSIEST)
 
-    // Nothing runs here, so this is exactly what a crawler is served (§2.1/D6). The
-    // inbound edges of the graph are the reason the panel is server-rendered at all.
+    // Nothing runs here, so this is exactly what a crawler is served. The panel is
+    // still where the server put it, and still on screen rather than behind a sheet
+    // that cannot open: the page degrades to a long page with everything it has
+    // visible (`noJsCss` in components/kb/Panel.tsx, census in `e2e/kb-sweep.test.ts`).
     await expect(page.locator(`main ${PANEL}`)).toHaveCount(1)
-    // And on screen, not behind a sheet that cannot open: §2.1 asks the page to
-    // degrade to a long page with everything visible, and this is the long case
-    // (`noJsCss` in components/kb/Panel.tsx, census in `e2e/kb-sweep.test.ts`).
     await expect(page.locator(PANEL)).toBeVisible()
 
-    const rows = page.locator(ROW)
-    await expect(rows).toHaveCount(LONGEST.rows)
-    await expect(rows.first()).toBeVisible()
-    await expect(rows.last()).toBeVisible()
-    // First and last in the served order, which is the tree walked pre-order: `<li>`s
-    // with their nested `<ul>`s inside them.
-    await expect(rows.first()).toHaveAttribute('href', LONGEST.firstHref!)
-    await expect(rows.last()).toHaveAttribute('href', LONGEST.lastHref!)
-    // The grouping is served too, not something the client builds: the nesting is
-    // `<ul>`s inside `<li>`s, which is the containment a crawler reads (§2.1).
-    await expect(page.locator(TOP_ROW)).toHaveCount(LONGEST.topRows)
+    // The section's shell is served exactly as it always was — the box, its kind and
+    // the heading that names it — because holding the ROWS back is the whole of the
+    // change (`panels/DeferredPanelContent.tsx`).
+    const section = page.locator(`${PANEL} [data-kb-panel-kind="incoming"]`)
+    await expect(section).toHaveCount(1)
+    await expect(section).toBeVisible()
+    await expect(
+      page.locator(PANEL).getByRole('heading', { name: 'Hol hivatkoznak rá', exact: true }),
+    ).toBeVisible()
+
+    // …and inside it, nothing of the longest list in the build: no row, neither of a
+    // row's two display lines, no grouping, and no empty state either — the section
+    // is not answering the question, it is deferring it.
+    await expect(page.locator(ROW)).toHaveCount(0)
+    await expect(page.locator(TOP_ROW)).toHaveCount(0)
+    await expect(page.locator(LABEL)).toHaveCount(0)
+    await expect(page.locator(OWNERSHIP)).toHaveCount(0)
     await expect(
       page.locator('#kb-panel [data-kb-panel-kind="incoming"] .backlinks-panel_nested'),
-    ).toHaveCount(LONGEST.nestedRows)
-    // Both display lines are part of that served answer rather than something the
-    // client adds, and the heaviest place is named with its number.
-    await expect(page.locator(LABEL)).toHaveCount(LONGEST.rows)
-    await expect(page.locator(OWNERSHIP)).toHaveCount(LONGEST.ownershipRows)
-    await expect(rows.first().locator('.backlinks-panel_label')).toHaveText(
-      new RegExp(`^${LONGEST.firstNumberPrefix.replace(/\./g, '\\.')}\\s`),
-    )
+    ).toHaveCount(0)
+    await expect(page.locator(EMPTY)).toHaveCount(0)
+    // The graph says there are rows to give up, so the counts above are the deferral
+    // and not an entity nothing cites.
+    expect(LONGEST.rows).toBeGreaterThan(0)
+
+    // One line in their place, once on the page, and it is the reader's — a reader
+    // with JavaScript never meets it (`e2e/kb-sweep.test.ts` asserts that direction).
+    await expect(page.locator(NO_JS_NOTE)).toHaveCount(1)
+    await expect(page.locator(NO_JS_NOTE)).toBeVisible()
+    await expect(page.locator(NO_JS_NOTE)).toHaveText(NO_JS_TEXT)
+
+    // The rows left the markup, not the page: the server still built every one of
+    // them and they travel in the RSC payload, which is how they reach the browser
+    // when the panel opens. Counted over the whole document rather than the DOM the
+    // selectors above search, since a `<script>`'s contents are text.
+    const served = (await page.content()).match(/backlinks-panel_link/g) ?? []
+    expect(served.length).toBeGreaterThanOrEqual(LONGEST.rows)
   })
 
-  test('an entity nothing cites is served the empty state, not an empty list', async ({ page }) => {
+  test('an entity nothing cites is served the same one line, not the empty state', async ({
+    page,
+  }) => {
     await page.goto(NOTHING_CITES_IT)
 
-    await expect(page.locator(EMPTY)).toHaveText('Nincs rá hivatkozás')
+    // The empty state is the FIRST row of the list's answer, so it waits with the
+    // rest of it: a page with nothing to show and a page with 239 rows to show are
+    // served the same shell and the same sentence, and neither says which it is.
+    await expect(page.locator(`${PANEL} [data-kb-panel-kind="incoming"]`)).toHaveCount(1)
+    await expect(page.locator(EMPTY)).toHaveCount(0)
     await expect(page.locator(ROW)).toHaveCount(0)
+    await expect(page.locator(NO_JS_NOTE)).toHaveText(NO_JS_TEXT)
   })
 })

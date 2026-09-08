@@ -31,9 +31,13 @@ import styles from '../panel.module.scss'
  * their order for both level-2 panels; putting the same half first in each is what
  * makes a term panel and a claim panel read as one design with a different subject.
  *
- * A server component, like every other panel content and for the same two reasons:
- * the graph cannot cross the client boundary, and §2.1 requires these rows in the
- * served HTML.
+ * A server component, like every other panel content: the graph cannot cross the
+ * client boundary. The rows it builds are not in the served HTML — an
+ * inbound-reference list is the transpose of edges the citing pages already state,
+ * so all three of them reach the page when the reader opens the panel
+ * (`DEFERRED_PANEL_KINDS` in `components/kb/KbEntityPage.tsx`). A page carries one
+ * of these per term, which is why they were the second-largest share of the markup
+ * after the unfiltered list.
  */
 
 interface TermPanelProps {

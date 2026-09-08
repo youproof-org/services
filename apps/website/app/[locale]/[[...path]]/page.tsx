@@ -41,7 +41,13 @@ import KbRootPage from '@/components/kb/KbRootPage'
 import KbTypeIndexPage from '@/components/kb/KbTypeIndexPage'
 import GlossaryPage from '@/components/kb/GlossaryPage'
 import KbEntityPage from '@/components/kb/KbEntityPage'
+import StructuredData from '@/components/kb/StructuredData'
 import { kbEntityBreadcrumbs, kbListBreadcrumbs } from '@/lib/content/kb-breadcrumbs'
+import {
+  kbEntityStructuredData,
+  kbListStructuredData,
+  siteStructuredData,
+} from '@/lib/content/structured-data'
 import { homeCrumb, articlesIndexCrumb, newsletterIndexCrumb } from '@/lib/content/breadcrumbs'
 import styles from './page.module.scss'
 
@@ -444,8 +450,16 @@ export default async function LocalizedRoute({ params }: RouteProps) {
   if (!resolved) notFound()
 
   switch (resolved.kind) {
+    // The `Organization` and `WebSite` nodes, once per locale root. They describe the
+    // site rather than this page, and every other page's `isPartOf` reaches them by
+    // id — so this is the one place they are declared.
     case 'home':
-      return <RootHome locale={locale} />
+      return (
+        <>
+          <StructuredData data={siteStructuredData(locale)} />
+          <RootHome locale={locale} />
+        </>
+      )
 
     // Dead-end stubs (no all-books directory; landing pages are unlisted).
     case 'books-index':
@@ -485,44 +499,65 @@ export default async function LocalizedRoute({ params }: RouteProps) {
     // disagree about where a page sits.
     case 'kb-root':
       return (
-        <KbPageShell locale={locale} breadcrumbs={kbListBreadcrumbs(locale, 'kb-root')}>
-          <KbRootPage locale={locale} />
-        </KbPageShell>
+        <>
+          <StructuredData data={kbListStructuredData(graph, locale, 'kb-root')} />
+          <KbPageShell locale={locale} breadcrumbs={kbListBreadcrumbs(locale, 'kb-root')}>
+            <KbRootPage locale={locale} />
+          </KbPageShell>
+        </>
       )
 
     case 'definitions-index':
       return (
-        <KbPageShell locale={locale} breadcrumbs={kbListBreadcrumbs(locale, 'definitions-index')}>
-          <KbTypeIndexPage locale={locale} type="definition" />
-        </KbPageShell>
+        <>
+          <StructuredData data={kbListStructuredData(graph, locale, 'definitions-index')} />
+          <KbPageShell locale={locale} breadcrumbs={kbListBreadcrumbs(locale, 'definitions-index')}>
+            <KbTypeIndexPage locale={locale} type="definition" />
+          </KbPageShell>
+        </>
       )
 
     case 'theorems-index':
       return (
-        <KbPageShell locale={locale} breadcrumbs={kbListBreadcrumbs(locale, 'theorems-index')}>
-          <KbTypeIndexPage locale={locale} type="theorem" />
-        </KbPageShell>
+        <>
+          <StructuredData data={kbListStructuredData(graph, locale, 'theorems-index')} />
+          <KbPageShell locale={locale} breadcrumbs={kbListBreadcrumbs(locale, 'theorems-index')}>
+            <KbTypeIndexPage locale={locale} type="theorem" />
+          </KbPageShell>
+        </>
       )
 
     case 'glossary':
       return (
-        <KbPageShell locale={locale} breadcrumbs={kbListBreadcrumbs(locale, 'glossary')}>
-          <GlossaryPage locale={locale} />
-        </KbPageShell>
+        <>
+          <StructuredData data={kbListStructuredData(graph, locale, 'glossary')} />
+          <KbPageShell locale={locale} breadcrumbs={kbListBreadcrumbs(locale, 'glossary')}>
+            <GlossaryPage locale={locale} />
+          </KbPageShell>
+        </>
       )
 
     // The four entity pages are one page: the type only decides the label the
     // header carries and the glyph that closes the body (§6.1). The chain comes
     // from the node's ownership, so a remark on a proof carries the theorem and
     // the proof above it.
+    //
+    // The structured-data block sits outside the shell rather than inside `main`:
+    // it describes the page, not the page's main content region. It is built here
+    // rather than inside `KbEntityPage` because it is metadata about the document,
+    // which is this route's job — the same reason `generateMetadata` lives here and
+    // not in the component that renders the body.
     case 'definition':
     case 'theorem':
     case 'proof':
     case 'remark':
       return (
-        <KbPageShell locale={locale} breadcrumbs={kbEntityBreadcrumbs(graph, resolved.node)}>
-          <KbEntityPage node={resolved.node} />
-        </KbPageShell>
+        <>
+          <StructuredData data={kbEntityStructuredData(graph, resolved.node)} />
+          <KbPageShell locale={locale} breadcrumbs={kbEntityBreadcrumbs(graph, resolved.node)}>
+            <KbEntityPage node={resolved.node} />
+          </KbPageShell>
+        </>
       )
 
     case 'book': {

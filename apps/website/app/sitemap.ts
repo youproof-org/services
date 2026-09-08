@@ -1,8 +1,7 @@
-import { readFileSync } from 'fs'
-import path from 'path'
 import type { MetadataRoute } from 'next'
 import { getContentGraph, initContentGraph, listPublished } from '@/lib/content'
 import { kbNodes, kbPageExists } from '@/lib/content/graph'
+import { kbLastmodKey, lastmodDate, latestOf } from '@/lib/content/lastmod'
 import type { KbNode } from '@/lib/content/types'
 import { LOCALES } from '@/lib/i18n/config'
 import { buildLocalizedUrl } from '@/lib/i18n/url'
@@ -22,28 +21,10 @@ import {
 // Enumerated from the content graph at build time and emitted as a static file.
 export const dynamic = 'force-static'
 
-// Per-item `lastmod` = the source file's last git-commit date, produced by the
-// prebuild `gen-content-lastmod.mjs` step. Keyed by `type:name`. Missing/empty
-// (e.g. content dir isn't a git checkout) → no lastmod emitted. This is the
-// "content last modified" hint — distinct from `published-at` (original publish).
-const LASTMOD: Record<string, string> = (() => {
-  try {
-    return JSON.parse(readFileSync(path.join(process.cwd(), '.generated', 'content-lastmod.json'), 'utf8'))
-  } catch {
-    return {}
-  }
-})()
-const lastmodDate = (key: string): Date | undefined =>
-  LASTMOD[key] ? new Date(LASTMOD[key]) : undefined
-// Latest lastmod across a set of keys — for index pages that have no file of
-// their own (use the most recently modified listed item).
-const latestOf = (keys: string[]): Date | undefined => {
-  const ds = keys.map((k) => LASTMOD[k]).filter(Boolean).sort()
-  return ds.length ? new Date(ds[ds.length - 1]) : undefined
-}
-// A knowledge-base entity's own source file is the one carrying its `type` and
-// `name`, which is exactly the pair gen-content-lastmod.mjs keys by.
-const kbLastmodKey = (node: KbNode): string => `${node.type}:${node.name}`
+// Per-item `lastmod` comes from `lib/content/lastmod.ts`, which reads the map the
+// prebuild `gen-content-lastmod.mjs` step writes. It lives there rather than here
+// because the structured-data builder reads the same map with the same keys, and a
+// second reader that keyed it differently would silently emit nothing.
 
 // One sitemap containing every locale's URLs. Each entry is annotated with the
 // hreflang alternates for the locales that actually have the item (today: just

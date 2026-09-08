@@ -2,23 +2,33 @@
 
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import type { ChromePanelKind } from '@/lib/kb/chrome-state'
+import DeferredPanelContent from './panels/DeferredPanelContent'
 import styles from './panel.module.scss'
 
 /**
  * The entity page's panel: one sheet over the bottom half of the screen, holding
  * whichever content the reader asked for (sub-plan §6.4).
  *
- * **Every content is in the served HTML, hidden.** §2.1 makes that the rule that
- * overrides layout preference where the two conflict — the panel's contents are
- * the edges of the knowledge graph, and a crawler that cannot see them cannot see
- * the structure this work exists to expose. So the sections are rendered on the
- * server, all of them, and opening a panel unhides one. Nothing is fetched, and
- * nothing is built on the client.
+ * **Every content is rendered on the server; most of it is in the served HTML,
+ * hidden.** The panel's contents are the edges of the knowledge graph, and a
+ * crawler that cannot see them cannot see the structure this work exists to expose,
+ * so the sections are rendered on the server and opening a panel unhides one.
+ * Nothing is fetched and nothing is built on the client.
  *
- * **Hidden is for a reader who can open it.** §2.1's other half asks the page to
- * degrade to a long page with everything visible rather than a broken one, so with
- * no JavaScript the sheet is not a sheet: it is a block in the flow with every
- * section showing. See `noJsCss` below.
+ * **The exception is an inbound-reference list**, which is the transpose of edges
+ * the citing pages already state in their own markup — the `incoming`, `term` and
+ * `claim` contents. Those are still server-rendered, and still cross the boundary
+ * as props, but they are held out of the server HTML pass until the reader opens
+ * them: see `components/kb/panels/DeferredPanelContent.tsx` for how, and
+ * `DEFERRED_PANEL_KINDS` in `components/kb/KbEntityPage.tsx` for which. A section
+ * marked `deferred` is the same section either way — the shell, its heading link
+ * and its two data attributes are served as they always were.
+ *
+ * **Hidden is for a reader who can open it.** The page has to degrade to a long
+ * page with everything visible rather than a broken one, so with no JavaScript the
+ * sheet is not a sheet: it is a block in the flow with every section showing —
+ * except the deferred ones, which have nothing to show and say so once. See
+ * `noJsCss` below.
  *
  * ## Why the nodes are adopted rather than portalled
  *
@@ -70,6 +80,27 @@ export interface KbPanelSection {
   title: ReactNode
   /** Server-rendered content. A `ReactNode` so it can come from a server component. */
   content: ReactNode
+  /**
+   * Whether `content` is held out of the served HTML until the reader first opens
+   * this section (`panels/DeferredPanelContent.tsx`).
+   *
+   * Set by the caller from one list rather than decided here, so that "is this
+   * content in the served markup?" is answered in the file that builds the sections
+   * — `DEFERRED_PANEL_KINDS` in `KbEntityPage.tsx` — and not by a second copy of the
+   * rule inside the component that renders them.
+   */
+  deferred?: boolean
+  /**
+   * The line a reader with no JavaScript is shown in this section's place, already
+   * localized.
+   *
+   * Only a deferred section has anything to explain, and only one of them carries
+   * the line: the no-JavaScript stylesheet reveals every section at once, so a page
+   * with 34 of them would otherwise repeat the same sentence 34 times down the page.
+   * A deferred section without a line is hidden outright, and the one that has it
+   * speaks for the others — see `noJsCss`.
+   */
+  noJsNote?: string
 }
 
 interface PanelProps {
@@ -198,13 +229,11 @@ const useAdoptionEffect = typeof window === 'undefined' ? useEffect : useLayoutE
 /**
  * The stylesheet a reader with no JavaScript gets, and nobody else.
  *
- * §2.1 asks for two things and the sections above give only the first. Every panel
- * content is in the served HTML — that is the rule that overrides layout preference,
- * and it is met — but the paragraph after it says the page should then "degrade to a
- * long page with everything visible instead of a broken one", and a sheet fixed off
- * the bottom edge of the viewport under `visibility: hidden` is not that. Nothing on
- * the client can put it right, either: unhiding is what JavaScript does here, so for
- * a reader who has none the page has to arrive already unhidden.
+ * The page should degrade to a long page with everything visible instead of a broken
+ * one, and a sheet fixed off the bottom edge of the viewport under `visibility:
+ * hidden` is not that. Nothing on the client can put it right, either: unhiding is
+ * what JavaScript does here, so for a reader who has none the page has to arrive
+ * already unhidden.
  *
  * **Why a `<noscript>` and not a class.** It is the only mechanism that answers "no
  * JavaScript" while the document is being parsed. A `no-js` class on `<html>` would
@@ -241,12 +270,27 @@ const useAdoptionEffect = typeof window === 'undefined' ? useEffect : useLayoutE
  *     document, so the title leads its section. One rule per index, and the index
  *     count is known here: this stylesheet is built per page, for the sections that
  *     page actually has.
+ *   - **a deferred section and its title are dropped**, because there is nothing in
+ *     them to reveal: an inbound-reference list is produced when the panel opens,
+ *     which is exactly what cannot happen here. The nth-child indices are untouched
+ *     by this — `display: none` takes an element out of the flex container without
+ *     renumbering its siblings — so every surviving title still shares an `order`
+ *     with its own section and with nothing else.
+ *   - **the one line that explains the absence is unhidden.** It lives in the
+ *     `incoming` section (`KbPanelSection.noJsNote`), carries the `hidden`
+ *     attribute so a reader with JavaScript never meets it, and says the term and
+ *     claim lists are gone for the same reason — one sentence per page instead of
+ *     one per empty section.
  *
  * A browser too old for `display: contents` gets the titles as one block and the
  * contents as another — the layout this replaced, which is legible rather than
  * broken.
  */
-function noJsCss(sectionCount: number): string {
+function noJsCss(sections: readonly KbPanelSection[]): string {
+  // 1-based, to read as an `:nth-child()` argument does.
+  const emptied = sections.flatMap((section, index) =>
+    section.deferred && !section.noJsNote ? [index + 1] : [],
+  )
   return [
     `#${PANEL_ID}{position:static;height:auto;transform:none;visibility:visible;box-shadow:none;margin-top:2.5rem;padding:1.25rem 0 2rem}`,
     `#${PANEL_ID} .${styles.header},#${PANEL_ID} .${styles.body}{display:contents}`,
@@ -256,10 +300,20 @@ function noJsCss(sectionCount: number): string {
     // A title reads as the heading of what follows it, so the space goes above it.
     `#${PANEL_ID} .${styles.title}{margin:1.75rem 0 .5rem}`,
     `#${PANEL_ID} .${styles.header}>:first-child{margin-top:0}`,
+    `#${PANEL_ID} .${styles.noJsNote}{display:block}`,
     ...Array.from(
-      { length: sectionCount },
+      { length: sections.length },
       (_, index) => `#${PANEL_ID}>*>:nth-child(${index + 1}){order:${index + 1}}`,
     ),
+    // Last, and one rule for all of them: it has to beat the blanket `display:block`
+    // above, which it does on specificity as well as on order.
+    ...(emptied.length === 0
+      ? []
+      : [
+          `${emptied
+            .map((position) => `#${PANEL_ID}>*>:nth-child(${position})`)
+            .join(',')}{display:none}`,
+        ]),
   ].join('')
 }
 
@@ -337,7 +391,7 @@ export default function Panel({ sections, activeKey, activeTarget = null }: Pane
         the second.
       */}
       <noscript
-        dangerouslySetInnerHTML={{ __html: `<style>${noJsCss(sections.length)}</style>` }}
+        dangerouslySetInnerHTML={{ __html: `<style>${noJsCss(sections)}</style>` }}
       />
       <aside
         ref={rootRef}
@@ -364,23 +418,41 @@ export default function Panel({ sections, activeKey, activeTarget = null }: Pane
         </div>
 
         <div className={styles.body}>
-          {sections.map((section) => (
-            <section
-              key={sectionId(section.key, section.target)}
-              aria-labelledby={`${PANEL_ID}-title-${sectionId(section.key, section.target)}`}
-              /*
-                The two handles the build gate and the browser tests count on. §2.1
-                requires every one of these contents in the served HTML, and "every
-                term panel is there" is a count against the node's terms — so the
-                markup has to say which section is which without being parsed.
-              */
-              data-kb-panel-kind={section.key}
-              data-kb-panel-target={section.target}
-              hidden={sectionId(section.key, section.target) !== shown}
-            >
-              {section.content}
-            </section>
-          ))}
+          {sections.map((section) => {
+            const id = sectionId(section.key, section.target)
+            return (
+              <section
+                key={id}
+                aria-labelledby={`${PANEL_ID}-title-${id}`}
+                /*
+                  The two handles the build gate and the browser tests count on. Every
+                  section's shell is served whether or not its content is, and "every
+                  term panel is there" is a count against the node's terms — so the
+                  markup has to say which section is which without being parsed.
+                */
+                data-kb-panel-kind={section.key}
+                data-kb-panel-target={section.target}
+                hidden={id !== shown}
+              >
+                {section.deferred ? (
+                  <DeferredPanelContent open={id === shown}>{section.content}</DeferredPanelContent>
+                ) : (
+                  section.content
+                )}
+                {/*
+                  For a reader with no JavaScript, and for nobody else: `hidden` here
+                  and unhidden by `noJsCss` alone, which is the same mechanism the
+                  sections themselves use. Inside the section rather than beside it so
+                  that hiding the section hides its explanation with it.
+                */}
+                {section.noJsNote && (
+                  <p className={styles.noJsNote} hidden>
+                    {section.noJsNote}
+                  </p>
+                )}
+              </section>
+            )
+          })}
         </div>
       </aside>
     </>

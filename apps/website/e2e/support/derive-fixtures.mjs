@@ -24,12 +24,14 @@ import '../../scripts/lib/load-env.mjs'
 import * as graphModule from '../../lib/content/graph.ts'
 import * as urlsModule from '../../lib/content/urls.ts'
 import * as keysModule from '../../lib/content/keys.ts'
+import * as fqnModule from '../../lib/content/fqn.ts'
 import * as glossaryModule from '../../lib/content/glossary-rows.ts'
 
 const pick = (m) => m.default ?? m
 const { buildContentGraph, kbPageExists, kbNodes, kbNodeTitle, kbNodeLabel } = pick(graphModule)
-const { urlForKbNode } = pick(urlsModule)
+const { urlForKbNode, ownPageScope, termAnchorId, claimAnchorId } = pick(urlsModule)
 const { keyForKbNode } = pick(keysModule)
+const { parseFqn } = pick(fqnModule)
 const { glossaryRows } = pick(glossaryModule)
 
 const websiteRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..')
@@ -112,6 +114,46 @@ for (const node of kbNodes(graph)) {
 const backlinksOf = (entry) => graph.backlinks.get(entry.key)?.all ?? []
 
 /**
+ * The narrowed inbound lists of one entity: the rows a selected term's or a
+ * selected claim's panel shows, keyed by the ANCHOR ID of the element that selects
+ * it.
+ *
+ * Keyed by the anchor id and not by the fully qualified name `byTarget` uses,
+ * because the id is the only one of the two a browser spec can see: it is the
+ * element's `id`, the value the chrome state carries, and the `data-kb-panel-target`
+ * the section is addressed by. The two builders that produce it are imported rather
+ * than reproduced, so a change to the anchor grammar moves the fixture and the page
+ * together.
+ *
+ * Derived for the same reason every other number here is: a filtered count is a
+ * property of the content, it moves whenever anyone adds a reference, and one
+ * written into a spec is a literal that fails on a date rather than on a change.
+ */
+function filteredRowsOf(entry) {
+  const byTarget = graph.backlinks.get(entry.key)?.byTarget
+  if (!byTarget) return undefined
+  const scope = ownPageScope(entry.node)
+  const rows = {}
+  for (const [targetFqn, sources] of byTarget) {
+    const target = parseFqn(targetFqn, `backlink index of ${entry.key}`)
+    let anchor
+    if (target.kind === 'term') {
+      anchor = termAnchorId(scope, target.name, entry.node.terms?.[target.name] ?? {})
+    } else if (target.kind === 'claim') {
+      const claim = entry.node.body.find(
+        (block) => block.type === 'claim' && block.name === target.name,
+      )
+      anchor = claimAnchorId(scope, claim ?? { name: target.name })
+    } else {
+      // A reference aimed at the entity itself, which is the unfiltered list.
+      continue
+    }
+    rows[anchor] = flatten(sources).length
+  }
+  return Object.keys(rows).length > 0 ? rows : undefined
+}
+
+/**
  * The busiest list in the build. Chosen rather than named so the suite keeps
  * asserting "the long end of the range" whatever the content does; every list-shape
  * assertion is derived from whichever entity that turns out to be.
@@ -181,6 +223,13 @@ const fixtures = {
     pages
       .map((entry) => [entry.url, flatten(backlinksOf(entry)).length])
       .filter(([, rows]) => rows > 0),
+  ),
+  /**
+   * The same thing for the level-2 panels: entity URL -> selection anchor id ->
+   * rows. Read it via `filteredRows`; an absent entry is the empty state.
+   */
+  filteredRowsByUrl: Object.fromEntries(
+    pages.map((entry) => [entry.url, filteredRowsOf(entry)]).filter(([, rows]) => rows),
   ),
   lists: {
     glossaryRows: glossaryRows(graph.glossary).length,

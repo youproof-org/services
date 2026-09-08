@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import { fixtures, incomingRows } from './support/fixtures'
+import { fixtures, filteredRows, incomingRows } from './support/fixtures'
 import sharp from 'sharp'
 import { collectConsoleNoise } from './support/console-noise'
 
@@ -78,17 +78,27 @@ const PROOF = fixtures.termlessProof.url
  * unfiltered one narrowed" is only worth checking against the exact figure the index
  * holds.
  *
- * `SELECTED_TERM` is the busiest term on the busiest entity, so a filter that did
- * nothing would show the whole unfiltered list instead of 154 and a filter that
- * matched nothing would show 0. `BELOW_FOLD_TERM` is the last term in the body, 1911px down a
- * 2884px page: it is off-screen when the page opens and in the half the panel is
- * about to cover when it is pressed, which is the case §6.4's scroll exists for.
+ * All three come from the graph rather than being written down, because all three
+ * are properties of the CONTENT: anyone who cites this definition once more moves
+ * one of them, and a literal here would then fail on a date rather than on a change.
+ * `filteredRows` looks a narrowed list up by the anchor id of the element that
+ * selects it — the same id the section carries as `data-kb-panel-target` — so the
+ * fixture and the page are addressed by the same handle. The specs below still
+ * assert the RELATION the counts exist for: each filtered list is non-empty and
+ * strictly shorter than the unfiltered one, which is what "narrowed" means and what
+ * a filter that did nothing, or matched nothing, would break.
+ *
+ * `SELECTED_TERM` is the busiest term on the busiest entity, which is what makes
+ * that relation worth asserting. `BELOW_FOLD_TERM` is the last term in the body,
+ * 1911px down a 2884px page: it is off-screen when the page opens and in the half
+ * the panel is about to cover when it is pressed, which is the case §6.4's scroll
+ * exists for.
  */
 const SELECTED_TERM = 'fogalmak.gyuru'
-const SELECTED_TERM_ROWS = 154
 const BELOW_FOLD_TERM = 'fogalmak.nullgyuru'
 const SELECTED_CLAIM = 'allitasok.szorzas-disztributiv'
-const SELECTED_CLAIM_ROWS = 33
+const SELECTED_TERM_ROWS = filteredRows(ENTITY, SELECTED_TERM)
+const SELECTED_CLAIM_ROWS = filteredRows(ENTITY, SELECTED_CLAIM)
 /**
  * The unfiltered list this entity serves in THIS build. The two filtered figures above
  * are counted from `byTarget`, which the page-existence filter leaves alone at this
@@ -780,10 +790,19 @@ test.describe('Fogalmak — level 2', () => {
     ).toBeVisible()
 
     // `byTarget` for this term, and smaller than `all` — the filtered list is the
-    // unfiltered one narrowed, and both are on this page to be compared (§7.2).
+    // unfiltered one narrowed (§7.2). Both counts come from the graph, so the two
+    // bounds are what carries the claim: a filter that matched nothing would land on
+    // 0, and one that did nothing would land on the unfiltered figure.
     await expect(panelRows(page, 'term', SELECTED_TERM)).toHaveCount(SELECTED_TERM_ROWS)
-    await expect(panelRows(page, 'incoming')).toHaveCount(UNFILTERED_ROWS)
+    expect(SELECTED_TERM_ROWS).toBeGreaterThan(0)
     expect(SELECTED_TERM_ROWS).toBeLessThan(UNFILTERED_ROWS)
+    // The two lists are no longer both on the page to be compared, which is why the
+    // comparison above is between the two graph counts. Each inbound list is produced
+    // when ITS OWN section is first opened (`panels/DeferredPanelContent.tsx`), and
+    // opening this term's panel is not opening the unfiltered one — so the section
+    // that would hold 239 rows holds none. `e2e/kb-backlinks.test.ts` is where the
+    // unfiltered list is opened and counted.
+    await expect(panelRows(page, 'incoming')).toHaveCount(0)
 
     // Same rows as the unfiltered list, so the two are one list rather than two: the
     // ordering is by count descending WITHIN a level — the list is a tree, and the
@@ -927,6 +946,7 @@ test.describe('Állítások — level 2', () => {
     // the unfiltered list, in the same list markup (§7.2).
     await expect(page.locator(`${PANEL} section:not([hidden])`)).toHaveCount(1)
     await expect(panelRows(page, 'claim', SELECTED_CLAIM)).toHaveCount(SELECTED_CLAIM_ROWS)
+    expect(SELECTED_CLAIM_ROWS).toBeGreaterThan(0)
     expect(SELECTED_CLAIM_ROWS).toBeLessThan(UNFILTERED_ROWS)
     // Numbered by its position in the body, which is the number the body prints in
     // front of it — this is the fifth claim of the eight.
@@ -1009,15 +1029,18 @@ test.describe('picking one logs nothing', () => {
 test.describe('the level-2 panels without JavaScript', () => {
   test.use({ javaScriptEnabled: false })
 
-  test('every term panel and every claim panel is in the served HTML', async ({ page }) => {
+  test('every term and claim section is served; not one of their rows is', async ({ page }) => {
     await page.goto(ENTITY)
 
-    // §2.1 draws no line between a content the menu opens and one the body opens:
-    // these are the per-term and per-claim narrowings of the inbound-reference list,
-    // and nothing runs here, so this is what a crawler is served.
+    // Nothing runs here, so this is what a crawler is served — and a term panel and a
+    // claim panel are the per-term and per-claim narrowings of the inbound-reference
+    // list, which is the one content this page holds back until the reader asks for
+    // it (`DEFERRED_PANEL_KINDS` in components/kb/KbEntityPage.tsx). The SHELLS are
+    // served exactly as they always were; the rows below are not.
     await expect(page.locator(`main ${PANEL}`)).toHaveCount(1)
-    // Shown inline, which is the rest of §2.1: see `noJsCss` in
-    // components/kb/Panel.tsx and the census in `e2e/kb-sweep.test.ts`.
+    // The panel itself is still a block in the flow rather than a sheet that cannot
+    // open: see `noJsCss` in components/kb/Panel.tsx and the census in
+    // `e2e/kb-sweep.test.ts`.
     await expect(page.locator(PANEL)).toBeVisible()
 
     // One per term and one per claim — the same two counts the body carries, which
@@ -1046,8 +1069,31 @@ test.describe('the level-2 panels without JavaScript', () => {
       .evaluateAll((elements) => elements.map((element) => element.id))
     expect([...targets].sort()).toEqual([...ids].sort())
 
-    // The rows themselves, not just the sections: the filtered list is served whole.
-    await expect(panelRows(page, 'term', SELECTED_TERM)).toHaveCount(SELECTED_TERM_ROWS)
-    await expect(panelRows(page, 'claim', SELECTED_CLAIM)).toHaveCount(SELECTED_CLAIM_ROWS)
+    // The rows themselves, and there are none: an inbound-reference list is produced
+    // when the panel opens, which is exactly what cannot happen here. The two graph
+    // counts say what is being given up — these are the busiest term and a claim with
+    // references on the busiest entity, so 0 is the deferral and not an empty index.
+    expect(SELECTED_TERM_ROWS).toBeGreaterThan(0)
+    expect(SELECTED_CLAIM_ROWS).toBeGreaterThan(0)
+    await expect(panelRows(page, 'term', SELECTED_TERM)).toHaveCount(0)
+    await expect(panelRows(page, 'claim', SELECTED_CLAIM)).toHaveCount(0)
+    await expect(panelRows(page, 'term')).toHaveCount(0)
+    await expect(panelRows(page, 'claim')).toHaveCount(0)
+
+    // So these sections have nothing to reveal, and `noJsCss` drops them rather than
+    // showing 20 empty boxes. The one line that explains the absence is in the
+    // `incoming` section instead — one sentence for the page, not one per section —
+    // and `e2e/kb-sweep.test.ts` is where that line and the pairing of the sections
+    // that DO survive are checked.
+    const levelTwo = page.locator(
+      `${PANEL} [data-kb-panel-kind="term"], ${PANEL} [data-kb-panel-kind="claim"]`,
+    )
+    expect(
+      await levelTwo.evaluateAll((nodes) =>
+        nodes.filter((node) => (node as HTMLElement).offsetParent !== null).length,
+      ),
+    ).toBe(0)
+    await expect(page.locator(`${PANEL} .panel_noJsNote`)).toHaveCount(1)
+    await expect(page.locator(`${PANEL} [data-kb-panel-kind="incoming"] .panel_noJsNote`)).toBeVisible()
   })
 })
