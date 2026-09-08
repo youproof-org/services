@@ -27,12 +27,6 @@
  * and the knowledge-base counts have to be non-zero — a graph that loaded nothing
  * would otherwise agree with a file that claims nothing.
  *
- * It also gates the `robots.txt` pair. `Disallow: /*.txt` is there for the RSC
- * payload files, and it matches `/llms.txt` too, so the `Allow` beside it is the
- * only reason this file is crawlable at all. The two are one decision and one line
- * of `app/robots.ts`; whenever the export carries the disallow, the allow must be
- * with it.
- *
  * Every URL in the file must be one this script has an expectation for. A new
  * section in the generator is therefore a deliberate edit here as well, rather
  * than a set of links and numbers that quietly nothing checks.
@@ -70,7 +64,6 @@ const { SITE_URL } = pick(metadataModule)
 const websiteRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const OUT = path.join(websiteRoot, 'out')
 const LLMS_TXT = path.join(OUT, 'llms.txt')
-const ROBOTS_TXT = path.join(OUT, 'robots.txt')
 
 if (!existsSync(OUT)) {
   console.error('[check-llms-txt] no out/ directory — run after `next build`.')
@@ -261,23 +254,6 @@ if (kbPages === 0 || definitions === 0 || theorems === 0 || glossaryNames === 0)
       `${theorems} theorem(s),\n  ${glossaryNames} glossary row(s)), so agreeing with the file ` +
       `would mean nothing.`,
   )
-}
-
-// ---------------------------------------------------------------------------
-// 4. robots.txt keeps the pair together
-// ---------------------------------------------------------------------------
-
-if (existsSync(ROBOTS_TXT)) {
-  const robots = readFileSync(ROBOTS_TXT, 'utf8')
-  const disallowsTxt = /^\s*Disallow:\s*\/\*\.txt\s*$/im.test(robots)
-  const allowsLlms = /^\s*Allow:\s*\/llms\.txt\s*$/im.test(robots)
-  if (disallowsTxt && !allowsLlms) {
-    fail(
-      `[check-llms-txt] robots.txt disallows /*.txt without allowing /llms.txt, so this file is ` +
-        `hidden\n  from every crawler that obeys it. The two are one rule — see the comment in ` +
-        `app/robots.ts.`,
-    )
-  }
 }
 
 if (failed) process.exit(1)

@@ -19,26 +19,21 @@ export default function robots(): MetadataRoute.Robots {
   }
 
   return {
-    // The `*.txt` files are Next's RSC payloads: a second, complete copy of every
-    // page's content, fetched only by a client-side navigation and linked from
-    // nothing. Keeping them out of a crawl costs a reader nothing and removes
-    // ~21 MiB of duplicate content. The pattern nominally covers `robots.txt`
-    // itself, which is harmless — a crawler fetches it before it has any rules to
-    // apply — and the sitemaps are `.xml`.
+    // Everything is crawlable, with no rule for Next's per-page `*.txt` RSC payloads.
+    // Those are a second copy of every page's prose (59 MiB in the export, 4.4 MiB
+    // gzipped) and they were disallowed for exactly that reason, but nothing publishes
+    // their URLs: no `<a>`, no `<link rel="prefetch">`, no sitemap entry, and not even a
+    // literal in the framework JS, which appends `.txt` to a pathname at navigation
+    // time. Reaching one means driving the client router or guessing the path. So the
+    // rule insured against an unlikely crawl, and it cost a real bug — `/*.txt` matched
+    // `/robots.txt` too, so this file disallowed itself, and an Ahrefs audit reported it
+    // inaccessible and crawled nothing while that was true.
     //
-    // `/llms.txt` is the one `.txt` meant to be read (scripts/gen-llms-txt.mjs
-    // generates it into the export), so the disallow and this allow are a pair and
-    // neither makes sense alone. RFC 9309 resolves the conflict by longest matching
-    // path, ties going to `Allow`: `/llms.txt` is nine characters against `/*.txt`'s
-    // six, so the allow wins.
-    //
-    // A crawler that does not implement the standard fails OPEN here, not closed.
-    // `/*.txt` needs `*` support to match anything, and Next emits the `Allow` lines
-    // before the `Disallow` one, so a first-match parser (Python's stdlib
-    // robotparser, for one) permits everything. `/llms.txt` therefore stays reachable
-    // either way; what such a crawler loses is the payload rule, which is advisory
-    // duplicate-content hygiene rather than access control.
-    rules: { userAgent: '*', allow: ['/', '/llms.txt'], disallow: ['/*.txt'] },
+    // If payload indexing ever does turn up in a report, the tool for it is
+    // `X-Robots-Tag: noindex` on `*.txt` from the response-header ruleset in
+    // infra/cloudflare/terraform/zone/response-headers.tf: it stops indexing without
+    // blocking access, and it cannot lock out the file that carries the rule.
+    rules: { userAgent: '*', allow: '/' },
     sitemap: `${SITE_URL}/sitemap.xml`,
   }
 }

@@ -194,10 +194,19 @@ short curated map of the site written from the graph at prebuild by
 `scripts/gen-llms-txt.mjs`, shipped as an ordinary file in `public/`, and checked
 after the build by `scripts/check-llms-txt.mjs` — every link resolves in the export
 and every count in it is re-derived from the graph, because a generated file whose
-generator stopped running looks exactly like one that is current. On production it is
-also the one `.txt` path `app/robots.ts` allows: everything else matching `/*.txt` is
-disallowed, because that is how a page's RSC payload is served and it is a second
-complete copy of the page rather than a document worth indexing.
+generator stopped running looks exactly like one that is current.
+
+`app/robots.ts` allows the whole site on production and singles out nothing. The
+per-page `*.txt` RSC payloads — a second complete copy of every page's prose, 59 MiB
+in the export — were disallowed for a while on duplicate-content grounds, and are not
+any more. Nothing publishes their URLs: no `<a>`, no `<link rel="prefetch">`, no
+sitemap entry, not even a literal in the framework JS, which appends `.txt` to a
+pathname at navigation time. So the rule guarded a crawl that needs the client router
+driven or the path guessed, while `/*.txt` also matched `/robots.txt` and left the file
+disallowing itself. Should payload indexing ever show up in a real report,
+`X-Robots-Tag: noindex` on `*.txt` from the response-header ruleset in
+[`../infra/cloudflare/terraform/zone/response-headers.tf`](../infra/cloudflare/terraform/zone/response-headers.tf)
+is the tool for it — it stops indexing without blocking access.
 
 <a id="anchor-rule"></a>
 ## Anchor rule
