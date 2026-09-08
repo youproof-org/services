@@ -2,10 +2,21 @@
 
 **Tickets:** YP-151, YP-172.
 **Parent plan:** [inbound references out of the HTML, and JSON-LD in](yp-151-yp-172-kb-inbound-refs-and-jsonld-plan.md).
-**Status:** proposal. Written to be read by someone who has never used JSON-LD, so
-§§1–2 explain the format before §§3–7 design ours.
-**Every example below is real** — the names, URLs, ids, terms, and dates are taken
-from the local export on 2026-09-07, not invented.
+**Status:** **built**, in phases 4, 5, and 5a of the parent plan, on
+`feat/yp-151-yp-172-kb-jsonld-and-inbound-refs`. `lib/content/structured-data.ts` is
+the builder, `components/kb/StructuredData.tsx` renders it,
+`test/structured-data.test.mjs` tests it over the fixture graph, and
+`scripts/check-structured-data.mjs` gates the export. 542 blocks ship — 537 entity
+pages, four list pages, and the locale root. **The one thing not done is half of the
+manual vocabulary validation** (§8.1 of the parent plan): `validator.schema.org` has
+been run by hand over the output and reported no errors and no warnings; Google's Rich
+Results Test has not been run. §8 and §10 below say what changed between the design and
+the build.
+Written to be read by someone who has never used JSON-LD, so §§1–2 explain the format
+before §§3–7 design ours.
+**Every example below is real** — the names, URLs, ids, terms, and dates were taken
+from the local export on 2026-09-07, not invented, and re-checked against the built
+export on 2026-09-08.
 
 ---
 
@@ -305,7 +316,7 @@ That is the entire design. §5 is the same four steps applied to each page kind.
 | `mainEntity` | "this page is primarily about that thing" | page → entity |
 | `isPartOf` | containment, upwards | proof → theorem; remark → owner; entity → chapter; chapter → book; every page → the site |
 | `hasPart` | containment, downwards | theorem → its proofs and remarks; definition → its remarks |
-| `citation` | "this work cites that work" | every outgoing reference in the prose, deduplicated |
+| `citation` | "this work cites that work" | every outgoing reference in the prose, deduplicated — 3520 edges across the export, 3515 of them to our own anchors and 5 to the off-site sources of §5.4 |
 | `about` | "this work is about that thing" | the terms the node introduces |
 | `teaches` | "this work helps you learn that concept" | the same terms — see §7.1 for why both |
 | `inDefinedTermSet` | which vocabulary a term belongs to | the glossary's id |
@@ -410,8 +421,17 @@ codebase does.
 }
 ```
 
-About 2.2 KiB — all of it structure, none of it content. The page it sits on serves
-29.4 KiB of markup today, 9.3 KiB of which is inbound-reference rows.
+**2649 B of JSON as built**, 2693 B with its `<script>` wrapper — all of it structure,
+none of it content. The "about 2.2 KiB" this line first carried understated even the
+block printed above, which minifies to 2583 B; the shipped one is larger still because
+its `description` is the whole sentence rather than the truncated one printed here. The
+page it sits on now serves 25641 B of markup and no inbound-reference rows at all,
+against 30280 B of markup and a 9671 B `incoming` section before the parent plan's
+first half.
+
+Across the export the 542 blocks total 1748678 B of markup, and — counted the same
+way, wrapper included — an entity page's block runs from 1881 B to 8567 B with a median
+of 3034 B.
 
 **No body text, and no formulas.** An earlier draft carried the statement here as a
 `text` property; §7.7 records why that is gone and where the mathematics went instead.
@@ -511,11 +531,34 @@ Three things this makes machine-readable that the HTML only implies:
 - **that all 217 canonical terms belong to one vocabulary**, via `inDefinedTermSet`
   pointing at the glossary's id from every page that introduces a term.
 
-### 5.4 A remark
+### 5.4 A remark, and the citations that leave the site
 
 The same, minus `additionalType` — Wikidata has no entry for a mathematical remark
 worth pointing at, and inventing one is worse than omitting the key. `isPartOf` names
 its owner, which for a remark on a proof is the proof.
+
+**Remarks are also where the content cites the outside world, which this design did
+not anticipate.** §2's step 4 says a `citation` id is "the exact anchor the prose links
+to", and every worked example takes that anchor to be one of ours. It is not always.
+Four external addresses are cited from the prose, all four from remark pages, and the
+builder emits them as `citation` like any other outgoing reference:
+
+| page | cited |
+|---|---|
+| `definiciok/egyseg/megjegyzesek/1` | `https://en.wikipedia.org/wiki/Gaussian_integer` |
+| `tetelek/asszocialtsag-tulajdonsagai/megjegyzesek/1` | the same Wikipedia article |
+| `tetelek/kis-fermat-tetel/megjegyzesek/1` | `https://hu.wikipedia.org/wiki/Leonhard_Euler` and `https://oeis.org/A001567` |
+| `tetelek/termeszetes-szamok-minimumtetele/megjegyzesek/1` | `https://hu.wikipedia.org/wiki/Pierre_de_Fermat` |
+
+That is five `citation` entries over four distinct URLs, out of 3520 edges in the
+export. Emitting them is right rather than merely harmless: `citation` means "this work
+cites that work", and a Wikipedia article is a work. It is also the one direction in
+which our graph joins the rest of the web by an id somebody else already owns, which is
+the whole argument of §1.3 arriving from the other side.
+
+The consequence for §9 is that an id check cannot simply require every address to be in
+the export. Off-origin addresses are counted and skipped; §9 says so, and the gate
+prints the count so that a fifth one appearing is a thing somebody sees.
 
 ### 5.5 The glossary — `/hu/tudasbazis/fogalmak`
 
@@ -685,7 +728,7 @@ it.
 
 ## 7. What we leave out, and why
 
-### 7.1 Not left out: `about` and `teaches` both
+### 7.1 Not left out: `about` and `teaches` both — **settled, both ship**
 
 `about` is the widely understood way to say "this work concerns that thing".
 `teaches` is more precise — schema.org defines it as "the item being described is
@@ -694,6 +737,10 @@ referenced term", it expects a `DefinedTerm`, and it is valid directly on
 `CreativeWork` (checked on schema.org, 2026-09-07). For a definition page, both
 statements are true, and the pair costs about 60 bytes per term. If one has to go,
 drop `teaches` — it is the less commonly consumed of the two.
+
+**Decided: both.** Nothing in the build argued against it, and the change if that ever
+reverses is one entry in `TERM_PREDICATES` in `lib/content/structured-data.ts`, which
+is a list for exactly this reason.
 
 ### 7.2 Inbound references
 
@@ -740,7 +787,11 @@ body inside a `<script>` tag is content filed where nobody looks for it.
 **And the measurements.** The LaTeX source across the corpus is 141 KiB; the whole-body
 text is 756 KiB. So 81% of what that property cost would have been prose the extractor
 already reads perfectly — and 72% of the total landed on the 190 proof pages, whose
-median body is 2050 B against a theorem's 321 B.
+median body is 2050 B against a theorem's 321 B. Both figures are of a `text` property
+that was never built, so neither can be re-measured; what *can* be, on the finished
+export, is the LaTeX that shipped instead — **311 KiB of `<annotation>` text across all
+588 pages, 123 KiB of it on knowledge-base pages**. Read the 141 KiB as
+knowledge-base-scoped and of the right order, not as a figure this export can confirm.
 
 The mathematics is fixed where it broke instead: `output: 'htmlAndMathml'` in
 `lib/utils/math.ts`, so each formula ships its authored LaTeX in an
@@ -754,48 +805,94 @@ work is not.
 
 ## 8. Settled decisions
 
-From the review on 2026-09-07 (numbers refer to the parent plan's open questions):
+From the review on 2026-09-07 (numbers refer to the parent plan's open questions).
+**All of them shipped as decided**; the "as built" column is what the export shows.
 
-| | decision |
-|---|---|
-| 1 | `CreativeWork` + `additionalType`. **Settled.** |
-| 2 | Wikidata concept URIs, verified per §6. **Settled.** |
-| 3 | Claims omitted. **Settled.** |
-| 4 | Inbound edges omitted. **Settled.** |
-| 5 | The index lists are named and counted; their members are not enumerated. **Settled**, with the reasoning corrected in §5.6 on 2026-09-07. |
-| 9 | `datePublished` from the embedding chapter. **Settled.** |
+| | decision | as built |
+|---|---|---|
+| 1 | `CreativeWork` + `additionalType`. **Settled.** | 537 `CreativeWork` nodes |
+| 2 | Wikidata concept URIs, verified per §6. **Settled.** | `http://www.wikidata.org/entity/…` on theorems, proofs, and definitions; nothing on remarks |
+| 3 | Claims omitted. **Settled.** | no `Claim` node in the export |
+| 4 | Inbound edges omitted. **Settled.** | gated: every `citation` target must be an address the page's own markup already links |
+| 5 | The index lists are named and counted; their members are not enumerated. **Settled**, with the reasoning corrected in §5.6 on 2026-09-07. | 2 `ItemList` nodes with `numberOfItems` and no `itemListElement`; one `DefinedTermSet` with no `hasDefinedTerm` |
+| 9 | `datePublished` from the embedding chapter. **Settled.** | via `lib/content/lastmod.ts`, which both this builder and `app/sitemap.ts` read with one keying |
 
 Also settled, in the parent plan's decision log because they reach beyond this
 document: **D10** one curated generated `llms.txt`, and **D11** the mathematics carried by the
 markup, via `output: 'htmlAndMathml'`, rather than by a `text` property here — §7.7.
+D11 shipped and **cost 2.8× what it was priced at**: +8.74 MiB of markup rather than
++3.16 MiB. §5.3 of the parent plan carries the corrected numbers; the decision is
+unchanged, because it was made on accessibility grounds and not on bytes.
 
-Still open, and small: the `Organization` logo asset (§5.7), and whether `teaches`
-stays alongside `about` (§7.1).
+### 8.1 What the build changed about this design
+
+Three things, none of them a reversal.
+
+**The `@id` check is one requirement, not two.** §9 used to state it as "either exists
+in the export **or** is a fragment on the page that declares it". The `or` cannot be
+implemented: read literally it adds nothing, and read loosely it exempts every
+`#theorem` and `#breadcrumb` from the base check. That is not hypothetical — it is what
+the first draft of the gate did in phase 6, and an `@id` with no file behind it went
+past it. §9 below now states the implemented form.
+
+**Off-site citations exist.** Four external URLs, five edges, all from remark pages.
+§5.4 has them. No worked example in §5 anticipated one.
+
+**The `@id` scheme survives contact with the export unchanged otherwise.** 12952
+addresses on our own origin, every one of them resolving to a file the export contains,
+and no id declared twice on a page.
 
 ---
 
 ## 9. How it gets checked
 
 A malformed block produces nothing and says nothing, so it needs a gate rather than a
-glance.
+glance. All three exist; the third is the one still outstanding.
 
 - **Unit tests** over the fixture graph: the shape per page kind, the `@id`s, and the
   relations — a proof's `isPartOf` is its theorem, a theorem's `hasPart` are its
   proofs and remarks, a term's `inDefinedTermSet` is the glossary.
+  `test/structured-data.test.mjs`, inside the suite's 280.
 - **A postbuild gate** (`scripts/check-structured-data.mjs`), in the shape
   `check-anchors.mjs` already has, reading the built export rather than the graph:
   exactly one `application/ld+json` per knowledge-base page, `JSON.parse` succeeds,
-  every `@id` is unique within its page, and every absolute URL in an `@id`, `item`,
-  or `citation` either exists in the export or is a fragment on the page that declares
-  it. That last one is the check that catches an id scheme drifting from the URL
-  helpers.
+  every `@type` is one this design uses, every `@id` is *declared* once within its page
+  — a bare `{ "@id": … }` is a reference and may repeat — and **every absolute URL in an
+  `@id`, `item`, `citation`, `url` or `logo`, with its fragment stripped, is a file the
+  export contains.** Off-origin URLs are counted and skipped (§5.4); nothing else is
+  exempt. That last one is the check that catches an id scheme drifting from the URL
+  helpers. It reports 542 blocks, 12736 nodes, 12952 resolved addresses, and 5 off-site
+  references.
+
+  **One requirement, not two.** This rule used to read "…exists in the export **or** is
+  a fragment on the page that declares it". Read literally the alternative is vacuous —
+  the page being read is in the export by definition. Read loosely it exempts every
+  `#theorem`, `#proof` and `#breadcrumb` id from the base check, which is precisely the
+  drift the rule exists to catch — and the draft of this gate that read it loosely did
+  let a non-resolving id through. Nothing needed the escape in the end:
+  `https://<host>/#website` is declared
+  on the locale root, and its base `/` is in the export as the `noindex` stub.
+
+- **The fragments themselves are checked elsewhere.** `check-anchors.mjs` is what
+  proves a `#fogalmak.oszto` id is really on the page it names, and the parent plan's
+  first half moved 3898 of those links out of the markup — so that gate now reads hrefs
+  from the RSC payload as well, and covers 44808 fragment links, 20455 in the markup and
+  24353 in the payload. The two gates divide the work: this one checks that the address
+  exists, that one that the anchor does.
+
 - **By hand, once per page kind, on staging:** Google's Rich Results Test (expect the
   breadcrumb to be detected and nothing to be in error) and `validator.schema.org`
-  (expect no warnings we did not choose).
+  (expect no warnings we did not choose). **`validator.schema.org` is done: no errors
+  and no warnings, so nothing in §7's list of deliberate omissions drew a complaint.
+  The Rich Results Test is not done** — §8.1 of the parent plan is the checklist, and
+  that half is the one unfinished item of this work.
 
 ---
 
 ## 10. Follow-ups
+
+Checked against the build on 2026-09-08. Everything below is still accurate and still
+open; §10.2 gained two entries the build turned up, and one entry gained a real number.
 
 ### 10.1 The whole graph as one file — designed, not scheduled
 
@@ -820,8 +917,9 @@ Three further asymmetries, all pointing the same way:
   and neither is a specification anyone is obliged to follow.
 - **Discoverability by construction.** A page's block is found by fetching the page.
   Nothing has to know it exists.
-- **Failure mode.** A per-page block that nobody reads costs 2.4 KiB on that page. A
-  graph file that nobody reads costs a build step and a URL, and is invisible.
+- **Failure mode.** A per-page block that nobody reads costs a median 3034 B on that
+  page — the estimate here was 2.4 KiB. A graph file that nobody reads costs a build
+  step and a URL, and is invisible.
 
 **What the file buys that per-page blocks cannot.** One shot at the *whole* structure:
 all 537 entities, 217 terms, their types, and every edge between them, in a form a
@@ -832,16 +930,21 @@ edge set, so even here nothing has to be duplicated in reverse.
 **How it would work.** Cheaply, because it is the same builder with a different
 projection:
 
-1. `lib/content/structured-data.ts` already knows how to describe one node. A generator
-   walks `graph`, calls it for every entity, term, chapter, and book, and concatenates
-   the results into one `@graph` — the same `@id`s, the same vocabulary, so a consumer
-   that has read a page and then the file sees one graph rather than two.
+1. `lib/content/structured-data.ts` already knows how to describe one node — it now
+   exists, which is what phase 4 was for. A generator walks `graph`, calls it for every
+   entity, term, chapter, and book, and concatenates the results into one `@graph` —
+   the same `@id`s, the same vocabulary, so a consumer that has read a page and then
+   the file sees one graph rather than two. `scripts/gen-llms-txt.mjs` is the working
+   example of a prebuild generator that imports the content graph through `tsx`, so the
+   wiring question is answered too.
 2. It is written by a prebuild script into `public/`, the way `gen-og-images.mjs` and
    the other generators work, so the static export ships it as an ordinary file. A
    route handler with `dynamic = 'force-static'` (the pattern `app/sitemap.ts` and
    `app/robots.ts` use) is the alternative.
 3. Estimated size: roughly 400–600 KiB for the entity and term nodes with their edges —
-   about half of one of today's biggest pages.
+   about half of one of today's biggest pages. The 542 per-page blocks total 1748678 B
+   with their breadcrumbs, chapter stubs and book stubs repeated on every page, so an
+   estimate at roughly a third of that, with each node stated once, looks about right.
 4. Discovery: linked from `llms.txt`, and from `<link rel="alternate">` in the document
    head. Not in the sitemaps, which are for indexable pages.
 5. **Then measure whether anything fetches it.** The path is served from R2 through
@@ -850,15 +953,26 @@ projection:
    it small first rather than perfect.
 
 **Sequencing.** Per-page first — phases 4 to 6 of the parent plan — then this, once the
-builder it reuses exists. Waiting makes it cheaper, not more expensive.
+builder it reuses exists. Waiting makes it cheaper, not more expensive. **The
+prerequisite is now met:** those phases shipped, so this is a generator over an
+existing builder rather than a builder and a generator together.
 
 ### 10.2 Smaller ones
 
 - **A brand logo asset for `Organization.logo`** — the OG thumbnail is a 1200×630
-  social card, not a logo.
+  social card (verified: `assets/generated/og-thumbnail.jpg` is exactly 1200×630), not
+  a logo. **This is the last open question of the design** — §9.1 of the parent plan
+  closed the other two.
+- **`llms.txt` could point at more than the hubs.** It ships at 1502 B with 7 links
+  over 3 sections and no pointer to any per-page structured data. If the whole-graph
+  file of §10.1 is ever built, this is where it gets announced — which was the reason
+  for building `llms.txt` first.
 - **Structured data for chapters, books, articles, and newsletters.** The `Chapter` and
   `Book` stubs we emit from entity pages are the beginning of it; the narrative pages
-  describing themselves properly is its own design.
+  describing themselves properly is its own design. One concrete thing it would fix:
+  the 28 chapter and book pages link **39 distinct external addresses** — all four of
+  the sources the remarks of §5.4 cite, and 35 more — and, carrying no block, say
+  nothing about any of them.
 - **`sameAs` to Wikidata for named theorems and definitions** (§7.6).
 - **`competencyRequired`** — schema.org's "knowledge or skills needed to use this
   resource", which expects a `DefinedTerm` and would express prerequisites exactly.

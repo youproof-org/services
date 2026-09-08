@@ -21,7 +21,7 @@ All are blocking unless noted.
 | Worker typecheck | `deploy.yml` (worker job) + `deploy-to-cloudflare.yml` (PR plan) | `tsc --noEmit` on the migration worker |
 | Manifest validation | worker `prebuild` → `validate-manifest.mjs` | manifest.json vs `manifest.schema.json` (AJV) + no self-redirects |
 | Worker build | `deploy.yml` | esbuild bundles worker + inlined manifest |
-| Website build | `deploy.yml` (website job) | `next build` — **also runs ESLint + `tsc`** on the site (no `ignoreDuringBuilds`/`ignoreBuildErrors`), plus the website's own `prebuild`/`postbuild` steps below |
+| Website build | `deploy.yml` (website job) | `next build` — **also runs `tsc`** on the site (no `ignoreBuildErrors`), plus the website's own `prebuild`/`postbuild` steps below. It does **not** lint: there is no ESLint configuration and no `eslint` dependency in the repository, so Next's lint step warns `No ESLint configuration detected` and checks nothing |
 | Figure compile | website `prebuild` → `sync-figures.mjs` | aborts the build on any `.tex`→SVG failure (no broken `<img>` ships) |
 | Website export gates | website `postbuild` → seven `check-*.mjs` scripts | the exported `out/` against seven invariants — see [the website's own build gates](#the-websites-own-build-gates) |
 | `.hu` smoke tests | `deploy.yml` (quality-gate job, `node --test`) | worker 301/404/410 redirect semantics |
@@ -66,12 +66,17 @@ above.
 
 ### Gaps & proposals
 
-- **No website build/lint/typecheck on PRs to `development`.** The website is
-  linted + typechecked, but only inside `next build` in the **deploy** path — so a
-  type/lint error surfaces at deploy time, not at PR review. *Proposal:* a fast
-  PR CI running `next build` + worker `typecheck` before merge.
-- **Worker has no ESLint** (only `tsc`). Low risk given its size; add a lint step
-  if it grows.
+- **No website build/typecheck on PRs to `development`.** The website is typechecked,
+  but only inside `next build` in the **deploy** path — so a type error surfaces at
+  deploy time, not at PR review. *Proposal:* a fast PR CI running `next build` +
+  worker `typecheck` before merge.
+- **Nothing in the repository is linted.** The website has no ESLint configuration and
+  no `eslint` dependency, so `next build` skips linting; and `pnpm --filter
+  @youproof.org/website lint` cannot run at all — it is `next lint`, which Next 15.5
+  deprecates and which drops into an interactive setup prompt, then exits 1. The
+  worker has no ESLint either. *Proposal:* adopt the ESLint CLI
+  (`npx @next/codemod@canary next-lint-to-eslint-cli .`) with a config and a CI step
+  of its own, or drop the `lint` script so nothing claims a check that does not exist.
 - **No pre-commit hooks** — all enforcement is CI-side. Acceptable for this team;
   noted so it's a deliberate choice, not an oversight.
 - **gen-manifest empty-content** is now covered by a unit test (YP-122 item 10b).
