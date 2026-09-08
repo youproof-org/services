@@ -52,7 +52,7 @@ are gates:
 | `check-mathml.mjs` | every KaTeX span ships its authored LaTeX in an `<annotation encoding="application/x-tex">`, and that LaTeX survives a naive tag-strip of its page |
 | `check-deferred-panels.mjs` | the three inbound-reference panel contents carry nothing in the served markup, the sections and the no-JavaScript line are still there, and the panels that are *not* deferred still carry theirs |
 | `check-structured-data.mjs` | one parseable JSON-LD block per knowledge-base page, `@id`s declared once, every address on our own origin resolving to a file in the export, `BreadcrumbList` in the shape Google documents, and no page restating its inbound references |
-| `check-llms-txt.mjs` | `/llms.txt` exists, every link in it resolves in the export, every count in it matches the graph, and `robots.txt` allows it while disallowing the other `.txt` paths |
+| `check-llms-txt.mjs` | `/llms.txt` exists, every link in it resolves in the export, and every count in it matches the graph |
 
 Each one exists because the thing it checks fails **silently**: a wrong measurement id,
 a broken fragment, a formula with no readable source, an inbound list back in the
