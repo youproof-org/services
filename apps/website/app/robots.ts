@@ -28,10 +28,16 @@ export default function robots(): MetadataRoute.Robots {
     //
     // `/llms.txt` is the one `.txt` meant to be read (scripts/gen-llms-txt.mjs
     // generates it into the export), so the disallow and this allow are a pair and
-    // neither makes sense alone. Google resolves the conflict by longest matching
+    // neither makes sense alone. RFC 9309 resolves the conflict by longest matching
     // path, ties going to `Allow`: `/llms.txt` is nine characters against `/*.txt`'s
-    // six, so the allow wins. A crawler that implements `Disallow` but not `Allow`
-    // skips the file — the accepted cost of taking the payloads out of reach.
+    // six, so the allow wins.
+    //
+    // A crawler that does not implement the standard fails OPEN here, not closed.
+    // `/*.txt` needs `*` support to match anything, and Next emits the `Allow` lines
+    // before the `Disallow` one, so a first-match parser (Python's stdlib
+    // robotparser, for one) permits everything. `/llms.txt` therefore stays reachable
+    // either way; what such a crawler loses is the payload rule, which is advisory
+    // duplicate-content hygiene rather than access control.
     rules: { userAgent: '*', allow: ['/', '/llms.txt'], disallow: ['/*.txt'] },
     sitemap: `${SITE_URL}/sitemap.xml`,
   }
