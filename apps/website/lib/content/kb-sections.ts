@@ -33,8 +33,13 @@ export interface KbSectionCard {
  * a number the page it links to contradicts (§3). Measured: 84 definitions and 191
  * theorems locally, 63 and 136 on a deployed build, the difference being the nodes
  * embedded in unpublished chapters.
+ *
+ * Exported because a third place states this number: the `numberOfItems` an index
+ * page's structured data carries (`structured-data.ts`). A machine reading the block
+ * and a reader reading the card have to be told the same thing, and the only way to
+ * guarantee that is for neither of them to count independently.
  */
-function publishedCount(
+export function kbPublishedCount(
   graph: ContentGraph,
   nodes: ReadonlyMap<string, KbNode>,
   locale: string,
@@ -61,14 +66,14 @@ export function kbSectionCards(graph: ContentGraph, locale: string): KbSectionCa
       href: urlForDefinitionsIndex(locale),
       nameKey: 'definitionsIndex',
       count: formatLocaleLabel(locale, 'kbDefinitionsCount', {
-        count: publishedCount(graph, graph.definitions, locale),
+        count: kbPublishedCount(graph, graph.definitions, locale),
       }),
     },
     {
       href: urlForTheoremsIndex(locale),
       nameKey: 'theoremsIndex',
       count: formatLocaleLabel(locale, 'kbTheoremsCount', {
-        count: publishedCount(graph, graph.theorems, locale),
+        count: kbPublishedCount(graph, graph.theorems, locale),
       }),
     },
     {

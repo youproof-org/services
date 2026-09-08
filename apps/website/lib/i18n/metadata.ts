@@ -50,8 +50,21 @@ export interface PageMetaNode {
 }
 
 /** Convert a stored 'YYYY-MM-DD HH:MM:SS' (UTC) timestamp to ISO 8601 for OG. */
-function toIsoTime(publishedAt: string): string {
+export function toIsoTime(publishedAt: string): string {
   return `${publishedAt.replace(' ', 'T')}Z`
+}
+
+/**
+ * The page-specific title of a content node: the crawler title it authored, else
+ * the title it displays.
+ *
+ * The first half of `buildPageMeta`'s fallback chain, exported because the
+ * structured-data builder names books and chapters from other pages and has to call
+ * them what those pages' own `<title>` calls them. Deriving that a second time is
+ * how a `Book` node ends up disagreeing with the book page it points at.
+ */
+export function pageTitleOf(node: { title: string; meta?: MetaInfo }): string {
+  return node.meta?.title ?? node.title
 }
 
 /**
@@ -90,7 +103,7 @@ export function buildPageMeta(args: {
   // (brand is per-locale). og:title stays clean (no brand suffix — the brand is
   // in og:site_name). Composed here, not via a root-layout template, so each
   // locale gets its own brand.
-  const pageTitle = node?.meta?.title ?? node?.title ?? fallbackTitle
+  const pageTitle = node ? pageTitleOf(node) : fallbackTitle
   const title = pageTitle ? `${pageTitle} | ${cfg.brand}` : cfg.brand
   const description = node?.meta?.description ?? node?.excerpt ?? cfg.defaultDescription
   const ogTitle = node?.meta?.openGraph?.title ?? pageTitle ?? cfg.brand

@@ -57,6 +57,11 @@ export interface Fixtures {
   termlessProof: { url: string }
   /** Inbound rows per entity URL; absent means none. Read it via `incomingRows`. */
   incomingRowsByUrl: Record<string, number>
+  /**
+   * The narrowed lists: entity URL -> the anchor id of the term or claim that
+   * selects one -> its rows. Read it via `filteredRows`.
+   */
+  filteredRowsByUrl: Record<string, Record<string, number>>
   lists: { glossaryRows: number; definitionRows: number; theoremRows: number }
 }
 
@@ -71,4 +76,14 @@ export const fixtures: Fixtures = JSON.parse(
  */
 export function incomingRows(url: string): number {
   return fixtures.incomingRowsByUrl[url] ?? 0
+}
+
+/**
+ * Rows the panel of one selected term or claim serves in THIS build, addressed the
+ * way a spec addresses it: by the anchor id of the element that selects it, which is
+ * the section's `data-kb-panel-target`. 0 is the empty state rather than a missing
+ * fixture, and a spec that means "this selection has references" should say so.
+ */
+export function filteredRows(url: string, target: string): number {
+  return fixtures.filteredRowsByUrl[url]?.[target] ?? 0
 }

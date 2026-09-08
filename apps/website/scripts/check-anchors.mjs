@@ -27,6 +27,23 @@
  * whose target simply is not built yet, which is the same concern as above and not
  * id drift. Nothing is masked: a stub renders no anchors at all, so there is no
  * mismatch it could hide.
+ *
+ * ## Both channels a page serves its links in
+ *
+ * Hrefs are read from the markup AND from the RSC payload — the `self.__next_f.push`
+ * scripts every App Router page carries, which is how a panel's content reaches the
+ * browser at all. That is not belt-and-braces over the same data: the inbound
+ * reference lists are deliberately absent from the markup and present only in the
+ * payload (`components/kb/panels/DeferredPanelContent.tsx`), and they are thousands
+ * of fragment links whose targets nothing else verifies. A link the export serves is
+ * a promise the export makes, whichever of the two copies carries it, so the check
+ * follows them there rather than losing 16% of its coverage to the channel change.
+ *
+ * The payload's own hrefs are read as `"href":"…"` props out of the Flight chunks:
+ * the push arguments are JSON, so they are parsed rather than pattern-matched, and a
+ * chunk that does not parse is counted and reported rather than passed over. Ids are
+ * still taken from the markup only — an id in the payload is an element the client
+ * will render, and the point of this check is what is actually in the built pages.
  */
 import { readdirSync, readFileSync, existsSync } from 'node:fs'
 import path from 'node:path'
@@ -71,30 +88,66 @@ for (const file of files) {
   if (/\sdata-stub="/.test(html)) stubPaths.add(pathname)
 }
 
-let checked = 0
+/**
+ * The RSC payload of one page as one string: the Flight chunks its
+ * `self.__next_f.push([kind, chunk])` calls carry, concatenated in document order.
+ *
+ * `JSON.parse` on the push argument rather than a regex over its contents, because
+ * the chunk is a JSON string literal — escaped quotes, escaped slashes and all — and
+ * an href pulled out of it unparsed would be the escaped form rather than the URL.
+ */
+function payloadOf(html, unparsed) {
+  let chunks = ''
+  for (const m of html.matchAll(/self\.__next_f\.push\((\[[\s\S]*?\])\)<\/script>/g)) {
+    try {
+      const [, chunk] = JSON.parse(m[1])
+      if (typeof chunk === 'string') chunks += chunk
+    } catch {
+      unparsed.count++
+    }
+  }
+  return chunks
+}
+
+let checkedInMarkup = 0
+let checkedInPayload = 0
 let skippedAbsent = 0
 let skippedStub = 0
+const unparsedChunks = { count: 0 }
 const broken = []
 
 for (const file of files) {
   const from = toPathname(file)
   const html = readFileSync(file, 'utf8')
-  for (const m of html.matchAll(/href="([^"]*#[^"]*)"/g)) {
-    const href = m[1]
-    // Only internal links: an absolute URL is someone else's page.
-    if (/^[a-z][a-z0-9+.-]*:/i.test(href) || href.startsWith('//')) continue
-    const hash = href.indexOf('#')
-    const target = href.slice(0, hash) || from
-    const fragment = href.slice(hash + 1)
-    if (!fragment) continue
+  // `href="…"` in the markup, `"href":"…"` in the payload — the same links written
+  // as an attribute and as a prop. Counted separately so the log says which channel
+  // each is in, and so a channel falling silent is visible rather than absorbed.
+  const sources = [
+    { hrefs: html.matchAll(/href="([^"]*#[^"]*)"/g), count: () => checkedInMarkup++ },
+    {
+      hrefs: payloadOf(html, unparsedChunks).matchAll(/"href":"([^"]*#[^"]*)"/g),
+      count: () => checkedInPayload++,
+    },
+  ]
 
-    const ids = idsByPath.get(target)
-    if (!ids) { skippedAbsent++; continue }
-    if (stubPaths.has(target)) { skippedStub++; continue }
+  for (const source of sources) {
+    for (const m of source.hrefs) {
+      const href = m[1]
+      // Only internal links: an absolute URL is someone else's page.
+      if (/^[a-z][a-z0-9+.-]*:/i.test(href) || href.startsWith('//')) continue
+      const hash = href.indexOf('#')
+      const target = href.slice(0, hash) || from
+      const fragment = href.slice(hash + 1)
+      if (!fragment) continue
 
-    checked++
-    if (!ids.has(fragment)) {
-      broken.push({ from, target, fragment })
+      const ids = idsByPath.get(target)
+      if (!ids) { skippedAbsent++; continue }
+      if (stubPaths.has(target)) { skippedStub++; continue }
+
+      source.count()
+      if (!ids.has(fragment)) {
+        broken.push({ from, target, fragment })
+      }
     }
   }
 }
@@ -115,9 +168,22 @@ const skips = [
 ].filter(Boolean)
 
 console.log(
-  `[check-anchors] ${checked} internal fragment link(s) checked across ${files.length} page(s)` +
+  `[check-anchors] ${checkedInMarkup + checkedInPayload} internal fragment link(s) checked ` +
+    `across ${files.length} page(s) — ${checkedInMarkup} in the markup, ` +
+    `${checkedInPayload} in the RSC payload` +
     `${skips.length ? `, skipped: ${skips.join(', ')}` : ''}.`,
 )
+
+// Not a warning: an unreadable chunk is a page whose payload went unchecked, and
+// silently checking less is the failure this whole extension exists to avoid.
+if (unparsedChunks.count > 0) {
+  console.error(
+    `[check-anchors] ${unparsedChunks.count} RSC payload chunk(s) did not parse as JSON, so the ` +
+      `links in them\n  went unchecked. The push argument's shape has changed — read it the new ` +
+      `way rather than\n  dropping the payload pass.`,
+  )
+  process.exit(1)
+}
 
 if (grouped.size > 0) {
   console.error(`[check-anchors] ${grouped.size} broken anchor target(s):`)
