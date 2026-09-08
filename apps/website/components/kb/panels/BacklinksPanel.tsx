@@ -59,10 +59,19 @@ import styles from './backlinks-panel.module.scss'
  * does nothing with it; `components/kb/HighlightOnArrival.tsx` is what turns it into a
  * query parameter at click time and into marks on arrival (D7).
  *
- * A server component, like `ContextPanel` and for the same two reasons: the graph is
- * a cyclic object graph that cannot cross the client boundary, and §2.1 requires
- * these rows in the served HTML — they are the inbound edges of the knowledge graph
- * this ticket exists to expose.
+ * A server component, like `ContextPanel`: the graph is a cyclic object graph that
+ * cannot cross the client boundary, so the rows are built where the graph is and
+ * handed over finished.
+ *
+ * **They are not in the served HTML, though.** These rows are the transpose of edges
+ * the citing pages already state in their own markup, so a crawler reading this page
+ * learns nothing new from them and reads a great deal — a fifth of the knowledge
+ * base's markup, and more than a third of every link in it. So the finished tree
+ * travels in the RSC payload and reaches the page when the reader opens the panel:
+ * `components/kb/panels/DeferredPanelContent.tsx` is the mechanism and
+ * `DEFERRED_PANEL_KINDS` in `components/kb/KbEntityPage.tsx` is the list. Nothing
+ * below changes because of it — this component renders exactly what it always did,
+ * and a row the reader sees is the row the server built.
  */
 
 interface BacklinksPanelProps {
@@ -124,9 +133,9 @@ export function BacklinkList({ locale, sources, target }: BacklinkListProps) {
  * One level of the tree and, under each of its rows, the level below it.
  *
  * Nested `<ul>`s rather than one flat list with an indent class, because that IS the
- * structure: a crawler reading the served HTML (§2.1) gets the containment for free,
- * and the indent becomes one rule about nesting instead of a depth the server has to
- * count and the stylesheet has to enumerate.
+ * structure: anything reading this list gets the containment for free, and the
+ * indent becomes one rule about nesting instead of a depth the server has to count
+ * and the stylesheet has to enumerate.
  *
  * `depth` is carried only as far as the markup: it is written on the row so a
  * checker reading the built HTML can tell a chapter's row from a section's without
@@ -171,8 +180,9 @@ function BacklinkLevel({
               — which thing hanging off that definition or theorem it is, then how
               many references it accounts for. Both display strings are built at
               graph-build time (`backlinkRowFor` in lib/content/graph.ts), because
-              §2.1 puts these rows in the served HTML and this component is handed an
-              array rather than the graph.
+              this component is handed an array rather than the graph — the graph
+              cannot cross the client boundary, and a row's own text must not depend
+              on which side of it the row is rendered.
 
               Through `InlineText` because both are content: a title can carry math
               and the rest of the narrative's inline markup.

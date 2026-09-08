@@ -95,6 +95,18 @@
   padding: 0.75rem $pad-x calc(2.75rem + #{$pad-x} + 1rem);
 }
 
+// The one line a reader with no JavaScript gets in place of the inbound-reference
+// lists (`KbPanelSection.noJsNote`, revealed by `noJsCss` in Panel.tsx). It reads as
+// the panel's own answer rather than as an error, so it wears the empty state's
+// treatment — body colour, ordinary text — and is not styled as a warning.
+//
+// No `display` here: the element carries the `hidden` attribute, and the
+// no-JavaScript stylesheet is the only thing that takes it back.
+.noJsNote {
+  margin: 0;
+  line-height: 1.5;
+}
+
 // ── Kontextus (components/kb/panels/ContextPanel.tsx) ──
 //
 // Chapter, then the section inside it — the rows of the Bejövő hivatkozások list

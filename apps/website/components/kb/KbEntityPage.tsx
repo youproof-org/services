@@ -8,6 +8,7 @@ import { formatLocaleLabel, getLocaleLabel } from '@/lib/i18n/config'
 import { kbMenuItems } from '@/lib/kb/menu-items'
 import { buildChapterEmbedIndices, buildChapterFigureIndices, getChapterIndex } from '@/lib/utils/index-helpers'
 import type { KbNode } from '@/lib/content/types'
+import type { ChromePanelKind } from '@/lib/kb/chrome-state'
 import EntityChrome from './EntityChrome'
 import OwnershipLinks from './OwnershipLinks'
 import type { KbPanelSection } from './Panel'
@@ -21,6 +22,28 @@ import styles from './kb-entity-page.module.scss'
 interface KbEntityPageProps {
   node: KbNode
 }
+
+/**
+ * The panel contents that are NOT in the served HTML — the one place that answers
+ * that question for the whole page.
+ *
+ * All three are the same thing narrowed: the list of what cites this entity, this
+ * term, or this claim. An inbound-reference list is the transpose of edges the
+ * citing pages already state in their own markup, so serving it here says nothing a
+ * crawler cannot already read — and it says it at length. On the busiest page the
+ * rows were most of the document, and across the knowledge base they were a fifth of
+ * all markup and more than a third of every link in it.
+ *
+ * The rule everything else still follows is unchanged: anything a crawler should
+ * follow is in the served markup. The body, the ownership chain, the indexes, the
+ * glossary, the Kontextus panel and the reference panels — which name outgoing
+ * targets the body already links to — are all served as they were.
+ *
+ * The three are still server-rendered, and their shells, headings and data
+ * attributes are still served; only the rows wait for the reader (`Panel` and
+ * `panels/DeferredPanelContent.tsx`).
+ */
+export const DEFERRED_PANEL_KINDS: readonly ChromePanelKind[] = ['incoming', 'term', 'claim']
 
 /**
  * The reading surface of one knowledge-base entity (sub-plan §6.1): a two-line
@@ -68,18 +91,24 @@ export default function KbEntityPage({ node }: KbEntityPageProps) {
     In the menu's order (§6.2), which is the order the reader meets the items in —
     and then the level-2 panels, which no menu item opens (§6.3).
 
-    A panel per term and a panel per claim, all of them server-rendered and all of
-    them in the served HTML: §2.1 does not distinguish between a content the menu
-    opens and one the body opens, and these are the per-term and per-claim
-    narrowings of the inbound-reference list, which is knowledge-graph structure by
-    any reading. `target` is the selected element's own anchor id, which is the
-    handle the click that picks it will arrive with.
+    A panel per term and a panel per claim, all of them server-rendered: there is no
+    line between a content the menu opens and one the body opens, and these are the
+    per-term and per-claim narrowings of the inbound-reference list. `target` is the
+    selected element's own anchor id, which is the handle the click that picks it
+    will arrive with.
+
+    Which of them reach the served HTML is `DEFERRED_PANEL_KINDS`, applied once
+    below rather than written onto the entries here — the list is what the answer
+    should be read off.
   */
-  const panels: KbPanelSection[] = [
+  const sections: KbPanelSection[] = [
     {
       key: 'incoming',
       title: getLocaleLabel(node.locale, 'kbPanelIncoming'),
       content: <BacklinksPanel node={node} />,
+      // The one place the reader is told the lists need JavaScript, and it stands
+      // for the term and claim panels as well as for this one (`noJsCss` in Panel).
+      noJsNote: getLocaleLabel(node.locale, 'kbPanelNoJs'),
     },
     {
       key: 'context',
@@ -112,6 +141,10 @@ export default function KbEntityPage({ node }: KbEntityPageProps) {
     */
     ...referencePanels(node),
   ]
+
+  const panels = sections.map((section) =>
+    DEFERRED_PANEL_KINDS.includes(section.key) ? { ...section, deferred: true } : section,
+  )
 
   return (
     <>
@@ -178,9 +211,10 @@ export default function KbEntityPage({ node }: KbEntityPageProps) {
 
         The panel's contents go the same way and for the same reason, but they are
         markup rather than data: a server component per content, rendered here and
-        handed over already finished, which is what puts it in the served HTML
-        (§2.1). The two the menu opens, plus one per term and one per claim; the
-        rest join this list as their phases land.
+        handed over already finished. The two the menu opens, plus one per term and
+        one per claim; the rest join this list as their phases land. A deferred
+        content is rendered here too — being finished on the server is what lets it
+        travel as a prop, and `DeferredPanelContent` only decides when it lands.
       */}
       <EntityChrome
         items={kbMenuItems(node)}
