@@ -9,11 +9,12 @@ commits: the eight of phases 1, 1a, 2, 3, 4, 5, 5a, and 6 (§10 has the table, w
 commit each phase became), plus `65d96f7`, which belongs to no phase — it corrects a
 wrong comment in `app/robots.ts` about how a conflicting `Allow` and `Disallow` are
 resolved, and D9 carries the correction. 280 unit tests, 129 end-to-end tests, and the
-nine postbuild steps — seven of them gates — pass on it. **Half of one item is
-unfinished: the Google Rich Results Test of §8.1.** `validator.schema.org` has been run
-by hand and reported no errors and no warnings; the Rich Results Test needs a person
-with a browser and the branch on staging. Nothing else in this document is a proposal
-any more; §12 is where the follow-ups it produced went.
+nine postbuild steps — seven of them gates — pass on it. **Nothing is outstanding.**
+The last open item, the manual vocabulary validation of §8.1, is done on both halves:
+`validator.schema.org` reported no errors and no warnings, and Google's Rich Results
+Test passed with `BreadcrumbList` detected as one valid item, which is the only rich
+result this design targets. Nothing in this document is a proposal any more; §12 is
+where the follow-ups it produced went.
 
 > ### Working agreement
 >
@@ -870,14 +871,14 @@ Nine postbuild steps run in all: `set-html-lang`, `split-sitemap`, `check-build-
 | no-JavaScript pages are not broken | `e2e/kb-sweep.test.ts`, reworked: the three sections are hidden or carry their line, and nothing else about the page changes |
 | every page has exactly one valid JSON-LD block | postbuild gate `scripts/check-structured-data.mjs`: parse it, one script per page, `@context` present |
 | the ids join up | the same gate: every absolute `@id`/`item`/`citation`/`url` URL on our own origin resolves to a file in the export — the shape of `check-anchors.mjs`, over JSON instead of hrefs. The "or it is a fragment on the page that declares it" alternative is not implemented: read literally it is subsumed (the page being read is in the export by definition), and read loosely it would exempt every `#theorem` and `#breadcrumb` id from the base check, which is the drift the rule exists to catch. Off-origin URLs are counted and skipped: the export has **five** such `citation` entries over **four distinct URLs** — `en.wikipedia.org/wiki/Gaussian_integer` from two remark pages, plus `hu.wikipedia.org` on Fermat and on Euler and `oeis.org/A001567`. The gate reports occurrences, so it prints five |
-| the vocabulary is right | Google Rich Results Test and validator.schema.org on one page of each kind, on staging, by hand — the checklist is §8.1. **`validator.schema.org` is done and clean; the Rich Results Test is not run** |
+| the vocabulary is right | Google Rich Results Test and validator.schema.org on one page of each kind, on staging, by hand — the checklist is §8.1. **Both are done: `validator.schema.org` clean, and the Rich Results Test passed with the breadcrumb detected** |
 | the mathematics survives extraction | a postbuild check that every `<span class="katex">` in the export carries an `<annotation encoding="application/x-tex">`, and that a tag-strip of one known formula contains its authored LaTeX verbatim |
 | the page still looks the same | the e2e suite, plus one screenshot comparison on a math-dense chapter — the MathML must stay clipped |
 | `llms.txt` is true | postbuild gate: it exists, every link in it resolves to a file in the export, and every count in it matches the graph |
 | `llms.txt` is reachable | `curl` it on staging, and check `robots.txt` allows it while a page's `.txt` payload is disallowed |
 | the byte effect | re-run §2's measurements and write the numbers into §10 |
 
-### 8.1 The manual validation pass — **half done**
+### 8.1 The manual validation pass — **done**
 
 Everything else in the table is automated. This one is not, and cannot be: the two
 tools are hosted, they need a reachable URL or a paste box, and what they check is
@@ -892,11 +893,12 @@ says so).
   omissions drew a complaint, and no property was flagged as used on a type that does
   not take it. Which of the eight pages below were pasted in was not recorded, so the
   per-page boxes stay unticked; the verdict is recorded, its coverage is not.
-- **Google Rich Results Test — not run.** This half is still outstanding. It is the
-  one item of phase 6 that is not finished, and it is a few minutes' work for a person
-  with a browser. It is also the half with the specific expectation worth confirming —
-  that `BreadcrumbList` is detected as one valid item — because breadcrumbs are the
-  only rich result this design targets.
+- **Google Rich Results Test — run, and passed.** The procedure below was followed
+  over the eight pages listed, and the outcome was a pass: **`BreadcrumbList` is
+  detected as one valid item, with no errors.** That is the specific expectation this
+  half existed to confirm, because breadcrumbs are the only rich result this design
+  targets. Nothing beyond the pass and that detection was reported back, so nothing
+  more is claimed here.
 
 **Before you start.** Staging is `noindex` and its `robots.txt` is `Disallow: /`, so
 the Rich Results Test's *URL* mode will report the page as unavailable to Google. Use
@@ -921,14 +923,16 @@ Eight pages, one per kind the builder has a branch for:
 
 **Google Rich Results Test** — <https://search.google.com/test/rich-results>
 
-- [ ] Pages 1–7: **Breadcrumbs** is detected as one valid item, with **0 errors**.
-- [ ] Page 8: **0 errors**. A `Logo` item may or may not be detected; either is fine,
+- [x] Pages 1–7: **Breadcrumbs** is detected as one valid item, with **0 errors**.
+- [x] Page 8: **0 errors**. A `Logo` item may or may not be detected; either is fine,
       the `Organization` node is there for consumers rather than for a rich result.
-- [ ] Every page: no item is reported *invalid*. "No items detected" for
+- [x] Every page: no item is reported *invalid*. "No items detected" for
       `CreativeWork`, `ItemList` or `DefinedTerm` is **expected and not a failure** —
       the tool only reports the types Google has a rich result for, and none of those
       do. This is the trap to avoid reading as a problem.
-- [ ] Any warning is written down here with a decision beside it.
+- [ ] Any warning is written down here with a decision beside it. **None was reported
+      back**, so there is nothing below; this box stays open because it records an act
+      of writing down, and no warning was passed on to write.
 
 **`validator.schema.org`** — <https://validator.schema.org/> — **run: no errors, no
 warnings.** The boxes below stay unticked because the pass was reported as a verdict
@@ -946,8 +950,13 @@ over the output rather than page by page.
       has the reasoning; a validator that rewrites them is telling us something).
 
 Record the outcome in this section: eight lines, page and verdict. If nothing is
-wrong, that is still the record that it was looked at. So far there is one line:
-**`validator.schema.org`, whole output, no errors and no warnings.**
+wrong, that is still the record that it was looked at. Two lines so far, and the
+difference between them is deliberate: **Google Rich Results Test, the eight pages
+above, passed with `BreadcrumbList` detected as one valid item and no errors**, and
+**`validator.schema.org`, whole output, no errors and no warnings**. Only the first
+carries a page-by-page coverage claim, which is why only its boxes are ticked; the
+validator's verdict was reported over the output rather than page by page, and ticking
+its boxes on the strength of the other tool's run would be inventing coverage.
 
 ---
 
@@ -1007,9 +1016,9 @@ second, and phase 1 is neither: either group can ship without the other, and the
 **All of them are done.** The commit each became is in the last column; phase 0 was a
 throwaway build and left none. A ninth commit, `65d96f7`, sits outside the table: it
 fixes the `app/robots.ts` comment phase 1 wrote, and is a correction rather than a
-phase. The **one thing on this branch that is not finished is the Rich Results Test
-half of §8.1**, which lives inside phase 6 and needs a browser and a staging URL
-rather than another commit.
+phase. **Nothing on this branch is unfinished:** the manual validation of §8.1, which
+lives inside phase 6 and needed a browser rather than another commit, is done on both
+halves.
 
 | # | phase | why here | commit |
 |---|---|---|---|
@@ -1021,7 +1030,7 @@ rather than another commit.
 | 4 | The structured-data builder and the entity pages | `lib/content/structured-data.ts` plus the four entity branches, with unit tests over the fixture graph. | `bf17bd7` |
 | 5 | The list pages and the site nodes | the four list kinds, and `Organization` + `WebSite` on the locale root. | `1ce3b05` |
 | 5a | `llms.txt` | the generator, the prebuild wiring, and the `Allow` line in `robots.ts` — D10 and D9. Independent of the JSON-LD; sequenced here only because it wants the counts the graph already gives phase 5. | `3f2b5cc` |
-| 6 | The JSON-LD gate, the validators, and the living doc | the postbuild parse/id gate, the Rich Results Test and `validator.schema.org` by hand on staging, and the second paragraph in the living doc. | `f4a5e96` — **the Rich Results Test half of §8.1 is still outstanding** |
+| 6 | The JSON-LD gate, the validators, and the living doc | the postbuild parse/id gate, the Rich Results Test and `validator.schema.org` by hand on staging, and the second paragraph in the living doc. | `f4a5e96` — **§8.1 done by hand afterwards, both tools** |
 | 7 | Close out | measurements back into §2, and any follow-up written down where it belongs — option B of §4.1, and the JSON-LD design's own §10 list. | this document |
 
 ## 11. Out of scope

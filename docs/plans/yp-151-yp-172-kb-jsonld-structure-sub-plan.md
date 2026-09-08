@@ -7,11 +7,11 @@
 the builder, `components/kb/StructuredData.tsx` renders it,
 `test/structured-data.test.mjs` tests it over the fixture graph, and
 `scripts/check-structured-data.mjs` gates the export. 542 blocks ship — 537 entity
-pages, four list pages, and the locale root. **The one thing not done is half of the
-manual vocabulary validation** (§8.1 of the parent plan): `validator.schema.org` has
-been run by hand over the output and reported no errors and no warnings; Google's Rich
-Results Test has not been run. §8 and §10 below say what changed between the design and
-the build.
+pages, four list pages, and the locale root. **Nothing is outstanding.** The manual
+vocabulary validation (§8.1 of the parent plan) is done on both halves:
+`validator.schema.org` was run by hand over the output and reported no errors and no
+warnings, and Google's Rich Results Test passed with `BreadcrumbList` detected as one
+valid item. §8 and §10 below say what changed between the design and the build.
 Written to be read by someone who has never used JSON-LD, so §§1–2 explain the format
 before §§3–7 design ours.
 **Every example below is real** — the names, URLs, ids, terms, and dates were taken
@@ -847,7 +847,7 @@ and no id declared twice on a page.
 ## 9. How it gets checked
 
 A malformed block produces nothing and says nothing, so it needs a gate rather than a
-glance. All three exist; the third is the one still outstanding.
+glance. All three exist, and all three have been run.
 
 - **Unit tests** over the fixture graph: the shape per page kind, the `@id`s, and the
   relations — a proof's `isPartOf` is its theorem, a theorem's `hasPart` are its
@@ -882,10 +882,11 @@ glance. All three exist; the third is the one still outstanding.
 
 - **By hand, once per page kind, on staging:** Google's Rich Results Test (expect the
   breadcrumb to be detected and nothing to be in error) and `validator.schema.org`
-  (expect no warnings we did not choose). **`validator.schema.org` is done: no errors
-  and no warnings, so nothing in §7's list of deliberate omissions drew a complaint.
-  The Rich Results Test is not done** — §8.1 of the parent plan is the checklist, and
-  that half is the one unfinished item of this work.
+  (expect no warnings we did not choose). **Both are done.** `validator.schema.org`
+  reported no errors and no warnings, so nothing in §7's list of deliberate omissions
+  drew a complaint; the Rich Results Test passed over the eight pages of §8.1, with
+  `BreadcrumbList` detected as one valid item and no errors — the one expectation §1.5
+  says Google is here for.
 
 ---
 
