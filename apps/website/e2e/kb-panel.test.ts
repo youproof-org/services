@@ -78,44 +78,85 @@ async function expectSettled(page: Page) {
   await expect.poll(() => panelTop(page)).toBe(page.viewportSize()!.height / 2)
 }
 
-/** What the panel is doing two frames after a chrome button was pressed. */
-interface SlideSample {
+/** What the panel was doing on one frame after a chrome button was pressed. */
+interface SlideFrame {
   /** Where the panel is — its resting place already, or somewhere on the way. */
   top: number
   /** The CSS transitions actually running on it, by property. */
   running: string[]
 }
 
+interface SlideTrace {
+  /** Where the panel sat on the frame the button was pressed. */
+  start: number
+  /** Every frame from the press until the panel stopped moving. */
+  frames: SlideFrame[]
+  /** Where it came to rest. */
+  end: number
+}
+
 /**
- * Press a chrome button and sample the panel on the second frame afterwards.
+ * Press a chrome button and record the panel frame by frame until it stops moving.
  *
  * The press happens IN the page rather than through `locator.click()`, and this is
  * the one place in the suite that does so. The question is what the panel does in
  * the first few milliseconds, and a Playwright click plus a separate read puts a
  * protocol round trip of unpredictable length in between — enough, measured, for a
- * 280ms slide to be over about a third of the time. Two animation frames is a
- * fixed, small distance into the movement instead.
+ * 280ms slide to be over about a third of the time.
+ *
+ * **A trace, not a sample on a chosen frame.** The frame the press lands on is not
+ * the frame the panel moves on: React applies the new state in its own time, and on
+ * a loaded CI runner that has been measured arriving later than the two frames this
+ * used to wait — which is how a reduced-motion close came to be read at the still
+ * open position and fail a deploy in 2026-09. Whether the sheet slid is a question
+ * about the whole journey, so the whole journey is recorded and the callers quantify
+ * over it.
  */
-async function pressAndSample(page: Page, caption: string): Promise<SlideSample> {
+async function pressAndTraceSlide(page: Page, caption: string): Promise<SlideTrace> {
   return page.evaluate((label) => {
     const button = Array.from(document.querySelectorAll<HTMLButtonElement>('.menu-stack_item'))
       .find((candidate) => candidate.textContent?.trim() === label)
     if (!button) throw new Error(`no chrome button captioned '${label}'`)
+    const panel = document.getElementById('kb-panel')!
+    const read = (): SlideFrame => ({
+      top: panel.getBoundingClientRect().top,
+      running: panel
+        .getAnimations()
+        .map((animation) => String((animation as { transitionProperty?: string }).transitionProperty ?? '')),
+    })
+    const start = read().top
+    const began = performance.now()
     button.click()
-    return new Promise<SlideSample>((resolve) => {
-      requestAnimationFrame(() =>
-        requestAnimationFrame(() => {
-          const panel = document.getElementById('kb-panel')!
-          resolve({
-            top: panel.getBoundingClientRect().top,
-            running: panel
-              .getAnimations()
-              .map((animation) => String((animation as { transitionProperty?: string }).transitionProperty ?? '')),
-          })
-        }),
-      )
+    return new Promise<SlideTrace>((resolve) => {
+      const frames: SlideFrame[] = []
+      let moved = false
+      let still = 0
+      const tick = () => {
+        const frame = read()
+        const previous = frames[frames.length - 1]
+        frames.push(frame)
+        if (frame.top !== start) moved = true
+        still = previous && previous.top === frame.top ? still + 1 : 0
+        // Settled: it has moved, and has held one position for several frames since.
+        // `moved` is the guard that matters — until the press is applied the panel
+        // sits at `start`, which on its own would read as "already settled".
+        if ((moved && still >= 5) || performance.now() - began > 4000) {
+          resolve({ start, frames, end: frame.top })
+          return
+        }
+        requestAnimationFrame(tick)
+      }
+      requestAnimationFrame(tick)
     })
   }, caption)
+}
+
+/**
+ * The positions the trace rendered that are neither where it started nor where it
+ * stopped — i.e. the evidence of a slide.
+ */
+function midFlight(trace: SlideTrace): SlideFrame[] {
+  return trace.frames.filter((frame) => frame.top !== trace.start && frame.top !== trace.end)
 }
 
 /** Menü → Kontextus, the two presses that put the panel up, and the slide done. */
@@ -263,18 +304,25 @@ test.describe('the Kontextus panel', () => {
     const viewport = page.viewportSize()!
     await chromeButton(page, MENU).click()
 
-    // Two frames in, the panel is on its way rather than arrived — and it is a
-    // transition of the transform doing it, not a jump.
-    const opening = await pressAndSample(page, CONTEXT)
-    expect(opening.running).toContain('transform')
-    expect(opening.top).toBeGreaterThan(viewport.height / 2)
+    // The panel was caught on its way rather than only arrived — and it is a
+    // transition of the transform doing it, not a jump. Both halves are asked of the
+    // same frames, so "it moved" and "a transform moved it" cannot be satisfied by
+    // two different moments.
+    const opening = await pressAndTraceSlide(page, CONTEXT)
+    expect(opening.end).toBe(viewport.height / 2)
+    expect(
+      midFlight(opening).filter((frame) => frame.running.includes('transform')),
+      'the panel never appeared between off-screen and its resting place',
+    ).not.toEqual([])
     await expectSettled(page)
 
     // §6.4: it slides back DOWN off-screen on close, rather than simply going away.
-    const closing = await pressAndSample(page, BACK)
-    expect(closing.running).toContain('transform')
-    expect(closing.top).toBeLessThan(viewport.height)
-    await expect.poll(() => panelTop(page)).toBe(viewport.height)
+    const closing = await pressAndTraceSlide(page, BACK)
+    expect(closing.end).toBe(viewport.height)
+    expect(
+      midFlight(closing).filter((frame) => frame.running.includes('transform')),
+      'the panel never appeared between its resting place and off-screen',
+    ).not.toEqual([])
   })
 
   test('a link inside the panel navigates, and leaves the page scrollable', async ({ page }) => {
@@ -321,19 +369,24 @@ test.describe('the panel under prefers-reduced-motion', () => {
     const viewport = page.viewportSize()!
     await chromeButton(page, MENU).click()
 
-    // The same sample the slide test takes, and the discriminating one: nothing is
-    // animating, and the panel is at its resting place on the very frame it opens.
-    const opening = await pressAndSample(page, CONTEXT)
-    expect(opening.running).toEqual([])
-    expect(opening.top).toBe(viewport.height / 2)
+    // The same trace the slide test takes, read for the opposite answer: across the
+    // whole journey nothing ever animated, and the panel was never anywhere but
+    // off-screen or at its resting place. Asking it of every frame rather than of one
+    // chosen frame is what makes it a statement about the panel instead of about how
+    // promptly the runner applied the press.
+    const opening = await pressAndTraceSlide(page, CONTEXT)
+    expect(opening.end).toBe(viewport.height / 2)
+    expect(opening.frames.flatMap((frame) => frame.running)).toEqual([])
+    expect(midFlight(opening), 'the panel was caught part-way: it slid').toEqual([])
     await expect(page.locator(PANEL)).toBeVisible()
     await expect(page.locator(PANEL)).toHaveCSS('transition-duration', '0s')
 
     // …and it disappears the same way. Nothing else about the panel changes:
     // reduced motion removes the movement, not the panel (§6.4).
-    const closing = await pressAndSample(page, BACK)
-    expect(closing.running).toEqual([])
-    expect(closing.top).toBe(viewport.height)
+    const closing = await pressAndTraceSlide(page, BACK)
+    expect(closing.end).toBe(viewport.height)
+    expect(closing.frames.flatMap((frame) => frame.running)).toEqual([])
+    expect(midFlight(closing), 'the panel was caught part-way: it slid').toEqual([])
     await expect(page.locator(PANEL)).toBeHidden()
     await expect(page.locator(`${PANEL} .panel_contextLevel a`)).toHaveCount(2)
   })

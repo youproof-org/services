@@ -113,6 +113,16 @@ const GESTURE_MS = SHRINK_MS + HOLD_MS + FADE_MS
 const OUTSET_TIGHT = 4
 const OUTSET_WIDE = 26
 
+/**
+ * How long to wait for a marker whose target has to be scrolled to.
+ *
+ * The default 5s is a bet that the arrival scroll is quick, and it is not: the term
+ * target is 34000px down its chapter and the page eases onto it over about 1.5
+ * seconds on an idle runner. Kept well inside the 30s default test timeout, which
+ * the navigation ahead of it has to come out of too.
+ */
+const MARK_WAIT = { timeout: 15_000 }
+
 /** `next.config.ts` names every CSS-module class of ours `<file>_<local>`. */
 const MARKER = '[data-kb-arrival-marker]'
 const OVERLAY = '.overlay_overlay'
@@ -124,6 +134,8 @@ const TERMS = 'Fogalmak'
 
 /** One animation frame of one marker, with the target it was framing at that moment. */
 interface MarkerFrame {
+  /** The timestamp of the frame that wrote it: the component's own clock. */
+  at: number
   top: number
   left: number
   width: number
@@ -180,6 +192,28 @@ async function installRecorder(context: BrowserContext) {
     let node: Element | null = null
     let current: Recorded | null = null
 
+    /**
+     * The timestamp of the frame being drawn, which is the clock the component times
+     * itself by.
+     *
+     * `performance.now()` inside the observer's callback is NOT that clock. The
+     * callback runs at the end of the task that wrote the boxes, so its reading lags
+     * the write by however long the rest of that frame took — measured at about 180ms
+     * on a loaded runner drawing 22 of them, which is most of the window a hold is
+     * timed against, and it does not cancel between two frames. Every
+     * `requestAnimationFrame` callback of one frame is handed the same timestamp
+     * instead, and this loop is registered from the init script, before React has
+     * loaded, so it is always ahead of the component's own loop in the frame. Elapsed
+     * times taken as differences of `at` are therefore the component's own, exactly,
+     * and nothing below needs a tolerance for the clock.
+     */
+    let frameAt = performance.now()
+    const clock = (now: number) => {
+      frameAt = now
+      requestAnimationFrame(clock)
+    }
+    requestAnimationFrame(clock)
+
     const sample = (element: Element) => {
       const anchor = element.getAttribute('data-kb-arrival-marker') ?? ''
       // A new entry when the element is a new one OR when React reused the node for
@@ -195,6 +229,7 @@ async function installRecorder(context: BrowserContext) {
       // separator in a selector (see `lib/content/urls.ts`).
       const target = document.getElementById(anchor)?.getBoundingClientRect()
       current.frames.push({
+        at: frameAt,
         top: marker.top,
         left: marker.left,
         width: marker.width,
@@ -231,11 +266,18 @@ function recorded(page: Page): Promise<Recorded[]> {
 
 /** The one marker this page produced, once it has finished and gone. */
 async function oneCompletedMarker(page: Page): Promise<Recorded> {
-  await expect.poll(async () => (await recorded(page)).length).toBe(1)
+  await expect.poll(async () => (await recorded(page)).length, MARK_WAIT).toBe(1)
   await expect(page.locator(MARKER)).toHaveCount(0)
   const all = await recorded(page)
   expect(all).toHaveLength(1)
   return all[0]
+}
+
+/** The component's own curve: how far outside its target the box sits at `elapsed`. */
+function outsetAt(elapsed: number) {
+  const closing = Math.min(1, Math.max(0, elapsed) / SHRINK_MS)
+  const eased = 1 - (1 - closing) ** 3
+  return OUTSET_WIDE + (OUTSET_TIGHT - OUTSET_WIDE) * eased
 }
 
 /** How far outside the target each edge of the frame sat, per frame. */
@@ -253,6 +295,21 @@ async function settleConsent(page: Page) {
   const reject = page.getByRole('button', { name: 'Elutasítom', exact: true })
   await reject.click()
   await expect(reject).toBeHidden()
+}
+
+/**
+ * Wait until this page's own scripts are running.
+ *
+ * The negative tests below wait out the gesture and then read an empty list, which is
+ * a result about the marker only if the marker's code was running while they waited —
+ * a page whose bundle never arrived records nothing either, and would pass them.
+ * Nothing in this witness is in the static export: the consent banner is a client
+ * component and a fresh context carries no decision, so its appearance is the moment
+ * the export handed over. The tests that settle the decision have waited for it
+ * already, by clicking it.
+ */
+async function hydrated(page: Page) {
+  await expect(page.getByRole('button', { name: 'Elutasítom', exact: true })).toBeVisible()
 }
 
 /** Follow one reference mark in the body, and hand back the tab it opened. */
@@ -308,6 +365,23 @@ test.describe('following a reference into another chapter', () => {
     const popup = await followReference(context, page, `${SECTION_TARGET}#${SECTION_ANCHOR}`)
     expect(new URL(popup.url()).hash).toBe(`#${SECTION_ANCHOR}`)
 
+    // "Scroll only" is the other half of the row, so the scroll has to be there — and
+    // it is read FIRST, because it is also this page's receipt for having acted on the
+    // arrival. Read after the wait it was both: a page that had not got there yet
+    // failed on the scroll, and a page that never ran at all would have passed the
+    // "nothing was marked" half for the wrong reason.
+    await expect
+      .poll(
+        () =>
+          popup.evaluate(
+            (anchor) => document.getElementById(anchor)!.getBoundingClientRect().top,
+            SECTION_ANCHOR,
+          ),
+        MARK_WAIT,
+      )
+      .toBeLessThan(popup.viewportSize()!.height)
+    expect(await popup.evaluate(() => window.scrollY)).toBeGreaterThan(0)
+
     // The mutation check, as a test: the clause above is "a marker appeared and
     // framed the target", and here the same recorder is read after the same kind of
     // arrival on the same kind of page, and must find nothing. Waited out in full —
@@ -315,14 +389,6 @@ test.describe('following a reference into another chapter', () => {
     await popup.waitForTimeout(GESTURE_MS * 2)
     expect(await recorded(popup)).toEqual([])
     await expect(popup.locator(MARKER)).toHaveCount(0)
-
-    // "Scroll only" is the other half of the row, so the scroll has to be there.
-    const heading = await popup.evaluate((anchor) => {
-      const rect = document.getElementById(anchor)!.getBoundingClientRect()
-      return { top: rect.top, scrollY: window.scrollY }
-    }, SECTION_ANCHOR)
-    expect(heading.scrollY).toBeGreaterThan(0)
-    expect(heading.top).toBeLessThan(popup.viewportSize()!.height)
   })
 })
 
@@ -400,7 +466,7 @@ test.describe('arriving on an entity page', () => {
     const before = await page.evaluate(() => window.scrollY)
     await page.mouse.click(spot.x, spot.y)
     await expect(page.locator(PANEL)).toBeVisible()
-    await expect.poll(() => page.evaluate(() => window.scrollY)).not.toBe(before)
+    await expect.poll(() => page.evaluate(() => window.scrollY), MARK_WAIT).not.toBe(before)
 
     // And the three back steps out of it. Each is a `popstate` on the page's single
     // URL, fragment included, which is why `popstate` is not one of the marker's
@@ -462,15 +528,33 @@ test.describe('the shape of the gesture', () => {
     for (let i = 1; i < spread.length; i += 1) {
       expect(spread[i].top).toBeLessThanOrEqual(spread[i - 1].top + 0.01)
     }
-    // It really moved over several frames rather than in one step.
-    const shrinking = spread.filter((frame) => frame.top > OUTSET_TIGHT + 0.5).length
-    expect(shrinking).toBeGreaterThan(3)
+    // And every sample of the shrink sits on the component's own curve at the moment
+    // that sample was drawn, which reads the movement's LENGTH as well as its shape.
+    // Timed rather than counted: counting the samples above OUTSET_TIGHT asked the
+    // runner for four frames inside 320ms, so a runner delivering them any sparser
+    // than 80ms failed a correct animation — while a curve is a curve at any frame
+    // rate, and two samples on it say more than four samples anywhere. No tolerance
+    // for the clock, because there is no clock error to allow for: `at` is the frame's
+    // own timestamp (see the recorder), so the elapsed time here is the one the
+    // component itself worked from. Half a pixel is subpixel layout, and nothing else.
+    const tight = marker.frames.findIndex((_, i) => spread[i].top <= OUTSET_TIGHT + 0.5)
+    for (let i = 0; i <= tight; i += 1) {
+      expect(spread[i].top).toBeCloseTo(outsetAt(marker.frames[i].at - marker.frames[0].at), 0)
+    }
 
     // Held at full strength, then faded to nothing — and the fade is the end of it.
+    // The hold is timed for the reason the shrink is: the first sample off full opacity
+    // cannot be drawn before the component's own `fadeAt`, so one sample reads the
+    // length of the hold where counting four full-opacity samples needed the frames to
+    // be close together. A gesture that faded at once measures near zero. The hold
+    // itself is not sampled at all — it writes the same five style values every frame,
+    // and a value that did not change is not reported as a mutation.
     const opacity = marker.frames.map((frame) => frame.opacity)
     expect(Math.max(...opacity)).toBe(1)
     expect(opacity[opacity.length - 1]).toBeLessThan(0.2)
-    expect(opacity.filter((value) => value === 1).length).toBeGreaterThan(3)
+    const fading = marker.frames.find((frame) => frame.opacity < 1)
+    expect(fading, 'the marker never left full opacity').toBeDefined()
+    expect(fading!.at - marker.frames[0].at).toBeGreaterThan(SHRINK_MS + HOLD_MS)
 
     // The frame is a decoration and nothing else: it is not in the way of the reader
     // pressing what it is around, and it sits at the layer `_variables.scss` gives it
@@ -501,7 +585,6 @@ test.describe('the shape of the gesture', () => {
     // Still a mark. §6.4 removes the movement, not the marker — showing the reader
     // where they landed is its job.
     expect(marker.anchor).toBe(TERM_ANCHOR)
-    expect(marker.frames.length).toBeGreaterThan(3)
 
     // And no shrink: already at its final size on the very first frame, and on every
     // frame after it. The discriminating trace against the animated one above, which
@@ -512,10 +595,16 @@ test.describe('the shape of the gesture', () => {
       expect(frame.width).toBeCloseTo(OUTSET_TIGHT, 0)
       expect(frame.height).toBeCloseTo(OUTSET_TIGHT, 0)
     }
-    // The one thing it still does is fade.
+    // The one thing it still does is fade, and it holds for the hold's own length
+    // first — the animated case's reading with the shrink §6.4 removes taken out of
+    // it, which is also what the sample count here was standing in for: a marker that
+    // really played rather than flickered.
     const opacity = marker.frames.map((frame) => frame.opacity)
     expect(opacity[0]).toBe(1)
     expect(opacity[opacity.length - 1]).toBeLessThan(0.2)
+    const fading = marker.frames.find((frame) => frame.opacity < 1)
+    expect(fading, 'the marker never left full opacity').toBeDefined()
+    expect(fading!.at - marker.frames[0].at).toBeGreaterThan(HOLD_MS)
   })
 })
 
@@ -523,6 +612,7 @@ test.describe('a fragment the site does not mark', () => {
   test('a page opened without one is never marked', async ({ context, page }) => {
     await installRecorder(context)
     await page.goto(TERM_TARGET)
+    await hydrated(page)
     await page.waitForTimeout(GESTURE_MS * 2)
     expect(await recorded(page)).toEqual([])
   })
@@ -530,6 +620,7 @@ test.describe('a fragment the site does not mark', () => {
   test('a fragment change nobody pressed is not an arrival', async ({ context, page }) => {
     await installRecorder(context)
     await page.goto(`${TERM_TARGET}#${UNMARKED_ON_TERM_PAGE}`)
+    await hydrated(page)
     await page.waitForTimeout(GESTURE_MS * 2)
     expect(await recorded(page)).toEqual([])
 
