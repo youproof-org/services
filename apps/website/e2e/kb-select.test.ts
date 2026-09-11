@@ -588,25 +588,67 @@ async function placeCandidateAt(page: Page, id: string, fraction: number) {
 
 /**
  * Press a candidate in-page and watch the page and the panel, frame by frame, until
- * the sheet has landed.
+ * both movements have stopped.
  *
- * In-page for the same reason as `kb-panel.test.ts`'s `pressAndSample`: the question
- * is what happens in the first few milliseconds, and a Playwright click followed by
- * a separate read puts a protocol round trip of unpredictable length in the middle.
- * Frame by frame because §6.4's "one gesture" is a claim about two DURATIONS — the
- * page has to be moving while the sheet is still on its way, and it has to be
- * finished by the time the sheet has landed — and a single sample can only answer
- * half of it.
+ * In-page for the same reason as `kb-panel.test.ts`'s `pressAndTraceSlide`: the
+ * question is what happens in the first few milliseconds, and a Playwright click
+ * followed by a separate read puts a protocol round trip of unpredictable length in
+ * the middle. Frame by frame because §6.4's "one gesture" is a claim about two
+ * DURATIONS — the page has to be moving while the sheet is still on its way, and it
+ * has to be finished by the time the sheet has landed — and a single sample can only
+ * answer half of it.
+ *
+ * **The whole trace is returned, and nothing is measured across the two movements.**
+ * They are the same 280ms long but they do not start together: the sheet is a CSS
+ * transition that starts when React paints the press, while the scroll is the rAF
+ * loop in `components/kb/Panel.tsx`, started from the passive `useEffect` in
+ * `EntityChrome.tsx` that runs AFTER that paint. The distance between the two starts
+ * is therefore whatever the runner's effect flush costs — measured here at 220ms of
+ * a 280ms gesture under load, against about a frame when idle — and it is unbounded.
+ * So "how far along was the scroll when the sheet landed" is a reading of the
+ * runner, not of the site, and it is the reading that failed three of the four
+ * `deploy / website` browser-test failures of 2026-09. Each movement is timed
+ * against its own start instead; see `scrollSpan`.
  */
 interface Gesture {
   /** Where the page was when the candidate was pressed. */
   before: number
-  /** Four frames in: early enough that a 280ms movement is nowhere near done. */
-  early: { scrollY: number; panelTop: number }
-  /** The frame the sheet reached its resting place on, and the scroll then. */
-  arrival: { scrollY: number; frame: number }
+  /** Every frame from the press until the sheet landed and the page stopped. */
+  frames: { t: number; scrollY: number; panelTop: number }[]
   /** Where the page came to rest. */
   final: number
+}
+
+/**
+ * How long the sheet takes to arrive: the `280ms` of `panel.module.scss`, which
+ * `components/kb/Panel.tsx` deliberately gives the scroll as well.
+ */
+const PANEL_SLIDE_MS = 280
+
+/**
+ * How long the page took to travel, and how sharply the trace could say so.
+ *
+ * The scroll's real start and its real finish each fall somewhere inside the frame
+ * gap before the frame they were first seen on, so `ms` — measured from the last
+ * frame that had not moved to the first frame that had arrived — is the true
+ * duration plus at most two gaps. `slack` reports the widest gap the trace saw, so
+ * the caller can allow exactly the imprecision the frame rate imposed instead of
+ * guessing at a tolerance. A runner too starved to render faster than the gesture
+ * yields a large `slack` and a correspondingly blunt check, which is the honest
+ * outcome: a 280ms movement cannot be timed with 300ms frames.
+ */
+function scrollSpan(gesture: Gesture): { ms: number; slack: number } {
+  const moving = gesture.frames.findIndex((sample) => sample.scrollY !== gesture.before)
+  const arrived = gesture.frames.findIndex(
+    (sample, index) => index >= moving && sample.scrollY === gesture.final,
+  )
+  const gaps = gesture.frames
+    .slice(1, arrived + 1)
+    .map((sample, index) => sample.t - gesture.frames[index].t)
+  return {
+    ms: gesture.frames[arrived].t - gesture.frames[Math.max(0, moving - 1)].t,
+    slack: Math.max(...gaps),
+  }
 }
 
 function pressAndTraceGesture(page: Page, id: string): Promise<Gesture> {
@@ -617,22 +659,25 @@ function pressAndTraceGesture(page: Page, id: string): Promise<Gesture> {
         const panel = document.getElementById('kb-panel')!
         const half = window.innerHeight / 2
         const before = window.scrollY
-        let early: Gesture['early'] | null = null
-        let arrival: Gesture['arrival'] | null = null
-        let frame = 0
+        const frames: Gesture['frames'] = []
+        let landed = false
+        let still = 0
+        const began = performance.now()
 
         element.click()
         const tick = () => {
-          frame += 1
           const panelTop = panel.getBoundingClientRect().top
-          if (frame === 4) early = { scrollY: window.scrollY, panelTop }
-          if (arrival === null && panelTop <= half) {
-            arrival = { scrollY: window.scrollY, frame }
-          }
-          // A few frames past the landing, so `final` is a settled position and not
-          // the same reading as `arrival` by construction.
-          if ((arrival !== null && frame > arrival.frame + 10) || frame > 300) {
-            resolve({ before, early: early!, arrival: arrival!, final: window.scrollY })
+          const scrollY = window.scrollY
+          const previous = frames[frames.length - 1]
+          frames.push({ t: performance.now(), scrollY, panelTop })
+          if (panelTop <= half) landed = true
+          still = previous && previous.scrollY === scrollY ? still + 1 : 0
+          // Settled: the sheet has landed and the page has held one position for
+          // several frames since, so `final` is a resting place. `landed` is the
+          // guard that matters — until the press is painted nothing has moved yet,
+          // which on its own would read as "already settled" on the first frame.
+          if ((landed && still >= 5) || performance.now() - began > 4000) {
+            resolve({ before, frames, final: scrollY })
             return
           }
           requestAnimationFrame(tick)
@@ -873,16 +918,24 @@ test.describe('Fogalmak — level 2', () => {
     // somewhere else entirely.
     expect(gesture.final).not.toBe(gesture.before)
 
-    // Four frames in, the sheet is still on its way and the page is already moving.
-    // Neither waits for the other, which is the first half of "one gesture" (§6.4).
-    expect(gesture.early.panelTop).toBeGreaterThan(viewport.height / 2)
-    expect(gesture.early.scrollY).not.toBe(gesture.before)
-    // …and it is eased rather than jumped: four frames in it is on the way, not there.
-    expect(gesture.early.scrollY).not.toBe(gesture.final)
+    // "One gesture" (§6.4) is a claim about the two DURATIONS: the page's journey is
+    // the sheet's journey, so the selection is in place by the time the sheet has
+    // landed. The page's own journey is what is timed here — from its own start,
+    // never across to the sheet's landing frame, which is a measure of React's
+    // effect flush rather than of the site (see `pressAndTraceGesture`).
+    const span = scrollSpan(gesture)
 
-    // The second half, and the one the wording is explicit about: the selection is
-    // ALREADY IN PLACE by the time the panel has finished arriving (§6.4).
-    expect(gesture.arrival.scrollY).toBe(gesture.final)
+    // It borrowed the slide's length rather than picking its own. This is the
+    // assertion `components/kb/Panel.tsx` drives its scroll frame by frame to
+    // satisfy: `behavior: 'smooth'` takes its duration from the distance, and over a
+    // journey this long it runs far past the sheet. `slack` is the frame rate's own
+    // imprecision, so a loaded runner widens the window instead of failing.
+    expect(span.ms).toBeLessThanOrEqual(PANEL_SLIDE_MS + 2 * span.slack)
+
+    // …and it eased over that time rather than jumping and waiting, which is what
+    // separates this from the reduced-motion gesture below. A jump measures one
+    // frame gap, not half a slide.
+    expect(span.ms).toBeGreaterThanOrEqual(PANEL_SLIDE_MS / 2)
   })
 
   test('Vissza returns to level 1, and a second Vissza to the open menu', async ({ page }) => {
@@ -988,12 +1041,18 @@ test.describe('level 2 under prefers-reduced-motion', () => {
     await placeCandidateAt(page, BELOW_FOLD_TERM, 0.8)
 
     // The discriminating trace, against the animated one above: the page has moved,
-    // and on the very first frames it is ALREADY where it is going. Nothing is
-    // removed — the selection still ends up in the free upper half (§6.4).
+    // and it was never in transit on the way. Nothing is removed — the selection
+    // still ends up in the free upper half (§6.4).
     const gesture = await pressAndTraceGesture(page, BELOW_FOLD_TERM)
     expect(gesture.final).not.toBe(gesture.before)
-    expect(gesture.early.scrollY).toBe(gesture.final)
-    expect(gesture.arrival.scrollY).toBe(gesture.final)
+    // No frame ever caught the page part-way: it is where it was until the press is
+    // applied and where it is going immediately after, with nothing in between. That
+    // is the whole of "jumps rather than eases", and every frame has to satisfy it —
+    // reading one chosen frame only asks whether the press had been applied by then.
+    const partWay = gesture.frames.filter(
+      (sample) => sample.scrollY !== gesture.before && sample.scrollY !== gesture.final,
+    )
+    expect(partWay, 'the page was caught part-way: the scroll eased rather than jumped').toEqual([])
 
     const viewport = page.viewportSize()!
     const box = await boxOf(page, BELOW_FOLD_TERM)
