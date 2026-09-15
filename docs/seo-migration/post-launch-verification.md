@@ -78,11 +78,27 @@ Run against `youproof.org` / `youproof.hu`.
   Confirm: real production URLs, `<lastmod>` present, landing pages excluded, no
   staging URLs leaking.
 - [ ] **[MANUAL]** Confirm **no** `X-Robots-Tag: noindex` and **no** `noindex` meta
-  on a production page (production must be indexable):
+  on a production **content** page (production must be indexable):
   ```bash
   curl -sI https://youproof.org/hu | grep -i x-robots-tag        # expect: no output
   curl -s  https://youproof.org/hu | grep -i 'name="robots"'      # expect: no noindex
   ```
+- [ ] **[AUTO]** The [stub pages](../content-site-and-static-generation.md#what-is-indexable)
+  carry their directive and the content pages carry none. _(gate:
+  `check-robots-meta.mjs`, in the website's `postbuild` — so a build that got this
+  wrong never reaches R2.)_ To eyeball it on the live host, pick one of each:
+  ```bash
+  # a not-migrated stub -> noindex, follow
+  curl -s https://youproof.org/hu/cikkek/a-vegtelenen-tul | grep -o 'name="robots" content="[^"]*"'
+  # an unavailable stub -> noindex, nofollow
+  curl -s https://youproof.org/hu/konyvek | grep -o 'name="robots" content="[^"]*"'
+  ```
+  `robots.txt` must stay `Allow: /` for these to have any effect — a crawler that is
+  not allowed to fetch the page never reads the directive on it.
+- [ ] **[MANUAL]** **Google Search Console** — the stub URLs that were indexed before
+  the directive shipped leave the index only on a recrawl, over days to weeks. Watch
+  **Pages → Excluded by 'noindex' tag** for the count rising, and use **Removals** for
+  a temporary hide on any that need to be gone sooner.
 - [ ] **[MANUAL]** **Facebook Sharing Debugger** on the production URLs (one per
   type) — re-scrape and confirm the cards + OG images are correct on the real host.
 - [ ] **[MANUAL]** **Google Search Console** — submit `https://youproof.org/sitemap.xml`;

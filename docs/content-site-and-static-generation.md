@@ -13,8 +13,8 @@ is uploaded to an R2 bucket and served through the CDN (see
   - `CONTENT_DIR` — path to the content repo's `content/` subdir (the same var
     the [worker manifest generator](migration-worker.md#the-migration-manifest-generated-from-content)
     reads).
-  - `SITE_ENV` — `staging` | `production`, controls the
-    [noindex gate](#noindex-on-staging) **and** the
+  - `SITE_ENV` — `staging` | `production`, controls [what is
+    indexable](#what-is-indexable) **and** the
     [knowledge-base page set](#knowledge-base-pages): unset (local dev) exports a
     page for every entity, `staging`/`production` only for those whose embedding
     chapter is published.
@@ -251,12 +251,15 @@ Migrated chapters can link to chapters that aren't migrated yet. To avoid hard
 (published or not), so every referenced chapter path resolves to a real static
 page. Behavior by case:
 
-| Case | Page generated |
-| --- | --- |
-| `published: true` | Normal chapter content. |
-| `published: false` + `legacyPath` | `NotMigratedStub` — "not migrated yet", with a link to `https://youproof.hu{legacyPath}` (legacy host). |
-| `published: false`, no `legacyPath` | `UnavailableStub` — generic "Sorry" not-found page (no legacy link). |
-| Path with no YAML at all | Next.js `not-found.tsx` (generic Sorry) at build; a genuinely non-existent path with no object falls through to the [CDN/bare-404 case](cdn-and-r2.md#custom-404-limitation). |
+| Case | Page generated | Robots directive on production |
+| --- | --- | --- |
+| `published: true` | Normal chapter content. | none (indexable) |
+| `published: false` + `legacyPath` | `NotMigratedStub` — "not migrated yet", with a link to `https://youproof.hu{legacyPath}` (legacy host). | `noindex, follow` |
+| `published: false`, no `legacyPath` | `UnavailableStub` — generic "Sorry" not-found page (no legacy link). | `noindex, nofollow` |
+| Path with no YAML at all | Next.js `not-found.tsx` (generic Sorry) at build; a genuinely non-existent path with no object falls through to the [CDN/bare-404 case](cdn-and-r2.md#custom-404-limitation). | `noindex, nofollow` |
+
+The two container-root dead ends — `/{locale}/konyvek` and `/{locale}/landing`, which
+have no directory page to serve — render `UnavailableStub` too, and carry its directive.
 
 This means **every referenced chapter/article needs a YAML file** (at minimum
 `published: false` + `legacy-path` if applicable) so the export has something to
@@ -267,18 +270,58 @@ The generic "Sorry" not-found page is also emitted as `404.html` and uploaded to
 the content bucket so the CDN can reference it as a fallback object where the
 plan tier allows (see [CDN & R2](cdn-and-r2.md#custom-404-limitation)).
 
-## Noindex on staging
+## What is indexable
 
-Search-engine indexing must be prevented on `staging.youproof.org`; production
-is the only indexable environment. The `SITE_ENV` build var gates this, and the
-gate **defaults to the indexable (production) behavior** so a missing or
-non-`staging` value can never accidentally noindex production:
+Production is the only indexable environment, and on production the stub pages are
+the only pages held out of the index. Both halves are gated by the `SITE_ENV` build
+var, read at build time and baked into the static export.
 
-- `SITE_ENV=staging` → the root layout emits
-  `<meta name="robots" content="noindex,nofollow">` **and** `app/robots.ts`
-  emits a disallow-all `robots.txt` to `out/`.
-- Default / `SITE_ENV=production` → an indexable `robots.txt` + sitemap;
-  **never** emits noindex.
+### Off production — nothing is indexable
+
+`SITE_ENV` is checked for the exact value `production`, so staging, a preview, and an
+unset or misspelled value all take this branch. That is the fail-safe direction: a
+mistake in the variable noindexes a site that should have been indexable, which is
+recoverable, rather than exposing one that should not have been.
+
+- The root layout emits `<meta name="robots" content="noindex, nofollow">` on **every**
+  page.
+- `app/robots.ts` emits a disallow-all `robots.txt`.
+- A zone response-header rule adds `X-Robots-Tag: noindex, nofollow` on every non-apex
+  `.org` host, covering the asset types that cannot carry a meta tag — see
+  [`../infra/cloudflare/terraform/zone/response-headers.tf`](../infra/cloudflare/terraform/zone/response-headers.tf).
+
+Three layers, because they fail differently: `robots.txt` stops a crawler that reads
+it, the meta tag stops the one that crawled anyway, and the header covers what has no
+`<head>`.
+
+### On production — the stubs, and only the stubs
+
+`robots.txt` is `Allow: /` with a `Sitemap:` line, no page-level directive is emitted,
+and the [stub pages](#not-found--stub-behavior) carry one apiece:
+
+| Page | Directive | Why |
+| --- | --- | --- |
+| `not-migrated` stub | `noindex, follow` | The page has no content of its own to index, but its one link goes to the legacy `.hu` page that does — and production keeps that page indexable (`SEO_NOINDEX="false"` on the migration worker), so `follow` is what keeps the content discoverable. |
+| `unavailable` stub | `noindex, nofollow` | A dead end with nothing behind it. |
+| everything else | none | Indexable. |
+
+**`robots.txt` and the meta tag are different layers, not alternatives.**
+`robots.txt` governs crawling, the meta tag governs indexing, and the second only
+takes effect if the first permitted the fetch. A URL disallowed in `robots.txt` can
+still be indexed from inbound links alone — Search Console reports it as "indexed,
+though blocked by `robots.txt`" — and the `noindex` on it is never read. So
+`Allow: /` on production is not in tension with noindexing the stubs; it is the
+precondition for it. Disallowing those paths instead would leave them indexed
+indefinitely.
+
+`noindex` also only takes effect on a recrawl, so a page already in the index leaves
+it over days to weeks. Search Console's **Removals** tool gives a temporary hide if
+that is too slow.
+
+The rule lives in `stubRobots` in `lib/i18n/metadata.ts`, and which stub a page renders
+in `stubKindFor` in `lib/content/stub.ts` — one definition, read by both the routes that
+render the stub and the `generateMetadata` that describes it. `scripts/check-robots-meta.mjs`
+gates the result in the built export on every build.
 
 `/sitemap.xml` is a `<sitemapindex>` over per-type child sitemaps, split out of the
 single exported `<urlset>` by a postbuild step — see

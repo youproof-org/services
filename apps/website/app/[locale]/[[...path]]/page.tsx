@@ -21,7 +21,8 @@ import {
   isRoutableAtRoot,
   type ContainerKey,
 } from '@/lib/i18n/config'
-import { buildPageMeta, type OgType, type PageMetaNode } from '@/lib/i18n/metadata'
+import { buildPageMeta, stubRobots, type OgType, type PageMetaNode } from '@/lib/i18n/metadata'
+import { stubKindFor, type StubKind } from '@/lib/content/stub'
 import type { UrlKey } from '@/lib/i18n/url'
 import { urlForBook, urlForChapter, urlForKbNode, kbUrlRef, kbNodeAtIndex } from '@/lib/content/urls'
 import { kbExcerpt } from '@/lib/content/kb-excerpt'
@@ -53,11 +54,6 @@ import styles from './page.module.scss'
 
 // Static export: only enumerated paths are generated; anything else 404s.
 export const dynamicParams = false
-
-// Unpublished content renders a stub only on deployed envs (SITE_ENV set by the
-// deploy workflow). Locally it renders normally so authors can preview drafts.
-const isDeployedEnv =
-  process.env.SITE_ENV === 'staging' || process.env.SITE_ENV === 'production'
 
 // ---------------------------------------------------------------------------
 // Slug-based resolution against the graph (always within a single locale)
@@ -367,9 +363,11 @@ export async function generateMetadata({ params }: RouteProps): Promise<Metadata
   const resolved = resolvePath(locale, path)
   if (!resolved) return {}
 
-  // Dead-end stub pages are not indexable.
+  // The container-root dead ends. No canonical and no OG block, deliberately:
+  // the .org crawler gate identifies a content page by its canonical, and these
+  // two are not one (see tools/smoke-tests/scripts/crawl.mjs).
   if (resolved.kind === 'books-index' || resolved.kind === 'landing-index') {
-    return { robots: { index: false, follow: false } }
+    return stubRobots('unavailable')
   }
 
   let key: UrlKey
@@ -377,6 +375,12 @@ export async function generateMetadata({ params }: RouteProps): Promise<Metadata
   let node: PageMetaNode | null = null
   let ogType: OgType = 'website'
   let fallbackTitle: string | undefined
+  // The stub a chapter or a standalone item renders on this environment, if any.
+  // Its robots directive goes on top of the page's own metadata below: a stub
+  // keeps its title, description, canonical and OG block — a crawler that has
+  // already indexed the URL still needs to recognise the page — and adds the
+  // directive that takes it out of the index.
+  let stub: StubKind | null = null
   switch (resolved.kind) {
     case 'home':
       key = 'home'; fallbackTitle = getLocaleLabel(locale, 'home'); ogType = 'website'; break
@@ -384,7 +388,8 @@ export async function generateMetadata({ params }: RouteProps): Promise<Metadata
       key = 'book'; slugPath = [resolved.book.slug]; node = resolved.book; ogType = 'book'; break
     case 'chapter':
       key = 'chapter'; slugPath = [resolved.book.slug, resolved.chapter.slug]
-      node = resolved.chapter; ogType = 'article'; break
+      node = resolved.chapter; ogType = 'article'
+      stub = stubKindFor(resolved.chapter); break
     case 'articles-index':
       key = 'articles-index'; fallbackTitle = getLocaleLabel(locale, 'articlesIndex'); ogType = 'website'; break
     case 'newsletter-index':
@@ -429,11 +434,15 @@ export async function generateMetadata({ params }: RouteProps): Promise<Metadata
       ogType = resolved.node.kind === 'article' || resolved.node.kind === 'newsletter'
         ? 'article'
         : 'website'
+      stub = stubKindFor(resolved.node)
   }
 
   // og:image (per-item generated share image) is wired in Phase 4; until then
   // buildPageMeta falls back to the generic OG image.
-  return buildPageMeta({ locale, key, slugPath, ogType, node, fallbackTitle })
+  return {
+    ...buildPageMeta({ locale, key, slugPath, ogType, node, fallbackTitle }),
+    ...(stub ? stubRobots(stub) : {}),
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -594,7 +603,7 @@ export default async function LocalizedRoute({ params }: RouteProps) {
         { label: `${chapterIndex}. ${chapter.title}`, href: urlForChapter(chapter) },
       ]
 
-      if (!chapter.published && isDeployedEnv) {
+      if (stubKindFor(chapter)) {
         return (
           <div className="book-shell">
             <SiteHeader breadcrumbs={breadcrumbs} locale={locale} />
