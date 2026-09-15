@@ -23,7 +23,7 @@ All are blocking unless noted.
 | Worker build | `deploy.yml` | esbuild bundles worker + inlined manifest |
 | Website build | `deploy.yml` (website job) | `next build` — **also runs `tsc`** on the site (no `ignoreBuildErrors`), plus the website's own `prebuild`/`postbuild` steps below. It does **not** lint: there is no ESLint configuration and no `eslint` dependency in the repository, so Next's lint step warns `No ESLint configuration detected` and checks nothing |
 | Figure compile | website `prebuild` → `sync-figures.mjs` | aborts the build on any `.tex`→SVG failure (no broken `<img>` ships) |
-| Website export gates | website `postbuild` → seven `check-*.mjs` scripts | the exported `out/` against seven invariants — see [the website's own build gates](#the-websites-own-build-gates) |
+| Website export gates | website `postbuild` → eight `check-*.mjs` scripts | the exported `out/` against eight invariants — see [the website's own build gates](#the-websites-own-build-gates) |
 | `.hu` smoke tests | `deploy.yml` (quality-gate job, `node --test`) | worker 301/404/410 redirect semantics |
 | Post-deploy crawler | `deploy.yml` (quality-gate) | live-site links/assets/manifest-targets/SEO; writes the artifact (see below) |
 | Promotion PR gate | `pr-gate.yml` (required on PRs → `stable/production`/`released`) | staging artifact exists **and** `overall == "pass"` |
@@ -39,15 +39,16 @@ catalogue because they are the only gates that see the **artefact being uploaded
 rather than the live site. The pipeline gates above all run after a deploy; these run
 before one, so a failure here aborts the build step and nothing reaches R2.
 
-`postbuild` is nine steps in `package.json`, in order. Two rewrite the export —
+`postbuild` is ten steps in `package.json`, in order. Two rewrite the export —
 `set-html-lang.mjs` fixes the per-locale `<html lang>`, `split-sitemap.mjs` turns the
-single `<urlset>` into a `<sitemapindex>` over per-type children — and the other seven
+single `<urlset>` into a `<sitemapindex>` over per-type children — and the other eight
 are gates:
 
 | Gate | Checks |
 | --- | --- |
 | `check-build-version.mjs` | the footer version resolved: no page ships `vUNDEFINED`, and at least one page rendered it |
 | `check-analytics-build.mjs` | a deploy build has a GA4 measurement id and exactly one distinct id, no `.html` references `googletagmanager.com`, and the consent banner's copy is server-rendered nowhere |
+| `check-robots-meta.mjs` | the `<meta name="robots">` on every page is the one its environment and its kind call for: off production every page is `noindex, nofollow`; on production the not-migrated stubs are `noindex, follow`, the unavailable stubs `noindex, nofollow`, and every other page carries no directive at all |
 | `check-anchors.mjs` | every internal fragment link resolves to an `id` that exists on the target page — read from the markup **and** from the RSC payload, since the deferred inbound-reference rows travel only in the payload |
 | `check-mathml.mjs` | every KaTeX span ships its authored LaTeX in an `<annotation encoding="application/x-tex">`, and that LaTeX survives a naive tag-strip of its page |
 | `check-deferred-panels.mjs` | the three inbound-reference panel contents carry nothing in the served markup, the sections and the no-JavaScript line are still there, and the panels that are *not* deferred still carry theirs |
@@ -56,9 +57,12 @@ are gates:
 
 Each one exists because the thing it checks fails **silently**: a wrong measurement id,
 a broken fragment, a formula with no readable source, an inbound list back in the
-markup, a malformed structured-data block and a stale generated file all render as a
-page that looks entirely correct. Every one of them also refuses to pass on an empty or
-degenerate export rather than reporting a vacuous success.
+markup, a malformed structured-data block, a robots directive on the wrong page and a
+stale generated file all render as a page that looks entirely correct. Every one of them
+also refuses to pass on an empty or degenerate export rather than reporting a vacuous
+success — though `check-robots-meta.mjs` states that over every page in the export
+rather than over the stub pages, whose set legitimately empties as the migration
+finishes.
 
 Two more run outside `postbuild`: `check-latex.mjs` on `postinstall` (TeX Live is on
 `PATH`) and the `prebuild` generators, of which `sync-figures.mjs` is in the table
