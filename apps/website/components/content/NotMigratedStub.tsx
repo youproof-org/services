@@ -20,11 +20,13 @@ export default function NotMigratedStub({ legacyPath }: NotMigratedStubProps) {
 
   const legacyHref = `https://${legacyHost}${legacyPath}`
   return (
-    // `data-stub` is the marker postbuild's check-anchors.mjs reads to know this
-    // page renders none of its content's anchors, so a forward reference into one
-    // of its sections is skipped rather than reported broken. A hashed CSS-module
-    // class is not a contract, and every deployed page is noindex, so neither can
-    // stand in for it.
+    // `data-stub` is the marker two postbuild checks read. check-anchors.mjs takes
+    // it to mean this page renders none of its content's anchors, so a forward
+    // reference into one of its sections is skipped rather than reported broken;
+    // check-robots-meta.mjs takes it as which stub this is, and so which robots
+    // directive the page must carry. A hashed CSS-module class is not a contract,
+    // and the directive is the thing that check is verifying — so neither can stand
+    // in for the marker.
     <div className={styles.stub} data-stub="not-migrated">
       <h1 className={styles.title}>Ez a tartalom még nem költözött át</h1>
       <p className={styles.message}>

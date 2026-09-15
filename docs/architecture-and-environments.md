@@ -38,8 +38,9 @@ Environment vars. One Worker codebase is deployed twice with different bindings;
 nothing about the domains is hardcoded in source. See
 [DNS & TLS](dns-and-tls.md) and the [migration worker](migration-worker.md) doc.
 
-Search-engine indexing is enabled on production only — the `.org` staging build
-emits `noindex` (see [content site & static generation](content-site-and-static-generation.md#noindex-on-staging)).
+Search-engine indexing is enabled on production only — every other `.org` build
+emits `noindex` on every page, and production emits it on the stub pages alone (see
+[content site & static generation](content-site-and-static-generation.md#what-is-indexable)).
 
 ## The `(services, content)` version-pair model
 
