@@ -1,6 +1,14 @@
+import type { Metadata } from 'next'
 import SiteHeader from '@/components/layout/SiteHeader'
 import SiteFooter from '@/components/layout/SiteFooter'
 import UnavailableStub from '@/components/content/UnavailableStub'
+import { stubRobots } from '@/lib/i18n/metadata'
+
+// This page is also the export's `404.html`, which is an object in the content
+// bucket and is reachable at `/404` through the extensionless transform rule —
+// so on production it is a fetchable page, not only an error body, and carries
+// the generic stub's directive.
+export const metadata: Metadata = stubRobots('unavailable')
 
 // Rendered by Next.js for any path with no matching route/param (also uploaded
 // as the CDN 404 object). Shares the generic "Sorry" stub with unpublished,

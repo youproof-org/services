@@ -4,14 +4,9 @@ import StandalonePage from './StandalonePage'
 import NotMigratedStub from './NotMigratedStub'
 import UnavailableStub from './UnavailableStub'
 import type { BreadcrumbItem } from '@/components/layout/Breadcrumb'
+import { stubKindFor } from '@/lib/content/stub'
 import type { StandaloneNode } from '@/lib/content/types'
 import styles from './standalone-route.module.scss'
-
-// Unpublished standalone items render a stub only on the deployed environments
-// (mirrors the chapter route). Locally (SITE_ENV unset) they render normally so
-// authors can preview drafts.
-const isDeployedEnv =
-  process.env.SITE_ENV === 'staging' || process.env.SITE_ENV === 'production'
 
 interface StandaloneRouteProps {
   node: StandaloneNode
@@ -30,7 +25,7 @@ export default function StandaloneRoute({
   mode = 'inner',
   withNewsletter = true,
 }: StandaloneRouteProps) {
-  const showStub = !node.published && isDeployedEnv
+  const showStub = stubKindFor(node) !== null
 
   // Stub: no hero; the message is vertically centered in the space between
   // header and footer (`.stub-main`).

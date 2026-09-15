@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { DEFAULT_LOCALE, getLocaleConfig } from './config'
 import { buildLocalizedUrl, type UrlKey } from './url'
+import type { StubKind } from '@/lib/content/stub'
 import type { MetaInfo } from '@/lib/content/types'
 
 // Absolute-URL base for canonical/hreflang/sitemap. Kept here so the whole app
@@ -15,6 +16,34 @@ export const SITE_URL = `https://${SITE_HOST}`
 
 export function absoluteUrl(pathname: string): string {
   return `${SITE_URL}${pathname}`
+}
+
+const isProduction = process.env.SITE_ENV === 'production'
+
+/**
+ * The robots directive a stub page carries, as a `Metadata` fragment to spread
+ * over the page's own metadata.
+ *
+ * A stub is a dead end for a crawler, and the two stubs are dead ends of
+ * different kinds:
+ *
+ *   - `not-migrated` → `noindex, follow`. The page itself has no content to
+ *     index, but it links to the legacy `.hu` page that does, and production
+ *     keeps that page indexable (SEO_NOINDEX="false" on the migration worker),
+ *     so following the link is how the content stays discoverable.
+ *   - `unavailable` → `noindex, nofollow`. Nothing behind it at all.
+ *
+ * Production only. Every page on every other environment is already
+ * `noindex, nofollow` from the root layout, and this returns an EMPTY object
+ * there rather than one with an undefined `robots` — Next's parent/child merge
+ * iterates the child's own keys, so a key that is present and undefined clobbers
+ * the layout's directive while an absent one inherits it.
+ */
+export function stubRobots(kind: StubKind): Metadata {
+  if (!isProduction) return {}
+  return kind === 'not-migrated'
+    ? { robots: { index: false, follow: true } }
+    : { robots: { index: false, follow: false } }
 }
 
 // ---------------------------------------------------------------------------
