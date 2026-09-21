@@ -77,11 +77,11 @@ export default function ConsentBanner({
             here: equal prominence is the anti-dark-pattern requirement, so a
             later "consistency" cleanup must not reintroduce it. */}
         <div className={styles.actions}>
-          <button className={styles.button} type="button" onClick={onAccept}>
-            {copy.accept}
-          </button>
           <button className={styles.button} type="button" onClick={onReject}>
             {copy.reject}
+          </button>
+          <button className={styles.button} type="button" onClick={onAccept}>
+            {copy.accept}
           </button>
         </div>
       </div>
