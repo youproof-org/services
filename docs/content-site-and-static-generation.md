@@ -182,7 +182,54 @@ What each page renders (`components/content/ChapterPage.tsx`):
 - a `<nav data-chapter-slot="prev|next" data-page="{n}">` before and after the
   wrapper, absent on page 1 and on the last page respectively, holding a plain
   `<a rel="prev|next">` to the neighbouring page. Its text names that page's first
-  section by number and title, such as "26.5. Primitív gyök létezése".
+  section by number and title, such as "26.5. Primitív gyök létezése";
+- inside the wrapper, an empty `<div data-newsletter-slot="{b}" hidden>` before
+  every section but the chapter's first, where `b` is the chapter-global index of
+  the section it precedes (see [the newsletter doc](newsletter.md#where-the-forms-go-and-how-each-one-is-named)).
+
+The navs and the wrapper sit in the `ChapterPager` client component's `div`.
+Without JavaScript that's the whole page, and every page stands alone.
+
+#### The client loader
+
+With JavaScript, `ChapterPager` (`components/content/ChapterPager.tsx`) makes the
+chapter read as one document:
+
+- **Loading.** Each `<nav>` is the sentinel for its direction. Once it's within 1.5
+  viewports, the pager fetches the neighbouring page's exported HTML, parses it with
+  `DOMParser`, and keeps only its `[data-chapter-page]` wrapper, which goes into a
+  `div` of its own through `dangerouslySetInnerHTML`. The fetched page's payload
+  never loads, and nothing in the fragment needs hydration: the chapter body is
+  server components apart from `next/link` (the knowledge-base link on an embedded
+  entity), which works as a plain `<a>`; `DetailsBlock` is a native `<details>`;
+  and the math is already rendered. The fetched page's own `<nav>` then takes over
+  the slot. There's one
+  request at a time per direction, and a failed fetch leaves the link in place.
+- **Prepending without a jump.** The pager measures an element in view just before
+  inserting a page above it, and scrolls by however far it moved. The browser's
+  scroll anchoring stays on and usually corrects the shift first, but it doesn't
+  anchor at scroll offset 0, which is where a reader landing on the top of page 2 is
+  when page 1 arrives.
+- **Fragment arrivals.** `scroll-behavior: smooth` makes the browser's scroll to a
+  URL fragment a smooth one, and an instant scroll would cancel it. So after a
+  fragment arrival the pager loads no page and places no form until that scroll has
+  come to rest.
+- **URL and title.** When a different page crosses a line a quarter of the way down
+  the viewport, the pager sets `document.title` to that page's `<title>` and swaps
+  the URL with `history.replaceState`, never `pushState`, so Back leaves the chapter.
+  Each crossing is a GA4 page view (see
+  [Analytics and consent](analytics-and-consent.md#scrolling-across-a-chapter-page-boundary-is-a-page-view)).
+- **Newsletter forms.** The pager decides which slots get a form, and renders each
+  through a portal into its slot.
+- **Links inside the chapter.** A plain click on a same-tab link to another page of
+  the chapter whose target is already in the document scrolls there and swaps the
+  URL. Anything else is left to the browser, including the body's references, which
+  open a new tab. In fetched HTML, a `next/link` is a plain `<a>`, so following one
+  is a full page load rather than a client-side navigation.
+
+A single-page chapter only places forms. `e2e/chapter-pagination.test.ts` covers the
+no-JavaScript pages, both directions of loading, the URL, title and page views, the
+forms, and the links, on a published split chapter.
 
 **Each page's metadata is its own.** The title, description and Open Graph tags come
 from the page's `meta`, with the chapter's `title` and `excerpt` as fallbacks

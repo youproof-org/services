@@ -182,6 +182,28 @@ Two reasons, in order of weight:
 `useSearchParams()` is deliberately unused: under `output: 'export'` it forces a
 Suspense boundary, and we do not want the query string anyway.
 
+### Scrolling across a chapter page boundary is a page view
+
+A split chapter reads as one document: `ChapterPager` loads the neighbouring pages
+as the reader scrolls, and when a different page crosses a line near the top of the
+viewport it sets `document.title` to that page's `<title>` and swaps the URL with
+`history.replaceState`. So **a scroll now sends a `page_view`**, one per boundary
+crossing, with that page's path and title, and no page was opened for it. Scrolling
+back across the boundary sends another.
+
+No analytics code does this on purpose. The App Router patches
+`history.replaceState` (`next/dist/client/components/app-router.js`, 15.5.12): a
+call with a URL dispatches a restore action whose reducer sets the router's
+canonical URL, and `usePathname()` is derived from that. The `usePathname()` effect
+above then sees a new pathname, exactly as for a navigation. It reads
+`document.title` a frame later, and the pager sets the title before it swaps the
+URL, so the page view carries the new page's title. `e2e/chapter-pagination.test.ts`
+reads the `dataLayer` across two crossings to hold this.
+
+The two consent pages in the content repo (`pages/suti`, `pages/adatkezeles`)
+describe a page view as a page the reader opened. A chapter page the reader scrolls
+into counts as well.
+
 ## Withdrawing consent without a reload
 
 A loaded `gtag.js` cannot be unloaded, and `consent update → denied` on its own does

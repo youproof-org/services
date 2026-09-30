@@ -27,7 +27,7 @@ interface SubscriptionActionDialogProps {
   id: string
   token: string
   mode: ActionMode
-  /** `source_form_instance` ("<page>#<placement>"), when the worker knew it. */
+  /** `source_form_instance` ("<page>#<instance>"), when the worker knew it. */
   formInstance?: string | null
   onClose: () => void
 }
@@ -59,9 +59,9 @@ export default function SubscriptionActionDialog({
    */
   function handOffToForm(): boolean {
     if (!formInstance) return false
-    const placement = formInstance.includes('#') ? formInstance.split('#')[1] : formInstance
-    if (!document.getElementById(`newsletter-form-${placement}`)) return false
-    window.dispatchEvent(new CustomEvent(CONFIRMED_EVENT, { detail: { placement } }))
+    const instance = formInstance.includes('#') ? formInstance.split('#')[1] : formInstance
+    if (!document.getElementById(`newsletter-form-${instance}`)) return false
+    window.dispatchEvent(new CustomEvent(CONFIRMED_EVENT, { detail: { instance } }))
     return true
   }
 

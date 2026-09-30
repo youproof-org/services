@@ -102,7 +102,55 @@ arrive as `…subscriptions.html` and match no route (→ 404).
 - Terraform root: `infra/cloudflare/terraform/newsletter/` (per-env; state key
   `cloudflare/newsletter/{env}.tfstate`; reads `org_zone_id` from the zone root).
 - Frontend: `apps/website/components/newsletter/` + placement in `SiteFooter`,
-  `ChapterPage`, `StandalonePage`, and `NewsletterLanding` in the root layout.
+  `StandalonePage`, `ChapterPager` (chapters), and `NewsletterLanding` in the root
+  layout. The placement rules are in `apps/website/lib/newsletter/placement.ts`.
+
+## Where the forms go, and how each one is named
+
+- **Pre-footer:** one expanded form above the footer (`SiteFooter`). Stub pages,
+  the 404 page and legal pages (standalone `page` kind) leave it out.
+- **Mid-content on articles and newsletters:** one collapsible form, rendered on
+  the server before the middle section of an item with at least six sections
+  (`midContentIndex`, read by `StandalonePage`).
+- **Mid-content on chapters:** placed on the client by `ChapterPager`, because a
+  paginated chapter's right places depend on which page the reader arrived on. The
+  server renders an empty, hidden `<div data-newsletter-slot="{b}">` before every
+  section but the chapter's first, where `b` is the chapter-global, zero-based
+  index of the section it precedes. With `S` sections in the chapter and `a` the
+  index of the first section on the page the reader landed on, slot `b` gets a form
+  when (`chapterSlotTakesForm`):
+  - `b − a` is a multiple of three (`CHAPTER_FORM_SPACING`);
+  - `b ≥ 3`, so at least three sections come before it;
+  - `S − b ≥ 3`, so at least three sections come after it;
+  - section `b − 1` is already in the document.
+
+  `a` is fixed for the visit, and a slot that has a form is never evaluated again,
+  so no form moves while the reader scrolls. The last condition only holds back the
+  slot above the first section of the earliest loaded page, so on arrival no form
+  sits right under the chapter header. It's filled when the page above is
+  prepended. Landing on page 1 of a 12-section chapter places forms at 3, 6 and 9.
+  Landing on a page of the same chapter that starts at section 7 places them at 7
+  and 4 once page 1 has loaded, and never at 10 (two sections after it) or 1 (one
+  before it). A single-page chapter follows the
+  same rule, so a long one gets several forms. Without JavaScript the slots stay
+  empty, which loses nothing, because the form can't submit without it anyway.
+
+**Instance keys.** A form's `instance` prop names it on the page. It defaults to the
+placement (`pre-footer`, `mid-content`), and a chapter's forms are
+`mid-content-{b}`. The instance is the DOM id (`newsletter-form-{instance}`) and the
+`#` part of `sourceFormInstance` (`{pathname}#{instance}`). The worker stores that
+as `source_form_instance` without reading it, and adds it as `sform` to the redirect
+a confirm link leads to. `SubscriptionActionDialog` looks up that id and fires `newsletter:confirmed`
+with the instance, and only the form with that instance switches to its confirmed
+state. `placement` still decides behaviour: mid-content is collapsible, pre-footer
+isn't.
+
+A confirmation link returns the reader to the page that was in view when they
+submitted (`source_page`, which follows the URL as they scroll a chapter), and the
+arrival point there can differ from the one that placed their form. Then that slot
+has no form, the lookup fails, and the dialog shows the thanks itself. A link minted
+before chapter forms had slot numbers names `#mid-content`, which no chapter form
+uses any more, so it fails the same way.
 
 ## Build & deploy
 

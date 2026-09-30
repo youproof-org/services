@@ -6,14 +6,20 @@ import { buildLocalizedUrl } from '@/lib/i18n/url'
 import { CONFIRMED_EVENT } from './SubscriptionActionDialog'
 import styles from './newsletter-form.module.scss'
 
-// Where this instance sits on the page. Part of the stable DOM id and the
-// source-form-instance reference sent to the API, so the confirmation link can
-// return the reader to the exact form they used.
+// Where the form sits on the page, which decides how it behaves: mid-content is
+// collapsible, pre-footer is not.
 export type NewsletterPlacement = 'pre-footer' | 'mid-content'
 
 interface NewsletterFormProps {
   locale: string
   placement: NewsletterPlacement
+  // Which form this is, when a page can carry several of one placement: a
+  // chapter's mid-content forms are `mid-content-{slot}`. Part of the stable DOM
+  // id and the source-form-instance reference sent to the API, so the
+  // confirmation link can return the reader to the exact form they used.
+  // Defaults to the placement, for a form that is the only one of its placement
+  // on the page.
+  instance?: string
 }
 
 type FormState = 'idle' | 'submitting' | 'pending' | 'blocked' | 'confirmed' | 'error'
@@ -34,7 +40,7 @@ declare global {
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-export default function NewsletterForm({ locale, placement }: NewsletterFormProps) {
+export default function NewsletterForm({ locale, placement, instance = placement }: NewsletterFormProps) {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [consent, setConsent] = useState(false)
@@ -53,7 +59,7 @@ export default function NewsletterForm({ locale, placement }: NewsletterFormProp
   const rootRef = useRef<HTMLDivElement | null>(null)
   const nameInputRef = useRef<HTMLInputElement | null>(null)
 
-  const domId = `newsletter-form-${placement}`
+  const domId = `newsletter-form-${instance}`
   const privacyHref = buildLocalizedUrl(locale, 'page', 'adatkezeles')
 
   // A confirmation just completed. The emailed link is read-only now (a mail
@@ -68,14 +74,14 @@ export default function NewsletterForm({ locale, placement }: NewsletterFormProp
   // of wrapping the whole app in a provider.
   useEffect(() => {
     function onConfirmed(e: Event) {
-      const detail = (e as CustomEvent<{ placement?: string }>).detail
-      if (detail?.placement !== placement) return
+      const detail = (e as CustomEvent<{ instance?: string }>).detail
+      if (detail?.instance !== instance) return
       setState('confirmed')
       rootRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
     window.addEventListener(CONFIRMED_EVENT, onConfirmed)
     return () => window.removeEventListener(CONFIRMED_EVENT, onConfirmed)
-  }, [placement])
+  }, [instance])
 
   // Move focus to the first field when the interstitial expands.
   useEffect(() => {
@@ -160,7 +166,7 @@ export default function NewsletterForm({ locale, placement }: NewsletterFormProp
           locale,
           privacyAccepted: consent,
           sourcePage: pagePath,
-          sourceFormInstance: `${pagePath}#${placement}`,
+          sourceFormInstance: `${pagePath}#${instance}`,
           turnstileToken: turnstileToken.current,
         }),
       })

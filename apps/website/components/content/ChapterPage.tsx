@@ -15,8 +15,7 @@ import ContentBlocks from './ContentBlocks'
 import SectionView from './SectionView'
 import BookReference from './BookReference'
 import InlineText from './InlineText'
-import NewsletterForm from '@/components/newsletter/NewsletterForm'
-import { midContentIndex } from '@/lib/newsletter/placement'
+import ChapterPager from './ChapterPager'
 import { urlForChapter, urlForChapterPage } from '@/lib/content/urls'
 import styles from './chapter-page.module.scss'
 
@@ -35,6 +34,11 @@ import styles from './chapter-page.module.scss'
  * page's sections, the abstract, prerequisite warning and prologue on page 1, and
  * the epilogue on the last page. Section numbers, embed and figure indices are
  * chapter-global, so a section is numbered the same whichever page it sits on.
+ *
+ * `ChapterPager` wraps the page and its neighbour links, and on the client joins
+ * the pages into one document. Before every section but the chapter's first sits
+ * an empty, hidden newsletter slot, named by the chapter-global index of the
+ * section it precedes; the pager decides which slots get a form.
  */
 interface ChapterPageProps {
   book: BookNode
@@ -61,7 +65,7 @@ export default function ChapterPage({ book, chapter, page }: ChapterPageProps) {
   const isLastPage = page.index === pageCount
   const prevPage = isFirstPage ? null : chapter.pages[page.index - 2]
   const nextPage = isLastPage ? null : chapter.pages[page.index]
-  const midIndex = midContentIndex(chapter.sections.length)
+  const pageFirstSections = chapter.pages.map((p) => chapter.sections.indexOf(p.sections[0]))
 
   return (
     <article className={styles.chapter} data-chapter={chapter.name} data-page-count={pageCount}>
@@ -73,60 +77,65 @@ export default function ChapterPage({ book, chapter, page }: ChapterPageProps) {
         <h1 className={styles['chapter-title']}>{chapter.title}</h1>
       </header>
 
-      {prevPage && <PageSlot direction="prev" page={prevPage} />}
+      <ChapterPager
+        chapter={chapter.name}
+        locale={chapter.locale}
+        page={page.index}
+        pageUrls={chapter.pages.map((p) => urlForChapterPage(chapter, p.index))}
+        pageFirstSections={pageFirstSections}
+        sectionCount={chapter.sections.length}
+        prevLink={prevPage ? <PageLink direction="prev" page={prevPage} /> : undefined}
+        nextLink={nextPage ? <PageLink direction="next" page={nextPage} /> : undefined}
+      >
+        <div data-chapter-page={page.index}>
+          {isFirstPage && chapter.abstract.length > 0 && (
+            <section className={styles.abstract}>
+              <ContentBlocks blocks={chapter.abstract} embedIndices={embedIndices} figureIndices={figureIndices} refs={chapterRefs} context="web" />
+            </section>
+          )}
 
-      <div data-chapter-page={page.index}>
-        {isFirstPage && chapter.abstract.length > 0 && (
-          <section className={styles.abstract}>
-            <ContentBlocks blocks={chapter.abstract} embedIndices={embedIndices} figureIndices={figureIndices} refs={chapterRefs} context="web" />
-          </section>
-        )}
-
-        {isFirstPage && chapter.prerequisiteWarning && chapter.prerequisiteWarning.length > 0 && (
-          <section className={styles.prereq}>
-            <ContentBlocks
-              blocks={chapter.prerequisiteWarning}
-              embedIndices={embedIndices} figureIndices={figureIndices}
-              refs={chapterRefs}
-              context="web"
-            />
-          </section>
-        )}
-
-        {isFirstPage && chapter.prologue.length > 0 && (
-          <section className={styles.prologue}>
-            <ContentBlocks blocks={chapter.prologue} embedIndices={embedIndices} figureIndices={figureIndices} refs={chapterRefs} context="web" dropCapFirst />
-          </section>
-        )}
-
-        {page.sections.map((section) => {
-          const i = chapter.sections.indexOf(section)
-          return (
-            <Fragment key={section.name}>
-              {i === midIndex && (
-                <NewsletterForm locale={chapter.locale} placement="mid-content" />
-              )}
-              <SectionView
-                slug={section.slug}
-                locale={section.locale}
-                title={section.title}
-                body={section.body}
-                label={`${chapterIndex}.${i + 1}`}
+          {isFirstPage && chapter.prerequisiteWarning && chapter.prerequisiteWarning.length > 0 && (
+            <section className={styles.prereq}>
+              <ContentBlocks
+                blocks={chapter.prerequisiteWarning}
                 embedIndices={embedIndices} figureIndices={figureIndices}
-                refs={section.references}
+                refs={chapterRefs}
+                context="web"
               />
-            </Fragment>
-          )
-        })}
+            </section>
+          )}
 
-        {isLastPage && chapter.epilogue.length > 0 && (
-          <section className={styles.epilogue}>
-            <ContentBlocks blocks={chapter.epilogue} embedIndices={embedIndices} figureIndices={figureIndices} refs={chapterRefs} context="web" />
-          </section>
-        )}
-      </div>
+          {isFirstPage && chapter.prologue.length > 0 && (
+            <section className={styles.prologue}>
+              <ContentBlocks blocks={chapter.prologue} embedIndices={embedIndices} figureIndices={figureIndices} refs={chapterRefs} context="web" dropCapFirst />
+            </section>
+          )}
 
-      {nextPage && <PageSlot direction="next" page={nextPage} />}
+          {page.sections.map((section) => {
+            const i = chapter.sections.indexOf(section)
+            return (
+              <Fragment key={section.name}>
+                {i > 0 && <div data-newsletter-slot={i} hidden />}
+                <SectionView
+                  slug={section.slug}
+                  locale={section.locale}
+                  title={section.title}
+                  body={section.body}
+                  label={`${chapterIndex}.${i + 1}`}
+                  embedIndices={embedIndices} figureIndices={figureIndices}
+                  refs={section.references}
+                />
+              </Fragment>
+            )
+          })}
+
+          {isLastPage && chapter.epilogue.length > 0 && (
+            <section className={styles.epilogue}>
+              <ContentBlocks blocks={chapter.epilogue} embedIndices={embedIndices} figureIndices={figureIndices} refs={chapterRefs} context="web" />
+            </section>
+          )}
+        </div>
+      </ChapterPager>
 
       <nav className={styles['chapter-nav']}>
         {prevChapter ? (
@@ -154,15 +163,14 @@ export default function ChapterPage({ book, chapter, page }: ChapterPageProps) {
 
 /**
  * The link to a neighbouring page of the chapter, named by that page's first
- * section rather than "next page", so it says where it leads.
+ * section rather than "next page", so it says where it leads. `ChapterPager`
+ * puts it in its `<nav>` placeholder.
  */
-function PageSlot({ direction, page }: { direction: 'prev' | 'next'; page: ChapterPageNode }) {
+function PageLink({ direction, page }: { direction: 'prev' | 'next'; page: ChapterPageNode }) {
   const [firstSection] = page.sections
   return (
-    <nav className={styles['page-slot']} data-chapter-slot={direction} data-page={page.index}>
-      <a href={urlForChapterPage(page.chapter, page.index)} rel={direction}>
-        <InlineText text={`${getSectionIndexLabel(firstSection)} ${firstSection.title}`} />
-      </a>
-    </nav>
+    <a href={urlForChapterPage(page.chapter, page.index)} rel={direction}>
+      <InlineText text={`${getSectionIndexLabel(firstSection)} ${firstSection.title}`} />
+    </a>
   )
 }
