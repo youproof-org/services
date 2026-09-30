@@ -84,7 +84,7 @@ const newFiles = walk(newDir)
 
 /** Detect the build id from the one directory under _next/static that is not fixed. */
 function buildId(root, files) {
-  const known = new Set(['chunks', 'css', 'media'])
+  const known = new Set(['chunks', 'css', 'media', 'flight'])
   for (const f of files) {
     const m = /^_next\/static\/([^/]+)\//.exec(f)
     if (m && !known.has(m[1])) return m[1]
@@ -120,6 +120,7 @@ const canonicalAsset = (f) =>
     .replace(/^_next\/static\/chunks\/.*$/, '_next/static/chunks/CHUNK')
     .replace(/^_next\/static\/css\/.*$/, '_next/static/css/STYLE')
     .replace(/^_next\/static\/media\/.*$/, '_next/static/media/ASSET')
+    .replace(/^_next\/static\/flight\/.*$/, '_next/static/flight/PAYLOAD')
     // Per-build directory, then the hashed (and renumbered) filename inside it.
     .replace(/^_next\/static\/[^/]+\//, '_next/static/BUILDID/')
     .replace(/^(_next\/static\/BUILDID\/.*?)[-_.][0-9a-f]{8,}(\.\w+)$/, '$1HASH$2')
