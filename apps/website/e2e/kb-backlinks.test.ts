@@ -448,9 +448,14 @@ test.describe('the backlink list without JavaScript', () => {
 
     // The rows left the markup, not the page: the server still built every one of
     // them and they travel in the RSC payload, which is how they reach the browser
-    // when the panel opens. Counted over the whole document rather than the DOM the
-    // selectors above search, since a `<script>`'s contents are text.
-    const served = (await page.content()).match(/backlinks-panel_link/g) ?? []
+    // when the panel opens. The payload is the page's one external flight script
+    // (`scripts/externalize-flight.mjs`), which nothing loads with JavaScript off, so
+    // it is fetched here and counted with the document.
+    const markup = await page.content()
+    const flightSrc = /<script src="(\/_next\/static\/flight\/[0-9a-f]+\.js)"><\/script>/.exec(markup)?.[1]
+    expect(flightSrc).toBeDefined()
+    const payload = await (await page.request.get(flightSrc!)).text()
+    const served = (markup + payload).match(/backlinks-panel_link/g) ?? []
     expect(served.length).toBeGreaterThanOrEqual(LONGEST.rows)
   })
 
