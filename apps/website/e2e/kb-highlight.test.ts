@@ -33,7 +33,7 @@ import { expect, test, type BrowserContext, type Page } from '@playwright/test'
  *
  * Two, and both are permanent tests rather than a note:
  *
- *   - **the counts in the worked case are discriminating.** 108 references to that
+ *   - **the counts in the worked case are discriminating.** 92 references to that
  *     term are on the page and 22 of them are inside the section the row named; the
  *     marks must be the 9 the section itself made. A rule that dropped the scope, or
  *     the owner boundary, or both, fails on a number rather than on a judgement.
@@ -88,13 +88,13 @@ const ROW_HREF = `${CHAPTER}#${SECTION}`
  * and 1 times in its narrative. The two are different quantities on this content, and
  * that is why both are here.
  *
- * `ON_PAGE` is every reference to the term in the whole chapter, and it is what the
- * marks must NOT be: the 86 beyond this section belong to other sections, which have
+ * `ON_PAGE` is every reference to the term on the chapter page, and it is what the
+ * marks must NOT be: the 70 beyond this section belong to other sections, which have
  * rows of their own.
  */
 const MARKS = 22
 const IN_SECTION = 22
-const ON_PAGE = 108
+const ON_PAGE = 92
 
 /** A fully qualified name nothing on the chapter page points at. */
 const ABSENT_FQN = 'definitions.nincs-ilyen-definicio'
@@ -441,7 +441,7 @@ test.describe('the worked case (§7.2)', () => {
     expect(marks.map((mark) => mark.name)).toEqual(Array(MARKS).fill(TERM_FQN))
 
     // The discriminating numbers: 22 references to this term are inside this section
-    // and 108 are on the page. The first is what was marked; the second is not.
+    // and 92 are on the page. The first is what was marked; the second is not.
     const references = await sectionReferences(page)
     expect(references.onPage).toBe(ON_PAGE)
     expect(references.inSection).toBe(IN_SECTION)
