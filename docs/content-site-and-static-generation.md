@@ -29,16 +29,106 @@ is uploaded to an R2 bucket and served through the CDN (see
   checkable, and `scripts/check-analytics-build.mjs` enforces it). Grepping `out/`
   for `gtag` will find nothing in the pages.
 
-### `__next_f` script tags are expected (not a bug)
+<a id="rsc-payload"></a>
+### The RSC payload is served as an external file
 
-Generated pages contain many `<script>(self.__next_f=…).push(…)</script>` tags —
-~10–14 on light pages, ~70 on a math-dense chapter. These are the App Router's
-**RSC (Flight) hydration payload**, chunked into small `push()` calls; the count
-scales with the serialized React tree, and math chapters serialize the
-server-rendered KaTeX HTML (hundreds of spans) into that payload. It's inherent to
-App Router static export — nothing in `next.config.ts` inflates it, hydration
-needs it, and removing it isn't possible without leaving App Router. Investigated
-under YP-122 item 9: **expected boilerplate, no action.**
+Next.js inlines every App Router page's **RSC (Flight) hydration payload** as a run
+of `<script>self.__next_f.push(…)</script>` tags after the footer. It scales with the
+serialized React tree, and a math chapter serializes its server-rendered KaTeX HTML
+into it, so it was most of every chapter file. Ahrefs flags a page whose HTML is over
+2 MiB, on the reasoning that Googlebot reads only the first 2 MB of a file
+([Googlebot docs](https://developers.google.com/search/docs/crawling-indexing/googlebot)).
+Next 15.5 has no option to stop inlining the payload, so the postbuild
+`scripts/externalize-flight.mjs` moves it out of every exported page:
+
+```html
+<!-- before -->
+<script src="/_next/static/chunks/webpack-….js" id="_R_" async=""></script>
+<script>(self.__next_f=self.__next_f||[]).push([0])</script>
+<script>self.__next_f.push([1,"1:\"$Sreact.fragment\"\n…"])</script>
+…
+</body></html>
+
+<!-- after -->
+<script src="/_next/static/chunks/webpack-….js" id="_R_" async=""></script>
+<script src="/_next/static/flight/<hash>.js"></script>
+</body></html>
+```
+
+- **The file holds the same statements, byte for byte, in the same order**, one per
+  line. Nothing is decoded or re-encoded; only the `<script>` wrappers change.
+- **It's named by a hash of its content**, so a cached copy can never pair a new page
+  with an old payload.
+- **Why a classic script works.** The client feeds every entry pushed onto the global
+  `self.__next_f` into the stream React hydrates from, and closes that stream at
+  `DOMContentLoaded` (`next/dist/client/app-index.js`). A `<script src>` that isn't
+  `async`, `defer`, or a module blocks the parser, so it runs before that event,
+  exactly like the inline scripts it replaces. A `fetch` of the page's `.txt` would
+  resolve too late.
+- **The `.txt` files stay.** Next.js writes them beside the pages for client-side
+  navigation, and nothing about that changes.
+- On a local export, the rewrite took the total HTML from 148.3 MiB to 52.1 MiB.
+
+**What the rewrite assumes, and how each assumption is checked.** It relies on how
+Next.js emits the payload, so it checks the shape of every page and stops the build
+with the page and the broken assumption named. It plans every page before writing
+any, so a failure leaves the export untouched.
+
+| assumption | checked by |
+|---|---|
+| exactly one `(self.__next_f=self.__next_f\|\|[]).push([0])` init script | `externalize-flight.mjs`: fails on zero or several |
+| the pushes form one contiguous block ending at `</body></html>` | `externalize-flight.mjs`: fails on any other markup inside the block, or any `__next_f` before it |
+| each push argument is a JSON array starting with a number | `externalize-flight.mjs`: parses every argument |
+| the payload is complete: nothing is lost or reordered | `check-flight.mjs`: decodes each page's external file's `[1, …]` chunks and compares them with the page's `.txt` |
+
+`check-flight.mjs` also checks that no inline `__next_f` script is left, and that each
+page loads exactly one flight file, which exists and is named by its hash. `404.html`
+is the one page Next.js writes no `.txt` for, so it gets every check except the
+comparison. Any other page without a `.txt` fails. The shape rules and the decoder are
+pure functions in `scripts/lib/flight.mjs`, unit-tested in `test/flight.test.mjs`,
+and `e2e/flight.test.ts` checks in Chromium that the rewritten pages still hydrate.
+
+**Order in `postbuild`.** `check-anchors.mjs` reads hrefs out of the inline payload,
+and `check-deferred-panels.mjs` and `check-structured-data.mjs` strip `<script>`
+elements to tell markup from payload. `check-analytics-build.mjs` scans each whole
+`.html` file for `googletagmanager.com` and the banner class, which included the
+inline payload. So every existing check runs first, then `externalize-flight.mjs`,
+then `check-flight.mjs` and `check-page-size.mjs`.
+
+**Re-running `postbuild` on an export it already rewrote fails.** The rewrite finds
+no init script and says so. Rebuild with `pnpm build` instead, which writes a fresh
+`out/`.
+
+**On the CDN**, the flight files are ordinary `.js` assets. The zone's asset rules for
+the transform and the cache match by extension, not by path (`asset_extensions` in
+`infra/cloudflare/terraform/zone/locals.tf`), so `/_next/static/flight/` gets the
+same long TTL as Next's own chunks ([cache rules](cdn-and-r2.md#cache-rules)).
+`aws s3 sync --delete` in the deploy removes an earlier deploy's flight files, as it
+does any object that's no longer in `out/`. The non-production `X-Robots-Tag` rule
+matches by host, so it covers them too.
+
+<a id="size-gate"></a>
+### Size gate
+
+`scripts/check-page-size.mjs` fails the build if any exported HTML page is over
+**1,990,000 bytes** (`PAGE_SIZE_LIMIT` in `scripts/lib/page-size.mjs`), just under
+the 2 MiB Ahrefs measures. It runs after the payload rewrite, so it measures what a
+crawler downloads, and it reports each offending page with its size.
+
+- **It covers every page**, not only chapters.
+- **It measures HTML only.** The flight files aren't gated. Ahrefs flags HTML pages,
+  and Google's docs say each resource referenced in the HTML is fetched separately,
+  with its own 2 MB limit.
+- **A known-oversize list allows the chapters that are still too large** until they're
+  split into pages. `KNOWN_OVERSIZE` names the published ones. Each is reported as a
+  warning, not an error.
+  - A listed page that's under the limit, or missing from the export, fails the
+    build, so the list can only shrink.
+  - Any other oversize page fails the build.
+- **`KNOWN_OVERSIZE_UNPUBLISHED` names unpublished chapters**, which only a local
+  build renders in full (`stubKindFor` in `lib/content/stub.ts`). It applies only
+  when `SITE_ENV` is neither `staging` nor `production`. On a deployed build, such a
+  chapter is a stub, and publishing it before it's split fails the build.
 
 ## Content model fields
 
