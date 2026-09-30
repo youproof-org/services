@@ -16,11 +16,7 @@ export const PAGE_SIZE_LIMIT = 1_990_000
  * page is only warned about. It fails the build once it is under the limit, or
  * missing from the export, so the list can only shrink.
  */
-export const KNOWN_OVERSIZE = [
-  'hu/konyvek/alice-es-bob/fejezetek/alice-bob-euler-es-fermat.html',
-  'hu/konyvek/alice-es-bob/fejezetek/alice-es-bob-felcsavarja-a-szamegyenest.html',
-  'hu/konyvek/alice-es-bob/fejezetek/alice-es-bob-komolyabb-fegyverekhez-nyul.html',
-]
+export const KNOWN_OVERSIZE = []
 
 /**
  * Oversize pages of unpublished chapters. A local build renders every chapter in
@@ -30,9 +26,7 @@ export const KNOWN_OVERSIZE = [
  * build they are ordinary pages: publishing one before its chapter is split fails
  * the build.
  */
-export const KNOWN_OVERSIZE_UNPUBLISHED = [
-  'hu/konyvek/alice-es-bob/fejezetek/alice-es-bob-atlepi-a-celvonalat.html',
-]
+export const KNOWN_OVERSIZE_UNPUBLISHED = []
 
 export const isDeployedSiteEnv = (siteEnv) => siteEnv === 'staging' || siteEnv === 'production'
 

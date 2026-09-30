@@ -81,11 +81,3 @@ test('a deployed build allows only the published chapters, a local build the unp
     assert.deepEqual(knownOversizeFor(local), [...KNOWN_OVERSIZE, ...KNOWN_OVERSIZE_UNPUBLISHED])
   }
 })
-
-test('on a deployed build, an unpublished chapter published before it is split fails', () => {
-  const [unpublished] = KNOWN_OVERSIZE_UNPUBLISHED
-  const sizes = new Map([...KNOWN_OVERSIZE, unpublished].map((page) => [page, PAGE_SIZE_LIMIT + 1]))
-  const { errors } = evaluatePageSizes(sizes, { knownOversize: knownOversizeFor('production') })
-  assert.equal(errors.length, 1)
-  assert.ok(errors[0].startsWith(unpublished))
-})

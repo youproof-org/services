@@ -129,6 +129,8 @@ crawler downloads, and it reports each offending page with its size.
   build renders in full (`stubKindFor` in `lib/content/stub.ts`). It applies only
   when `SITE_ENV` is neither `staging` nor `production`. On a deployed build, such a
   chapter is a stub, and publishing it before it's split fails the build.
+- **Both lists are empty now**: every chapter that was over the gate is split into
+  pages.
 
 ## Content model fields
 

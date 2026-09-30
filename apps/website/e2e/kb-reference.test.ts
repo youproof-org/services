@@ -63,7 +63,7 @@ const EXTERNAL_TARGET = 'https://oeis.org/A001567'
  */
 const HIERARCHY_ENTITY = '/hu/tudasbazis/definiciok/reszhalmaz/megjegyzesek/1'
 const SECTION_TARGET =
-  '/hu/konyvek/alice-es-bob/fejezetek/alice-es-bob-felcsavarja-a-szamegyenest#szakaszok.maradekosztalygyuruk'
+  '/hu/konyvek/alice-es-bob/fejezetek/alice-es-bob-felcsavarja-a-szamegyenest/2#szakaszok.maradekosztalygyuruk'
 const SECTION_TARGET_TITLE = 'Maradékosztálygyűrűk'
 /** Its number, as the narrative and every reference to it write it. */
 const SECTION_TARGET_LABEL = '18.8.'
