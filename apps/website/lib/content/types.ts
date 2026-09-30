@@ -296,8 +296,23 @@ export interface SectionNode {
   locale: string
   title: string
   chapter: ChapterNode            // parent reference
+  page: ChapterPageNode           // the page of the chapter it renders on
   body: ContentBlock[]
   references: RefMap
+}
+
+/**
+ * One page of a chapter, as `chapter.yaml` groups its sections under `pages`.
+ *
+ * Pages are layout, not identity: a section's address and its chapter-global
+ * number don't depend on the page it sits on. `meta` is this page's crawler and
+ * social metadata, and describes only this page.
+ */
+export interface ChapterPageNode {
+  index: number                   // 1-based
+  chapter: ChapterNode            // parent reference
+  sections: SectionNode[]
+  meta?: MetaInfo
 }
 
 export interface ChapterNode {
@@ -313,11 +328,11 @@ export interface ChapterNode {
   abstract: ContentBlock[]
   prerequisiteWarning?: ContentBlock[]
   prologue: ContentBlock[]
-  sections: SectionNode[]
+  sections: SectionNode[]         // every page's sections, in chapter order
+  pages: ChapterPageNode[]        // never empty; pageHolding says which page holds the rest
   epilogue: ContentBlock[]
   references: RefMap
   thumbnail?: ThumbnailImage
-  meta?: MetaInfo                  // optional crawler/social metadata (kebab: meta)
 }
 
 // A part has no URL — it is flattened out of chapter paths — but it IS anchored,
@@ -427,6 +442,7 @@ export interface AnchorParent {
  */
 export interface EmbeddingContext {
   chapter: ChapterNode
+  page: ChapterPageNode           // the page the embed renders on (see pageHolding)
   section?: SectionNode           // absent only for a chapter prologue/epilogue embed
   index?: string                  // chapter-scoped label, e.g. "11.3."
 }

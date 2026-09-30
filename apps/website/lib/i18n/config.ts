@@ -111,6 +111,10 @@ export type LabelKey =
   // from the narrative into the knowledge base at all — the one that makes the
   // knowledge base reachable by following links from the homepage.
   | 'kbEmbeddedPageLink'
+  // The suffix that ends the Open Graph title of a chapter's page after page 1,
+  // "(2. rész)". Authored in the page's own `meta`, not generated: the loader only
+  // checks that it's there and carries the page's own number.
+  | 'chapterPagePart'
 
 export interface LocaleConfig {
   displayName: string

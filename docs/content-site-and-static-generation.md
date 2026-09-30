@@ -132,15 +132,50 @@ crawler downloads, and it reports each offending page with its size.
 
 ## Content model fields
 
-Chapter YAML files in the content repo carry two fields the pipeline depends on
-(the website loader normalizes kebab → camel: `published`, `legacyPath`):
+Chapter YAML files in the content repo carry three fields the pipeline depends on
+(the website loader normalizes kebab → camel: `publishedAt`, `legacyPath`):
 
-- **`published`** (bool, default `false` when absent) — whether the chapter is
-  served as real content on `youproof.org`. On a deployed environment it also
+- **`published-at`** (optional, a quoted `'YYYY-MM-DD HH:MM:SS'` UTC string) — a
+  chapter that has one is published (`ChapterNode.published`), and served as real
+  content on `youproof.org`. On a deployed environment it also
   decides whether the knowledge-base entities that chapter embeds get pages of
   their own (see [knowledge-base pages](#knowledge-base-pages)).
 - **`legacy-path`** (optional) — the chapter's old path on the `youproof.hu`
   domain.
+- **`pages`** — the chapter's sections, grouped into pages, each with its own
+  optional `meta` (`title`, `description`, `open-graph`). The loader
+  (`loadChapter` in `lib/content/loader.ts`) still accepts the older shape, a flat
+  `sections` list next to a chapter-level `meta`, and reads it as one page that
+  carries that meta. The chapter route renders every page's sections at the
+  chapter URL, with page 1's metadata (`chapterPageMetaNode` in
+  `lib/content/chapter-pages.ts`).
+
+<a id="chapter-pages"></a>
+### Chapter pages
+
+In the graph, `ChapterNode.pages` lists the pages in order, numbered from 1, and
+each `SectionNode` points at its `page`. `chapter.sections` stays the flat list of
+every page's sections, so section numbers, embed indices and figure indices are
+chapter-global. Page 1 also holds the abstract, the prerequisite warning and the
+prologue, and the last page holds the epilogue (`pageHolding`). An entity's
+`EmbeddingContext.page` is the page its embed renders on.
+
+The build fails when the graph loads, with an error naming the `chapter.yaml`, if:
+
+- a section is listed on more than one page, or twice on one page;
+- a section file in the chapter's directory is on no page;
+- a page has no sections, or `pages` is empty;
+- `sections` or a chapter-level `meta` sits next to `pages`;
+- on a published chapter (one with `published-at`), a page after page 1 lacks
+  `meta.title` or `meta.description`;
+- a page after page 1 has an `open-graph.title` that doesn't end in its own page
+  number, such as `(2. rész)` (the `chapterPagePart` label in
+  `lib/i18n/locales.json`).
+
+The rules are unit-tested in `test/chapter-pages.test.mjs`. "Published" here is the
+content's own status, not what the environment renders. A local build renders drafts
+in full, but a draft may still leave its later pages without meta. That keeps the rule a fact about the content alone, so a check in the
+content repo can apply it the same way.
 
 <a id="canonical-url-rule"></a>
 ## Canonical URL rule

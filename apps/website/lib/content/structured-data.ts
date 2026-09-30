@@ -7,6 +7,7 @@ import {
   pageTitleOf,
   toIsoTime,
 } from '@/lib/i18n/metadata'
+import { chapterPageMetaNode } from './chapter-pages'
 import { kbNodeTitle, kbOwnership } from './graph'
 import { kbEntityBreadcrumbs, kbListBreadcrumbs, type KbListPage } from './kb-breadcrumbs'
 import { kbExcerpt } from './kb-excerpt'
@@ -339,13 +340,14 @@ function breadcrumbNode(id: string, crumbs: BreadcrumbItem[]): JsonLdNode {
  * from a single page, without following a link.
  *
  * `pageTitleOf` rather than `.title`, so each stub calls the chapter and the book
- * what their own pages' `<title>` calls them.
+ * what their own pages' `<title>` calls them. For a chapter, that's the title from
+ * page 1's meta, which the chapter URL in its `@id` uses.
  */
 function chapterNode(chapter: ChapterNode): JsonLdNode {
   return {
     '@type': 'Chapter',
     '@id': absoluteUrl(urlForChapter(chapter)),
-    name: pageTitleOf(chapter),
+    name: pageTitleOf(chapterPageMetaNode(chapter)),
     isPartOf: ref(absoluteUrl(urlForBook(chapter.part.book))),
   }
 }

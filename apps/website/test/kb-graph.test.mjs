@@ -149,7 +149,7 @@ function backlinkFixture() {
     'r-def': ref('a definíció', 'definitions.def-egy'),
     'r-def-ujra': ref('ugyanaz újra', 'definitions.def-egy'),
   }
-  chapter.sections[0].references = {
+  chapter.pages[0].sections[0].references = {
     'r-claim': ref('az állítás', 'definitions.def-egy.claims.def-claim'),
   }
   data.theorems[0].references = {
@@ -175,7 +175,7 @@ function backlinkFixture() {
     prologue: [],
     epilogue: [],
     references: {},
-    sections: [
+    pages: [{ sections: [
       {
         name: 'masodik-szakasz',
         slug: 'masodik-szakasz',
@@ -184,7 +184,7 @@ function backlinkFixture() {
         references: { 'r-def': ref('a definíció', 'definitions.def-egy') },
         body: [embed('theorems.tetel-ketto')],
       },
-    ],
+    ] }],
   })
   return data
 }
@@ -342,7 +342,7 @@ function ownedSourceFixture() {
     body: [narrative('Megjegyzés a bizonyításhoz.')],
     references: citesTheDefinition,
   })
-  data.books[0].parts[0].chapters[0].sections[0].body.push(
+  data.books[0].parts[0].chapters[0].pages[0].sections[0].body.push(
     embed('theorems.tetel-egy.proofs.biz-egy.remarks.rem-ketto'),
   )
   return data
@@ -431,7 +431,7 @@ function rawWithThreeProofs() {
   data.theorems[0].proofSlugs = ['biz-egy', 'biz-ketto', 'biz-harom']
   for (const name of ['biz-ketto', 'biz-harom']) {
     data.proofs.push({ ...hu, name, body: [narrative('Bizonyítás.')], references: {}, remarkSlugs: [] })
-    data.books[0].parts[0].chapters[0].sections[0].body.push(embed(`theorems.tetel-egy.proofs.${name}`))
+    data.books[0].parts[0].chapters[0].pages[0].sections[0].body.push(embed(`theorems.tetel-egy.proofs.${name}`))
   }
   return data
 }
@@ -652,7 +652,7 @@ function rawWithTwoRemarksOnTheProof() {
   data.proofs[0].remarkSlugs = ['rem-biz-egy', 'rem-biz-ketto']
   for (const name of ['rem-biz-egy', 'rem-biz-ketto']) {
     data.remarks.push({ ...hu, name, body: [narrative('Megjegyzés.')], references: {} })
-    data.books[0].parts[0].chapters[0].sections[0].body.push(
+    data.books[0].parts[0].chapters[0].pages[0].sections[0].body.push(
       embed(`theorems.tetel-egy.proofs.biz-egy.remarks.${name}`),
     )
   }
@@ -684,7 +684,7 @@ function rawWithUnpublishedFirstProof() {
     prologue: [],
     epilogue: [],
     references: {},
-    sections: [
+    pages: [{ sections: [
       {
         name: 'masodik-szakasz',
         slug: 'masodik-szakasz',
@@ -693,7 +693,7 @@ function rawWithUnpublishedFirstProof() {
         references: {},
         body: [embed('theorems.tetel-egy.proofs.biz-ketto')],
       },
-    ],
+    ] }],
   })
   return data
 }

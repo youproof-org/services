@@ -44,7 +44,8 @@
         "kbBacklinkKindRemark": "megjegyzés",
         "kbPanelTermSynonyms": "Szinonimák",
         "kbPanelClaim": "{index}. állítás",
-        "kbEmbeddedPageLink": "Megnézem a tudásbázisban"
+        "kbEmbeddedPageLink": "Megnézem a tudásbázisban",
+        "chapterPagePart": "({index}. rész)"
       },
       "containers": {
         "book": "konyvek",

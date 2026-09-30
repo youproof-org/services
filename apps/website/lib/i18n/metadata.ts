@@ -69,7 +69,8 @@ export const OG_IMAGE_HEIGHT = 630
 export type OgType = 'website' | 'article' | 'book'
 
 // The content-bearing subset buildPageMeta reads (structurally satisfied by
-// BookNode/ChapterNode/StandaloneNode). `null` for content-less pages.
+// BookNode/StandaloneNode; a chapter's comes from chapterPageMetaNode). `null`
+// for content-less pages.
 export interface PageMetaNode {
   title: string
   excerpt?: string

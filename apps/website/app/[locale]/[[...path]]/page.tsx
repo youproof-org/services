@@ -23,6 +23,7 @@ import {
 } from '@/lib/i18n/config'
 import { buildPageMeta, stubRobots, type OgType, type PageMetaNode } from '@/lib/i18n/metadata'
 import { stubKindFor, type StubKind } from '@/lib/content/stub'
+import { chapterPageMetaNode } from '@/lib/content/chapter-pages'
 import type { UrlKey } from '@/lib/i18n/url'
 import { urlForBook, urlForChapter, urlForKbNode, kbUrlRef, kbNodeAtIndex } from '@/lib/content/urls'
 import { kbExcerpt } from '@/lib/content/kb-excerpt'
@@ -388,7 +389,7 @@ export async function generateMetadata({ params }: RouteProps): Promise<Metadata
       key = 'book'; slugPath = [resolved.book.slug]; node = resolved.book; ogType = 'book'; break
     case 'chapter':
       key = 'chapter'; slugPath = [resolved.book.slug, resolved.chapter.slug]
-      node = resolved.chapter; ogType = 'article'
+      node = chapterPageMetaNode(resolved.chapter); ogType = 'article'
       stub = stubKindFor(resolved.chapter); break
     case 'articles-index':
       key = 'articles-index'; fallbackTitle = getLocaleLabel(locale, 'articlesIndex'); ogType = 'website'; break

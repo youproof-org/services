@@ -16,6 +16,7 @@ import type {
   BookNode,
   PartNode,
   ChapterNode,
+  ChapterPageNode,
   SectionNode,
   StandaloneKind,
   StandaloneNode,
@@ -70,6 +71,7 @@ import {
   embeddedScope,
 } from './urls'
 import { compareHu } from './collate'
+import { pageHolding } from './chapter-pages'
 import {
   bookKey,
   partKey,
@@ -190,6 +192,11 @@ export interface RawSectionEntry {
   references: RefMap
 }
 
+export interface RawChapterPageEntry {
+  sections: RawSectionEntry[]
+  meta?: MetaInfo
+}
+
 export interface RawChapterEntry {
   name: string
   slug: string
@@ -201,11 +208,10 @@ export interface RawChapterEntry {
   abstract: ContentBlock[]
   prerequisiteWarning?: ContentBlock[]
   prologue: ContentBlock[]
-  sections: RawSectionEntry[]
+  pages: RawChapterPageEntry[]
   epilogue: ContentBlock[]
   references: RefMap
   thumbnail?: ThumbnailImage
-  meta?: MetaInfo
 }
 
 export interface RawPartEntry {
@@ -256,7 +262,7 @@ export interface RawStandaloneEntry {
  * schema, so a cache written by an older build would otherwise rehydrate nodes
  * that silently lack the new fields.
  */
-export const RAW_GRAPH_VERSION = 4
+export const RAW_GRAPH_VERSION = 5
 
 export interface RawGraphData {
   version: number
@@ -487,8 +493,7 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
                 alt: rawChapter.thumbnail.alt,
               }
             : undefined,
-          meta: rawChapter.meta,
-          sections: [],
+          pages: [],
         }
 
         // Build name → {path, raw} map for sections by scanning chapter directory
@@ -500,18 +505,32 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
           sectionByName.set(raw.name, { filePath: candidate, raw })
         }
 
-        for (const sectionName of rawChapter.sectionNames) {
-          const section = sectionByName.get(sectionName)
-          if (!section) { console.warn(`No section YAML found with name "${sectionName}" under ${chapterDir}`); continue }
-          const { raw: rawSection } = section
-          chapterEntry.sections.push({
-            name: rawSection.name,
-            slug: rawSection.slug,
-            locale: rawSection.locale,
-            title: rawSection.title,
-            body: rawSection.body,
-            references: rawSection.references,
-          })
+        const pagedSectionNames = new Set(rawChapter.pages.flatMap((page) => page.sectionNames))
+        const unpaged = [...sectionByName.keys()].filter((sectionName) => !pagedSectionNames.has(sectionName)).sort()
+        if (unpaged.length > 0) {
+          throw new ContentFormatError(
+            `${path.relative(process.cwd(), path.join(chapterDir, 'chapter.yaml'))} — ` +
+              `section(s) ${unpaged.map((n) => `'${n}'`).join(', ')} sit in the chapter's directory ` +
+              `but on no page. A section sits on exactly one page.`,
+          )
+        }
+
+        for (const rawPage of rawChapter.pages) {
+          const pageEntry: RawChapterPageEntry = { sections: [], meta: rawPage.meta }
+          for (const sectionName of rawPage.sectionNames) {
+            const section = sectionByName.get(sectionName)
+            if (!section) { console.warn(`No section YAML found with name "${sectionName}" under ${chapterDir}`); continue }
+            const { raw: rawSection } = section
+            pageEntry.sections.push({
+              name: rawSection.name,
+              slug: rawSection.slug,
+              locale: rawSection.locale,
+              title: rawSection.title,
+              body: rawSection.body,
+              references: rawSection.references,
+            })
+          }
+          chapterEntry.pages.push(pageEntry)
         }
 
         partEntry.chapters.push(chapterEntry)
@@ -804,26 +823,32 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
           prologue: chapterEntry.prologue,
           epilogue: chapterEntry.epilogue,
           sections: [],
+          pages: [],
           references: chapterEntry.references,
           thumbnail: chapterEntry.thumbnail,
-          meta: chapterEntry.meta,
         }
         part.chapters.push(chapter)
         graph.chapters.set(chapterKey(book.name, chapter.name), chapter)
 
-        for (const sectionEntry of chapterEntry.sections) {
-          const section: SectionNode = {
-            name: sectionEntry.name,
-            slug: sectionEntry.slug,
-            locale: sectionEntry.locale,
-            title: sectionEntry.title,
-            chapter,
-            body: sectionEntry.body,
-            references: sectionEntry.references,
+        chapterEntry.pages.forEach((pageEntry, i) => {
+          const page: ChapterPageNode = { index: i + 1, chapter, sections: [], meta: pageEntry.meta }
+          chapter.pages.push(page)
+          for (const sectionEntry of pageEntry.sections) {
+            const section: SectionNode = {
+              name: sectionEntry.name,
+              slug: sectionEntry.slug,
+              locale: sectionEntry.locale,
+              title: sectionEntry.title,
+              chapter,
+              page,
+              body: sectionEntry.body,
+              references: sectionEntry.references,
+            }
+            page.sections.push(section)
+            chapter.sections.push(section)
+            graph.sections.set(sectionKey(book.name, chapter.name, section.name), section)
           }
-          chapter.sections.push(section)
-          graph.sections.set(sectionKey(book.name, chapter.name, section.name), section)
-        }
+        })
       }
     }
   }
@@ -983,21 +1008,21 @@ const isDeployedEnv =
 function buildEmbedding(graph: ContentGraph): Map<string, EmbeddingContext> {
   const info = new Map<string, EmbeddingContext>()
 
-  const record = (block: EmbedBlock, chapter: ChapterNode, section?: SectionNode) => {
+  const record = (block: EmbedBlock, chapter: ChapterNode, page: ChapterPageNode, section?: SectionNode) => {
     const key = block.target.fqn
-    if (!info.has(key)) info.set(key, { chapter, section })
+    if (!info.has(key)) info.set(key, { chapter, page, section })
   }
-  const scan = (blocks: ContentBlock[], chapter: ChapterNode, section?: SectionNode) => {
+  const scan = (blocks: ContentBlock[], chapter: ChapterNode, page: ChapterPageNode, section?: SectionNode) => {
     for (const block of blocks) {
-      if (block.type === 'embed') record(block, chapter, section)
-      if (block.type === 'subsection' || block.type === 'details') scan(block.blocks, chapter, section)
+      if (block.type === 'embed') record(block, chapter, page, section)
+      if (block.type === 'subsection' || block.type === 'details') scan(block.blocks, chapter, page, section)
     }
   }
 
   for (const chapter of graph.chapters.values()) {
-    scan(chapter.prologue, chapter)
-    scan(chapter.epilogue, chapter)
-    for (const section of chapter.sections) scan(section.body, chapter, section)
+    scan(chapter.prologue, chapter, pageHolding(chapter, 'prologue'))
+    scan(chapter.epilogue, chapter, pageHolding(chapter, 'epilogue'))
+    for (const section of chapter.sections) scan(section.body, chapter, pageHolding(chapter, section), section)
   }
 
   // Second pass: the "11.3." label, numbered in embed order within the chapter.

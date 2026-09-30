@@ -95,18 +95,22 @@ export function raw({ published = true, references = {}, extraDefinitions = [], 
                 prologue: [],
                 epilogue: [],
                 references: {},
-                sections: [
+                pages: [
                   {
-                    name: 'szakasz',
-                    slug: 'szakasz',
-                    locale: 'hu',
-                    title: 'Szakasz',
-                    references: {},
-                    body: [
-                      embed('definitions.def-egy'),
-                      embed('theorems.tetel-egy'),
-                      embed('theorems.tetel-egy.proofs.biz-egy'),
-                      embed('definitions.def-egy.remarks.rem-egy'),
+                    sections: [
+                      {
+                        name: 'szakasz',
+                        slug: 'szakasz',
+                        locale: 'hu',
+                        title: 'Szakasz',
+                        references: {},
+                        body: [
+                          embed('definitions.def-egy'),
+                          embed('theorems.tetel-egy'),
+                          embed('theorems.tetel-egy.proofs.biz-egy'),
+                          embed('definitions.def-egy.remarks.rem-egy'),
+                        ],
+                      },
                     ],
                   },
                 ],

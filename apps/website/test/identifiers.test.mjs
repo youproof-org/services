@@ -46,7 +46,7 @@ function secondBook(data, { bookSlug = 'masik-konyv', chapterSlug = 'fejezet-ket
             prologue: [],
             epilogue: [],
             references: {},
-            sections: [],
+            pages: [{ sections: [] }],
           },
         ],
       },
@@ -73,7 +73,7 @@ test('a dot in a slug fails the build — it would split the anchor grammar', ()
 
 test('uppercase in a name fails the build, even for a mathematical symbol', () => {
   const data = raw()
-  chapterOf(data).sections[0].name = 'muvelet-az-N-halmazon'
+  chapterOf(data).pages[0].sections[0].name = 'muvelet-az-N-halmazon'
   assert.throws(() => build(data), /Invalid name 'muvelet-az-N-halmazon'/)
 })
 
@@ -113,7 +113,7 @@ test('two chapters in the SAME book sharing a slug fail, even across different p
         locale: 'hu',
         title: 'Második fejezet',
         publishedAt: '2020-01-01 00:00:00',
-        abstract: [], prologue: [], epilogue: [], references: {}, sections: [],
+        abstract: [], prologue: [], epilogue: [], references: {}, pages: [{ sections: [] }],
       },
     ],
   })
@@ -137,7 +137,7 @@ test('two parts in the same book sharing a slug fail', () => {
 
 test('two sections in the same chapter sharing a slug fail — duplicate in-page anchor', () => {
   const data = raw()
-  chapterOf(data).sections.push({
+  chapterOf(data).pages[0].sections.push({
     name: 'szakasz-ketto', slug: 'szakasz', locale: 'hu', title: 'Második szakasz',
     references: {}, body: [],
   })
@@ -149,7 +149,7 @@ test('two sections in DIFFERENT chapters may share a name AND a slug', () => {
   // is page-scoped, so nothing collides.
   const data = raw()
   const other = secondBook(data)
-  other.sections.push({
+  other.pages[0].sections.push({
     name: 'szakasz', slug: 'szakasz', locale: 'hu', title: 'Szakasz', references: {}, body: [],
   })
   const g = build(data)
@@ -210,7 +210,7 @@ test('a definition and a theorem may share a name and a slug', () => {
     ...hu, name: 'def-egy', slug: 'def-egy', title: 'Ütköző tétel',
     body: [], references: {}, proofSlugs: [], remarkSlugs: [],
   })
-  chapterOf(data).sections[0].body.push(embed('theorems.def-egy'))
+  chapterOf(data).pages[0].sections[0].body.push(embed('theorems.def-egy'))
   const g = build(data)
   assert.ok(g.definitions.has('definitions.def-egy'))
   assert.equal(g.theorems.size, 2)
@@ -259,7 +259,7 @@ test('a namespace path segment must satisfy the character rule', () => {
   for (const list of [data.definitions, data.theorems, data.proofs, data.remarks]) {
     for (const n of list) n.namespace = '/Proba'
   }
-  for (const b of chapterOf(data).sections[0].body) {
+  for (const b of chapterOf(data).pages[0].sections[0].body) {
     if (b.type === 'embed') b.target.namespace = '/Proba'
   }
   assert.throws(() => build(data), /Invalid name 'Proba'/)
@@ -325,7 +325,7 @@ test('two theorems listing the same proof fail — one file cannot have two owne
     proofSlugs: ['biz-egy'],
     remarkSlugs: [],
   })
-  chapterOf(data).sections[0].body.push(embed('theorems.tetel-ketto'))
+  chapterOf(data).pages[0].sections[0].body.push(embed('theorems.tetel-ketto'))
   assert.throws(
     () => build(data),
     /Identifier collision: 'biz-egy'.*theorem tetel-egy \(proofs entry 1\).*theorem tetel-ketto \(proofs entry 1\).*within proof ownership/s,
@@ -360,7 +360,7 @@ test('a theorem may list two proofs — both attach, in the authored order', () 
     references: {},
     remarkSlugs: [],
   })
-  chapterOf(data).sections[0].body.push(embed('theorems.tetel-egy.proofs.biz-ketto'))
+  chapterOf(data).pages[0].sections[0].body.push(embed('theorems.tetel-egy.proofs.biz-ketto'))
   const g = build(data)
   assert.deepEqual(
     g.theorems.get('theorems.tetel-egy').proofs.map(p => p.name),

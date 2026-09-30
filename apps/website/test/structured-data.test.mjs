@@ -94,7 +94,7 @@ function fixture({ published = true } = {}) {
   r.proofs[0].remarkSlugs = ['rem-biz']
   // A node only has a page — and therefore a block — if the narrative introduces it
   // somewhere, so the two new remarks are embedded like the rest of the fixture.
-  r.books[0].parts[0].chapters[0].sections[0].body.push(
+  r.books[0].parts[0].chapters[0].pages[0].sections[0].body.push(
     embed('definitions.def-ketto'),
     embed('theorems.tetel-egy.remarks.rem-tetel'),
     embed('theorems.tetel-egy.proofs.biz-egy.remarks.rem-biz'),

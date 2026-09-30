@@ -2,7 +2,7 @@ import 'server-only'
 import fs from 'fs'
 import path from 'path'
 import yaml from 'js-yaml'
-import { DEFAULT_LOCALE } from '@/lib/i18n/config'
+import { DEFAULT_LOCALE, formatLocaleLabel } from '@/lib/i18n/config'
 import type {
   RefTarget,
   ContentBlock,
@@ -465,6 +465,11 @@ function toMeta(raw: unknown): MetaInfo | undefined {
   return meta.title || meta.description || meta.openGraph ? meta : undefined
 }
 
+export interface RawChapterPage {
+  sectionNames: string[]
+  meta?: MetaInfo
+}
+
 export interface RawChapter {
   name: string
   slug: string
@@ -473,29 +478,95 @@ export interface RawChapter {
   publishedAt?: string
   legacyPath?: string
   excerpt?: string
-  sectionNames: string[]
+  pages: RawChapterPage[]
   abstract: ContentBlock[]
   prerequisiteWarning?: ContentBlock[]
   prologue: ContentBlock[]
   epilogue: ContentBlock[]
   references: RefMap
   thumbnail?: ThumbnailImage
-  meta?: MetaInfo
+}
+
+/**
+ * A chapter's `pages`, or the single page its older shape stands for.
+ *
+ * The older shape, a flat `sections` list next to a chapter-level `meta`, is
+ * still accepted while the content repo migrates: it reads as one page that
+ * carries the chapter's meta. The two shapes can't be mixed: with both, one of
+ * them would be silently ignored.
+ */
+function toChapterPages(raw: Record<string, unknown>): RawChapterPage[] {
+  if (raw.pages === undefined) {
+    return [{ sectionNames: toStringArray(raw.sections), meta: toMeta(raw.meta) }]
+  }
+  for (const oldKey of ['sections', 'meta']) {
+    if (raw[oldKey] !== undefined) {
+      formatError(`'${oldKey}' can't sit next to 'pages'. Move it into a page.`)
+    }
+  }
+  if (!Array.isArray(raw.pages)) formatError(`'pages' must be a list.`)
+  return raw.pages.map((page: unknown) => {
+    const p = page && typeof page === 'object' ? (page as Record<string, unknown>) : {}
+    return { sectionNames: toStringArray(p.sections), meta: toMeta(p.meta) }
+  })
+}
+
+/**
+ * The rules a chapter's pages must follow. They depend on the chapter file alone,
+ * so a check in the content repo can enforce the same ones before merge.
+ *
+ * "Published" is the content's own status, `published-at`, not whether this
+ * environment renders the chapter in full. A local build renders drafts in full,
+ * and a rule that followed it would fail a draft locally that a deployed build,
+ * where the draft is a stub, lets through.
+ */
+function validateChapterPages(pages: RawChapterPage[], published: boolean, locale: string): void {
+  if (pages.length === 0) formatError(`'pages' is empty. A chapter needs at least one page.`)
+  const pageOfSection = new Map<string, number>()
+  pages.forEach((page, i) => {
+    const index = i + 1
+    if (page.sectionNames.length === 0) formatError(`page ${index} has no sections.`)
+    for (const sectionName of page.sectionNames) {
+      const earlier = pageOfSection.get(sectionName)
+      if (earlier !== undefined) {
+        const where = earlier === index ? `twice on page ${index}` : `on page ${earlier} and page ${index}`
+        formatError(`section '${sectionName}' appears ${where}. A section sits on exactly one page.`)
+      }
+      pageOfSection.set(sectionName, index)
+    }
+    if (index === 1) return
+    if (published) {
+      for (const field of ['title', 'description'] as const) {
+        if (!page.meta?.[field]) {
+          formatError(`page ${index} has no 'meta.${field}'. Every page after page 1 of a published chapter needs one.`)
+        }
+      }
+    }
+    const ogTitle = page.meta?.openGraph?.title
+    const suffix = formatLocaleLabel(locale, 'chapterPagePart', { index })
+    if (ogTitle !== undefined && !ogTitle.endsWith(suffix)) {
+      formatError(`page ${index} has an 'open-graph.title' that doesn't end in '${suffix}'.`)
+    }
+  })
 }
 
 export function loadChapter(filePath: string): RawChapter {
   return inFile(filePath, () => {
     const raw = readYaml(filePath)
     const name = raw.name as string
+    const locale = readLocale(raw)
+    const publishedAt = toPublishedAt(raw['published-at'], filePath)
+    const pages = toChapterPages(raw)
+    validateChapterPages(pages, publishedAt !== undefined, locale)
     return {
       name,
       slug: readSlug(raw, name),
-      locale: readLocale(raw),
+      locale,
       title: raw.title as string,
-      publishedAt: toPublishedAt(raw['published-at'], filePath),
+      publishedAt,
       legacyPath: typeof raw['legacy-path'] === 'string' ? (raw['legacy-path'] as string) : undefined,
       excerpt: typeof raw.excerpt === 'string' ? (raw.excerpt as string) : undefined,
-      sectionNames: toStringArray(raw.sections),
+      pages,
       abstract: toBlocks(raw.abstract),
       prerequisiteWarning: raw['prerequisite-warning']
         ? toBlocks(raw['prerequisite-warning'])
@@ -504,7 +575,6 @@ export function loadChapter(filePath: string): RawChapter {
       epilogue: toBlocks(raw.epilogue),
       references: toRefMap(raw.references),
       thumbnail: toThumbnail(raw.thumbnail),
-      meta: toMeta(raw.meta),
     }
   })
 }
