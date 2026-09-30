@@ -58,7 +58,7 @@ read the inline payload; the last two check its result:
 | `check-structured-data.mjs` | one parseable JSON-LD block per knowledge-base page, `@id`s declared once, every address on our own origin resolving to a file in the export, `BreadcrumbList` in the shape Google documents, and no page restating its inbound references |
 | `check-llms-txt.mjs` | `/llms.txt` exists, every link in it resolves in the export, and every count in it matches the graph |
 | `check-flight.mjs` | no page keeps an inline `__next_f` script, each loads exactly one flight file that exists and is named by its content hash, and that file's decoded payload is identical to the page's `.txt` (`404.html` has no `.txt`, so it skips only the comparison) |
-| `check-page-size.mjs` | no exported HTML page is over 1,990,000 bytes, apart from the chapters on the known-oversize list, which only warn; a listed page under the limit fails ([size gate](content-site-and-static-generation.md#size-gate)) |
+| `check-page-size.mjs` | no exported HTML page is over 1,990,000 bytes; any page over it fails, with its size ([size gate](content-site-and-static-generation.md#size-gate)) |
 
 Each one exists because the thing it checks fails **silently**: a wrong measurement id,
 a broken fragment, a formula with no readable source, an inbound list back in the
@@ -77,10 +77,11 @@ Next.js changed how it inlines the payload.
 The `website` job's browser tests (`test:e2e`) run against the rewritten `out/`, after
 the build and before the upload, so every knowledge-base interaction test is also a
 hydration test of the rewritten pages. `e2e/flight.test.ts` checks the contract
-directly on the home page, a chapter, a knowledge-base entity, and the theorem index:
-no inline payload is served, exactly one flight script loads with a `200` and a
-JavaScript content type, nothing logs a page or console error, React attaches to
-`main`, and the theorem filter and a knowledge-base panel work.
+directly on the home page, a chapter, a later page of a split chapter, a
+knowledge-base entity, and the theorem index: no inline payload is served, exactly
+one flight script loads with a `200` and a JavaScript content type, nothing logs a
+page or console error, React attaches to `main`, and the theorem filter and a
+knowledge-base panel work.
 
 Two more run outside `postbuild`: `check-latex.mjs` on `postinstall` (TeX Live is on
 `PATH`) and the `prebuild` generators, of which `sync-figures.mjs` is in the table

@@ -15,13 +15,14 @@ import { fixtures } from './support/fixtures'
  *
  * Every other suite in this directory also runs against the rewritten export, so
  * each of their interactions is a hydration test too. This one states the contract
- * directly, on one page of each kind: the home page, a chapter, a knowledge-base
- * entity, and the theorem index.
+ * directly, on one page of each kind: the home page, a chapter, a later page of a
+ * split chapter, a knowledge-base entity, and the theorem index.
  */
 
 const PAGES = [
   { name: 'the home page', url: '/hu' },
   { name: 'a chapter', url: '/hu/konyvek/alice-es-bob/fejezetek/alice-es-bob-gyuruje' },
+  { name: 'a later chapter page', url: '/hu/konyvek/alice-es-bob/fejezetek/alice-es-bob-felcsavarja-a-szamegyenest/2' },
   { name: 'a knowledge-base entity', url: '/hu/tudasbazis/definiciok/gyuru-test' },
   { name: 'the theorem index', url: '/hu/tudasbazis/tetelek' },
 ] as const

@@ -488,16 +488,14 @@ export interface RawChapter {
 }
 
 /**
- * A chapter's `pages`, or the single page its older shape stands for.
- *
- * The older shape, a flat `sections` list next to a chapter-level `meta`, is
- * still accepted while the content repo migrates: it reads as one page that
- * carries the chapter's meta. The two shapes can't be mixed: with both, one of
- * them would be silently ignored.
+ * A chapter's `pages`. The older shape, a flat `sections` list next to a
+ * chapter-level `meta`, is rejected, as is either key next to `pages`: a writer
+ * that still emits them doesn't know about pages, and one of the two would be
+ * silently ignored.
  */
 function toChapterPages(raw: Record<string, unknown>): RawChapterPage[] {
   if (raw.pages === undefined) {
-    return [{ sectionNames: toStringArray(raw.sections), meta: toMeta(raw.meta) }]
+    formatError(`chapter has no 'pages'. Move 'sections' and 'meta' into a page.`)
   }
   for (const oldKey of ['sections', 'meta']) {
     if (raw[oldKey] !== undefined) {

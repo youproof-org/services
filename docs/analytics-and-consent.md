@@ -200,9 +200,9 @@ above then sees a new pathname, exactly as for a navigation. It reads
 URL, so the page view carries the new page's title. `e2e/chapter-pagination.test.ts`
 reads the `dataLayer` across two crossings to hold this.
 
-The two consent pages in the content repo (`pages/suti`, `pages/adatkezeles`)
-describe a page view as a page the reader opened. A chapter page the reader scrolls
-into counts as well.
+The two consent pages in the content repo (`pages/suti`, `pages/adatkezeles`) say
+so: a page view is a page the reader opened, or a page of a split chapter the reader
+scrolls into.
 
 ## Withdrawing consent without a reload
 

@@ -119,18 +119,6 @@ crawler downloads, and it reports each offending page with its size.
 - **It measures HTML only.** The flight files aren't gated. Ahrefs flags HTML pages,
   and Google's docs say each resource referenced in the HTML is fetched separately,
   with its own 2 MB limit.
-- **A known-oversize list allows the chapters that are still too large** until they're
-  split into pages. `KNOWN_OVERSIZE` names the published ones. Each is reported as a
-  warning, not an error.
-  - A listed page that's under the limit, or missing from the export, fails the
-    build, so the list can only shrink.
-  - Any other oversize page fails the build.
-- **`KNOWN_OVERSIZE_UNPUBLISHED` names unpublished chapters**, which only a local
-  build renders in full (`stubKindFor` in `lib/content/stub.ts`). It applies only
-  when `SITE_ENV` is neither `staging` nor `production`. On a deployed build, such a
-  chapter is a stub, and publishing it before it's split fails the build.
-- **Both lists are empty now**: every chapter that was over the gate is split into
-  pages.
 
 ## Content model fields
 
@@ -146,9 +134,9 @@ Chapter YAML files in the content repo carry three fields the pipeline depends o
   domain.
 - **`pages`** — the chapter's sections, grouped into pages, each with its own
   optional `meta` (`title`, `description`, `open-graph`). The loader
-  (`loadChapter` in `lib/content/loader.ts`) still accepts the older shape, a flat
-  `sections` list next to a chapter-level `meta`, and reads it as one page that
-  carries that meta. Each page has a URL of its own (see
+  (`loadChapter` in `lib/content/loader.ts`) rejects a chapter without `pages`, so
+  the older shape, a flat `sections` list next to a chapter-level `meta`, fails the
+  build. Each page has a URL of its own (see
   [Chapter pages](#chapter-pages)).
 
 <a id="chapter-pages"></a>
@@ -228,8 +216,9 @@ chapter read as one document:
   is a full page load rather than a client-side navigation.
 
 A single-page chapter only places forms. `e2e/chapter-pagination.test.ts` covers the
-no-JavaScript pages, both directions of loading, the URL, title and page views, the
-forms, and the links, on a published split chapter.
+no-JavaScript pages, each page's canonical and `rel="prev|next"` links, the `404`
+for `/1` and for pages past the last, both directions of loading, the URL, title
+and page views, the forms, and the links, on a published split chapter.
 
 **Each page's metadata is its own.** The title, description and Open Graph tags come
 from the page's `meta`, with the chapter's `title` and `excerpt` as fallbacks
@@ -244,7 +233,7 @@ The build fails when the graph loads, with an error naming the `chapter.yaml`, i
 
 - a section is listed on more than one page, or twice on one page;
 - a section file in the chapter's directory is on no page;
-- a page has no sections, or `pages` is empty;
+- a chapter has no `pages`, `pages` is empty, or a page has no sections;
 - every section a page lists has no file, so the page would be empty (a single
   missing section file is only a warning);
 - `sections` or a chapter-level `meta` sits next to `pages`;

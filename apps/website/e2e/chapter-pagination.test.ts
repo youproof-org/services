@@ -186,6 +186,34 @@ test.describe('without JavaScript', () => {
     await expect(prev).toHaveText(/^18\.1\. /)
     await expect(page.locator('[data-newsletter-slot]:not([hidden])')).toHaveCount(0)
   })
+
+  test('each page is its own canonical, with prev and next links in the head', async ({ page }) => {
+    const headLink = (rel: string) => page.locator(`head > link[rel="${rel}"]`)
+    const pathnameOf = (url: string | null) => (url === null ? null : new URL(url, page.url()).pathname)
+
+    for (const { url, prev, next } of [
+      { url: CHAPTER, prev: null, next: PAGE_2 },
+      { url: PAGE_2, prev: CHAPTER, next: null },
+    ]) {
+      await page.goto(url)
+      await expect(headLink('canonical')).toHaveCount(1)
+      expect(pathnameOf(await headLink('canonical').getAttribute('href'))).toBe(url)
+      expect(pathnameOf(await page.locator('head > meta[property="og:url"]').getAttribute('content'))).toBe(url)
+      for (const [rel, expected] of [
+        ['prev', prev],
+        ['next', next],
+      ] as const) {
+        if (expected === null) await expect(headLink(rel)).toHaveCount(0)
+        else await expect(headLink(rel)).toHaveAttribute('href', expected)
+      }
+    }
+  })
+
+  test('page 1 has one URL, and pages past the last are not found', async ({ request }) => {
+    for (const url of [`${CHAPTER}/1`, `${CHAPTER}/0`, `${CHAPTER}/3`]) {
+      expect((await request.get(url)).status(), url).toBe(404)
+    }
+  })
 })
 
 test.describe('with JavaScript', () => {

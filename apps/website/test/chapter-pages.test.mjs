@@ -72,28 +72,17 @@ pages:
 `
 
 // ---------------------------------------------------------------------------
-// The two YAML shapes
+// The YAML shape
 // ---------------------------------------------------------------------------
 
-test('the old shape reads as one page that carries the chapter meta', () => {
-  const chapter = load(`
-meta:
-  title: Oldalcím
-  description: Leírás.
-  open-graph: { title: '1. fejezet: Fejezet' }
-sections: [egy, ketto]
-`)
-  assert.deepEqual(chapter.pages, [
-    {
-      sectionNames: ['egy', 'ketto'],
-      meta: { title: 'Oldalcím', description: 'Leírás.', openGraph: { title: '1. fejezet: Fejezet', description: undefined } },
-    },
-  ])
-  assert.ok(!('meta' in chapter) && !('sectionNames' in chapter))
-})
-
-test('the old shape without meta reads as one page without meta', () => {
-  assert.deepEqual(load('sections: [egy]').pages, [{ sectionNames: ['egy'], meta: undefined }])
+test('the old shape, sections and meta with no pages, is rejected', () => {
+  assertRejects(
+    `meta:\n  title: Oldalcím\n  description: Leírás.\nsections: [egy, ketto]`,
+    /chapter has no 'pages'\. Move 'sections' and 'meta' into a page/,
+  )
+  assertRejects('sections: [egy]', /chapter has no 'pages'/)
+  assertRejects('meta: { title: Cím }', /chapter has no 'pages'/)
+  assertRejects('', /chapter has no 'pages'/)
 })
 
 test('the pages shape reads each page with its own sections and meta', () => {
@@ -102,6 +91,7 @@ test('the pages shape reads each page with its own sections and meta', () => {
   assert.equal(chapter.pages[0].meta.title, 'Első oldal')
   assert.equal(chapter.pages[1].meta.title, 'Második oldal')
   assert.equal(chapter.pages[1].meta.openGraph.title, '1. fejezet: Fejezet (2. rész)')
+  assert.ok(!('meta' in chapter) && !('sectionNames' in chapter))
 })
 
 // ---------------------------------------------------------------------------
@@ -124,10 +114,9 @@ test('pages that are not a list are rejected', () => {
   assertRejects('pages: { sections: [egy] }', /'pages' must be a list/)
 })
 
-test('a page with no sections is rejected, in either shape', () => {
+test('a page with no sections is rejected', () => {
   assertRejects(`pages:\n  - sections: [egy]\n  - meta: { title: Cím, description: Leírás. }`, /page 2 has no sections/)
   assertRejects(`pages:\n  - sections: []`, /page 1 has no sections/)
-  assertRejects('meta: { title: Cím }', /page 1 has no sections/)
 })
 
 test('a section on two pages is rejected', () => {
@@ -137,9 +126,8 @@ test('a section on two pages is rejected', () => {
   )
 })
 
-test('a section twice on one page is rejected, in either shape', () => {
+test('a section twice on one page is rejected', () => {
   assertRejects(`pages:\n  - sections: [egy, egy]`, /section 'egy' appears twice on page 1/)
-  assertRejects('sections: [egy, ketto, egy]', /section 'egy' appears twice on page 1/)
 })
 
 test('a section file on no page is rejected when the graph loads', async (t) => {
