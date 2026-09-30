@@ -55,11 +55,11 @@ const STANDALONE_DIRS: Record<StandaloneKind, string> = {
   landing: 'landing',
 }
 import { buildContext, resolveTemplate, ENTITY_LABEL_HU } from './display-template'
-import { buildLocalizedUrl } from '@/lib/i18n/url'
 import { getLocaleLabel, resolveContainerKey } from '@/lib/i18n/config'
 import type { LabelKey } from '@/lib/i18n/config'
 import {
   urlForBook,
+  urlForChapter,
   urlForStandalone,
   urlForKbNode,
   claimAnchorId,
@@ -71,7 +71,7 @@ import {
   embeddedScope,
 } from './urls'
 import { compareHu } from './collate'
-import { pageHolding } from './chapter-pages'
+import { chapterPageHref, generatedPages, pageHolding } from './chapter-pages'
 import {
   bookKey,
   partKey,
@@ -515,7 +515,7 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
           )
         }
 
-        for (const rawPage of rawChapter.pages) {
+        rawChapter.pages.forEach((rawPage, i) => {
           const pageEntry: RawChapterPageEntry = { sections: [], meta: rawPage.meta }
           for (const sectionName of rawPage.sectionNames) {
             const section = sectionByName.get(sectionName)
@@ -530,8 +530,16 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
               references: rawSection.references,
             })
           }
+          // A missing section file is only a warning, but a page left with none would
+          // still get an address, a title and neighbours linking to it.
+          if (pageEntry.sections.length === 0) {
+            throw new ContentFormatError(
+              `${path.relative(process.cwd(), path.join(chapterDir, 'chapter.yaml'))} — ` +
+                `page ${i + 1} lists no section that has a file. A page needs at least one section.`,
+            )
+          }
           chapterEntry.pages.push(pageEntry)
-        }
+        })
 
         partEntry.chapters.push(chapterEntry)
       }
@@ -1052,11 +1060,6 @@ function buildEmbedding(graph: ContentGraph): Map<string, EmbeddingContext> {
   }
 
   return info
-}
-
-/** Localized URL of the chapter a node is embedded in. */
-function chapterUrlOf(chapter: ChapterNode): string {
-  return buildLocalizedUrl(chapter.locale, 'chapter', chapter.part.book.slug, chapter.slug)
 }
 
 /**
@@ -1600,7 +1603,7 @@ function chapterBacklinkRow(chapter: ChapterNode): BacklinkRow | null {
     fqn: keyForChapter(chapter),
     title: chapter.title,
     label: `${getChapterIndexLabel(chapter)} ${chapter.title}`,
-    href: chapterUrlOf(chapter),
+    href: urlForChapter(chapter),
   }
 }
 
@@ -1612,7 +1615,7 @@ function sectionBacklinkRow(section: SectionNode, chapter: ChapterNode): Backlin
     fqn: keyForSection(section),
     title: section.title,
     label: `${getSectionIndexLabel(section)} ${section.title}`,
-    href: `${chapterUrlOf(chapter)}#${sectionAnchorId(section)}`,
+    href: `${chapterPageHref(section.page)}#${sectionAnchorId(section)}`,
   }
 }
 
@@ -1928,7 +1931,9 @@ function validateKbLinks(graph: ContentGraph): void {
     const url = urlForKbNode(node)
     if (url) pages.add(url)
   }
-  for (const chapter of graph.chapters.values()) pages.add(chapterUrlOf(chapter))
+  for (const chapter of graph.chapters.values()) {
+    for (const page of generatedPages(chapter)) pages.add(chapterPageHref(page))
+  }
 
   for (const entry of allRefEntries(graph)) {
     if (!entry.kbHref) continue
@@ -1973,17 +1978,19 @@ function validateAnchors(graph: ContentGraph): void {
     for (const part of book.parts) add(url, partAnchorId(part))
   }
 
-  // A chapter page renders its sections, plus every entity embedded in it and
-  // that entity's claims and terms, in chapter context.
+  // Each page of a chapter renders its own sections, plus every entity embedded on
+  // it and that entity's claims and terms, in chapter context.
   for (const chapter of graph.chapters.values()) {
-    const url = chapterUrlOf(chapter)
-    rendered.set(url, rendered.get(url) ?? new Set())
-    for (const section of chapter.sections) add(url, sectionAnchorId(section))
+    for (const page of chapter.pages) {
+      const url = chapterPageHref(page)
+      rendered.set(url, rendered.get(url) ?? new Set())
+      for (const section of page.sections) add(url, sectionAnchorId(section))
+    }
   }
   for (const node of kbNodes(graph)) {
     const embedding = graph.embedding.get(keyForKbNode(node))
     if (!embedding) continue
-    const url = chapterUrlOf(embedding.chapter)
+    const url = chapterPageHref(embedding.page)
     add(url, kbAnchorPath(node))
     for (const [a, scope] of [
       [url, embeddedScope(node)] as const,
@@ -2090,7 +2097,7 @@ function resolveRefHrefs(graph: ContentGraph): void {
       }
       // Two contexts, two anchors: the chapter page renders the node embedded, so
       // the path carries the node; its own page does not.
-      entry.href = `${chapterUrlOf(embedding.chapter)}#${anchors.inChapter}`
+      entry.href = `${chapterPageHref(embedding.page)}#${anchors.inChapter}`
       const kbPage = kbUrlOrFallback(parent, entry.href)
       entry.kbHref = kbPage === entry.href
         // Fell back to the chapter anchor, which already carries its own fragment.
@@ -2109,7 +2116,7 @@ function resolveRefHrefs(graph: ContentGraph): void {
             `in no chapter (so it is rendered nowhere).`,
         )
       }
-      entry.href = `${chapterUrlOf(embedding.chapter)}#${kbAnchorPath(node)}`
+      entry.href = `${chapterPageHref(embedding.page)}#${kbAnchorPath(node)}`
       entry.kbHref = kbUrlOrFallback(node, entry.href)
     } else if (entry.target.type === 'book') {
       const target = entry.target
@@ -2127,14 +2134,14 @@ function resolveRefHrefs(graph: ContentGraph): void {
       if (!chapter) {
         throw new Error(`Cannot resolve chapter reference '${target.fqn}' - no such chapter.`)
       }
-      entry.href = chapterUrlOf(chapter)
+      entry.href = urlForChapter(chapter)
     } else if (entry.target.type === 'section') {
       const target = entry.target
       const section = graph.sections.get(target.fqn)
       if (!section) {
         throw new Error(`Cannot resolve section reference '${target.fqn}' - no such section.`)
       }
-      entry.href = `${chapterUrlOf(section.chapter)}#${sectionAnchorId(section)}`
+      entry.href = `${chapterPageHref(section.page)}#${sectionAnchorId(section)}`
     } else if (
       entry.target.type === 'article'  || entry.target.type === 'newsletter' ||
       entry.target.type === 'page'     || entry.target.type === 'landing'

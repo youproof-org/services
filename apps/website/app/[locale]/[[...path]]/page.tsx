@@ -4,6 +4,7 @@ import { getContentGraph, initContentGraph } from '@/lib/content'
 import type {
   BookNode,
   ChapterNode,
+  ChapterPageNode,
   StandaloneNode,
   DefinitionNode,
   TheoremNode,
@@ -23,9 +24,9 @@ import {
 } from '@/lib/i18n/config'
 import { buildPageMeta, stubRobots, type OgType, type PageMetaNode } from '@/lib/i18n/metadata'
 import { stubKindFor, type StubKind } from '@/lib/content/stub'
-import { chapterPageMetaNode } from '@/lib/content/chapter-pages'
+import { chapterPageAt, chapterPageMetaNode, generatedPages } from '@/lib/content/chapter-pages'
 import type { UrlKey } from '@/lib/i18n/url'
-import { urlForBook, urlForChapter, urlForKbNode, kbUrlRef, kbNodeAtIndex } from '@/lib/content/urls'
+import { urlForBook, urlForChapter, urlForChapterPage, urlForKbNode, kbUrlRef, kbNodeAtIndex } from '@/lib/content/urls'
 import { kbExcerpt } from '@/lib/content/kb-excerpt'
 import { kbNodes, kbNodeTitle, kbPageExists } from '@/lib/content/graph'
 import { getBookRomanIndex, getChapterIndex } from '@/lib/utils/index-helpers'
@@ -89,7 +90,7 @@ type Resolved =
   | { kind: 'home' }
   | { kind: 'books-index' }
   | { kind: 'book'; book: BookNode }
-  | { kind: 'chapter'; book: BookNode; chapter: ChapterNode }
+  | { kind: 'chapter'; book: BookNode; chapter: ChapterNode; page: ChapterPageNode }
   | { kind: 'articles-index' }
   | { kind: 'newsletter-index' }
   | { kind: 'landing-index' }
@@ -125,9 +126,11 @@ function resolvePath(locale: string, path: string[]): Resolved | null {
     const book = findBook(locale, path[1])
     if (!book) return null
     if (path.length === 2) return { kind: 'book', book }
-    if (path.length === 4 && path[2] === getContainerSegment(locale, 'chapter')) {
+    if ((path.length === 4 || path.length === 5) && path[2] === getContainerSegment(locale, 'chapter')) {
       const chapter = findChapter(book, locale, path[3])
-      return chapter ? { kind: 'chapter', book, chapter } : null
+      if (!chapter) return null
+      const page = path.length === 4 ? chapter.pages[0] : chapterPageAt(chapter, path[4])
+      return page ? { kind: 'chapter', book, chapter, page } : null
     }
     return null
   }
@@ -283,7 +286,6 @@ export async function generateStaticParams() {
 
   for (const locale of LOCALES) {
     const bookC = getContainerSegment(locale, 'book')
-    const chapterC = getContainerSegment(locale, 'chapter')
     const articleC = getContainerSegment(locale, 'article')
     const newsletterC = getContainerSegment(locale, 'newsletter')
     const landingC = getContainerSegment(locale, 'landing')
@@ -297,7 +299,10 @@ export async function generateStaticParams() {
       params.push({ locale, path: [bookC, book.slug] })
       for (const part of book.parts) {
         for (const chapter of part.chapters) {
-          params.push({ locale, path: [bookC, book.slug, chapterC, chapter.slug] })
+          // Page 1 is the chapter URL itself; a stub chapter has only that page.
+          for (const page of generatedPages(chapter)) {
+            params.push({ locale, path: urlForChapterPage(chapter, page.index).split('/').slice(2) })
+          }
         }
       }
     }
@@ -387,10 +392,15 @@ export async function generateMetadata({ params }: RouteProps): Promise<Metadata
       key = 'home'; fallbackTitle = getLocaleLabel(locale, 'home'); ogType = 'website'; break
     case 'book':
       key = 'book'; slugPath = [resolved.book.slug]; node = resolved.book; ogType = 'book'; break
-    case 'chapter':
-      key = 'chapter'; slugPath = [resolved.book.slug, resolved.chapter.slug]
-      node = chapterPageMetaNode(resolved.chapter); ogType = 'article'
-      stub = stubKindFor(resolved.chapter); break
+    // Each page of a chapter is its own canonical URL, with its own meta: no page
+    // points its canonical at page 1.
+    case 'chapter': {
+      const { book, chapter, page } = resolved
+      if (page.index === 1) { key = 'chapter'; slugPath = [book.slug, chapter.slug] }
+      else { key = 'chapter-page'; slugPath = [book.slug, chapter.slug, String(page.index)] }
+      node = chapterPageMetaNode(page); ogType = 'article'
+      stub = stubKindFor(chapter); break
+    }
     case 'articles-index':
       key = 'articles-index'; fallbackTitle = getLocaleLabel(locale, 'articlesIndex'); ogType = 'website'; break
     case 'newsletter-index':
@@ -596,7 +606,7 @@ export default async function LocalizedRoute({ params }: RouteProps) {
     }
 
     case 'chapter': {
-      const { book, chapter } = resolved
+      const { book, chapter, page } = resolved
       const chapterIndex = getChapterIndex(chapter)
       const breadcrumbs = [
         homeCrumb(locale),
@@ -628,7 +638,7 @@ export default async function LocalizedRoute({ params }: RouteProps) {
             <div className="hero-placeholder" aria-hidden="true" />
           )}
           <main className="page-content">
-            <ChapterPage book={book} chapter={chapter} />
+            <ChapterPage book={book} chapter={chapter} page={page} />
           </main>
           <SiteFooter locale={locale} />
         </div>

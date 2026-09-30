@@ -32,6 +32,23 @@ export function urlForChapter(chapter: ChapterNode): string {
   return buildLocalizedUrl(chapter.locale, 'chapter', chapter.part.book.slug, chapter.slug)
 }
 
+/**
+ * The URL of page `pageIndex` (1-based) of a chapter. Page 1 is the chapter URL
+ * itself, so it has exactly one address.
+ *
+ * Throws on an index the chapter has no page for, rather than building a URL that
+ * no build generates.
+ */
+export function urlForChapterPage(chapter: ChapterNode, pageIndex: number): string {
+  if (!Number.isInteger(pageIndex) || pageIndex < 1 || pageIndex > chapter.pages.length) {
+    throw new Error(
+      `chapter '${chapter.name}' has ${chapter.pages.length} page(s), so it has no page ${pageIndex}`,
+    )
+  }
+  if (pageIndex === 1) return urlForChapter(chapter)
+  return buildLocalizedUrl(chapter.locale, 'chapter-page', chapter.part.book.slug, chapter.slug, String(pageIndex))
+}
+
 export function urlForStandalone(node: StandaloneNode): string {
   // StandaloneKind ('article' | 'newsletter' | 'page' | 'landing') is a subset of
   // UrlKey with matching names, so the kind is the URL key directly.

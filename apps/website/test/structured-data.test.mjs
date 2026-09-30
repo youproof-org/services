@@ -302,6 +302,14 @@ test('the chapter and book stubs carry the narrative chain', () => {
   assert.deepEqual(edge(chapterStub, 'isPartOf'), [bookStub['@id']])
 })
 
+test("the chapter stub is named by the chapter's root title, not by page 1's meta", () => {
+  const r = raw()
+  r.books[0].parts[0].chapters[0].pages[0].meta = { title: 'Az első oldal témái' }
+  const withMeta = buildGraphFromRaw(r)
+  const node = byName(withMeta.theorems, 'tetel-egy')
+  assert.equal(nodeOfType(kbEntityStructuredData(withMeta, node), 'Chapter').name, 'Fejezet')
+})
+
 // ---------------------------------------------------------------------------
 // Terms
 // ---------------------------------------------------------------------------

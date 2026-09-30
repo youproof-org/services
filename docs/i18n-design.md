@@ -41,6 +41,7 @@ first configured locale (`hu`) in local dev.
 | Homepage (per locale) | `/{locale}` |
 | Book (series) | `/{locale}/{book-container}/{book-slug}` |
 | Chapter | `/{locale}/{book-container}/{book-slug}/{chapter-container}/{chapter-slug}` |
+| Chapter page 2 and later | `…/{chapter-slug}/{n}` — page 1 is the chapter URL itself, and `{n}` is a bare number in every locale |
 | Article | `/{locale}/{article-container}/{slug}` |
 | Newsletter | `/{locale}/{newsletter-container}/{slug}` |
 | Landing | `/{locale}/{landing-container}/{slug}` |
@@ -63,6 +64,7 @@ Concrete `hu` examples (from §3):
 /hu
 /hu/konyvek/alice-es-bob
 /hu/konyvek/alice-es-bob/fejezetek/{chapter-slug}
+/hu/konyvek/alice-es-bob/fejezetek/{chapter-slug}/2
 /hu/cikkek/{slug}
 /hu/hirek/{slug}
 /hu/landing/{slug}

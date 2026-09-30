@@ -14,11 +14,18 @@ import path from 'node:path'
 import * as loaderModule from '../lib/content/loader.ts'
 import * as graphModule from '../lib/content/graph.ts'
 import * as chapterPagesModule from '../lib/content/chapter-pages.ts'
-import { hu, narrative, embed, raw } from './support/raw-graph.mjs'
+import * as urlsModule from '../lib/content/urls.ts'
+import * as i18nUrlModule from '../lib/i18n/url.ts'
+import * as metadataModule from '../lib/i18n/metadata.ts'
+import { hu, narrative, embed, raw, ref } from './support/raw-graph.mjs'
 
 const { loadChapter } = loaderModule.default ?? loaderModule
 const { buildGraphFromRaw, loadRawGraphData } = graphModule.default ?? graphModule
-const { pageHolding, chapterPageMetaNode } = chapterPagesModule.default ?? chapterPagesModule
+const { pageHolding, chapterPageMetaNode, generatedPages, chapterPageAt, chapterPageHref } =
+  chapterPagesModule.default ?? chapterPagesModule
+const { urlForChapter, urlForChapterPage, sectionAnchorId } = urlsModule.default ?? urlsModule
+const { buildLocalizedUrl } = i18nUrlModule.default ?? i18nUrlModule
+const { buildPageMeta } = metadataModule.default ?? metadataModule
 
 const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'chapter-pages-'))
 after(() => fs.rmSync(tmpRoot, { recursive: true, force: true }))
@@ -295,7 +302,7 @@ test('section numbering and embed indices stay chapter-global across pages', () 
 
 test('the chapter URL takes its metadata from page 1', () => {
   const chapter = chapterOf(buildGraphFromRaw(paged()))
-  assert.deepEqual(chapterPageMetaNode(chapter), {
+  assert.deepEqual(chapterPageMetaNode(chapter.pages[0]), {
     title: 'Fejezet',
     excerpt: undefined,
     publishedAt: '2020-01-01 00:00:00',
@@ -308,5 +315,178 @@ test('an unpublished chapter builds with all its pages, so its single stub page 
   const chapter = chapterOf(buildGraphFromRaw(paged({ published: false })))
   assert.equal(chapter.published, false)
   assert.equal(chapter.pages.length, 3)
-  assert.equal(chapterPageMetaNode(chapter).meta.title, 'Első oldal')
+  assert.equal(chapterPageMetaNode(chapter.pages[0]).meta.title, 'Első oldal')
+})
+
+// ---------------------------------------------------------------------------
+// URLs: page 1 is the chapter URL, later pages add `/{n}`
+// ---------------------------------------------------------------------------
+
+const CHAPTER_URL = '/hu/konyvek/konyv/fejezetek/fejezet'
+
+test('page 1 of a chapter is the bare chapter URL, later pages add their number', () => {
+  const chapter = chapterOf(buildGraphFromRaw(paged()))
+  assert.equal(urlForChapter(chapter), CHAPTER_URL)
+  assert.equal(urlForChapterPage(chapter, 1), CHAPTER_URL)
+  assert.equal(urlForChapterPage(chapter, 2), `${CHAPTER_URL}/2`)
+  assert.equal(urlForChapterPage(chapter, 3), `${CHAPTER_URL}/3`)
+})
+
+test('the page URL builder rejects page 0, a page past the last, and a non-integer', () => {
+  const chapter = chapterOf(buildGraphFromRaw(paged()))
+  for (const index of [0, -1, 4, 1.5, Number.NaN]) {
+    assert.throws(() => urlForChapterPage(chapter, index), /has 3 page\(s\), so it has no page/, String(index))
+  }
+})
+
+test("the URL constructor's chapter-page key refuses a second spelling of page 1", () => {
+  assert.equal(buildLocalizedUrl('hu', 'chapter-page', 'konyv', 'fejezet', '2'), `${CHAPTER_URL}/2`)
+  for (const index of ['1', '0', '01', '2.0', 'x', '']) {
+    assert.throws(() => buildLocalizedUrl('hu', 'chapter-page', 'konyv', 'fejezet', index), undefined, index)
+  }
+})
+
+// ---------------------------------------------------------------------------
+// The route: which segment resolves, and which pages are generated
+// ---------------------------------------------------------------------------
+
+test('a page segment resolves only for pages 2 to N, spelled as a plain number', () => {
+  const chapter = chapterOf(buildGraphFromRaw(paged()))
+  assert.equal(chapterPageAt(chapter, '2'), chapter.pages[1])
+  assert.equal(chapterPageAt(chapter, '3'), chapter.pages[2])
+  for (const segment of ['1', '0', '4', '10', '02', '2.0', ' 2', 'x', '', undefined]) {
+    assert.equal(chapterPageAt(chapter, segment), undefined, String(segment))
+  }
+})
+
+test('locally every page of a chapter is generated, drafts included', () => {
+  for (const published of [true, false]) {
+    const chapter = chapterOf(buildGraphFromRaw(paged({ published })))
+    assert.deepEqual(generatedPages(chapter).map((p) => p.index), [1, 2, 3])
+  }
+})
+
+test('every generated page URL resolves back to its own page, the static params round trip', () => {
+  const chapter = chapterOf(buildGraphFromRaw(paged()))
+  for (const page of generatedPages(chapter)) {
+    const path = urlForChapterPage(chapter, page.index).split('/').slice(2)
+    assert.deepEqual(path.slice(0, 4), ['konyvek', 'konyv', 'fejezetek', 'fejezet'])
+    const resolved = path.length === 4 ? chapter.pages[0] : chapterPageAt(chapter, path[4])
+    assert.equal(resolved, page)
+  }
+})
+
+// ---------------------------------------------------------------------------
+// Hrefs into a paginated chapter carry the page that renders the anchor
+// ---------------------------------------------------------------------------
+
+/**
+ * `paged()`, with section 'negy' on page 3 citing something on every page, and
+ * section 'harom' on page 2 citing def-egy, so def-egy has a backlink row that
+ * points at page 2.
+ */
+function pagedWithRefs() {
+  const data = paged()
+  const [, second, third] = data.books[0].parts[0].chapters[0].pages
+  const harom = second.sections[1]
+  harom.body = [narrative('Lásd [az-elsot].')]
+  harom.references = { 'az-elsot': ref('az elsőt', 'definitions.def-egy') }
+  const negy = third.sections[0]
+  negy.body.push(narrative('[szakasz] [harmadik] [masodik] [utolso] [allitas] [fejezet]'))
+  negy.references = {
+    szakasz: ref('a szakasz', 'books.konyv.chapters.fejezet.sections.harom'),
+    harmadik: ref('a harmadik', 'definitions.def-harom'),
+    masodik: ref('a második', 'definitions.def-ketto'),
+    utolso: ref('az utolsó', 'definitions.def-uto'),
+    allitas: ref('az állítás', 'definitions.def-egy.claims.def-claim'),
+    fejezet: ref('a fejezet', 'books.konyv.chapters.fejezet'),
+  }
+  return data
+}
+
+test('a reference into a chapter links to the page that renders its target', () => {
+  const g = buildGraphFromRaw(pagedWithRefs())
+  const refs = g.sections.get('books.konyv.chapters.fejezet.sections.negy').references
+  assert.equal(refs.szakasz.href, `${CHAPTER_URL}/2#szakaszok.harom`)
+  assert.equal(refs.masodik.href, `${CHAPTER_URL}/2#definiciok.def-ketto`)
+  assert.equal(refs.harmadik.href, `${CHAPTER_URL}/3#definiciok.def-harom`)
+  assert.equal(refs.utolso.href, `${CHAPTER_URL}/3#definiciok.def-uto`, 'the epilogue is on the last page')
+  assert.match(refs.allitas.href, new RegExp(`^${CHAPTER_URL}#definiciok\\.def-egy\\.`), 'page 1 stays bare')
+  assert.equal(refs.fejezet.href, CHAPTER_URL, 'the chapter as a whole is page 1')
+})
+
+test('a backlink row to a section links to the page the section sits on', () => {
+  const g = buildGraphFromRaw(pagedWithRefs())
+  const rows = (list) => list.flatMap((r) => [r, ...rows(r.children)])
+  const row = rows(g.backlinks.get('definitions.def-egy').all)
+    .find((r) => r.fqn === 'books.konyv.chapters.fejezet.sections.harom')
+  const harom = g.sections.get('books.konyv.chapters.fejezet.sections.harom')
+  assert.equal(row.href, `${CHAPTER_URL}/2#${sectionAnchorId(harom)}`)
+  assert.equal(chapterPageHref(harom.page), `${CHAPTER_URL}/2`)
+})
+
+// ---------------------------------------------------------------------------
+// Per-page metadata
+// ---------------------------------------------------------------------------
+
+test("each page's metadata is its own: title, description, canonical, og:url and hreflang", () => {
+  const chapter = chapterOf(buildGraphFromRaw(paged()))
+  const metaOf = (page) =>
+    buildPageMeta({
+      locale: 'hu',
+      key: page.index === 1 ? 'chapter' : 'chapter-page',
+      slugPath: page.index === 1 ? ['konyv', 'fejezet'] : ['konyv', 'fejezet', String(page.index)],
+      ogType: 'article',
+      node: chapterPageMetaNode(page),
+    })
+  const [first, second, third] = chapter.pages.map(metaOf)
+
+  assert.match(first.title.absolute, /^Első oldal \| /)
+  assert.equal(first.description, 'Első.')
+  assert.equal(first.alternates.canonical, `https://youproof.org${CHAPTER_URL}`)
+
+  assert.match(second.title.absolute, /^Második oldal \| /)
+  assert.equal(second.description, 'Második.')
+  assert.equal(second.alternates.canonical, `https://youproof.org${CHAPTER_URL}/2`)
+  assert.equal(second.openGraph.url, `https://youproof.org${CHAPTER_URL}/2`)
+  assert.deepEqual(second.alternates.languages, {
+    hu: `https://youproof.org${CHAPTER_URL}/2`,
+    'x-default': `https://youproof.org${CHAPTER_URL}/2`,
+  })
+
+  // Page 3 of this unvalidated fixture has no meta, so it falls back as page 1 would.
+  assert.match(third.title.absolute, /^Fejezet \| /)
+  assert.equal(third.alternates.canonical, `https://youproof.org${CHAPTER_URL}/3`)
+})
+
+// ---------------------------------------------------------------------------
+// A page with nothing on it
+// ---------------------------------------------------------------------------
+
+test('a page whose listed sections all lack a file fails the graph load', async (t) => {
+  const contentDir = path.join(tmpRoot, 'content-missing')
+  const chapterDir = path.join(contentDir, 'books', 'konyv', 'resz', 'fejezet')
+  fs.mkdirSync(chapterDir, { recursive: true })
+  fs.writeFileSync(path.join(contentDir, 'books', 'episodes.yaml'), '- konyv\n')
+  fs.writeFileSync(path.join(contentDir, 'books', 'konyv', 'book.yaml'), 'name: konyv\ntitle: Könyv\nparts: [resz]\n')
+  fs.writeFileSync(path.join(contentDir, 'books', 'konyv', 'resz', 'part.yaml'), 'name: resz\ntitle: Rész\nchapters: [fejezet]\n')
+  fs.writeFileSync(path.join(chapterDir, 'egy.yaml'), 'name: egy\ntitle: egy\nbody: []\n')
+  fs.writeFileSync(
+    path.join(chapterDir, 'chapter.yaml'),
+    'name: fejezet\ntitle: Fejezet\npages:\n  - sections: [egy]\n  - sections: [nincs]\n',
+  )
+
+  const previous = process.env.CONTENT_DIR
+  process.env.CONTENT_DIR = contentDir
+  t.after(() => {
+    if (previous === undefined) delete process.env.CONTENT_DIR
+    else process.env.CONTENT_DIR = previous
+  })
+  t.mock.method(console, 'warn', () => {})
+
+  await assert.rejects(loadRawGraphData(), (err) => {
+    assert.equal(err.name, 'ContentFormatError')
+    assert.match(err.message, /fejezet\/chapter\.yaml — page 2 lists no section that has a file/)
+    return true
+  })
 })

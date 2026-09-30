@@ -9,7 +9,7 @@ import { absoluteUrl } from '@/lib/i18n/metadata'
 import {
   homeUrl,
   urlForBook,
-  urlForChapter,
+  urlForChapterPage,
   urlForDefinitionsIndex,
   urlForGlossary,
   urlForKbNode,
@@ -58,7 +58,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       entries.push(entry(locale, urlForBook(book), lastmodDate(`book:${book.name}`)))
       for (const part of book.parts) {
         for (const chapter of part.chapters) {
-          if (chapter.published) entries.push(entry(locale, urlForChapter(chapter), lastmodDate(`chapter:${chapter.name}`)))
+          if (!chapter.published) continue
+          // Every page carries the chapter's lastmod: the map dates YAML files, and a
+          // page has no file of its own.
+          for (const page of chapter.pages) {
+            entries.push(entry(locale, urlForChapterPage(chapter, page.index), lastmodDate(`chapter:${chapter.name}`)))
+          }
         }
       }
     }

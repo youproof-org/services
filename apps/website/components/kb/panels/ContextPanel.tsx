@@ -3,6 +3,7 @@ import InlineText from '@/components/content/InlineText'
 import { getContentGraph } from '@/lib/content'
 import { keyForKbNode } from '@/lib/content/keys'
 import { sectionAnchorId, urlForChapter } from '@/lib/content/urls'
+import { chapterPageHref } from '@/lib/content/chapter-pages'
 import { getChapterIndexLabel, getSectionIndexLabel } from '@/lib/utils/index-helpers'
 import type { KbNode } from '@/lib/content/types'
 import styles from '../panel.module.scss'
@@ -34,9 +35,9 @@ import styles from '../panel.module.scss'
  * which §2.1 requires of exactly this content — the embedding is one of the edges
  * of the knowledge graph this ticket exists to expose.
  *
- * The links are ordinary links and navigate away (§6.4). The section's is the
- * chapter's URL plus the section's anchor, the same href a backlink row to a
- * section uses (`backlinkRowFor` in lib/content/graph.ts).
+ * The links are ordinary links and navigate away (§6.4). The section's is the URL
+ * of the chapter page it sits on plus the section's anchor, the same href a
+ * backlink row to a section uses (`sectionBacklinkRow` in lib/content/graph.ts).
  */
 
 interface ContextPanelProps {
@@ -59,15 +60,14 @@ export default function ContextPanel({ node }: ContextPanelProps) {
   }
 
   const { chapter, section } = embedding
-  const chapterUrl = urlForChapter(chapter)
   const levels: ContextLevel[] = [
-    { href: chapterUrl, label: `${getChapterIndexLabel(chapter)} ${chapter.title}` },
+    { href: urlForChapter(chapter), label: `${getChapterIndexLabel(chapter)} ${chapter.title}` },
   ]
   // Absent only for a prologue/epilogue embed, which no content has today (§6.5).
   // The chapter alone then, rather than a level with nothing behind it.
   if (section) {
     levels.push({
-      href: `${chapterUrl}#${sectionAnchorId(section)}`,
+      href: `${chapterPageHref(section.page)}#${sectionAnchorId(section)}`,
       label: `${getSectionIndexLabel(section)} ${section.title}`,
     })
   }

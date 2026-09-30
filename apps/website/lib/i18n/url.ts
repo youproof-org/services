@@ -12,6 +12,7 @@ import { getContainerSegment } from './config'
  *   home        /{locale}
  *   book        /{locale}/{book}/{slug}
  *   chapter     /{locale}/{book}/{bookSlug}/{chapter}/{chapterSlug}
+ *   chapter-page  {chapter}/{n}                 (n ≥ 2: page 1 is `chapter`)
  *   article     /{locale}/{article}/{slug}
  *   newsletter  /{locale}/{newsletter}/{slug}
  *   landing     /{locale}/{landing}/{slug}
@@ -47,6 +48,7 @@ export type UrlKey =
   | 'home'
   | 'book'
   | 'chapter'
+  | 'chapter-page'
   | 'article'
   | 'newsletter'
   | 'landing'
@@ -77,6 +79,13 @@ export function buildLocalizedUrl(locale: string, key: UrlKey, ...slugPath: stri
     case 'chapter': {
       const [bookSlug, chapterSlug] = req(slugPath, 2, key)
       return `${base}/${getContainerSegment(locale, 'book')}/${bookSlug}/${getContainerSegment(locale, 'chapter')}/${chapterSlug}`
+    }
+    case 'chapter-page': {
+      const [bookSlug, chapterSlug, pageIndex] = req(slugPath, 3, key)
+      if (!/^[1-9][0-9]*$/.test(pageIndex) || pageIndex === '1') {
+        throw new Error(`buildLocalizedUrl('${key}') expects a page index of 2 or more, got '${pageIndex}'`)
+      }
+      return `${buildLocalizedUrl(locale, 'chapter', bookSlug, chapterSlug)}/${pageIndex}`
     }
     case 'article':
       return `${base}/${getContainerSegment(locale, 'article')}/${req(slugPath, 1, key)[0]}`

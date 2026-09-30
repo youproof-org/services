@@ -146,9 +146,8 @@ Chapter YAML files in the content repo carry three fields the pipeline depends o
   optional `meta` (`title`, `description`, `open-graph`). The loader
   (`loadChapter` in `lib/content/loader.ts`) still accepts the older shape, a flat
   `sections` list next to a chapter-level `meta`, and reads it as one page that
-  carries that meta. The chapter route renders every page's sections at the
-  chapter URL, with page 1's metadata (`chapterPageMetaNode` in
-  `lib/content/chapter-pages.ts`).
+  carries that meta. Each page has a URL of its own (see
+  [Chapter pages](#chapter-pages)).
 
 <a id="chapter-pages"></a>
 ### Chapter pages
@@ -160,11 +159,45 @@ chapter-global. Page 1 also holds the abstract, the prerequisite warning and the
 prologue, and the last page holds the epilogue (`pageHolding`). An entity's
 `EmbeddingContext.page` is the page its embed renders on.
 
+**Each page is a URL of its own.** Page 1 keeps the chapter URL, and a later page
+adds its number: `/hu/konyvek/alice-es-bob/fejezetek/{chapter-slug}/2`, with no
+trailing slash (`urlForChapterPage` in `lib/content/urls.ts`, over the
+`chapter-page` key of `lib/i18n/url.ts`). Page 1 has exactly one address: `/…/1`
+isn't generated, and neither is `/…/0`, `/…/02` or a number past the last page, so
+they all 404 (`chapterPageAt` in `lib/content/chapter-pages.ts`). In the export, page
+2 is `{chapter-slug}/2.html` next to `{chapter-slug}.html`. A stub chapter renders one
+stub page at the chapter URL and generates no later page, whatever its `pages` say
+(`generatedPages`). A local build renders drafts in full, so a draft paginates like
+a published chapter there.
+
+What each page renders (`components/content/ChapterPage.tsx`):
+
+- the chapter header and the chapter-to-chapter nav, on every page;
+- a `<div data-chapter-page="{n}">` wrapper holding this page's sections, plus the
+  abstract, the prerequisite warning and the prologue on page 1, and the epilogue
+  on the last page;
+- `data-chapter` and `data-page-count` on the `<article>`;
+- a `<nav data-chapter-slot="prev|next" data-page="{n}">` before and after the
+  wrapper, absent on page 1 and on the last page respectively, holding a plain
+  `<a rel="prev|next">` to the neighbouring page. Its text names that page's first
+  section by number and title, such as "26.5. Primitív gyök létezése".
+
+**Each page's metadata is its own.** The title, description and Open Graph tags come
+from the page's `meta`, with the chapter's `title` and `excerpt` as fallbacks
+(`chapterPageMetaNode`). The canonical, `og:url` and hreflang point at the page
+itself; no page sets its canonical to page 1. The page also carries
+`<link rel="prev|next">` to its neighbours. They're rendered in the article, and
+React 19 hoists them into `<head>` in the export. The sitemap lists every page of a
+published chapter, each with the chapter's lastmod, and `split-sitemap.mjs` puts
+them in the book's child sitemap with the chapter.
+
 The build fails when the graph loads, with an error naming the `chapter.yaml`, if:
 
 - a section is listed on more than one page, or twice on one page;
 - a section file in the chapter's directory is on no page;
 - a page has no sections, or `pages` is empty;
+- every section a page lists has no file, so the page would be empty (a single
+  missing section file is only a warning);
 - `sections` or a chapter-level `meta` sits next to `pages`;
 - on a published chapter (one with `published-at`), a page after page 1 lacks
   `meta.title` or `meta.description`;
@@ -172,7 +205,9 @@ The build fails when the graph loads, with an error naming the `chapter.yaml`, i
   number, such as `(2. rész)` (the `chapterPagePart` label in
   `lib/i18n/locales.json`).
 
-The rules are unit-tested in `test/chapter-pages.test.mjs`. "Published" here is the
+The rules, the URLs, the page-qualified hrefs and the per-page metadata are
+unit-tested in `test/chapter-pages.test.mjs`, and what a deployed build generates for
+a stub chapter in `test/chapter-pages-deployed.test.mjs`. "Published" here is the
 content's own status, not what the environment renders. A local build renders drafts
 in full, but a draft may still leave its later pages without meta. That keeps the rule a fact about the content alone, so a check in the
 content repo can apply it the same way.
@@ -192,6 +227,7 @@ constructor — nothing string-concatenates a path.
 | home | `/{locale}` |
 | book | `/{locale}/{book}/{book-slug}` |
 | chapter | `/{locale}/{book}/{book-slug}/{chapter}/{chapter-slug}` |
+| chapter page 2 and later | `/{locale}/{book}/{book-slug}/{chapter}/{chapter-slug}/{n}` — page 1 is the chapter URL, see [Chapter pages](#chapter-pages) |
 | article / newsletter / landing | `/{locale}/{container}/{slug}` |
 | page | `/{locale}/{slug}` — at the locale root, so a page slug may not collide with a container segment |
 | listing pages | `/{locale}/{container}` |
@@ -293,7 +329,11 @@ draws it). An entity page describes itself as a `WebPage` whose main entity is a
 `CreativeWork` — carrying the Wikidata concept URI for "theorem", "proof" or
 "mathematical definition" as its `additionalType`, because schema.org has no type for
 any of them — plus its `BreadcrumbList`, `Chapter` and `Book` stubs for the place in
-the narrative it was lifted from, and a `DefinedTerm` for each term it introduces. The
+the narrative it was lifted from, and a `DefinedTerm` for each term it introduces.
+The `Book` stub is named by the book page's `<title>` (`pageTitleOf`). The `Chapter`
+stub's `@id` is the chapter URL (page 1), and it's named by the chapter's root
+`title`, the one its `<h1>` shows: a chapter's `meta` belongs to its pages, and each
+page's describes only that page. The
 four index pages are `CollectionPage`s: the definition and theorem indexes over an
 `ItemList` that is named and counted but whose members are not enumerated, the
 glossary over the `DefinedTermSet` those terms belong to, and the knowledge-base root
@@ -351,6 +391,18 @@ must not depend on where it happens to be embedded.
 | chapter / standalone item | `szakaszok.{section}`; per embedded entity `definiciok.{d}`, `tetelek.{t}`, `tetelek.{t}.bizonyitasok.{p}`, `…​.megjegyzesek.{r}`, each optionally followed by `.fogalmak.{term}` or `.allitasok.{claim}` |
 | knowledge-base entity page | `fogalmak.{term}`, `allitasok.{claim}` |
 
+A chapter anchor lives on the page that renders it: a section's on its own page, an
+entity's on the page its embed renders on (`EmbeddingContext.page`), so page 1 for
+the prologue and the last page for the epilogue. Every internal href to one carries
+that page's URL, resolved at build time: cross-references (`resolveRefHrefs` in
+`lib/content/graph.ts`), backlink rows, and the knowledge-base context panel
+(`chapterPageHref` in `lib/content/chapter-pages.ts`). A link to the chapter as a
+whole — breadcrumbs, the book index, the chapter nav, a `chapter` reference, the
+structured data — goes to page 1. Where the chapter is a stub, every page's anchors
+point at the stub, its only page. `validateAnchors` expects each anchor on its page's
+URL, and `check-anchors.mjs` checks the export the same way, since a fragment is
+checked against the ids of the file its path names.
+
 Both halves are localized: the container segments come from the same
 `locales.json` `containers` dictionary the URL segments come from, and the key is
 the node's `slug`. A fragment is URL text a reader sees and copies, so it reads in
@@ -385,6 +437,9 @@ page. Behavior by case:
 
 The two container-root dead ends — `/{locale}/konyvek` and `/{locale}/landing`, which
 have no directory page to serve — render `UnavailableStub` too, and carry its directive.
+
+A stub chapter is one page at the chapter URL, however many `pages` it has: its later
+page URLs aren't generated (see [Chapter pages](#chapter-pages)).
 
 This means **every referenced chapter/article needs a YAML file** (at minimum
 `published: false` + `legacy-path` if applicable) so the export has something to

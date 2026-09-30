@@ -89,9 +89,10 @@ export function toIsoTime(publishedAt: string): string {
  * the title it displays.
  *
  * The first half of `buildPageMeta`'s fallback chain, exported because the
- * structured-data builder names books and chapters from other pages and has to call
- * them what those pages' own `<title>` calls them. Deriving that a second time is
- * how a `Book` node ends up disagreeing with the book page it points at.
+ * structured-data builder names books from other pages and has to call them what
+ * the book page's own `<title>` calls them. Deriving that a second time is how a
+ * `Book` node ends up disagreeing with the book page it points at. Chapters are
+ * the exception (`chapterNode` in lib/content/structured-data.ts).
  */
 export function pageTitleOf(node: { title: string; meta?: MetaInfo }): string {
   return node.meta?.title ?? node.title

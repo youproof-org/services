@@ -33,6 +33,7 @@ const EVERY_SHAPE = [
   '/hu',
   '/hu/konyvek/alice-es-bob',
   '/hu/konyvek/alice-es-bob/fejezetek/alice-es-bob-szinrelep',
+  '/hu/konyvek/alice-es-bob/fejezetek/alice-es-bob-szinrelep/2',
   '/hu/cikkek',
   '/hu/cikkek/a-vegtelenen-tul',
   '/hu/hirek',
@@ -57,9 +58,9 @@ const countsByFile = (result) => Object.fromEntries(result.children.map((c) => [
 test('every URL shape lands in the child sitemap of its own type', () => {
   const result = split(EVERY_SHAPE)
   assert.deepEqual(countsByFile(result), {
-    // A chapter lists with its book, and the knowledge-base root with the pages
-    // that have no container of their own.
-    'sitemap-konyvek.xml': 2,
+    // A chapter and its later pages list with its book, and the knowledge-base
+    // root with the pages that have no container of their own.
+    'sitemap-konyvek.xml': 3,
     'sitemap-cikkek.xml': 2,
     'sitemap-hirek.xml': 2,
     'sitemap-oldalak.xml': 3,
