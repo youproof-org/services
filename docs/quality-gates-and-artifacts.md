@@ -53,7 +53,7 @@ read the inline payload; the last two check its result:
 | `check-analytics-build.mjs` | a deploy build has a GA4 measurement id and exactly one distinct id, no `.html` references `googletagmanager.com`, and the consent banner's copy is server-rendered nowhere |
 | `check-robots-meta.mjs` | the `<meta name="robots">` on every page is the one its environment and its kind call for: off production every page is `noindex, nofollow`; on production the not-migrated stubs are `noindex, follow`, the unavailable stubs `noindex, nofollow`, and every other page carries no directive at all |
 | `check-anchors.mjs` | every internal fragment link resolves to an `id` that exists on the target page — read from the markup **and** from the RSC payload, since the deferred inbound-reference rows travel only in the payload |
-| `check-mathml.mjs` | every KaTeX span ships its authored LaTeX in an `<annotation encoding="application/x-tex">`, and that LaTeX survives a naive tag-strip of its page |
+| `check-math-source.mjs` | no formula ships typeset: each one is its LaTeX source in a `tex-src` span ([why](content-site-and-static-generation.md#formulas)), that LaTeX survives a naive tag-strip of its page, and at least one formula as authored in the content repo appears verbatim in that strip |
 | `check-deferred-panels.mjs` | the three inbound-reference panel contents carry nothing in the served markup, the sections and the no-JavaScript line are still there, and the panels that are *not* deferred still carry theirs |
 | `check-structured-data.mjs` | one parseable JSON-LD block per knowledge-base page, `@id`s declared once, every address on our own origin resolving to a file in the export, `BreadcrumbList` in the shape Google documents, and no page restating its inbound references |
 | `check-llms-txt.mjs` | `/llms.txt` exists, every link in it resolves in the export, and every count in it matches the graph |
@@ -80,7 +80,13 @@ hydration test of the rewritten pages. `e2e/flight.test.ts` checks the contract
 directly on the home page, a chapter, a knowledge-base entity, and the theorem index:
 no inline payload is served, exactly one flight script loads with a `200` and a
 JavaScript content type, nothing logs a page or console error, React attaches to
-`main`, and the theorem filter and a knowledge-base panel work.
+`main`, and the theorem filter and a knowledge-base panel work. `e2e/math.test.ts` checks
+the [formulas](content-site-and-static-generation.md#formulas): every one is typeset
+after load, `?math=source` leaves them as LaTeX, the reader stays put through the swaps
+after a fragment load, a link to a fragment, a highlight arrival, and a fast scroll, and
+without JavaScript the strip shows without covering the footer. The position tests turn
+off Chromium's scroll anchoring, which would otherwise hold the page by itself and hide
+a broken enhancer.
 
 Two more run outside `postbuild`: `check-latex.mjs` on `postinstall` (TeX Live is on
 `PATH`) and the `prebuild` generators, of which `sync-figures.mjs` is in the table

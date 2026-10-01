@@ -41,7 +41,7 @@ const contentDir = process.env.CONTENT_DIR
   : path.resolve(websiteRoot, '../content')
 
 if (!existsSync(OUT)) {
-  console.error('[check-mathml] no out/ directory — run after `next build`.')
+  console.error('[check-math-source] no out/ directory — run after `next build`.')
   process.exit(1)
 }
 
@@ -109,14 +109,14 @@ if (existsSync(contentDir)) {
     try { collect(yaml.load(readFileSync(file, 'utf8'))) } catch { /* not our validator's job */ }
   }
 } else {
-  console.error(`[check-mathml] CONTENT_DIR does not exist: ${contentDir}`)
+  console.error(`[check-math-source] CONTENT_DIR does not exist: ${contentDir}`)
   process.exit(1)
 }
 
 const authoredAndServed = [...authored].filter((tex) => servedTex.has(tex))
 
 console.log(
-  `[check-mathml] ${sources} formula source(s) and ${spans} typeset formula(s) across ${pages.length} page(s), ` +
+  `[check-math-source] ${sources} formula source(s) and ${spans} typeset formula(s) across ${pages.length} page(s), ` +
     `${authoredAndServed.length}/${authored.size} authored formula(s) ` +
     `found verbatim in a tag-strip of the export.`,
 )
@@ -126,7 +126,7 @@ let failed = false
 if (typeset.length > 0) {
   failed = true
   console.error(
-    `[check-mathml] ${typeset.length} formula(s) ship typeset by KaTeX instead of as LaTeX source.\n` +
+    `[check-math-source] ${typeset.length} formula(s) ship typeset by KaTeX instead of as LaTeX source.\n` +
       `  Render formulas through mathSource in lib/utils/math.ts.`,
   )
   for (const m of typeset.slice(0, 5)) console.error(`  ${m.page}: ${m.excerpt}…`)
@@ -135,23 +135,23 @@ if (typeset.length > 0) {
 
 if (notInText.length > 0) {
   failed = true
-  console.error(`[check-mathml] ${notInText.length} formula source(s) do not survive a tag-strip of their page:`)
+  console.error(`[check-math-source] ${notInText.length} formula source(s) do not survive a tag-strip of their page:`)
   for (const m of notInText.slice(0, 5)) console.error(`  ${m.page}: ${m.tex}`)
   if (notInText.length > 5) console.error(`  … and ${notInText.length - 5} more`)
 }
 
 if (sources === 0) {
   failed = true
-  console.error('[check-mathml] no formula sources found in the export — the check cannot mean anything.')
+  console.error('[check-math-source] no formula sources found in the export — the check cannot mean anything.')
 }
 
 if (authored.size === 0) {
   failed = true
-  console.error(`[check-mathml] no authored formulas found under ${contentDir} — the check cannot mean anything.`)
+  console.error(`[check-math-source] no authored formulas found under ${contentDir} — the check cannot mean anything.`)
 } else if (authoredAndServed.length === 0) {
   failed = true
   console.error(
-    `[check-mathml] not one of the ${authored.size} formulas authored in the content repo appears\n` +
+    `[check-math-source] not one of the ${authored.size} formulas authored in the content repo appears\n` +
       `  verbatim in a tag-strip of the export. The LaTeX is either absent or rewritten.`,
   )
 }

@@ -120,6 +120,65 @@ crawler downloads, and it reports each offending page with its size.
   and Google's docs say each resource referenced in the HTML is fetched separately,
   with its own 2 MB limit.
 
+<a id="formulas"></a>
+### Formulas are served as LaTeX source
+
+KaTeX's markup for a formula is about 100 times the size of its LaTeX: the 1,326
+formulas in `alice-bob-euler-es-fermat` are 13 KB of LaTeX and 1.5 MB of KaTeX HTML.
+So the export doesn't typeset them. `mathSource` in
+`lib/utils/math.ts` writes each formula as its authored LaTeX in a
+`<span class="tex-src">` (with `data-display` for a display formula), and
+`components/content/MathEnhancer.tsx`, mounted in the root layout, typesets them in
+the browser.
+
+- **What a crawler reads.** A crawler that runs no script reads the LaTeX as text,
+  and that's the one form a text extractor recovers a formula in. KaTeX's glyph run
+  strips `a^{p-1}` to `a p − 1`.
+- **Invalid LaTeX still fails loudly.** `mathSource` still parses each formula, and
+  one KaTeX rejects ships as KaTeX's own `katex-error` span, as it did when the server
+  typeset everything.
+- **The KaTeX bundle loads on every page**, about 75 KB gzipped, since the enhancer
+  is in the root layout. A page with no formulas pays for it too.
+- **`?math=source`** skips typesetting, to see a page as it's served.
+- **Without JavaScript**, the formulas stay as LaTeX and a strip at the bottom of the
+  screen asks the reader to turn JavaScript on. It's `position: sticky`, not `fixed`,
+  so at the end of the page it sits below the footer instead of over it.
+
+**The order formulas are typeset in.** The work is cut into 8 ms slices, so a dense
+chapter never blocks scrolling.
+
+1. **Where the reader arrives**, all at once: from the arrival target down to two
+   screens below it. The target is the URL fragment, or the reference a
+   knowledge-base highlight arrival scrolls to (`ARRIVAL_EVENT` in
+   `lib/kb/highlight.ts`). Before that arrival marks its references, the enhancer
+   typesets the paragraphs around them, since a swap anywhere in a paragraph rewraps
+   its lines and resizes the marked box.
+2. **Formulas within a screen of the viewport**, nearest to the screen first. A fast
+   scroll queues every formula it passes, and the ones where the reader stopped go
+   before those.
+3. **The rest**, while the browser is idle.
+
+**Keeping the reader in place.** A typeset formula is a different size from its
+source, so each swap moves everything below it. Two rules stop that from moving the
+reader:
+
+- **Nothing is swapped while the page scrolls**, or for 200 ms after a scroll, new
+  content, or an arrival. A smooth scroll to an anchor fixes its destination when it
+  starts, so content growing above the anchor mid-scroll would land the reader short
+  of it.
+- **Each slice keeps one element where it was on screen**, and scrolls by however far
+  the slice moved it. That's the arrival target until the reader scrolls, clicks, or
+  types, and the element a third of the way down the viewport after that. Safari has
+  no scroll anchoring of its own, and the element Chrome anchors to can be the formula
+  being replaced.
+
+Raw LaTeX still shows in two places: during a scroll, since nothing is swapped then,
+and for a moment after it stops, about the 200 ms settle time.
+
+`scripts/check-math-source.mjs` checks the served side
+([quality gates](quality-gates-and-artifacts.md)), and `e2e/math.test.ts` checks the
+browser side.
+
 ## Content model fields
 
 Chapter YAML files in the content repo carry two fields the pipeline depends on
