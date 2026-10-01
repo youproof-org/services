@@ -85,9 +85,10 @@ body {
   text-align: center;
 }
 
+/* Sticky, not fixed: at the end of the page it sits below the footer instead of over it */
 .noscript-strip {
-  position: fixed;
-  inset: auto 0 0;
+  position: sticky;
+  bottom: 0;
   z-index: $z-banner;
   padding: 0.75rem 1rem;
   background: $gray-800;
