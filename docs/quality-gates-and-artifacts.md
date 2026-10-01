@@ -58,7 +58,7 @@ read the inline payload; the last two check its result:
 | `check-structured-data.mjs` | one parseable JSON-LD block per knowledge-base page, `@id`s declared once, every address on our own origin resolving to a file in the export, `BreadcrumbList` in the shape Google documents, and no page restating its inbound references |
 | `check-llms-txt.mjs` | `/llms.txt` exists, every link in it resolves in the export, and every count in it matches the graph |
 | `check-flight.mjs` | no page keeps an inline `__next_f` script, each loads exactly one flight file that exists and is named by its content hash, and that file's decoded payload is identical to the page's `.txt` (`404.html` has no `.txt`, so it skips only the comparison) |
-| `check-page-size.mjs` | no exported HTML page is over 1,990,000 bytes, apart from the chapters on the known-oversize list, which only warn; a listed page under the limit fails ([size gate](content-site-and-static-generation.md#size-gate)) |
+| `check-page-size.mjs` | no exported HTML page is over 1,990,000 bytes; any page over it fails, with its size ([size gate](content-site-and-static-generation.md#size-gate)) |
 
 Each one exists because the thing it checks fails **silently**: a wrong measurement id,
 a broken fragment, a formula with no readable source, an inbound list back in the

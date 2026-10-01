@@ -34,10 +34,10 @@ is uploaded to an R2 bucket and served through the CDN (see
 
 Next.js inlines every App Router page's **RSC (Flight) hydration payload** as a run
 of `<script>self.__next_f.push(…)</script>` tags after the footer. It scales with the
-serialized React tree, and a math chapter serializes its server-rendered KaTeX HTML
-into it, so it was most of every chapter file. Ahrefs flags a page whose HTML is over
-2 MiB, on the reasoning that Googlebot reads only the first 2 MB of a file
-([Googlebot docs](https://developers.google.com/search/docs/crawling-indexing/googlebot)).
+serialized React tree, and it carries a chapter's content a second time, formula
+sources included, so it was most of every chapter file. Ahrefs flags a page whose
+HTML is over 2 MiB, on the reasoning that Googlebot reads only the first 2 MB of a
+file ([Googlebot docs](https://developers.google.com/search/docs/crawling-indexing/googlebot)).
 Next 15.5 has no option to stop inlining the payload, so the postbuild
 `scripts/externalize-flight.mjs` moves it out of every exported page:
 
@@ -67,7 +67,7 @@ Next 15.5 has no option to stop inlining the payload, so the postbuild
   resolve too late.
 - **The `.txt` files stay.** Next.js writes them beside the pages for client-side
   navigation, and nothing about that changes.
-- On a local export, the rewrite took the total HTML from 148.3 MiB to 52.1 MiB.
+- On a local export, the rewrite took the total HTML from 65.7 MiB to 21.2 MiB.
 
 **What the rewrite assumes, and how each assumption is checked.** It relies on how
 Next.js emits the payload, so it checks the shape of every page and stops the build
@@ -119,16 +119,6 @@ crawler downloads, and it reports each offending page with its size.
 - **It measures HTML only.** The flight files aren't gated. Ahrefs flags HTML pages,
   and Google's docs say each resource referenced in the HTML is fetched separately,
   with its own 2 MB limit.
-- **A known-oversize list allows the chapters that are still too large** until they're
-  split into pages. `KNOWN_OVERSIZE` names the published ones. Each is reported as a
-  warning, not an error.
-  - A listed page that's under the limit, or missing from the export, fails the
-    build, so the list can only shrink.
-  - Any other oversize page fails the build.
-- **`KNOWN_OVERSIZE_UNPUBLISHED` names unpublished chapters**, which only a local
-  build renders in full (`stubKindFor` in `lib/content/stub.ts`). It applies only
-  when `SITE_ENV` is neither `staging` nor `production`. On a deployed build, such a
-  chapter is a stub, and publishing it before it's split fails the build.
 
 ## Content model fields
 
