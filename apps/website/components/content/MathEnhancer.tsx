@@ -39,6 +39,19 @@ function readingAnchor(): Element | null {
   return hit.closest(PENDING_SELECTOR)?.parentElement ?? hit
 }
 
+function distanceFromScreen(element: Element): number {
+  const { top, bottom } = element.getBoundingClientRect()
+  return Math.max(0, top - window.innerHeight, -bottom)
+}
+
+/** A fast scroll queues every formula it passes; the ones the reader stopped at go first. */
+function nearestFirst(formulas: Iterable<Element>): Element[] {
+  return [...formulas]
+    .map((formula) => ({ formula, distance: distanceFromScreen(formula) }))
+    .sort((a, b) => a.distance - b.distance)
+    .map(({ formula }) => formula)
+}
+
 /**
  * Typesets each formula the server shipped as LaTeX source (see `mathSource`).
  * Formulas within a viewport of the screen go first; the rest follow while the
@@ -128,7 +141,7 @@ export default function MathEnhancer() {
     const nextSlice = () => {
       const sliceStart = performance.now()
       const inTime = () => performance.now() - sliceStart < SLICE_MS
-      for (const formula of nearViewport) {
+      for (const formula of nearestFirst(nearViewport)) {
         if (!inTime()) return true
         nearViewport.delete(formula)
         enhance(formula)
