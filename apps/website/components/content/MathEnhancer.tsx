@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { ARRIVAL_EVENT } from '@/lib/kb/highlight'
+import { ARRIVAL_EVENT, type ArrivalDetail } from '@/lib/kb/highlight'
 import { TEX_SOURCE_CLASS, typeset } from '@/lib/utils/math'
 
 const PENDING_SELECTOR = `.${TEX_SOURCE_CLASS}`
@@ -19,6 +19,14 @@ function fragmentTarget(): Element | null {
   return id ? document.getElementById(id) : null
 }
 
+/** A swap anywhere in a paragraph rewraps its lines, and so resizes an inline box in it. */
+function enclosingBlock(element: Element): Element {
+  let block = element
+  while (block.parentElement && getComputedStyle(block).display.startsWith('inline')) {
+    block = block.parentElement
+  }
+  return block
+}
 
 /**
  * What the reader is looking at: the element under a line a third of the way down
@@ -165,6 +173,9 @@ export default function MathEnhancer() {
 
     const arriveAtHighlight = (event: Event) => {
       if (!(event.target instanceof Element)) return
+      for (const marked of (event as CustomEvent<ArrivalDetail>).detail?.marked ?? []) {
+        enclosingBlock(marked).querySelectorAll(PENDING_SELECTOR).forEach(enhance)
+      }
       highlightTarget = event.target
       arrivedAtFragment = true
       queueAroundFragment()

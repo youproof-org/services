@@ -151,15 +151,23 @@ interface MarkFrame {
   scrollY: number
   /** The timestamp of the frame that wrote it: the component's own clock. */
   at: number
+  /**
+   * The reference this box is drawn around, measured in the same frame: the one at
+   * the box's own position in the list `HighlightOnArrival` marks, which is the order
+   * `ArrivalMarker` renders its boxes in. Null for an arrival that marks no reference.
+   *
+   * Measured here rather than once at the end because the page reflows under the
+   * boxes: `MathEnhancer` typesets formulas above a reference after it has been
+   * marked, which moves it down the document while the enhancer keeps it still on
+   * screen.
+   */
+  target: { index: number; top: number; left: number; width: number; height: number } | null
 }
 
 interface Recorded {
   name: string
   frames: MarkFrame[]
 }
-
-/** One reference as `sectionReferences` reports it, in document coordinates. */
-type Target = Awaited<ReturnType<typeof sectionReferences>>['toMark'][number]
 
 async function installRecorder(context: BrowserContext) {
   await context.addInitScript(() => {
@@ -189,6 +197,23 @@ async function installRecorder(context: BrowserContext) {
     }
     requestAnimationFrame(clock)
 
+    const targetOf = (element: Element) => {
+      const name = element.getAttribute('data-kb-arrival-marker') ?? ''
+      const anchor = decodeURIComponent(window.location.hash.slice(1))
+      const named = anchor === '' ? null : document.getElementById(anchor)
+      const scope = named?.hasAttribute('data-ref-owner') ? named : document
+      const references = [
+        ...scope.querySelectorAll(`[data-target-fqn="${name}"], [data-target-fqn^="${name}."]`),
+      ].filter((reference) => !reference.closest('#kb-panel'))
+      const index = [...document.querySelectorAll('[data-kb-arrival-marker]')]
+        .filter((marker) => marker.getAttribute('data-kb-arrival-marker') === name)
+        .indexOf(element)
+      const reference = references[index]
+      if (!reference) return null
+      const { top, left, width, height } = reference.getBoundingClientRect()
+      return { index, top, left, width, height }
+    }
+
     const sample = (element: Element) => {
       let current = seen.get(element)
       if (!current) {
@@ -208,6 +233,7 @@ async function installRecorder(context: BrowserContext) {
         pointerEvents: computed.pointerEvents,
         scrollY: window.scrollY,
         at: frameAt,
+        target: targetOf(element),
       })
     }
 
@@ -457,31 +483,22 @@ test.describe('the worked case (§7.2)', () => {
     // enough to skip that window leaves only mid-shrink boxes, which is how this
     // failed 2 of 8 runs under load with a box caught at an outset of 9px.
     //
-    // In document coordinates: the boxes were written at as many different scroll
-    // positions as there are marks and are measured at one more, so
-    // `frame.top + frame.scrollY` is the only form in which the two are the same
-    // quantity.
-    const unmatched = [...references.toMark]
-    const framed = marks.map((mark) => {
+    // Against the reference as it was in the frame the box was drawn in
+    // (`MarkFrame.target`), since the page reflows under the boxes as its formulas
+    // are typeset.
+    const framedIndexes = new Set<number>()
+    for (const mark of marks) {
       const held = mark.frames.filter((entry) => entry.opacity === 1)
       expect(held.length, 'a mark never reached full opacity').toBeGreaterThan(0)
       const last = held[held.length - 1]
-      const centre = {
-        x: last.left + last.width / 2,
-        y: last.top + last.scrollY + last.height / 2,
-      }
-      const index = unmatched.findIndex(
-        (target) =>
-          Math.abs(target.left + target.width / 2 - centre.x) < 1 &&
-          Math.abs(target.top + target.height / 2 - centre.y) < 1,
-      )
-      expect(
-        index,
-        `no unframed reference centred at ${JSON.stringify(centre)}`,
-      ).toBeGreaterThanOrEqual(0)
-      return { target: unmatched.splice(index, 1)[0], frames: mark.frames }
-    })
-    expect(unmatched).toEqual([])
+      expect(last.target, 'a mark with no reference under it').not.toBeNull()
+      const target = last.target!
+      expect(Math.abs(target.left + target.width / 2 - (last.left + last.width / 2))).toBeLessThan(1)
+      expect(Math.abs(target.top + target.height / 2 - (last.top + last.height / 2))).toBeLessThan(1)
+      for (const frame of mark.frames) expect(frame.target?.index).toBe(target.index)
+      framedIndexes.add(target.index)
+    }
+    expect(framedIndexes.size).toBe(MARKS)
 
     // What the shrink actually did, against the reference each box was framing. Every
     // frame is checked, not just the last: the box starts at `OUTSET_WIDE` exactly (the
@@ -500,14 +517,13 @@ test.describe('the worked case (§7.2)', () => {
     // write by however long the frame that wrote 22 boxes took, which under load is
     // most of the window being timed, so a box caught 139ms into its shrink carried a
     // span claiming 320ms and was measured as settled at an outset of 8px.
-    const outsetOf = (frame: MarkFrame, target: Target) => target.top - (frame.top + frame.scrollY)
-    for (const { target, frames } of framed) {
-      expect(Math.abs(outsetOf(frames[0], target) - OUTSET_WIDE)).toBeLessThan(1)
-      expect(
-        Math.abs(outsetOf(frames[frames.length - 1], target) - OUTSET_TIGHT),
-      ).toBeLessThan(1)
+    const outsetOf = (frame: MarkFrame) => frame.target!.top - frame.top
+    for (const { frames } of marks) {
+      expect(Math.abs(outsetOf(frames[0]) - OUTSET_WIDE)).toBeLessThan(1)
+      expect(Math.abs(outsetOf(frames[frames.length - 1]) - OUTSET_TIGHT)).toBeLessThan(1)
       for (const frame of frames) {
-        const outset = outsetOf(frame, target)
+        const target = frame.target!
+        const outset = outsetOf(frame)
         expect(outset).toBeGreaterThanOrEqual(OUTSET_TIGHT - 1)
         expect(outset).toBeLessThanOrEqual(OUTSET_WIDE + 1)
         expect(Math.abs(target.left - frame.left - outset)).toBeLessThan(1)
