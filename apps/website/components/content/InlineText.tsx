@@ -1,5 +1,5 @@
 import React from 'react'
-import { renderKatex } from '@/lib/utils/math'
+import { mathSource } from '@/lib/utils/math'
 import { termAnchorId } from '@/lib/content/urls'
 import { isPathTarget } from '@/lib/content/types'
 import type { RefMap, TermMap, AnchorParent } from '@/lib/content/types'
@@ -106,7 +106,7 @@ function renderChunkWithMath(text: string, counter: KeyCounter): React.ReactNode
   while ((m = mathRe.exec(text)) !== null) {
     if (m.index > last) nodes.push(text.slice(last, m.index))
     nodes.push(
-      <span key={counter.n++} dangerouslySetInnerHTML={{ __html: renderKatex(m[1], false) }} className="inline-math" />
+      <span key={counter.n++} dangerouslySetInnerHTML={{ __html: mathSource(m[1], false) }} className="inline-math" />
     )
     last = m.index + m[0].length
   }
@@ -164,7 +164,7 @@ function parseNormalized(
       const inner = parseNormalized(bContent, refs, terms, termParent, counter, selfRefDisplay)
       nodes.push(<strong key={counter.n++}>{inner}</strong>)
     } else if (mathContent !== undefined) {
-      const html = renderKatex(mathContent, false)
+      const html = mathSource(mathContent, false)
       nodes.push(
         <span
           key={counter.n++}

@@ -2,35 +2,29 @@
 /**
  * Postbuild: every formula in the export must ship its authored LaTeX as text.
  *
- * KaTeX's `output: 'html'` emits only a glyph run whose one text-bearing span is
- * `aria-hidden="true"` — unreadable to a screen reader, and to a text extractor
- * `a^{p-1}` flattens to `a p − 1`, which reads equally as a·p−1. `renderKatex`
- * therefore asks for `htmlAndMathml`, which adds a MathML subtree carrying the
- * source in `<annotation encoding="application/x-tex">`. That is a one-word
- * setting in `lib/utils/math.ts` that nothing else in the build would notice if
- * it were reverted, so it is gated here, against the built HTML.
+ * `mathSource` in `lib/utils/math.ts` serves each formula as its LaTeX source,
+ * which `MathEnhancer` typesets in the browser. The source is what a crawler that
+ * runs no script reads, and the one form in which a text extractor recovers a
+ * formula: KaTeX's glyph run strips `a^{p-1}` to `a p − 1`.
  *
  * Three things are checked:
  *
- *   1. Every `<span class="katex">` in the export carries an annotation. Catches
- *      the setting being reverted, and any render path that bypasses renderKatex.
- *   2. Every annotation's LaTeX survives a NAIVE extraction of its page — strip
- *      tags with a regex, decode the XML entities, and the LaTeX must still
- *      be there verbatim. This is the path `data-tex` attributes failed: an
- *      attribute is not text. It also catches entity mangling, which is not
- *      hypothetical — a column separator `&` ships as `&amp;`.
+ *   1. No formula in the export is typeset. A `<span class="katex">` means some
+ *      render path bypasses mathSource, and puts KaTeX's markup back into the
+ *      page weight that this layout exists to keep out of it.
+ *   2. Every source span's LaTeX survives a NAIVE extraction of its page — strip
+ *      tags with a regex, decode the XML entities, and the LaTeX must still be
+ *      there verbatim. It catches entity mangling, which is not hypothetical — a
+ *      column separator `&` ships as `&amp;`.
  *   3. At least one formula as AUTHORED in the content repo appears verbatim in
- *      that naive extraction. 1 and 2 both read the annotation the build wrote,
- *      so they would agree with themselves if KaTeX ever normalised the source;
- *      this one crosses from the content YAML to the HTML and would not.
+ *      that naive extraction. 2 reads the spans the build wrote, so it would agree
+ *      with itself if the source were ever normalised; this one crosses from the
+ *      content YAML to the HTML and would not.
  *
- * Why 3 asserts "at least one" rather than a count: the expectation is derived
- * from the content repo rather than pinned to a literal, so it cannot rot. A
- * threshold could — the content tree can hold formulas on pages this export does
- * not build, an unpublished chapter being the obvious case, so full coverage is
- * a property of today's content and not of this code. It happens to be 1601 of
- * 1601 as this is written; that figure is printed for information rather than
- * asserted, and checks 1 and 2 are what make the gate exhaustive.
+ * Why 3 asserts "at least one" rather than a count: the content tree can hold
+ * formulas on pages this export does not build, an unpublished chapter being the
+ * obvious case, so full coverage is a property of today's content and not of this
+ * code. The figure is printed for information rather than asserted.
  */
 import { readdirSync, readFileSync, existsSync } from 'node:fs'
 import path from 'node:path'
@@ -74,13 +68,13 @@ const decodeXml = (s) =>
 /** What a naive text extractor gets: tags dropped with a regex, entities decoded. */
 const asPlainText = (html) => decodeXml(html.replace(/<[^>]*>/g, ' '))
 
-const KATEX_SPAN = /<span class="katex">/g
-const ANNOTATION = /<annotation encoding="application\/x-tex">([\s\S]*?)<\/annotation>/g
+const TYPESET = /<span class="katex">/g
+const SOURCE = /<span class="tex-src"(?: data-display)?>([^<]*)<\/span>/g
 
 const pages = filesUnder(OUT, /\.html$/)
 let spans = 0
-let annotations = 0
-const missingAnnotation = []
+let sources = 0
+const typeset = []
 const notInText = []
 /** Every LaTeX string the export actually serves as text, for check 3. */
 const servedTex = new Set()
@@ -90,20 +84,13 @@ for (const file of pages) {
   const text = asPlainText(html)
   const page = path.relative(websiteRoot, file)
 
-  // A formula's annotation always precedes the next `<span class="katex">`, so
-  // the slice from one span opener to the next contains its own annotation and
-  // no other's. Nesting the spans properly would need a parser and buys nothing.
-  const openers = [...html.matchAll(KATEX_SPAN)].map((m) => m.index)
-  spans += openers.length
-  for (let i = 0; i < openers.length; i++) {
-    const slice = html.slice(openers[i], openers[i + 1] ?? html.length)
-    if (!/<annotation encoding="application\/x-tex">/.test(slice)) {
-      missingAnnotation.push({ page, excerpt: slice.slice(0, 120) })
-    }
+  for (const m of html.matchAll(TYPESET)) {
+    spans++
+    typeset.push({ page, excerpt: html.slice(m.index, m.index + 120) })
   }
 
-  for (const m of html.matchAll(ANNOTATION)) {
-    annotations++
+  for (const m of html.matchAll(SOURCE)) {
+    sources++
     const tex = decodeXml(m[1])
     if (!text.includes(tex)) notInText.push({ page, tex })
     else servedTex.add(tex)
@@ -129,29 +116,33 @@ if (existsSync(contentDir)) {
 const authoredAndServed = [...authored].filter((tex) => servedTex.has(tex))
 
 console.log(
-  `[check-mathml] ${spans} formula(s) across ${pages.length} page(s), ` +
-    `${annotations} annotation(s), ${authoredAndServed.length}/${authored.size} authored formula(s) ` +
+  `[check-mathml] ${sources} formula source(s) and ${spans} typeset formula(s) across ${pages.length} page(s), ` +
+    `${authoredAndServed.length}/${authored.size} authored formula(s) ` +
     `found verbatim in a tag-strip of the export.`,
 )
 
 let failed = false
 
-if (missingAnnotation.length > 0) {
+if (typeset.length > 0) {
   failed = true
   console.error(
-    `[check-mathml] ${missingAnnotation.length} formula(s) ship no <annotation encoding="application/x-tex">.\n` +
-      `  The LaTeX source is then absent from the served bytes and the formula is announced as\n` +
-      `  nothing by a screen reader. Check output: 'htmlAndMathml' in lib/utils/math.ts.`,
+    `[check-mathml] ${typeset.length} formula(s) ship typeset by KaTeX instead of as LaTeX source.\n` +
+      `  Render formulas through mathSource in lib/utils/math.ts.`,
   )
-  for (const m of missingAnnotation.slice(0, 5)) console.error(`  ${m.page}: ${m.excerpt}…`)
-  if (missingAnnotation.length > 5) console.error(`  … and ${missingAnnotation.length - 5} more`)
+  for (const m of typeset.slice(0, 5)) console.error(`  ${m.page}: ${m.excerpt}…`)
+  if (typeset.length > 5) console.error(`  … and ${typeset.length - 5} more`)
 }
 
 if (notInText.length > 0) {
   failed = true
-  console.error(`[check-mathml] ${notInText.length} annotation(s) do not survive a tag-strip of their page:`)
+  console.error(`[check-mathml] ${notInText.length} formula source(s) do not survive a tag-strip of their page:`)
   for (const m of notInText.slice(0, 5)) console.error(`  ${m.page}: ${m.tex}`)
   if (notInText.length > 5) console.error(`  … and ${notInText.length - 5} more`)
+}
+
+if (sources === 0) {
+  failed = true
+  console.error('[check-mathml] no formula sources found in the export — the check cannot mean anything.')
 }
 
 if (authored.size === 0) {

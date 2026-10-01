@@ -75,6 +75,26 @@ body {
   margin: 0;
 }
 
+/* LaTeX source as served, until MathEnhancer typesets it */
+.tex-src {
+  overflow-wrap: anywhere;
+}
+
+.tex-src[data-display] {
+  display: block;
+  text-align: center;
+}
+
+.noscript-strip {
+  position: fixed;
+  inset: auto 0 0;
+  z-index: $z-banner;
+  padding: 0.75rem 1rem;
+  background: $gray-800;
+  color: $white;
+  text-align: center;
+}
+
 /* Reference errors */
 .ref-error {
   font-size: 0.85em;
