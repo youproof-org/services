@@ -1,6 +1,6 @@
 import type { RefMap, TermMap, AnchorParent } from '@/lib/content/types'
 import { claimAnchorId } from '@/lib/content/urls'
-import { renderKatex } from '@/lib/utils/math'
+import { mathSource } from '@/lib/utils/math'
 import InlineText from '../InlineText'
 import styles from './claim-block.module.scss'
 
@@ -29,7 +29,7 @@ export default function ClaimBlock({ index, name, slug, content, formula, refs, 
         {formula && (
           <div
             className={styles.formula}
-            dangerouslySetInnerHTML={{ __html: renderKatex(formula, true) }}
+            dangerouslySetInnerHTML={{ __html: mathSource(formula, true) }}
           />
         )}
       </div>

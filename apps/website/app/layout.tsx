@@ -14,6 +14,7 @@ import DevContentReloader from '@/components/DevContentReloader'
 import ConsentGate from '@/components/consent/ConsentGate'
 import ArrivalMarker from '@/components/kb/ArrivalMarker'
 import HighlightOnArrival from '@/components/kb/HighlightOnArrival'
+import MathEnhancer from '@/components/content/MathEnhancer'
 import NewsletterLanding from '@/components/newsletter/NewsletterLanding'
 import { DEFAULT_LOCALE, getLocaleConfig } from '@/lib/i18n/config'
 import {
@@ -109,6 +110,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             re-reads window.location.search when it does, exactly as they do, so all
             three can arrive in one URL. */}
         <HighlightOnArrival />
+        <MathEnhancer />
+        <noscript>
+          <div className="noscript-strip">A képletek megjelenítéséhez kapcsold be a JavaScriptet.</div>
+        </noscript>
         {process.env.NODE_ENV === 'development' && <DevContentReloader />}
       </body>
     </html>
