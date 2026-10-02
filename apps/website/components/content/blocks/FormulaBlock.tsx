@@ -1,5 +1,5 @@
 import type { RefMap, TermMap, AnchorParent } from '@/lib/content/types'
-import { renderKatex } from '@/lib/utils/math'
+import { mathSource } from '@/lib/utils/math'
 import InlineText from '../InlineText'
 import styles from './formula-block.module.scss'
 
@@ -13,7 +13,7 @@ interface FormulaBlockProps {
 }
 
 export default function FormulaBlock({ leadIn, content, leadOut, refs, terms, termParent }: FormulaBlockProps) {
-  const html = renderKatex(content, true)
+  const html = mathSource(content, true)
   return (
     <div data-block-type="formula" className={styles.formula}>
       {leadIn && (

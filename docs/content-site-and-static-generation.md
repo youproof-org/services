@@ -29,16 +29,155 @@ is uploaded to an R2 bucket and served through the CDN (see
   checkable, and `scripts/check-analytics-build.mjs` enforces it). Grepping `out/`
   for `gtag` will find nothing in the pages.
 
-### `__next_f` script tags are expected (not a bug)
+<a id="rsc-payload"></a>
+### The RSC payload is served as an external file
 
-Generated pages contain many `<script>(self.__next_f=…).push(…)</script>` tags —
-~10–14 on light pages, ~70 on a math-dense chapter. These are the App Router's
-**RSC (Flight) hydration payload**, chunked into small `push()` calls; the count
-scales with the serialized React tree, and math chapters serialize the
-server-rendered KaTeX HTML (hundreds of spans) into that payload. It's inherent to
-App Router static export — nothing in `next.config.ts` inflates it, hydration
-needs it, and removing it isn't possible without leaving App Router. Investigated
-under YP-122 item 9: **expected boilerplate, no action.**
+Next.js inlines every App Router page's **RSC (Flight) hydration payload** as a run
+of `<script>self.__next_f.push(…)</script>` tags after the footer. It scales with the
+serialized React tree, and it carries a chapter's content a second time, formula
+sources included, so it was most of every chapter file. Ahrefs flags a page whose
+HTML is over 2 MiB, on the reasoning that Googlebot reads only the first 2 MB of a
+file ([Googlebot docs](https://developers.google.com/search/docs/crawling-indexing/googlebot)).
+Next 15.5 has no option to stop inlining the payload, so the postbuild
+`scripts/externalize-flight.mjs` moves it out of every exported page:
+
+```html
+<!-- before -->
+<script src="/_next/static/chunks/webpack-….js" id="_R_" async=""></script>
+<script>(self.__next_f=self.__next_f||[]).push([0])</script>
+<script>self.__next_f.push([1,"1:\"$Sreact.fragment\"\n…"])</script>
+…
+</body></html>
+
+<!-- after -->
+<script src="/_next/static/chunks/webpack-….js" id="_R_" async=""></script>
+<script src="/_next/static/flight/<hash>.js"></script>
+</body></html>
+```
+
+- **The file holds the same statements, byte for byte, in the same order**, one per
+  line. Nothing is decoded or re-encoded; only the `<script>` wrappers change.
+- **It's named by a hash of its content**, so a cached copy can never pair a new page
+  with an old payload.
+- **Why a classic script works.** The client feeds every entry pushed onto the global
+  `self.__next_f` into the stream React hydrates from, and closes that stream at
+  `DOMContentLoaded` (`next/dist/client/app-index.js`). A `<script src>` that isn't
+  `async`, `defer`, or a module blocks the parser, so it runs before that event,
+  exactly like the inline scripts it replaces. A `fetch` of the page's `.txt` would
+  resolve too late.
+- **The `.txt` files stay.** Next.js writes them beside the pages for client-side
+  navigation, and nothing about that changes.
+- On a local export, the rewrite took the total HTML from 65.7 MiB to 21.2 MiB.
+
+**What the rewrite assumes, and how each assumption is checked.** It relies on how
+Next.js emits the payload, so it checks the shape of every page and stops the build
+with the page and the broken assumption named. It plans every page before writing
+any, so a failure leaves the export untouched.
+
+| assumption | checked by |
+|---|---|
+| exactly one `(self.__next_f=self.__next_f\|\|[]).push([0])` init script | `externalize-flight.mjs`: fails on zero or several |
+| the pushes form one contiguous block ending at `</body></html>` | `externalize-flight.mjs`: fails on any other markup inside the block, or any `__next_f` before it |
+| each push argument is a JSON array starting with a number | `externalize-flight.mjs`: parses every argument |
+| the payload is complete: nothing is lost or reordered | `check-flight.mjs`: decodes each page's external file's `[1, …]` chunks and compares them with the page's `.txt` |
+
+`check-flight.mjs` also checks that no inline `__next_f` script is left, and that each
+page loads exactly one flight file, which exists and is named by its hash. `404.html`
+is the one page Next.js writes no `.txt` for, so it gets every check except the
+comparison. Any other page without a `.txt` fails. The shape rules and the decoder are
+pure functions in `scripts/lib/flight.mjs`, unit-tested in `test/flight.test.mjs`,
+and `e2e/flight.test.ts` checks in Chromium that the rewritten pages still hydrate.
+
+**Order in `postbuild`.** `check-anchors.mjs` reads hrefs out of the inline payload,
+and `check-deferred-panels.mjs` and `check-structured-data.mjs` strip `<script>`
+elements to tell markup from payload. `check-analytics-build.mjs` scans each whole
+`.html` file for `googletagmanager.com` and the banner class, which included the
+inline payload. So every existing check runs first, then `externalize-flight.mjs`,
+then `check-flight.mjs` and `check-page-size.mjs`.
+
+**Re-running `postbuild` on an export it already rewrote fails.** The rewrite finds
+no init script and says so. Rebuild with `pnpm build` instead, which writes a fresh
+`out/`.
+
+**On the CDN**, the flight files are ordinary `.js` assets. The zone's asset rules for
+the transform and the cache match by extension, not by path (`asset_extensions` in
+`infra/cloudflare/terraform/zone/locals.tf`), so `/_next/static/flight/` gets the
+same long TTL as Next's own chunks ([cache rules](cdn-and-r2.md#cache-rules)).
+`aws s3 sync --delete` in the deploy removes an earlier deploy's flight files, as it
+does any object that's no longer in `out/`. The non-production `X-Robots-Tag` rule
+matches by host, so it covers them too.
+
+<a id="size-gate"></a>
+### Size gate
+
+`scripts/check-page-size.mjs` fails the build if any exported HTML page is over
+**1,990,000 bytes** (`PAGE_SIZE_LIMIT` in `scripts/lib/page-size.mjs`), just under
+the 2 MiB Ahrefs measures. It runs after the payload rewrite, so it measures what a
+crawler downloads, and it reports each offending page with its size.
+
+- **It covers every page**, not only chapters.
+- **It measures HTML only.** The flight files aren't gated. Ahrefs flags HTML pages,
+  and Google's docs say each resource referenced in the HTML is fetched separately,
+  with its own 2 MB limit.
+
+<a id="formulas"></a>
+### Formulas are served as LaTeX source
+
+KaTeX's markup for a formula is about 100 times the size of its LaTeX: the 1,326
+formulas in `alice-bob-euler-es-fermat` are 13 KB of LaTeX and 1.5 MB of KaTeX HTML.
+So the export doesn't typeset them. `mathSource` in
+`lib/utils/math.ts` writes each formula as its authored LaTeX in a
+`<span class="tex-src">` (with `data-display` for a display formula), and
+`components/content/MathEnhancer.tsx`, mounted in the root layout, typesets them in
+the browser.
+
+- **What a crawler reads.** A crawler that runs no script reads the LaTeX as text,
+  and that's the one form a text extractor recovers a formula in. KaTeX's glyph run
+  strips `a^{p-1}` to `a p − 1`.
+- **Invalid LaTeX still fails loudly.** `mathSource` still parses each formula, and
+  one KaTeX rejects ships as KaTeX's own `katex-error` span, as it did when the server
+  typeset everything.
+- **The KaTeX bundle loads on every page**, about 75 KB gzipped, since the enhancer
+  is in the root layout. A page with no formulas pays for it too.
+- **`?math=source`** skips typesetting, to see a page as it's served.
+- **Without JavaScript**, the formulas stay as LaTeX and a strip at the bottom of the
+  screen asks the reader to turn JavaScript on. It's `position: sticky`, not `fixed`,
+  so at the end of the page it sits below the footer instead of over it.
+
+**The order formulas are typeset in.** The work is cut into 8 ms slices, so a dense
+chapter never blocks scrolling.
+
+1. **Where the reader arrives**, all at once: from the arrival target down to two
+   screens below it. The target is the URL fragment, or the reference a
+   knowledge-base highlight arrival scrolls to (`ARRIVAL_EVENT` in
+   `lib/kb/highlight.ts`). Before that arrival marks its references, the enhancer
+   typesets the paragraphs around them, since a swap anywhere in a paragraph rewraps
+   its lines and resizes the marked box.
+2. **Formulas within a screen of the viewport**, nearest to the screen first. A fast
+   scroll queues every formula it passes, and the ones where the reader stopped go
+   before those.
+3. **The rest**, while the browser is idle.
+
+**Keeping the reader in place.** A typeset formula is a different size from its
+source, so each swap moves everything below it. Two rules stop that from moving the
+reader:
+
+- **Nothing is swapped while the page scrolls**, or for 200 ms after a scroll, new
+  content, or an arrival. A smooth scroll to an anchor fixes its destination when it
+  starts, so content growing above the anchor mid-scroll would land the reader short
+  of it.
+- **Each slice keeps one element where it was on screen**, and scrolls by however far
+  the slice moved it. That's the arrival target until the reader scrolls, clicks, or
+  types, and the element a third of the way down the viewport after that. Safari has
+  no scroll anchoring of its own, and the element Chrome anchors to can be the formula
+  being replaced.
+
+Raw LaTeX still shows in two places: during a scroll, since nothing is swapped then,
+and for a moment after it stops, about the 200 ms settle time.
+
+`scripts/check-math-source.mjs` checks the served side
+([quality gates](quality-gates-and-artifacts.md)), and `e2e/math.test.ts` checks the
+browser side.
 
 ## Content model fields
 
