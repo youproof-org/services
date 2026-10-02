@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import {
+  ARRIVAL_EVENT,
+  type ArrivalDetail,
   HIGHLIGHT_ATTR,
   HIGHLIGHT_PARAM,
   highlightSelector,
@@ -228,6 +230,12 @@ export default function HighlightOnArrival() {
         fragment stays in the URL on purpose — it is where a reader with no JavaScript
         lands — so both scrolls happen, and the last one issued is the one that wins.
       */
+      found[0].element.dispatchEvent(
+        new CustomEvent<ArrivalDetail>(ARRIVAL_EVENT, {
+          bubbles: true,
+          detail: { marked: found.map((mark) => mark.element) },
+        }),
+      )
       found[0].element.scrollIntoView({
         block: 'center',
         // The site scrolls smoothly (`scroll-behavior` on `:root` in

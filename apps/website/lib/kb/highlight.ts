@@ -54,6 +54,17 @@ export const TARGET_ATTR = 'data-target-fqn'
 export const HIGHLIGHT_ATTR = 'data-highlight-fqn'
 
 /**
+ * Dispatched, bubbling, on the reference an arrival scrolls to, just before the
+ * scroll starts. The reader is sent there rather than to the URL's fragment, and
+ * `components/content/MathEnhancer.tsx` typesets around wherever the reader is sent.
+ * It typesets the paragraph around every reference about to be marked first, so no
+ * formula swapped in later rewraps one and resizes its box mid-gesture.
+ */
+export const ARRIVAL_EVENT = 'kb-highlight-arrival'
+
+export type ArrivalDetail = { marked: readonly Element[] }
+
+/**
  * The character rule, from the identifiers sub-plan by way of D7: a fully qualified
  * name is `[a-z0-9-]` segments joined by dots. Nothing else, ever.
  *
