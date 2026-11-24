@@ -54,6 +54,7 @@ New file `apps/website/lib/i18n/entity-labels.json`:
 ```json
 {
   "hu": {
+    "cases": ["ine", "ela", "acc", "all", "dat", "sub", "ins", "pl", "pl-ine", "poss", "poss-dat", "poss-ine", "poss-ela"],
     "theorem": {
       "default": "theorem",
       "variants": {
@@ -69,17 +70,22 @@ New file `apps/website/lib/i18n/entity-labels.json`:
 }
 ```
 
-(Cases abbreviated. The registry lists every case the content uses, for every
-variant.)
+(Variant cases abbreviated.)
 
 Rules:
 
 - Variant keys are kebab-case symbolic names and are the same in every locale. A new
-  locale adds words and cases, never keys.
+  locale adds words, never variant keys.
 - `default` names one of the type's own variants.
 - `canonical` is lowercase, as today. Callers capitalize.
 - No short or abbreviated form.
-- Case keys are fixed per locale. The Hungarian set is below.
+- Each locale declares its own case keys in `cases`. Locales differ grammatically, so
+  their sets differ: a locale can have keys another lacks, and a locale without
+  inflection can declare none.
+- **Every variant in a locale defines every case key that locale declares, and no
+  others.** So every theorem, lemma and corollary inflects the same way, and a
+  template's case is valid for any target as long as the target's locale declares
+  it. The Hungarian set is below.
 
 ### Hungarian case keys
 
@@ -122,9 +128,15 @@ The `labels` block is removed from the content model. The loader rejects it.
 
 - an unknown `label` variant for the entity's type;
 - a `labels` block in an entity file;
-- a display template that asks for a case the target's variant does not define;
+- a display template whose `base` or `suffix` names a case key the target's locale
+  does not declare (this covers `target.label` and `target.parent.label`);
 - a registry entry whose `default` is not one of its variants, or whose variant key
-  is not kebab-case.
+  is not kebab-case;
+- a variant that is missing one of its locale's case keys or defines one the locale
+  does not declare.
+
+Each error names the file and, for a template, the reference key. A missing case
+never falls back to the canonical word.
 
 ## Steps
 
@@ -180,6 +192,35 @@ A one-off script:
   `plural-in` references, for review instead of guessing.
 
 Update the "Labels System" section of `docs/content-model.md`.
+
+### 4a. Content-side check (content repo)
+
+The services build is the only place that catches a bad label or case key today, and
+content PRs never build the site. So a typo surfaces only when the staging deploy
+fails after the merge to `draft`. Extend `scripts/check-refs.mjs` to check the same
+rules from the content repo:
+
+- every entity's `label` is a variant of its type in its locale;
+- every `base(...)` and `suffix(...)` call in a reference's `display` names a case key
+  the target's locale declares. The script already resolves every reference target to
+  its file, so it knows the target's locale.
+
+The script stays dependency-free and line-based like the rest of it. It reads the
+registry from the services repo, since the registry lives there:
+
+- locally, from a services checkout given by `--registry <path>` or `SERVICES_DIR`;
+- in CI, from `stable/staging` through the GitHub API, using the existing
+  `SERVICES_REPO_TOKEN`. Content on `draft` is built with `stable/staging` (see the
+  runbook), so that's the registry it has to match.
+
+`check-refs.mjs` isn't run by any workflow today. Add a `pull_request` workflow that
+runs it, modelled on `slug-check.yml`, as a separate commit. It also starts checking
+every reference rule the script already enforces, so run it over the whole tree first
+and fix any existing problems before it can block anything.
+
+During the runbook, `stable/staging` only gets the registry at step 5, so this CI
+check fails on content PRs until then. Content PRs into `content/yp-94-chapter-26`
+should run it locally against the `centralize-entity-labels` services checkout.
 
 ### 5. Output equivalence check
 
