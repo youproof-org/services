@@ -1,0 +1,24 @@
+{
+  "changes": [
+    {
+      "where": "content/books/alice-es-bob/03-a-matematika-epitmenye/12-alice-es-bob-rendet-tesz/08-hol-tartunk-most.yaml#in-the-peano-szorzas-disztributivitas-theorem",
+      "target": "theorems.peano-szorzas-disztributivitas",
+      "before": "'{the(target.index)} [{target.index} Tételek]ben'",
+      "after": "'{the(target.index)} [{target.index} Tétel]ekben'"
+    },
+    {
+      "where": "content/books/alice-es-bob/03-a-matematika-epitmenye/13-alice-es-bob-eladosodik/03-ekvivalenciarelaciok.yaml#in-the-antiszimmetrikus-relacio-definition",
+      "target": "definitions.antiszimmetrikus-relacio",
+      "before": "'{the(target.index)} [{target.index} Definíció]'",
+      "after": "'{the(target.index)} [{target.index} Definíció]ban'"
+    },
+    {
+      "where": "content/books/alice-es-bob/04-a-szamelmelet-alapjai/17-alice-es-bob-okori-haverja/02-a-kituntetett-kozos-oszto.yaml#in-the-kituntetett-kozos-oszto-def",
+      "target": "definitions.kituntetett-kozos-oszto",
+      "before": "'{the(target.index)} [{target.index} Definíció]'",
+      "after": "'{the(target.index)} [{target.index} Definíció]ban'"
+    }
+  ],
+  "pending": [],
+  "errors": []
+}
