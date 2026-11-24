@@ -12,7 +12,8 @@ The type word is defined in three places in this repo:
   word per type, also read by `kbTypeLabel` in `apps/website/lib/content/graph.ts`
   and by `apps/website/components/content/EmbeddedEntity.tsx`.
 - `TYPE_LABELS` in `apps/website/components/content/blocks/RecallBlock.tsx`, with
-  abbreviated Hungarian forms.
+  abbreviated Hungarian forms. The content has no `recall` blocks left, so this is
+  dead code and goes away with the rest of the recall block support (step 2a).
 - `kbBacklinkKindProof` and `kbBacklinkKindRemark` in
   `apps/website/lib/i18n/locales.json`.
 
@@ -150,9 +151,6 @@ tests.
 
 - Remove `ENTITY_LABEL_HU`. `display-template.ts`, `kbTypeLabel` in `graph.ts` and
   `EmbeddedEntity.tsx` read the registry.
-- `RecallBlock` shows the capitalized `canonical` of its target type's default
-  variant, so a lemma's recall block reads `Tétel`. `RecallBlock` is due to be
-  removed, so it doesn't get the target's variant passed down.
 - Remove `kbBacklinkKindProof` and `kbBacklinkKindRemark`. `kbChainBelowTop` reads
   the registry. Delete their assertions in
   `apps/website/test/locale-labels.test.mjs` and their entry in the `LabelKey`
@@ -160,6 +158,22 @@ tests.
 - `definitionsIndex` and `theoremsIndex` stay in `locales.json`. They are page titles.
 - Update the comments in `apps/website/lib/i18n/config.ts` that name the removed
   constant and keys.
+
+### 2a. Remove recall blocks (services)
+
+No content uses `recall` blocks any more, so their support goes from all three repos.
+In services:
+
+- delete `components/content/blocks/RecallBlock.tsx` and `recall-block.module.scss`;
+- drop the `recall` case and import from `components/content/ContentBlocks.tsx`;
+- drop the `RecallBlock` type and its union member from `lib/content/types.ts`, and
+  its re-export from `lib/content/index.ts`;
+- drop the `recall` branch from the loader's target normalization;
+- remove `recall` from `docs/content-site-and-static-generation.md` and
+  `docs/i18n-design.md`.
+
+Old plans under `docs/plans/` and the archived inputs under `lost+found/` keep their
+mentions. They describe the past.
 
 ### 3. Loader (services)
 
@@ -193,7 +207,24 @@ A one-off script:
 - reports every reference whose case its target did not define, including the 18
   `plural-in` references, for review instead of guessing.
 
+The 17 `plural-in` references whose target has no `plural-in` render the singular
+today (`[Tétel]ben`). Moving them to `pl-ine` would make them plural (`[Tétel]ekben`),
+which may not be what each sentence means. Review them one by one with the content
+owner, and decide for each whether it becomes `pl-ine` or stays singular as `ine`.
+The script leaves them unchanged until that decision is made.
+
 Update the "Labels System" section of `docs/content-model.md`.
+
+Remove the recall block from the content repo's docs and tooling, as its own commit:
+
+- `docs/content-model.md`: the `recall` row in the block table and the mentions next
+  to `embed`;
+- `CLAUDE.md`: the embed/recall target check;
+- `scripts/check-refs.mjs`: the embed/recall wording in its header, comment and error
+  message.
+
+`scripts/migrate-ref-targets.mjs` is a finished one-off migration and the
+`docs/plans/` files describe the past, so they stay as they are.
 
 ### 4a. Content-side check (content repo)
 
@@ -250,7 +281,7 @@ file per build with:
 - every KB entity's `kbNodeLabel` and `kbNodeTitle`;
 - every KB entity's `kbEntityRowLines`, which is what the deferred backlink rows and
   the outgoing-reference panel show;
-- every embedded entity's heading and every recall block's word.
+- every embedded entity's heading.
 
 The two files are diffed key by key. This layer names each difference by its source,
 so a migration bug points to the file and reference that caused it.
@@ -274,13 +305,13 @@ real comparison can't be trusted until that's fixed.
 **Intended changes.** The migration script (step 4) writes a manifest of every
 intended difference, with old and new text:
 
-- recall blocks that change from `Def.`, `Biz.` or `Megj.` to the full word;
 - references whose target had no case for the template, which rendered the bare word
   and now render the inflected one;
 - the 18 `plural-in` references, once reviewed. The registry splits `pl-ine` as the
-  singular base plus the whole plural ending (`tétel` + `ekben`), like `pl`. So the
-  17 that render the singular today change to the plural, and
-  `in-the-peano-szorzas-disztributivitas-theorem` in
+  singular base plus the whole plural ending (`tétel` + `ekben`), like `pl`. Each of
+  the 17 that render the singular today is listed with the outcome of its review in
+  step 4: unchanged if it stays `ine`, `[Tétel]ben` to `[Tétel]ekben` if it becomes
+  `pl-ine`. `in-the-peano-szorzas-disztributivitas-theorem` in
   `books/alice-es-bob/03-a-matematika-epitmenye/12-alice-es-bob-rendet-tesz/08-hol-tartunk-most.yaml`
   changes its link text from `Tételek` + `ben` to `Tétel` + `ekben`.
 
@@ -294,6 +325,18 @@ change before the release.
 `media/src/editor/LabelsEditor.tsx` becomes a variant picker for the entity's type,
 writing `label`. It needs the variant list, which it reads from the registry or keeps
 as its own copy. Separate PR.
+
+The same PR removes the recall block, as its own commit:
+
+- `media/src/editor/blocks/RecallBlock.tsx`, and its import, title and component
+  entries in `media/src/editor/BlockView.tsx`;
+- the `recall` branch in `media/src/editor/hooks/useTargetSelection.ts`;
+- the `RecallBlock` model type and its loader case in `src/content/model.ts` and
+  `src/content/loader.ts`;
+- `ContentRecallBlock` in `src/protocol/contentTypes.ts` and the shared types it
+  mirrors;
+- the three `recall` checks in `src/handlers.ts`;
+- the `recall` mentions in `docs/extension-messaging.md`.
 
 ## Delivery
 
@@ -356,8 +399,7 @@ behave differently:
    staging:
    - the footer shows `v2.4.0`;
    - a lemma and a corollary show their own word;
-   - inflected references keep their suffix after the link;
-   - a recall block shows the full word.
+   - inflected references keep their suffix after the link.
 7. **Services: `stable/staging` → `stable/production`, bypassing `pr-gate`.** The gate
    looks for a staging artifact for the new services with the content that
    `stable/released` was promoted from. That pair was never built, so the gate fails.
