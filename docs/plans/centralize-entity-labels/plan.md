@@ -180,6 +180,23 @@ mentions. They describe the past.
 The loader reads `label`, resolves it through the registry, and rejects `labels`.
 Add the display-template case check.
 
+Step 2 leaves an authored `labels` in front of every registry lookup
+(`entity.labels ?? entityLabels(…)`), so its output matches the current content. This
+step replaces each of those with a lookup of the entity's own variant,
+`entityLabels(locale, type, label)`, and removes the `labels` field:
+
+- the `labels ??` fallbacks in `buildContext` in `lib/content/display-template.ts`,
+  and the `labels?.canonical ??` ones in `kbTypeLabel` and `kbChainBelowTop` in
+  `lib/content/graph.ts`;
+- the `canonicalLabel` prop of `components/content/EmbeddedEntity.tsx` and the
+  `entity.labels?.canonical` that `components/content/ContentBlocks.tsx` passes it;
+  `EmbeddedEntity` gets the variant instead;
+- the `labels` field on the four node types in `lib/content/types.ts` and
+  `lib/content/graph.ts`, where the graph copies it, and where the loader reads it in
+  `lib/content/loader.ts`. Each is replaced by `label`.
+
+`EntityLabels` and `InflectedForm` stay, since `entityLabels` returns that shape.
+
 The rejection must fail `next build`, naming the file. The deployment order depends on
 it: a build with the new services and the old content has to fail before anything is
 uploaded, so the environment keeps serving its previous export. A warning or a
@@ -326,17 +343,20 @@ change before the release.
 writing `label`. It needs the variant list, which it reads from the registry or keeps
 as its own copy. Separate PR.
 
-The same PR removes the recall block, as its own commit:
+The same PR removes the recall block, as its own commit. The editor can't create one
+(`recall` isn't in `CREATABLE_BLOCK_TYPES` in `media/src/editor/blocks/createBlock.ts`),
+but it still loads, shows, retargets and saves existing ones:
 
 - `media/src/editor/blocks/RecallBlock.tsx`, and its import, title and component
   entries in `media/src/editor/BlockView.tsx`;
 - the `recall` branch in `media/src/editor/hooks/useTargetSelection.ts`;
 - the `RecallBlock` model type and its loader case in `src/content/model.ts` and
   `src/content/loader.ts`;
-- `ContentRecallBlock` in `src/protocol/contentTypes.ts` and the shared types it
-  mirrors;
+- `ContentRecallBlock` and its union member in `src/protocol/contentTypes.ts`, which
+  `media/src/shared/types.ts` re-exports;
 - the three `recall` checks in `src/handlers.ts`;
-- the `recall` mentions in `docs/extension-messaging.md`.
+- the `recall` mentions in `docs/extension-messaging.md`, whose block list then
+  counts 11 types instead of 12.
 
 ## Delivery
 

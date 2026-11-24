@@ -93,9 +93,9 @@ function normalizeBlock(raw: Record<string, unknown>): ContentBlock {
   if (out.type === 'details' && Array.isArray(out.blocks)) {
     out.blocks = toBlocks(out.blocks)
   }
-  // `embed` and `recall` carry a target in the same form as a reference, always
-  // pointing at a knowledge-base entity.
-  if (out.type === 'embed' || out.type === 'recall') {
+  // `embed` carries a target in the same form as a reference, always pointing at a
+  // knowledge-base entity.
+  if (out.type === 'embed') {
     const target = toRefTarget(out.target, `${out.type} block target`)
     if (target.type === 'external') {
       formatError(`${out.type} block target must be a knowledge-base entity, not a URL.`)

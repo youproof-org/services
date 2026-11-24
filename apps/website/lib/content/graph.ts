@@ -53,10 +53,10 @@ const STANDALONE_DIRS: Record<StandaloneKind, string> = {
   page: 'pages',
   landing: 'landing',
 }
-import { buildContext, resolveTemplate, ENTITY_LABEL_HU } from './display-template'
+import { buildContext, resolveTemplate } from './display-template'
+import { entityLabels } from '@/lib/i18n/entity-labels'
 import { buildLocalizedUrl } from '@/lib/i18n/url'
-import { getLocaleLabel, resolveContainerKey } from '@/lib/i18n/config'
-import type { LabelKey } from '@/lib/i18n/config'
+import { resolveContainerKey } from '@/lib/i18n/config'
 import {
   urlForBook,
   urlForStandalone,
@@ -1468,7 +1468,7 @@ function termAnchorsForKey(parent: KbNode, termKey: string): AnchorPair | null {
 
 /** The type label of a node, capitalized: authored if it has one, else the default. */
 function kbTypeLabel(node: KbNode): string {
-  const label = node.labels?.canonical ?? ENTITY_LABEL_HU[node.type] ?? node.type
+  const label = node.labels?.canonical ?? entityLabels(node.locale, node.type).canonical
   return label.charAt(0).toUpperCase() + label.slice(1)
 }
 
@@ -1608,12 +1608,6 @@ function kbChainTop(node: KbNode): KbNode {
   return node
 }
 
-/** What the ownership line calls one step of the chain, per type it can be. */
-const OWNED_TYPE_LABELS: Record<'proof' | 'remark', LabelKey> = {
-  proof: 'kbBacklinkKindProof',
-  remark: 'kbBacklinkKindRemark',
-}
-
 /**
  * The chain BELOW the definition or theorem a row's first line names, or undefined
  * when the row's source IS that definition or theorem.
@@ -1631,7 +1625,7 @@ function kbChainBelowTop(node: KbNode): string | undefined {
   if (node.type !== 'proof' && node.type !== 'remark') return undefined
   const above = node.type === 'proof' ? node.proves : node.attachedTo
   if (!above) return undefined
-  const word = node.labels?.canonical ?? getLocaleLabel(node.locale, OWNED_TYPE_LABELS[node.type])
+  const word = node.labels?.canonical ?? entityLabels(node.locale, node.type).canonical
   const segment = node.title ? `${word} (${node.title})` : word
   const higher = kbChainBelowTop(above)
   return higher ? `${higher} → ${segment}` : segment

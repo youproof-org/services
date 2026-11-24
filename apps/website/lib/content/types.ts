@@ -33,8 +33,8 @@ export interface FigureBlock {
 }
 
 /**
- * An `embed` or `recall` block's target: always a knowledge-base entity, addressed
- * by the same parsed path as a cross-reference (see PathRefTarget).
+ * An `embed` block's target: always a knowledge-base entity, addressed by the same
+ * parsed path as a cross-reference (see PathRefTarget).
  */
 export interface EmbedTarget {
   type: RefTargetKind
@@ -58,11 +58,6 @@ export interface ClaimBlock {
   slug?: string
   content: string
   formula?: string
-}
-
-export interface RecallBlock {
-  type: 'recall'
-  target: EmbedTarget
 }
 
 export interface ListBlock {
@@ -107,7 +102,6 @@ export type ContentBlock = (
   | FigureBlock
   | EmbedBlock
   | ClaimBlock
-  | RecallBlock
   | ListBlock
   | TypewriterBlock
   | QuoteBlock

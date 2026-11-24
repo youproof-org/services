@@ -1,6 +1,7 @@
 import 'server-only'
 import type { RefTarget, ContentGraph, StandaloneNode } from './types'
 import { getChapterIndexLabel, getSectionIndexLabel } from '../utils/index-helpers'
+import { entityLabels } from '../i18n/entity-labels'
 
 // ---------------------------------------------------------------------------
 // Context types
@@ -15,17 +16,6 @@ export type TemplateContext = Record<string, ContextObject>
 // ---------------------------------------------------------------------------
 
 export type BuiltInFn = (...args: ContextValue[]) => string
-
-// ---------------------------------------------------------------------------
-// Entity label fallbacks (lowercase — capitalize at render time when needed)
-// ---------------------------------------------------------------------------
-
-export const ENTITY_LABEL_HU: Record<string, string> = {
-  definition: 'definíció',
-  theorem:    'tétel',
-  proof:      'bizonyítás',
-  remark:     'megjegyzés',
-}
 
 /**
  * Returns the Hungarian definite article ("a" or "az") for the given string.
@@ -353,7 +343,6 @@ export function buildContext(
     }
     if (!found) return null
     const parentInfo = graph.embedding.get(target.parentFqn)
-    const parentFallbackLabel = ENTITY_LABEL_HU[parentEntity.type] ?? parentEntity.type
     return {
       target: {
         index: `${claimIdx}.`,
@@ -361,7 +350,7 @@ export function buildContext(
         type:  'claim',
         parent: {
           index: parentInfo?.index ?? '',
-          label: (parentEntity.labels ?? { canonical: parentFallbackLabel }) as unknown as ContextObject,
+          label: (parentEntity.labels ?? entityLabels(parentEntity.locale, parentEntity.type)) as unknown as ContextObject,
         },
       },
     }
@@ -376,14 +365,13 @@ export function buildContext(
       graph.remarks.get(parentKey)
     if (!parentEntity) return null
     const parentInfo = graph.embedding.get(target.parentFqn)
-    const parentFallbackLabel = ENTITY_LABEL_HU[parentEntity.type] ?? parentEntity.type
     return {
       target: {
         type: 'term',
         name: target.name,
         parent: {
           index: parentInfo?.index ?? '',
-          label: (parentEntity.labels ?? { canonical: parentFallbackLabel }) as unknown as ContextObject,
+          label: (parentEntity.labels ?? entityLabels(parentEntity.locale, parentEntity.type)) as unknown as ContextObject,
         },
       },
     }
@@ -412,13 +400,12 @@ export function buildContext(
       graph.proofs.get(entityKey)     ?? graph.remarks.get(entityKey)
     if (!entity) return null
     const info = graph.embedding.get(target.fqn)
-    const fallbackLabel = ENTITY_LABEL_HU[target.type] ?? target.type
     return {
       target: {
         type:  target.type,
         name:  target.name,
         title: entity.title ?? '',
-        label: (entity.labels ?? { canonical: fallbackLabel }) as unknown as ContextObject,
+        label: (entity.labels ?? entityLabels(entity.locale, entity.type)) as unknown as ContextObject,
         index: info?.index ?? '',
       },
     }

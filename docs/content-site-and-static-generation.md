@@ -232,7 +232,7 @@ list.
 ### Knowledge-base pages, and which entities get one
 
 Every knowledge-base entity is *also* rendered inline inside a chapter, via
-`embed`/`recall` blocks, so it has two addresses: the in-chapter anchor and its own
+`embed` blocks, so it has two addresses: the in-chapter anchor and its own
 page. Which one a cross-reference resolves to depends on the **rendering context**,
 not on the target, and both are resolved at build time (`RefEntry.href` /
 `RefEntry.kbHref`).

@@ -195,7 +195,7 @@ expected to be reorganized, and a node's URL must not move when that happens —
 definition or theorem sits at a flat path and a proof or remark nests under the node
 that owns it. `lib/i18n/url.ts` is the single constructor for all of them.
 
-An entity is *also* rendered inline inside a chapter, via `embed`/`recall` content
+An entity is *also* rendered inline inside a chapter, via `embed` content
 blocks. That gives it two addresses, and which one a cross-reference resolves to
 depends on the **rendering context**, not on the target: a reference rendered on a
 chapter page resolves to the in-chapter anchor, and the same reference on a

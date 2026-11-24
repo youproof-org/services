@@ -18,7 +18,6 @@ import NarrativeBlock from './blocks/NarrativeBlock'
 import FormulaBlock from './blocks/FormulaBlock'
 import FigureBlock from './blocks/FigureBlock'
 import ListBlock from './blocks/ListBlock'
-import RecallBlock from './blocks/RecallBlock'
 import QuoteBlock from './blocks/QuoteBlock'
 import SubsectionBlock from './blocks/SubsectionBlock'
 import DetailsBlock from './blocks/DetailsBlock'
@@ -101,14 +100,6 @@ export default function ContentBlocks({ blocks, embedIndices, figureIndices, ref
                 refs={refs}
                 terms={terms}
                 termParent={termParent}
-              />
-            )
-          case 'recall':
-            return (
-              <RecallBlock
-                key={i}
-                target={block.target}
-                embedIndices={embedIndices}
               />
             )
           case 'embed': {

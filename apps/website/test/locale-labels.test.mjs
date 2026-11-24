@@ -28,15 +28,6 @@ test('a backlink row counts the references one source aims at the entity', () =>
   assert.equal(formatLocaleLabel('hu', 'kbPanelIncomingCount', { count: 5 }), '5 hivatkozás')
 })
 
-test('names what hangs off a definition or a theorem, in the project\'s own words', () => {
-  // The second line of a backlink row for a proof or a remark: its first line names
-  // the definition or theorem the page belongs to, and these are what say which of
-  // that node's children the row leads to. The words are `ENTITY_LABEL_HU`'s
-  // (lib/content/display-template.ts), lowercase like it.
-  assert.equal(getLocaleLabel('hu', 'kbBacklinkKindProof'), 'bizonyítás')
-  assert.equal(getLocaleLabel('hu', 'kbBacklinkKindRemark'), 'megjegyzés')
-})
-
 test('numbers a sibling in the ownership chain the way a label reads', () => {
   // Two proofs of one theorem are both "Bizonyítás", so the ordinal is what makes
   // the pair two links rather than one repeated; it leads, as an entity's index

@@ -105,7 +105,6 @@ export type {
   FormulaBlock,
   FigureBlock,
   EmbedBlock,
-  RecallBlock,
   ListBlock,
   TypewriterBlock,
   RefMap,

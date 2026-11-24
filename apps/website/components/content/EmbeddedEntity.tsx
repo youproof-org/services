@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import type { ContentBlock, RefMap, TermMap, AnchorParent } from '@/lib/content/types'
-import { ENTITY_LABEL_HU } from '@/lib/content/display-template'
+import { entityLabels } from '@/lib/i18n/entity-labels'
 import { getLocaleLabel } from '@/lib/i18n/config'
 import ContentBlocks from './ContentBlocks'
 import styles from './embedded-entity.module.scss'
@@ -75,7 +75,7 @@ function EntityClose({ mark, locale, kbHref }: { mark: string; locale: string; k
   what says which entity.
 */
 export default function EmbeddedEntity({ entityType, anchorId, body, label, canonicalLabel, embedIndices, figureIndices, showTitle, title, refs, terms, termParent, locale, kbHref }: EmbeddedEntityProps) {
-  const typeLabelRaw = canonicalLabel ?? ENTITY_LABEL_HU[entityType] ?? entityType
+  const typeLabelRaw = canonicalLabel ?? entityLabels(locale, entityType).canonical
   const typeLabel = typeLabelRaw.charAt(0).toUpperCase() + typeLabelRaw.slice(1)
   // Claims inside this entity share the term scope: both hang off the same node.
   const parentEntity: AnchorParent | undefined = termParent

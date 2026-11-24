@@ -84,18 +84,6 @@ export type LabelKey =
   // the per-term and per-claim lists too, which are hidden outright: a page carries up
   // to 34 of those, and one explanation per page is the point.
   | 'kbPanelNoJs'
-  // The two things that hang off a definition or a theorem, as a backlink row names
-  // them on its second line: a row for a proof or a remark leads to a page whose
-  // first line is its theorem's, and this is what says which of the theorem's
-  // children it actually is (`kbChainBelowTop` in lib/content/graph.ts). A proof or
-  // remark carrying an authored `labels.canonical` reads as that instead. The words
-  // are the ones the content model already uses for those types (`ENTITY_LABEL_HU`
-  // in lib/content/display-template.ts, which is what `kbNodeLabel` writes beside an
-  // entity in the narrative), and lowercase like it: the line qualifies the name
-  // above it rather than starting a sentence. The other four kinds a source can be
-  // need no word — a chapter's "16." and a section's "16.1." tell those two apart,
-  // and a definition's and a theorem's own label carries its type word already.
-  | 'kbBacklinkKindProof' | 'kbBacklinkKindRemark'
   // A selected term or claim, level 2 of a selection mode (§6.3, §7.2). A term
   // panel is headed by the term itself, which is content and needs no label, so
   // only the synonyms line does; a claim has no name of its own and is headed by
