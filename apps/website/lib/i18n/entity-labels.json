@@ -1,0 +1,133 @@
+{
+  "hu": {
+    "cases": ["ine", "ela", "acc", "all", "dat", "sub", "ins", "pl", "pl-ine", "poss", "poss-dat", "poss-ine", "poss-ela"],
+    "definition": {
+      "default": "definition",
+      "variants": {
+        "definition": {
+          "canonical": "definíció",
+          "cases": {
+            "ine":      { "base": "definíció",  "suffix": "ban" },
+            "ela":      { "base": "definíció",  "suffix": "ból" },
+            "acc":      { "base": "definíció",  "suffix": "t" },
+            "all":      { "base": "definíció",  "suffix": "hoz" },
+            "dat":      { "base": "definíció",  "suffix": "nak" },
+            "sub":      { "base": "definíció",  "suffix": "ra" },
+            "ins":      { "base": "definíció",  "suffix": "val" },
+            "pl":       { "base": "definíció",  "suffix": "k" },
+            "pl-ine":   { "base": "definíció",  "suffix": "kban" },
+            "poss":     { "base": "definíció",  "suffix": "ja" },
+            "poss-dat": { "base": "definíció",  "suffix": "jának" },
+            "poss-ine": { "base": "definíció",  "suffix": "jában" },
+            "poss-ela": { "base": "definíció",  "suffix": "jából" }
+          }
+        }
+      }
+    },
+    "theorem": {
+      "default": "theorem",
+      "variants": {
+        "theorem": {
+          "canonical": "tétel",
+          "cases": {
+            "ine":      { "base": "tétel",   "suffix": "ben" },
+            "ela":      { "base": "tétel",   "suffix": "ből" },
+            "acc":      { "base": "tétel",   "suffix": "t" },
+            "all":      { "base": "tétel",   "suffix": "hez" },
+            "dat":      { "base": "tétel",   "suffix": "nek" },
+            "sub":      { "base": "tétel",   "suffix": "re" },
+            "ins":      { "base": "tétel",   "suffix": "lel" },
+            "pl":       { "base": "tétel",   "suffix": "ek" },
+            "pl-ine":   { "base": "tétel",   "suffix": "ekben" },
+            "poss":     { "base": "tétel",   "suffix": "e" },
+            "poss-dat": { "base": "tétel",   "suffix": "ének" },
+            "poss-ine": { "base": "tétel",   "suffix": "ében" },
+            "poss-ela": { "base": "tétel",   "suffix": "éből" }
+          }
+        },
+        "lemma": {
+          "canonical": "lemma",
+          "cases": {
+            "ine":      { "base": "lemmá",  "suffix": "ban" },
+            "ela":      { "base": "lemmá",  "suffix": "ból" },
+            "acc":      { "base": "lemmá",  "suffix": "t" },
+            "all":      { "base": "lemmá",  "suffix": "hoz" },
+            "dat":      { "base": "lemmá",  "suffix": "nak" },
+            "sub":      { "base": "lemmá",  "suffix": "ra" },
+            "ins":      { "base": "lemmá",  "suffix": "val" },
+            "pl":       { "base": "lemmá",  "suffix": "k" },
+            "pl-ine":   { "base": "lemmá",  "suffix": "kban" },
+            "poss":     { "base": "lemmá",  "suffix": "ja" },
+            "poss-dat": { "base": "lemmá",  "suffix": "jának" },
+            "poss-ine": { "base": "lemmá",  "suffix": "jában" },
+            "poss-ela": { "base": "lemmá",  "suffix": "jából" }
+          }
+        },
+        "corollary": {
+          "canonical": "következmény",
+          "cases": {
+            "ine":      { "base": "következmény",    "suffix": "ben" },
+            "ela":      { "base": "következmény",    "suffix": "ből" },
+            "acc":      { "base": "következmény",    "suffix": "t" },
+            "all":      { "base": "következmény",    "suffix": "hez" },
+            "dat":      { "base": "következmény",    "suffix": "nek" },
+            "sub":      { "base": "következmény",    "suffix": "re" },
+            "ins":      { "base": "következménny",   "suffix": "el" },
+            "pl":       { "base": "következmény",    "suffix": "ek" },
+            "pl-ine":   { "base": "következmény",    "suffix": "ekben" },
+            "poss":     { "base": "következmény",    "suffix": "e" },
+            "poss-dat": { "base": "következmény",    "suffix": "ének" },
+            "poss-ine": { "base": "következmény",    "suffix": "ében" },
+            "poss-ela": { "base": "következmény",    "suffix": "éből" }
+          }
+        }
+      }
+    },
+    "proof": {
+      "default": "proof",
+      "variants": {
+        "proof": {
+          "canonical": "bizonyítás",
+          "cases": {
+            "ine":      { "base": "bizonyítás",   "suffix": "ban" },
+            "ela":      { "base": "bizonyítás",   "suffix": "ból" },
+            "acc":      { "base": "bizonyítás",   "suffix": "t" },
+            "all":      { "base": "bizonyítás",   "suffix": "hoz" },
+            "dat":      { "base": "bizonyítás",   "suffix": "nak" },
+            "sub":      { "base": "bizonyítás",   "suffix": "ra" },
+            "ins":      { "base": "bizonyítás",   "suffix": "sal" },
+            "pl":       { "base": "bizonyítás",   "suffix": "ok" },
+            "pl-ine":   { "base": "bizonyítás",   "suffix": "okban" },
+            "poss":     { "base": "bizonyítás",   "suffix": "a" },
+            "poss-dat": { "base": "bizonyítás",   "suffix": "ának" },
+            "poss-ine": { "base": "bizonyítás",   "suffix": "ában" },
+            "poss-ela": { "base": "bizonyítás",   "suffix": "ából" }
+          }
+        }
+      }
+    },
+    "remark": {
+      "default": "remark",
+      "variants": {
+        "remark": {
+          "canonical": "megjegyzés",
+          "cases": {
+            "ine":      { "base": "megjegyzés",   "suffix": "ben" },
+            "ela":      { "base": "megjegyzés",   "suffix": "ből" },
+            "acc":      { "base": "megjegyzés",   "suffix": "t" },
+            "all":      { "base": "megjegyzés",   "suffix": "hez" },
+            "dat":      { "base": "megjegyzés",   "suffix": "nek" },
+            "sub":      { "base": "megjegyzés",   "suffix": "re" },
+            "ins":      { "base": "megjegyzés",   "suffix": "sel" },
+            "pl":       { "base": "megjegyzés",   "suffix": "ek" },
+            "pl-ine":   { "base": "megjegyzés",   "suffix": "ekben" },
+            "poss":     { "base": "megjegyzés",   "suffix": "e" },
+            "poss-dat": { "base": "megjegyzés",   "suffix": "ének" },
+            "poss-ine": { "base": "megjegyzés",   "suffix": "ében" },
+            "poss-ela": { "base": "megjegyzés",   "suffix": "éből" }
+          }
+        }
+      }
+    }
+  }
+}
