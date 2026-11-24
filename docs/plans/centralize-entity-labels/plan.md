@@ -140,7 +140,9 @@ tests.
 - `RecallBlock` shows the variant's capitalized `canonical`. It needs the locale and
   the target's variant, passed from `ContentBlocks`.
 - Remove `kbBacklinkKindProof` and `kbBacklinkKindRemark`. `kbChainBelowTop` reads
-  the registry.
+  the registry. Delete their assertions in
+  `apps/website/test/locale-labels.test.mjs` and their entry in the `LabelKey`
+  union in `config.ts`.
 - `definitionsIndex` and `theoremsIndex` stay in `locales.json`. They are page titles.
 - Update the comments in `apps/website/lib/i18n/config.ts` that name the removed
   constant and keys.
@@ -148,8 +150,19 @@ tests.
 ### 3. Loader (services)
 
 The loader reads `label`, resolves it through the registry, and rejects `labels`.
-Add the display-template case check. Steps 1 to 3 merge together with the content
-change, since the loader no longer accepts the old format.
+Add the display-template case check.
+
+The rejection must fail `next build`, naming the file. The deployment order depends on
+it: a build with the new services and the old content has to fail before anything is
+uploaded, so the environment keeps serving its previous export. A warning or a
+fallback would upload wrong output instead (see the runbook).
+
+### 3a. Version (services)
+
+Bump `apps/website/package.json` from `2.3.2` to `2.4.0`. This is a breaking change to
+the content contract, and the footer shows this version. `tag-release` in
+`.github/workflows/deploy.yml` creates the `v2.4.0` tag on the first successful
+production deploy of this commit.
 
 ### 4. Content migration (content repo)
 
@@ -168,17 +181,65 @@ A one-off script:
 
 Update the "Labels System" section of `docs/content-model.md`.
 
-### 5. Verification
+### 5. Output equivalence check
 
-Build `out/` with the current services and content, then with both branches, and
-diff the two. Expected differences:
+The rendered output must be the same before and after, except for an explicit list of
+intended changes. The check is deterministic: pinned inputs, a control run that
+proves the comparison ignores build noise, and an exact match against the list of
+intended changes.
 
-- recall blocks show the full word instead of `Def.`, `Biz.` and `Megj.`;
-- references that rendered a bare word through the silent fallback now render the
-  inflected form.
+**Pinned inputs.**
 
-Any other difference is a migration bug. Each expected difference is listed for
-review before merging.
+| Build | Services | Content |
+|---|---|---|
+| Baseline | merge-base of `centralize-entity-labels` and `development` | the `content/yp-94-chapter-26` commit the content branch forked from |
+| Candidate | `centralize-entity-labels` tip | `centralize-entity-labels` tip |
+
+Both builds use the same machine, Node version, TeX Live and `SITE_ENV`. Use the
+staging page set, which is a superset of production's, so every page that can
+render a label is covered.
+
+**Layer 1: label strings.** A script outside both checkouts loads each build's
+content graph through the functions both versions export, and writes one sorted JSON
+file per build with:
+
+- every reference's resolved display text, keyed by source file and reference key;
+- every KB entity's `kbNodeLabel` and `kbNodeTitle`;
+- every KB entity's `kbEntityRowLines`, which is what the deferred backlink rows and
+  the outgoing-reference panel show;
+- every embedded entity's heading and every recall block's word.
+
+The two files are diffed key by key. This layer names each difference by its source,
+so a migration bug points to the file and reference that caused it.
+
+**Layer 2: the export.** Diff the two `out/` trees as a catch-all for anything layer 1
+doesn't read:
+
+- The file lists must match exactly.
+- Each HTML page, `.txt` payload and decoded flight file is compared after
+  normalization. The payloads matter because the backlink rows are only in the
+  payload, not in the markup.
+- Normalization replaces the Next build ID, content-hashed asset and flight file
+  names, and the footer version with placeholders. It also drops sitemap `lastmod`
+  and structured-data `dateModified`, which move for every migrated file because
+  they come from git commit dates. Nothing else is normalized.
+
+**Control run.** Build the baseline twice and run layer 2 on the pair. It must report
+zero differences. If it doesn't, the normalization misses some build noise, and the
+real comparison can't be trusted until that's fixed.
+
+**Intended changes.** The migration script (step 4) writes a manifest of every
+intended difference, with old and new text:
+
+- recall blocks that change from `Def.`, `Biz.` or `Megj.` to the full word;
+- references whose target had no case for the template, which rendered the bare word
+  and now render the inflected one;
+- the 18 `plural-in` references, once reviewed.
+
+The check passes only when the set of differences found equals the manifest exactly:
+every difference is listed in the manifest, and every manifest entry shows up as a
+difference. Run it before opening the services PR and again after the last content
+change before the release.
 
 ### 6. Editor (editor repo)
 
@@ -190,5 +251,86 @@ as its own copy. Separate PR.
 
 - Services: branch `centralize-entity-labels` off `development`. One commit per step,
   with approval before each commit.
-- Content: branch `centralize-entity-labels` off `content/yp-94-chapter-26`.
-- Services and content are deployed together. No dual-format release.
+- Content: branch `centralize-entity-labels` off `content/yp-94-chapter-26`, merged into
+  that branch when done, so it ships with chapter 26.
+- No dual-format release. The two sides go out by the runbook below.
+
+## Deployment runbook
+
+The pipeline doesn't deploy a services change and a content change at the same time.
+Each deploy builds one side's new tip with the other side's current tip
+(`.github/workflows/deploy-to-cloudflare.yml`):
+
+- a push to `stable/staging`, or content landing on `draft`, deploys staging with
+  `stable/staging` + `draft`;
+- a push to `stable/production` deploys production with `stable/production` +
+  `stable/released`;
+- content landing on `stable/released` deploys production with the same pair.
+
+So one environment always builds a mismatched pair for a while. The two mismatches
+behave differently:
+
+| Pair | Result |
+|---|---|
+| New services, old content | Build fails on the `labels` rejection. Nothing is uploaded, and the environment keeps serving its previous export. |
+| Old services, new content | Build passes but renders wrong: the old loader ignores `label` and the old `base`/`suffix` don't know the new case keys. No gate catches it. |
+
+**Services always goes first.** A failed build is safe because of how
+`.github/workflows/deploy.yml` chains its jobs:
+
+- the `website` job fails before the R2 upload;
+- `quality-gate` runs only after a successful `website` job, so it is skipped;
+- `rollback-dispatch` fires only when `quality-gate` fails, not when it is skipped, so
+  no rollback starts;
+- `zone`, `website-infra`, `worker` and `newsletter-worker` still apply, but the
+  worker manifest comes from the same old content, so they change nothing;
+- `tag-release` is skipped and runs on the next successful production deploy instead.
+
+### Steps
+
+1. **Hold the services PR off `development` until chapter 26 is ready for `draft`.**
+   Promotions are wholesale: once this change is on `development`, no other services
+   work can reach staging without carrying it.
+2. **Merge the content `centralize-entity-labels` branch into
+   `content/yp-94-chapter-26`.** That branch doesn't deploy anything, so this can
+   happen whenever the content work is done.
+3. **Run the output equivalence check** (step 5) on the final services and content
+   tips. Release only on a pass.
+4. **Freeze `stable/staging` and `draft`.** Nothing else merges into either until
+   step 8. Step 8's gate needs the exact pair step 6 tests. Tell anyone watching CI
+   that the red runs in steps 5 and 7 are expected.
+5. **Services: merge the PR into `development`, then promote `development` →
+   `stable/staging`.** The staging deploy builds the new services with the old `draft`
+   and fails at `next build`, as expected. Staging keeps serving the old pair, and
+   every staging deploy fails until step 6, so do step 6 right away.
+6. **Content: `content/yp-94-chapter-26` → `draft`.** The staging deploy builds
+   (new, new). It must pass and write the staging artifact for this pair. Check on
+   staging:
+   - the footer shows `v2.4.0`;
+   - a lemma and a corollary show their own word;
+   - inflected references keep their suffix after the link;
+   - a recall block shows the full word.
+7. **Services: `stable/staging` → `stable/production`, bypassing `pr-gate`.** The gate
+   looks for a staging artifact for the new services with the content that
+   `stable/released` was promoted from. That pair was never built, so the gate fails.
+   This is the only bypass in the sequence. The production deploy fails at
+   `next build` like step 5, and production keeps serving the old pair.
+8. **Content: `draft` → `stable/released`.** Open the PR, or re-run its `pr-gate`, after
+   step 7. The gate reads the second parent of `stable/production` when it runs, and
+   now resolves to the pair step 6 tested, so it passes without a bypass. The
+   production deploy builds (new, new), runs the quality gate, and `tag-release`
+   creates `v2.4.0`.
+9. **Verify production** with the step 6 checks, and confirm the `v2.4.0` tag exists.
+   Lift the freeze.
+
+### If something fails
+
+- **Step 6 fails on staging.** Production is unaffected. Fix forward on the services
+  side (`development` → `stable/staging`) or the content side (to `draft`); the freeze
+  stays in place until step 6 passes.
+- **The production quality gate fails after step 8.** `rollback.yml` redeploys the
+  last passing production pair by exact SHAs, which is the old services with the old
+  content. That pair is consistent, so readers get the previous site, not a broken
+  one. The `.hu` smoke test is known to flake and can dispatch a rollback that isn't
+  warranted, so check which step failed before treating it as real. Either way the
+  fix rolls forward; the branches are never moved back.
