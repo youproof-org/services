@@ -153,7 +153,7 @@ export default function ContentBlocks({ blocks, embedIndices, figureIndices, ref
                 figureIndices={figureIndices}
                 showTitle={block.showTitle}
                 title={entity.title}
-                canonicalLabel={entity.labels?.canonical}
+                labelVariant={entity.label}
                 refs={entity.references}
                 terms={entity.terms}
                 anchorId={kbAnchorPath(entity)}

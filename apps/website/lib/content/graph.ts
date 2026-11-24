@@ -8,7 +8,6 @@ import type {
   ThumbnailImage,
   MetaInfo,
   ContentGraph,
-  EntityLabels,
   EmbedBlock,
   DefinitionNode,
   TheoremNode,
@@ -53,8 +52,8 @@ const STANDALONE_DIRS: Record<StandaloneKind, string> = {
   page: 'pages',
   landing: 'landing',
 }
-import { buildContext, resolveTemplate } from './display-template'
-import { entityLabels } from '@/lib/i18n/entity-labels'
+import { buildContext, resolveTemplate, TemplateCaseError } from './display-template'
+import { entityLabels, entityLabelCases } from '@/lib/i18n/entity-labels'
 import { buildLocalizedUrl } from '@/lib/i18n/url'
 import { resolveContainerKey } from '@/lib/i18n/config'
 import {
@@ -137,7 +136,7 @@ export interface RawDefinitionEntry {
   locale: string
   namespace: string
   title?: string
-  labels?: EntityLabels
+  label?: string
   terms?: TermMap
   body: ContentBlock[]
   references: RefMap
@@ -150,7 +149,7 @@ export interface RawTheoremEntry {
   locale: string
   namespace: string
   title?: string
-  labels?: EntityLabels
+  label?: string
   terms?: TermMap
   body: ContentBlock[]
   references: RefMap
@@ -163,7 +162,7 @@ export interface RawProofEntry {
   locale: string
   namespace: string
   title?: string
-  labels?: EntityLabels
+  label?: string
   terms?: TermMap
   body: ContentBlock[]
   references: RefMap
@@ -175,7 +174,7 @@ export interface RawRemarkEntry {
   locale: string
   namespace: string
   title?: string
-  labels?: EntityLabels
+  label?: string
   terms?: TermMap
   references: RefMap
   body: ContentBlock[]
@@ -256,7 +255,7 @@ export interface RawStandaloneEntry {
  * schema, so a cache written by an older build would otherwise rehydrate nodes
  * that silently lack the new fields.
  */
-export const RAW_GRAPH_VERSION = 4
+export const RAW_GRAPH_VERSION = 5
 
 export interface RawGraphData {
   version: number
@@ -317,7 +316,7 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
                 locale: loaded.node.locale,
                 namespace,
                 title: loaded.node.title,
-                labels: loaded.node.labels,
+                label: loaded.node.label,
                 terms: loaded.node.terms,
                 body: resolveFigurePaths(loaded.node.body, figureUrlPrefix, figuresDir),
                 references: loaded.node.references,
@@ -331,7 +330,7 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
                 locale: loaded.node.locale,
                 namespace,
                 title: loaded.node.title,
-                labels: loaded.node.labels,
+                label: loaded.node.label,
                 terms: loaded.node.terms,
                 body: resolveFigurePaths(loaded.node.body, figureUrlPrefix, figuresDir),
                 references: loaded.node.references,
@@ -345,7 +344,7 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
                 locale: loaded.node.locale,
                 namespace,
                 title: loaded.node.title,
-                labels: loaded.node.labels,
+                label: loaded.node.label,
                 terms: loaded.node.terms,
                 body: resolveFigurePaths(loaded.node.body, figureUrlPrefix, figuresDir),
                 references: loaded.node.references,
@@ -358,7 +357,7 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
                 locale: loaded.node.locale,
                 namespace,
                 title: loaded.node.title,
-                labels: loaded.node.labels,
+                label: loaded.node.label,
                 terms: loaded.node.terms,
                 references: loaded.node.references,
                 body: resolveFigurePaths(loaded.node.body, figureUrlPrefix, figuresDir),
@@ -657,7 +656,7 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
       locale: e.locale,
       namespace: e.namespace,
       title: e.title,
-      labels: e.labels,
+      label: e.label,
       terms: e.terms,
       body: e.body,
       references: e.references,
@@ -673,7 +672,7 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
       locale: e.locale,
       namespace: e.namespace,
       title: e.title,
-      labels: e.labels,
+      label: e.label,
       terms: e.terms,
       body: e.body,
       references: e.references,
@@ -694,7 +693,7 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
       locale: e.locale,
       namespace: e.namespace,
       title: e.title,
-      labels: e.labels,
+      label: e.label,
       terms: e.terms,
       body: e.body,
       references: e.references,
@@ -711,7 +710,7 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
       locale: e.locale,
       namespace: e.namespace,
       title: e.title,
-      labels: e.labels,
+      label: e.label,
       terms: e.terms,
       references: e.references,
       body: e.body,
@@ -1466,9 +1465,9 @@ function termAnchorsForKey(parent: KbNode, termKey: string): AnchorPair | null {
 }
 
 
-/** The type label of a node, capitalized: authored if it has one, else the default. */
+/** The type label of a node, capitalized: its label variant's word, else the type's default. */
 function kbTypeLabel(node: KbNode): string {
-  const label = node.labels?.canonical ?? entityLabels(node.locale, node.type).canonical
+  const label = entityLabels(node.locale, node.type, node.label).canonical
   return label.charAt(0).toUpperCase() + label.slice(1)
 }
 
@@ -1615,17 +1614,16 @@ function kbChainTop(node: KbNode): KbNode {
  * Read from the node upwards and written top-down, so a remark on a proof reads
  * "bizonyítás → megjegyzés": the row's first line names the theorem, and this says
  * which of the things hanging off it the row actually leads to. The type word is the
- * node's own - authored `labels.canonical` if it has one, else the locale's word for
- * the type - and an authored title follows it in parentheses. No proof or remark in
- * the content has either today, so today every one of these lines is one or two bare
- * words; both fields are in the model and authored ones must read as themselves rather
- * than as "bizonyítás".
+ * word of the node's `label` variant, else the type's default, and an authored title
+ * follows it in parentheses. No proof or remark in the content has either today, so
+ * today every one of these lines is one or two bare words; both fields are in the
+ * model and authored ones must read as themselves rather than as "bizonyítás".
  */
 function kbChainBelowTop(node: KbNode): string | undefined {
   if (node.type !== 'proof' && node.type !== 'remark') return undefined
   const above = node.type === 'proof' ? node.proves : node.attachedTo
   if (!above) return undefined
-  const word = node.labels?.canonical ?? entityLabels(node.locale, node.type).canonical
+  const word = entityLabels(node.locale, node.type, node.label).canonical
   const segment = node.title ? `${word} (${node.title})` : word
   const higher = kbChainBelowTop(above)
   return higher ? `${higher} → ${segment}` : segment
@@ -2166,11 +2164,35 @@ function validateTermInsertions(graph: ContentGraph): void {
   }
 }
 
+function describeRefOwner(owner: RefOwner): string {
+  if (owner.kind === 'section' || owner.kind === 'standalone-section') {
+    return `section "${owner.node.name}" of "${owner.parent.name}"`
+  }
+  return `${owner.kind} "${owner.node.name}"`
+}
+
+/** The locale whose case keys a template on `target` may name: the labelled node's. */
+function targetLabelLocale(target: RefTarget, graph: ContentGraph): string | undefined {
+  if (target.type === 'external') return undefined
+  const key = target.type === 'claim' || target.type === 'term' ? target.parentFqn : target.fqn
+  return key ? kbNodeByKey(graph, key)?.locale : undefined
+}
+
 function resolveDisplayTemplates(graph: ContentGraph): void {
-  for (const entry of allRefEntries(graph)) {
-    if (!entry.display?.includes('{')) continue
-    const ctx = buildContext(entry.target, graph)
-    if (ctx) entry.display = resolveTemplate(entry.display, ctx).trim()
+  for (const owner of refOwners(graph)) {
+    for (const [refKey, entry] of Object.entries(owner.node.references)) {
+      if (!entry.display?.includes('{')) continue
+      const ctx = buildContext(entry.target, graph)
+      if (!ctx) continue
+      try {
+        entry.display = resolveTemplate(entry.display, ctx).trim()
+      } catch (err) {
+        if (!(err instanceof TemplateCaseError)) throw err
+        const locale = targetLabelLocale(entry.target, graph)
+        const declared = locale ? ` '${locale}' declares: ${entityLabelCases(locale).join(', ')}.` : ''
+        throw new Error(`Reference "${refKey}" in ${describeRefOwner(owner)}: ${err.message}.${declared}`)
+      }
+    }
   }
 }
 

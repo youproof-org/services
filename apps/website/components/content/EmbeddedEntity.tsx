@@ -13,7 +13,7 @@ interface EmbeddedEntityProps {
   anchorId: string
   body: ContentBlock[]
   label?: string
-  canonicalLabel?: string
+  labelVariant?: string
   embedIndices?: Record<string, string>
   figureIndices?: Map<object, string>
   showTitle?: boolean
@@ -74,8 +74,8 @@ function EntityClose({ mark, locale, kbHref }: { mark: string; locale: string; k
   it marks a source's references on arrival. Presence is the whole of it; the `id` is
   what says which entity.
 */
-export default function EmbeddedEntity({ entityType, anchorId, body, label, canonicalLabel, embedIndices, figureIndices, showTitle, title, refs, terms, termParent, locale, kbHref }: EmbeddedEntityProps) {
-  const typeLabelRaw = canonicalLabel ?? entityLabels(locale, entityType).canonical
+export default function EmbeddedEntity({ entityType, anchorId, body, label, labelVariant, embedIndices, figureIndices, showTitle, title, refs, terms, termParent, locale, kbHref }: EmbeddedEntityProps) {
+  const typeLabelRaw = entityLabels(locale, entityType, labelVariant).canonical
   const typeLabel = typeLabelRaw.charAt(0).toUpperCase() + typeLabelRaw.slice(1)
   // Claims inside this entity share the term scope: both hang off the same node.
   const parentEntity: AnchorParent | undefined = termParent

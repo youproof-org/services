@@ -137,8 +137,11 @@ The `labels` block is removed from the content model. The loader rejects it.
 - a variant that is missing one of its locale's case keys or defines one the locale
   does not declare.
 
-Each error names the file and, for a template, the reference key. A missing case
-never falls back to the canonical word.
+A loader error names the file. A template error names the reference key and its
+owner, such as `definition "x"` or `section "x" of "y"`, plus the case keys the
+target's locale declares. Graph nodes don't record their source file, and the other
+graph checks (`validateReferences`, `validateTermInsertions`) name the owner the same
+way. A missing case never falls back to the canonical word.
 
 ## Steps
 
@@ -197,10 +200,21 @@ step replaces each of those with a lookup of the entity's own variant,
 
 `EntityLabels` and `InflectedForm` stay, since `entityLabels` returns that shape.
 
-The rejection must fail `next build`, naming the file. The deployment order depends on
-it: a build with the new services and the old content has to fail before anything is
-uploaded, so the environment keeps serving its previous export. A warning or a
-fallback would upload wrong output instead (see the runbook).
+Bump `RAW_GRAPH_VERSION` in `lib/content/graph.ts`, since `label` replaces `labels`
+on the raw entries. Without the bump, a dev-mode graph cache written before the change
+rehydrates entities without `label` and renders the default word for every lemma and
+corollary.
+
+The rejection must fail the deploy's `website` job, naming the file. The deployment
+order depends on it: a build with the new services and the old content has to fail
+before anything is uploaded, so the environment keeps serving its previous export. A
+warning or a fallback would upload wrong output instead (see the runbook).
+
+With old content it fails twice before the upload, and the first one stops the job.
+The unit-test step runs first, and `test/doc-examples.test.mjs` loads the whole content
+graph, so it fails on the first `labels` block. `next build` would fail on the same
+error. PR CI has no content clone and skips `doc-examples`, so the services PR stays
+green. Locally, `pnpm test` fails that one test until the content is migrated.
 
 ### 3a. Version (services)
 
@@ -412,7 +426,8 @@ behave differently:
    that the red runs in steps 5 and 7 are expected.
 5. **Services: merge the PR into `development`, then promote `development` →
    `stable/staging`.** The staging deploy builds the new services with the old `draft`
-   and fails at `next build`, as expected. Staging keeps serving the old pair, and
+   and fails in the `website` job, at its unit tests, as expected. Staging keeps
+   serving the old pair, and
    every staging deploy fails until step 6, so do step 6 right away.
 6. **Content: `content/yp-94-chapter-26` → `draft`.** The staging deploy builds
    (new, new). It must pass and write the staging artifact for this pair. Check on
@@ -423,8 +438,8 @@ behave differently:
 7. **Services: `stable/staging` → `stable/production`, bypassing `pr-gate`.** The gate
    looks for a staging artifact for the new services with the content that
    `stable/released` was promoted from. That pair was never built, so the gate fails.
-   This is the only bypass in the sequence. The production deploy fails at
-   `next build` like step 5, and production keeps serving the old pair.
+   This is the only bypass in the sequence. The production deploy fails in the
+   `website` job like step 5, and production keeps serving the old pair.
 8. **Content: `draft` → `stable/released`.** Open the PR, or re-run its `pr-gate`, after
    step 7. The gate reads the second parent of `stable/production` when it runs, and
    now resolves to the pair step 6 tested, so it passes without a bypass. The

@@ -209,7 +209,7 @@ export interface DefinitionNode {
   locale: string
   namespace: string               // e.g. "/primalitas" — grouping only, never in the URL
   title?: string
-  labels?: EntityLabels
+  label?: string                  // entity label variant; absent = the type's default
   terms?: TermMap
   remarks: RemarkNode[]           // remarks attached to this definition
   references: RefMap
@@ -223,7 +223,7 @@ export interface TheoremNode {
   locale: string
   namespace: string
   title?: string
-  labels?: EntityLabels
+  label?: string                  // entity label variant; absent = the type's default
   terms?: TermMap
   proofs: ProofNode[]             // proofs belonging to this theorem
   remarks: RemarkNode[]           // remarks attached to this theorem
@@ -237,7 +237,7 @@ export interface ProofNode {
   locale: string
   namespace: string
   title?: string
-  labels?: EntityLabels
+  label?: string                  // entity label variant; absent = the type's default
   terms?: TermMap
   proves: TheoremNode             // the theorem this proof belongs to
   remarks: RemarkNode[]           // remarks attached to this proof
@@ -251,7 +251,7 @@ export interface RemarkNode {
   locale: string
   namespace: string
   title?: string
-  labels?: EntityLabels
+  label?: string                  // entity label variant; absent = the type's default
   terms?: TermMap
   attachedTo?: DefinitionNode | TheoremNode | ProofNode  // undefined = independent
   references: RefMap

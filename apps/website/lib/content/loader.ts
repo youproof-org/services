@@ -3,6 +3,7 @@ import fs from 'fs'
 import path from 'path'
 import yaml from 'js-yaml'
 import { DEFAULT_LOCALE } from '@/lib/i18n/config'
+import { entityLabelVariants } from '@/lib/i18n/entity-labels'
 import type {
   RefTarget,
   ContentBlock,
@@ -10,7 +11,6 @@ import type {
   TermMap,
   ThumbnailImage,
   MetaInfo,
-  EntityLabels,
   DefinitionNode,
   TheoremNode,
   ProofNode,
@@ -217,6 +217,18 @@ function readLocale(raw: Record<string, unknown>): string {
   return typeof raw.locale === 'string' && raw.locale.trim() !== '' ? raw.locale.trim() : DEFAULT_LOCALE
 }
 
+function readLabel(raw: Record<string, unknown>, type: string, locale: string): string | undefined {
+  if ('labels' in raw) {
+    formatError(`'labels' is no longer supported. Name a variant with 'label', or omit it for the ${type} default.`)
+  }
+  if (raw.label === undefined) return undefined
+  const variants = entityLabelVariants(locale, type)
+  if (typeof raw.label !== 'string' || !variants.includes(raw.label)) {
+    formatError(`label '${String(raw.label)}' is not a ${type} label in '${locale}'. Known: ${variants.join(', ')}`)
+  }
+  return raw.label
+}
+
 function readSlug(raw: Record<string, unknown>, name: string): string {
   return typeof raw.slug === 'string' && raw.slug.trim() !== '' ? raw.slug.trim() : name.toLowerCase()
 }
@@ -315,7 +327,7 @@ export function loadDefinition(filePath: string, namespace: string): RawDefiniti
         locale: readLocale(raw),
         namespace,
         title: raw.title as string | undefined,
-        labels: raw.labels as EntityLabels | undefined,
+        label: readLabel(raw, 'definition', readLocale(raw)),
         terms: toTermMap(raw.terms),
         references: toRefMap(raw.references),
         body: toBlocks(raw.body),
@@ -338,7 +350,7 @@ export function loadTheorem(filePath: string, namespace: string): RawTheorem {
         locale: readLocale(raw),
         namespace,
         title: raw.title as string | undefined,
-        labels: raw.labels as EntityLabels | undefined,
+        label: readLabel(raw, 'theorem', readLocale(raw)),
         terms: toTermMap(raw.terms),
         references: toRefMap(raw.references),
         body: toBlocks(raw.body),
@@ -359,7 +371,7 @@ export function loadProof(filePath: string, namespace: string): RawProof {
         locale: readLocale(raw),
         namespace,
         title: raw.title as string | undefined,
-        labels: raw.labels as EntityLabels | undefined,
+        label: readLabel(raw, 'proof', readLocale(raw)),
         terms: toTermMap(raw.terms),
         references: toRefMap(raw.references),
         body: toBlocks(raw.body),
@@ -379,7 +391,7 @@ export function loadRemark(filePath: string, namespace: string): RawRemark {
         locale: readLocale(raw),
         namespace,
         title: raw.title as string | undefined,
-        labels: raw.labels as EntityLabels | undefined,
+        label: readLabel(raw, 'remark', readLocale(raw)),
         terms: toTermMap(raw.terms),
         references: toRefMap(raw.references),
         body: toBlocks(raw.body),

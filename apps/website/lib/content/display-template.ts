@@ -42,39 +42,42 @@ function capital(val: ContextValue): string {
   return str ? str.charAt(0).toUpperCase() + str.slice(1) : ''
 }
 
-// Looks up labels.cases[inflCase] as a ContextObject (the { base, suffix } object)
-function getCaseObj(inflCase: ContextValue, labels: ContextValue): ContextObject | null {
+/**
+ * A `base` or `suffix` call whose case the label doesn't have, or whose second
+ * argument isn't a label. Every variant in a locale defines every case the locale
+ * declares, so a missing case is one the target's locale doesn't declare. Falling
+ * back to the bare word would render an uninflected word where the author wrote an
+ * inflected one, so this fails the build instead.
+ */
+export class TemplateCaseError extends Error {
+  constructor(readonly caseKey: string, message: string) {
+    super(message)
+    this.name = 'TemplateCaseError'
+  }
+}
+
+function getCaseObj(inflCase: ContextValue, labels: ContextValue): ContextObject {
   const key = typeof inflCase === 'string' ? inflCase : ''
-  if (typeof labels !== 'object' || labels === null) return null
-  const casesVal = (labels as ContextObject).cases
-  if (typeof casesVal !== 'object' || casesVal === null) return null
-  const caseVal = (casesVal as ContextObject)[key]
-  if (typeof caseVal === 'object' && caseVal !== null) return caseVal as ContextObject
-  return null
+  const cases = typeof labels === 'object' ? labels.cases : undefined
+  if (typeof cases !== 'object') {
+    throw new TemplateCaseError(key, `case '${key}' is applied to something that is not a label`)
+  }
+  const caseVal = cases[key]
+  if (typeof caseVal !== 'object') {
+    throw new TemplateCaseError(key, `case '${key}' is not declared`)
+  }
+  return caseVal
 }
 
 // Note: parameter named 'inflCase' since 'case' is a reserved keyword in JS/TS
 function base(inflCase: ContextValue, labels: ContextValue): string {
-  const caseObj = getCaseObj(inflCase, labels)
-  if (caseObj) {
-    const b = caseObj.base
-    if (typeof b === 'string') return b
-  }
-  // Fall back to canonical
-  if (typeof labels === 'object' && labels !== null) {
-    const canonical = (labels as ContextObject).canonical
-    return typeof canonical === 'string' ? canonical : ''
-  }
-  return ''
+  const b = getCaseObj(inflCase, labels).base
+  return typeof b === 'string' ? b : ''
 }
 
 function suffix(inflCase: ContextValue, labels: ContextValue): string {
-  const caseObj = getCaseObj(inflCase, labels)
-  if (caseObj) {
-    const s = caseObj.suffix
-    if (typeof s === 'string') return s
-  }
-  return ''
+  const s = getCaseObj(inflCase, labels).suffix
+  return typeof s === 'string' ? s : ''
 }
 
 function inflect(inflCase: ContextValue, labels: ContextValue): string {
@@ -350,7 +353,7 @@ export function buildContext(
         type:  'claim',
         parent: {
           index: parentInfo?.index ?? '',
-          label: (parentEntity.labels ?? entityLabels(parentEntity.locale, parentEntity.type)) as unknown as ContextObject,
+          label: entityLabels(parentEntity.locale, parentEntity.type, parentEntity.label) as unknown as ContextObject,
         },
       },
     }
@@ -371,7 +374,7 @@ export function buildContext(
         name: target.name,
         parent: {
           index: parentInfo?.index ?? '',
-          label: (parentEntity.labels ?? entityLabels(parentEntity.locale, parentEntity.type)) as unknown as ContextObject,
+          label: entityLabels(parentEntity.locale, parentEntity.type, parentEntity.label) as unknown as ContextObject,
         },
       },
     }
@@ -405,7 +408,7 @@ export function buildContext(
         type:  target.type,
         name:  target.name,
         title: entity.title ?? '',
-        label: (entity.labels ?? entityLabels(entity.locale, entity.type)) as unknown as ContextObject,
+        label: entityLabels(entity.locale, entity.type, entity.label) as unknown as ContextObject,
         index: info?.index ?? '',
       },
     }
