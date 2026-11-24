@@ -353,9 +353,36 @@ change before the release.
 
 ### 6. Editor (editor repo)
 
-`media/src/editor/LabelsEditor.tsx` becomes a variant picker for the entity's type,
-writing `label`. It needs the variant list, which it reads from the registry or keeps
-as its own copy. Separate PR.
+The Labels tab goes. In its place, the entity header shows a dropdown of the variants
+for the entity's locale and type, next to the title (`EntityLabelPicker` in
+`media/src/editor/EntityHeader.tsx`). It writes `label`, and removes it when the
+default is chosen.
+
+- The dropdown shows only when the type has more than one variant, which is
+  theorems today. It also shows when the file's `label` isn't a known variant, so
+  the bad value is visible.
+- A file that still has a `labels` block gets a hint under the header on every type,
+  and saving it is refused. Dropping the block would lose data, and keeping it would
+  break the site build.
+
+The editor keeps no copy of services data. At startup and on every content reload,
+the extension host reads `apps/website/lib/i18n/entity-labels.json` and
+`apps/website/lib/i18n/locales.json` from a services checkout. That replaces the
+hand-kept `LOCALES` list in `src/content/locales.ts`. Two new settings:
+
+- `youproof.servicesRoot`: the services checkout, absolute or relative to the
+  workspace. It defaults to a `services` folder beside the content repo, the same
+  layout `check-refs.mjs` assumes.
+- `youproof.defaultLocale`: the locale the editor opens with. It defaults to the
+  first locale in `locales.json`, and a locale that isn't configured is an error. A
+  file without `locale:` still counts as the first locale, which is the website's
+  default when its `DEFAULT_LOCALE` build setting is unset, not as this setting.
+
+A missing or broken `locales.json` is an error, and no content loads. A missing or
+broken `entity-labels.json` is an error too, but content still loads, without the
+dropdown.
+
+Separate PR.
 
 The same PR removes the recall block, as its own commit. The editor can't create one
 (`recall` isn't in `CREATABLE_BLOCK_TYPES` in `media/src/editor/blocks/createBlock.ts`),
@@ -371,6 +398,9 @@ but it still loads, shows, retargets and saves existing ones:
 - the three `recall` checks in `src/handlers.ts`;
 - the `recall` mentions in `docs/extension-messaging.md`, whose block list then
   counts 11 types instead of 12.
+
+`src/content/fqn.ts` is still a hand-kept copy of services' `lib/content/fqn.ts`.
+Whether to remove it is a separate decision, not part of this step.
 
 ## Delivery
 
