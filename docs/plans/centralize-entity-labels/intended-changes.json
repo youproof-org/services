@@ -17,6 +17,20 @@
       "target": "definitions.kituntetett-kozos-oszto",
       "before": "'{the(target.index)} [{target.index} Definíció]'",
       "after": "'{the(target.index)} [{target.index} Definíció]ban'"
+    },
+    {
+      "where": "content/books/alice-es-bob/07-kitekintes-es-jovokep/27-alice-es-bob-jovoje/08-elliptikus-gorbek-es-kriptografia.yaml#power-of-power-with-integer-exponent-claim",
+      "target": "theorems.egesz-kitevos-hatvanyozas-azonossagai.claims.power-of-power-with-integer-exponent",
+      "before": null,
+      "after": "[{target.parent.index} {capital(target.parent.label.canonical)} {target.index} pontja]",
+      "note": "new reference: the undeclared [egesz-kitevos-hatvanyozas-azonossagai] in chapter 27 is now declared"
+    },
+    {
+      "where": "content/books/alice-es-bob/07-kitekintes-es-jovokep/27-alice-es-bob-jovoje/08-elliptikus-gorbek-es-kriptografia.yaml#the-egesz-kitevos-hatvanyozas-azonossagai-thm",
+      "target": "theorems.egesz-kitevos-hatvanyozas-azonossagai",
+      "before": null,
+      "after": "{the(target.index)} [{target.index} {capital(target.label.canonical)}]",
+      "note": "new reference: the undeclared [egesz-kitevos-hatvanyozas-azonossagai] in chapter 27 is now declared"
     }
   ],
   "pending": [],
