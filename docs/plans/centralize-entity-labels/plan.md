@@ -36,8 +36,9 @@ Each block lists only the cases its author needed. Measured problems:
   `suffix(case, label)` to `''`, so a reference to an entity without that case
   renders the bare word where an inflected one was written.
 - **Base and suffix are mixed across cases.** 18 references use
-  `base('plural-in', …)` with `suffix('in', …)`. Seen on definition targets, which
-  carry no `plural-in`, so these likely render the singular word today.
+  `base('plural-in', …)` with `suffix('in', …)`, all on theorem targets. Only
+  `theorems.peano-szorzas-disztributivitas` carries a `plural-in` (`tételek` + `ben`),
+  so the other 17 render the singular word today.
 
 The base/suffix split is required and stays. Every inflected display template puts
 the base inside the link text and the suffix after it, for example
@@ -149,8 +150,9 @@ tests.
 
 - Remove `ENTITY_LABEL_HU`. `display-template.ts`, `kbTypeLabel` in `graph.ts` and
   `EmbeddedEntity.tsx` read the registry.
-- `RecallBlock` shows the variant's capitalized `canonical`. It needs the locale and
-  the target's variant, passed from `ContentBlocks`.
+- `RecallBlock` shows the capitalized `canonical` of its target type's default
+  variant, so a lemma's recall block reads `Tétel`. `RecallBlock` is due to be
+  removed, so it doesn't get the target's variant passed down.
 - Remove `kbBacklinkKindProof` and `kbBacklinkKindRemark`. `kbChainBelowTop` reads
   the registry. Delete their assertions in
   `apps/website/test/locale-labels.test.mjs` and their entry in the `LabelKey`
@@ -275,7 +277,12 @@ intended difference, with old and new text:
 - recall blocks that change from `Def.`, `Biz.` or `Megj.` to the full word;
 - references whose target had no case for the template, which rendered the bare word
   and now render the inflected one;
-- the 18 `plural-in` references, once reviewed.
+- the 18 `plural-in` references, once reviewed. The registry splits `pl-ine` as the
+  singular base plus the whole plural ending (`tétel` + `ekben`), like `pl`. So the
+  17 that render the singular today change to the plural, and
+  `in-the-peano-szorzas-disztributivitas-theorem` in
+  `books/alice-es-bob/03-a-matematika-epitmenye/12-alice-es-bob-rendet-tesz/08-hol-tartunk-most.yaml`
+  changes its link text from `Tételek` + `ben` to `Tétel` + `ekben`.
 
 The check passes only when the set of differences found equals the manifest exactly:
 every difference is listed in the manifest, and every manifest entry shows up as a
