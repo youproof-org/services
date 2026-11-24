@@ -354,9 +354,9 @@ change before the release.
 ### 6. Editor (editor repo)
 
 The Labels tab goes. In its place, the entity header shows a dropdown of the variants
-for the entity's locale and type, next to the title (`EntityLabelPicker` in
-`media/src/editor/EntityHeader.tsx`). It writes `label`, and removes it when the
-default is chosen.
+for the entity's locale and type, on its own line under the title (`EntityLabelPicker`
+in `media/src/editor/EntityLabelPicker.tsx`, rendered by `EntityHeader.tsx`). It
+writes `label`, and removes it when the default is chosen.
 
 - The dropdown shows only when the type has more than one variant, which is
   theorems today. It also shows when the file's `label` isn't a known variant, so
