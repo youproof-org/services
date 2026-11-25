@@ -200,7 +200,8 @@ blocks. That gives it two addresses, and which one a cross-reference resolves to
 depends on the **rendering context**, not on the target: a reference rendered on a
 chapter page resolves to the in-chapter anchor, and the same reference on a
 knowledge-base page resolves to the target's own page. Both are resolved at build
-time — `RefEntry.href` and `RefEntry.kbHref` in `lib/content/graph.ts`.
+time in `lib/content/graph.ts`, as the `href` and `kbHref` of each link of a resolved
+reference (`RefLinkSegment` in `lib/content/types.ts`).
 
 `namespace` is the one type with **`locale` only, no `slug`**. It is not
 materialized as a routed node and has no anchor; it exists solely as a slash-joined
@@ -227,6 +228,32 @@ Both therefore carry **`locale` and `slug`**. The `slug` — not `name` — is w
 appears in the anchor, so a fragment reads in the page's language; `name` stays the
 language-independent internal ID that cross-references resolve against. See
 [§9](#9-identifier-rules--names-and-slugs) for the anchor shape.
+
+### 4c. Reference display templates are per locale
+
+The link text of a cross-reference is part of a sentence in its file's language, so
+the templates that produce it are locale data in the content repo, one collection per
+locale at `content/display-templates/display-templates.<locale>.yaml`.
+`loadDisplayTemplateCollections` in `lib/content/loader.ts` reads the collection of
+every configured locale, and a locale without a file has no templates. A reference
+names a template of the locale of the file it is written in. Two rules follow:
+
+- Each locale has its own set of templates, because what a template has to express
+  depends on the language. Two locales may use the same name for the same shape, and
+  nothing requires them to.
+- Translating a content file means choosing its references' templates again, not only
+  translating its text.
+
+The case keys a template inflects a label with (`base`, `suffix`, `inflect`) come from
+the entity label registry, `lib/i18n/entity-labels.json`. The load-time check accepts
+a case key that any locale declares. When a reference resolves, the key must exist on
+the target's label in the target's own locale, or the build fails. So besides its
+`locales.json` entry, a new locale needs an entry in the label registry and a
+collection file in the content repo before its references render. The engine needs
+no change unless the locale needs a builtin it lacks. The builtins are code in
+`packages/display-templates`, and `the` returns the Hungarian definite article.
+[Content site & static generation](content-site-and-static-generation.md#references)
+describes the reference and template formats.
 
 ### Field summary
 
@@ -373,9 +400,21 @@ the zone rule ships) — starting at `/` would traverse nothing.
 - No browser-language or geo-IP redirect.
 - No `en` content or translation tooling.
 - No cross-locale cross-reference resolution logic (design-only, §4).
-- No shared schema package / Zod validator (fields added to existing per-repo
-  types + a lightweight URL-safety check in the existing loader; mirrored by hand
-  in the editor with a pointer comment).
+- No shared schema package or Zod validator for the content model. Fields are added
+  to the existing per-repo types with a lightweight URL-safety check in the existing
+  loader, and mirrored by hand in the editor with a pointer comment.
+
+  One part is shared already: the reference display template engine is the
+  workspace package `@youproof.org/display-templates` (`packages/display-templates`).
+  It holds the expression language and its builtins, the template checks, list
+  resolution and the segment helpers, has no runtime dependencies, and is consumed
+  from source. The website uses it today. It is a package so that there is one
+  renderer for the site and the editor: the editor will show each reference as it
+  renders on the site, and a second implementation would drift from the first. The
+  editor doesn't bundle it yet. More sharing is planned along the same lines, for the
+  code the editor needs to read references exactly as the site does: the collection
+  reader, the reference list reader and token grammar, and the content addressing and
+  label registry readers.
 
 ---
 

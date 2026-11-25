@@ -234,8 +234,9 @@ list.
 Every knowledge-base entity is *also* rendered inline inside a chapter, via
 `embed` blocks, so it has two addresses: the in-chapter anchor and its own
 page. Which one a cross-reference resolves to depends on the **rendering context**,
-not on the target, and both are resolved at build time (`RefEntry.href` /
-`RefEntry.kbHref`).
+not on the target, and both are resolved at build time: every link of a resolved
+reference carries an `href` and a `kbHref` (`RefLinkSegment` in
+`lib/content/types.ts`, see [References](#references)).
 
 An entity gets a page of its own under two conditions, and `kbPageExists` in
 `lib/content/graph.ts` is the one place they live — `generateStaticParams`, the two
@@ -382,6 +383,142 @@ anchor segment and a URL segment for the same concept cannot drift apart. The
 cross-reference targets in the content YAML use the identical path shape with
 canonical English segments and `name` keys instead; the content repo's
 `docs/content-model.md` specifies that grammar for authors.
+
+<a id="references"></a>
+## References
+
+A cross-reference in the prose is an item of its file's `references` list, and the
+text cites the item by its zero-based index: `[0]`, `[1]` and so on. Chapters, their
+sections, knowledge-base entities, standalone items and their sections can each carry
+a list. `readReferences` in `lib/content/loader.ts` reads it and checks it against the
+file's text.
+
+```yaml
+references:
+  - { display: the-index-label, target: definitions.peano-axiomarendszer }
+  - { text: "a [kis Fermat-tétel]", target: theorems.kis-fermat-tetel }
+  - display: the-chapters
+    targets:
+      - books.alice-es-bob.chapters.alice-es-bob-rendet-tesz
+      - books.alice-es-bob.chapters.alice-es-bob-eladosodik
+```
+
+An item has `target` or `targets`, never both. `target` is the short form of a list of
+one, and the loaded `RefEntry.targets` is always a list. It also has exactly one of:
+
+- `display`, the name of a template in the display template collection of the file's
+  locale (below);
+- `text`, literal link text. `[...]` marks the link inside it, and text without
+  brackets is a link as a whole. A `text` item has one target, at most one link and no
+  `{...}` expression: an expression belongs in the collection. An external URL target
+  always takes `text`, since no template accepts one.
+
+Each item is used exactly once, and the list is in the order the text first uses its
+items, so `[i]` is the i-th reference a reader meets. The loader reads the tokens from
+the text fields `InlineText` renders, in the order the site renders them
+(`referenceTexts`), at the top level and inside bold. The token grammar is
+`lib/content/inline-tokens.ts`, shared by `InlineText`, `kb-excerpt.ts` and the
+loader. It matches math first, so `$[0]_3$` is a formula and not a reference, and the
+content of a formula block and the rows of a typewriter block are never read for
+tokens.
+
+The build fails, naming the file and every problem in it at once, on:
+
+- a `references` dictionary keyed by name, the format the list replaced, and a `[name]`
+  token in the text, which cited an entry of that dictionary;
+- an unknown key in an item, or an item with both or neither of `display` and `text`,
+  or of `target` and `targets`;
+- a `display` that is not a template of the file's locale, a target type the template
+  doesn't accept, or a number of targets the template doesn't take;
+- the same target twice in one item;
+- a `[i]` with no item, an item the text never uses or uses more than once, and a list
+  out of order.
+
+### Display templates
+
+The templates live in the content repo, one collection per locale at
+`content/display-templates/display-templates.<locale>.yaml`. A new template is a
+content change and needs no services release. `loadDisplayTemplateCollections` in
+`lib/content/loader.ts` reads the collection of every configured locale into the raw
+graph and checks every template as it reads it, so an invalid template fails the build
+even when nothing uses it. A locale without a file has no templates.
+
+```yaml
+the-index-label:
+  targets: [definition, theorem]
+  template: "{the(target.index)} [{target.index} {capital(target.label.canonical)}]"
+
+the-chapters:
+  targets: [chapter]
+  list:
+    count: { min: 2 }
+    item:
+      first: "{the(target.index)} [{target.index}]"
+      middle: "[{target.index}]"
+      last: "{the(target.index)} [{target.index} fejezet]"
+      separator: ", "
+      last-separator: " és "
+```
+
+A template name is kebab-case. `targets` lists the target types the template accepts,
+which can be any internal kind except `part`. A template has exactly one of `template`,
+for a reference with one target, and `list`, for one or more.
+
+A template is text with `{...}` expressions and at most one `[...]`, the link. An
+expression reads a field of the target's context, such as `target.index`,
+`target.label` or a claim's `target.parent`, or calls a builtin: `the`, `capital`,
+`base`, `suffix` or `inflect`. `buildContext` in `lib/content/display-template.ts`
+builds the context of each target type, and `TEMPLATE_CONTEXT_SHAPES` in the engine
+says which fields each type has, so the load-time check rejects a field the accepted
+types don't have, an unknown builtin, a wrong number of arguments, a case key no locale
+declares in `lib/i18n/entity-labels.json`, and more than one link. A text with no
+`{...}` is a valid template, for a phrase that repeats.
+
+A `list` renders several targets with one template:
+
+- `count` is an exact number or a range with `min` and `max`. `min` defaults to 1, a
+  range without `max` is open, and `min` must be smaller than `max`.
+- `item` holds the positional forms. `first` is required, `middle` defaults to `first`,
+  and `last` to `middle`. `only` is the form of a lone item and has no default; it is
+  required when `count` allows one target or the template groups. `separator` goes
+  between items and `last-separator`, which defaults to `separator`, before the last
+  one. Each form is resolved against its own target, so `the` picks the article per
+  item and each `[...]` links to that item's target.
+- `before` and `after` are text around the whole list. They and the separators can hold
+  neither an expression nor a link.
+- The targets are sorted by their position in the content (`buildContentPositions` in
+  `lib/content/graph.ts`, the site's reading order) unless the template sets
+  `order: authored`.
+- `group-by` splits the sorted targets into groups that share a `label` (the entity
+  type and label variant, for definitions, theorems, proofs and remarks), a `parent`
+  (the owning entity, for claims) or a `type`. The groups come in the order of their
+  first member, the item forms and separators apply within each group, and `group`
+  gives the `separator` and `last-separator` between groups. `group` is required with
+  `group-by` and not allowed without it.
+
+For chapters 13 and 14, `the-chapters` above renders `a [13.] és a [14. fejezet]`.
+
+`resolveDisplayTemplates` in `lib/content/graph.ts` resolves every item to
+`RefEntry.segments`: plain text and link segments in reading order, each link with its
+target, `href` and `kbHref`. A `text` item resolves through its brackets, a `display`
+item through its template. A case key the target's label doesn't have fails the build
+here, and so does a target that doesn't render exactly one link. `InlineText`
+upper-cases the first visible character of a reference at the start of a sentence,
+in whichever segment holds it.
+
+Every target of an item is an incoming reference of its own. The backlink index counts
+one citation per target per item, so a count is the number of times the source cites
+the target. The outgoing reference panels, the knowledge-base links (`kbRefs` swaps
+each link's `href` for its `kbHref`) and the structured data citations all walk the
+link segments, one per target.
+
+The engine itself is the workspace package `@youproof.org/display-templates`
+(`packages/display-templates`): the expression language and its builtins, the template
+checks, list resolution and the segment helpers. It has no runtime dependencies, the
+website consumes it from source, and it exists as a package so the editor can render
+references with the same code. Reading the collection file and building contexts stay
+in the website. A figure's `self-reference.display` uses the same expression language
+with its own context and stays inline in the figure block.
 
 ## Not-found & stub behavior
 

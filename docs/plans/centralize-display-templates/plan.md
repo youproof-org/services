@@ -707,10 +707,13 @@ messages (`validateReferences`, `resolveDisplayTemplates`) to name the index. Bu
 As with the label change, the rejection has to fail the deploy's `website` job before
 any upload.
 
-### 3a. Version and docs (services)
+### 3a. Docs (services)
 
-Bump `apps/website/package.json` to `2.5.0`: this breaks the content contract. Update
-`docs/content-site-and-static-generation.md` and `docs/i18n-design.md` where they
+No version bump. The released version is 2.3.2, and the entity labels branch already
+bumps it to 2.4.0. That branch is released together with this one, not on its own,
+so 2.4.0 covers both content contract changes.
+
+Update `docs/content-site-and-static-generation.md` and `docs/i18n-design.md` where they
 describe references. §8 of `docs/i18n-design.md` lists no shared schema package as a
 non-goal, which `packages/display-templates` has changed. Update it to say what is
 shared and why.
