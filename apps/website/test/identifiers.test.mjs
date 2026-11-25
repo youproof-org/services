@@ -45,7 +45,7 @@ function secondBook(data, { bookSlug = 'masik-konyv', chapterSlug = 'fejezet-ket
             abstract: [],
             prologue: [],
             epilogue: [],
-            references: {},
+            references: [],
             sections: [],
           },
         ],
@@ -113,7 +113,7 @@ test('two chapters in the SAME book sharing a slug fail, even across different p
         locale: 'hu',
         title: 'Második fejezet',
         publishedAt: '2020-01-01 00:00:00',
-        abstract: [], prologue: [], epilogue: [], references: {}, sections: [],
+        abstract: [], prologue: [], epilogue: [], references: [], sections: [],
       },
     ],
   })
@@ -139,7 +139,7 @@ test('two sections in the same chapter sharing a slug fail — duplicate in-page
   const data = raw()
   chapterOf(data).sections.push({
     name: 'szakasz-ketto', slug: 'szakasz', locale: 'hu', title: 'Második szakasz',
-    references: {}, body: [],
+    references: [], body: [],
   })
   assert.throws(() => build(data), /Identifier collision: 'szakasz'.*chapter 'fejezet' sections/s)
 })
@@ -150,7 +150,7 @@ test('two sections in DIFFERENT chapters may share a name AND a slug', () => {
   const data = raw()
   const other = secondBook(data)
   other.sections.push({
-    name: 'szakasz', slug: 'szakasz', locale: 'hu', title: 'Szakasz', references: {}, body: [],
+    name: 'szakasz', slug: 'szakasz', locale: 'hu', title: 'Szakasz', references: [], body: [],
   })
   const g = build(data)
   assert.equal(g.sections.size, 2)
@@ -162,7 +162,7 @@ test('two sections in DIFFERENT chapters may share a name AND a slug', () => {
 
 const standalone = (kind, name, slug, extra = {}) => ({
   kind, name, slug, locale: 'hu', title: name,
-  abstract: [], prologue: [], epilogue: [], sections: [], references: {}, ...extra,
+  abstract: [], prologue: [], epilogue: [], sections: [], references: [], ...extra,
 })
 
 test('two articles sharing a slug fail — same URL', () => {
@@ -208,7 +208,7 @@ test('a definition and a theorem may share a name and a slug', () => {
   const data = raw()
   data.theorems.push({
     ...hu, name: 'def-egy', slug: 'def-egy', title: 'Ütköző tétel',
-    body: [], references: {}, proofSlugs: [], remarkSlugs: [],
+    body: [], references: [], proofSlugs: [], remarkSlugs: [],
   })
   chapterOf(data).sections[0].body.push(embed('theorems.def-egy'))
   const g = build(data)
@@ -321,7 +321,7 @@ test('two theorems listing the same proof fail — one file cannot have two owne
     slug: 'tetel-ketto',
     title: 'Második tétel',
     body: [narrative('Tétel.')],
-    references: {},
+    references: [],
     proofSlugs: ['biz-egy'],
     remarkSlugs: [],
   })
@@ -357,7 +357,7 @@ test('a theorem may list two proofs — both attach, in the authored order', () 
     ...hu,
     name: 'biz-ketto',
     body: [narrative('Másik bizonyítás.')],
-    references: {},
+    references: [],
     remarkSlugs: [],
   })
   chapterOf(data).sections[0].body.push(embed('theorems.tetel-egy.proofs.biz-ketto'))
@@ -375,7 +375,7 @@ test('two parents may each own a remark, as long as they are different remarks',
     ...hu,
     name: 'rem-ketto',
     body: [narrative('Megjegyzés.')],
-    references: {},
+    references: [],
   })
   const g = build(data)
   assert.deepEqual(

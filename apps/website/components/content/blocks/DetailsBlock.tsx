@@ -1,4 +1,4 @@
-import type { ContentBlock, RefMap, TermMap, AnchorParent } from '@/lib/content/types'
+import type { ContentBlock, RefList, TermMap, AnchorParent } from '@/lib/content/types'
 import InlineText from '../InlineText'
 import ContentBlocks from '../ContentBlocks'
 import styles from './details-block.module.scss'
@@ -8,7 +8,7 @@ interface DetailsBlockProps {
   blocks: ContentBlock[]
   embedIndices?: Record<string, string>
   figureIndices?: Map<object, string>
-  refs?: RefMap
+  refs?: RefList
   context: 'web' | 'latex'
   terms?: TermMap
   termParent?: AnchorParent

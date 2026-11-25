@@ -1,4 +1,4 @@
-import type { RefMap, TermMap, AnchorParent } from '@/lib/content/types'
+import type { RefList, TermMap, AnchorParent } from '@/lib/content/types'
 import { mathSource } from '@/lib/utils/math'
 import InlineText from '../InlineText'
 import styles from './formula-block.module.scss'
@@ -7,7 +7,7 @@ interface FormulaBlockProps {
   leadIn?: string
   content: string
   leadOut?: string
-  refs?: RefMap
+  refs?: RefList
   terms?: TermMap
   termParent?: AnchorParent
 }

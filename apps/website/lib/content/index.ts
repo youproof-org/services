@@ -107,6 +107,6 @@ export type {
   EmbedBlock,
   ListBlock,
   TypewriterBlock,
-  RefMap,
+  RefList,
   RefTarget,
 } from './types'

@@ -7,7 +7,8 @@ import type {
   ProofNode,
   RemarkNode,
   KbNode,
-  RefMap,
+  RefLinkSegment,
+  RefList,
 } from './types'
 import { buildLocalizedUrl, type UrlKey } from '@/lib/i18n/url'
 import {
@@ -371,22 +372,31 @@ export function anchorMarksTarget(locale: string, anchorId: string): boolean {
 }
 
 /**
- * Re-point a references map at knowledge-base pages.
+ * Re-point a references list at knowledge-base pages.
  *
- * `RefEntry` and each of its link segments carry two resolved hrefs (see types.ts):
+ * Each link segment of a reference carries two resolved hrefs (see types.ts):
  * `href` for the chapter context and `kbHref` for a KB page. Rather than threading a "which context"
  * flag through ContentBlocks and every block component down to InlineText, a KB
  * page passes its refs through this once at the page boundary. Nested
  * subsection/details blocks inherit the same `refs` prop, so they are covered.
  */
-export function kbRefs(refs: RefMap | undefined): RefMap | undefined {
+export function kbRefs(refs: RefList | undefined): RefList | undefined {
   if (!refs) return refs
-  const out: RefMap = {}
-  for (const [key, entry] of Object.entries(refs)) {
-    const segments = entry.segments.map((segment) =>
+  return refs.map((entry) => ({
+    ...entry,
+    segments: entry.segments.map((segment) =>
       segment.kind === 'link' && segment.kbHref ? { ...segment, href: segment.kbHref } : segment,
-    )
-    out[key] = entry.kbHref ? { ...entry, href: entry.kbHref, segments } : { ...entry, segments }
-  }
-  return out
+    ),
+  }))
+}
+
+/**
+ * Every link of a references list, in reading order, re-pointed at knowledge-base
+ * pages as `kbRefs` does. One per target of each item, since every target renders
+ * exactly one link: what a KB page's outgoing references are.
+ */
+export function kbRefLinks(refs: RefList | undefined): RefLinkSegment[] {
+  return (kbRefs(refs) ?? []).flatMap((entry) =>
+    entry.segments.filter((segment): segment is RefLinkSegment => segment.kind === 'link'),
+  )
 }

@@ -1,4 +1,4 @@
-import type { RefMap, TermMap, AnchorParent } from '@/lib/content/types'
+import type { RefList, TermMap, AnchorParent } from '@/lib/content/types'
 import InlineText from '../InlineText'
 import styles from './quote-block.module.scss'
 
@@ -6,7 +6,7 @@ interface QuoteBlockProps {
   leadIn?: string
   quote: string
   author?: string
-  refs?: RefMap
+  refs?: RefList
   terms?: TermMap
   termParent?: AnchorParent
 }

@@ -1,12 +1,13 @@
 import React from 'react'
-import { capitalizeSegments, linkSegments, type DisplaySegment } from '@youproof.org/display-templates'
+import { capitalizeSegments, linkSegments, segmentsText, type DisplaySegment } from '@youproof.org/display-templates'
 import { mathSource } from '@/lib/utils/math'
 import { termAnchorId } from '@/lib/content/urls'
-import type { RefMap, RefLinkSegment, RefTarget, TermMap, AnchorParent } from '@/lib/content/types'
+import { inlineTokens } from '@/lib/content/inline-tokens'
+import type { RefList, RefLinkSegment, RefTarget, TermMap, AnchorParent } from '@/lib/content/types'
 
 interface InlineTextProps {
   text: string
-  refs?: RefMap
+  refs?: RefList
   terms?: TermMap
   termParent?: AnchorParent
   selfRefDisplay?: string
@@ -17,7 +18,7 @@ interface InlineTextProps {
  *   ***text***  → bold italic
  *   **text**    → bold
  *   $...$       → KaTeX inline math
- *   [slug]      → reference label (resolved via refs)
+ *   [i]         → the i-th reference (resolved via refs)
  *   [*]         → self-reference (resolved via selfRefDisplay)
  *   &ndash;     → –
  *   ^text^      → superscript
@@ -31,11 +32,6 @@ export default function InlineText({ text, refs, terms, termParent, selfRefDispl
 }
 
 type KeyCounter = { n: number }
-
-// Note: no `s` flag — use [\s\S]*? to match across newlines (compatible with es2017-)
-// Group indices: 1-2 bold-italic, 3-4 bold, 5 math, 6 ref-slug, 7 sup, 8 term-key, 9 self-ref
-const TOKEN_RE =
-  /(\*\*\*)([\s\S]*?)\*\*\*|(\*\*)([\s\S]*?)\*\*|\$([^$]+)\$|\[([a-zA-Z][a-zA-Z0-9-]*)\]|\^([^^]+)\^|\[\[([a-zA-Z][a-zA-Z0-9-]*)\]\]|(\[\*\])/g
 
 function normalise(text: string): string {
   return text
@@ -124,7 +120,7 @@ function atSentenceStart(text: string, index: number): boolean {
 
 function parseInline(
   text: string,
-  refs?: RefMap,
+  refs?: RefList,
   terms?: TermMap,
   termParent?: AnchorParent,
   selfRefDisplay?: string,
@@ -170,7 +166,7 @@ function formatTermDisplay(display: string, counter: KeyCounter): React.ReactNod
 
 function parseNormalized(
   text: string,
-  refs: RefMap | undefined,
+  refs: RefList | undefined,
   terms: TermMap | undefined,
   termParent: AnchorParent | undefined,
   counter: KeyCounter,
@@ -179,84 +175,82 @@ function parseNormalized(
   const nodes: React.ReactNode[] = []
   let lastIndex = 0
 
-  // Create a fresh regex instance per call to avoid lastIndex conflicts when recursing
-  const re = new RegExp(TOKEN_RE.source, 'g')
-  let match: RegExpExecArray | null
-
-  while ((match = re.exec(text)) !== null) {
-    const [fullMatch, , biContent, , bContent, mathContent, refSlug, supContent, termKey, selfRefToken] = match
-
-    // Emit plain text before this match
-    if (match.index > lastIndex) {
-      nodes.push(text.slice(lastIndex, match.index))
+  for (const { token, start, source } of inlineTokens(text)) {
+    if (start > lastIndex) {
+      nodes.push(text.slice(lastIndex, start))
     }
 
-    if (biContent !== undefined) {
-      const inner = parseNormalized(biContent, refs, terms, termParent, counter, selfRefDisplay)
-      nodes.push(<strong key={counter.n++}><em>{inner}</em></strong>)
-    } else if (bContent !== undefined) {
-      const inner = parseNormalized(bContent, refs, terms, termParent, counter, selfRefDisplay)
-      nodes.push(<strong key={counter.n++}>{inner}</strong>)
-    } else if (mathContent !== undefined) {
-      const html = mathSource(mathContent, false)
-      nodes.push(
-        <span
-          key={counter.n++}
-          dangerouslySetInnerHTML={{ __html: html }}
-          className="inline-math"
-        />
-      )
-    } else if (refSlug !== undefined) {
-      const ref = refs?.[refSlug]
-      if (ref && ref.segments.length > 0) {
-        if (LINKED_TARGETS.has(ref.target.type)) {
-          const segments = atSentenceStart(text, match.index) ? capitalizeSegments(ref.segments) : ref.segments
+    switch (token.kind) {
+      case 'bold-italic': {
+        const inner = parseNormalized(token.inner, refs, terms, termParent, counter, selfRefDisplay)
+        nodes.push(<strong key={counter.n++}><em>{inner}</em></strong>)
+        break
+      }
+      case 'bold': {
+        const inner = parseNormalized(token.inner, refs, terms, termParent, counter, selfRefDisplay)
+        nodes.push(<strong key={counter.n++}>{inner}</strong>)
+        break
+      }
+      case 'math':
+        nodes.push(
+          <span
+            key={counter.n++}
+            dangerouslySetInnerHTML={{ __html: mathSource(token.source, false) }}
+            className="inline-math"
+          />
+        )
+        break
+      case 'ref': {
+        const ref = refs?.[token.index]
+        if (!ref || ref.segments.length === 0) {
+          // A missing reference, or a display that resolves to nothing
+          nodes.push(<span key={counter.n++} className="ref-error">{source}</span>)
+        } else if (ref.segments.every((segment) => segment.kind === 'text' || LINKED_TARGETS.has(segment.target.type))) {
+          const segments = atSentenceStart(text, start) ? capitalizeSegments(ref.segments) : ref.segments
           nodes.push(renderSegments(segments, counter, renderRefLink))
         } else {
-          // Fallback for unrecognised target types
+          // A target type that renders no link
+          nodes.push(<span key={counter.n++} className="ref-error">[{segmentsText(ref.segments)}]</span>)
+        }
+        break
+      }
+      case 'legacy-ref':
+        // A reference by name, which the loader rejects
+        nodes.push(<span key={counter.n++} className="ref-error">{source}</span>)
+        break
+      case 'sup':
+        nodes.push(<sup key={counter.n++}>{token.inner}</sup>)
+        break
+      case 'term': {
+        const term = terms?.[token.key]
+        if (term && termParent) {
+          const id = termAnchorId(termParent, token.key, term)
           nodes.push(
-            <span key={counter.n++} className="ref-error">
-              [{ref.display}]
+            <span key={counter.n++} id={id} className="term">
+              {formatTermDisplay(term.display, counter)}
             </span>
           )
+        } else {
+          nodes.push(source)
         }
-      } else {
-        // Fallback for a missing reference, or a display that resolves to nothing
-        nodes.push(
-          <span key={counter.n++} className="ref-error">
-            [{refSlug}]
-          </span>
-        )
+        break
       }
-    } else if (supContent !== undefined) {
-      nodes.push(<sup key={counter.n++}>{supContent}</sup>)
-    } else if (termKey !== undefined) {
-      const term = terms?.[termKey]
-      if (term && termParent) {
-        const id = termAnchorId(termParent, termKey, term)
-        nodes.push(
-          <span key={counter.n++} id={id} className="term">
-            {formatTermDisplay(term.display, counter)}
-          </span>
-        )
-      } else {
-        nodes.push(`[[${termKey}]]`)
-      }
-    } else if (selfRefToken !== undefined) {
-      if (selfRefDisplay) {
-        const segments = linkSegments(selfRefDisplay, undefined)
-        nodes.push(renderSegments(
-          atSentenceStart(text, match.index) ? capitalizeSegments(segments) : segments,
-          counter,
-          (_, linkText) => <strong>{linkText}</strong>,
-        ))
-      } else {
-        // Fallback for self-reference when display template is missing or invalid
-        nodes.push(<span key={counter.n++} className="ref-error">[*]</span>)
-      }
+      case 'self-ref':
+        if (selfRefDisplay) {
+          const segments = linkSegments(selfRefDisplay, undefined)
+          nodes.push(renderSegments(
+            atSentenceStart(text, start) ? capitalizeSegments(segments) : segments,
+            counter,
+            (_, linkText) => <strong>{linkText}</strong>,
+          ))
+        } else {
+          // Fallback for self-reference when display template is missing or invalid
+          nodes.push(<span key={counter.n++} className="ref-error">[*]</span>)
+        }
+        break
     }
 
-    lastIndex = match.index + fullMatch.length
+    lastIndex = start + source.length
   }
 
   // Remaining plain text

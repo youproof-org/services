@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 import InlineText from '@/components/content/InlineText'
 import { getContentGraph } from '@/lib/content'
 import { kbEntityRowLines, kbNodeByKey, kbNodeTitle } from '@/lib/content/graph'
-import { kbRefs } from '@/lib/content/urls'
+import { kbRefLinks } from '@/lib/content/urls'
 import { getChapterIndexLabel, getSectionIndexLabel } from '@/lib/utils/index-helpers'
 import { formatLocaleLabel } from '@/lib/i18n/config'
 import { isPathTarget } from '@/lib/content/types'
@@ -96,26 +96,25 @@ interface ReferenceSubject {
  * The sections a node's outgoing references contribute to the panel, one per
  * distinct target.
  *
- * Order is the order of the node's own `references` map, which is the order the
- * references were authored in rather than the order they appear in the prose. The
- * panel is a set of hidden contents addressed by `target`, so nothing about it is
- * read in order; the map's order is simply the one order that exists.
+ * Every target of every item counts, since each renders its own link. Order is the
+ * order the links are read in: the node's `references` list, which follows the
+ * order of appearance in the prose, and within a multi-reference the order its
+ * template renders the targets in. The panel is a set of hidden contents addressed
+ * by `target`, so nothing about it is read in order.
  *
- * Two references are dropped: an external one, which §7.1 gives no panel, and one
- * whose `href` is unresolved — `resolveRefHrefs` throws rather than leaving an
- * internal target unresolved, so the guard is for the `[slug]` that resolves to no
- * entry at all, which `InlineText` renders as `[slug]` and never as a link.
+ * Two links are dropped: an external one, which §7.1 gives no panel, and one whose
+ * `href` is unresolved, which `resolveRefHrefs` doesn't leave for an internal target,
+ * so the guard is only there to keep a gap from becoming a broken panel.
  */
 export function referencePanels(node: KbNode): KbPanelSection[] {
   const graph = getContentGraph()
   const sections: KbPanelSection[] = []
   // By href, because that is what identifies a panel — one panel per target.
   const seen = new Set<string>()
-
-  for (const entry of Object.values(kbRefs(node.references) ?? {})) {
-    if (!isPathTarget(entry.target)) continue
-    if (!entry.href || seen.has(entry.href)) continue
-    const subject = subjectOf(graph, node, entry.target, entry.href)
+  for (const link of kbRefLinks(node.references)) {
+    if (!isPathTarget(link.target)) continue
+    if (!link.href || seen.has(link.href)) continue
+    const subject = subjectOf(graph, node, link.target, link.href)
     if (!subject) continue
     seen.add(subject.href)
     sections.push({

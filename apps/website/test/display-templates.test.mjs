@@ -299,6 +299,32 @@ test('order is absent or authored', () => {
 // checkTemplate and the template context
 // ---------------------------------------------------------------------------
 
+test("a standalone section in another locale than its item stops the load", async () => {
+  const saved = process.env.CONTENT_DIR
+  try {
+    const dir = contentDir()
+    const pageDir = path.join(dir, 'pages', 'p')
+    fs.mkdirSync(pageDir, { recursive: true })
+    fs.mkdirSync(path.join(dir, 'books'))
+    fs.writeFileSync(path.join(pageDir, 'page.yaml'), 'type: page\nname: p\nslug: p\nlocale: hu\ntitle: P\nsections: [s]\n')
+    const section = (locale) => `name: s\nslug: s\nlocale: ${locale}\ntitle: S\nbody: []\n`
+    process.env.CONTENT_DIR = dir
+
+    fs.writeFileSync(path.join(pageDir, 's.yaml'), section('hu'))
+    assert.equal((await loadRawGraphData()).standalones[0].sections.length, 1)
+
+    fs.writeFileSync(path.join(pageDir, 's.yaml'), section('en'))
+    await assert.rejects(loadRawGraphData(), (err) => {
+      assert.ok(err instanceof ContentFormatError, `expected a ContentFormatError, got ${err}`)
+      assert.match(err.message, /section 's' is in locale 'en', but its page is in 'hu'/)
+      return true
+    })
+  } finally {
+    if (saved === undefined) delete process.env.CONTENT_DIR
+    else process.env.CONTENT_DIR = saved
+  }
+})
+
 test('a template that resolves today passes the check for its target type', () => {
   const cases = { hu: ['ine', 'poss'] }
   const ok = (template, type) => assert.deepEqual(checkTemplate(template, [type], { links: 'at-most-one', cases }), [], template)
@@ -321,7 +347,7 @@ test('the declared context shapes match what buildContext gives each target type
   const data = raw()
   data.standalones.push(
     ...['article', 'newsletter', 'page', 'landing'].map((kind) => ({
-      kind, name: kind, slug: kind, locale: 'hu', title: kind, abstract: [], prologue: [], sections: [], epilogue: [], references: {},
+      kind, name: kind, slug: kind, locale: 'hu', title: kind, abstract: [], prologue: [], sections: [], epilogue: [], references: [],
     })),
   )
   const graph = buildGraphFromRaw(data)
@@ -342,7 +368,7 @@ test('the declared context shapes match what buildContext gives each target type
   }
   assert.deepEqual(Object.keys(fqns).sort(), [...TEMPLATE_TARGET_TYPES].sort())
   for (const [type, fqn] of Object.entries(fqns)) {
-    const ctx = buildContext(ref('x', fqn).target, graph)
+    const ctx = buildContext(ref('x', fqn).targets[0], graph)
     assert.ok(ctx, `no context for ${type}`)
     assert.deepEqual(shapeOf(ctx.target), TEMPLATE_CONTEXT_SHAPES[type], type)
   }

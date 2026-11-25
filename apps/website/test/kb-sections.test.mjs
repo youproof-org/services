@@ -29,7 +29,7 @@ const unembedded = {
   title: 'Beágyazatlan definíció',
   terms: {},
   body: [narrative('Törzs.')],
-  references: {},
+  references: [],
   remarkSlugs: [],
 }
 

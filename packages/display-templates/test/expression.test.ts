@@ -3,6 +3,7 @@ import assert from 'node:assert/strict'
 
 import {
   capitalizeSegments,
+  checkLinkText,
   checkTemplate,
   joinSegments,
   linkSegments,
@@ -151,11 +152,47 @@ test('neighbouring text segments are joined', () => {
   )
 })
 
-test('capitalization changes the first character of the first segment only', () => {
+test('capitalization changes the first visible character, in whichever segment holds it', () => {
   assert.deepEqual(capitalizeSegments(linkSegments('az [1.] fejezet', 't')).map((s) => s.text), ['Az ', '1.', ' fejezet'])
   assert.deepEqual(capitalizeSegments(linkSegments('kis tétel', 't')).map((s) => s.text), ['Kis tétel'])
-  assert.deepEqual(capitalizeSegments(linkSegments('[kis] tétel', 't')).map((s) => s.text), ['', 'kis', ' tétel'])
+  assert.deepEqual(capitalizeSegments(linkSegments('[kongruenciá]val', 't')).map((s) => s.text), ['', 'Kongruenciá', 'val'])
+  assert.deepEqual(capitalizeSegments(linkSegments(' a [tétel] ', 't')).map((s) => s.text), [' A ', 'tétel', ' '])
+  assert.deepEqual(
+    capitalizeSegments([
+      { kind: 'text', text: '' },
+      { kind: 'link', text: '', target: 't' },
+      { kind: 'text', text: '  ' },
+      { kind: 'link', text: 'élő', target: 'u' },
+    ]).map((s) => s.text),
+    ['', '', '  ', 'Élő'],
+  )
+  assert.deepEqual(capitalizeSegments(linkSegments('[] ', 't')).map((s) => s.text), ['', '', ' '])
   assert.deepEqual(capitalizeSegments([]), [])
+})
+
+test('capitalization keeps every segment but the one it changes, and its kind and target', () => {
+  const segments = linkSegments('[kis] tétel', 't')
+  const capitalized = capitalizeSegments(segments)
+  assert.deepEqual(capitalized[1], { kind: 'link', text: 'Kis', target: 't' })
+  assert.equal(capitalized[0], segments[0])
+  assert.equal(capitalized[2], segments[2])
+  assert.equal(segments[1].text, 'kis', 'the input is not mutated')
+})
+
+// ---------------------------------------------------------------------------
+// Literal link text
+// ---------------------------------------------------------------------------
+
+test('literal link text may mark one link and holds no expression', () => {
+  assert.deepEqual(checkLinkText('kis Fermat-tétel'), [])
+  assert.deepEqual(checkLinkText('a [gyűrű]k'), [])
+  assert.deepEqual(checkLinkText('modulo $p^{c+1}$ [maradékosztály]'), [], 'braces inside math are not expressions')
+  assert.deepEqual(checkLinkText('[a] és [b]'), ['it may hold one link [...], not several'])
+  assert.deepEqual(checkLinkText('a [b'), ["'[' and ']' don't pair up"])
+  assert.deepEqual(checkLinkText('a ]b['), ["']' comes before its '['"])
+  assert.deepEqual(checkLinkText('az [{target.index}]'), [
+    '{target.index} is an expression, and literal text has none: name a template in the collection instead',
+  ])
 })
 
 test('the text of a display is its segments without link markup', () => {

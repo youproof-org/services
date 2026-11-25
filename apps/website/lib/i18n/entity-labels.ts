@@ -107,9 +107,14 @@ export function entityLabelVariants(locale: string, type: string): readonly stri
   return Object.keys(labelType(locale, type).variants)
 }
 
+/** The variant an entity of `type` uses: the one it names, or the type's default. */
+export function entityLabelVariant(locale: string, type: string, variant?: string): string {
+  return variant ?? labelType(locale, type).default
+}
+
 export function entityLabels(locale: string, type: string, variant?: string): EntityLabels {
   const t = labelType(locale, type)
-  const name = variant ?? t.default
+  const name = entityLabelVariant(locale, type, variant)
   const found = Object.prototype.hasOwnProperty.call(t.variants, name) ? t.variants[name] : undefined
   if (!found) {
     throw new Error(

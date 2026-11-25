@@ -3,7 +3,7 @@ import fs from 'fs'
 import path from 'path'
 import type {
   ContentBlock,
-  RefMap,
+  RefList,
   TermMap,
   ThumbnailImage,
   MetaInfo,
@@ -27,7 +27,8 @@ import type {
   GlossaryEntry,
   KbBacklinkSource,
   KbBacklinks,
-  DisplayTemplateCollection,
+  DisplayTemplateCollections,
+  RefLinkSegment,
 } from './types'
 import {
   getContentDir,
@@ -54,9 +55,17 @@ const STANDALONE_DIRS: Record<StandaloneKind, string> = {
   page: 'pages',
   landing: 'landing',
 }
-import { linkSegments, resolveSingle, resolveTemplate, TemplateCaseError } from '@youproof.org/display-templates'
+import {
+  DisplayListError,
+  linkSegments,
+  resolveDisplay,
+  resolveTemplate,
+  TemplateCaseError,
+  type DisplayTemplateGroupBy,
+  type ListMember,
+} from '@youproof.org/display-templates'
 import { buildContext } from './display-template'
-import { entityLabels, entityLabelCases } from '@/lib/i18n/entity-labels'
+import { entityLabels, entityLabelCases, entityLabelVariant, KB_ENTITY_TYPES } from '@/lib/i18n/entity-labels'
 import { buildLocalizedUrl } from '@/lib/i18n/url'
 import { resolveContainerKey } from '@/lib/i18n/config'
 import {
@@ -84,7 +93,10 @@ import {
   remarkKey,
   keyForKbNode,
   keyForChapter,
+  keyForPart,
   keyForSection,
+  keyForStandalone,
+  standaloneSectionKey,
 } from './keys'
 import { fqnJoin } from './fqn'
 import {
@@ -142,7 +154,7 @@ export interface RawDefinitionEntry {
   label?: string
   terms?: TermMap
   body: ContentBlock[]
-  references: RefMap
+  references: RefList
   remarkSlugs: string[]
 }
 
@@ -155,7 +167,7 @@ export interface RawTheoremEntry {
   label?: string
   terms?: TermMap
   body: ContentBlock[]
-  references: RefMap
+  references: RefList
   proofSlugs: string[]
   remarkSlugs: string[]
 }
@@ -168,7 +180,7 @@ export interface RawProofEntry {
   label?: string
   terms?: TermMap
   body: ContentBlock[]
-  references: RefMap
+  references: RefList
   remarkSlugs: string[]
 }
 
@@ -179,7 +191,7 @@ export interface RawRemarkEntry {
   title?: string
   label?: string
   terms?: TermMap
-  references: RefMap
+  references: RefList
   body: ContentBlock[]
 }
 
@@ -189,7 +201,7 @@ export interface RawSectionEntry {
   locale: string
   title: string
   body: ContentBlock[]
-  references: RefMap
+  references: RefList
 }
 
 export interface RawChapterEntry {
@@ -205,7 +217,7 @@ export interface RawChapterEntry {
   prologue: ContentBlock[]
   sections: RawSectionEntry[]
   epilogue: ContentBlock[]
-  references: RefMap
+  references: RefList
   thumbnail?: ThumbnailImage
   meta?: MetaInfo
 }
@@ -249,7 +261,7 @@ export interface RawStandaloneEntry {
   epilogue: ContentBlock[]
   thumbnail?: ThumbnailImage
   meta?: MetaInfo
-  references: RefMap
+  references: RefList
 }
 
 /**
@@ -258,7 +270,7 @@ export interface RawStandaloneEntry {
  * schema, so a cache written by an older build would otherwise rehydrate nodes
  * that silently lack the new fields.
  */
-export const RAW_GRAPH_VERSION = 5
+export const RAW_GRAPH_VERSION = 6
 
 export interface RawGraphData {
   version: number
@@ -269,8 +281,7 @@ export interface RawGraphData {
   remarks: RawRemarkEntry[]
   books: RawBookEntry[]
   standalones: RawStandaloneEntry[]
-  /** Locale -> that locale's display template collection. */
-  displayTemplates: Record<string, DisplayTemplateCollection>
+  displayTemplates: DisplayTemplateCollections
 }
 
 // ---------------------------------------------------------------------------
@@ -293,6 +304,7 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
     standalones: [],
     displayTemplates: loadDisplayTemplateCollections(contentDir),
   }
+  const templates = raw.displayTemplates
 
   function scanNamespaceDir(dir: string) {
     const entries = fs.existsSync(dir)
@@ -315,7 +327,7 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
           const figuresDir = path.join(process.cwd(), 'public', figureUrlPrefix)
           try {
             if (typeName === 'definitions') {
-              const loaded = loadDefinition(file, namespace)
+              const loaded = loadDefinition(file, namespace, templates)
               raw.definitions.push({
                 name: loaded.node.name,
                 slug: loaded.node.slug,
@@ -329,7 +341,7 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
                 remarkSlugs: loaded.rawRemarks,
               })
             } else if (typeName === 'theorems') {
-              const loaded = loadTheorem(file, namespace)
+              const loaded = loadTheorem(file, namespace, templates)
               raw.theorems.push({
                 name: loaded.node.name,
                 slug: loaded.node.slug,
@@ -344,7 +356,7 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
                 remarkSlugs: loaded.rawRemarks,
               })
             } else if (typeName === 'proofs') {
-              const loaded = loadProof(file, namespace)
+              const loaded = loadProof(file, namespace, templates)
               raw.proofs.push({
                 name: loaded.node.name,
                 locale: loaded.node.locale,
@@ -357,7 +369,7 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
                 remarkSlugs: loaded.rawRemarks,
               })
             } else if (typeName === 'remarks') {
-              const loaded = loadRemark(file, namespace)
+              const loaded = loadRemark(file, namespace, templates)
               raw.remarks.push({
                 name: loaded.node.name,
                 locale: loaded.node.locale,
@@ -455,7 +467,7 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
         if (!entry.isDirectory()) continue
         const candidate = path.join(partDir, entry.name, 'chapter.yaml')
         if (!fs.existsSync(candidate)) continue
-        const raw = loadChapter(candidate)
+        const raw = loadChapter(candidate, templates)
         chapterByName.set(raw.name, { dir: path.join(partDir, entry.name), raw })
       }
 
@@ -501,7 +513,7 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
         for (const file of fs.readdirSync(chapterDir)) {
           if (!file.endsWith('.yaml') || file === 'chapter.yaml') continue
           const candidate = path.join(chapterDir, file)
-          const raw = loadSection(candidate, figureUrlPrefix, figuresDir)
+          const raw = loadSection(candidate, templates, figureUrlPrefix, figuresDir)
           sectionByName.set(raw.name, { filePath: candidate, raw })
         }
 
@@ -542,7 +554,7 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
       if (!fs.existsSync(itemYaml)) continue
 
       try {
-        const rawItem = loadStandalone(itemYaml)
+        const rawItem = loadStandalone(itemYaml, templates)
         // Served path is built from the YAML `name`, not the on-disk folder name.
         const itemName = rawItem.name ?? entry.name
         const urlPrefix = `/content/${STANDALONE_DIRS[kind]}/${itemName}`
@@ -553,12 +565,21 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
         const sectionByName = new Map<string, ReturnType<typeof loadSection>>()
         for (const file of fs.readdirSync(itemDir)) {
           if (!file.endsWith('.yaml') || file === `${kind}.yaml`) continue
-          const s = loadSection(path.join(itemDir, file), figureUrlPrefix, figuresDir)
+          const s = loadSection(path.join(itemDir, file), templates, figureUrlPrefix, figuresDir)
           sectionByName.set(s.name, s)
         }
         const sections = rawItem.sectionNames
           .map((n) => sectionByName.get(n))
           .filter((s): s is ReturnType<typeof loadSection> => s !== undefined)
+          .map((s) => {
+            if (s.locale !== rawItem.locale) {
+              throw new ContentFormatError(
+                `${path.relative(process.cwd(), itemDir)} — section '${s.name}' is in locale '${s.locale}', ` +
+                  `but its ${kind} is in '${rawItem.locale}'. A section has its ${kind}'s locale.`,
+              )
+            }
+            return s
+          })
           .map((s) => ({
             name: s.name,
             slug: s.slug,
@@ -863,7 +884,7 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
   // anchors and the validators check the hrefs those produce.
   graph.embedding = buildEmbedding(graph)
   validateIdentifiers(graph, raw)
-  resolveDisplayTemplates(graph)
+  resolveDisplayTemplates(graph, raw.displayTemplates)
   resolveSelfReferenceDisplayTemplates(graph)
   resolveRefHrefs(graph)
   graph.glossary = buildGlossary(graph)
@@ -881,7 +902,7 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
 // ---------------------------------------------------------------------------
 
 /**
- * Every node in the graph that can carry a `references` map, together with what
+ * Every node in the graph that can carry a `references` list, together with what
  * kind of node it is and (for a section) its parent.
  *
  * This is the single place that enumerates reference owners. Everything that walks
@@ -889,9 +910,9 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
  * through `refOwners`, so adding a node kind means touching one function instead of
  * every walker.
  *
- * The owner is carried, not just its RefMap, because reference *rules* are
+ * The owner is carried, not just its RefList, because reference *rules* are
  * statements about an owner and its target together ("a chapter may only reference
- * chapters of the same book"). Handing walkers a bare RefMap would make such rules
+ * chapters of the same book"). Handing walkers a bare RefList would make such rules
  * inexpressible.
  */
 type RefOwner =
@@ -905,9 +926,8 @@ type RefOwner =
   | { kind: 'standalone-section'; node: StandaloneSection; parent: StandaloneNode }
 
 /**
- * Yields the LIVE node objects, not copies: resolution mutates `RefEntry.href` and
- * `RefEntry.segments` in place, and the renderer reads the same objects back off the
- * graph.
+ * Yields the LIVE node objects, not copies: resolution sets `RefEntry.segments` and
+ * their hrefs in place, and the renderer reads the same objects back off the graph.
  */
 function* refOwners(graph: ContentGraph): Generator<RefOwner> {
   for (const node of graph.chapters.values()) {
@@ -928,9 +948,13 @@ function* refOwners(graph: ContentGraph): Generator<RefOwner> {
   }
 }
 
-/** Every reference map in the graph, for walkers that don't need owner context. */
-function* allRefEntries(graph: ContentGraph): Generator<RefEntry> {
-  for (const owner of refOwners(graph)) yield* Object.values(owner.node.references)
+/** Every link of every reference in the graph, for walkers that don't need owner context. */
+function* allRefLinks(graph: ContentGraph): Generator<RefLinkSegment> {
+  for (const owner of refOwners(graph)) {
+    for (const entry of owner.node.references) {
+      for (const segment of entry.segments) if (segment.kind === 'link') yield segment
+    }
+  }
 }
 
 /**
@@ -955,15 +979,17 @@ function validateReferences(graph: ContentGraph): void {
   for (const owner of refOwners(graph)) {
     const allowed = ALLOWED_REF_TARGETS[owner.kind]
     if (!allowed) continue
-    for (const [key, entry] of Object.entries(owner.node.references)) {
-      if (!allowed.includes(entry.target.type)) {
-        throw new Error(
-          `Reference "${key}" in ${owner.kind} "${owner.node.name}" targets ` +
-            `'${entry.target.type}', which a ${owner.kind} may not reference ` +
-            `(allowed: ${allowed.join(', ')}).`
-        )
+    owner.node.references.forEach((entry, index) => {
+      for (const target of entry.targets) {
+        if (!allowed.includes(target.type)) {
+          throw new Error(
+            `Reference [${index}] in ${owner.kind} "${owner.node.name}" targets ` +
+              `'${target.type}', which a ${owner.kind} may not reference ` +
+              `(allowed: ${allowed.join(', ')}).`
+          )
+        }
       }
-    }
+    })
   }
 }
 
@@ -1843,12 +1869,12 @@ function buildBacklinkIndex(graph: ContentGraph): Map<string, KbBacklinks> {
   }
 
   for (const owner of refOwners(graph)) {
-    const refs = Object.values(owner.node.references)
+    const refs = owner.node.references
     if (refs.length === 0) continue
     const row = backlinkRowFor(graph, owner)
     if (!row) continue
 
-    for (const { target } of refs) {
+    for (const target of refs.flatMap((entry) => entry.targets)) {
       if (target.type === 'external') continue
       // The owning entity is the target itself when the target IS an entity, and
       // the target minus its trailing `.claims.{c}` / `.terms.{t}` step otherwise
@@ -1903,12 +1929,12 @@ function validateKbLinks(graph: ContentGraph): void {
   }
   for (const chapter of graph.chapters.values()) pages.add(chapterUrlOf(chapter))
 
-  for (const entry of allRefEntries(graph)) {
-    if (!entry.kbHref) continue
-    const pathname = entry.kbHref.split('#')[0]
+  for (const link of allRefLinks(graph)) {
+    if (!link.kbHref) continue
+    const pathname = link.kbHref.split('#')[0]
     if (!pages.has(pathname)) {
       throw new Error(
-        `A '${entry.target.type}' reference resolves to '${entry.kbHref}', ` +
+        `A '${link.target.type}' reference resolves to '${link.kbHref}', ` +
           `for which this build generates no page.`,
       )
     }
@@ -2013,9 +2039,9 @@ function validateAnchors(graph: ContentGraph): void {
     }
   }
 
-  for (const entry of allRefEntries(graph)) {
-    check(entry.href, `'${entry.target.type}' reference (chapter context)`)
-    check(entry.kbHref, `'${entry.target.type}' reference (knowledge-base context)`)
+  for (const link of allRefLinks(graph)) {
+    check(link.href, `'${link.target.type}' reference (chapter context)`)
+    check(link.kbHref, `'${link.target.type}' reference (knowledge-base context)`)
   }
   for (const row of graph.glossary) check(row.href, `glossary row for term "${row.termKey}"`)
 }
@@ -2130,17 +2156,7 @@ function resolveRefHrefs(graph: ContentGraph): void {
     }
   }
 
-  for (const entry of allRefEntries(graph)) {
-    resolveHrefs(entry)
-    for (const segment of entry.segments) {
-      if (segment.kind !== 'link') continue
-      if (segment.target !== entry.target) resolveHrefs(segment)
-      else if (entry.href !== undefined) {
-        segment.href = entry.href
-        if (entry.kbHref !== undefined) segment.kbHref = entry.kbHref
-      }
-    }
-  }
+  for (const link of allRefLinks(graph)) resolveHrefs(link)
 }
 
 function countTermOccurrences(termKey: string, blocks: ContentBlock[]): number {
@@ -2197,24 +2213,127 @@ function targetLabelLocale(target: RefTarget, graph: ContentGraph): string | und
 }
 
 /**
- * A display with a `{...}` expression is resolved against its target's context; one
- * without, or whose target has no context, is literal text. Either way the result
- * becomes the entry's segments.
+ * Where each target sits in the content, one distinct number per fully qualified
+ * name, so a list template can render its targets in reading order.
+ *
+ * The order is the site's reading order: the books in episode order, each book's
+ * parts and chapters in order, and within a chapter the chapter itself, its
+ * prologue, each section followed by what it embeds, and the epilogue. Embeds are
+ * read in block order, through subsections and details blocks. That agrees with the
+ * entity indexes, which `buildEmbedding` counts over the top-level embeds of the
+ * prologue and then the sections, so a sorted list reads in ascending index. An
+ * entity is followed by its claims, in the order `buildContext` numbers them, and
+ * then by its terms. Standalone items come after the books.
  */
-function resolveDisplayTemplates(graph: ContentGraph): void {
-  for (const owner of refOwners(graph)) {
-    for (const [refKey, entry] of Object.entries(owner.node.references)) {
-      const ctx = entry.display.includes('{') ? buildContext(entry.target, graph) : null
-      try {
-        entry.segments = ctx ? resolveSingle(entry.display, entry.target, ctx) : linkSegments(entry.display, entry.target)
-      } catch (err) {
-        if (!(err instanceof TemplateCaseError)) throw err
-        const locale = targetLabelLocale(entry.target, graph)
-        const declared = locale ? ` '${locale}' declares: ${entityLabelCases(locale).join(', ')}.` : ''
-        throw new Error(`Reference "${refKey}" in ${describeRefOwner(owner)}: ${err.message}.${declared}`)
+function buildContentPositions(graph: ContentGraph): Map<string, number> {
+  const positions = new Map<string, number>()
+  const place = (fqn: string) => {
+    if (!positions.has(fqn)) positions.set(fqn, positions.size)
+  }
+  const placeEntity = (fqn: string) => {
+    place(fqn)
+    const node = kbNodeByKey(graph, fqn)
+    if (!node) return
+    for (const block of node.body) if (block.type === 'claim') place(fqnJoin(fqn, 'claim', block.name))
+    for (const termKey of Object.keys(node.terms ?? {})) place(fqnJoin(fqn, 'term', termKey))
+  }
+  const scan = (blocks: ContentBlock[]) => {
+    for (const block of blocks) {
+      if (block.type === 'embed') placeEntity(block.target.fqn)
+      if (block.type === 'subsection' || block.type === 'details') scan(block.blocks)
+    }
+  }
+  for (const book of graph.books.values()) {
+    place(bookKey(book.name))
+    for (const part of book.parts) {
+      place(keyForPart(part))
+      for (const chapter of part.chapters) {
+        place(keyForChapter(chapter))
+        scan(chapter.prologue)
+        for (const section of chapter.sections) {
+          place(keyForSection(section))
+          scan(section.body)
+        }
+        scan(chapter.epilogue)
       }
     }
   }
+  for (const map of [graph.articles, graph.newsletters, graph.pages, graph.landings]) {
+    for (const node of map.values()) {
+      place(keyForStandalone(node))
+      for (const section of node.sections) place(standaloneSectionKey(node.kind, node.name, section.name))
+    }
+  }
+  return positions
+}
+
+/** What a target shares with the other members of its group, for each `group-by` it supports. */
+function groupKeys(target: RefTarget, graph: ContentGraph): ListMember<RefTarget>['groups'] {
+  if (target.type === 'external') return {}
+  const groups: Partial<Record<DisplayTemplateGroupBy, string>> = { type: target.type }
+  if (target.type === 'claim') groups.parent = target.parentFqn
+  const entity = (KB_ENTITY_TYPES as readonly string[]).includes(target.type) ? kbNodeByKey(graph, target.fqn) : undefined
+  if (entity) groups.label = `${entity.type}:${entityLabelVariant(entity.locale, entity.type, entity.label)}`
+  return groups
+}
+
+/** The locale of the file a reference is written in, whose collection names its template. */
+function ownerLocale(owner: RefOwner): string {
+  return owner.kind === 'standalone-section' ? owner.parent.locale : owner.node.locale
+}
+
+/**
+ * Resolves every reference to segments: a `text` item through its link brackets,
+ * a `display` item through its template in the collection of the file's locale,
+ * against the context of each target. Every target must come out with exactly one
+ * link, since that link is what its incoming reference lands on.
+ */
+function resolveDisplayTemplates(graph: ContentGraph, templates: DisplayTemplateCollections): void {
+  const positions = buildContentPositions(graph)
+  for (const owner of refOwners(graph)) {
+    const locale = ownerLocale(owner)
+    owner.node.references.forEach((entry, index) => {
+      const fail: (message: string) => never = (message) => {
+        throw new Error(`Reference [${index}] in ${describeRefOwner(owner)}: ${message}`)
+      }
+      if (entry.display === undefined) {
+        entry.segments = linkSegments(entry.text ?? '', entry.targets[0])
+      } else {
+        const template = templates[locale]?.[entry.display]
+        if (!template) fail(`'${entry.display}' is not a display template in '${locale}'.`)
+        const members = entry.targets.map((target): ListMember<RefTarget> => {
+          const context = buildContext(target, graph)
+          if (!context) fail(`'${describeTarget(target)}' is not in the content graph.`)
+          return {
+            target,
+            key: describeTarget(target),
+            context,
+            position: positions.get(describeTarget(target)) ?? Number.MAX_SAFE_INTEGER,
+            groups: groupKeys(target, graph),
+          }
+        })
+        try {
+          entry.segments = resolveDisplay(template, members)
+        } catch (err) {
+          if (err instanceof DisplayListError) fail(`template '${entry.display}': ${err.message}.`)
+          if (!(err instanceof TemplateCaseError)) throw err
+          const caseLocale = entry.targets.map((target) => targetLabelLocale(target, graph)).find(Boolean)
+          const declared = caseLocale ? ` '${caseLocale}' declares: ${entityLabelCases(caseLocale).join(', ')}.` : ''
+          fail(`${err.message}.${declared}`)
+        }
+      }
+      for (const target of entry.targets) {
+        const links = entry.segments.filter((segment) => segment.kind === 'link' && segment.target === target).length
+        if (links !== 1) {
+          fail(`'${describeTarget(target)}' renders ${links === 0 ? 'no link' : `${links} links`}; every target renders exactly one.`)
+        }
+      }
+    })
+  }
+}
+
+function describeTarget(target: RefTarget): string {
+  return target.type === 'external' ? target.url : target.fqn
 }
 
 function resolveSelfReferenceDisplayTemplates(graph: ContentGraph): void {

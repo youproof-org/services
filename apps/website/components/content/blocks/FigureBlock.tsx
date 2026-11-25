@@ -1,4 +1,4 @@
-import type { RefMap, TermMap, AnchorParent } from '@/lib/content/types'
+import type { RefList, TermMap, AnchorParent } from '@/lib/content/types'
 import InlineText from '../InlineText'
 import styles from './figure-block.module.scss'
 
@@ -15,7 +15,7 @@ interface FigureBlockProps {
   // figure above an anchor loads late and shifts the cross-ref target out of view.
   width?: number
   height?: number
-  refs?: RefMap
+  refs?: RefList
   terms?: TermMap
   termParent?: AnchorParent
 }

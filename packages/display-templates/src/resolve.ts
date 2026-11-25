@@ -22,7 +22,7 @@ export interface ListMember<T> {
   groups: Partial<Record<DisplayTemplateGroupBy, string>>
 }
 
-/** A reference whose targets don't fit its template: too many, too few, or one listed twice. */
+/** A reference whose targets don't fit its template: too many, too few, one listed twice, or one without what the template groups by. */
 export class DisplayListError extends Error {
   constructor(message: string) {
     super(message)
@@ -44,10 +44,23 @@ function targetCount(n: number): string {
   return n === 1 ? '1 target' : `${n} targets`
 }
 
+function countError(count: DisplayTemplateList['count'], n: number): string | undefined {
+  if (n >= count.min && (count.max === undefined || n <= count.max)) return undefined
+  return `takes ${describeCount(count)} targets, not ${n}`
+}
+
+/**
+ * Why `template` can't render `n` targets, as a phrase about the template, such
+ * as "takes exactly 1 target, not 2". Undefined when it can.
+ */
+export function targetCountError(template: DisplayTemplate, n: number): string | undefined {
+  if (template.kind === 'list') return countError(template.list.count, n)
+  return n === 1 ? undefined : `takes exactly 1 target, not ${n}`
+}
+
 function checkMembers<T>(count: DisplayTemplateList['count'], members: readonly ListMember<T>[]): void {
-  if (members.length < count.min || (count.max !== undefined && members.length > count.max)) {
-    throw new DisplayListError(`the template takes ${describeCount(count)} targets, not ${members.length}`)
-  }
+  const error = countError(count, members.length)
+  if (error) throw new DisplayListError(`the template ${error}`)
   const seen = new Set<string>()
   for (const member of members) {
     if (seen.has(member.key)) throw new DisplayListError(`'${member.key}' is listed twice`)
@@ -60,7 +73,7 @@ function groupMembers<T>(members: readonly ListMember<T>[], groupBy: DisplayTemp
   const groups = new Map<string, ListMember<T>[]>()
   for (const member of members) {
     const key = member.groups[groupBy]
-    if (key === undefined) throw new Error(`'${member.key}' has no '${groupBy}' to group by`)
+    if (key === undefined) throw new DisplayListError(`'${member.key}' has no '${groupBy}' to group by`)
     const group = groups.get(key)
     if (group) group.push(member)
     else groups.set(key, [member])
@@ -106,9 +119,8 @@ export function resolveList<T>(list: DisplayTemplateList, members: readonly List
 /** A collection template, single or list, resolved against a reference's targets. */
 export function resolveDisplay<T>(template: DisplayTemplate, members: readonly ListMember<T>[]): DisplaySegment<T>[] {
   if (template.kind === 'list') return resolveList(template.list, members)
-  if (members.length !== 1) {
-    throw new DisplayListError(`the template takes exactly 1 target, not ${members.length}`)
-  }
+  const error = targetCountError(template, members.length)
+  if (error) throw new DisplayListError(`the template ${error}`)
   const [member] = members
   return resolveSingle(template.template, member.target, member.context)
 }

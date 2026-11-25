@@ -15,7 +15,7 @@ import { keyForKbNode } from './keys'
 import { contentLastmod, kbLastmodKey } from './lastmod'
 import type { BookNode, ChapterNode, ContentGraph, KbNode, TermDefinition } from './types'
 import {
-  kbRefs,
+  kbRefLinks,
   ownPageScope,
   termAnchorId,
   urlForBook,
@@ -59,7 +59,7 @@ import {
  *
  * Every string here comes from the graph, from the same helpers the visible page
  * uses: `kbNodeTitle` for a name, `kbExcerpt` for a description, `kbEntityBreadcrumbs`
- * for the trail, `kbOwnership` for the parents and children, `kbRefs` for the
+ * for the trail, `kbOwnership` for the parents and children, `kbRefLinks` for the
  * outgoing references. So the block cannot disagree with the page it sits on, and
  * there are 537 of these pages — no content file is ever going to grow a `jsonld:`
  * field.
@@ -380,8 +380,8 @@ function definedTermNode(id: string, termKey: string, term: TermDefinition, loca
 }
 
 /**
- * Every outgoing reference in the node's prose, as absolute URLs, deduplicated and
- * ordered.
+ * Every outgoing reference in the node's prose, one per target of each item (each
+ * has its own link), as absolute URLs, deduplicated and ordered.
  *
  * **Whatever the reader's own link points at**, which is one rule with two visible
  * shapes. A reference to the term "relatív prím" resolves to
@@ -389,13 +389,13 @@ function definedTermNode(id: string, termKey: string, term: TermDefinition, loca
  * page, and it is where that page declares the term's own `DefinedTerm`. A reference
  * to a whole theorem resolves to that theorem's page, with no fragment, because that
  * is where the link goes; the page declares that URL as its own `@id` and points at
- * the work from it. `kbRefs` is what makes these knowledge-base addresses rather than
+ * the work from it. `kbRefLinks` is what makes these knowledge-base addresses rather than
  * chapter anchors — the same remapping the body itself renders through, so a
  * citation and the link beside it can never be different URLs.
  *
  * Deduplicated because one edge is one edge and a body may link the same term twice
  * (the kis Fermat-tétel does, for two of its five). Sorted by code unit rather than
- * by authored order, so reordering a references map does not rewrite the block, and
+ * by authored order, so reordering a references list does not rewrite the block, and
  * so the ordering is the same on every machine — which a locale-aware collation would
  * not guarantee.
  *
@@ -404,14 +404,10 @@ function definedTermNode(id: string, termKey: string, term: TermDefinition, loca
  * one. Five of them exist across the content today.
  */
 function citationIds(node: KbNode): string[] {
-  const refs = kbRefs(node.references) ?? {}
   const ids = new Set<string>()
-  for (const entry of Object.values(refs)) {
-    if (entry.target.type === 'external') {
-      ids.add(entry.target.url)
-    } else if (entry.href) {
-      ids.add(absoluteUrl(entry.href))
-    }
+  for (const link of kbRefLinks(node.references)) {
+    if (link.target.type === 'external') ids.add(link.target.url)
+    else if (link.href) ids.add(absoluteUrl(link.href))
   }
   return [...ids].sort()
 }

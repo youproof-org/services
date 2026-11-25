@@ -1,5 +1,5 @@
 export * from './types'
 export { BUILTINS, resolveTemplate, TemplateCaseError, type BuiltIn, type BuiltInFn, type ParamKind } from './expression'
-export { checkTemplate, TEMPLATE_CONTEXT_SHAPES, type TemplateCheckOptions } from './check'
+export { checkLinkText, checkTemplate, TEMPLATE_CONTEXT_SHAPES, type TemplateCheckOptions } from './check'
 export { capitalizeSegments, joinSegments, linkSegments, segmentsText } from './segments'
-export { DisplayListError, resolveDisplay, resolveList, resolveSingle, type ListMember } from './resolve'
+export { DisplayListError, resolveDisplay, resolveList, resolveSingle, targetCountError, type ListMember } from './resolve'

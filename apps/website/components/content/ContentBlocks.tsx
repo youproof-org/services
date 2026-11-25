@@ -4,7 +4,7 @@ import type {
   TheoremNode,
   ProofNode,
   RemarkNode,
-  RefMap,
+  RefList,
   TermMap,
   AnchorParent,
 } from '@/lib/content/types'
@@ -29,7 +29,7 @@ interface ContentBlocksProps {
   blocks: ContentBlock[]
   embedIndices?: Record<string, string>
   figureIndices?: Map<object, string>
-  refs?: RefMap
+  refs?: RefList
   context: 'web' | 'latex'
   dropCapFirst?: boolean
   parentEntity?: AnchorParent

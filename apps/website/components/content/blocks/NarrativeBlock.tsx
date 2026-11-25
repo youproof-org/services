@@ -1,10 +1,10 @@
-import type { RefMap, TermMap, AnchorParent } from '@/lib/content/types'
+import type { RefList, TermMap, AnchorParent } from '@/lib/content/types'
 import InlineText from '../InlineText'
 import styles from './narrative-block.module.scss'
 
 interface NarrativeBlockProps {
   content: string
-  refs?: RefMap
+  refs?: RefList
   dropCap?: boolean
   terms?: TermMap
   termParent?: AnchorParent

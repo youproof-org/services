@@ -7,11 +7,20 @@
 import { RAW_GRAPH_VERSION } from '../../lib/content/graph.ts'
 import { toRefTarget } from '../../lib/content/loader.ts'
 
+const targetsOf = (fqns) => fqns.map((fqn) => toRefTarget(fqn, `test ref '${fqn}'`))
+
 /**
- * Build a reference entry the way the loader does, so a fixture cannot drift from
- * the parser: `ref('az állítás', 'definitions.def-egy.claims.def-claim')`.
+ * Build a reference item the way the loader does, so a fixture cannot drift from
+ * the parser. `ref` is a literal `text` item:
+ * `ref('az [állítás]', 'definitions.def-egy.claims.def-claim')`.
  */
-export const ref = (display, fqn) => ({ display, target: toRefTarget(fqn, `test ref '${fqn}'`) })
+export const ref = (text, fqn) => ({ text, targets: targetsOf([fqn]), segments: [] })
+
+/** A `display` item, naming a template of the collection: `tpl('the-chapters', fqnA, fqnB)`. */
+export const tpl = (display, ...fqns) => ({ display, targets: targetsOf(fqns), segments: [] })
+
+/** A collection template with one form for a single target. */
+export const single = (targets, template) => ({ kind: 'single', name: '', targets, template })
 
 export const NS = '/proba'
 export const hu = { locale: 'hu', namespace: NS }
@@ -28,7 +37,7 @@ export const embed = (fqn) => {
  * proof, and a remark on the definition. `published` controls whether the chapter
  * is published, which is what gates page existence on a deployed build.
  */
-export function raw({ published = true, references = {}, extraDefinitions = [], terms } = {}) {
+export function raw({ published = true, references = [], extraDefinitions = [], terms, displayTemplates = {} } = {}) {
   return {
     version: RAW_GRAPH_VERSION,
     episodeOrder: ['konyv'],
@@ -54,7 +63,7 @@ export function raw({ published = true, references = {}, extraDefinitions = [], 
         slug: 'tetel-egy',
         title: 'Első tétel',
         body: [narrative('Tétel.')],
-        references: {},
+        references: [],
         proofSlugs: ['biz-egy'],
         remarkSlugs: [],
       },
@@ -64,12 +73,12 @@ export function raw({ published = true, references = {}, extraDefinitions = [], 
         ...hu,
         name: 'biz-egy',
         body: [narrative('Bizonyítás.')],
-        references: {},
+        references: [],
         remarkSlugs: [],
       },
     ],
     remarks: [
-      { ...hu, name: 'rem-egy', body: [narrative('Megjegyzés.')], references: {} },
+      { ...hu, name: 'rem-egy', body: [narrative('Megjegyzés.')], references: [] },
     ],
     books: [
       {
@@ -94,14 +103,14 @@ export function raw({ published = true, references = {}, extraDefinitions = [], 
                 abstract: [],
                 prologue: [],
                 epilogue: [],
-                references: {},
+                references: [],
                 sections: [
                   {
                     name: 'szakasz',
                     slug: 'szakasz',
                     locale: 'hu',
                     title: 'Szakasz',
-                    references: {},
+                    references: [],
                     body: [
                       embed('definitions.def-egy'),
                       embed('theorems.tetel-egy'),
@@ -117,7 +126,7 @@ export function raw({ published = true, references = {}, extraDefinitions = [], 
       },
     ],
     standalones: [],
-    displayTemplates: { hu: {} },
+    displayTemplates: { hu: displayTemplates },
   }
 }
 

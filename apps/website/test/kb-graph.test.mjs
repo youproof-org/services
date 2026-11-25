@@ -11,7 +11,7 @@ import { urlForDefinition, urlForTheorem, urlForProof, urlForRemark, kbRefs, cla
 
 const { buildGraphFromRaw, kbPageExists, kbNodeTitle, kbNodeLabel, kbOwnership } = graphModule.default ?? graphModule
 
-import { NS, hu, ref, narrative, claim, embed, raw } from './support/raw-graph.mjs'
+import { NS, hu, ref, tpl, narrative, claim, embed, raw } from './support/raw-graph.mjs'
 
 const def = (g) => g.definitions.get('definitions.def-egy')
 const thm = (g) => g.theorems.get('theorems.tetel-egy')
@@ -53,7 +53,7 @@ test('a node embedded nowhere never has a page', () => {
   const g = buildGraphFromRaw(
     raw({
       extraDefinitions: [
-        { ...hu, name: 'arva', slug: 'arva', title: 'Árva', body: [], references: {}, remarkSlugs: [] },
+        { ...hu, name: 'arva', slug: 'arva', title: 'Árva', body: [], references: [], remarkSlugs: [] },
       ],
     }),
   )
@@ -82,52 +82,43 @@ test('a label is where a node sits in the book, and an untitled node sorts under
   assert.equal(kbNodeTitle(g, def(g)), '1.1. Definíció')
 })
 
+/** The link segments of a reference, which carry its targets' hrefs. */
+const linksOf = (entry) => entry.segments.filter((segment) => segment.kind === 'link')
+
 test('a reference gets a chapter href AND a knowledge-base href', () => {
-  const g = buildGraphFromRaw(
-    raw({
-      references: {
-        'r-thm': ref('a tétel', 'theorems.tetel-egy'),
-      },
-    }),
-  )
-  const entry = def(g).references['r-thm']
-  assert.equal(entry.href, '/hu/konyvek/konyv/fejezetek/fejezet#tetelek.tetel-egy')
-  assert.equal(entry.kbHref, '/hu/tudasbazis/tetelek/tetel-egy')
+  const g = buildGraphFromRaw(raw({ references: [ref('a tétel', 'theorems.tetel-egy')] }))
+  const [link] = linksOf(def(g).references[0])
+  assert.equal(link.href, '/hu/konyvek/konyv/fejezetek/fejezet#tetelek.tetel-egy')
+  assert.equal(link.kbHref, '/hu/tudasbazis/tetelek/tetel-egy')
 })
 
 test('a claim reference resolves to the slug anchor in both contexts', () => {
-  const g = buildGraphFromRaw(
-    raw({
-      references: {
-        'r-claim': ref('az állítás', 'definitions.def-egy.claims.def-claim'),
-      },
-    }),
-  )
-  const entry = def(g).references['r-claim']
+  const g = buildGraphFromRaw(raw({ references: [ref('az állítás', 'definitions.def-egy.claims.def-claim')] }))
+  const [link] = linksOf(def(g).references[0])
   // Chapter context carries the node in the path; the node's own page does not.
   assert.equal(
-    entry.href,
+    link.href,
     '/hu/konyvek/konyv/fejezetek/fejezet#definiciok.def-egy.allitasok.def-allitas',
   )
-  assert.equal(entry.kbHref, '/hu/tudasbazis/definiciok/def-egy#allitasok.def-allitas')
+  assert.equal(link.kbHref, '/hu/tudasbazis/definiciok/def-egy#allitasok.def-allitas')
 })
 
 test('kbRefs swaps in the knowledge-base href and leaves other entries alone', () => {
   const g = buildGraphFromRaw(
     raw({
-      references: {
-        'r-thm': ref('a tétel', 'theorems.tetel-egy'),
-        'r-ext': { display: 'kifelé', target: { type: 'external', url: 'https://example.org' } },
-      },
+      references: [
+        ref('a tétel', 'theorems.tetel-egy'),
+        ref('kifelé', 'https://example.org'),
+      ],
     }),
   )
   const remapped = kbRefs(def(g).references)
-  assert.equal(remapped['r-thm'].href, '/hu/tudasbazis/tetelek/tetel-egy')
-  assert.equal(remapped['r-ext'].href, def(g).references['r-ext'].href, 'no kbHref means unchanged')
+  assert.equal(linksOf(remapped[0])[0].href, '/hu/tudasbazis/tetelek/tetel-egy')
+  assert.equal(linksOf(remapped[1])[0].href, linksOf(def(g).references[1])[0].href, 'no kbHref means unchanged')
   assert.equal(
-    def(g).references['r-thm'].href,
+    linksOf(def(g).references[0])[0].href,
     '/hu/konyvek/konyv/fejezetek/fejezet#tetelek.tetel-egy',
-    'the original map must not be mutated',
+    'the original list must not be mutated',
   )
 })
 
@@ -145,23 +136,19 @@ test('kbRefs swaps in the knowledge-base href and leaves other entries alone', (
 function backlinkFixture() {
   const data = raw()
   const chapter = data.books[0].parts[0].chapters[0]
-  chapter.references = {
-    'r-def': ref('a definíció', 'definitions.def-egy'),
-    'r-def-ujra': ref('ugyanaz újra', 'definitions.def-egy'),
-  }
-  chapter.sections[0].references = {
-    'r-claim': ref('az állítás', 'definitions.def-egy.claims.def-claim'),
-  }
-  data.theorems[0].references = {
-    'r-term': ref('a fogalom', 'definitions.def-egy.terms.first-term'),
-  }
+  chapter.references = [
+    ref('a definíció', 'definitions.def-egy'),
+    ref('ugyanaz újra', 'definitions.def-egy'),
+  ]
+  chapter.sections[0].references = [ref('az állítás', 'definitions.def-egy.claims.def-claim')]
+  data.theorems[0].references = [ref('a fogalom', 'definitions.def-egy.terms.first-term')]
   data.theorems.push({
     ...hu,
     name: 'tetel-ketto',
     slug: 'tetel-ketto',
     title: 'Második tétel',
     body: [narrative('Tétel.')],
-    references: { 'r-def': ref('a definíció', 'definitions.def-egy') },
+    references: [ref('a definíció', 'definitions.def-egy')],
     proofSlugs: [],
     remarkSlugs: [],
   })
@@ -174,14 +161,14 @@ function backlinkFixture() {
     abstract: [],
     prologue: [],
     epilogue: [],
-    references: {},
+    references: [],
     sections: [
       {
         name: 'masodik-szakasz',
         slug: 'masodik-szakasz',
         locale: 'hu',
         title: 'Második szakasz',
-        references: { 'r-def': ref('a definíció', 'definitions.def-egy') },
+        references: [ref('a definíció', 'definitions.def-egy')],
         body: [embed('theorems.tetel-ketto')],
       },
     ],
@@ -293,6 +280,40 @@ test('a reference to a claim or a term is a reference to the entity that owns it
   assert.equal(b.byTarget.size, 3)
 })
 
+test('every target of every item is one citation: a multi-reference counts once per target', () => {
+  const data = raw({
+    displayTemplates: {
+      'the-claims': {
+        kind: 'list',
+        name: 'the-claims',
+        targets: ['claim', 'definition'],
+        list: {
+          count: { min: 2 },
+          order: 'sorted',
+          item: { first: '[{target.index}]', middle: '[{target.index}]', last: '[{target.index}]', separator: ', ', lastSeparator: ' és ' },
+          before: '',
+          after: '',
+        },
+      },
+    },
+  })
+  data.definitions[0].body.push(claim('def-claim-2', 'def-allitas-2'))
+  data.theorems[0].references = [
+    tpl('the-claims', 'definitions.def-egy.claims.def-claim', 'definitions.def-egy.claims.def-claim-2'),
+    tpl('the-claims', 'definitions.def-egy', 'definitions.def-egy.claims.def-claim'),
+    ref('a definíció', 'definitions.def-egy'),
+  ]
+  const b = buildGraphFromRaw(data).backlinks.get('definitions.def-egy')
+  const theoremRow = (list) => nodesOf(list).find((row) => row.fqn === 'theorems.tetel-egy')?.count
+  // Two claims in one item add two to the entity's list and one to each claim, as two
+  // chained single references would; the second item adds one more to each of its
+  // two targets, and the third one to the definition.
+  assert.equal(theoremRow(b.all), 5)
+  assert.equal(theoremRow(b.byTarget.get('definitions.def-egy.claims.def-claim')), 2)
+  assert.equal(theoremRow(b.byTarget.get('definitions.def-egy.claims.def-claim-2')), 1)
+  assert.equal(theoremRow(b.byTarget.get('definitions.def-egy')), 2)
+})
+
 test('a backlink row links to the source: an entity page, a chapter, or a section anchor', () => {
   const g = buildGraphFromRaw(backlinkFixture())
   const byFqn = new Map(nodesOf(g.backlinks.get('definitions.def-egy').all).map((r) => [r.fqn, r]))
@@ -332,7 +353,7 @@ test('a backlink row links to the source: an entity page, a chapter, or a sectio
 /** The same fixture, with the proof and two remarks citing the definition as well. */
 function ownedSourceFixture() {
   const data = backlinkFixture()
-  const citesTheDefinition = { 'r-def': ref('a definíció', 'definitions.def-egy') }
+  const citesTheDefinition = [ref('a definíció', 'definitions.def-egy')]
   data.proofs[0].references = citesTheDefinition
   data.proofs[0].remarkSlugs = ['rem-ketto']
   data.remarks[0].references = citesTheDefinition
@@ -430,7 +451,7 @@ function rawWithThreeProofs() {
   const data = raw()
   data.theorems[0].proofSlugs = ['biz-egy', 'biz-ketto', 'biz-harom']
   for (const name of ['biz-ketto', 'biz-harom']) {
-    data.proofs.push({ ...hu, name, body: [narrative('Bizonyítás.')], references: {}, remarkSlugs: [] })
+    data.proofs.push({ ...hu, name, body: [narrative('Bizonyítás.')], references: [], remarkSlugs: [] })
     data.books[0].parts[0].chapters[0].sections[0].body.push(embed(`theorems.tetel-egy.proofs.${name}`))
   }
   return data
@@ -560,7 +581,7 @@ test('an anchor slug is used verbatim; a missing one falls back to the name', ()
 test('two definitions sharing a slug fail the build', () => {
   const data = raw({
     extraDefinitions: [
-      { ...hu, name: 'masik', slug: 'def-egy', title: 'Másik', body: [], references: {}, remarkSlugs: [] },
+      { ...hu, name: 'masik', slug: 'def-egy', title: 'Másik', body: [], references: [], remarkSlugs: [] },
     ],
   })
   assert.throws(() => buildGraphFromRaw(data), /Identifier collision/)
@@ -578,9 +599,9 @@ test('two claims on one node sharing a slug fail the build', () => {
 
 test('a reference to a node embedded nowhere fails the build', () => {
   const data = raw({
-    references: { 'r-arva': ref('árva', 'definitions.arva') },
+    references: [ref('árva', 'definitions.arva')],
     extraDefinitions: [
-      { ...hu, name: 'arva', slug: 'arva', title: 'Árva', body: [], references: {}, remarkSlugs: [] },
+      { ...hu, name: 'arva', slug: 'arva', title: 'Árva', body: [], references: [], remarkSlugs: [] },
     ],
   })
   assert.throws(() => buildGraphFromRaw(data), /embedded in no chapter/)
@@ -651,7 +672,7 @@ function rawWithTwoRemarksOnTheProof() {
   const data = raw()
   data.proofs[0].remarkSlugs = ['rem-biz-egy', 'rem-biz-ketto']
   for (const name of ['rem-biz-egy', 'rem-biz-ketto']) {
-    data.remarks.push({ ...hu, name, body: [narrative('Megjegyzés.')], references: {} })
+    data.remarks.push({ ...hu, name, body: [narrative('Megjegyzés.')], references: [] })
     data.books[0].parts[0].chapters[0].sections[0].body.push(
       embed(`theorems.tetel-egy.proofs.biz-egy.remarks.${name}`),
     )
@@ -671,7 +692,7 @@ function rawWithUnpublishedFirstProof() {
     ...hu,
     name: 'biz-ketto',
     body: [narrative('Másik bizonyítás.')],
-    references: {},
+    references: [],
     remarkSlugs: [],
   })
   data.books[0].parts[0].chapters.push({
@@ -683,14 +704,14 @@ function rawWithUnpublishedFirstProof() {
     abstract: [],
     prologue: [],
     epilogue: [],
-    references: {},
+    references: [],
     sections: [
       {
         name: 'masodik-szakasz',
         slug: 'masodik-szakasz',
         locale: 'hu',
         title: 'Második szakasz',
-        references: {},
+        references: [],
         body: [embed('theorems.tetel-egy.proofs.biz-ketto')],
       },
     ],
@@ -754,7 +775,7 @@ test('an owner-less remark has no position, so its anchor keeps its name', () =>
     ...hu,
     name: 'rem-arva',
     body: [narrative('Megjegyzés.')],
-    references: {},
+    references: [],
   })
   const g = buildGraphFromRaw(data)
   const orphan = [...g.remarks.values()].find((r) => r.name === 'rem-arva')

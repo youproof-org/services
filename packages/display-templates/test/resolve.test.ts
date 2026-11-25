@@ -6,6 +6,7 @@ import {
   resolveDisplay,
   resolveList,
   resolveSingle,
+  targetCountError,
   type ContextObject,
   type DisplaySegment,
   type DisplayTemplateList,
@@ -198,9 +199,12 @@ test('three groups use the group separator, then the last group separator', () =
   assert.equal(bracketed(segments), 'az [1. Definition], a [2. Theorem], valamint a [3. Remark]')
 })
 
-test('a member without the key its template groups by is a caller error', () => {
+test('a member without the key its template groups by does not fit the template', () => {
   const ungrouped = { ...theorem('1.1', 'lemma'), groups: {} }
-  assert.throws(() => resolveList(THE_ENTITIES, [ungrouped, theorem('1.2', 'lemma')]), /has no 'label' to group by/)
+  assert.throws(
+    () => resolveList(THE_ENTITIES, [ungrouped, theorem('1.2', 'lemma')]),
+    (err) => err instanceof DisplayListError && /has no 'label' to group by/.test(err.message),
+  )
 })
 
 // ---------------------------------------------------------------------------
@@ -237,4 +241,15 @@ test('resolveDisplay dispatches on the template kind, and a single template take
   assert.throws(() => resolveDisplay({ ...single, targets: [...single.targets] }, [chapter(7), chapter(8)]), /exactly 1 target, not 2/)
   const list = { kind: 'list' as const, name: 'l', targets: ['chapter' as const], list: THE_CHAPTERS_INE }
   assert.equal(bracketed(resolveDisplay(list, [chapter(8), chapter(7)])), 'a [7.] és a [8. fejezet]ekben')
+})
+
+test('targetCountError says why a template cannot render a count, for the loader to report', () => {
+  const single = { kind: 'single' as const, name: 's', targets: ['chapter' as const], template: '[{target.index}]' }
+  const list = (count: DisplayTemplateList['count']) => ({ kind: 'list' as const, name: 'l', targets: ['chapter' as const], list: { ...THE_CHAPTERS_INE, count } })
+  assert.equal(targetCountError(single, 1), undefined)
+  assert.equal(targetCountError(single, 2), 'takes exactly 1 target, not 2')
+  assert.equal(targetCountError(list({ min: 2 }), 9), undefined)
+  assert.equal(targetCountError(list({ min: 2 }), 1), 'takes at least 2 targets, not 1')
+  assert.equal(targetCountError(list({ min: 2, max: 3 }), 4), 'takes 2 to 3 targets, not 4')
+  assert.equal(targetCountError(list({ min: 3, max: 3 }), 2), 'takes exactly 3 targets, not 2')
 })

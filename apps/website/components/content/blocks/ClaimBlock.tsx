@@ -1,4 +1,4 @@
-import type { RefMap, TermMap, AnchorParent } from '@/lib/content/types'
+import type { RefList, TermMap, AnchorParent } from '@/lib/content/types'
 import { claimAnchorId } from '@/lib/content/urls'
 import { mathSource } from '@/lib/utils/math'
 import InlineText from '../InlineText'
@@ -10,7 +10,7 @@ interface ClaimBlockProps {
   slug?: string
   content: string
   formula?: string
-  refs?: RefMap
+  refs?: RefList
   parent?: AnchorParent
   terms?: TermMap
   termParent?: AnchorParent

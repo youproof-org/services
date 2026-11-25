@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import type { ContentBlock, RefMap, TermMap, AnchorParent } from '@/lib/content/types'
+import type { ContentBlock, RefList, TermMap, AnchorParent } from '@/lib/content/types'
 import { entityLabels } from '@/lib/i18n/entity-labels'
 import { getLocaleLabel } from '@/lib/i18n/config'
 import ContentBlocks from './ContentBlocks'
@@ -18,7 +18,7 @@ interface EmbeddedEntityProps {
   figureIndices?: Map<object, string>
   showTitle?: boolean
   title?: string
-  refs?: RefMap
+  refs?: RefList
   terms?: TermMap
   termParent?: AnchorParent
   /** The entity's locale, for the knowledge-base link's label. */

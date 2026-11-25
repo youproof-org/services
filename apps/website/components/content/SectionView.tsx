@@ -1,4 +1,4 @@
-import type { ContentBlock, RefMap } from '@/lib/content/types'
+import type { ContentBlock, RefList } from '@/lib/content/types'
 import { sectionAnchorId } from '@/lib/content/urls'
 import InlineText from './InlineText'
 import ContentBlocks from './ContentBlocks'
@@ -15,7 +15,7 @@ interface SectionViewProps {
   label: string              // "n.k" e.g. "11.3"
   embedIndices: Record<string, string>
   figureIndices?: Map<object, string>
-  refs?: RefMap
+  refs?: RefList
 }
 
 export default function SectionView({ slug, locale, title, body, label, embedIndices, figureIndices, refs }: SectionViewProps) {

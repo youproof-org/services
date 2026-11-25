@@ -112,16 +112,11 @@ export function checkTemplate(
   { links, expressions = true, cases }: TemplateCheckOptions,
 ): string[] {
   const errors = new Set<string>()
-  let opens = 0
-  let closes = 0
+  const brackets = { opens: 0, closes: 0 }
   for (const part of tokenize(template)) {
     if (part.kind === 'math') continue
     if (part.kind === 'text') {
-      if (part.text.includes('{')) errors.add(`'{' is never closed`)
-      for (const ch of part.text) {
-        if (ch === '[') opens++
-        else if (ch === ']' && ++closes > opens) errors.add(`']' comes before its '['`)
-      }
+      countBrackets(part.text, brackets, errors)
       continue
     }
     const where = `{${part.source}}`
@@ -143,8 +138,45 @@ export function checkTemplate(
       for (const error of found) errors.add(`${where}: ${error}`)
     }
   }
+  checkLinks(brackets, links, errors)
+  return [...errors]
+}
+
+interface BracketCount {
+  opens: number
+  closes: number
+}
+
+function countBrackets(text: string, count: BracketCount, errors: Set<string>): void {
+  if (text.includes('{')) errors.add(`'{' is never closed`)
+  for (const ch of text) {
+    if (ch === '[') count.opens++
+    else if (ch === ']' && ++count.closes > count.opens) errors.add(`']' comes before its '['`)
+  }
+}
+
+function checkLinks({ opens, closes }: BracketCount, links: TemplateCheckOptions['links'], errors: Set<string>): void {
   if (opens !== closes) errors.add(`'[' and ']' don't pair up`)
   else if (links === 'none' && opens > 0) errors.add('it may not hold a link [...]')
   else if (opens > 1) errors.add('it may hold one link [...], not several')
+}
+
+/**
+ * The problems with literal link text, the `text` of a reference: link brackets
+ * that don't pair up or mark more than one link, and `{...}` expressions, which
+ * belong in a template of the collection. Empty when the text is valid.
+ */
+export function checkLinkText(text: string): string[] {
+  const errors = new Set<string>()
+  const brackets = { opens: 0, closes: 0 }
+  for (const part of tokenize(text)) {
+    if (part.kind === 'math') continue
+    if (part.kind === 'expr') {
+      errors.add(`{${part.source}} is an expression, and literal text has none: name a template in the collection instead`)
+      continue
+    }
+    countBrackets(part.text, brackets, errors)
+  }
+  checkLinks(brackets, 'at-most-one', errors)
   return [...errors]
 }

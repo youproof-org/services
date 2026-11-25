@@ -3,9 +3,8 @@ import type { DisplaySegment } from './types'
 /**
  * A resolved single-target display as segments. The span from the first `[` to
  * the last `]` is the link and the brackets come out. The text on either side of
- * it is kept even when empty, so a display that starts with its link starts with
- * an empty text segment and isn't capitalized at a sentence start. A display
- * without such a span is a link as a whole. An empty display has no segments.
+ * it is kept even when empty. A display without such a span is a link as a whole.
+ * An empty display has no segments.
  */
 export function linkSegments<T>(display: string, target: T): DisplaySegment<T>[] {
   if (display === '') return []
@@ -30,11 +29,21 @@ export function joinSegments<T>(parts: readonly DisplaySegment<T>[]): DisplaySeg
   return out
 }
 
-/** The display at the start of a sentence: its first character upper-cased. */
+/**
+ * The display at the start of a sentence: its first visible character upper-cased,
+ * in whichever segment holds it. Empty segments and leading whitespace are skipped,
+ * so a display that starts with its link capitalizes the link.
+ */
 export function capitalizeSegments<S extends { text: string }>(segments: readonly S[]): S[] {
-  if (segments.length === 0) return []
-  const [first, ...rest] = segments
-  return [{ ...first, text: first.text.charAt(0).toUpperCase() + first.text.slice(1) }, ...rest]
+  const out = [...segments]
+  for (let i = 0; i < out.length; i++) {
+    const { text } = out[i]
+    const at = text.search(/\S/)
+    if (at === -1) continue
+    out[i] = { ...out[i], text: text.slice(0, at) + text.charAt(at).toUpperCase() + text.slice(at + 1) }
+    break
+  }
+  return out
 }
 
 /** The words of a display, without link markup. */

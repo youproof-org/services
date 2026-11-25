@@ -4,11 +4,18 @@ import path from 'path'
 import yaml from 'js-yaml'
 import { DEFAULT_LOCALE, LOCALES } from '@/lib/i18n/config'
 import { entityLabelCases, entityLabelVariants, KB_ENTITY_TYPES, KEBAB_CASE } from '@/lib/i18n/entity-labels'
-import { checkTemplate, TEMPLATE_TARGET_TYPES, type TemplateCheckOptions } from '@youproof.org/display-templates'
+import {
+  checkLinkText,
+  checkTemplate,
+  targetCountError,
+  TEMPLATE_TARGET_TYPES,
+  type TemplateCheckOptions,
+} from '@youproof.org/display-templates'
 import type {
   RefTarget,
   ContentBlock,
-  RefMap,
+  RefEntry,
+  RefList,
   TermMap,
   ThumbnailImage,
   MetaInfo,
@@ -22,6 +29,7 @@ import type {
   SectionNode,
   DisplayTemplate,
   DisplayTemplateCollection,
+  DisplayTemplateCollections,
   DisplayTemplateGroupBy,
   DisplayTemplateItemForms,
   DisplayTemplateList,
@@ -29,6 +37,7 @@ import type {
   DisplayTemplateTargetType,
 } from './types'
 import { isExternalTarget, parseFqn } from './fqn'
+import { referenceTokens } from './inline-tokens'
 
 // ---------------------------------------------------------------------------
 // Content directory
@@ -118,14 +127,6 @@ function toBlocks(raw: unknown): ContentBlock[] {
   return (raw as Record<string, unknown>[]).map(normalizeBlock)
 }
 
-/**
- * Parse a `references` map: every `target` is a string, either a fully qualified
- * name or an external URL (see fqn.ts for the scheme test that tells them apart).
- *
- * The ref key is in the message because that is what the author sees at the
- * citation site (`[ref-key]`); the file comes from `inFile`, which wraps the whole
- * load, so neither has to be threaded through every helper.
- */
 export class ContentFormatError extends Error {
   constructor(message: string) {
     super(message)
@@ -143,20 +144,6 @@ export class ContentFormatError extends Error {
  */
 function formatError(message: string): never {
   throw new ContentFormatError(message)
-}
-
-function toRefMap(raw: unknown): RefMap {
-  if (!raw || typeof raw !== 'object') return {}
-  const out: RefMap = {}
-  for (const [refKey, value] of Object.entries(raw as Record<string, unknown>)) {
-    const entry = value as { display?: string; target?: unknown }
-    out[refKey] = {
-      display: typeof entry.display === 'string' ? entry.display : '',
-      segments: [],
-      target: toRefTarget(entry.target, `reference '${refKey}'`),
-    }
-  }
-  return out
 }
 
 /**
@@ -186,6 +173,214 @@ export function toRefTarget(raw: unknown, where: string): RefTarget {
     parentFqn: parsed.parentFqn,
     parentKind: parsed.parentKind,
   }
+}
+
+// ---------------------------------------------------------------------------
+// References list
+// ---------------------------------------------------------------------------
+
+/** What the checks of a file's `references` need to know about the file. */
+interface ReferenceScope {
+  locale: string
+  templates: DisplayTemplateCollections
+  /** The text fields that can hold `[i]` tokens, in the order the site renders them. */
+  texts: string[]
+}
+
+const REFERENCE_KEYS = ['display', 'text', 'target', 'targets']
+
+/**
+ * The text fields of `blocks` that InlineText renders with the references, in the
+ * order the site renders them. A block's `context` doesn't matter: a `latex` block
+ * is not on the web page, but its tokens are part of the file all the same.
+ */
+export function referenceTexts(blocks: readonly ContentBlock[] | undefined): string[] {
+  const texts: string[] = []
+  const add = (...fields: (string | undefined)[]) => {
+    for (const field of fields) if (typeof field === 'string') texts.push(field)
+  }
+  for (const block of blocks ?? []) {
+    switch (block.type) {
+      case 'narrative':
+      case 'claim':
+        add(block.content)
+        break
+      case 'formula':
+        add(block.leadIn, block.leadOut)
+        break
+      case 'figure':
+        add(block.leadIn, block.caption)
+        break
+      case 'unordered-list':
+      case 'ordered-list':
+        add(block.leadIn, ...(Array.isArray(block.items) ? block.items : []))
+        break
+      case 'typewriter':
+        add(block.leadIn)
+        break
+      case 'quote':
+        add(block.leadIn, block.quote)
+        break
+      case 'details':
+        add(block.title)
+        texts.push(...referenceTexts(block.blocks))
+        break
+      case 'subsection':
+        texts.push(...referenceTexts(block.blocks))
+        break
+    }
+  }
+  return texts
+}
+
+function targetKey(target: RefTarget): string {
+  return target.type === 'external' ? target.url : target.fqn
+}
+
+function readItemTargets(raw: Record<string, unknown>, where: string, problems: string[]): RefTarget[] {
+  const hasTarget = raw.target !== undefined
+  const hasTargets = raw.targets !== undefined
+  if (hasTarget === hasTargets) {
+    problems.push(`${where}: an item has exactly one of 'target' and 'targets'`)
+    return []
+  }
+  const authored = hasTarget ? [raw.target] : raw.targets
+  if (!Array.isArray(authored) || authored.length === 0) {
+    problems.push(`${where}: 'targets' must be a non-empty list`)
+    return []
+  }
+  const targets: RefTarget[] = []
+  const seen = new Set<string>()
+  for (const value of authored) {
+    let target: RefTarget
+    try {
+      target = toRefTarget(value, where)
+    } catch (err) {
+      if (!(err instanceof ContentFormatError)) throw err
+      problems.push(err.message)
+      continue
+    }
+    const key = targetKey(target)
+    if (seen.has(key)) problems.push(`${where}: lists '${key}' twice`)
+    seen.add(key)
+    targets.push(target)
+  }
+  return targets
+}
+
+function checkDisplay(display: string, targets: RefTarget[], where: string, scope: ReferenceScope, problems: string[]): void {
+  const template = scope.templates[scope.locale]?.[display]
+  if (!template) {
+    problems.push(`${where}: '${display}' is not a display template in '${scope.locale}'`)
+    return
+  }
+  for (const target of targets) {
+    if (!(template.targets as readonly string[]).includes(target.type)) {
+      problems.push(
+        `${where}: template '${display}' takes ${template.targets.join(', ')} targets, ` +
+          `not ${target.type === 'external' ? 'a URL' : `a ${target.type}`} ('${targetKey(target)}')`,
+      )
+    }
+  }
+  const countError = targetCountError(template, targets.length)
+  if (countError && targets.length > 0) problems.push(`${where}: template '${display}' ${countError}`)
+}
+
+function readReferenceItem(raw: unknown, index: number, scope: ReferenceScope, problems: string[]): RefEntry | undefined {
+  const where = `reference [${index}]`
+  if (!isMapping(raw)) {
+    problems.push(`${where}: an item is a mapping with a 'target' and a 'display' or 'text'`)
+    return undefined
+  }
+  for (const key of Object.keys(raw)) {
+    if (!REFERENCE_KEYS.includes(key)) problems.push(`${where}: unknown key '${key}'. Known: ${REFERENCE_KEYS.join(', ')}`)
+  }
+  const targets = readItemTargets(raw, where, problems)
+  const hasDisplay = raw.display !== undefined
+  const hasText = raw.text !== undefined
+  if (hasDisplay === hasText) {
+    problems.push(`${where}: an item has exactly one of 'display' and 'text'`)
+    return undefined
+  }
+  if (hasDisplay) {
+    if (typeof raw.display !== 'string' || raw.display === '') {
+      problems.push(`${where}: 'display' must name a display template`)
+      return undefined
+    }
+    checkDisplay(raw.display, targets, where, scope, problems)
+    return { display: raw.display, targets, segments: [] }
+  }
+  if (typeof raw.text !== 'string' || raw.text === '') {
+    problems.push(`${where}: 'text' must be non-empty link text`)
+    return undefined
+  }
+  for (const error of checkLinkText(raw.text)) problems.push(`${where}: text: ${error}`)
+  if (targets.length > 1) {
+    problems.push(`${where}: a 'text' item has one target. Several targets need a list template in 'display'`)
+  }
+  return { text: raw.text, targets, segments: [] }
+}
+
+/**
+ * The problems with how the text uses the list: a token with no item, an item
+ * used never or more than once, a list that isn't in the order the text uses it,
+ * and a `[key]` token, which names a reference the way the old dictionary did.
+ */
+function checkTokens(count: number, texts: readonly string[], problems: string[]): void {
+  const uses = new Array<number>(count).fill(0)
+  const order: number[] = []
+  const legacy = new Set<string>()
+  const unknown = new Set<number>()
+  for (const text of texts) {
+    for (const token of referenceTokens(text)) {
+      if (token.kind === 'legacy-ref') {
+        legacy.add(token.key)
+      } else if (token.index >= count) {
+        unknown.add(token.index)
+      } else if (uses[token.index]++ === 0) {
+        order.push(token.index)
+      }
+    }
+  }
+  for (const key of legacy) {
+    problems.push(`[${key}] names a reference, which the text no longer does: use the index of a 'references' item, as in [0]`)
+  }
+  for (const index of unknown) {
+    problems.push(`[${index}] has no item: the 'references' list has ${count === 1 ? '1 item' : `${count} items`}`)
+  }
+  uses.forEach((n, index) => {
+    if (n === 0) problems.push(`reference [${index}] is not used in the text`)
+    else if (n > 1) problems.push(`reference [${index}] is used ${n} times: each item is used once`)
+  })
+  const inversion = order.findIndex((index, i) => i > 0 && index < order[i - 1])
+  if (inversion > 0) {
+    problems.push(
+      `the 'references' list is not in the order the text uses it: [${order[inversion - 1]}] comes before ` +
+        `[${order[inversion]}]. Renumber the items in the order they appear`,
+    )
+  }
+}
+
+/**
+ * Parse a `references` list and check it against the file's text and the display
+ * template collection of the file's locale, reporting every problem in it at once.
+ * The dictionary keyed by name that the list replaced is rejected.
+ */
+function readReferences(raw: unknown, scope: ReferenceScope): RefList {
+  if (raw === undefined || raw === null) raw = []
+  if (isMapping(raw)) {
+    formatError(
+      "'references' is a dictionary of named references, which is no longer supported. It is now a list: " +
+        "each item has a 'target' (or 'targets') and a 'display' template name or literal 'text', " +
+        'and the text cites the item by its zero-based index, [0], [1] and so on.',
+    )
+  }
+  if (!Array.isArray(raw)) formatError("'references' must be a list of items")
+  const problems: string[] = []
+  const entries = raw.map((item, index) => readReferenceItem(item, index, scope, problems))
+  checkTokens(raw.length, scope.texts, problems)
+  if (problems.length > 0) formatError(problems.join('\n  '))
+  return entries as RefEntry[]
 }
 
 /**
@@ -323,7 +518,13 @@ export interface RawRemark {
   node: Omit<RemarkNode, 'attachedTo'>
 }
 
-export function loadDefinition(filePath: string, namespace: string): RawDefinition {
+/** A knowledge-base entity's body, and the references its body cites. */
+function bodyWithReferences(raw: Record<string, unknown>, templates: DisplayTemplateCollections): { body: ContentBlock[]; references: RefList } {
+  const body = toBlocks(raw.body)
+  return { body, references: readReferences(raw.references, { locale: readLocale(raw), templates, texts: referenceTexts(body) }) }
+}
+
+export function loadDefinition(filePath: string, namespace: string, templates: DisplayTemplateCollections): RawDefinition {
   return inFile(filePath, () => {
     const raw = readYaml(filePath)
     return {
@@ -338,15 +539,14 @@ export function loadDefinition(filePath: string, namespace: string): RawDefiniti
         title: raw.title as string | undefined,
         label: readLabel(raw, 'definition', readLocale(raw)),
         terms: toTermMap(raw.terms),
-        references: toRefMap(raw.references),
-        body: toBlocks(raw.body),
+        ...bodyWithReferences(raw, templates),
       },
       rawRemarks: toStringArray(raw.remarks),
     }
   })
 }
 
-export function loadTheorem(filePath: string, namespace: string): RawTheorem {
+export function loadTheorem(filePath: string, namespace: string, templates: DisplayTemplateCollections): RawTheorem {
   return inFile(filePath, () => {
     const raw = readYaml(filePath)
     return {
@@ -361,8 +561,7 @@ export function loadTheorem(filePath: string, namespace: string): RawTheorem {
         title: raw.title as string | undefined,
         label: readLabel(raw, 'theorem', readLocale(raw)),
         terms: toTermMap(raw.terms),
-        references: toRefMap(raw.references),
-        body: toBlocks(raw.body),
+        ...bodyWithReferences(raw, templates),
       },
       rawProofs: toStringArray(raw.proofs),
       rawRemarks: toStringArray(raw.remarks),
@@ -370,7 +569,7 @@ export function loadTheorem(filePath: string, namespace: string): RawTheorem {
   })
 }
 
-export function loadProof(filePath: string, namespace: string): RawProof {
+export function loadProof(filePath: string, namespace: string, templates: DisplayTemplateCollections): RawProof {
   return inFile(filePath, () => {
     const raw = readYaml(filePath)
     return {
@@ -382,15 +581,14 @@ export function loadProof(filePath: string, namespace: string): RawProof {
         title: raw.title as string | undefined,
         label: readLabel(raw, 'proof', readLocale(raw)),
         terms: toTermMap(raw.terms),
-        references: toRefMap(raw.references),
-        body: toBlocks(raw.body),
+        ...bodyWithReferences(raw, templates),
       },
       rawRemarks: toStringArray(raw.remarks),
     }
   })
 }
 
-export function loadRemark(filePath: string, namespace: string): RawRemark {
+export function loadRemark(filePath: string, namespace: string, templates: DisplayTemplateCollections): RawRemark {
   return inFile(filePath, () => {
     const raw = readYaml(filePath)
     return {
@@ -402,8 +600,7 @@ export function loadRemark(filePath: string, namespace: string): RawRemark {
         title: raw.title as string | undefined,
         label: readLabel(raw, 'remark', readLocale(raw)),
         terms: toTermMap(raw.terms),
-        references: toRefMap(raw.references),
-        body: toBlocks(raw.body),
+        ...bodyWithReferences(raw, templates),
       },
     }
   })
@@ -415,19 +612,22 @@ export function loadRemark(filePath: string, namespace: string): RawRemark {
 
 export function loadSection(
   filePath: string,
+  templates: DisplayTemplateCollections,
   figureUrlPrefix: string,
   figuresDir?: string
-): { name: string; slug: string; locale: string; title: string; body: ContentBlock[]; references: RefMap } {
+): { name: string; slug: string; locale: string; title: string; body: ContentBlock[]; references: RefList } {
   return inFile(filePath, () => {
     const raw = readYaml(filePath)
     const name = raw.name as string
+    const locale = readLocale(raw)
+    const body = resolveBlocksFigures(toBlocks(raw.body), figureUrlPrefix, figuresDir)
     return {
       name,
       slug: readSlug(raw, name),
-      locale: readLocale(raw),
+      locale,
       title: raw.title as string,
-      body: resolveBlocksFigures(toBlocks(raw.body), figureUrlPrefix, figuresDir),
-      references: toRefMap(raw.references),
+      body,
+      references: readReferences(raw.references, { locale, templates, texts: referenceTexts(body) }),
     }
   })
 }
@@ -499,31 +699,36 @@ export interface RawChapter {
   prerequisiteWarning?: ContentBlock[]
   prologue: ContentBlock[]
   epilogue: ContentBlock[]
-  references: RefMap
+  references: RefList
   thumbnail?: ThumbnailImage
   meta?: MetaInfo
 }
 
-export function loadChapter(filePath: string): RawChapter {
+export function loadChapter(filePath: string, templates: DisplayTemplateCollections): RawChapter {
   return inFile(filePath, () => {
     const raw = readYaml(filePath)
     const name = raw.name as string
+    const locale = readLocale(raw)
+    const abstract = toBlocks(raw.abstract)
+    const prerequisiteWarning = raw['prerequisite-warning'] ? toBlocks(raw['prerequisite-warning']) : undefined
+    const prologue = toBlocks(raw.prologue)
+    const epilogue = toBlocks(raw.epilogue)
+    // The order ChapterPage renders them in; the sections are files of their own.
+    const texts = [abstract, prerequisiteWarning, prologue, epilogue].flatMap(referenceTexts)
     return {
       name,
       slug: readSlug(raw, name),
-      locale: readLocale(raw),
+      locale,
       title: raw.title as string,
       publishedAt: toPublishedAt(raw['published-at'], filePath),
       legacyPath: typeof raw['legacy-path'] === 'string' ? (raw['legacy-path'] as string) : undefined,
       excerpt: typeof raw.excerpt === 'string' ? (raw.excerpt as string) : undefined,
       sectionNames: toStringArray(raw.sections),
-      abstract: toBlocks(raw.abstract),
-      prerequisiteWarning: raw['prerequisite-warning']
-        ? toBlocks(raw['prerequisite-warning'])
-        : undefined,
-      prologue: toBlocks(raw.prologue),
-      epilogue: toBlocks(raw.epilogue),
-      references: toRefMap(raw.references),
+      abstract,
+      prerequisiteWarning,
+      prologue,
+      epilogue,
+      references: readReferences(raw.references, { locale, templates, texts }),
       thumbnail: toThumbnail(raw.thumbnail),
       meta: toMeta(raw.meta),
     }
@@ -622,31 +827,37 @@ export interface RawStandalone {
   epilogue: ContentBlock[]
   thumbnail?: ThumbnailImage
   meta?: MetaInfo
-  references: RefMap
+  references: RefList
 }
 
 // Structure mirrors a chapter (minus book relationship / prerequisite-warning),
 // `references` included — which target types a standalone item may actually point
 // at is enforced later, by validateReferences in graph.ts.
-export function loadStandalone(filePath: string): RawStandalone {
+export function loadStandalone(filePath: string, templates: DisplayTemplateCollections): RawStandalone {
   return inFile(filePath, () => {
     const raw = readYaml(filePath)
     const name = raw.name as string
+    const locale = readLocale(raw)
+    const abstract = toBlocks(raw.abstract)
+    const prologue = toBlocks(raw.prologue)
+    const epilogue = toBlocks(raw.epilogue)
+    // The order StandalonePage renders them in; the sections are files of their own.
+    const texts = [abstract, prologue, epilogue].flatMap(referenceTexts)
     return {
       name,
       slug: readSlug(raw, name),
-      locale: readLocale(raw),
+      locale,
       title: raw.title as string,
       publishedAt: toPublishedAt(raw['published-at'], filePath),
       legacyPath: typeof raw['legacy-path'] === 'string' ? (raw['legacy-path'] as string) : undefined,
       excerpt: typeof raw.excerpt === 'string' ? (raw.excerpt as string) : undefined,
       sectionNames: toStringArray(raw.sections),
-      abstract: toBlocks(raw.abstract),
-      prologue: toBlocks(raw.prologue),
-      epilogue: toBlocks(raw.epilogue),
+      abstract,
+      prologue,
+      epilogue,
       thumbnail: toThumbnail(raw.thumbnail),
       meta: toMeta(raw.meta),
-      references: toRefMap(raw.references),
+      references: readReferences(raw.references, { locale, templates, texts }),
     }
   })
 }

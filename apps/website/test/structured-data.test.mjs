@@ -47,13 +47,13 @@ const { absoluteUrl, toIsoTime, SITE_URL, OG_IMAGE_DEFAULT } = pick(metadataModu
 const { kbEntityBreadcrumbs, kbListBreadcrumbs } = pick(breadcrumbsModule)
 const { keyForKbNode } = pick(keysModule)
 
-import { embed, hu, narrative, raw, ref } from './support/raw-graph.mjs'
+import { embed, hu, narrative, raw, ref, tpl } from './support/raw-graph.mjs'
 
 // ---------------------------------------------------------------------------
 // The fixture
 // ---------------------------------------------------------------------------
 
-const remark = (name, body = [narrative('Megjegyzés.')], references = {}) => ({
+const remark = (name, body = [narrative('Megjegyzés.')], references = []) => ({
   ...hu,
   name,
   body,
@@ -71,11 +71,23 @@ const remark = (name, body = [narrative('Megjegyzés.')], references = {}) => ({
  *   - a reference FROM the definition TO the theorem, so the theorem has an inbound
  *     edge that its own block must not mention.
  */
-function fixture({ published = true } = {}) {
+const THE_DEFINITIONS = {
+  kind: 'list',
+  name: 'the-definitions',
+  targets: ['definition'],
+  list: {
+    count: { min: 2 },
+    order: 'sorted',
+    item: { first: '[{target.index}]', middle: '[{target.index}]', last: '[{target.index} Definíció]', separator: ', ', lastSeparator: ' és ' },
+    before: 'az ',
+    after: '',
+  },
+}
+
+function fixture({ published = true, extraTheoremRefs = [] } = {}) {
   const r = raw({
-    references: {
-      'a-tetel': ref('a tétel', 'theorems.tetel-egy'),
-    },
+    references: [ref('a tétel', 'theorems.tetel-egy')],
+    displayTemplates: { 'the-definitions': THE_DEFINITIONS },
     published,
     extraDefinitions: [
       {
@@ -83,8 +95,8 @@ function fixture({ published = true } = {}) {
         name: 'def-ketto',
         slug: 'def-ketto',
         title: 'Második definíció',
-        body: [narrative('Hivatkozik [a-tetelre].')],
-        references: { 'a-tetelre': ref('a tételre', 'theorems.tetel-egy') },
+        body: [narrative('Hivatkozik [0].')],
+        references: [ref('a tételre', 'theorems.tetel-egy')],
         remarkSlugs: [],
       },
     ],
@@ -99,13 +111,14 @@ function fixture({ published = true } = {}) {
     embed('theorems.tetel-egy.remarks.rem-tetel'),
     embed('theorems.tetel-egy.proofs.biz-egy.remarks.rem-biz'),
   )
-  r.theorems[0].references = {
-    'a-fogalom': ref('az első fogalom', 'definitions.def-egy.terms.first-term'),
-    // A second authored key for the same target: one edge is one edge.
-    'ugyanaz-a-fogalom': ref('ugyanaz', 'definitions.def-egy.terms.first-term'),
-    'egy-allitas': ref('az állítás', 'definitions.def-egy.claims.def-claim'),
-    kulso: ref('külső forrás', 'https://example.org/forras'),
-  }
+  r.theorems[0].references = [
+    ref('az első fogalom', 'definitions.def-egy.terms.first-term'),
+    // A second item for the same target: one edge is one edge.
+    ref('ugyanaz', 'definitions.def-egy.terms.first-term'),
+    ref('az állítás', 'definitions.def-egy.claims.def-claim'),
+    ref('külső forrás', 'https://example.org/forras'),
+    ...extraTheoremRefs,
+  ]
   return buildGraphFromRaw(r)
 }
 
@@ -385,9 +398,19 @@ test('two authored references to one target are one edge', () => {
   const work = nodeOfType(docFor(theorem), 'CreativeWork')
   const citations = edge(work, 'citation')
   // The fixture authors four references, two of which name the same term.
-  assert.equal(Object.keys(theorem.references).length, 4)
+  assert.equal(theorem.references.length, 4)
   assert.equal(citations.length, 3)
   assert.deepEqual([...new Set(citations)], citations)
+})
+
+test('every target of a multi-reference is a citation of its own', () => {
+  const multi = fixture({ extraTheoremRefs: [tpl('the-definitions', 'definitions.def-ketto', 'definitions.def-egy')] })
+  const node = byName(multi.theorems, 'tetel-egy')
+  const citations = edge(nodeOfType(kbEntityStructuredData(multi, node), 'CreativeWork'), 'citation')
+  const pageOf = (name) => absoluteUrl(urlForKbNode(byName(multi.definitions, name)))
+  assert.equal(citations.length, 5)
+  assert.ok(citations.includes(pageOf('def-egy')) && citations.includes(pageOf('def-ketto')))
+  assert.deepEqual([...citations].sort(), citations)
 })
 
 test('an external reference is cited as the URL the prose links to', () => {
@@ -395,7 +418,7 @@ test('an external reference is cited as the URL the prose links to', () => {
   assert.ok(citations.includes('https://example.org/forras'))
 })
 
-test('citations are ordered by their id, so reordering a references map rewrites nothing', () => {
+test('citations are ordered by their id, so reordering a references list rewrites nothing', () => {
   for (const node of EVERY_KIND) {
     const citations = edge(nodeOfType(docFor(node), 'CreativeWork'), 'citation')
     assert.deepEqual([...citations].sort(), citations, `${node.name} cites out of order`)
@@ -606,7 +629,7 @@ test('the count is what has a page, not what is in the map', () => {
           title: 'Harmadik definíció',
           terms: {},
           body: [narrative('Sehol nem szerepel.')],
-          references: {},
+          references: [],
           remarkSlugs: [],
         },
       ],

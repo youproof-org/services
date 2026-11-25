@@ -23,17 +23,17 @@ const node = (body, { references, terms } = {}) => ({
   locale: 'hu',
   namespace: '/proba',
   remarks: [],
-  references: references ?? {},
+  references: references ?? [],
   terms,
   body,
 })
 
 const narrative = (content) => ({ type: 'narrative', content })
 
-/** A references entry as the graph leaves it, with its display resolved to segments. */
-const external = (display, url = 'x') => {
+/** A references item as the graph leaves it, with its text resolved to segments. */
+const external = (text, url = 'x') => {
   const target = { type: 'external', url }
-  return { display, target, segments: linkSegments(display, target) }
+  return { text, targets: [target], segments: linkSegments(text, target) }
 }
 
 // ---------------------------------------------------------------------------
@@ -54,8 +54,8 @@ test('emphasis markers come out, the words stay', () => {
 
 test('a reference and a term become the words they display', () => {
   const excerpt = kbExcerpt(
-    node([narrative('Legyen $R$ egy [ring], amelyben van [[unit]].')], {
-      references: { ring: external('gyűrű') },
+    node([narrative('Legyen $R$ egy [0], amelyben van [[unit]].')], {
+      references: [external('gyűrű')],
       terms: { unit: { display: '[egység]', canonical: 'egység' } },
     }),
   )
@@ -64,19 +64,36 @@ test('a reference and a term become the words they display', () => {
 
 test('a display form is itself markup: its own math and emphasis are resolved too', () => {
   const excerpt = kbExcerpt(
-    node([narrative('Tekintsük a [mod] gyűrűt.')], {
-      references: {
-        mod: external('modulo $m$ ***maradékok***'),
-      },
+    node([narrative('Tekintsük a [0] gyűrűt.')], {
+      references: [external('modulo $m$ ***maradékok***')],
     }),
   )
   assert.equal(excerpt, 'Tekintsük a modulo m maradékok gyűrűt.')
 })
 
+test('a multi-reference becomes the words of all its segments', () => {
+  const [a, b] = [{ type: 'external', url: 'a' }, { type: 'external', url: 'b' }]
+  const list = {
+    display: 'the-list',
+    targets: [a, b],
+    segments: [
+      { kind: 'text', text: 'az ' },
+      { kind: 'link', text: '1.', target: a },
+      { kind: 'text', text: ' és a ' },
+      { kind: 'link', text: '2. fejezet', target: b },
+      { kind: 'text', text: 'ben' },
+    ],
+  }
+  assert.equal(kbExcerpt(node([narrative('Lásd [0].')], { references: [list] })), 'Lásd az 1. és a 2. fejezetben.')
+})
+
 test('an unresolved reference or term is left as authored rather than dropped', () => {
-  // Nothing in the content model guarantees a ref map entry for every token, and a
-  // silently deleted word would be harder to notice than a visible one.
+  // The loader rejects a token with no item and a reference by name, but a node built
+  // any other way carries no such guarantee, and a silently deleted word would be
+  // harder to notice than a visible one.
+  assert.equal(kbExcerpt(node([narrative('Egy [3] token.')])), 'Egy [3] token.')
   assert.equal(kbExcerpt(node([narrative('Egy [nincs-ilyen] token.')])), 'Egy [nincs-ilyen] token.')
+  assert.equal(kbExcerpt(node([narrative('Egy [[nincs-ilyen]] fogalom.')])), 'Egy [[nincs-ilyen]] fogalom.')
 })
 
 test('math survives while it reads as text, and is dropped when it is TeX source', () => {
@@ -85,15 +102,15 @@ test('math survives while it reads as text, and is dropped when it is TeX source
 })
 
 test('a bracket inside math is part of the formula, not a reference', () => {
-  // The token order of InlineText: `$[a]_n$` matches as math, so `[a]` is never
-  // looked up in the ref map — which is what stops a residue class from being
-  // replaced by whatever a ref named "a" happens to display.
+  // The token order of InlineText: `$[0]_n$` matches as math, so `[0]` is never
+  // looked up in the references — which is what stops a residue class from being
+  // replaced by whatever the first reference happens to display.
   const excerpt = kbExcerpt(
-    node([narrative('Az $[a]_n$ maradékosztály.')], {
-      references: { a: external('VALAMI MÁS') },
+    node([narrative('Az $[0]_n$ maradékosztály, és a $[a]_n$ is.')], {
+      references: [external('VALAMI MÁS')],
     }),
   )
-  assert.equal(excerpt, 'Az [a]_n maradékosztály.')
+  assert.equal(excerpt, 'Az [0]_n maradékosztály, és a [a]_n is.')
 })
 
 test('HTML entities are resolved, and superscripts keep their text', () => {
@@ -124,7 +141,7 @@ test("a formula's content is never the excerpt, but its lead-out is", () => {
 
 test("a typewriter block's rows are never read as prose, only its lead-in", () => {
   const rows = ['[0]_3 [1]_3', '[r] [x]']
-  const refs = { references: { r: external('HIBA', 'https://x') } }
+  const refs = { references: [external('HIBA', 'https://x')] }
   assert.equal(kbExcerpt(node([{ type: 'typewriter', rows }], refs)), undefined)
   assert.equal(kbExcerpt(node([{ type: 'typewriter', leadIn: 'A tábla:', rows }], refs)), 'A tábla:')
 })

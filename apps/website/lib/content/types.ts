@@ -1,5 +1,5 @@
 import type { RefTargetKind } from './fqn'
-import type { DisplayTemplateTargetType, LinkSegment, TextSegment } from '@youproof.org/display-templates'
+import type { DisplayTemplateCollection, DisplayTemplateTargetType, LinkSegment, TextSegment } from '@youproof.org/display-templates'
 
 // ---------------------------------------------------------------------------
 // Content blocks
@@ -154,7 +154,16 @@ export function isPathTarget(target: RefTarget): target is PathRefTarget {
   return target.type !== 'external'
 }
 
-/** A link in a resolved display, with its target's two hrefs (see `RefEntry`). */
+/**
+ * A link in a resolved display, with its target's two hrefs, resolved at
+ * graph-build time. Two because the same references are rendered in two places and
+ * must point somewhere different in each:
+ *   href   — on a chapter page (and inside an entity embedded there): the
+ *            in-page or cross-chapter anchor.
+ *   kbHref — on a standalone knowledge-base page: the target's own KB page.
+ * A KB page therefore remaps its refs (see kbRefs) rather than threading a "which
+ * context am I in" flag through every block component.
+ */
 export interface RefLinkSegment extends LinkSegment<RefTarget> {
   href?: string
   kbHref?: string
@@ -162,27 +171,25 @@ export interface RefLinkSegment extends LinkSegment<RefTarget> {
 
 export type RefSegment = TextSegment | RefLinkSegment
 
+/**
+ * One item of a file's `references` list, used in the text as `[i]`, its index.
+ * Exactly one of `display` and `text` is set.
+ */
 export interface RefEntry {
-  /** As authored: a display template or literal text. */
-  display: string
+  /** A template name in the display template collection of the file's locale. */
+  display?: string
+  /** Literal link text, with `[...]` marking the link. */
+  text?: string
+  /** One or more. A single `target` in the YAML loads as a list of one. */
+  targets: RefTarget[]
   /**
-   * The resolved display, set at graph-build time for every entry. Empty when the
-   * display resolves to nothing, which renders as an error.
+   * The resolved display, set at graph-build time. Every target has exactly one
+   * link segment, which carries its hrefs.
    */
   segments: RefSegment[]
-  // Resolved at graph-build time, in two variants, because the SAME references map
-  // is rendered in two places and must point somewhere different in each:
-  //   href   — used on a chapter page (and inside an entity embedded there): the
-  //            in-page/cross-chapter anchor, i.e. today's behaviour, unchanged.
-  //   kbHref — used on a standalone knowledge-base page: the target's own KB page.
-  // A KB page therefore remaps its refs (see kbRefs) rather than threading a
-  // "which context am I in" flag through every block component.
-  href?: string
-  kbHref?: string
-  target: RefTarget
 }
 
-export type RefMap = Record<string, RefEntry>
+export type RefList = RefEntry[]
 
 // ---------------------------------------------------------------------------
 // Display templates
@@ -199,6 +206,9 @@ export type {
   ListDisplayTemplate,
   SingleDisplayTemplate,
 } from '@youproof.org/display-templates'
+
+/** Locale -> that locale's display template collection. */
+export type DisplayTemplateCollections = Record<string, DisplayTemplateCollection>
 
 type SameTypes<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false
 /** The engine's list of renderable target kinds is every target kind but `part`. */
@@ -250,7 +260,7 @@ export interface DefinitionNode {
   label?: string                  // entity label variant; absent = the type's default
   terms?: TermMap
   remarks: RemarkNode[]           // remarks attached to this definition
-  references: RefMap
+  references: RefList
   body: ContentBlock[]
 }
 
@@ -265,7 +275,7 @@ export interface TheoremNode {
   terms?: TermMap
   proofs: ProofNode[]             // proofs belonging to this theorem
   remarks: RemarkNode[]           // remarks attached to this theorem
-  references: RefMap
+  references: RefList
   body: ContentBlock[]
 }
 
@@ -279,7 +289,7 @@ export interface ProofNode {
   terms?: TermMap
   proves: TheoremNode             // the theorem this proof belongs to
   remarks: RemarkNode[]           // remarks attached to this proof
-  references: RefMap
+  references: RefList
   body: ContentBlock[]
 }
 
@@ -292,7 +302,7 @@ export interface RemarkNode {
   label?: string                  // entity label variant; absent = the type's default
   terms?: TermMap
   attachedTo?: DefinitionNode | TheoremNode | ProofNode  // undefined = independent
-  references: RefMap
+  references: RefList
   body: ContentBlock[]
 }
 
@@ -329,7 +339,7 @@ export interface SectionNode {
   title: string
   chapter: ChapterNode            // parent reference
   body: ContentBlock[]
-  references: RefMap
+  references: RefList
 }
 
 export interface ChapterNode {
@@ -347,7 +357,7 @@ export interface ChapterNode {
   prologue: ContentBlock[]
   sections: SectionNode[]
   epilogue: ContentBlock[]
-  references: RefMap
+  references: RefList
   thumbnail?: ThumbnailImage
   meta?: MetaInfo                  // optional crawler/social metadata (kebab: meta)
 }
@@ -403,7 +413,7 @@ export interface StandaloneSection {
   slug: string                    // localized in-page anchor id
   title: string
   body: ContentBlock[]
-  references: RefMap
+  references: RefList
 }
 
 export interface StandaloneNode {
@@ -422,7 +432,7 @@ export interface StandaloneNode {
   epilogue: ContentBlock[]
   thumbnail?: ThumbnailImage
   meta?: MetaInfo                 // optional crawler/social metadata (kebab: meta)
-  references: RefMap              // inline [slug] targets (kebab: references)
+  references: RefList             // inline [i] targets (kebab: references)
 }
 
 // ---------------------------------------------------------------------------

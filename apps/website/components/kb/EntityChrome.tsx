@@ -116,7 +116,7 @@ const SELECTED_OF: Record<ChromeSelectionKind, ChromeSelectedKind> = {
 }
 
 /**
- * The outgoing references in the body — every mark `InlineText` emits for a `[slug]`
+ * The outgoing references in the body — every link `InlineText` emits for a `[i]`
  * (§7.1).
  *
  * Both classes, because both are references: `ref-concept` is the treatment an

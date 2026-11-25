@@ -1,5 +1,6 @@
 import { segmentsText } from '@youproof.org/display-templates'
-import type { ContentBlock, KbNode, RefMap, TermMap } from './types'
+import type { ContentBlock, KbNode, RefList, TermMap } from './types'
+import { inlineTokens, type InlineToken } from './inline-tokens'
 
 // The meta-description of a knowledge-base entity page: the opening prose of its
 // body, as plain text, truncated.
@@ -39,7 +40,7 @@ export function kbExcerpt(node: KbNode): string | undefined {
  */
 function firstProse(
   blocks: ContentBlock[],
-  refs: RefMap | undefined,
+  refs: RefList | undefined,
   terms: TermMap | undefined,
 ): string | undefined {
   for (const block of blocks) {
@@ -66,25 +67,14 @@ function firstProse(
 }
 
 /**
- * The token grammar of `InlineText`, in that component's own alternation order:
- * bold-italic, bold, math, ref, superscript, term, self-reference. The order is
- * load-bearing rather than cosmetic — a `[a]` inside `$[a]_n$` must be read as part
- * of the formula and not as a reference, which is exactly what matching the math
- * alternative first gives — so it is copied rather than re-derived.
- */
-const TOKEN_RE =
-  /(\*\*\*)([\s\S]*?)\*\*\*|(\*\*)([\s\S]*?)\*\*|\$([^$]+)\$|\[([a-zA-Z][a-zA-Z0-9-]*)\]|\^([^^]+)\^|\[\[([a-zA-Z][a-zA-Z0-9-]*)\]\]|(\[\*\])/g
-
-/**
  * The inline markup of `InlineText`, resolved to plain text.
  *
- * That component is the only other place this markup is interpreted, so a token
- * added there has to be added here too — and this reads the same single pass over
- * the same alternation, so the two cannot disagree about where a token starts.
+ * Both read the token grammar of `inline-tokens.ts`, so the two cannot disagree
+ * about where a token starts.
  *
  * Two decisions specific to a description:
  *
- * - A `[ref]` and a `[[term]]` become the words they display, so the sentence
+ * - A `[i]` reference and a `[[term]]` become the words they display, so the sentence
  *   stays a sentence. A term's display form may itself mark which part is the
  *   link text (`a [gyűrű] definíciója`), and a ref's resolved segments are joined
  *   without their link markup; any bracket left is markup too and comes out.
@@ -93,7 +83,7 @@ const TOKEN_RE =
  *   the search result as `\Z` or `\frac{m}{d}`, so it is dropped instead. The
  *   sentence loses a symbol; it does not gain visible source code.
  */
-function plainInline(text: string, refs: RefMap | undefined, terms: TermMap | undefined): string {
+function plainInline(text: string, refs: RefList | undefined, terms: TermMap | undefined): string {
   const plain = tokens(normalise(text), refs, terms)
   // Authored line breaks and the gaps left by a dropped formula collapse: a
   // description is one line.
@@ -109,29 +99,43 @@ function normalise(text: string): string {
     .replace(/&#x2663;/g, '♣')
 }
 
-function tokens(text: string, refs: RefMap | undefined, terms: TermMap | undefined): string {
-  type Group = string | undefined
-  return text.replace(TOKEN_RE, (
-    whole: string,
-    _boldItalicMarker: Group, boldItalic: Group,
-    _boldMarker: Group, bold: Group,
-    math: Group, refSlug: Group, sup: Group, termKey: Group, selfRef: Group,
-  ) => {
+function tokens(text: string, refs: RefList | undefined, terms: TermMap | undefined): string {
+  let out = ''
+  let last = 0
+  for (const { token, start, source } of inlineTokens(text)) {
+    out += text.slice(last, start) + tokenText(token, source, refs, terms)
+    last = start + source.length
+  }
+  return out + text.slice(last)
+}
+
+function tokenText(
+  token: InlineToken,
+  source: string,
+  refs: RefList | undefined,
+  terms: TermMap | undefined,
+): string {
+  switch (token.kind) {
     // Emphasis is emphasis: the markers go, and the words inside are still markup.
-    if (boldItalic !== undefined) return tokens(boldItalic, refs, terms)
-    if (bold !== undefined) return tokens(bold, refs, terms)
-    if (math !== undefined) return /[\\{}]/.test(math) ? '' : math
-    if (refSlug !== undefined) {
-      const ref = refs?.[refSlug]
-      return (ref && display(segmentsText(ref.segments), refs, terms)) ?? whole
+    case 'bold-italic':
+    case 'bold':
+    case 'sup':
+      return tokens(token.inner, refs, terms)
+    case 'math':
+      return /[\\{}]/.test(token.source) ? '' : token.source
+    case 'ref': {
+      const ref = refs?.[token.index]
+      return (ref && display(segmentsText(ref.segments), refs, terms)) ?? source
     }
-    if (sup !== undefined) return tokens(sup, refs, terms)
-    if (termKey !== undefined) return display(terms?.[termKey]?.display, refs, terms) ?? whole
+    case 'legacy-ref':
+      return source
+    case 'term':
+      return display(terms?.[token.key]?.display, refs, terms) ?? source
     // A figure's self-reference resolves against the figure, which a description
     // does not show; the words around it carry the sentence.
-    if (selfRef !== undefined) return ''
-    return whole
-  })
+    case 'self-ref':
+      return ''
+  }
 }
 
 /**
@@ -144,7 +148,7 @@ function tokens(text: string, refs: RefMap | undefined, terms: TermMap | undefin
  */
 function display(
   value: string | undefined,
-  refs: RefMap | undefined,
+  refs: RefList | undefined,
   terms: TermMap | undefined,
 ): string | undefined {
   return value === undefined ? undefined : tokens(value.replace(/[[\]]/g, ''), refs, terms)

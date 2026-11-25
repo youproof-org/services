@@ -13,7 +13,7 @@ import { resolveTemplate, segmentsText, TemplateCaseError } from '@youproof.org/
 const { buildGraphFromRaw, kbNodeLabel } = graphModule.default ?? graphModule
 const { loadTheorem, ContentFormatError } = loaderModule.default ?? loaderModule
 
-import { ref, raw } from './support/raw-graph.mjs'
+import { raw, single, tpl } from './support/raw-graph.mjs'
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'kb-labels-'))
 after(() => fs.rmSync(tmp, { recursive: true, force: true }))
@@ -26,13 +26,13 @@ function theoremFile(extra) {
 }
 
 test('the loader reads a label variant of the entity\'s type', () => {
-  assert.equal(loadTheorem(theoremFile('label: lemma\n'), '/x').node.label, 'lemma')
-  assert.equal(loadTheorem(theoremFile(''), '/x').node.label, undefined)
+  assert.equal(loadTheorem(theoremFile('label: lemma\n'), '/x', {}).node.label, 'lemma')
+  assert.equal(loadTheorem(theoremFile(''), '/x', {}).node.label, undefined)
 })
 
 test('the loader rejects a variant its type does not have, naming the file', () => {
   assert.throws(
-    () => loadTheorem(theoremFile('label: definition\n'), '/x'),
+    () => loadTheorem(theoremFile('label: definition\n'), '/x', {}),
     (err) =>
       err instanceof ContentFormatError &&
       /tetel\.yaml — label 'definition' is not a theorem label in 'hu'\. Known: theorem, lemma, corollary/.test(err.message),
@@ -41,46 +41,48 @@ test('the loader rejects a variant its type does not have, naming the file', () 
 
 test('the loader rejects a labels block, naming the file', () => {
   assert.throws(
-    () => loadTheorem(theoremFile('labels:\n  canonical: lemma\n'), '/x'),
+    () => loadTheorem(theoremFile('labels:\n  canonical: lemma\n'), '/x', {}),
     (err) => err instanceof ContentFormatError && /tetel\.yaml — 'labels' is no longer supported/.test(err.message),
   )
 })
 
 // ---------------------------------------------------------------------------
 
-const INE = "{capital(base('ine', target.label))}{suffix('ine', target.label)}"
+const TEMPLATES = {
+  ine: single(['theorem'], "{capital(base('ine', target.label))}{suffix('ine', target.label)}"),
+  'parent-poss-dat': single(['claim'], "{base('poss-dat', target.parent.label)}{suffix('poss-dat', target.parent.label)}"),
+  'old-in': single(['theorem'], "{base('in', target.label)}{suffix('in', target.label)}"),
+}
 
 function graphWith(references, theoremLabel) {
-  const data = raw({ references })
+  const data = raw({ references, displayTemplates: TEMPLATES })
   if (theoremLabel) data.theorems[0].label = theoremLabel
   return buildGraphFromRaw(data)
 }
 
-const display = (g, key) => segmentsText(g.definitions.get('definitions.def-egy').references[key].segments)
+const display = (g, index) => segmentsText(g.definitions.get('definitions.def-egy').references[index].segments)
 
 test('an entity without a label reads as its type\'s default word', () => {
-  const g = graphWith({ r: ref(INE, 'theorems.tetel-egy') })
+  const g = graphWith([tpl('ine', 'theorems.tetel-egy')])
   assert.match(kbNodeLabel(g, g.theorems.get('theorems.tetel-egy')), /Tétel$/)
-  assert.equal(display(g, 'r'), 'Tételben')
+  assert.equal(display(g, 0), 'Tételben')
 })
 
 test('an entity\'s label variant gives its own word and stem', () => {
-  const g = graphWith({ r: ref(INE, 'theorems.tetel-egy') }, 'lemma')
+  const g = graphWith([tpl('ine', 'theorems.tetel-egy')], 'lemma')
   assert.match(kbNodeLabel(g, g.theorems.get('theorems.tetel-egy')), /Lemma$/)
-  assert.equal(display(g, 'r'), 'Lemmában')
+  assert.equal(display(g, 0), 'Lemmában')
 })
 
 test('a claim or term template inflects the parent entity\'s label', () => {
-  const g = graphWith({
-    r: ref("{base('poss-dat', target.parent.label)}{suffix('poss-dat', target.parent.label)}", 'definitions.def-egy.claims.def-claim'),
-  })
-  assert.equal(display(g, 'r'), 'definíciójának')
+  const g = graphWith([tpl('parent-poss-dat', 'definitions.def-egy.claims.def-claim')])
+  assert.equal(display(g, 0), 'definíciójának')
 })
 
 test('a case the target\'s locale does not declare fails the build, naming the owner and reference', () => {
   assert.throws(
-    () => graphWith({ 'r-old': ref("{base('in', target.label)}{suffix('in', target.label)}", 'theorems.tetel-egy') }),
-    /^Error: Reference "r-old" in definition "def-egy": case 'in' is not declared\. 'hu' declares: ine, ela, acc,/,
+    () => graphWith([tpl('ine', 'theorems.tetel-egy'), tpl('old-in', 'theorems.tetel-egy')]),
+    /^Error: Reference \[1\] in definition "def-egy": case 'in' is not declared\. 'hu' declares: ine, ela, acc,/,
   )
 })
 
