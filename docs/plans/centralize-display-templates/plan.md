@@ -748,6 +748,13 @@ Before the rewrite, as separate commits:
 Update the "References System" section of `docs/content-model.md`, and `CLAUDE.md`
 where it describes references.
 
+In services, update `apps/website/e2e/kb-backlinks.test.ts` against the migrated
+content. It hard-codes the backlink counts and row order of the `gyuru-test` page,
+which change with single use (34, 2 and 2 today; 68, 7 and 2 in a trial conversion,
+in a different order). It runs in the deploy's `website` job before the upload, so it
+has to land before the first deploy with migrated content. Take the numbers from the
+real migration after step 4a, since a conversion can change the order.
+
 ### 4a. Convert the hand-chained lists (content repo)
 
 Convert as many of the 129 in-scope places as possible to multi-references:
@@ -806,7 +813,10 @@ keeping copies of it:
   `packages/display-templates`, with the defaults it fills in (`middle` from `first`,
   `last` from `middle`, `last-separator` from `separator`, an exact `count` as a
   range). The list resolver relies on those defaults, so the editor has to read the
-  collection the same way.
+  collection the same way. The reference list reader goes with it: `readReferences`
+  and `referenceTexts` from `loader.ts` and the token grammar in
+  `apps/website/lib/content/inline-tokens.ts`, so the editor and the site agree on
+  which items a file has, which tokens its text holds and in what order.
 - Add a second package for content addressing and labels, kept apart from the
   template engine. It takes `lib/content/fqn.ts`, which replaces the editor's
   hand-kept copy in `src/content/fqn.ts`, and the code that interprets the label
