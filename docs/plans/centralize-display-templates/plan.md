@@ -785,6 +785,12 @@ rendering (step 6).
 Extend `scripts/check-refs.mjs` with the validation rules and the `--fix` renumbering.
 `ref-check.yml` already runs it on pull requests.
 
+Until this step, the script still reads only the old dictionary format, so on the
+migrated content it passes without checking any reference. The content repo's
+`CLAUDE.md` and `.claude/skills/link-references/SKILL.md` say so and send authors to
+the site build instead. Once the script checks the list, update both to say what it
+checks, and describe `--fix` in the skill's workflow.
+
 ### 6. Output equivalence check
 
 Reuse the two-layer check and its scripts from
