@@ -711,7 +711,9 @@ any upload.
 
 Bump `apps/website/package.json` to `2.5.0`: this breaks the content contract. Update
 `docs/content-site-and-static-generation.md` and `docs/i18n-design.md` where they
-describe references.
+describe references. §8 of `docs/i18n-design.md` lists no shared schema package as a
+non-goal, which `packages/display-templates` has changed. Update it to say what is
+shared and why.
 
 ### 4. Content migration (content repo)
 
@@ -797,7 +799,29 @@ accepted over the authored one: its entry records the reordered text.
 
 ### 7. Editor (editor repo)
 
-Read the collection, bundle the shared engine, render references inline, hold each
+It starts with two changes in services, so the editor bundles shared code instead of
+keeping copies of it:
+
+- Move the collection reader from `apps/website/lib/content/loader.ts` into
+  `packages/display-templates`, with the defaults it fills in (`middle` from `first`,
+  `last` from `middle`, `last-separator` from `separator`, an exact `count` as a
+  range). The list resolver relies on those defaults, so the editor has to read the
+  collection the same way.
+- Add a second package for content addressing and labels, kept apart from the
+  template engine. It takes `lib/content/fqn.ts`, which replaces the editor's
+  hand-kept copy in `src/content/fqn.ts`, and the code that interprets the label
+  registry and the locale list: the registry types, `validateEntityLabelRegistry`,
+  the case-key and variant lookups, and reading the locales. These are pure
+  functions over the parsed JSON. `packages/display-templates` then imports
+  `RefTargetKind` from it, in place of the compile-time check that its target types
+  match the website's.
+
+`locales.json` and `entity-labels.json` stay in `apps/website/lib/i18n` as data. The
+editor keeps reading them from the services checkout at startup, so a new locale or
+label variant reaches it without an editor release, and `check-refs.mjs` in the
+content repo keeps reading `entity-labels.json` by path.
+
+Then, in the editor: read the collection, bundle the shared engine, render references inline, hold each
 reference in its token and write the list on save, and replace the panel with the
 create and edit popup. Refuse to save a file that still has a
 `references` dictionary, as it does for a `labels` block. Separate PR, and a new
