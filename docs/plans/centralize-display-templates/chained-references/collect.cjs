@@ -150,7 +150,7 @@ md.push('', '### Places that are not ascending, or need grouping', '', '| File |
 for (const p of inScope.filter((p) => p.ordered === false || p.groups > 1)) md.push(`| ${p.file.split('/').slice(-2).join('/')} | ${p.grouping} | ${p.ordered} | \`${p.source.replace(/\|/g, '\\|').replace(/\n/g, ' ')}\` |`)
 md.push('')
 md.push('## Shapes (in scope)', '', `${shapes.size} distinct shapes. A shape is the kinds, the first, middle and last display, and the separators.`, '')
-md.push('| Places | Counts | Kinds | First | Middle | Last | Separator | Last separator | Example | After |', '|---|---|---|---|---|---|---|---|---|---|')
+md.push('| Places | Counts | Kinds | First | Middle | Last | Separator | Last separator | Example | Following text (example) |', '|---|---|---|---|---|---|---|---|---|---|')
 const cell = (s) => (s == null || s === '' ? '' : '`' + String(s).replace(/\|/g, '\\|').replace(/\n/g, ' ') + '`')
 for (const s of [...shapes.values()].sort((a, b) => b.n - a.n)) {
   const e = s.example

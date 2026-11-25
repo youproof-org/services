@@ -79,7 +79,7 @@ A list template sorts its targets by position and can group them. Each place is 
 
 60 distinct shapes. A shape is the kinds, the first, middle and last display, and the separators.
 
-| Places | Counts | Kinds | First | Middle | Last | Separator | Last separator | Example | After |
+| Places | Counts | Kinds | First | Middle | Last | Separator | Last separator | Example | Following text (example) |
 |---|---|---|---|---|---|---|---|---|---|
 | 15 | 2 | chapter | `{the(target.index)} [{target.index}]` |  | `{the(target.index)} [{target.index} fejezet]` |  | ` és ` | `[the-alice-es-bob-a-kiszamithatosag-hataran-chapter-index] és [the-alice-es-bob-egymillio-dollaros-kerdese-chapter]` | `eket is` |
 | 14 | 2 | claim | `{the(target.parent.index)} [{target.parent.index} {capital(target.parent.label.canonical)} {target.index}]` |  | `{target.index} pontja` |  | ` és ` | `[the-residue-class-is-reduced-claim-idx] és [residue-class-is-not-in-hn-claim]` | ` miatt ráadásul egy [proper-su` |
