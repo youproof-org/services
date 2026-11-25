@@ -170,6 +170,61 @@ export interface RefEntry {
 export type RefMap = Record<string, RefEntry>
 
 // ---------------------------------------------------------------------------
+// Display templates
+// ---------------------------------------------------------------------------
+
+/** What a display template can render: every target kind with a template context. */
+export type DisplayTemplateTargetType = Exclude<RefTargetKind, 'part'>
+
+export type DisplayTemplateGroupBy = 'label' | 'parent' | 'type'
+
+export interface DisplayTemplateSeparators {
+  separator: string
+  /** Defaults to `separator`. */
+  lastSeparator: string
+}
+
+/** The positional forms of a list item. `middle` defaults to `first`, `last` to `middle`. */
+export interface DisplayTemplateItemForms extends DisplayTemplateSeparators {
+  first: string
+  middle: string
+  last: string
+  only?: string
+}
+
+export interface DisplayTemplateList {
+  /** An exact count is stored as `min === max`; no `max` means no upper bound. */
+  count: { min: number; max?: number }
+  groupBy?: DisplayTemplateGroupBy
+  order: 'sorted' | 'authored'
+  item: DisplayTemplateItemForms
+  /** Between groups; present exactly when `groupBy` is. */
+  group?: DisplayTemplateSeparators
+  before: string
+  after: string
+}
+
+interface DisplayTemplateBase {
+  name: string
+  targets: DisplayTemplateTargetType[]
+}
+
+export interface SingleDisplayTemplate extends DisplayTemplateBase {
+  kind: 'single'
+  template: string
+}
+
+export interface ListDisplayTemplate extends DisplayTemplateBase {
+  kind: 'list'
+  list: DisplayTemplateList
+}
+
+export type DisplayTemplate = SingleDisplayTemplate | ListDisplayTemplate
+
+/** One locale's templates, keyed by name. */
+export type DisplayTemplateCollection = Record<string, DisplayTemplate>
+
+// ---------------------------------------------------------------------------
 // Entity labels
 // ---------------------------------------------------------------------------
 

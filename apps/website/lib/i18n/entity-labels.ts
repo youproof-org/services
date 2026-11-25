@@ -28,7 +28,7 @@ export type EntityLabelLocale = { cases: string[] } & Record<KbEntityType, Entit
 
 export type EntityLabelRegistry = Record<string, EntityLabelLocale>
 
-const KEBAB_CASE = /^[a-z0-9]+(-[a-z0-9]+)*$/
+export const KEBAB_CASE = /^[a-z0-9]+(-[a-z0-9]+)*$/
 
 export function validateEntityLabelRegistry(registry: EntityLabelRegistry, locales: string[]): string[] {
   const errors: string[] = []

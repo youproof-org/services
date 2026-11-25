@@ -117,6 +117,7 @@ export function raw({ published = true, references = {}, extraDefinitions = [], 
       },
     ],
     standalones: [],
+    displayTemplates: { hu: {} },
   }
 }
 

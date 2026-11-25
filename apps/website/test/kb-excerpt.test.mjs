@@ -115,6 +115,13 @@ test("a formula's content is never the excerpt, but its lead-out is", () => {
   )
 })
 
+test("a typewriter block's rows are never read as prose, only its lead-in", () => {
+  const rows = ['[0]_3 [1]_3', '[r] [x]']
+  const refs = { references: { r: { display: 'HIBA', target: { type: 'external', url: 'https://x' } } } }
+  assert.equal(kbExcerpt(node([{ type: 'typewriter', rows }], refs)), undefined)
+  assert.equal(kbExcerpt(node([{ type: 'typewriter', leadIn: 'A tábla:', rows }], refs)), 'A tábla:')
+})
+
 test('a list, a figure and a quote contribute their prose', () => {
   assert.equal(
     kbExcerpt(node([{ type: 'ordered-list', leadIn: 'Tegyük fel:', items: ['egy', 'kettő'] }])),

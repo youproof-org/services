@@ -27,6 +27,7 @@ import type {
   GlossaryEntry,
   KbBacklinkSource,
   KbBacklinks,
+  DisplayTemplateCollection,
 } from './types'
 import {
   getContentDir,
@@ -42,6 +43,7 @@ import {
   loadSection,
   loadStandalone,
   resolveFigurePaths,
+  loadDisplayTemplateCollections,
   ContentFormatError,
 } from './loader'
 
@@ -266,6 +268,8 @@ export interface RawGraphData {
   remarks: RawRemarkEntry[]
   books: RawBookEntry[]
   standalones: RawStandaloneEntry[]
+  /** Locale -> that locale's display template collection. */
+  displayTemplates: Record<string, DisplayTemplateCollection>
 }
 
 // ---------------------------------------------------------------------------
@@ -286,6 +290,7 @@ export async function loadRawGraphData(): Promise<RawGraphData> {
     remarks: [],
     books: [],
     standalones: [],
+    displayTemplates: loadDisplayTemplateCollections(contentDir),
   }
 
   function scanNamespaceDir(dir: string) {

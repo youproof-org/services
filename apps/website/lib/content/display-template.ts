@@ -1,7 +1,8 @@
 import 'server-only'
-import type { RefTarget, ContentGraph, StandaloneNode } from './types'
+import type { RefTarget, ContentGraph, StandaloneNode, DisplayTemplateTargetType } from './types'
 import { getChapterIndexLabel, getSectionIndexLabel } from '../utils/index-helpers'
-import { entityLabels } from '../i18n/entity-labels'
+import { entityLabels, entityLabelCases } from '../i18n/entity-labels'
+import { LOCALES } from '../i18n/config'
 
 // ---------------------------------------------------------------------------
 // Context types
@@ -84,12 +85,19 @@ function inflect(inflCase: ContextValue, labels: ContextValue): string {
   return base(inflCase, labels) + suffix(inflCase, labels)
 }
 
-const BUILTINS: Record<string, BuiltInFn> = {
-  the,
-  capital,
-  base,
-  suffix,
-  inflect,
+type ParamKind = 'text' | 'case' | 'label'
+
+interface BuiltIn {
+  fn: BuiltInFn
+  params: readonly ParamKind[]
+}
+
+const BUILTINS: Record<string, BuiltIn> = {
+  the:     { fn: the,     params: ['text'] },
+  capital: { fn: capital, params: ['text'] },
+  base:    { fn: base,    params: ['case', 'label'] },
+  suffix:  { fn: suffix,  params: ['case', 'label'] },
+  inflect: { fn: inflect, params: ['case', 'label'] },
 }
 
 // ---------------------------------------------------------------------------
@@ -98,14 +106,17 @@ const BUILTINS: Record<string, BuiltInFn> = {
 //
 // Grammar:
 //   template  ::= (literal | '{' expr '}')*
-//   expr      ::= fn_call | path
+//   expr      ::= string | fn_call | path
+//   string    ::= "'" [^']* "'"
 //   fn_call   ::= identifier '(' arg_list ')'
 //   arg_list  ::= expr (',' expr)*
 //   path      ::= identifier ('.' identifier)*
-//
-// A parsed expr is a thunk: (ctx: TemplateContext) => ContextValue
 
-type Thunk = (ctx: TemplateContext) => ContextValue
+export type TemplateExpr =
+  | { kind: 'string'; value: string }
+  | { kind: 'call'; name: string; args: TemplateExpr[] }
+  | { kind: 'path'; segments: string[] }
+
 type ParseResult<T> = { value: T; rest: string } | null
 
 function skipWs(s: string): string {
@@ -132,24 +143,20 @@ function parsePath(s: string): ParseResult<string[]> {
   return { value: parts, rest }
 }
 
-function parseExpr(s: string): ParseResult<Thunk> {
+function parseExpr(s: string): ParseResult<TemplateExpr> {
   s = skipWs(s)
 
-  // String literal: 'value'
   if (s.startsWith("'")) {
     const end = s.indexOf("'", 1)
     if (end !== -1) {
-      const literal = s.slice(1, end)
-      return { value: () => literal, rest: s.slice(end + 1) }
+      return { value: { kind: 'string', value: s.slice(1, end) }, rest: s.slice(end + 1) }
     }
   }
 
-  // Peek: identifier followed by '(' → function call
   const id = parseIdentifier(s)
   if (id && skipWs(id.rest).startsWith('(')) {
-    const fnName = id.value
-    let rest = skipWs(id.rest).slice(1) // consume '('
-    const args: Thunk[] = []
+    let rest = skipWs(id.rest).slice(1)
+    const args: TemplateExpr[] = []
 
     rest = skipWs(rest)
     if (!rest.startsWith(')')) {
@@ -168,22 +175,21 @@ function parseExpr(s: string): ParseResult<Thunk> {
     }
 
     if (!rest.startsWith(')')) return null
-    rest = rest.slice(1) // consume ')'
-
-    const fn = BUILTINS[fnName]
-    if (!fn) throw new Error(`[display-template] Unknown built-in: "${fnName}"`)
-
-    return { value: (ctx) => fn(...args.map(a => a(ctx))), rest }
+    return { value: { kind: 'call', name: id.value, args }, rest: rest.slice(1) }
   }
 
-  // Path
   const path = parsePath(s)
-  if (path) {
-    const segments = path.value
-    return { value: (ctx) => resolvePath(segments, ctx), rest: path.rest }
-  }
+  if (path) return { value: { kind: 'path', segments: path.value }, rest: path.rest }
 
   return null
+}
+
+function evaluate(expr: TemplateExpr, ctx: TemplateContext): ContextValue {
+  if (expr.kind === 'string') return expr.value
+  if (expr.kind === 'path') return resolvePath(expr.segments, ctx)
+  const builtIn = Object.prototype.hasOwnProperty.call(BUILTINS, expr.name) ? BUILTINS[expr.name] : undefined
+  if (!builtIn) throw new Error(`[display-template] Unknown built-in: "${expr.name}"`)
+  return builtIn.fn(...expr.args.map((arg) => evaluate(arg, ctx)))
 }
 
 function resolvePath(parts: string[], ctx: TemplateContext): ContextValue {
@@ -198,44 +204,51 @@ function resolvePath(parts: string[], ctx: TemplateContext): ContextValue {
 }
 
 // ---------------------------------------------------------------------------
-// Public API
+// Tokenizer
 // ---------------------------------------------------------------------------
 
 // $...$ inline math — same token as InlineText's renderChunkWithMath (/\$([^$]+)\$/g).
 // Braces inside math (e.g. \frac{m}{d}) must NOT be treated as template expressions.
 const MATH_RE = /\$[^$]+\$/g
 
-/**
- * Resolve all `{expr}` placeholders in a single (math-free) segment against `ctx`.
- * Returns the segment unchanged if it contains no `{`.
- */
-function resolveSegment(segment: string, ctx: TemplateContext): string {
-  if (!segment.includes('{')) return segment
+type TemplatePart =
+  | { kind: 'text'; text: string }
+  | { kind: 'math'; text: string }
+  | { kind: 'expr'; source: string }
 
-  const parts: string[] = []
+/** A `{` with no closing `}` stays in its text part, as the resolver prints it. */
+function splitSegment(segment: string, out: TemplatePart[]): void {
   let i = 0
-
   while (i < segment.length) {
     const open = segment.indexOf('{', i)
-    if (open === -1) { parts.push(segment.slice(i)); break }
-    if (open > i) parts.push(segment.slice(i, open))
+    if (open === -1) { out.push({ kind: 'text', text: segment.slice(i) }); return }
+    if (open > i) out.push({ kind: 'text', text: segment.slice(i, open) })
 
     const close = segment.indexOf('}', open + 1)
-    if (close === -1) { parts.push(segment.slice(open)); break }
+    if (close === -1) { out.push({ kind: 'text', text: segment.slice(open) }); return }
 
-    const exprStr = segment.slice(open + 1, close)
-    const parsed = parseExpr(exprStr)
-    if (parsed) {
-      const val = parsed.value(ctx)
-      parts.push(typeof val === 'string' ? val : '')
-    } else {
-      parts.push(`{${exprStr}}`)
-    }
+    out.push({ kind: 'expr', source: segment.slice(open + 1, close) })
     i = close + 1
   }
-
-  return parts.join('')
 }
+
+function tokenize(template: string): TemplatePart[] {
+  const parts: TemplatePart[] = []
+  let pos = 0
+  let m: RegExpExecArray | null
+  MATH_RE.lastIndex = 0
+  while ((m = MATH_RE.exec(template)) !== null) {
+    splitSegment(template.slice(pos, m.index), parts)
+    parts.push({ kind: 'math', text: m[0] })
+    pos = m.index + m[0].length
+  }
+  splitSegment(template.slice(pos), parts)
+  return parts
+}
+
+// ---------------------------------------------------------------------------
+// Public API
+// ---------------------------------------------------------------------------
 
 /**
  * Resolve all `{expr}` fields in `template` against `ctx`.
@@ -246,18 +259,15 @@ function resolveSegment(segment: string, ctx: TemplateContext): string {
 export function resolveTemplate(template: string, ctx: TemplateContext): string {
   if (!template.includes('{')) return template
 
-  const out: string[] = []
-  let pos = 0
-  let m: RegExpExecArray | null
-  MATH_RE.lastIndex = 0
-  while ((m = MATH_RE.exec(template)) !== null) {
-    out.push(resolveSegment(template.slice(pos, m.index), ctx))
-    out.push(m[0])                       // math span passes through untouched
-    pos = m.index + m[0].length
-  }
-  out.push(resolveSegment(template.slice(pos), ctx))
-
-  return out.join('')
+  return tokenize(template)
+    .map((part) => {
+      if (part.kind !== 'expr') return part.text
+      const parsed = parseExpr(part.source)
+      if (!parsed) return `{${part.source}}`
+      const val = evaluate(parsed.value, ctx)
+      return typeof val === 'string' ? val : ''
+    })
+    .join('')
 }
 
 /**
@@ -415,4 +425,150 @@ export function buildContext(
   }
 
   return null
+}
+
+// ---------------------------------------------------------------------------
+// Template checks
+// ---------------------------------------------------------------------------
+
+type ContextShape = 'text' | 'label' | { readonly [field: string]: ContextShape }
+
+const STANDALONE_SHAPE = { name: 'text', title: 'text', type: 'text' } as const
+const NUMBERED_SHAPE = { index: 'text', name: 'text', title: 'text', type: 'text' } as const
+const ENTITY_SHAPE = { index: 'text', name: 'text', title: 'text', type: 'text', label: 'label' } as const
+const LABELLED_PARENT_SHAPE = { index: 'text', label: 'label' } as const
+
+/**
+ * The `target` fields `buildContext` gives each target type it supports, so a
+ * template can be checked before any reference uses it. A unit test builds the
+ * context of every type and compares it with this, so the two can't drift apart.
+ */
+export const TEMPLATE_CONTEXT_SHAPES = {
+  book: STANDALONE_SHAPE,
+  article: STANDALONE_SHAPE,
+  newsletter: STANDALONE_SHAPE,
+  page: STANDALONE_SHAPE,
+  landing: STANDALONE_SHAPE,
+  chapter: NUMBERED_SHAPE,
+  section: NUMBERED_SHAPE,
+  definition: ENTITY_SHAPE,
+  theorem: ENTITY_SHAPE,
+  proof: ENTITY_SHAPE,
+  remark: ENTITY_SHAPE,
+  claim: { index: 'text', name: 'text', type: 'text', parent: LABELLED_PARENT_SHAPE },
+  term: { name: 'text', type: 'text', parent: LABELLED_PARENT_SHAPE },
+} as const satisfies Record<DisplayTemplateTargetType, ContextShape>
+
+export const TEMPLATE_TARGET_TYPES = Object.keys(TEMPLATE_CONTEXT_SHAPES) as DisplayTemplateTargetType[]
+
+type ExprKind = 'text' | 'label' | 'object' | 'invalid'
+
+function pathKind(segments: string[], type: DisplayTemplateTargetType, errors: Set<string>): ExprKind {
+  let shape: ContextShape = { target: TEMPLATE_CONTEXT_SHAPES[type] }
+  for (let i = 0; i < segments.length; i++) {
+    const segment = segments[i]
+    if (shape === 'label' && segment === 'canonical' && i === segments.length - 1) return 'text'
+    const next: ContextShape | undefined =
+      typeof shape === 'object' && Object.prototype.hasOwnProperty.call(shape, segment) ? shape[segment] : undefined
+    if (next === undefined) {
+      errors.add(`a ${type} target has no '${segments.slice(0, i + 1).join('.')}'`)
+      return 'invalid'
+    }
+    shape = next
+  }
+  return typeof shape === 'object' ? 'object' : shape
+}
+
+function describeCases(): string {
+  return LOCALES.map((locale) => `'${locale}' declares: ${entityLabelCases(locale).join(', ')}`).join('; ')
+}
+
+function exprKind(expr: TemplateExpr, type: DisplayTemplateTargetType, errors: Set<string>): ExprKind {
+  if (expr.kind === 'string') return 'text'
+  if (expr.kind === 'path') return pathKind(expr.segments, type, errors)
+
+  const builtIn = Object.prototype.hasOwnProperty.call(BUILTINS, expr.name) ? BUILTINS[expr.name] : undefined
+  if (!builtIn) {
+    errors.add(`unknown built-in '${expr.name}'. Known: ${Object.keys(BUILTINS).join(', ')}`)
+    return 'invalid'
+  }
+  if (expr.args.length !== builtIn.params.length) {
+    errors.add(`${expr.name}() takes ${builtIn.params.length} argument(s), not ${expr.args.length}`)
+    return 'invalid'
+  }
+  builtIn.params.forEach((param, i) => {
+    const arg = expr.args[i]
+    if (param === 'case') {
+      if (arg.kind !== 'string') {
+        errors.add(`the case of ${expr.name}() must be a quoted case key`)
+      } else if (!LOCALES.some((locale) => entityLabelCases(locale).includes(arg.value))) {
+        errors.add(`case '${arg.value}' is not declared. ${describeCases()}`)
+      }
+      return
+    }
+    const kind = exprKind(arg, type, errors)
+    if (kind === 'invalid' || kind === param) return
+    errors.add(
+      param === 'label'
+        ? `${expr.name}() inflects a label, such as target.label`
+        : `${expr.name}() takes text, not ${kind === 'label' ? 'a label' : 'an object'}`,
+    )
+  })
+  return 'text'
+}
+
+export interface TemplateCheckOptions {
+  /** `at-most-one` for a form that renders one target, `none` for text around or between items. */
+  links: 'at-most-one' | 'none'
+  /** False for text that has no target of its own, such as a list's separators. */
+  expressions?: boolean
+}
+
+/**
+ * The problems with `template` as a display for any of `targets`, without a
+ * reference to resolve it against: expressions the parser can't read, built-ins
+ * that don't exist or get the wrong arguments, fields the target types don't have,
+ * case keys no locale declares, and link brackets. Empty when the template is valid.
+ */
+export function checkTemplate(
+  template: string,
+  targets: readonly DisplayTemplateTargetType[],
+  { links, expressions = true }: TemplateCheckOptions,
+): string[] {
+  const errors = new Set<string>()
+  let opens = 0
+  let closes = 0
+  for (const part of tokenize(template)) {
+    if (part.kind === 'math') continue
+    if (part.kind === 'text') {
+      if (part.text.includes('{')) errors.add(`'{' is never closed`)
+      for (const ch of part.text) {
+        if (ch === '[') opens++
+        else if (ch === ']' && ++closes > opens) errors.add(`']' comes before its '['`)
+      }
+      continue
+    }
+    const where = `{${part.source}}`
+    if (!expressions) {
+      errors.add(`${where}: there is no target here to read`)
+      continue
+    }
+    const parsed = parseExpr(part.source)
+    if (!parsed || skipWs(parsed.rest) !== '') {
+      errors.add(`${where} is not an expression`)
+      continue
+    }
+    for (const type of targets) {
+      const found = new Set<string>()
+      const kind = exprKind(parsed.value, type, found)
+      if (kind === 'label' || kind === 'object') {
+        found.add(kind === 'label' ? 'a label is not text: read its canonical word or inflect it' : 'it names an object, not text')
+      }
+      for (const error of found) errors.add(`${where}: ${error}`)
+    }
+  }
+  if (opens !== closes) errors.add(`'[' and ']' don't pair up`)
+  else if (links === 'none' && opens > 0) errors.add('it may not hold a link [...]')
+  else if (opens > 1) errors.add('it may hold one link [...], not several')
+  return [...errors]
 }

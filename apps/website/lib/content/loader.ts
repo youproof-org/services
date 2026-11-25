@@ -2,8 +2,9 @@ import 'server-only'
 import fs from 'fs'
 import path from 'path'
 import yaml from 'js-yaml'
-import { DEFAULT_LOCALE } from '@/lib/i18n/config'
-import { entityLabelVariants } from '@/lib/i18n/entity-labels'
+import { DEFAULT_LOCALE, LOCALES } from '@/lib/i18n/config'
+import { entityLabelVariants, KB_ENTITY_TYPES, KEBAB_CASE } from '@/lib/i18n/entity-labels'
+import { checkTemplate, TEMPLATE_TARGET_TYPES, type TemplateCheckOptions } from './display-template'
 import type {
   RefTarget,
   ContentBlock,
@@ -19,6 +20,13 @@ import type {
   PartNode,
   ChapterNode,
   SectionNode,
+  DisplayTemplate,
+  DisplayTemplateCollection,
+  DisplayTemplateGroupBy,
+  DisplayTemplateItemForms,
+  DisplayTemplateList,
+  DisplayTemplateSeparators,
+  DisplayTemplateTargetType,
 } from './types'
 import { isExternalTarget, parseFqn } from './fqn'
 
@@ -640,4 +648,256 @@ export function loadStandalone(filePath: string): RawStandalone {
       references: toRefMap(raw.references),
     }
   })
+}
+
+// ---------------------------------------------------------------------------
+// Display template collection
+// ---------------------------------------------------------------------------
+
+export function displayTemplatesPath(contentDir: string, locale: string): string {
+  return path.join(contentDir, 'display-templates', `display-templates.${locale}.yaml`)
+}
+
+/** Every configured locale's collection. A locale without a file has no templates. */
+export function loadDisplayTemplateCollections(contentDir: string): Record<string, DisplayTemplateCollection> {
+  const collections: Record<string, DisplayTemplateCollection> = {}
+  for (const locale of LOCALES) {
+    const file = displayTemplatesPath(contentDir, locale)
+    collections[locale] = fs.existsSync(file) ? loadDisplayTemplates(file) : {}
+  }
+  return collections
+}
+
+/** Reads one locale's collection and reports every invalid template in it at once. */
+export function loadDisplayTemplates(filePath: string): DisplayTemplateCollection {
+  return inFile(filePath, () => {
+    const raw = yaml.load(fs.readFileSync(filePath, 'utf-8'))
+    if (raw === undefined || raw === null) return {}
+    if (!isMapping(raw)) formatError('the file must map template names to templates.')
+    const collection: DisplayTemplateCollection = {}
+    const errors: string[] = []
+    for (const [name, entry] of Object.entries(raw)) {
+      const problems: string[] = []
+      const template = readDisplayTemplate(name, entry, problems)
+      if (problems.length > 0) errors.push(...problems.map((problem) => `template '${name}': ${problem}`))
+      else if (template) collection[name] = template
+    }
+    if (errors.length > 0) formatError(errors.join('\n  '))
+    return collection
+  })
+}
+
+const TEMPLATE_KEYS = ['targets', 'template', 'list']
+const LIST_KEYS = ['count', 'group-by', 'order', 'item', 'group', 'before', 'after']
+const ITEM_KEYS = ['first', 'middle', 'last', 'only', 'separator', 'last-separator']
+const SEPARATOR_KEYS = ['separator', 'last-separator']
+const COUNT_KEYS = ['min', 'max']
+const GROUP_BY: readonly DisplayTemplateGroupBy[] = ['label', 'parent', 'type']
+
+const ITEM_FORM: TemplateCheckOptions = { links: 'at-most-one' }
+const LIST_TEXT: TemplateCheckOptions = { links: 'none', expressions: false }
+
+function isMapping(raw: unknown): raw is Record<string, unknown> {
+  return typeof raw === 'object' && raw !== null && !Array.isArray(raw)
+}
+
+function rejectUnknownKeys(raw: Record<string, unknown>, known: string[], where: string, problems: string[]): void {
+  for (const key of Object.keys(raw)) {
+    if (!known.includes(key)) problems.push(`unknown key '${where}${key}'. Known: ${known.join(', ')}`)
+  }
+}
+
+function readDisplayTemplate(name: string, raw: unknown, problems: string[]): DisplayTemplate | undefined {
+  if (!KEBAB_CASE.test(name)) problems.push('the name is not kebab-case')
+  if (!isMapping(raw)) {
+    problems.push("a template must be a mapping with 'targets' and 'template' or 'list'")
+    return undefined
+  }
+  rejectUnknownKeys(raw, TEMPLATE_KEYS, '', problems)
+  const targets = readTargets(raw.targets, problems)
+
+  const hasTemplate = raw.template !== undefined
+  const hasList = raw.list !== undefined
+  if (hasTemplate === hasList) {
+    problems.push("a template has exactly one of 'template' and 'list'")
+    return undefined
+  }
+  if (hasTemplate) {
+    const template = readForm(raw.template, 'template', targets, ITEM_FORM, problems)
+    return template === undefined ? undefined : { kind: 'single', name, targets, template }
+  }
+  const list = readList(raw.list, targets, problems)
+  return list && { kind: 'list', name, targets, list }
+}
+
+function readTargets(raw: unknown, problems: string[]): DisplayTemplateTargetType[] {
+  if (!Array.isArray(raw) || raw.length === 0) {
+    problems.push(`'targets' must be a non-empty list of target types. Known: ${TEMPLATE_TARGET_TYPES.join(', ')}`)
+    return []
+  }
+  const targets: DisplayTemplateTargetType[] = []
+  for (const type of raw) {
+    if (!(TEMPLATE_TARGET_TYPES as unknown[]).includes(type)) {
+      problems.push(`'${String(type)}' is not a target type. Known: ${TEMPLATE_TARGET_TYPES.join(', ')}`)
+    } else if (targets.includes(type)) {
+      problems.push(`'targets' lists '${type}' twice`)
+    } else {
+      targets.push(type)
+    }
+  }
+  return targets
+}
+
+function readForm(
+  raw: unknown,
+  where: string,
+  targets: DisplayTemplateTargetType[],
+  options: TemplateCheckOptions,
+  problems: string[],
+): string | undefined {
+  if (typeof raw !== 'string') {
+    problems.push(`'${where}' must be a string`)
+    return undefined
+  }
+  for (const error of checkTemplate(raw, targets, options)) problems.push(`${where}: ${error}`)
+  return raw
+}
+
+function readOptionalForm(
+  raw: unknown,
+  where: string,
+  targets: DisplayTemplateTargetType[],
+  options: TemplateCheckOptions,
+  problems: string[],
+): string | undefined {
+  return raw === undefined ? undefined : readForm(raw, where, targets, options, problems)
+}
+
+function readCount(raw: unknown, problems: string[]): DisplayTemplateList['count'] | undefined {
+  const isCount = (n: unknown): n is number => Number.isInteger(n) && (n as number) >= 1
+  if (typeof raw === 'number') {
+    if (isCount(raw)) return { min: raw, max: raw }
+    problems.push("'list.count' must be a whole number of at least 1")
+    return undefined
+  }
+  if (!isMapping(raw)) {
+    problems.push("'list.count' must be a number or a range with 'min' and 'max'")
+    return undefined
+  }
+  rejectUnknownKeys(raw, COUNT_KEYS, 'list.count.', problems)
+  const min = raw.min ?? 1
+  const max = raw.max
+  if (!isCount(min)) problems.push("'list.count.min' must be a whole number of at least 1")
+  if (max !== undefined && !isCount(max)) problems.push("'list.count.max' must be a whole number of at least 1")
+  if (!isCount(min) || (max !== undefined && !isCount(max))) return undefined
+  if (max !== undefined && min >= max) {
+    problems.push(`'list.count.min' (${min}) must be smaller than 'list.count.max' (${max}); write one value as 'count: ${min}'`)
+    return undefined
+  }
+  return max === undefined ? { min } : { min, max }
+}
+
+function readGroupBy(
+  raw: unknown,
+  targets: DisplayTemplateTargetType[],
+  problems: string[],
+): DisplayTemplateGroupBy | undefined {
+  if (raw === undefined) return undefined
+  if (!(GROUP_BY as unknown[]).includes(raw)) {
+    problems.push(`'list.group-by' must be one of ${GROUP_BY.join(', ')}`)
+    return undefined
+  }
+  const groupBy = raw as DisplayTemplateGroupBy
+  const supported = (type: DisplayTemplateTargetType) =>
+    groupBy === 'type' ||
+    (groupBy === 'parent' && type === 'claim') ||
+    (groupBy === 'label' && (KB_ENTITY_TYPES as readonly string[]).includes(type))
+  const unsupported = targets.filter((type) => !supported(type))
+  if (unsupported.length > 0) {
+    const which = groupBy === 'parent' ? 'only claims have a parent' : `only ${KB_ENTITY_TYPES.join(', ')} have a label`
+    problems.push(`'list.group-by: ${groupBy}' does not apply to ${unsupported.join(', ')}: ${which}`)
+  }
+  return groupBy
+}
+
+function readSeparators(raw: Record<string, unknown>, where: string, problems: string[]): DisplayTemplateSeparators | undefined {
+  const separator = readForm(raw.separator, `${where}.separator`, [], LIST_TEXT, problems)
+  const lastSeparator = readOptionalForm(raw['last-separator'], `${where}.last-separator`, [], LIST_TEXT, problems)
+  return separator === undefined ? undefined : { separator, lastSeparator: lastSeparator ?? separator }
+}
+
+function readItem(
+  raw: unknown,
+  targets: DisplayTemplateTargetType[],
+  problems: string[],
+): DisplayTemplateItemForms | undefined {
+  if (!isMapping(raw)) {
+    problems.push("'list.item' must be a mapping with at least 'first' and 'separator'")
+    return undefined
+  }
+  rejectUnknownKeys(raw, ITEM_KEYS, 'list.item.', problems)
+  const first = readForm(raw.first, 'list.item.first', targets, ITEM_FORM, problems)
+  const middle = readOptionalForm(raw.middle, 'list.item.middle', targets, ITEM_FORM, problems)
+  const last = readOptionalForm(raw.last, 'list.item.last', targets, ITEM_FORM, problems)
+  const only = readOptionalForm(raw.only, 'list.item.only', targets, ITEM_FORM, problems)
+  const separators = readSeparators(raw, 'list.item', problems)
+  if (first === undefined || separators === undefined) return undefined
+  const resolvedMiddle = middle ?? first
+  return {
+    first,
+    middle: resolvedMiddle,
+    last: last ?? resolvedMiddle,
+    ...(only === undefined ? {} : { only }),
+    ...separators,
+  }
+}
+
+function readList(
+  raw: unknown,
+  targets: DisplayTemplateTargetType[],
+  problems: string[],
+): DisplayTemplateList | undefined {
+  if (!isMapping(raw)) {
+    problems.push("'list' must be a mapping with 'count' and 'item'")
+    return undefined
+  }
+  rejectUnknownKeys(raw, LIST_KEYS, 'list.', problems)
+  let count: DisplayTemplateList['count'] | undefined
+  if (raw.count === undefined) problems.push("'list.count' is required")
+  else count = readCount(raw.count, problems)
+  const groupBy = readGroupBy(raw['group-by'], targets, problems)
+  if (raw.order !== undefined && raw.order !== 'authored') {
+    problems.push("'list.order' is either absent, for the targets' order in the content, or 'authored'")
+  }
+  const item = readItem(raw.item, targets, problems)
+  let group: DisplayTemplateSeparators | undefined
+  if (groupBy !== undefined) {
+    if (isMapping(raw.group)) {
+      rejectUnknownKeys(raw.group, SEPARATOR_KEYS, 'list.group.', problems)
+      group = readSeparators(raw.group, 'list.group', problems)
+    } else {
+      problems.push("'list.group' with a 'separator' is required with 'group-by'")
+    }
+  } else if (raw.group !== undefined) {
+    problems.push("'list.group' only applies with 'group-by'")
+  }
+  const before = readOptionalForm(raw.before, 'list.before', [], LIST_TEXT, problems) ?? ''
+  const after = readOptionalForm(raw.after, 'list.after', [], LIST_TEXT, problems) ?? ''
+
+  if (item && count && item.only === undefined && (groupBy !== undefined || count.min === 1)) {
+    problems.push(
+      groupBy !== undefined
+        ? "'list.item.only' is required with 'group-by', since a group can have one member"
+        : "'list.item.only' is required when 'list.count' allows one target",
+    )
+  }
+  if (!count || !item || (groupBy !== undefined && !group)) return undefined
+  return {
+    count,
+    ...(groupBy === undefined ? {} : { groupBy, group }),
+    order: raw.order === 'authored' ? 'authored' : 'sorted',
+    item,
+    before,
+    after,
+  }
 }
