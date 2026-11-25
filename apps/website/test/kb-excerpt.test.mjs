@@ -12,6 +12,7 @@ import * as graphModule from '../lib/content/graph.ts'
 const { kbExcerpt } = excerptModule.default ?? excerptModule
 const { buildGraphFromRaw } = graphModule.default ?? graphModule
 
+import { linkSegments } from '@youproof.org/display-templates'
 import { raw } from './support/raw-graph.mjs'
 
 /** A node with just the fields the excerpt reads. */
@@ -28,6 +29,12 @@ const node = (body, { references, terms } = {}) => ({
 })
 
 const narrative = (content) => ({ type: 'narrative', content })
+
+/** A references entry as the graph leaves it, with its display resolved to segments. */
+const external = (display, url = 'x') => {
+  const target = { type: 'external', url }
+  return { display, target, segments: linkSegments(display, target) }
+}
 
 // ---------------------------------------------------------------------------
 
@@ -48,7 +55,7 @@ test('emphasis markers come out, the words stay', () => {
 test('a reference and a term become the words they display', () => {
   const excerpt = kbExcerpt(
     node([narrative('Legyen $R$ egy [ring], amelyben van [[unit]].')], {
-      references: { ring: { display: 'gyűrű', target: { type: 'external', url: 'x' } } },
+      references: { ring: external('gyűrű') },
       terms: { unit: { display: '[egység]', canonical: 'egység' } },
     }),
   )
@@ -59,7 +66,7 @@ test('a display form is itself markup: its own math and emphasis are resolved to
   const excerpt = kbExcerpt(
     node([narrative('Tekintsük a [mod] gyűrűt.')], {
       references: {
-        mod: { display: 'modulo $m$ ***maradékok***', target: { type: 'external', url: 'x' } },
+        mod: external('modulo $m$ ***maradékok***'),
       },
     }),
   )
@@ -83,7 +90,7 @@ test('a bracket inside math is part of the formula, not a reference', () => {
   // replaced by whatever a ref named "a" happens to display.
   const excerpt = kbExcerpt(
     node([narrative('Az $[a]_n$ maradékosztály.')], {
-      references: { a: { display: 'VALAMI MÁS', target: { type: 'external', url: 'x' } } },
+      references: { a: external('VALAMI MÁS') },
     }),
   )
   assert.equal(excerpt, 'Az [a]_n maradékosztály.')
@@ -117,7 +124,7 @@ test("a formula's content is never the excerpt, but its lead-out is", () => {
 
 test("a typewriter block's rows are never read as prose, only its lead-in", () => {
   const rows = ['[0]_3 [1]_3', '[r] [x]']
-  const refs = { references: { r: { display: 'HIBA', target: { type: 'external', url: 'https://x' } } } }
+  const refs = { references: { r: external('HIBA', 'https://x') } }
   assert.equal(kbExcerpt(node([{ type: 'typewriter', rows }], refs)), undefined)
   assert.equal(kbExcerpt(node([{ type: 'typewriter', leadIn: 'A tábla:', rows }], refs)), 'A tábla:')
 })

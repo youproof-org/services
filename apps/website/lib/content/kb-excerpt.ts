@@ -1,3 +1,4 @@
+import { segmentsText } from '@youproof.org/display-templates'
 import type { ContentBlock, KbNode, RefMap, TermMap } from './types'
 
 // The meta-description of a knowledge-base entity page: the opening prose of its
@@ -84,9 +85,9 @@ const TOKEN_RE =
  * Two decisions specific to a description:
  *
  * - A `[ref]` and a `[[term]]` become the words they display, so the sentence
- *   stays a sentence. A display form may itself mark which part is the link text
- *   (`a [gyűrű] definíciója`, see `formatSegmentedDisplay`); those brackets are
- *   markup and come out.
+ *   stays a sentence. A term's display form may itself mark which part is the
+ *   link text (`a [gyűrű] definíciója`), and a ref's resolved segments are joined
+ *   without their link markup; any bracket left is markup too and comes out.
  * - `$math$` survives only while it reads as text — a bare symbol like `R` or
  *   `a*b`. Anything with a backslash or a brace is a TeX command that would reach
  *   the search result as `\Z` or `\frac{m}{d}`, so it is dropped instead. The
@@ -120,7 +121,10 @@ function tokens(text: string, refs: RefMap | undefined, terms: TermMap | undefin
     if (boldItalic !== undefined) return tokens(boldItalic, refs, terms)
     if (bold !== undefined) return tokens(bold, refs, terms)
     if (math !== undefined) return /[\\{}]/.test(math) ? '' : math
-    if (refSlug !== undefined) return display(refs?.[refSlug]?.display, refs, terms) ?? whole
+    if (refSlug !== undefined) {
+      const ref = refs?.[refSlug]
+      return (ref && display(segmentsText(ref.segments), refs, terms)) ?? whole
+    }
     if (sup !== undefined) return tokens(sup, refs, terms)
     if (termKey !== undefined) return display(terms?.[termKey]?.display, refs, terms) ?? whole
     // A figure's self-reference resolves against the figure, which a description

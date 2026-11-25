@@ -1,8 +1,8 @@
 import React from 'react'
+import { capitalizeSegments, linkSegments, type DisplaySegment } from '@youproof.org/display-templates'
 import { mathSource } from '@/lib/utils/math'
 import { termAnchorId } from '@/lib/content/urls'
-import { isPathTarget } from '@/lib/content/types'
-import type { RefMap, TermMap, AnchorParent } from '@/lib/content/types'
+import type { RefMap, RefLinkSegment, RefTarget, TermMap, AnchorParent } from '@/lib/content/types'
 
 interface InlineTextProps {
   text: string
@@ -66,26 +66,60 @@ function parseBoldItalic(text: string, counter: KeyCounter): React.ReactNode[] {
   return nodes
 }
 
-function formatSegmentedDisplay(
-  display: string,
+/**
+ * A resolved display: its text segments as inline markup, its link segments as
+ * whatever `renderLink` makes of them.
+ */
+function renderSegments<S extends DisplaySegment<unknown>>(
+  segments: readonly S[],
   counter: KeyCounter,
-  renderLink: (linkText: React.ReactNode[]) => React.ReactElement,
+  renderLink: (segment: Extract<S, { kind: 'link' }>, linkText: React.ReactNode[]) => React.ReactElement,
 ): React.ReactNode {
-  const open = display.indexOf('[')
-  const close = display.lastIndexOf(']')
-  if (open !== -1 && close > open) {
-    const before = display.slice(0, open)
-    const linkText = display.slice(open + 1, close)
-    const after = display.slice(close + 1)
-    return (
-      <React.Fragment key={counter.n++}>
-        {parseBoldItalic(before, counter)}
-        {renderLink(parseBoldItalic(linkText, counter))}
-        {parseBoldItalic(after, counter)}
-      </React.Fragment>
-    )
+  const children = segments.map((segment) =>
+    segment.kind === 'link'
+      ? renderLink(segment as Extract<S, { kind: 'link' }>, parseBoldItalic(segment.text, counter))
+      : parseBoldItalic(segment.text, counter),
+  )
+  return React.createElement(React.Fragment, { key: counter.n++ }, ...children)
+}
+
+const CONCEPT_TARGETS: ReadonlySet<RefTarget['type']> = new Set([
+  'claim', 'term', 'definition', 'theorem', 'proof', 'remark',
+])
+
+const LINKED_TARGETS: ReadonlySet<RefTarget['type']> = new Set([
+  ...CONCEPT_TARGETS, 'external', 'book', 'chapter', 'section', 'article', 'newsletter', 'page', 'landing',
+])
+
+/*
+  What a link points at, in the one form that addresses everything in the content
+  model (sub-plan D7). It is written onto every internal link as `data-target-fqn`,
+  because a page arrived at from a "Bejövő hivatkozások" row has to be able to find
+  the references pointing back at where the reader came from, and the fully
+  qualified name is what the row names them by (see `lib/kb/highlight.ts`). Each
+  link segment carries its own target, so a reference with several links marks
+  each one with its own.
+
+  An external target has no fully qualified name and gets no attribute: it
+  addresses something outside the content model, so there is nothing for a
+  reference list to point back at.
+
+  Every href is resolved at graph-build time (book and standalone pages via their
+  url helpers, never a hardcoded absolute URL; claims via resolveRefHrefs, which
+  throws rather than leaving one unset).
+*/
+function renderRefLink(segment: RefLinkSegment, linkText: React.ReactNode[]): React.ReactElement {
+  const { target } = segment
+  if (target.type === 'external') {
+    return <a href={target.url} target="_blank" rel="noopener noreferrer" className="ref-link">{linkText}</a>
   }
-  return <React.Fragment key={counter.n++}>{renderLink(parseBoldItalic(display, counter))}</React.Fragment>
+  const className = CONCEPT_TARGETS.has(target.type) ? 'ref-concept' : 'ref-link'
+  return <a href={segment.href ?? '#'} target="_blank" data-target-fqn={target.fqn} className={className}>{linkText}</a>
+}
+
+function atSentenceStart(text: string, index: number): boolean {
+  const textBefore = text.slice(0, index).trimEnd()
+  return textBefore.length === 0 || /[.!?]$/.test(textBefore)
 }
 
 function parseInline(
@@ -174,89 +208,10 @@ function parseNormalized(
       )
     } else if (refSlug !== undefined) {
       const ref = refs?.[refSlug]
-      if (ref && ref.display) {
-        /*
-          What this reference points at, in the one form that addresses everything in
-          the content model (sub-plan D7). It is written onto every internal
-          reference below — the seven branches that render a link, covering the
-          thirteen path kinds this component knows, from a book down to a term —
-          because a page arrived at from a "Bejövő hivatkozások" row has to be able
-          to find the references pointing back at where the reader came from, and the
-          fully qualified name is what the row names them by (see
-          `lib/kb/highlight.ts`). Nothing is computed for it: `target.fqn` is already
-          on the entry, resolved at graph-build time.
-
-          An external target has no fully qualified name and gets no attribute: it
-          addresses something outside the content model, so there is nothing for a
-          reference list to point back at. `isPathTarget` is that distinction.
-        */
-        const targetFqn = isPathTarget(ref.target) ? ref.target.fqn : undefined
-        const textBefore = text.slice(0, match.index).trimEnd()
-        const sentenceStart = textBefore.length === 0 || /[.!?]$/.test(textBefore)
-        const display = sentenceStart
-          ? ref.display.charAt(0).toUpperCase() + ref.display.slice(1)
-          : ref.display
-        if (ref.target.type === 'external') {
-          const url = ref.target.url
-          nodes.push(formatSegmentedDisplay(display, counter, (text: React.ReactNode[]) =>
-            <a href={url} target="_blank" rel="noopener noreferrer" className="ref-link">{text}</a>
-          ))
-        } else if (ref.target.type === 'book') {
-          // href (the book's localized index page) is resolved at graph-build
-          // time via urlForBook — never a hardcoded absolute URL.
-          const href = ref.href ?? '#'
-          nodes.push(formatSegmentedDisplay(display, counter, (text: React.ReactNode[]) =>
-            <a href={href} target="_blank" data-target-fqn={targetFqn} className="ref-link">{text}</a>
-          ))
-        } else if (ref.target.type === 'chapter') {
-          // href is resolved at graph-build time via buildLocalizedUrl.
-          const href = ref.href ?? '#'
-          nodes.push(formatSegmentedDisplay(display, counter, (text: React.ReactNode[]) =>
-            <a href={href} target="_blank" data-target-fqn={targetFqn} className="ref-link">{text}</a>
-          ))
-        } else if (ref.target.type === 'section') {
-          // href (localized chapter URL + section-slug anchor) is resolved at
-          // graph-build time via buildLocalizedUrl.
-          const href = ref.href ?? '#'
-          nodes.push(formatSegmentedDisplay(display, counter, (text: React.ReactNode[]) =>
-            <a href={href} target="_blank" data-target-fqn={targetFqn} className="ref-link">{text}</a>
-          ))
-        } else if (
-          ref.target.type === 'article'  || ref.target.type === 'newsletter' ||
-          ref.target.type === 'page'     || ref.target.type === 'landing'
-        ) {
-          // Standalone item (e.g. one legal page linking to another). href is the
-          // locale-prefixed site path, resolved at graph-build time via
-          // urlForStandalone — never a hardcoded absolute URL.
-          const href = ref.href ?? '#'
-          nodes.push(formatSegmentedDisplay(display, counter, (text: React.ReactNode[]) =>
-            <a href={href} target="_blank" data-target-fqn={targetFqn} className="ref-link">{text}</a>
-          ))
-        } else if (ref.target.type === 'claim') {
-          // href is always resolved at graph-build time (resolveRefHrefs throws
-          // rather than leaving one unset), so there is no id to recompute here.
-          const href = ref.href ?? '#'
-          nodes.push(formatSegmentedDisplay(display, counter, (text: React.ReactNode[]) =>
-            <a href={href} target="_blank" data-target-fqn={targetFqn} className="ref-concept">{text}</a>
-          ))
-        } else if (ref.target.type === 'term') {
-          const href = ref.href ?? '#'
-          nodes.push(formatSegmentedDisplay(display, counter, (text: React.ReactNode[]) =>
-            <a href={href} target="_blank" data-target-fqn={targetFqn} className="ref-concept">{text}</a>
-          ))
-        } else if (
-          ref.target.type === 'definition' || ref.target.type === 'theorem' ||
-          ref.target.type === 'proof'       || ref.target.type === 'remark'
-        ) {
-          if (display) {
-            const href = ref.href ?? '#'
-            nodes.push(formatSegmentedDisplay(display, counter, (text: React.ReactNode[]) =>
-              <a href={href} target="_blank" data-target-fqn={targetFqn} className="ref-concept">{text}</a>
-            ))
-          } else {
-            // Fallback if display template is missing or invalid
-            nodes.push(<span key={counter.n++} className="ref-error">[{ref.target.name}]</span>)
-          }
+      if (ref && ref.segments.length > 0) {
+        if (LINKED_TARGETS.has(ref.target.type)) {
+          const segments = atSentenceStart(text, match.index) ? capitalizeSegments(ref.segments) : ref.segments
+          nodes.push(renderSegments(segments, counter, renderRefLink))
         } else {
           // Fallback for unrecognised target types
           nodes.push(
@@ -266,7 +221,7 @@ function parseNormalized(
           )
         }
       } else {
-        // Fallback for missing reference
+        // Fallback for a missing reference, or a display that resolves to nothing
         nodes.push(
           <span key={counter.n++} className="ref-error">
             [{refSlug}]
@@ -289,13 +244,11 @@ function parseNormalized(
       }
     } else if (selfRefToken !== undefined) {
       if (selfRefDisplay) {
-        const textBefore = text.slice(0, match.index).trimEnd()
-        const sentenceStart = textBefore.length === 0 || /[.!?]$/.test(textBefore)
-        const display = sentenceStart
-          ? selfRefDisplay.charAt(0).toUpperCase() + selfRefDisplay.slice(1)
-          : selfRefDisplay
-        nodes.push(formatSegmentedDisplay(display, counter, (text: React.ReactNode[]) =>
-            <strong>{text}</strong>
+        const segments = linkSegments(selfRefDisplay, undefined)
+        nodes.push(renderSegments(
+          atSentenceStart(text, match.index) ? capitalizeSegments(segments) : segments,
+          counter,
+          (_, linkText) => <strong>{linkText}</strong>,
         ))
       } else {
         // Fallback for self-reference when display template is missing or invalid

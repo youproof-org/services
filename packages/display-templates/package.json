@@ -1,0 +1,19 @@
+{
+  "name": "@youproof.org/display-templates",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "The reference display template engine: the expression language, the template checks and list resolution. Plain TypeScript source with no runtime dependencies, consumed from source by the website and the editor.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit && tsc --noEmit -p test",
+    "test": "node --import tsx --test \"test/*.test.ts\""
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:"
+  }
+}

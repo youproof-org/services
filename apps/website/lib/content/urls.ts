@@ -373,8 +373,8 @@ export function anchorMarksTarget(locale: string, anchorId: string): boolean {
 /**
  * Re-point a references map at knowledge-base pages.
  *
- * `RefEntry` carries two resolved hrefs (see types.ts): `href` for the chapter
- * context and `kbHref` for a KB page. Rather than threading a "which context"
+ * `RefEntry` and each of its link segments carry two resolved hrefs (see types.ts):
+ * `href` for the chapter context and `kbHref` for a KB page. Rather than threading a "which context"
  * flag through ContentBlocks and every block component down to InlineText, a KB
  * page passes its refs through this once at the page boundary. Nested
  * subsection/details blocks inherit the same `refs` prop, so they are covered.
@@ -383,7 +383,10 @@ export function kbRefs(refs: RefMap | undefined): RefMap | undefined {
   if (!refs) return refs
   const out: RefMap = {}
   for (const [key, entry] of Object.entries(refs)) {
-    out[key] = entry.kbHref ? { ...entry, href: entry.kbHref } : entry
+    const segments = entry.segments.map((segment) =>
+      segment.kind === 'link' && segment.kbHref ? { ...segment, href: segment.kbHref } : segment,
+    )
+    out[key] = entry.kbHref ? { ...entry, href: entry.kbHref, segments } : { ...entry, segments }
   }
   return out
 }

@@ -54,7 +54,8 @@ const STANDALONE_DIRS: Record<StandaloneKind, string> = {
   page: 'pages',
   landing: 'landing',
 }
-import { buildContext, resolveTemplate, TemplateCaseError } from './display-template'
+import { linkSegments, resolveSingle, resolveTemplate, TemplateCaseError } from '@youproof.org/display-templates'
+import { buildContext } from './display-template'
 import { entityLabels, entityLabelCases } from '@/lib/i18n/entity-labels'
 import { buildLocalizedUrl } from '@/lib/i18n/url'
 import { resolveContainerKey } from '@/lib/i18n/config'
@@ -905,7 +906,7 @@ type RefOwner =
 
 /**
  * Yields the LIVE node objects, not copies: resolution mutates `RefEntry.href` and
- * `RefEntry.display` in place, and the renderer reads the same objects back off the
+ * `RefEntry.segments` in place, and the renderer reads the same objects back off the
  * graph.
  */
 function* refOwners(graph: ContentGraph): Generator<RefOwner> {
@@ -2039,9 +2040,9 @@ function resolveRefHrefs(graph: ContentGraph): void {
     return chapterAnchorHref
   }
 
-  for (const entry of allRefEntries(graph)) {
-    if (entry.target.type === 'claim' || entry.target.type === 'term') {
-      const target = entry.target
+  const resolveHrefs = (link: { target: RefTarget; href?: string; kbHref?: string }): void => {
+    if (link.target.type === 'claim' || link.target.type === 'term') {
+      const target = link.target
       // The parent's key IS the path minus the leaf, so no reconstruction.
       const parent = kbNodeByKey(graph, target.parentFqn)
       const embedding = graph.embedding.get(target.parentFqn)
@@ -2062,17 +2063,17 @@ function resolveRefHrefs(graph: ContentGraph): void {
       }
       // Two contexts, two anchors: the chapter page renders the node embedded, so
       // the path carries the node; its own page does not.
-      entry.href = `${chapterUrlOf(embedding.chapter)}#${anchors.inChapter}`
-      const kbPage = kbUrlOrFallback(parent, entry.href)
-      entry.kbHref = kbPage === entry.href
+      link.href = `${chapterUrlOf(embedding.chapter)}#${anchors.inChapter}`
+      const kbPage = kbUrlOrFallback(parent, link.href)
+      link.kbHref = kbPage === link.href
         // Fell back to the chapter anchor, which already carries its own fragment.
-        ? entry.href
+        ? link.href
         : `${kbPage}#${anchors.onPage}`
     } else if (
-      entry.target.type === 'definition' || entry.target.type === 'theorem' ||
-      entry.target.type === 'proof'       || entry.target.type === 'remark'
+      link.target.type === 'definition' || link.target.type === 'theorem' ||
+      link.target.type === 'proof'       || link.target.type === 'remark'
     ) {
-      const target = entry.target
+      const target = link.target
       const node = kbNodeByKey(graph, target.fqn)
       const embedding = graph.embedding.get(target.fqn)
       if (!node || !embedding) {
@@ -2081,10 +2082,10 @@ function resolveRefHrefs(graph: ContentGraph): void {
             `in no chapter (so it is rendered nowhere).`,
         )
       }
-      entry.href = `${chapterUrlOf(embedding.chapter)}#${kbAnchorPath(node)}`
-      entry.kbHref = kbUrlOrFallback(node, entry.href)
-    } else if (entry.target.type === 'book') {
-      const target = entry.target
+      link.href = `${chapterUrlOf(embedding.chapter)}#${kbAnchorPath(node)}`
+      link.kbHref = kbUrlOrFallback(node, link.href)
+    } else if (link.target.type === 'book') {
+      const target = link.target
       const book = graph.books.get(target.fqn)
       if (!book) {
         throw new Error(`Cannot resolve book reference to "${target.name}" - no such book in the content graph`)
@@ -2092,26 +2093,26 @@ function resolveRefHrefs(graph: ContentGraph): void {
       // No published-gate here (unlike standalone targets): every book gets a
       // static index page and BookIndex renders regardless of `published`, so
       // the link is live either way.
-      entry.href = urlForBook(book)
-    } else if (entry.target.type === 'chapter') {
-      const target = entry.target
+      link.href = urlForBook(book)
+    } else if (link.target.type === 'chapter') {
+      const target = link.target
       const chapter = graph.chapters.get(target.fqn)
       if (!chapter) {
         throw new Error(`Cannot resolve chapter reference '${target.fqn}' - no such chapter.`)
       }
-      entry.href = chapterUrlOf(chapter)
-    } else if (entry.target.type === 'section') {
-      const target = entry.target
+      link.href = chapterUrlOf(chapter)
+    } else if (link.target.type === 'section') {
+      const target = link.target
       const section = graph.sections.get(target.fqn)
       if (!section) {
         throw new Error(`Cannot resolve section reference '${target.fqn}' - no such section.`)
       }
-      entry.href = `${chapterUrlOf(section.chapter)}#${sectionAnchorId(section)}`
+      link.href = `${chapterUrlOf(section.chapter)}#${sectionAnchorId(section)}`
     } else if (
-      entry.target.type === 'article'  || entry.target.type === 'newsletter' ||
-      entry.target.type === 'page'     || entry.target.type === 'landing'
+      link.target.type === 'article'  || link.target.type === 'newsletter' ||
+      link.target.type === 'page'     || link.target.type === 'landing'
     ) {
-      const target = entry.target
+      const target = link.target
       const node = standaloneMapFor(graph, target.type as StandaloneKind).get(target.fqn)
       if (!node) {
         throw new Error(`Cannot resolve ${target.type} reference to "${target.name}" - no such ${target.type} in the content graph`)
@@ -2125,7 +2126,19 @@ function resolveRefHrefs(graph: ContentGraph): void {
             `it will link to the not-migrated stub until 'published-at' is set.`,
         )
       }
-      entry.href = urlForStandalone(node)
+      link.href = urlForStandalone(node)
+    }
+  }
+
+  for (const entry of allRefEntries(graph)) {
+    resolveHrefs(entry)
+    for (const segment of entry.segments) {
+      if (segment.kind !== 'link') continue
+      if (segment.target !== entry.target) resolveHrefs(segment)
+      else if (entry.href !== undefined) {
+        segment.href = entry.href
+        if (entry.kbHref !== undefined) segment.kbHref = entry.kbHref
+      }
     }
   }
 }
@@ -2183,14 +2196,17 @@ function targetLabelLocale(target: RefTarget, graph: ContentGraph): string | und
   return key ? kbNodeByKey(graph, key)?.locale : undefined
 }
 
+/**
+ * A display with a `{...}` expression is resolved against its target's context; one
+ * without, or whose target has no context, is literal text. Either way the result
+ * becomes the entry's segments.
+ */
 function resolveDisplayTemplates(graph: ContentGraph): void {
   for (const owner of refOwners(graph)) {
     for (const [refKey, entry] of Object.entries(owner.node.references)) {
-      if (!entry.display?.includes('{')) continue
-      const ctx = buildContext(entry.target, graph)
-      if (!ctx) continue
+      const ctx = entry.display.includes('{') ? buildContext(entry.target, graph) : null
       try {
-        entry.display = resolveTemplate(entry.display, ctx).trim()
+        entry.segments = ctx ? resolveSingle(entry.display, entry.target, ctx) : linkSegments(entry.display, entry.target)
       } catch (err) {
         if (!(err instanceof TemplateCaseError)) throw err
         const locale = targetLabelLocale(entry.target, graph)

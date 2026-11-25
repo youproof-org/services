@@ -47,6 +47,7 @@ const nextConfig: NextConfig = {
   output: isProductionBuild ? 'export' : undefined,
   images: { unoptimized: true },
   serverExternalPackages: ['js-yaml', 'chokidar'],
+  transpilePackages: ['@youproof.org/display-templates'],
   sassOptions: {
     includePaths: ['./styles'],
   },

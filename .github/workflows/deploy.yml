@@ -577,6 +577,9 @@ jobs:
       # the knowledge-base URL/graph layer, the chrome state machine. Consent is
       # the part with legal consequences rather than cosmetic ones. Runs before
       # the build so a failure costs a 30-second job, not a deploy.
+      - name: Unit tests (display templates)
+        run: pnpm --filter @youproof.org/display-templates run test
+
       - name: Unit tests (website)
         run: pnpm --filter @youproof.org/website run test
 

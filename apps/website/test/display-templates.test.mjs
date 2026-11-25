@@ -8,12 +8,12 @@ import path from 'node:path'
 
 import * as loaderModule from '../lib/content/loader.ts'
 import * as templateModule from '../lib/content/display-template.ts'
+import { checkTemplate, TEMPLATE_CONTEXT_SHAPES, TEMPLATE_TARGET_TYPES } from '@youproof.org/display-templates'
 import * as graphModule from '../lib/content/graph.ts'
 
 const { loadDisplayTemplates, loadDisplayTemplateCollections, displayTemplatesPath, ContentFormatError } =
   loaderModule.default ?? loaderModule
-const { checkTemplate, buildContext, TEMPLATE_CONTEXT_SHAPES, TEMPLATE_TARGET_TYPES } =
-  templateModule.default ?? templateModule
+const { buildContext } = templateModule.default ?? templateModule
 const { buildGraphFromRaw, loadRawGraphData } = graphModule.default ?? graphModule
 
 import { raw, ref } from './support/raw-graph.mjs'
@@ -300,7 +300,8 @@ test('order is absent or authored', () => {
 // ---------------------------------------------------------------------------
 
 test('a template that resolves today passes the check for its target type', () => {
-  const ok = (template, type) => assert.deepEqual(checkTemplate(template, [type], { links: 'at-most-one' }), [], template)
+  const cases = { hu: ['ine', 'poss'] }
+  const ok = (template, type) => assert.deepEqual(checkTemplate(template, [type], { links: 'at-most-one', cases }), [], template)
   ok('{the(target.index)} [{target.index} {capital(target.label.canonical)}]', 'theorem')
   ok("{the(target.index)} [{target.index} {capital(base('ine', target.label))}]{suffix('ine', target.label)}", 'definition')
   ok("{the(target.parent.index)} [{target.parent.index} {capital(base('poss', target.parent.label))}]{suffix('poss', target.parent.label)}", 'claim')

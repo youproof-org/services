@@ -1,4 +1,5 @@
 import type { RefTargetKind } from './fqn'
+import type { DisplayTemplateTargetType, LinkSegment, TextSegment } from '@youproof.org/display-templates'
 
 // ---------------------------------------------------------------------------
 // Content blocks
@@ -153,8 +154,22 @@ export function isPathTarget(target: RefTarget): target is PathRefTarget {
   return target.type !== 'external'
 }
 
+/** A link in a resolved display, with its target's two hrefs (see `RefEntry`). */
+export interface RefLinkSegment extends LinkSegment<RefTarget> {
+  href?: string
+  kbHref?: string
+}
+
+export type RefSegment = TextSegment | RefLinkSegment
+
 export interface RefEntry {
+  /** As authored: a display template or literal text. */
   display: string
+  /**
+   * The resolved display, set at graph-build time for every entry. Empty when the
+   * display resolves to nothing, which renders as an error.
+   */
+  segments: RefSegment[]
   // Resolved at graph-build time, in two variants, because the SAME references map
   // is rendered in two places and must point somewhere different in each:
   //   href   — used on a chapter page (and inside an entity embedded there): the
@@ -173,56 +188,24 @@ export type RefMap = Record<string, RefEntry>
 // Display templates
 // ---------------------------------------------------------------------------
 
-/** What a display template can render: every target kind with a template context. */
-export type DisplayTemplateTargetType = Exclude<RefTargetKind, 'part'>
+export type {
+  DisplayTemplate,
+  DisplayTemplateCollection,
+  DisplayTemplateGroupBy,
+  DisplayTemplateItemForms,
+  DisplayTemplateList,
+  DisplayTemplateSeparators,
+  DisplayTemplateTargetType,
+  ListDisplayTemplate,
+  SingleDisplayTemplate,
+} from '@youproof.org/display-templates'
 
-export type DisplayTemplateGroupBy = 'label' | 'parent' | 'type'
-
-export interface DisplayTemplateSeparators {
-  separator: string
-  /** Defaults to `separator`. */
-  lastSeparator: string
-}
-
-/** The positional forms of a list item. `middle` defaults to `first`, `last` to `middle`. */
-export interface DisplayTemplateItemForms extends DisplayTemplateSeparators {
-  first: string
-  middle: string
-  last: string
-  only?: string
-}
-
-export interface DisplayTemplateList {
-  /** An exact count is stored as `min === max`; no `max` means no upper bound. */
-  count: { min: number; max?: number }
-  groupBy?: DisplayTemplateGroupBy
-  order: 'sorted' | 'authored'
-  item: DisplayTemplateItemForms
-  /** Between groups; present exactly when `groupBy` is. */
-  group?: DisplayTemplateSeparators
-  before: string
-  after: string
-}
-
-interface DisplayTemplateBase {
-  name: string
-  targets: DisplayTemplateTargetType[]
-}
-
-export interface SingleDisplayTemplate extends DisplayTemplateBase {
-  kind: 'single'
-  template: string
-}
-
-export interface ListDisplayTemplate extends DisplayTemplateBase {
-  kind: 'list'
-  list: DisplayTemplateList
-}
-
-export type DisplayTemplate = SingleDisplayTemplate | ListDisplayTemplate
-
-/** One locale's templates, keyed by name. */
-export type DisplayTemplateCollection = Record<string, DisplayTemplate>
+type SameTypes<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false
+/** The engine's list of renderable target kinds is every target kind but `part`. */
+export const DISPLAY_TEMPLATE_TARGET_TYPES_MATCH: SameTypes<
+  DisplayTemplateTargetType,
+  Exclude<RefTargetKind, 'part'>
+> = true
 
 // ---------------------------------------------------------------------------
 // Entity labels

@@ -3,8 +3,8 @@ import fs from 'fs'
 import path from 'path'
 import yaml from 'js-yaml'
 import { DEFAULT_LOCALE, LOCALES } from '@/lib/i18n/config'
-import { entityLabelVariants, KB_ENTITY_TYPES, KEBAB_CASE } from '@/lib/i18n/entity-labels'
-import { checkTemplate, TEMPLATE_TARGET_TYPES, type TemplateCheckOptions } from './display-template'
+import { entityLabelCases, entityLabelVariants, KB_ENTITY_TYPES, KEBAB_CASE } from '@/lib/i18n/entity-labels'
+import { checkTemplate, TEMPLATE_TARGET_TYPES, type TemplateCheckOptions } from '@youproof.org/display-templates'
 import type {
   RefTarget,
   ContentBlock,
@@ -152,6 +152,7 @@ function toRefMap(raw: unknown): RefMap {
     const entry = value as { display?: string; target?: unknown }
     out[refKey] = {
       display: typeof entry.display === 'string' ? entry.display : '',
+      segments: [],
       target: toRefTarget(entry.target, `reference '${refKey}'`),
     }
   }
@@ -694,8 +695,9 @@ const SEPARATOR_KEYS = ['separator', 'last-separator']
 const COUNT_KEYS = ['min', 'max']
 const GROUP_BY: readonly DisplayTemplateGroupBy[] = ['label', 'parent', 'type']
 
-const ITEM_FORM: TemplateCheckOptions = { links: 'at-most-one' }
-const LIST_TEXT: TemplateCheckOptions = { links: 'none', expressions: false }
+const LOCALE_CASES = Object.fromEntries(LOCALES.map((locale) => [locale, entityLabelCases(locale)]))
+const ITEM_FORM: TemplateCheckOptions = { links: 'at-most-one', cases: LOCALE_CASES }
+const LIST_TEXT: TemplateCheckOptions = { links: 'none', expressions: false, cases: LOCALE_CASES }
 
 function isMapping(raw: unknown): raw is Record<string, unknown> {
   return typeof raw === 'object' && raw !== null && !Array.isArray(raw)
@@ -737,7 +739,7 @@ function readTargets(raw: unknown, problems: string[]): DisplayTemplateTargetTyp
   }
   const targets: DisplayTemplateTargetType[] = []
   for (const type of raw) {
-    if (!(TEMPLATE_TARGET_TYPES as unknown[]).includes(type)) {
+    if (!(TEMPLATE_TARGET_TYPES as readonly unknown[]).includes(type)) {
       problems.push(`'${String(type)}' is not a target type. Known: ${TEMPLATE_TARGET_TYPES.join(', ')}`)
     } else if (targets.includes(type)) {
       problems.push(`'targets' lists '${type}' twice`)

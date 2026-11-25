@@ -8,11 +8,10 @@ import path from 'node:path'
 
 import * as graphModule from '../lib/content/graph.ts'
 import * as loaderModule from '../lib/content/loader.ts'
-import * as templateModule from '../lib/content/display-template.ts'
+import { resolveTemplate, segmentsText, TemplateCaseError } from '@youproof.org/display-templates'
 
 const { buildGraphFromRaw, kbNodeLabel } = graphModule.default ?? graphModule
 const { loadTheorem, ContentFormatError } = loaderModule.default ?? loaderModule
-const { resolveTemplate, TemplateCaseError } = templateModule.default ?? templateModule
 
 import { ref, raw } from './support/raw-graph.mjs'
 
@@ -57,7 +56,7 @@ function graphWith(references, theoremLabel) {
   return buildGraphFromRaw(data)
 }
 
-const display = (g, key) => g.definitions.get('definitions.def-egy').references[key].display
+const display = (g, key) => segmentsText(g.definitions.get('definitions.def-egy').references[key].segments)
 
 test('an entity without a label reads as its type\'s default word', () => {
   const g = graphWith({ r: ref(INE, 'theorems.tetel-egy') })
