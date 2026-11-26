@@ -12,6 +12,7 @@ export {
   referenceTexts,
   type ReferenceFileKind,
   type ReferenceItem,
+  type ReferenceProblem,
   type ReferenceScope,
   type ReferencesReadResult,
 } from './references'

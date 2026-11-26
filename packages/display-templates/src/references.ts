@@ -24,11 +24,26 @@ export interface ReferenceScope {
   texts: readonly string[]
 }
 
+/**
+ * A problem with a file's references and the place it is about, so a tool can point
+ * at the line: `item`, an index into the list, or `token`, the position of a `[i]`
+ * token among all the `[i]` tokens of the texts in reading order, or `key`, the key
+ * of a `[key]` token. None is set for a problem with the list as a whole.
+ */
+export interface ReferenceProblem {
+  message: string
+  item?: number
+  token?: number
+  key?: string
+}
+
 export interface ReferencesReadResult {
   /** One entry per list item, in list order. An item that can't be read is `undefined`, so indexes still match the tokens. */
   references: (ReferenceItem | undefined)[]
   /** Every problem with the list and with how the text uses it. Empty when the file's references are valid. */
   errors: string[]
+  /** The same problems as `errors`, in the same order, each with the place it is about. */
+  problems: ReferenceProblem[]
 }
 
 const REFERENCE_KEYS = ['display', 'text', 'target', 'targets']
@@ -186,38 +201,45 @@ function readReferenceItem(raw: unknown, index: number, scope: ReferenceScope, p
  * used never or more than once, a list that isn't in the order the text uses it,
  * and a `[key]` token, which names a reference the way the old dictionary did.
  */
-function checkTokens(count: number, texts: readonly string[], problems: string[]): void {
-  const uses = new Array<number>(count).fill(0)
-  const order: number[] = []
+function checkTokens(count: number, texts: readonly string[], problems: ReferenceProblem[]): void {
+  const uses: number[][] = Array.from({ length: count }, () => [])
+  const order: { index: number; token: number }[] = []
   const legacy = new Set<string>()
-  const unknown = new Set<number>()
+  const unknown = new Map<number, number>()
+  let position = 0
   for (const text of texts) {
     for (const token of referenceTokens(text)) {
       if (token.kind === 'legacy-ref') {
         legacy.add(token.key)
-      } else if (token.index >= count) {
-        unknown.add(token.index)
-      } else if (uses[token.index]++ === 0) {
-        order.push(token.index)
+        continue
+      }
+      const at = position++
+      if (token.index >= count) {
+        if (!unknown.has(token.index)) unknown.set(token.index, at)
+      } else {
+        if (uses[token.index].length === 0) order.push({ index: token.index, token: at })
+        uses[token.index].push(at)
       }
     }
   }
   for (const key of legacy) {
-    problems.push(`[${key}] names a reference, which the text no longer does: use the index of a 'references' item, as in [0]`)
+    problems.push({ message: `[${key}] names a reference, which the text no longer does: use the index of a 'references' item, as in [0]`, key })
   }
-  for (const index of unknown) {
-    problems.push(`[${index}] has no item: the 'references' list has ${count === 1 ? '1 item' : `${count} items`}`)
+  for (const [index, token] of unknown) {
+    problems.push({ message: `[${index}] has no item: the 'references' list has ${count === 1 ? '1 item' : `${count} items`}`, token })
   }
-  uses.forEach((n, index) => {
-    if (n === 0) problems.push(`reference [${index}] is not used in the text`)
-    else if (n > 1) problems.push(`reference [${index}] is used ${n} times: each item is used once`)
+  uses.forEach((found, index) => {
+    if (found.length === 0) problems.push({ message: `reference [${index}] is not used in the text`, item: index })
+    else if (found.length > 1) problems.push({ message: `reference [${index}] is used ${found.length} times: each item is used once`, token: found[1] })
   })
-  const inversion = order.findIndex((index, i) => i > 0 && index < order[i - 1])
+  const inversion = order.findIndex(({ index }, i) => i > 0 && index < order[i - 1].index)
   if (inversion > 0) {
-    problems.push(
-      `the 'references' list is not in the order the text uses it: [${order[inversion - 1]}] comes before ` +
-        `[${order[inversion]}]. Renumber the items in the order they appear`,
-    )
+    problems.push({
+      message:
+        `the 'references' list is not in the order the text uses it: [${order[inversion - 1].index}] comes before ` +
+        `[${order[inversion].index}]. Renumber the items in the order they appear`,
+      token: order[inversion].token,
+    })
   }
 }
 
@@ -227,20 +249,30 @@ function checkTokens(count: number, texts: readonly string[], problems: string[]
  * at once. The dictionary keyed by name that the list replaced is rejected.
  */
 export function readReferences(raw: unknown, scope: ReferenceScope): ReferencesReadResult {
+  const result = (references: (ReferenceItem | undefined)[], problems: ReferenceProblem[]): ReferencesReadResult => ({
+    references,
+    errors: problems.map((problem) => problem.message),
+    problems,
+  })
   if (raw === undefined || raw === null) raw = []
   if (isMapping(raw)) {
-    return {
-      references: [],
-      errors: [
-        "'references' is a dictionary of named references, which is no longer supported. It is now a list: " +
+    return result([], [
+      {
+        message:
+          "'references' is a dictionary of named references, which is no longer supported. It is now a list: " +
           "each item has a 'target' (or 'targets') and a 'display' template name or literal 'text', " +
           'and the text cites the item by its zero-based index, [0], [1] and so on.',
-      ],
-    }
+      },
+    ])
   }
-  if (!Array.isArray(raw)) return { references: [], errors: ["'references' must be a list of items"] }
-  const errors: string[] = []
-  const references = raw.map((item, index) => readReferenceItem(item, index, scope, errors))
-  checkTokens(raw.length, scope.texts, errors)
-  return { references, errors }
+  if (!Array.isArray(raw)) return result([], [{ message: "'references' must be a list of items" }])
+  const problems: ReferenceProblem[] = []
+  const references = raw.map((item, index) => {
+    const messages: string[] = []
+    const read = readReferenceItem(item, index, scope, messages)
+    for (const message of messages) problems.push({ message, item: index })
+    return read
+  })
+  checkTokens(raw.length, scope.texts, problems)
+  return result(references, problems)
 }

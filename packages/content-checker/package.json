@@ -1,0 +1,27 @@
+{
+  "name": "@youproof.org/content-checker",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "description": "The reference and display template checks of the build, bundled with js-yaml into one committed JavaScript file, content-checker.mjs, that the content repo's scripts/check-refs.mjs loads from a services checkout or downloads in CI. Content pull requests never build the site, so this is how they run the build's own checks.",
+  "exports": {
+    ".": "./content-checker.mjs"
+  },
+  "scripts": {
+    "generate": "node build.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test \"test/*.test.mjs\""
+  },
+  "dependencies": {
+    "@youproof.org/content-model": "workspace:*",
+    "@youproof.org/display-templates": "workspace:*",
+    "js-yaml": "catalog:"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "catalog:",
+    "@types/node": "catalog:",
+    "esbuild": "catalog:",
+    "typescript": "catalog:"
+  }
+}
