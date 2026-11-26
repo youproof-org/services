@@ -412,8 +412,9 @@ the zone rule ships) — starting at `/` would traverse nothing.
   - `@youproof.org/display-templates` (`packages/display-templates`), the reference
     display template engine: the expression language and its builtins, the template
     checks, list resolution, the segment helpers, the collection reader, the
-    `references` list reader, the inline token grammar, the template context of each
-    target type and the resolution of a reference to segments.
+    `references` list reader, the inline token grammar with its entity decoding and
+    sentence-start rule, the template context of each target type and the resolution
+    of a reference to segments.
   - `@youproof.org/content-model` (`packages/content-model`), content addressing,
     labels and structure: the fully qualified name grammar, the parsed reference
     target, the entity label registry types, check and lookups, the locale list

@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "sideEffects": false,
-  "description": "The reference display template engine: the expression language, the template checks, list resolution, the template collection reader, the references list reader, the inline token grammar, and the template context and resolution of a file's references over the content outline. Plain TypeScript source with no third-party runtime dependencies (it uses the sibling @youproof.org/content-model), consumed from source by the website, and meant to be bundled by the editor.",
+  "description": "The reference display template engine: the expression language, the template checks, list resolution, the template collection reader, the references list reader, the inline token grammar with its entity decoding and sentence-start rule, and the template context and resolution of a file's references over the content outline. Plain TypeScript source with no third-party runtime dependencies (it uses the sibling @youproof.org/content-model), consumed from source by the website, and meant to be bundled by the editor.",
   "exports": {
     ".": "./src/index.ts"
   },

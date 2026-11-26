@@ -420,7 +420,8 @@ items, so `[i]` is the i-th reference a reader meets. The reader reads the token
 the text fields `InlineText` renders, in the order the site renders them
 (`REFERENCE_TEXT_FIELDS` and `referenceTexts`), at the top level and inside bold. The
 token grammar is `inline-tokens.ts` in the same package, shared by `InlineText`,
-`kb-excerpt.ts` and the reader. It matches math first, so `$[0]_3$` is a formula and not a reference, and the
+`kb-excerpt.ts` and the reader. The two website readers decode the HTML entities of
+a text with `decodeInlineEntities` from the same module before they read its tokens. It matches math first, so `$[0]_3$` is a formula and not a reference, and the
 content of a formula block and the rows of a typewriter block are never read for
 tokens.
 
@@ -510,7 +511,11 @@ can't render, and the website fails the build with it, naming the item's index a
 its file's node. That covers a case key the target's label doesn't have and a target
 that doesn't render exactly one link. `InlineText`
 upper-cases the first visible character of a reference at the start of a sentence,
-in whichever segment holds it.
+in whichever segment holds it. A reference starts a sentence when the text before it,
+within the same run of plain or bold text and with trailing whitespace dropped, is
+empty or ends in `.`, `!` or `?`. The rule is `atSentenceStart` in `inline-tokens.ts`,
+and `InlineText` applies it to the text after `decodeInlineEntities` from the same
+module has replaced its HTML entities. The same rule capitalizes a figure's `[*]`.
 
 Every target of an item is an incoming reference of its own. The backlink index counts
 one citation per target per item, so a count is the number of times the source cites
@@ -521,7 +526,8 @@ link segments, one per target.
 The engine itself is the workspace package `@youproof.org/display-templates`
 (`packages/display-templates`): the expression language and its builtins, the template
 checks, list resolution, the segment helpers, the collection reader with the defaults
-it fills in, the `references` list reader, the inline token grammar, the context of
+it fills in, the `references` list reader, the inline token grammar with its entity
+decoding and sentence-start rule, the context of
 each target type, the group keys and the resolution of a reference to segments. Its
 one dependency is the sibling package `@youproof.org/content-model`
 (`packages/content-model`), which holds the fully qualified name grammar, the parsed

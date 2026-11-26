@@ -1,5 +1,13 @@
 import React from 'react'
-import { capitalizeSegments, inlineTokens, linkSegments, segmentsText, type DisplaySegment } from '@youproof.org/display-templates'
+import {
+  atSentenceStart,
+  capitalizeSegments,
+  decodeInlineEntities,
+  inlineTokens,
+  linkSegments,
+  segmentsText,
+  type DisplaySegment,
+} from '@youproof.org/display-templates'
 import { mathSource } from '@/lib/utils/math'
 import { termAnchorId } from '@/lib/content/urls'
 import type { RefList, RefLinkSegment, RefTarget, TermMap, AnchorParent } from '@/lib/content/types'
@@ -31,14 +39,6 @@ export default function InlineText({ text, refs, terms, termParent, selfRefDispl
 }
 
 type KeyCounter = { n: number }
-
-function normalise(text: string): string {
-  return text
-    .replace(/&ndash;/g, '–')
-    .replace(/&amp;/g, '&')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&#x2663;/g, '♣')
-}
 
 // Group indices: 1-2 bold-italic, 3-4 bold
 const BOLD_ITALIC_RE = /(\*\*\*)([\s\S]*?)\*\*\*|(\*\*)([\s\S]*?)\*\*/g
@@ -112,11 +112,6 @@ function renderRefLink(segment: RefLinkSegment, linkText: React.ReactNode[]): Re
   return <a href={segment.href ?? '#'} target="_blank" data-target-fqn={target.fqn} className={className}>{linkText}</a>
 }
 
-function atSentenceStart(text: string, index: number): boolean {
-  const textBefore = text.slice(0, index).trimEnd()
-  return textBefore.length === 0 || /[.!?]$/.test(textBefore)
-}
-
 function parseInline(
   text: string,
   refs?: RefList,
@@ -124,7 +119,7 @@ function parseInline(
   termParent?: AnchorParent,
   selfRefDisplay?: string,
 ): React.ReactNode[] {
-  return parseNormalized(normalise(text), refs, terms, termParent, { n: 0 }, selfRefDisplay)
+  return parseNormalized(decodeInlineEntities(text), refs, terms, termParent, { n: 0 }, selfRefDisplay)
 }
 
 function renderChunkWithMath(text: string, counter: KeyCounter): React.ReactNode[] {

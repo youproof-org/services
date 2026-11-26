@@ -64,3 +64,27 @@ export function* referenceTokens(text: string): Generator<Extract<InlineToken, {
     else if (token.kind === 'bold-italic' || token.kind === 'bold') yield* referenceTokens(token.inner)
   }
 }
+
+/**
+ * `text` with the HTML entities authored text carries replaced by their
+ * characters, `&nbsp;` by a plain space. The website reads the inline markup of
+ * a text after this, so token offsets and sentence starts are those of the
+ * decoded text.
+ */
+export function decodeInlineEntities(text: string): string {
+  return text
+    .replace(/&ndash;/g, '–')
+    .replace(/&amp;/g, '&')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&#x2663;/g, '♣')
+}
+
+/**
+ * Whether a token at `index` of `text` starts a sentence: nothing but whitespace
+ * comes before it, or the text before it ends in `.`, `!` or `?`. `InlineText`
+ * capitalizes a reference there.
+ */
+export function atSentenceStart(text: string, index: number): boolean {
+  const textBefore = text.slice(0, index).trimEnd()
+  return textBefore.length === 0 || /[.!?]$/.test(textBefore)
+}

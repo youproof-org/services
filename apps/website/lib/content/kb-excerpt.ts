@@ -1,4 +1,4 @@
-import { inlineTokens, segmentsText, type InlineToken } from '@youproof.org/display-templates'
+import { decodeInlineEntities, inlineTokens, segmentsText, type InlineToken } from '@youproof.org/display-templates'
 import type { ContentBlock, KbNode, RefList, TermMap } from './types'
 
 // The meta-description of a knowledge-base entity page: the opening prose of its
@@ -83,19 +83,10 @@ function firstProse(
  *   sentence loses a symbol; it does not gain visible source code.
  */
 function plainInline(text: string, refs: RefList | undefined, terms: TermMap | undefined): string {
-  const plain = tokens(normalise(text), refs, terms)
+  const plain = tokens(decodeInlineEntities(text), refs, terms)
   // Authored line breaks and the gaps left by a dropped formula collapse: a
   // description is one line.
   return plain.replace(/\s+/g, ' ').trim()
-}
-
-/** The HTML entities the authored text carries, as `InlineText.normalise` reads them. */
-function normalise(text: string): string {
-  return text
-    .replace(/&ndash;/g, '–')
-    .replace(/&amp;/g, '&')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&#x2663;/g, '♣')
 }
 
 function tokens(text: string, refs: RefList | undefined, terms: TermMap | undefined): string {
