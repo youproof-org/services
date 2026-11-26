@@ -1,0 +1,9 @@
+[
+ {
+  "file": "knowledge-base/primalitas/theorems/primhatvany-miller-rabin-nemtanuinak-szama.yaml",
+  "target": "theorems.primhatvany-miller-rabin-nemtanui-a-gyokhalmazban",
+  "before": "a [26.25. Lemma]ban",
+  "after": "a [26.25. Lemmá]ban",
+  "reason": "The display glued the inessive to the canonical label. The migration maps it to the-index-label-ine, which takes the case form from the label. Recorded as intended in the migration's own report, not in the plan's step 6 list."
+ }
+]
