@@ -785,6 +785,15 @@ rendering (step 6).
 Extend `scripts/check-refs.mjs` with the validation rules and the `--fix` renumbering.
 `ref-check.yml` already runs it on pull requests.
 
+The script doesn't keep its own copy of the rules or of the YAML parser, so it can't
+drift from the build. Services builds one JavaScript file from the packages (the
+template checks, the collection and reference readers, the token grammar) with the
+js-yaml it uses, commits it, and fails CI when the file is out of date with its
+sources. `check-refs.mjs` loads that file from the services checkout locally, and
+`ref-check.yml` downloads it from services `stable/staging`, as it does for
+`entity-labels.json`. Without a services checkout a local run skips the reference
+checks with a warning, as it already does for labels.
+
 Until this step, the script still reads only the old dictionary format, so on the
 migrated content it passes without checking any reference. The content repo's
 `CLAUDE.md` and `.claude/skills/link-references/SKILL.md` say so and send authors to
@@ -815,7 +824,7 @@ accepted over the authored one: its entry records the reordered text.
 
 ### 7. Editor (editor repo)
 
-It starts with two changes in services, so the editor bundles shared code instead of
+It starts with three changes in services, so the editor bundles shared code instead of
 keeping copies of it:
 
 - Move the collection reader from `apps/website/lib/content/loader.ts` into
@@ -834,6 +843,12 @@ keeping copies of it:
   functions over the parsed JSON. `packages/display-templates` then imports
   `RefTargetKind` from it, in place of the compile-time check that its target types
   match the website's.
+- Move the numbering and the template context into the packages: the embedding and
+  the chapter, section and entity indexes (`buildEmbedding`), the context the
+  expressions read, `buildContentPositions`, `groupKeys` and the resolution of a
+  file's references into segments. The editor computes no indexes of its own, so
+  without this it can't render a reference the way the site does. The functions take
+  plain data that both the website's graph and the editor's loaded content produce.
 
 `locales.json` and `entity-labels.json` stay in `apps/website/lib/i18n` as data. The
 editor keeps reading them from the services checkout at startup, so a new locale or
@@ -843,9 +858,9 @@ content repo keeps reading `entity-labels.json` by path.
 Then, in the editor: read the collection, bundle the shared engine, render references inline, hold each
 reference in its token and write the list on save, and replace the panel with the
 create and edit popup. Refuse to save a file that still has a
-`references` dictionary, as it does for a `labels` block. Separate PR, and a new
-editor version, because an editor that predates the change would write the old
-format.
+`references` dictionary, as it does for a `labels` block. Separate PR, and editor
+2.0.0, because 1.3.0 loses data on migrated content: it ignores the list, so a save
+drops it and leaves the `[i]` tokens behind.
 
 ## Delivery
 
