@@ -101,14 +101,17 @@ Rules, on top of the existing ones:
 
 - `claim` is not a KB entity type. It is a label type: the registry holds it, and
   `entityLabels(locale, 'claim', variant)` returns it, but nothing treats a claim as
-  an entity because of it. `KB_ENTITY_TYPES` in `lib/i18n/entity-labels.ts` stays as
-  it is, and a second list names the label types.
+  an entity because of it. The registry code is in
+  `packages/content-model/src/entity-labels.ts`, and it ties the two together today:
+  `EntityLabelLocale` is keyed by `KbEntityType`, the registry check walks
+  `KB_ENTITY_TYPES`, and `labelType` throws on any other type. `KB_ENTITY_TYPES`
+  stays as it is, and a second list names the label types those three read.
 - Every variant defines every case key its locale declares, as for entities. That is
   8 variants with 13 Hungarian cases each. The cases the templates use today are
   `acc`, `ine`, `ins`, `pl`, `poss` and `poss-ine`. No new case key is needed.
 - `canonical` may start with a capital when the word is a proper noun.
-  `validateEntityLabelRegistry` rejects any uppercase today, which `Peano-axióma`
-  fails. The check changes to compare the canonical word with its first letter
+  `validateEntityLabelRegistry` in the same file rejects any uppercase today, which
+  `Peano-axióma` fails. The check changes to compare the canonical word with its first letter
   aside. Entity templates capitalize the word and claim templates don't, so the
   canonical form has to carry the capital itself.
 - Variant keys are the same in every locale, as for entities. A locale that needs no
@@ -147,10 +150,21 @@ A claim target gets `label`, next to `index`, `name`, `type` and `parent`:
 
 `target.label` is `entityLabels(locale, 'claim', parent['claim-label'])`, in the
 existing `EntityLabels` shape, so `base`, `suffix`, `inflect` and `.canonical` work
-on it unchanged. `buildContext` in `apps/website/lib/content/display-template.ts`
-fills it, and the claim shape in `packages/display-templates/src/check.ts` declares
-it, which is what lets the template check accept the new templates. The case key
-check already covers any `target.label` path.
+on it unchanged. `buildContext` fills it, and the claim shape in
+`packages/display-templates/src/check.ts` declares it, which is what lets the
+template check accept the new templates. The case key check already covers any
+`target.label` path.
+
+`buildContext` is in `packages/display-templates/src/context.ts`, shared by the
+website and the editor. It reads the parent from the content outline, as an
+`OutlineEntity` (`packages/content-model/src/outline.ts`), which carries the
+entity's `label` and not yet the noun of its claims. So the outline entity gains a
+`claimLabel` field, and whoever builds the outline fills it: `outlineEntity` in
+`apps/website/lib/content/outline.ts` for the site, and the editor's loader for the
+editor. The editor then needs no claim logic of its own.
+
+`groupKeys` in the same file gives a claim a `parent` group and no `label` group.
+It stays that way in this plan (see [Non-goals](#non-goals)).
 
 ### Templates
 
@@ -271,25 +285,35 @@ The template picker needs nothing new. It renders each template against the actu
 target through the shared engine, so a claim's noun shows up in the previews once
 the editor's context carries `label`.
 
-This depends on step 7 of the display templates plan, which has not started. If the
-registry code has moved into the content-model package by then, the `claim` label
-type lands there.
+This depends on step 7 of the display templates plan. Its services side is under
+way: the registry code, the collection and reference readers, the numbering and the
+template context are all in the packages. The editor side has not started. The editor reads `entity-labels.json` from the services
+checkout, so the claim variants reach it without an editor release. The dropdown
+itself is editor code.
 
 ## Steps
 
 ### 1. Registry (services)
 
 Add the `claim` entry to `entity-labels.json` with all 8 variants and 13 cases. The
-content owner reviews the Hungarian forms before the commit. Separate the label
-types from `KB_ENTITY_TYPES`, relax the lowercase check for a leading capital, and
-extend the registry tests.
+content owner reviews the Hungarian forms before the commit. In
+`packages/content-model/src/entity-labels.ts`, separate the label types from
+`KB_ENTITY_TYPES` and relax the lowercase check for a leading capital. Extend
+`packages/content-model/test/entity-labels.test.ts`. The website's
+`lib/i18n/entity-labels.ts` only binds the registry file to those functions, so it
+needs no change beyond its re-exports.
 
 ### 2. Loader and context (services)
 
 The loader reads `claim-label` on definitions, theorems and remarks, checks it, and
-rejects it on a proof. `buildContext` adds `label` to a claim target, and the claim
-shape in `packages/display-templates` declares it. Bump `RAW_GRAPH_VERSION`, since
-the raw entries gain a field. Unit tests.
+rejects it on a proof. `readLabel` in `apps/website/lib/content/loader.ts` is the
+model. `OutlineEntity` in `packages/content-model` gains `claimLabel`, and
+`outlineEntity` in `apps/website/lib/content/outline.ts` copies it from the graph
+node. `buildContext` in `packages/display-templates/src/context.ts` adds `label` to
+a claim target, and the claim shape in `check.ts` declares it.
+`packages/display-templates/test/context.test.ts` compares the two, so it fails
+until both change. Bump `RAW_GRAPH_VERSION` from its value at the time (6 on this
+branch), since the raw entries gain a field. Unit tests.
 
 ### 3. Panel title (services)
 
@@ -332,10 +356,19 @@ templates.
 
 ### 5. Content-side check (content repo)
 
-Extend `scripts/check-refs.mjs`: `claim-label` is a `claim` variant of the entity's
-locale, it sits on a type that can hold claims, and `target.label` on a claim
-target resolves to the claim noun in the case key check (`labelOwner` handles
-entities and parents today). Warn on a `claim-label` without claims.
+`scripts/check-refs.mjs` has to check that `claim-label` is a `claim` variant of
+the entity's locale, that it sits on a type that can hold claims, and that
+`target.label` on a claim target resolves to the claim noun in the case key check.
+It warns on a `claim-label` without claims.
+
+How much of that is new script code depends on step 5 of the display templates
+plan. That step now has the script load one JavaScript file built from the services
+packages, so it keeps no copy of the rules. If it has landed, the template and case
+key checks come from that file and follow the package changes of steps 1 and 2:
+rebuild and commit the file in services, and only the `claim-label` field check is
+written in the script. If it hasn't, the script's own `labelOwner` and label checks
+are extended by hand. That step is planned and not built yet, so check which case
+applies before starting.
 
 ### 6. Output equivalence check
 
@@ -352,15 +385,16 @@ Everything else must be identical.
 ### 7. Editor (editor repo)
 
 The claim noun dropdown, and `label` in the claim context of the template previews.
-Separate PR and a new editor version. An editor that predates it can't set the noun.
-How its previews treat a template that reads `target.label` on a claim depends on
-the step 7 editor of the display templates plan, which doesn't exist yet, so check
-it then.
+Separate PR and a new editor version after 2.0.0, which the display templates plan
+reserves for the reference list. An editor that predates it can't set the noun. Its
+previews get the claim noun through the shared context once its loader reads
+`claim-label` and it bundles a services checkout that has step 2.
 
 ## Delivery
 
-- Services: a branch off `centralize-display-templates`, or off `development` once
-  that work is released. One commit per step, with approval before each commit.
+- Services: branch `claim-noun-registry`, which carries `references-refactor` and
+  through it `centralize-display-templates`. Merge those in again as they move. One
+  commit per step, with approval before each commit.
 - Content: after step 4a of the display templates plan, so the claim lists are
   already list templates when this migration runs.
 - Both mismatched pairs are safe, so this needs no freeze and no `pr-gate` bypass:
@@ -379,8 +413,9 @@ it then.
 - The 23 `disztributivitási szabály` references. They name one claim by what it
   says, not by its number, and stay `text` items.
 - Claim list templates. Step 4a of the display templates plan designs them. Once
-  `target.label` exists on a claim, a list template can read it and group by
-  `label`.
+  `target.label` exists on a claim, a list template can read it. Grouping claims by
+  `label` would need `groupKeys` to give a claim a `label` group, which it doesn't
+  today. Add it when a list template needs it.
 
 ## Open questions
 
