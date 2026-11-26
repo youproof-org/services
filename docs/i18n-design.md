@@ -26,7 +26,8 @@ The set of supported locales is a **config list**, `['hu']` today. Each locale h
 
 The config lives in one place, `apps/website/lib/i18n/config.ts`, backed by a
 plain-data file `apps/website/lib/i18n/locales.json` so it can also be read by the
-legacy-redirect manifest generator (a standalone `.mjs`, see §7). `DEFAULT_LOCALE`
+legacy-redirect manifest generator (a standalone `.mjs`, see §7). `config.ts` takes
+the locale codes from it with `localeCodes` in `packages/content-model`. `DEFAULT_LOCALE`
 is not in that file: it comes from the build-time env var of the same name — the
 same GitHub Environment variable that drives the Cloudflare apex redirect — so the
 default lives in exactly one place across app and infra, and falls back to the
@@ -245,7 +246,9 @@ names a template of the locale of the file it is written in. Two rules follow:
   translating its text.
 
 The case keys a template inflects a label with (`base`, `suffix`, `inflect`) come from
-the entity label registry, `lib/i18n/entity-labels.json`. The load-time check accepts
+the entity label registry, `lib/i18n/entity-labels.json`, which
+`lib/i18n/entity-labels.ts` checks with `validateEntityLabelRegistry` from
+`packages/content-model` when it loads. The load-time check of a template accepts
 a case key that any locale declares. When a reference resolves, the key must exist on
 the target's label in the target's own locale, or the build fails. So besides its
 `locales.json` entry, a new locale needs an entry in the label registry and a
@@ -404,17 +407,22 @@ the zone rule ships) — starting at `/` would traverse nothing.
   to the existing per-repo types with a lightweight URL-safety check in the existing
   loader, and mirrored by hand in the editor with a pointer comment.
 
-  One part is shared already: the reference display template engine is the
-  workspace package `@youproof.org/display-templates` (`packages/display-templates`).
-  It holds the expression language and its builtins, the template checks, list
-  resolution and the segment helpers, has no runtime dependencies, and is consumed
-  from source. The website uses it today. It is a package so that there is one
-  renderer for the site and the editor: the editor will show each reference as it
-  renders on the site, and a second implementation would drift from the first. The
-  editor doesn't bundle it yet. More sharing is planned along the same lines, for the
-  code the editor needs to read references exactly as the site does: the collection
-  reader, the reference list reader and token grammar, and the content addressing and
-  label registry readers.
+  Two parts are shared already, as workspace packages consumed from source:
+
+  - `@youproof.org/display-templates` (`packages/display-templates`), the reference
+    display template engine: the expression language and its builtins, the template
+    checks, list resolution, the segment helpers, the collection reader, the
+    `references` list reader and the inline token grammar.
+  - `@youproof.org/content-model` (`packages/content-model`), content addressing and
+    labels: the fully qualified name grammar, the parsed reference target, the entity
+    label registry types, check and lookups, and the locale list reader.
+    `locales.json` and `entity-labels.json` stay in `apps/website/lib/i18n` as data.
+
+  Both are pure functions over parsed data with no third-party runtime dependencies.
+  The website uses them today. They are packages so that the site and the editor
+  read and render references with one implementation: the editor will show each
+  reference as it renders on the site, and a second implementation would drift from
+  the first. The editor doesn't bundle them yet.
 
 ---
 
