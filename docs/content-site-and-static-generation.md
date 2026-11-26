@@ -470,8 +470,8 @@ for a reference with one target, and `list`, for one or more.
 A template is text with `{...}` expressions and at most one `[...]`, the link. An
 expression reads a field of the target's context, such as `target.index`,
 `target.label` or a claim's `target.parent`, or calls a builtin: `the`, `capital`,
-`base`, `suffix` or `inflect`. `buildContext` in `lib/content/display-template.ts`
-builds the context of each target type, and `TEMPLATE_CONTEXT_SHAPES` in the engine
+`base`, `suffix` or `inflect`. `buildContext` in the engine builds the context of each
+target type, and `TEMPLATE_CONTEXT_SHAPES` beside it
 says which fields each type has, so the load-time check rejects a field the accepted
 types don't have, an unknown builtin, a wrong number of arguments, a case key no locale
 declares in `lib/i18n/entity-labels.json`, and more than one link. A text with no
@@ -490,7 +490,7 @@ A `list` renders several targets with one template:
 - `before` and `after` are text around the whole list. They and the separators can hold
   neither an expression nor a link.
 - The targets are sorted by their position in the content (`buildContentPositions` in
-  `lib/content/graph.ts`, the site's reading order) unless the template sets
+  `packages/content-model`, the site's reading order) unless the template sets
   `order: authored`.
 - `group-by` splits the sorted targets into groups that share a `label` (the entity
   type and label variant, for definitions, theorems, proofs and remarks), a `parent`
@@ -502,10 +502,13 @@ A `list` renders several targets with one template:
 For chapters 13 and 14, `the-chapters` above renders `a [13.] és a [14. fejezet]`.
 
 `resolveDisplayTemplates` in `lib/content/graph.ts` resolves every item to
-`RefEntry.segments`: plain text and link segments in reading order, each link with its
-target, `href` and `kbHref`. A `text` item resolves through its brackets, a `display`
-item through its template. A case key the target's label doesn't have fails the build
-here, and so does a target that doesn't render exactly one link. `InlineText`
+`RefEntry.segments` with `resolveReference` from the engine: plain text and link
+segments in reading order, each link with its target. `resolveRefHrefs` then gives
+each link its `href` and `kbHref`. A `text` item resolves through its brackets, a
+`display` item through its template. `resolveReference` returns the reason an item
+can't render, and the website fails the build with it, naming the item's index and
+its file's node. That covers a case key the target's label doesn't have and a target
+that doesn't render exactly one link. `InlineText`
 upper-cases the first visible character of a reference at the start of a sentence,
 in whichever segment holds it.
 
@@ -518,14 +521,21 @@ link segments, one per target.
 The engine itself is the workspace package `@youproof.org/display-templates`
 (`packages/display-templates`): the expression language and its builtins, the template
 checks, list resolution, the segment helpers, the collection reader with the defaults
-it fills in, the `references` list reader and the inline token grammar. Its one
-dependency is the sibling package `@youproof.org/content-model`
+it fills in, the `references` list reader, the inline token grammar, the context of
+each target type, the group keys and the resolution of a reference to segments. Its
+one dependency is the sibling package `@youproof.org/content-model`
 (`packages/content-model`), which holds the fully qualified name grammar, the parsed
-reference target, the entity label registry check and lookups, and the locale list
-reader. Neither has a third-party runtime dependency or reads a file: both take parsed
-data. The website consumes them from source, and they exist as packages so the editor
-can read and render references with the same code. Reading files, parsing the YAML and
-building contexts stay in the website. A figure's `self-reference.display` uses the same expression language
+reference target, the entity label registry check and lookups, the locale list reader,
+and the numbering and reading order: chapter and section numbers, where each entity is
+embedded and its chapter-scoped number (`buildEmbedding`), and the content positions.
+Neither has a third-party runtime dependency or reads a file: both take parsed data.
+The numbering and the contexts read a `ContentOutline`, plain data with the books,
+the knowledge-base entities and the standalone items (`outline.ts` in
+`packages/content-model` documents its shape). The website builds it from the graph
+with `contentOutline` in `lib/content/outline.ts`, and the editor can build it from
+the content it loads. The website consumes the packages from source, and they exist
+as packages so the editor can read and render references with the same code. Reading
+files, parsing the YAML, building the graph and reporting errors stay in the website. A figure's `self-reference.display` uses the same expression language
 with its own context and stays inline in the figure block.
 
 ## Not-found & stub behavior
