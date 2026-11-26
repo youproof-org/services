@@ -20,28 +20,29 @@ export type {
   KbEntityType,
 } from '@youproof.org/content-model'
 
-const REGISTRY = registryData as EntityLabelRegistry
+/** The parsed and validated label registry, for the shared code that takes it as data. */
+export const ENTITY_LABEL_REGISTRY = registryData as EntityLabelRegistry
 
-const registryErrors = validateEntityLabelRegistry(REGISTRY, LOCALES)
+const registryErrors = validateEntityLabelRegistry(ENTITY_LABEL_REGISTRY, LOCALES)
 if (registryErrors.length > 0) {
   throw new Error(`lib/i18n/entity-labels.json is invalid:\n  ${registryErrors.join('\n  ')}`)
 }
 
 /** The case keys a locale's display templates may name in `base` and `suffix`. */
 export function entityLabelCases(locale: string): readonly string[] {
-  return registryCases(REGISTRY, locale)
+  return registryCases(ENTITY_LABEL_REGISTRY, locale)
 }
 
 /** The variant keys an entity of `type` may name in its `label`. */
 export function entityLabelVariants(locale: string, type: string): readonly string[] {
-  return registryVariants(REGISTRY, locale, type)
+  return registryVariants(ENTITY_LABEL_REGISTRY, locale, type)
 }
 
 /** The variant an entity of `type` uses: the one it names, or the type's default. */
 export function entityLabelVariant(locale: string, type: string, variant?: string): string {
-  return registryVariant(REGISTRY, locale, type, variant)
+  return registryVariant(ENTITY_LABEL_REGISTRY, locale, type, variant)
 }
 
 export function entityLabels(locale: string, type: string, variant?: string): EntityLabels {
-  return registryLabels(REGISTRY, locale, type, variant)
+  return registryLabels(ENTITY_LABEL_REGISTRY, locale, type, variant)
 }

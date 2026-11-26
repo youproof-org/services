@@ -849,6 +849,9 @@ keeping copies of it:
   file's references into segments. The editor computes no indexes of its own, so
   without this it can't render a reference the way the site does. The functions take
   plain data that both the website's graph and the editor's loaded content produce.
+  The editor numbers only what it loaded. Where it can't find a chapter, section or
+  embedded entity that the site's build would fail on, it shows an error instead of
+  numbering what's left, so its numbers never silently differ from the site's.
 
 `locales.json` and `entity-labels.json` stay in `apps/website/lib/i18n` as data. The
 editor keeps reading them from the services checkout at startup, so a new locale or

@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "sideEffects": false,
-  "description": "Content addressing and labels: the fully qualified name grammar, reference targets, the entity label registry and the locale list, as pure functions over parsed data. Plain TypeScript source with no runtime dependencies, consumed from source by the website and the display template engine, and meant to be bundled by the editor.",
+  "description": "Content addressing, labels and structure: the fully qualified name grammar, reference targets, the entity label registry, the locale list, and the chapter, section and entity numbering and reading order over a plain-data outline of the content. Pure functions over parsed data, in plain TypeScript source with no runtime dependencies, consumed from source by the website and the display template engine, and meant to be bundled by the editor.",
   "exports": {
     ".": "./src/index.ts"
   },

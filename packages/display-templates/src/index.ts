@@ -15,3 +15,10 @@ export {
   type ReferenceScope,
   type ReferencesReadResult,
 } from './references'
+export { buildContext, groupKeys } from './context'
+export {
+  resolveReference,
+  resolveReferences,
+  type ReferenceDisplay,
+  type ReferenceDisplayOptions,
+} from './reference-display'
