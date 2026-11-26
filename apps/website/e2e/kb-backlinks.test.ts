@@ -249,9 +249,9 @@ test.describe('the Bejövő hivatkozások panel', () => {
     await openBacklinks(page, SHARED_TITLES)
 
     // The case that used to need a kind label. Three of `gyuru-test`'s rows are titled
-    // "Oszthatóság": the section of the book, whose 34 include the 14 its own narrative
-    // writes, the definition of that name, which cites it twice, and the remark on that
-    // definition, which cites it twice as well. The number does not separate them —
+    // "Oszthatóság": the section of the book, whose 68 include the 28 its own narrative
+    // writes, the definition of that name, which cites it seven times, and the remark on
+    // that definition, which cites it twice. The number does not separate them —
     // chapter 16's first section and its first definition are both "16.1." — the type
     // word and the ownership line do.
     const titled = page.locator(ROW).filter({
@@ -273,20 +273,20 @@ test.describe('the Bejövő hivatkozások panel', () => {
       {
         label: '16.1. Oszthatóság',
         ownership: null,
-        count: '34',
+        count: '68',
         href: '/hu/konyvek/alice-es-bob/fejezetek/alice-es-bob-alaptetele#szakaszok.oszthatosag',
+      },
+      {
+        label: '16.1. Definíció: Oszthatóság',
+        ownership: null,
+        count: '7',
+        href: '/hu/tudasbazis/definiciok/oszthatosag',
       },
       {
         label: '16.1. Definíció: Oszthatóság',
         ownership: 'megjegyzés',
         count: '2',
         href: '/hu/tudasbazis/definiciok/oszthatosag/megjegyzesek/1',
-      },
-      {
-        label: '16.1. Definíció: Oszthatóság',
-        ownership: null,
-        count: '2',
-        href: '/hu/tudasbazis/definiciok/oszthatosag',
       },
     ])
     // No two rows of the list read alike: measured over the export, no list has two
@@ -396,7 +396,7 @@ test.describe('the Bejövő hivatkozások panel', () => {
     await page.locator(ROW).first().click()
 
     await expect(page).toHaveURL(
-      /\/hu\/konyvek\/alice-es-bob\/fejezetek\/alice-es-bob-alaptetele$/,
+      /\/hu\/konyvek\/alice-es-bob\/fejezetek\/alice-es-bob-felcsavarja-a-szamegyenest$/,
     )
     expect(errors, 'navigating away from an open panel threw').toEqual([])
   })
