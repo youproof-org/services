@@ -15,8 +15,9 @@ import styles from '../panel.module.scss'
  * place in the book whichever question led the reader to it, so a level here reads
  * as a backlink row does: the numbered name of the place, and the section nested
  * under the chapter that contains it — "16." over an indented "16.1.". The numbers
- * come from `lib/utils/index-helpers.ts`, the one place that decides which section
- * is 16.1., so this panel and a backlink row cannot disagree about it.
+ * come from `lib/utils/index-helpers.ts`, which reads the one numbering in
+ * packages/content-model, so this panel and a backlink row cannot disagree about
+ * which section is 16.1.
  *
  * The book is not a level. Nesting is what says where the entity sits, and the two
  * containers that carry a number are what the reader recognizes; the book above them

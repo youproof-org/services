@@ -1,4 +1,5 @@
 import type { ContentGraph, ChapterNode, SectionNode, BookNode, ContentBlock, EmbedBlock, FigureBlock } from '../content/types'
+import { chapterIndexLabel, chapterNumber, sectionIndexLabel } from '@youproof.org/content-model'
 import { toRoman } from './roman'
 
 // ---------------------------------------------------------------------------
@@ -22,38 +23,21 @@ export function getBookRomanIndex(book: BookNode, graph: ContentGraph): string {
 }
 
 // ---------------------------------------------------------------------------
-// Chapter index (1–N sequential across all parts in the book)
+// Chapter and section numbers: "16." for a chapter, "16.1." for its first section.
+// The numbering lives in packages/content-model, so a chapter page's heading, a
+// reference label and a backlink row can't disagree about which section is 16.1.
 // ---------------------------------------------------------------------------
 
 export function getChapterIndex(chapter: ChapterNode): number {
-  const book = chapter.part.book
-  let idx = 1
-  for (const part of book.parts) {
-    for (const ch of part.chapters) {
-      if (ch === chapter) return idx
-      idx++
-    }
-  }
-  return 0
+  return chapterNumber(chapter.part.book, chapter)
 }
 
-// ---------------------------------------------------------------------------
-// The two container numbers, as the narrative and every reference to them write
-// them: "16." for a chapter, "16.1." for its first section. One place, because a
-// chapter page's heading, a reference label (`buildContext` in
-// lib/content/display-template.ts) and a backlink row (`buildBacklinkIndex` in
-// lib/content/graph.ts) must not be able to disagree about which section is 16.1.
-// A section's number is its position among its chapter's sections; nothing counts
-// sections a second time.
-// ---------------------------------------------------------------------------
-
 export function getChapterIndexLabel(chapter: ChapterNode): string {
-  return `${getChapterIndex(chapter)}.`
+  return chapterIndexLabel(chapter.part.book, chapter)
 }
 
 export function getSectionIndexLabel(section: SectionNode): string {
-  const chapter = section.chapter
-  return `${getChapterIndex(chapter)}.${chapter.sections.indexOf(section) + 1}.`
+  return sectionIndexLabel(section.chapter.part.book, section.chapter, section)
 }
 
 // ---------------------------------------------------------------------------

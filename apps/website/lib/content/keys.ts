@@ -11,9 +11,8 @@
  * Now a key IS the reference target: a cross-reference resolves with
  * `graph.theorems.get(target.fqn)` and no key construction at any call site.
  *
- * These live apart from graph.ts because display-template.ts needs them too, and
- * graph.ts imports display-template — so a shared module is the only place both can
- * reach without a cycle.
+ * These live apart from graph.ts so the components and structured-data.ts can
+ * build keys without importing the graph.
  */
 import { fqnJoin } from '@youproof.org/content-model'
 import type {

@@ -8,7 +8,6 @@ import type {
   ThumbnailImage,
   MetaInfo,
   ContentGraph,
-  EmbedBlock,
   DefinitionNode,
   TheoremNode,
   ProofNode,
@@ -55,17 +54,9 @@ const STANDALONE_DIRS: Record<StandaloneKind, string> = {
   page: 'pages',
   landing: 'landing',
 }
-import {
-  DisplayListError,
-  linkSegments,
-  resolveDisplay,
-  resolveTemplate,
-  TemplateCaseError,
-  type DisplayTemplateGroupBy,
-  type ListMember,
-} from '@youproof.org/display-templates'
-import { buildContext } from './display-template'
-import { entityLabels, entityLabelCases, entityLabelVariant, KB_ENTITY_TYPES } from '@/lib/i18n/entity-labels'
+import { resolveReference, resolveTemplate } from '@youproof.org/display-templates'
+import { contentOutline } from './outline'
+import { ENTITY_LABEL_REGISTRY, entityLabels } from '@/lib/i18n/entity-labels'
 import { buildLocalizedUrl } from '@/lib/i18n/url'
 import { resolveContainerKey } from '@/lib/i18n/config'
 import {
@@ -93,12 +84,9 @@ import {
   remarkKey,
   keyForKbNode,
   keyForChapter,
-  keyForPart,
   keyForSection,
-  keyForStandalone,
-  standaloneSectionKey,
 } from './keys'
-import { fqnJoin } from '@youproof.org/content-model'
+import { fqnJoin, indexContent, type ContentIndex } from '@youproof.org/content-model'
 import {
   getChapterIndex,
   getChapterIndexLabel,
@@ -882,9 +870,10 @@ export function buildGraphFromRaw(raw: RawGraphData): ContentGraph {
   // Order matters. Embedding first: every URL and title below depends on knowing
   // which chapter a node lives in. Then hrefs, since the glossary links to term
   // anchors and the validators check the hrefs those produce.
-  graph.embedding = buildEmbedding(graph)
+  const content = indexContent(contentOutline(graph))
+  graph.embedding = embeddingContexts(graph, content)
   validateIdentifiers(graph, raw)
-  resolveDisplayTemplates(graph, raw.displayTemplates)
+  resolveDisplayTemplates(graph, content, raw.displayTemplates)
   resolveSelfReferenceDisplayTemplates(graph)
   resolveRefHrefs(graph)
   graph.glossary = buildGlossary(graph)
@@ -1006,58 +995,21 @@ const isDeployedEnv =
 
 /**
  * Where each knowledge-base node is introduced in the narrative: the chapter that
- * embeds it, the section within that chapter, and the chapter-scoped index label.
- *
- * Every node is embedded exactly once today. A node embedded in two chapters keeps
- * the first in iteration order, which is deterministic (driven by episodes.yaml).
+ * embeds it, the section within that chapter, and the chapter-scoped index label,
+ * as `buildEmbedding` in packages/content-model numbers them, with the graph's
+ * nodes in place of their names.
  */
-function buildEmbedding(graph: ContentGraph): Map<string, EmbeddingContext> {
-  const info = new Map<string, EmbeddingContext>()
-
-  const record = (block: EmbedBlock, chapter: ChapterNode, section?: SectionNode) => {
-    const key = block.target.fqn
-    if (!info.has(key)) info.set(key, { chapter, section })
-  }
-  const scan = (blocks: ContentBlock[], chapter: ChapterNode, section?: SectionNode) => {
-    for (const block of blocks) {
-      if (block.type === 'embed') record(block, chapter, section)
-      if (block.type === 'subsection' || block.type === 'details') scan(block.blocks, chapter, section)
+function embeddingContexts(graph: ContentGraph, content: ContentIndex): Map<string, EmbeddingContext> {
+  const contexts = new Map<string, EmbeddingContext>()
+  for (const [fqn, embedding] of content.embedding) {
+    const context: EmbeddingContext = {
+      chapter: graph.chapters.get(embedding.chapter)!,
+      section: embedding.section === undefined ? undefined : graph.sections.get(embedding.section),
     }
+    if (embedding.index !== undefined) context.index = embedding.index
+    contexts.set(fqn, context)
   }
-
-  for (const chapter of graph.chapters.values()) {
-    scan(chapter.prologue, chapter)
-    scan(chapter.epilogue, chapter)
-    for (const section of chapter.sections) scan(section.body, chapter, section)
-  }
-
-  // Second pass: the "11.3." label, numbered in embed order within the chapter.
-  // Only definitions, theorems and owner-less remarks are numbered.
-  const isIndexed = (block: EmbedBlock): boolean => {
-    const { type, fqn } = block.target
-    if (type === 'definition' || type === 'theorem') return true
-    if (type === 'remark') {
-      const remark = graph.remarks.get(fqn)
-      return remark !== undefined && remark.attachedTo === undefined
-    }
-    return false
-  }
-
-  for (const chapter of graph.chapters.values()) {
-    const chapterIdx = getChapterIndex(chapter)
-    let k = 0
-    const number = (blocks: ContentBlock[]) => {
-      for (const block of blocks) {
-        if (block.type !== 'embed' || !isIndexed(block)) continue
-        const entry = info.get(block.target.fqn)
-        if (entry && !entry.index) entry.index = `${chapterIdx}.${++k}.`
-      }
-    }
-    number(chapter.prologue)
-    for (const section of chapter.sections) number(section.body)
-  }
-
-  return info
+  return contexts
 }
 
 /** Localized URL of the chapter a node is embedded in. */
@@ -2205,135 +2157,27 @@ function describeRefOwner(owner: RefOwner): string {
   return `${owner.kind} "${owner.node.name}"`
 }
 
-/** The locale whose case keys a template on `target` may name: the labelled node's. */
-function targetLabelLocale(target: RefTarget, graph: ContentGraph): string | undefined {
-  if (target.type === 'external') return undefined
-  const key = target.type === 'claim' || target.type === 'term' ? target.parentFqn : target.fqn
-  return key ? kbNodeByKey(graph, key)?.locale : undefined
-}
-
-/**
- * Where each target sits in the content, one distinct number per fully qualified
- * name, so a list template can render its targets in reading order.
- *
- * The order is the site's reading order: the books in episode order, each book's
- * parts and chapters in order, and within a chapter the chapter itself, its
- * prologue, each section followed by what it embeds, and the epilogue. Embeds are
- * read in block order, through subsections and details blocks. That agrees with the
- * entity indexes, which `buildEmbedding` counts over the top-level embeds of the
- * prologue and then the sections, so a sorted list reads in ascending index. An
- * entity is followed by its claims, in the order `buildContext` numbers them, and
- * then by its terms. Standalone items come after the books.
- */
-function buildContentPositions(graph: ContentGraph): Map<string, number> {
-  const positions = new Map<string, number>()
-  const place = (fqn: string) => {
-    if (!positions.has(fqn)) positions.set(fqn, positions.size)
-  }
-  const placeEntity = (fqn: string) => {
-    place(fqn)
-    const node = kbNodeByKey(graph, fqn)
-    if (!node) return
-    for (const block of node.body) if (block.type === 'claim') place(fqnJoin(fqn, 'claim', block.name))
-    for (const termKey of Object.keys(node.terms ?? {})) place(fqnJoin(fqn, 'term', termKey))
-  }
-  const scan = (blocks: ContentBlock[]) => {
-    for (const block of blocks) {
-      if (block.type === 'embed') placeEntity(block.target.fqn)
-      if (block.type === 'subsection' || block.type === 'details') scan(block.blocks)
-    }
-  }
-  for (const book of graph.books.values()) {
-    place(bookKey(book.name))
-    for (const part of book.parts) {
-      place(keyForPart(part))
-      for (const chapter of part.chapters) {
-        place(keyForChapter(chapter))
-        scan(chapter.prologue)
-        for (const section of chapter.sections) {
-          place(keyForSection(section))
-          scan(section.body)
-        }
-        scan(chapter.epilogue)
-      }
-    }
-  }
-  for (const map of [graph.articles, graph.newsletters, graph.pages, graph.landings]) {
-    for (const node of map.values()) {
-      place(keyForStandalone(node))
-      for (const section of node.sections) place(standaloneSectionKey(node.kind, node.name, section.name))
-    }
-  }
-  return positions
-}
-
-/** What a target shares with the other members of its group, for each `group-by` it supports. */
-function groupKeys(target: RefTarget, graph: ContentGraph): ListMember<RefTarget>['groups'] {
-  if (target.type === 'external') return {}
-  const groups: Partial<Record<DisplayTemplateGroupBy, string>> = { type: target.type }
-  if (target.type === 'claim') groups.parent = target.parentFqn
-  const entity = (KB_ENTITY_TYPES as readonly string[]).includes(target.type) ? kbNodeByKey(graph, target.fqn) : undefined
-  if (entity) groups.label = `${entity.type}:${entityLabelVariant(entity.locale, entity.type, entity.label)}`
-  return groups
-}
-
 /** The locale of the file a reference is written in, whose collection names its template. */
 function ownerLocale(owner: RefOwner): string {
   return owner.kind === 'standalone-section' ? owner.parent.locale : owner.node.locale
 }
 
 /**
- * Resolves every reference to segments: a `text` item through its link brackets,
- * a `display` item through its template in the collection of the file's locale,
- * against the context of each target. Every target must come out with exactly one
- * link, since that link is what its incoming reference lands on.
+ * Resolves every reference to segments through the display template engine
+ * (`resolveReference` in packages/display-templates), and fails the build on the
+ * first one that can't be rendered.
  */
-function resolveDisplayTemplates(graph: ContentGraph, templates: DisplayTemplateCollections): void {
-  const positions = buildContentPositions(graph)
+function resolveDisplayTemplates(graph: ContentGraph, content: ContentIndex, templates: DisplayTemplateCollections): void {
   for (const owner of refOwners(graph)) {
     const locale = ownerLocale(owner)
     owner.node.references.forEach((entry, index) => {
-      const fail: (message: string) => never = (message) => {
-        throw new Error(`Reference [${index}] in ${describeRefOwner(owner)}: ${message}`)
+      const resolved = resolveReference(entry, { locale, templates: templates[locale], content, labels: ENTITY_LABEL_REGISTRY })
+      if (resolved.error !== undefined) {
+        throw new Error(`Reference [${index}] in ${describeRefOwner(owner)}: ${resolved.error}`)
       }
-      if (entry.display === undefined) {
-        entry.segments = linkSegments(entry.text ?? '', entry.targets[0])
-      } else {
-        const template = templates[locale]?.[entry.display]
-        if (!template) fail(`'${entry.display}' is not a display template in '${locale}'.`)
-        const members = entry.targets.map((target): ListMember<RefTarget> => {
-          const context = buildContext(target, graph)
-          if (!context) fail(`'${describeTarget(target)}' is not in the content graph.`)
-          return {
-            target,
-            key: describeTarget(target),
-            context,
-            position: positions.get(describeTarget(target)) ?? Number.MAX_SAFE_INTEGER,
-            groups: groupKeys(target, graph),
-          }
-        })
-        try {
-          entry.segments = resolveDisplay(template, members)
-        } catch (err) {
-          if (err instanceof DisplayListError) fail(`template '${entry.display}': ${err.message}.`)
-          if (!(err instanceof TemplateCaseError)) throw err
-          const caseLocale = entry.targets.map((target) => targetLabelLocale(target, graph)).find(Boolean)
-          const declared = caseLocale ? ` '${caseLocale}' declares: ${entityLabelCases(caseLocale).join(', ')}.` : ''
-          fail(`${err.message}.${declared}`)
-        }
-      }
-      for (const target of entry.targets) {
-        const links = entry.segments.filter((segment) => segment.kind === 'link' && segment.target === target).length
-        if (links !== 1) {
-          fail(`'${describeTarget(target)}' renders ${links === 0 ? 'no link' : `${links} links`}; every target renders exactly one.`)
-        }
-      }
+      entry.segments = resolved.segments
     })
   }
-}
-
-function describeTarget(target: RefTarget): string {
-  return target.type === 'external' ? target.url : target.fqn
 }
 
 function resolveSelfReferenceDisplayTemplates(graph: ContentGraph): void {

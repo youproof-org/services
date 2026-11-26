@@ -8,13 +8,16 @@ import os from 'node:os'
 import path from 'node:path'
 
 import * as loaderModule from '../lib/content/loader.ts'
-import * as templateModule from '../lib/content/display-template.ts'
-import { checkTemplate, TEMPLATE_CONTEXT_SHAPES, TEMPLATE_TARGET_TYPES } from '@youproof.org/display-templates'
+import * as outlineModule from '../lib/content/outline.ts'
+import * as labelsModule from '../lib/i18n/entity-labels.ts'
+import { buildContext, checkTemplate, TEMPLATE_CONTEXT_SHAPES, TEMPLATE_TARGET_TYPES } from '@youproof.org/display-templates'
+import { indexContent } from '@youproof.org/content-model'
 import * as graphModule from '../lib/content/graph.ts'
 
 const { loadDisplayTemplates, loadDisplayTemplateCollections, displayTemplatesPath, ContentFormatError } =
   loaderModule.default ?? loaderModule
-const { buildContext } = templateModule.default ?? templateModule
+const { contentOutline } = outlineModule.default ?? outlineModule
+const { ENTITY_LABEL_REGISTRY } = labelsModule.default ?? labelsModule
 const { buildGraphFromRaw, loadRawGraphData } = graphModule.default ?? graphModule
 
 import { raw, ref } from './support/raw-graph.mjs'
@@ -146,14 +149,14 @@ function shapeOf(value) {
   return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, shapeOf(v)]))
 }
 
-test('the declared context shapes match what buildContext gives each target type', () => {
+test('the outline of the graph gives every target type a context in its declared shape', () => {
   const data = raw()
   data.standalones.push(
     ...['article', 'newsletter', 'page', 'landing'].map((kind) => ({
       kind, name: kind, slug: kind, locale: 'hu', title: kind, abstract: [], prologue: [], sections: [], epilogue: [], references: [],
     })),
   )
-  const graph = buildGraphFromRaw(data)
+  const content = indexContent(contentOutline(buildGraphFromRaw(data)))
   const fqns = {
     book: 'books.konyv',
     chapter: 'books.konyv.chapters.fejezet',
@@ -171,7 +174,7 @@ test('the declared context shapes match what buildContext gives each target type
   }
   assert.deepEqual(Object.keys(fqns).sort(), [...TEMPLATE_TARGET_TYPES].sort())
   for (const [type, fqn] of Object.entries(fqns)) {
-    const ctx = buildContext(ref('x', fqn).targets[0], graph)
+    const ctx = buildContext(ref('x', fqn).targets[0], content, ENTITY_LABEL_REGISTRY)
     assert.ok(ctx, `no context for ${type}`)
     assert.deepEqual(shapeOf(ctx.target), TEMPLATE_CONTEXT_SHAPES[type], type)
   }
