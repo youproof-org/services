@@ -1,7 +1,7 @@
 import InlineText from '@/components/content/InlineText'
 import { getContentGraph } from '@/lib/content'
 import { keyForKbNode } from '@/lib/content/keys'
-import { fqnJoin } from '@/lib/content/fqn'
+import { fqnJoin } from '@youproof.org/content-model'
 import { getLocaleLabel } from '@/lib/i18n/config'
 import type { KbNode, TermDefinition } from '@/lib/content/types'
 import { BacklinkList } from './BacklinksPanel'

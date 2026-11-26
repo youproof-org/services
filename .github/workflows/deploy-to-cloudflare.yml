@@ -36,6 +36,7 @@ on:
     paths:
       - "infra/cloudflare/**"
       - "apps/website/**"
+      - "packages/content-model/**"
       - "packages/display-templates/**"
       - "tools/smoke-tests/**"
       - ".github/workflows/deploy-to-cloudflare.yml"
@@ -133,6 +134,7 @@ jobs:
               - 'infra/cloudflare/newsletter-worker/**'
             app:
               - 'apps/website/**'
+              - 'packages/content-model/**'
               - 'packages/display-templates/**'
 
   # The website is NOT built on a PR (the full build needs TeX Live and a content
@@ -167,8 +169,13 @@ jobs:
       # deploy's website job, where an export already exists.
       - name: Unit tests (website)
         run: pnpm --filter @youproof.org/website run test
-      # The display template engine the website renders references with. It is a
-      # workspace dependency of the website, so the install above already has it.
+      # The content model (addressing, labels, locales) and the display template
+      # engine the website renders references with. Both are workspace dependencies
+      # of the website, so the install above already has them.
+      - name: Typecheck (content model)
+        run: pnpm --filter @youproof.org/content-model run typecheck
+      - name: Unit tests (content model)
+        run: pnpm --filter @youproof.org/content-model run test
       - name: Typecheck (display templates)
         run: pnpm --filter @youproof.org/display-templates run typecheck
       - name: Unit tests (display templates)

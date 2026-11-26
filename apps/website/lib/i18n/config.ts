@@ -1,3 +1,4 @@
+import { localeCodes } from '@youproof.org/content-model'
 import localesData from './locales.json'
 
 /**
@@ -123,7 +124,7 @@ const DATA = localesData as {
 }
 
 /** Active locale codes, e.g. `['hu']`. */
-export const LOCALES: string[] = Object.keys(DATA.locales)
+export const LOCALES: string[] = localeCodes(DATA)
 
 /**
  * The default locale used for the root redirect, `<html lang>`, and x-default.

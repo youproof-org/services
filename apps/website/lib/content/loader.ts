@@ -36,7 +36,7 @@ import type {
   DisplayTemplateSeparators,
   DisplayTemplateTargetType,
 } from './types'
-import { isExternalTarget, parseFqn } from './fqn'
+import { parseRefTarget } from '@youproof.org/content-model'
 import { referenceTokens } from './inline-tokens'
 
 // ---------------------------------------------------------------------------
@@ -152,26 +152,10 @@ function formatError(message: string): never {
  * idea of the shape rather than the parser's.
  */
 export function toRefTarget(raw: unknown, where: string): RefTarget {
-  if (typeof raw !== 'string') {
-    formatError(
-      `${where}: 'target' must be a string — either a fully qualified name ` +
-        `(e.g. definitions.gyuru.terms.integer-number) or a URL.`,
-    )
-  }
-  const target = raw.trim()
-  if (isExternalTarget(target)) return { type: 'external', url: target }
-  let parsed
   try {
-    parsed = parseFqn(target, where)
+    return parseRefTarget(raw, where)
   } catch (err) {
     formatError(err instanceof Error ? err.message : String(err))
-  }
-  return {
-    type: parsed.kind,
-    name: parsed.name,
-    fqn: parsed.fqn,
-    parentFqn: parsed.parentFqn,
-    parentKind: parsed.parentKind,
   }
 }
 

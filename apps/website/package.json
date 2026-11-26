@@ -24,6 +24,7 @@
     "@fortawesome/free-brands-svg-icons": "catalog:",
     "@fortawesome/free-solid-svg-icons": "catalog:",
     "@fortawesome/react-fontawesome": "catalog:",
+    "@youproof.org/content-model": "workspace:*",
     "@youproof.org/display-templates": "workspace:*",
     "js-yaml": "catalog:",
     "katex": "catalog:",

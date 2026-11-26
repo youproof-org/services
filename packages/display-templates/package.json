@@ -3,13 +3,17 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "The reference display template engine: the expression language, the template checks and list resolution. Plain TypeScript source with no runtime dependencies, consumed from source by the website, and meant to be bundled by the editor.",
+  "sideEffects": false,
+  "description": "The reference display template engine: the expression language, the template checks and list resolution. Plain TypeScript source with no third-party runtime dependencies (it uses the sibling @youproof.org/content-model), consumed from source by the website, and meant to be bundled by the editor.",
   "exports": {
     ".": "./src/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit && tsc --noEmit -p test",
     "test": "node --import tsx --test \"test/*.test.ts\""
+  },
+  "dependencies": {
+    "@youproof.org/content-model": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "catalog:",

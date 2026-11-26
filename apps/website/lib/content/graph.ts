@@ -98,7 +98,7 @@ import {
   keyForStandalone,
   standaloneSectionKey,
 } from './keys'
-import { fqnJoin } from './fqn'
+import { fqnJoin } from '@youproof.org/content-model'
 import {
   getChapterIndex,
   getChapterIndexLabel,
@@ -1892,8 +1892,8 @@ function buildBacklinkIndex(graph: ContentGraph): Map<string, KbBacklinks> {
   }
 
   // A section's fqn names its chapter, but parsing one back out of a string is the
-  // kind of thing `lib/content/fqn.ts` exists to stop; the graph knows the answer,
-  // so it is asked once here rather than per row.
+  // kind of thing `fqn.ts` in packages/content-model exists to stop; the graph knows
+  // the answer, so it is asked once here rather than per row.
   const chapterOfSection = new Map<string, ChapterNode>()
   for (const chapter of graph.chapters.values()) {
     for (const section of chapter.sections) chapterOfSection.set(keyForSection(section), chapter)

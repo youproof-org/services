@@ -1,5 +1,5 @@
-import type { RefTargetKind } from './fqn'
-import type { DisplayTemplateCollection, DisplayTemplateTargetType, LinkSegment, TextSegment } from '@youproof.org/display-templates'
+import type { RefTarget, RefTargetKind } from '@youproof.org/content-model'
+import type { DisplayTemplateCollection, LinkSegment, TextSegment } from '@youproof.org/display-templates'
 
 // ---------------------------------------------------------------------------
 // Content blocks
@@ -115,44 +115,8 @@ export type ContentBlock = (
 // References
 // ---------------------------------------------------------------------------
 
-export interface ExternalRefTarget {
-  type: 'external'
-  url: string
-}
-
-/**
- * An internal cross-reference target: a parsed fully qualified name (see fqn.ts).
- *
- * One shape for all fourteen kinds, replacing the eight hand-written interfaces
- * this used to be. Those carried the parentage each kind happened to need —
- * `namespace` on an entity, `book` + `part` on a chapter, a nested `parent` object
- * on a claim — which meant the shape of a target depended on what it pointed at,
- * and adding a kind meant adding an interface. The path already encodes parentage,
- * so it is read off the path instead.
- *
- * `type` keeps its name so the many `target.type === 'book'` checks still read the
- * same, and there is no `type` field in the YAML any more: the leading container
- * decides the root type and the last one decides the leaf's, so a declared type
- * could only ever duplicate or contradict the path.
- */
-export interface PathRefTarget {
-  type: RefTargetKind
-  /** Leaf key — a `name`, never a slug. */
-  name: string
-  /** The path as authored, e.g. "theorems.t.proofs.p". Also the graph's map key. */
-  fqn: string
-  /** The path minus its last step; '' when the leaf sits at the root. */
-  parentFqn: string
-  /** Kind of the parent, or null at the root. Lets a consumer branch without re-parsing. */
-  parentKind: RefTargetKind | null
-}
-
-export type RefTarget = ExternalRefTarget | PathRefTarget
-
-/** True for every target except an external URL — i.e. everything with an `fqn`. */
-export function isPathTarget(target: RefTarget): target is PathRefTarget {
-  return target.type !== 'external'
-}
+export type { ExternalRefTarget, PathRefTarget, RefTarget } from '@youproof.org/content-model'
+export { isPathTarget } from '@youproof.org/content-model'
 
 /**
  * A link in a resolved display, with its target's two hrefs, resolved at
@@ -210,26 +174,11 @@ export type {
 /** Locale -> that locale's display template collection. */
 export type DisplayTemplateCollections = Record<string, DisplayTemplateCollection>
 
-type SameTypes<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false
-/** The engine's list of renderable target kinds is every target kind but `part`. */
-export const DISPLAY_TEMPLATE_TARGET_TYPES_MATCH: SameTypes<
-  DisplayTemplateTargetType,
-  Exclude<RefTargetKind, 'part'>
-> = true
-
 // ---------------------------------------------------------------------------
 // Entity labels
 // ---------------------------------------------------------------------------
 
-export interface InflectedForm {
-  base: string
-  suffix?: string
-}
-
-export interface EntityLabels {
-  canonical: string
-  cases?: Record<string, InflectedForm>
-}
+export type { EntityLabels, InflectedForm } from '@youproof.org/content-model'
 
 // ---------------------------------------------------------------------------
 // Term definitions
@@ -587,7 +536,8 @@ export interface KbBacklinks {
 //
 // Every map is keyed by the node's fully qualified name — the same string a
 // cross-reference target is — so a lookup is `graph.theorems.get(target.fqn)` with
-// no key construction. See keys.ts for the builders and fqn.ts for the grammar:
+// no key construction. See keys.ts for the builders and fqn.ts in
+// packages/content-model for the grammar:
 //
 //   books.{book}
 //   books.{book}.parts.{part}

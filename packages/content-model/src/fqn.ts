@@ -6,7 +6,7 @@
  *
  * Containers are canonical English plurals; keys are `name` values. This is what a
  * cross-reference target is, and it is language-independent — the localized
- * projection with `slug` keys is the anchor (see urls.ts).
+ * projection with `slug` keys is the anchor (see the website's lib/content/urls.ts).
  *
  * Two properties are load-bearing and easy to lose by accident:
  *
@@ -19,8 +19,8 @@
  *     flatten parts out, and a chapter moving between parts must not move its
  *     address.
  *
- * `.` is the separator, so no name may contain one; `validateIdentifiers` enforces
- * that, and this module assumes it.
+ * `.` is the separator, so no name may contain one; the website's
+ * `validateIdentifiers` enforces that, and this module assumes it.
  */
 
 /** What a fully qualified name can point at. The leaf container decides which. */
@@ -33,9 +33,9 @@ export type RefTargetKind =
 /**
  * Container segment → the kind of thing it holds.
  *
- * NOT the same vocabulary as `ContainerKey` in lib/i18n/config.ts, and the
- * difference is deliberate: that one is about URL and anchor *segments*, so it has
- * no `pages` (a custom page sits at the locale root with no container segment) and
+ * NOT the same vocabulary as `ContainerKey` in the website's lib/i18n/config.ts,
+ * and the difference is deliberate: that one is about URL and anchor *segments*, so
+ * it has no `pages` (a custom page sits at the locale root with no container segment) and
  * it has a `knowledge-base` outer segment that addresses nothing on its own. This
  * one is about *containment* in the content model.
  */
