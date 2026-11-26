@@ -810,6 +810,13 @@ Run it twice. After step 4 the intended changes are:
 
 - the retargeted `in-the-reflexiv-relacio-definition` link;
 - the backlinks, panels and citations the 28 removed references produced;
+- the 13 chapter 27 references that got a display, and the text they changed;
+- `[26.25. Lemma]ban` becoming `[26.25. Lemmá]ban` in
+  `primhatvany-miller-rabin-nemtanuinak-szama.yaml`, and in that page's excerpt: the
+  old display glued the ending onto the canonical label, and `the-index-label-ine`
+  takes the label's inessive form;
+- the order of the knowledge base reference panels, which now follows the order of
+  appearance in the text;
 - the backlink counts and the row order that follows from them. These are checked by
   rule, not listed one by one: every count must equal the number of times the source
   cites the target in its text.
