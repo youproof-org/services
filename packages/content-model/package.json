@@ -1,0 +1,20 @@
+{
+  "name": "@youproof.org/content-model",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "description": "Content addressing and labels: the fully qualified name grammar, reference targets, the entity label registry and the locale list, as pure functions over parsed data. Plain TypeScript source with no runtime dependencies, consumed from source by the website and the display template engine, and meant to be bundled by the editor.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit && tsc --noEmit -p test",
+    "test": "node --import tsx --test \"test/*.test.ts\""
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:"
+  }
+}

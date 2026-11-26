@@ -14,7 +14,7 @@ import assert from 'node:assert/strict'
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { parseFqn, isExternalTarget } from '../lib/content/fqn.ts'
+import { parseFqn, isExternalTarget } from '@youproof.org/content-model'
 import * as graphModule from '../lib/content/graph.ts'
 
 const { loadRawGraphData, buildGraphFromRaw } = graphModule.default ?? graphModule

@@ -1,25 +1,29 @@
+import type { RefTargetKind } from '@youproof.org/content-model'
+
 export interface ContextObject extends Record<string, ContextValue> {}
 export type ContextValue = string | ContextObject
 export type TemplateContext = Record<string, ContextObject>
 
-/** Every target kind a display template can render. */
-export const TEMPLATE_TARGET_TYPES = [
-  'book',
-  'article',
-  'newsletter',
-  'page',
-  'landing',
-  'chapter',
-  'section',
-  'definition',
-  'theorem',
-  'proof',
-  'remark',
-  'claim',
-  'term',
-] as const
+/** Every target kind a display template can render: all but a part, which nothing displays. */
+export type DisplayTemplateTargetType = Exclude<RefTargetKind, 'part'>
 
-export type DisplayTemplateTargetType = (typeof TEMPLATE_TARGET_TYPES)[number]
+const TARGET_TYPES = {
+  book: true,
+  article: true,
+  newsletter: true,
+  page: true,
+  landing: true,
+  chapter: true,
+  section: true,
+  definition: true,
+  theorem: true,
+  proof: true,
+  remark: true,
+  claim: true,
+  term: true,
+} as const satisfies Record<DisplayTemplateTargetType, true>
+
+export const TEMPLATE_TARGET_TYPES = Object.keys(TARGET_TYPES) as readonly DisplayTemplateTargetType[]
 
 export type DisplayTemplateGroupBy = 'label' | 'parent' | 'type'
 

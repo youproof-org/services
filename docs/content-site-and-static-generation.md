@@ -381,8 +381,9 @@ The anchor builders live in `lib/content/urls.ts` and the localized segments in
 `lib/i18n/locales.json` — the same dictionary the URL segments come from, so an
 anchor segment and a URL segment for the same concept cannot drift apart. The
 cross-reference targets in the content YAML use the identical path shape with
-canonical English segments and `name` keys instead; the content repo's
-`docs/content-model.md` specifies that grammar for authors.
+canonical English segments and `name` keys instead. `parseFqn` in
+`packages/content-model` parses them, and the content repo's `docs/content-model.md`
+specifies that grammar for authors.
 
 <a id="references"></a>
 ## References
@@ -390,8 +391,9 @@ canonical English segments and `name` keys instead; the content repo's
 A cross-reference in the prose is an item of its file's `references` list, and the
 text cites the item by its zero-based index: `[0]`, `[1]` and so on. Chapters, their
 sections, knowledge-base entities, standalone items and their sections can each carry
-a list. `readReferences` in `lib/content/loader.ts` reads it and checks it against the
-file's text.
+a list. `readReferences` in `packages/display-templates` reads the parsed list and
+checks it against the file's text, and the loader (`lib/content/loader.ts`) fails the
+build on the problems it reports.
 
 ```yaml
 references:
@@ -414,11 +416,11 @@ one, and the loaded `RefEntry.targets` is always a list. It also has exactly one
   always takes `text`, since no template accepts one.
 
 Each item is used exactly once, and the list is in the order the text first uses its
-items, so `[i]` is the i-th reference a reader meets. The loader reads the tokens from
+items, so `[i]` is the i-th reference a reader meets. The reader reads the tokens from
 the text fields `InlineText` renders, in the order the site renders them
-(`referenceTexts`), at the top level and inside bold. The token grammar is
-`lib/content/inline-tokens.ts`, shared by `InlineText`, `kb-excerpt.ts` and the
-loader. It matches math first, so `$[0]_3$` is a formula and not a reference, and the
+(`REFERENCE_TEXT_FIELDS` and `referenceTexts`), at the top level and inside bold. The
+token grammar is `inline-tokens.ts` in the same package, shared by `InlineText`,
+`kb-excerpt.ts` and the reader. It matches math first, so `$[0]_3$` is a formula and not a reference, and the
 content of a formula block and the rows of a typewriter block are never read for
 tokens.
 
@@ -440,8 +442,9 @@ The templates live in the content repo, one collection per locale at
 `content/display-templates/display-templates.<locale>.yaml`. A new template is a
 content change and needs no services release. `loadDisplayTemplateCollections` in
 `lib/content/loader.ts` reads the collection of every configured locale into the raw
-graph and checks every template as it reads it, so an invalid template fails the build
-even when nothing uses it. A locale without a file has no templates.
+graph with `readDisplayTemplateCollection` from the engine package, which checks every
+template as it reads it, so an invalid template fails the build even when nothing uses
+it. A locale without a file has no templates.
 
 ```yaml
 the-index-label:
@@ -514,10 +517,15 @@ link segments, one per target.
 
 The engine itself is the workspace package `@youproof.org/display-templates`
 (`packages/display-templates`): the expression language and its builtins, the template
-checks, list resolution and the segment helpers. It has no runtime dependencies, the
-website consumes it from source, and it exists as a package so the editor can render
-references with the same code. Reading the collection file and building contexts stay
-in the website. A figure's `self-reference.display` uses the same expression language
+checks, list resolution, the segment helpers, the collection reader with the defaults
+it fills in, the `references` list reader and the inline token grammar. Its one
+dependency is the sibling package `@youproof.org/content-model`
+(`packages/content-model`), which holds the fully qualified name grammar, the parsed
+reference target, the entity label registry check and lookups, and the locale list
+reader. Neither has a third-party runtime dependency or reads a file: both take parsed
+data. The website consumes them from source, and they exist as packages so the editor
+can read and render references with the same code. Reading files, parsing the YAML and
+building contexts stay in the website. A figure's `self-reference.display` uses the same expression language
 with its own context and stays inline in the figure block.
 
 ## Not-found & stub behavior

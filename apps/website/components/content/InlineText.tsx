@@ -1,8 +1,7 @@
 import React from 'react'
-import { capitalizeSegments, linkSegments, segmentsText, type DisplaySegment } from '@youproof.org/display-templates'
+import { capitalizeSegments, inlineTokens, linkSegments, segmentsText, type DisplaySegment } from '@youproof.org/display-templates'
 import { mathSource } from '@/lib/utils/math'
 import { termAnchorId } from '@/lib/content/urls'
-import { inlineTokens } from '@/lib/content/inline-tokens'
 import type { RefList, RefLinkSegment, RefTarget, TermMap, AnchorParent } from '@/lib/content/types'
 
 interface InlineTextProps {

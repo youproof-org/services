@@ -9,9 +9,9 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 
-import { parseFqn, isExternalTarget, fqnJoin, fqnSegment } from '../lib/content/fqn.ts'
+import { parseFqn, isExternalTarget, fqnJoin, fqnSegment } from '../src/fqn'
 
-const parse = (fqn) => parseFqn(fqn, 'test')
+const parse = (fqn: string) => parseFqn(fqn, 'test')
 
 // ---------------------------------------------------------------------------
 // Every production

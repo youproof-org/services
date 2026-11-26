@@ -24,7 +24,7 @@ import '../../scripts/lib/load-env.mjs'
 import * as graphModule from '../../lib/content/graph.ts'
 import * as urlsModule from '../../lib/content/urls.ts'
 import * as keysModule from '../../lib/content/keys.ts'
-import * as fqnModule from '../../lib/content/fqn.ts'
+import * as fqnModule from '@youproof.org/content-model'
 import * as glossaryModule from '../../lib/content/glossary-rows.ts'
 
 const pick = (m) => m.default ?? m

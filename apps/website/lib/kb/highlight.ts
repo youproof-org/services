@@ -68,12 +68,12 @@ export type ArrivalDetail = { marked: readonly Element[] }
  * The character rule, from the identifiers sub-plan by way of D7: a fully qualified
  * name is `[a-z0-9-]` segments joined by dots. Nothing else, ever.
  *
- * Deliberately narrower than `parseFqn` (`lib/content/fqn.ts`), which is the
- * authoring-time grammar and throws with a message naming what an author got wrong.
- * This is the arrival-time gate on an untrusted string, and its only answer is yes
- * or no: no uppercase, no percent-encoding (the caller decodes first, so an escape
- * that survives here is a character that is not allowed), no whitespace, no empty
- * segment, no leading or trailing dot.
+ * Deliberately narrower than `parseFqn` (`packages/content-model/src/fqn.ts`),
+ * which is the authoring-time grammar and throws with a message naming what an
+ * author got wrong. This is the arrival-time gate on an untrusted string, and its
+ * only answer is yes or no: no uppercase, no percent-encoding (the caller decodes
+ * first, so an escape that survives here is a character that is not allowed), no
+ * whitespace, no empty segment, no leading or trailing dot.
  */
 const TARGET_FQN = /^[a-z0-9-]+(?:\.[a-z0-9-]+)*$/
 

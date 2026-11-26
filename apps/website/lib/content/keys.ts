@@ -15,7 +15,7 @@
  * graph.ts imports display-template — so a shared module is the only place both can
  * reach without a cycle.
  */
-import { fqnJoin } from './fqn'
+import { fqnJoin } from '@youproof.org/content-model'
 import type {
   BookNode,
   ChapterNode,
@@ -30,7 +30,10 @@ export const bookKey = (bookName: string): string => fqnJoin('', 'book', bookNam
 export const partKey = (bookName: string, partName: string): string =>
   fqnJoin(bookKey(bookName), 'part', partName)
 
-/** No part segment: a chapter's address is `{book}.chapters.{chapter}` (see fqn.ts). */
+/**
+ * No part segment: a chapter's address is `{book}.chapters.{chapter}` (see fqn.ts in
+ * packages/content-model).
+ */
 export const chapterKey = (bookName: string, chapterName: string): string =>
   fqnJoin(bookKey(bookName), 'chapter', chapterName)
 
