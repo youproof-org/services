@@ -538,6 +538,22 @@ as packages so the editor can read and render references with the same code. Rea
 files, parsing the YAML, building the graph and reporting errors stay in the website. A figure's `self-reference.display` uses the same expression language
 with its own context and stays inline in the figure block.
 
+Content pull requests never build the site, so the content repo's
+`scripts/check-refs.mjs` runs the build's own reference and template checks from a third
+package, `@youproof.org/content-checker` (`packages/content-checker`). Its
+`build.mjs` bundles `src/index.ts`, the two packages above, the locale list from
+`lib/i18n/locales.json` and the locked js-yaml into one self-contained ES module,
+`packages/content-checker/content-checker.mjs`, which is committed. Regenerate it with
+`pnpm --filter @youproof.org/content-checker generate` after changing any of its
+sources; the same inputs give the same bytes. The website unit test job in
+`deploy-to-cloudflare.yml` regenerates it on pull requests and fails when the committed
+file differs. The file offers what the script needs: parsing YAML as the site does,
+reading and checking a template collection, reading and checking a file's `references`
+list with the item, token or key each problem is about, and the source offset of each
+`[i]` token the site reads. `check-refs.mjs` loads it from a services checkout, and the
+content repo's `ref-check.yml` downloads it from `stable/staging`, so a change to these
+checks reaches content pull requests when it reaches `stable/staging`.
+
 ## Not-found & stub behavior
 
 Migrated chapters can link to chapters that aren't migrated yet. To avoid hard
