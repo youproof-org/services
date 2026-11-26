@@ -622,12 +622,24 @@ the caret. Escape closes the popup and leaves the text unchanged. Typing `[` ins
 a `$...$` math span doesn't open the popup, since brackets are ordinary there. `[[`
 keeps its meaning for term insertions.
 
+The popup has one search box over the loaded targets. Most references are term links,
+so a term hit inserts its `text` item at once, with the link text it was picked by.
+Any other target goes on to the template choice. A "Pick in sidebar" action uses the
+sidebar's existing selection mode for when the author knows where a target is but
+not its title. The templates are listed most used first for the target's kind, with
+the first one preselected and a filter.
+
 **Editing a reference.** Clicking a reference opens the same popup with its details:
 the template, picked from the templates that accept the targets' types and count,
 each shown rendered against the actual targets; a switch to literal `text`; and the
-target. For a multi-reference the popup holds the ordered target list with add,
-remove and reorder, and the preview shows how the targets group. `RefsPanel.tsx` and
-its hooks go.
+target. F2 on the reference next to the caret, or Enter on a selected one, opens it
+from the keyboard. For a multi-reference the popup holds the target list with add
+and remove, in reading order and grouped as the template groups them, and the
+preview shows the result. Reordering is offered only for a template with
+`order: authored`, since every other list template sorts its targets by position.
+If an edit leaves the chosen template unable to take the targets, the popup keeps
+it, shows the reader's reason and blocks confirming until the author picks one:
+the case ending is the sentence's choice, so the editor doesn't guess it.
 
 **Popup placement.** The popup must never cover the reference it edits:
 
@@ -880,7 +892,8 @@ Then, in the editor, one commit or a few per step:
    dictionary, as it does for a `labels` block.
 6. Hold each reference in its token, and write the list and number the tokens on save.
 7. Render references inline as atomic tokens.
-8. Replace the panel with the create and edit popup.
+8. Add the create and edit popup. The references panel already went in step 5,
+   with the dictionary editing.
 9. Release editor 2.0.0, in a separate PR, because 1.3.0 loses data on migrated
    content: it ignores the list, so a save drops it and leaves the `[i]` tokens behind.
 
@@ -919,3 +932,4 @@ branch in each repo. One commit per step, with approval before each commit.
 | 8 | Backlink counts after single use | Count every citation |
 | 9 | Places that chain a claim with an entity | Stay separate references |
 | 10 | Collection editing in the editor | Hand-edited YAML, reloaded on file change |
+| 11 | How the editor creates and edits references | One popup with search, term hits inserted at once, a sidebar pick, templates by use, targets in reading order |
