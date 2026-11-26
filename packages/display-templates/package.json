@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "sideEffects": false,
-  "description": "The reference display template engine: the expression language, the template checks and list resolution. Plain TypeScript source with no third-party runtime dependencies (it uses the sibling @youproof.org/content-model), consumed from source by the website, and meant to be bundled by the editor.",
+  "description": "The reference display template engine: the expression language, the template checks, list resolution, the template collection reader, the references list reader and the inline token grammar. Plain TypeScript source with no third-party runtime dependencies (it uses the sibling @youproof.org/content-model), consumed from source by the website, and meant to be bundled by the editor.",
   "exports": {
     ".": "./src/index.ts"
   },
@@ -16,7 +16,9 @@
     "@youproof.org/content-model": "workspace:*"
   },
   "devDependencies": {
+    "@types/js-yaml": "catalog:",
     "@types/node": "catalog:",
+    "js-yaml": "catalog:",
     "tsx": "catalog:",
     "typescript": "catalog:"
   }

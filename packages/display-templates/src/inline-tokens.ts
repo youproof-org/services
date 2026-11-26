@@ -1,15 +1,15 @@
 /**
  * The token grammar of the inline markup in narrative content, shared by
- * everything that reads it: `InlineText` renders it, `kb-excerpt` flattens it to
- * plain text, and the loader checks the reference tokens in it. One pattern, so
- * the three can't disagree about where a token starts.
+ * everything that reads it: the website's `InlineText` renders it, its
+ * `kb-excerpt` flattens it to plain text, and `readReferences` checks the reference
+ * tokens in it. One pattern, so they can't disagree about where a token starts.
  *
  * The alternation order is load-bearing: a `[0]` inside `$[0]_3$` is part of the
  * formula and not a reference, which is what matching math first gives.
  *
  * `legacy-ref` is the `[key]` token of the old keyed `references` dictionary. It
  * matches what that token matched, so text that read as a reference before still
- * reads as one and the loader can reject it instead of rendering it as prose.
+ * reads as one and the reader can reject it instead of rendering it as prose.
  */
 export type InlineToken =
   | { kind: 'bold-italic'; inner: string }

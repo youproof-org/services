@@ -1,6 +1,5 @@
-import { segmentsText } from '@youproof.org/display-templates'
+import { inlineTokens, segmentsText, type InlineToken } from '@youproof.org/display-templates'
 import type { ContentBlock, KbNode, RefList, TermMap } from './types'
-import { inlineTokens, type InlineToken } from './inline-tokens'
 
 // The meta-description of a knowledge-base entity page: the opening prose of its
 // body, as plain text, truncated.
@@ -69,8 +68,8 @@ function firstProse(
 /**
  * The inline markup of `InlineText`, resolved to plain text.
  *
- * Both read the token grammar of `inline-tokens.ts`, so the two cannot disagree
- * about where a token starts.
+ * Both read the token grammar of `inline-tokens.ts` in packages/display-templates,
+ * so the two cannot disagree about where a token starts.
  *
  * Two decisions specific to a description:
  *
