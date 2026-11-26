@@ -287,9 +287,10 @@ the editor's context carries `label`.
 
 This depends on step 7 of the display templates plan. Its services side is under
 way: the registry code, the collection and reference readers, the numbering and the
-template context are all in the packages. The editor side has not started. The editor reads `entity-labels.json` from the services
-checkout, so the claim variants reach it without an editor release. The dropdown
-itself is editor code.
+template context are all in the packages, and the content checker is built from
+them. The editor side has not started. The editor reads `entity-labels.json` from
+the services checkout, so the claim variants reach it without an editor release.
+The dropdown itself is editor code.
 
 ## Steps
 
@@ -314,6 +315,11 @@ a claim target, and the claim shape in `check.ts` declares it.
 `packages/display-templates/test/context.test.ts` compares the two, so it fails
 until both change. Bump `RAW_GRAPH_VERSION` from its value at the time (6 on this
 branch), since the raw entries gain a field. Unit tests.
+
+Steps 1 and 2 change the sources of `packages/content-checker/content-checker.mjs`.
+Regenerate it with `pnpm --filter @youproof.org/content-checker generate` and
+commit it with each of those steps. The pull request check and the deploy both fail
+when the committed file is out of date.
 
 ### 3. Panel title (services)
 
@@ -356,19 +362,25 @@ templates.
 
 ### 5. Content-side check (content repo)
 
-`scripts/check-refs.mjs` has to check that `claim-label` is a `claim` variant of
-the entity's locale, that it sits on a type that can hold claims, and that
-`target.label` on a claim target resolves to the claim noun in the case key check.
-It warns on a `claim-label` without claims.
+`scripts/check-refs.mjs` no longer keeps its own copy of the template rules. It
+runs the build's checks from `packages/content-checker/content-checker.mjs`, a
+committed file that services generates from the packages, and it reads
+`entity-labels.json` beside it. So the work splits in two:
 
-How much of that is new script code depends on step 5 of the display templates
-plan. That step now has the script load one JavaScript file built from the services
-packages, so it keeps no copy of the rules. If it has landed, the template and case
-key checks come from that file and follow the package changes of steps 1 and 2:
-rebuild and commit the file in services, and only the `claim-label` field check is
-written in the script. If it hasn't, the script's own `labelOwner` and label checks
-are extended by hand. That step is planned and not built yet, so check which case
-applies before starting.
+- **Comes with services.** The template checks, including the claim shape that
+  allows `target.label` and the case key check on it, reach the script through the
+  regenerated checker (step 2). Nothing is written in the content repo for them.
+- **Written in the script.** The entity field checks are still the script's own,
+  line by line: `label` is checked against the registry there today. Add the same
+  for `claim-label`: it is a `claim` variant of the entity's locale, and it sits on
+  a definition, theorem or remark. Warn on a `claim-label` in a file without claim
+  blocks.
+
+`ref-check.yml` downloads the checker and the registry from services
+`stable/staging`. Until this plan's services change is there, a content pull
+request that uses a template reading `target.label` on a claim fails the check, and
+so does one that sets `claim-label`. Run the script locally against the services
+branch until then, as the entity labels plan did.
 
 ### 6. Output equivalence check
 
@@ -384,11 +396,18 @@ Everything else must be identical.
 
 ### 7. Editor (editor repo)
 
-The claim noun dropdown, and `label` in the claim context of the template previews.
-Separate PR and a new editor version after 2.0.0, which the display templates plan
-reserves for the reference list. An editor that predates it can't set the noun. Its
-previews get the claim noun through the shared context once its loader reads
-`claim-label` and it bundles a services checkout that has step 2.
+This comes after the nine editor steps of the display templates plan, which end
+with editor 2.0.0. Those steps have the editor bundle the shared packages from the
+services checkout and build the content outline from what it loads. On top of that:
+
+1. Read `claim-label` in the editor's loader and pass it into the outline entity as
+   `claimLabel`. The shared `buildContext` then gives the template previews the
+   claim noun.
+2. Add the claim noun dropdown to the entity header.
+3. Release a new editor version, built against a services checkout that has step 2.
+
+Separate PR. An editor that predates it can't set the noun, and its previews of a
+template that reads `target.label` on a claim fail the shared template check.
 
 ## Delivery
 
@@ -404,7 +423,9 @@ previews get the claim noun through the shared context once its loader reads
 | New services, old content | Builds and renders as before. No entity declares a `claim-label`, and the old templates are still valid. Only the panel title can differ, and without a `claim-label` it doesn't. |
 | Old services, new content | Build fails before the upload. The template check rejects `target.label` on a claim, and `doc-examples` loads the whole graph in the unit-test step. |
 
-  Services goes first, then content.
+  Services goes first, then content. Content pull requests are checked with the
+  services code on `stable/staging` (step 5), which is one more reason for that
+  order.
 
 ## Non-goals
 
