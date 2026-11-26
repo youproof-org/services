@@ -333,14 +333,14 @@ decision goes the other way.
 Update `docs/content-site-and-static-generation.md` and `docs/i18n-design.md` where
 they describe labels and reference templates.
 
-Version: this phase ships after the 2.4.0 release that carries the label and
-template changes, so it gets its own bump, to 2.5.0. If it ends up in the same
-release, it gets none.
+Version: the label and template changes ship as one release, 2.4.0, from
+`references-refactor`. This phase comes after it, so it gets its own bump, to
+2.5.0. If it ends up in that release, it gets none.
 
 ### 4. Content migration (content repo)
 
 A one-off script, on a branch off the content branch that holds the migrated
-references:
+references (see [Delivery](#delivery)):
 
 - sets `claim-label` on each entity whose claims are cited with a noun other than
   `pont` and other than the default. From the data that is the 12 `property`
@@ -409,13 +409,26 @@ services checkout and build the content outline from what it loads. On top of th
 Separate PR. An editor that predates it can't set the noun, and its previews of a
 template that reads `target.label` on a claim fail the shared template check.
 
+Check first whether editor 2.0.0 keeps a top-level field it doesn't know when it
+saves an entity file. Editor 1.3.0 dropped the `references` list that way, which is
+why the display templates plan releases the editor first. If 2.0.0 would drop
+`claim-label`, this editor version has to be out before authors edit migrated
+content.
+
 ## Delivery
 
-- Services: branch `claim-noun-registry`, which carries `references-refactor` and
-  through it `centralize-display-templates`. Merge those in again as they move. One
-  commit per step, with approval before each commit.
-- Content: after step 4a of the display templates plan, so the claim lists are
-  already list templates when this migration runs.
+- Services: branch `claim-noun-registry`, which carries `references-refactor`. That
+  branch holds the label and the template changes and reaches `development` in one
+  PR, as one release. Merge it in again as it moves, and merge `development`
+  instead once it has landed. One commit per step, with approval before each commit.
+- Content: a branch off `content/yp-94-chapter-26` after the content
+  `references-refactor` branch is merged back into it, and after step 4a of the
+  display templates plan, so the claim lists are already list templates when this
+  migration runs. If chapter 26 is still being finalized there, the same rule
+  applies as for that migration: nothing else merges meanwhile, or the script is
+  rerun on conflict.
+- Editor: before the content migration reaches a branch authors edit, if the check
+  in step 7 shows an older editor would drop `claim-label`. Otherwise in any order.
 - Both mismatched pairs are safe, so this needs no freeze and no `pr-gate` bypass:
 
 | Pair | Result |
