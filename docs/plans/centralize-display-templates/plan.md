@@ -879,14 +879,20 @@ Then, in the editor, one commit or a few per step:
 
 ## Delivery
 
-- Services: branch `centralize-display-templates` off `centralize-entity-labels`. One
-  commit per step, with approval before each commit. The branch carries the label
-  change, so it reaches `development` after that one or together with it.
-- Content: a branch off the content branch that holds the migrated entity labels. The migration
-  rewrites nearly every content file, so it needs a short freeze on content merges,
-  or it runs last and is rerun on conflict. The script is repeatable for that reason.
-- Editor: released together with the content migration. Authors need the new editor
-  from the moment the migrated content is on their branch.
+The label change and this one ship as one release, from a `references-refactor`
+branch in each repo. One commit per step, with approval before each commit.
+
+- Services: `references-refactor` carries the label change too, and reaches
+  `development` in one PR.
+- Content: `references-refactor` is off `content/yp-94-chapter-26`. It's merged back
+  into `content/yp-94-chapter-26`, and chapter 26 is finalized on that branch with
+  the migrated content. The migration rewrites nearly every content file, so nothing
+  else merges into that branch meanwhile, or the scripts are rerun on conflict. They
+  are repeatable for that reason.
+- Editor: released first, as 2.0.0. Until chapter 26 is finalized, the only content
+  being edited is that branch, which already has the migrated content, so nobody
+  needs the old format in the editor.
+- Services and content are released together after chapter 26 is finalized.
 - No dual-format release. Services goes first, as in the entity labels runbook: new
   services with old content fails the build before upload, and old services with new
   content would render wrong with no gate to catch it. The deployment steps and the
