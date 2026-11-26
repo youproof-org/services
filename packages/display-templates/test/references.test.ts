@@ -257,6 +257,26 @@ test('every problem of a file is reported at once', () => {
 // ---------------------------------------------------------------------------
 // Order of appearance
 
+test('each problem names the item, the token or the key it is about, in the order of the errors', () => {
+  const result = read(definition(
+    'references:\n  - { display: no-such, target: theorems.t }\n  - { text: egy, target: theorems.u }\n  - { text: kettő, target: theorems.v }\n',
+    'Lásd $[2]$ [2], [1], [7], [2] és [regi].',
+  ))
+  assert.deepEqual(result.problems, [
+    { message: "reference [0]: 'no-such' is not a display template in 'hu'", item: 0 },
+    { message: "[regi] names a reference, which the text no longer does: use the index of a 'references' item, as in [0]", key: 'regi' },
+    { message: "[7] has no item: the 'references' list has 3 items", token: 2 },
+    { message: 'reference [0] is not used in the text', item: 0 },
+    { message: 'reference [2] is used 2 times: each item is used once', token: 3 },
+    {
+      message: "the 'references' list is not in the order the text uses it: [2] comes before [1]. Renumber the items in the order they appear",
+      token: 1,
+    },
+  ])
+  assert.deepEqual(result.errors, result.problems.map((problem) => problem.message))
+  assert.deepEqual(read(definition('references:\n  old: { text: x, target: theorems.t }\n')).problems.map((p) => Object.keys(p)), [['message']])
+})
+
 test('the text fields of the blocks are read in the order the site renders them, latex blocks included', () => {
   const blocks = yaml.load(`
 - { type: narrative, content: n }

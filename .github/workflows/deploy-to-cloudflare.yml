@@ -38,6 +38,8 @@ on:
       - "apps/website/**"
       - "packages/content-model/**"
       - "packages/display-templates/**"
+      - "packages/content-checker/**"
+      - "pnpm-lock.yaml"
       - "tools/smoke-tests/**"
       - ".github/workflows/deploy-to-cloudflare.yml"
       - ".github/workflows/deploy.yml"
@@ -136,6 +138,8 @@ jobs:
               - 'apps/website/**'
               - 'packages/content-model/**'
               - 'packages/display-templates/**'
+              - 'packages/content-checker/**'
+              - 'pnpm-lock.yaml'
 
   # The website is NOT built on a PR (the full build needs TeX Live and a content
   # checkout, and the deploy covers it). This job is the cheap slice worth having
@@ -156,8 +160,8 @@ jobs:
       # --ignore-scripts skips the website's postinstall LaTeX probe, which is a
       # dev-machine convenience check and needs a TeX install this job has no
       # reason to carry.
-      - name: Install dependencies (website subtree)
-        run: pnpm install --frozen-lockfile --filter @youproof.org/website... --ignore-scripts
+      - name: Install dependencies (website and content checker subtrees)
+        run: pnpm install --frozen-lockfile --filter @youproof.org/website... --filter @youproof.org/content-checker... --ignore-scripts
       # `typecheck` generates .generated/consent-policy.json first — it is imported
       # by client code but gitignored, and this job has no content clone (the
       # generator writes a valid version-0 file in that case).
@@ -180,6 +184,18 @@ jobs:
         run: pnpm --filter @youproof.org/display-templates run typecheck
       - name: Unit tests (display templates)
         run: pnpm --filter @youproof.org/display-templates run test
+      # The content repo's check-refs.mjs runs the committed content-checker.mjs, so
+      # the file must be what its sources build: the packages above, the website's
+      # locales.json and the locked js-yaml. Regenerate it and fail on any difference.
+      - name: Content checker is up to date
+        run: |
+          pnpm --filter @youproof.org/content-checker run generate
+          git diff --exit-code -- packages/content-checker/content-checker.mjs \
+            || { echo '::error file=packages/content-checker/content-checker.mjs,title=content checker out of date::Run pnpm --filter @youproof.org/content-checker generate and commit the result.'; exit 1; }
+      - name: Typecheck (content checker)
+        run: pnpm --filter @youproof.org/content-checker run typecheck
+      - name: Unit tests (content checker)
+        run: pnpm --filter @youproof.org/content-checker run test
 
   # NOTE: zone-purity enforcement lives in the dedicated, always-run
   # `zone-purity-guard.yml` (no paths filter, so it can't be bypassed and is a

@@ -570,8 +570,16 @@ jobs:
           node-version-file: ".nvmrc"
           cache: pnpm
 
-      - name: Install dependencies (website subtree)
-        run: pnpm install --frozen-lockfile --filter @youproof.org/website...
+      - name: Install dependencies (website and content checker subtrees)
+        run: pnpm install --frozen-lockfile --filter @youproof.org/website... --filter @youproof.org/content-checker...
+
+      # Content CI downloads content-checker.mjs from stable/staging, so a deployed
+      # commit must carry the file its sources build.
+      - name: Content checker is up to date
+        run: |
+          pnpm --filter @youproof.org/content-checker run generate
+          git diff --exit-code -- packages/content-checker/content-checker.mjs \
+            || { echo '::error file=packages/content-checker/content-checker.mjs,title=content checker out of date::Run pnpm --filter @youproof.org/content-checker generate and commit the result.'; exit 1; }
 
       # The whole node:test suite over the site's pure modules — consent logic,
       # the knowledge-base URL/graph layer, the chrome state machine. Consent is

@@ -422,6 +422,10 @@ the zone rule ships) — starting at `/` would traverse nothing.
     `locales.json` and `entity-labels.json` stay in `apps/website/lib/i18n` as data.
 
   Both are pure functions over parsed data with no third-party runtime dependencies.
+  A third package, `@youproof.org/content-checker` (`packages/content-checker`),
+  bundles the two with `locales.json` and js-yaml into one committed file,
+  `content-checker.mjs`, that the content repo's `scripts/check-refs.mjs` runs to apply
+  the build's reference and template checks without building the site.
   The website uses them today. They are packages so that the site and the editor
   read and render references with one implementation: the editor will show each
   reference as it renders on the site, and a second implementation would drift from

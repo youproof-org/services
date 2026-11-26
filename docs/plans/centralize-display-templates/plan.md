@@ -858,12 +858,24 @@ editor keeps reading them from the services checkout at startup, so a new locale
 label variant reaches it without an editor release, and `check-refs.mjs` in the
 content repo keeps reading `entity-labels.json` by path.
 
-Then, in the editor: read the collection, bundle the shared engine, render references inline, hold each
-reference in its token and write the list on save, and replace the panel with the
-create and edit popup. Refuse to save a file that still has a
-`references` dictionary, as it does for a `labels` block. Separate PR, and editor
-2.0.0, because 1.3.0 loses data on migrated content: it ignores the list, so a save
-drops it and leaves the `[i]` tokens behind.
+Then, in the editor, one commit or a few per step:
+
+1. Bundle the extension host with esbuild, resolving the shared packages from the
+   services checkout (`SERVICES_DIR`, else `../services`).
+2. Use `content-model` for reference paths, locales and the label registry, in place
+   of the editor's own `fqn.ts` and parsing.
+3. Read the collection with the shared reader, report its problems, and reload it
+   when it changes on disk.
+4. Build the content outline from what the editor loads and number it with the
+   shared code, reporting missing content as described above.
+5. Read the `references` list and `[i]` tokens with the shared reader, over the same
+   text fields as the site. Refuse to save a file that still has a `references`
+   dictionary, as it does for a `labels` block.
+6. Hold each reference in its token, and write the list and number the tokens on save.
+7. Render references inline as atomic tokens.
+8. Replace the panel with the create and edit popup.
+9. Release editor 2.0.0, in a separate PR, because 1.3.0 loses data on migrated
+   content: it ignores the list, so a save drops it and leaves the `[i]` tokens behind.
 
 ## Delivery
 
