@@ -10,9 +10,9 @@ const LABELLED_PARENT_SHAPE = { index: 'text', label: 'label' } as const
 
 /**
  * The `target` fields a context gives each target type, so a template can be
- * checked before any reference uses it. Whoever builds contexts must build these
- * shapes: the website has a unit test that builds the context of every type and
- * compares it with this, so the two can't drift apart.
+ * checked before any reference uses it. `buildContext` in context.ts builds these
+ * shapes, and a test builds the context of every type and compares it with this,
+ * so the two can't drift apart.
  */
 export const TEMPLATE_CONTEXT_SHAPES = {
   book: STANDALONE_SHAPE,
