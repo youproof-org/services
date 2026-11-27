@@ -283,7 +283,9 @@ bad value is visible.
 
 The template picker needs nothing new. It renders each template against the actual
 target through the shared engine, so a claim's noun shows up in the previews once
-the editor's context carries `label`.
+the editor's context carries `label`. The popup lists the templates for the
+target's kind, most used first, so a claim's list gets up to 18 entries shorter,
+depending on how many written-in nouns the review keeps.
 
 This depends on step 7 of the display templates plan. Its services side is under
 way: the registry code, the collection and reference readers, the numbering and the
@@ -384,8 +386,18 @@ branch until then, as the entity labels plan did.
 
 ### 6. Output equivalence check
 
-Reuse the two-layer check from `docs/plans/centralize-entity-labels/equivalence`.
-Add the knowledge-base panel titles to layer 1. The intended changes are:
+Reuse the check in `docs/plans/centralize-display-templates/equivalence`. Its
+`layer1.mjs` keys every reference by source file and position and dumps the
+resolved segments, so it shows a changed noun and a moved link boundary as
+different things. `build.sh` and `layer2.mjs` still come from
+`docs/plans/centralize-entity-labels/equivalence`. Two additions:
+
+- `layer1.mjs` dumps the reference panels' targets and order, not the claim panel
+  titles. Add the titles that `KbEntityPage.tsx` and `ReferencePanel.tsx` build;
+- `layer1-diff.mjs` has a mode per step of that plan (`step4`, `step4a`). Add one
+  for this migration, with its own intended-changes file next to this plan.
+
+The intended changes are:
 
 - the minority references whose review chose the declared noun;
 - the references whose link boundary moves (see [Templates](#templates));
@@ -405,6 +417,11 @@ services checkout and build the content outline from what it loads. On top of th
    claim noun.
 2. Add the claim noun dropdown to the entity header.
 3. Release a new editor version, built against a services checkout that has step 2.
+
+Add the checks that need a real VS Code window to a manual test list next to this
+plan, as `docs/plans/centralize-display-templates/editor-manual-tests.md` does for
+2.0.0: the dropdown writes and removes the field, and the previews of a claim
+reference follow it.
 
 Separate PR. An editor that predates it can't set the noun, and its previews of a
 template that reads `target.label` on a claim fail the shared template check.
