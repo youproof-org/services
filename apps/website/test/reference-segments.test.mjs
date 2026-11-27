@@ -291,6 +291,21 @@ test('a display that starts with its link is capitalized inside the link', () =>
   assert.match(render('Itt [0] áll.', refs), /^Itt <a [^>]*>tétel<\/a>ben áll\.$/)
 })
 
+test('a reference at the start of a bold run is capitalized only when the run starts a sentence', () => {
+  const refs = refsOf([ref('a [tétel]ben', 'theorems.tetel-egy')])
+  assert.match(render('Ha $n$ ***[0] x***, akkor', refs), /<strong><em>a <a [^>]*>tétel<\/a>ben x<\/em><\/strong>, akkor$/)
+  assert.match(render('**[0] x**, akkor', refs), /^<strong>A <a [^>]*>tétel<\/a>ben x<\/strong>/)
+  assert.match(render('Vége. ***[0] x***', refs), /<strong><em>A <a [^>]*>tétel<\/a>ben x<\/em><\/strong>$/)
+  assert.match(render('lásd **x. [0]**', refs), /x\. A <a [^>]*>tétel<\/a>ben<\/strong>$/)
+})
+
+test('a figure\'s [*] follows the same rule', () => {
+  const html = (text) => renderToStaticMarkup(React.createElement(InlineText, { text, selfRefDisplay: 'az [ábra]' }))
+  assert.equal(html('[*] mutatja.'), 'Az <strong>ábra</strong> mutatja.')
+  assert.equal(html('Ezt **[*]** mutatja.'), 'Ezt <strong>az <strong>ábra</strong></strong> mutatja.')
+  assert.equal(html('Vége. **[*]** mutatja.'), 'Vége. <strong>Az <strong>ábra</strong></strong> mutatja.')
+})
+
 test('a grouped multi-reference renders one link per target, each with its own href and target', () => {
   const refs = kbRefs(refsOf([
     tpl('the-entities', 'theorems.lemma-a', 'theorems.kov-b', 'theorems.lemma-c', 'theorems.kov-d'),

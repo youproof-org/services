@@ -54,14 +54,51 @@ export function* inlineTokens(text: string): Generator<InlineMatch> {
   }
 }
 
+export interface PlacedInlineMatch extends InlineMatch {
+  /** Whether the token starts a sentence, by `atSentenceStart`. For a bold run, whether its inner text does. */
+  sentenceStart: boolean
+}
+
 /**
- * The reference tokens `InlineText` renders from `text`, in reading order: the
- * top level and inside bold, the only markup it parses for references.
+ * The tokens of `text` in order, as `inlineTokens` reads them, each with whether
+ * it starts a sentence, given whether `text` itself does. `InlineText` renders a
+ * text through this, and the inner text of a bold run with the run's own
+ * `sentenceStart`.
  */
+export function* placedInlineTokens(text: string, textStartsSentence = true): Generator<PlacedInlineMatch> {
+  for (const match of inlineTokens(text)) {
+    yield { ...match, sentenceStart: atSentenceStart(text, match.start, textStartsSentence) }
+  }
+}
+
+type RenderedReferenceToken = Extract<InlineToken, { kind: 'ref' | 'legacy-ref' | 'self-ref' }>
+
+/**
+ * The reference and self-reference tokens `InlineText` renders from `text`, in
+ * reading order: the top level and inside bold, the only markup it parses for
+ * them. Each has its offset in `text` and whether `InlineText` capitalizes it as
+ * the start of a sentence.
+ */
+export function* renderedReferences(
+  text: string,
+  textStartsSentence = true,
+  offset = 0,
+): Generator<PlacedInlineMatch & { token: RenderedReferenceToken }> {
+  for (const match of placedInlineTokens(text, textStartsSentence)) {
+    const { token } = match
+    if (token.kind === 'ref' || token.kind === 'legacy-ref' || token.kind === 'self-ref') {
+      yield { ...match, token, start: offset + match.start }
+    } else if (token.kind === 'bold-italic' || token.kind === 'bold') {
+      const marker = token.kind === 'bold' ? 2 : 3
+      yield* renderedReferences(token.inner, match.sentenceStart, offset + match.start + marker)
+    }
+  }
+}
+
+/** The reference tokens `InlineText` renders from `text`, in reading order, as `renderedReferences` finds them. */
 export function* referenceTokens(text: string): Generator<Extract<InlineToken, { kind: 'ref' | 'legacy-ref' }>> {
-  for (const { token } of inlineTokens(text)) {
-    if (token.kind === 'ref' || token.kind === 'legacy-ref') yield token
-    else if (token.kind === 'bold-italic' || token.kind === 'bold') yield* referenceTokens(token.inner)
+  for (const { token } of renderedReferences(text)) {
+    if (token.kind !== 'self-ref') yield token
   }
 }
 
@@ -80,11 +117,12 @@ export function decodeInlineEntities(text: string): string {
 }
 
 /**
- * Whether a token at `index` of `text` starts a sentence: nothing but whitespace
- * comes before it, or the text before it ends in `.`, `!` or `?`. `InlineText`
- * capitalizes a reference there.
+ * Whether a token at `index` of `text` starts a sentence: the text before it ends
+ * in `.`, `!` or `?`, or nothing but whitespace comes before it and `text` itself
+ * starts a sentence. A whole text does; the inner text of a bold run does when the
+ * run does. `InlineText` capitalizes a reference there.
  */
-export function atSentenceStart(text: string, index: number): boolean {
+export function atSentenceStart(text: string, index: number, textStartsSentence = true): boolean {
   const textBefore = text.slice(0, index).trimEnd()
-  return textBefore.length === 0 || /[.!?]$/.test(textBefore)
+  return textBefore.length === 0 ? textStartsSentence : /[.!?]$/.test(textBefore)
 }

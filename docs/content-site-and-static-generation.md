@@ -512,10 +512,18 @@ its file's node. That covers a case key the target's label doesn't have and a ta
 that doesn't render exactly one link. `InlineText`
 upper-cases the first visible character of a reference at the start of a sentence,
 in whichever segment holds it. A reference starts a sentence when the text before it,
-within the same run of plain or bold text and with trailing whitespace dropped, is
-empty or ends in `.`, `!` or `?`. The rule is `atSentenceStart` in `inline-tokens.ts`,
-and `InlineText` applies it to the text after `decodeInlineEntities` from the same
-module has replaced its HTML entities. The same rule capitalizes a figure's `[*]`.
+within the same run of plain or bold text and with trailing whitespace dropped, ends
+in `.`, `!` or `?`, or when that text is empty and the run itself starts a sentence:
+the whole text does, and a bold run does when the same rule says so for the run's own
+position. So `Ha $n$ ***[0]...***` keeps the reference lower case, and `Vége. **[0]**`
+capitalizes it. The rule is `atSentenceStart` in `inline-tokens.ts`, and
+`placedInlineTokens` there reads a text's tokens with it, which `InlineText` renders
+from, passing a bold run's own sentence start to its inner text. `renderedReferences`
+walks the same way into bold and lists each reference and `[*]` with its sentence
+start, for a reader that needs the placements without rendering, such as the editor.
+`InlineText` reads the text after `decodeInlineEntities` from the same module has
+replaced its HTML entities, and a caller of `renderedReferences` decodes it the same
+way. The same rule capitalizes a figure's `[*]`.
 
 Every target of an item is an incoming reference of its own. The backlink index counts
 one citation per target per item, so a count is the number of times the source cites

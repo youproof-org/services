@@ -8,9 +8,12 @@ export {
   atSentenceStart,
   decodeInlineEntities,
   inlineTokens,
+  placedInlineTokens,
   referenceTokens,
+  renderedReferences,
   type InlineMatch,
   type InlineToken,
+  type PlacedInlineMatch,
 } from './inline-tokens'
 export {
   fileReferenceTexts,
