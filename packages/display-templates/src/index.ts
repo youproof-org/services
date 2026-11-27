@@ -4,7 +4,17 @@ export { checkLinkText, checkTemplate, TEMPLATE_CONTEXT_SHAPES, type TemplateChe
 export { capitalizeSegments, joinSegments, linkSegments, segmentsText } from './segments'
 export { DisplayListError, resolveDisplay, resolveList, resolveSingle, targetCountError, type ListMember } from './resolve'
 export { readDisplayTemplateCollection, type CollectionReadOptions, type CollectionReadResult } from './collection'
-export { inlineTokens, referenceTokens, type InlineMatch, type InlineToken } from './inline-tokens'
+export {
+  atSentenceStart,
+  decodeInlineEntities,
+  inlineTokens,
+  placedInlineTokens,
+  referenceTokens,
+  renderedReferences,
+  type InlineMatch,
+  type InlineToken,
+  type PlacedInlineMatch,
+} from './inline-tokens'
 export {
   fileReferenceTexts,
   readReferences,

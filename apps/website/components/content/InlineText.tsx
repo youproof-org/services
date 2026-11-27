@@ -1,5 +1,12 @@
 import React from 'react'
-import { capitalizeSegments, inlineTokens, linkSegments, segmentsText, type DisplaySegment } from '@youproof.org/display-templates'
+import {
+  capitalizeSegments,
+  decodeInlineEntities,
+  linkSegments,
+  placedInlineTokens,
+  segmentsText,
+  type DisplaySegment,
+} from '@youproof.org/display-templates'
 import { mathSource } from '@/lib/utils/math'
 import { termAnchorId } from '@/lib/content/urls'
 import type { RefList, RefLinkSegment, RefTarget, TermMap, AnchorParent } from '@/lib/content/types'
@@ -23,7 +30,9 @@ interface InlineTextProps {
  *   ^text^      → superscript
  *
  * Bold and bold-italic content is parsed recursively, so math and other
- * inline markup inside them is rendered correctly.
+ * inline markup inside them is rendered correctly. A reference or `[*]` at the
+ * start of a sentence is capitalized: after `.`, `!` or `?`, or at the start of
+ * the text, or at the start of a bold run that itself starts a sentence.
  */
 export default function InlineText({ text, refs, terms, termParent, selfRefDisplay }: InlineTextProps) {
   const nodes = parseInline(text, refs, terms, termParent, selfRefDisplay)
@@ -31,14 +40,6 @@ export default function InlineText({ text, refs, terms, termParent, selfRefDispl
 }
 
 type KeyCounter = { n: number }
-
-function normalise(text: string): string {
-  return text
-    .replace(/&ndash;/g, '–')
-    .replace(/&amp;/g, '&')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&#x2663;/g, '♣')
-}
 
 // Group indices: 1-2 bold-italic, 3-4 bold
 const BOLD_ITALIC_RE = /(\*\*\*)([\s\S]*?)\*\*\*|(\*\*)([\s\S]*?)\*\*/g
@@ -112,11 +113,6 @@ function renderRefLink(segment: RefLinkSegment, linkText: React.ReactNode[]): Re
   return <a href={segment.href ?? '#'} target="_blank" data-target-fqn={target.fqn} className={className}>{linkText}</a>
 }
 
-function atSentenceStart(text: string, index: number): boolean {
-  const textBefore = text.slice(0, index).trimEnd()
-  return textBefore.length === 0 || /[.!?]$/.test(textBefore)
-}
-
 function parseInline(
   text: string,
   refs?: RefList,
@@ -124,7 +120,7 @@ function parseInline(
   termParent?: AnchorParent,
   selfRefDisplay?: string,
 ): React.ReactNode[] {
-  return parseNormalized(normalise(text), refs, terms, termParent, { n: 0 }, selfRefDisplay)
+  return parseNormalized(decodeInlineEntities(text), refs, terms, termParent, { n: 0 }, selfRefDisplay)
 }
 
 function renderChunkWithMath(text: string, counter: KeyCounter): React.ReactNode[] {
@@ -170,23 +166,24 @@ function parseNormalized(
   termParent: AnchorParent | undefined,
   counter: KeyCounter,
   selfRefDisplay?: string,
+  textStartsSentence = true,
 ): React.ReactNode[] {
   const nodes: React.ReactNode[] = []
   let lastIndex = 0
 
-  for (const { token, start, source } of inlineTokens(text)) {
+  for (const { token, start, source, sentenceStart } of placedInlineTokens(text, textStartsSentence)) {
     if (start > lastIndex) {
       nodes.push(text.slice(lastIndex, start))
     }
 
     switch (token.kind) {
       case 'bold-italic': {
-        const inner = parseNormalized(token.inner, refs, terms, termParent, counter, selfRefDisplay)
+        const inner = parseNormalized(token.inner, refs, terms, termParent, counter, selfRefDisplay, sentenceStart)
         nodes.push(<strong key={counter.n++}><em>{inner}</em></strong>)
         break
       }
       case 'bold': {
-        const inner = parseNormalized(token.inner, refs, terms, termParent, counter, selfRefDisplay)
+        const inner = parseNormalized(token.inner, refs, terms, termParent, counter, selfRefDisplay, sentenceStart)
         nodes.push(<strong key={counter.n++}>{inner}</strong>)
         break
       }
@@ -205,7 +202,7 @@ function parseNormalized(
           // A missing reference, or a display that resolves to nothing
           nodes.push(<span key={counter.n++} className="ref-error">{source}</span>)
         } else if (ref.segments.every((segment) => segment.kind === 'text' || LINKED_TARGETS.has(segment.target.type))) {
-          const segments = atSentenceStart(text, start) ? capitalizeSegments(ref.segments) : ref.segments
+          const segments = sentenceStart ? capitalizeSegments(ref.segments) : ref.segments
           nodes.push(renderSegments(segments, counter, renderRefLink))
         } else {
           // A target type that renders no link
@@ -238,7 +235,7 @@ function parseNormalized(
         if (selfRefDisplay) {
           const segments = linkSegments(selfRefDisplay, undefined)
           nodes.push(renderSegments(
-            atSentenceStart(text, start) ? capitalizeSegments(segments) : segments,
+            sentenceStart ? capitalizeSegments(segments) : segments,
             counter,
             (_, linkText) => <strong>{linkText}</strong>,
           ))

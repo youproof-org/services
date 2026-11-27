@@ -622,12 +622,24 @@ the caret. Escape closes the popup and leaves the text unchanged. Typing `[` ins
 a `$...$` math span doesn't open the popup, since brackets are ordinary there. `[[`
 keeps its meaning for term insertions.
 
+The popup has one search box over the loaded targets. Most references are term links,
+so a term hit inserts its `text` item at once, with the link text it was picked by.
+Any other target goes on to the template choice. A "Pick in sidebar" action uses the
+sidebar's existing selection mode for when the author knows where a target is but
+not its title. The templates are listed most used first for the target's kind, with
+the first one preselected and a filter.
+
 **Editing a reference.** Clicking a reference opens the same popup with its details:
 the template, picked from the templates that accept the targets' types and count,
 each shown rendered against the actual targets; a switch to literal `text`; and the
-target. For a multi-reference the popup holds the ordered target list with add,
-remove and reorder, and the preview shows how the targets group. `RefsPanel.tsx` and
-its hooks go.
+target. F2 on the reference next to the caret, or Enter on a selected one, opens it
+from the keyboard. For a multi-reference the popup holds the target list with add
+and remove, in reading order and grouped as the template groups them, and the
+preview shows the result. Reordering is offered only for a template with
+`order: authored`, since every other list template sorts its targets by position.
+If an edit leaves the chosen template unable to take the targets, the popup keeps
+it, shows the reader's reason and blocks confirming until the author picks one:
+the case ending is the sentence's choice, so the editor doesn't guess it.
 
 **Popup placement.** The popup must never cover the reference it edits:
 
@@ -810,6 +822,13 @@ Run it twice. After step 4 the intended changes are:
 
 - the retargeted `in-the-reflexiv-relacio-definition` link;
 - the backlinks, panels and citations the 28 removed references produced;
+- the 13 chapter 27 references that got a display, and the text they changed;
+- `[26.25. Lemma]ban` becoming `[26.25. Lemmá]ban` in
+  `primhatvany-miller-rabin-nemtanuinak-szama.yaml`, and in that page's excerpt: the
+  old display glued the ending onto the canonical label, and `the-index-label-ine`
+  takes the label's inessive form;
+- the order of the knowledge base reference panels, which now follows the order of
+  appearance in the text;
 - the backlink counts and the row order that follows from them. These are checked by
   rule, not listed one by one: every count must equal the number of times the source
   cites the target in its text.
@@ -850,7 +869,7 @@ keeping copies of it:
   without this it can't render a reference the way the site does. The functions take
   plain data that both the website's graph and the editor's loaded content produce.
   The editor numbers only what it loaded. Where it can't find a chapter, section or
-  embedded entity that the site's build would fail on, it shows an error instead of
+  embedded entity that the site would warn about or fail on, it shows an error instead of
   numbering what's left, so its numbers never silently differ from the site's.
 
 `locales.json` and `entity-labels.json` stay in `apps/website/lib/i18n` as data. The
@@ -873,7 +892,8 @@ Then, in the editor, one commit or a few per step:
    dictionary, as it does for a `labels` block.
 6. Hold each reference in its token, and write the list and number the tokens on save.
 7. Render references inline as atomic tokens.
-8. Replace the panel with the create and edit popup.
+8. Add the create and edit popup. The references panel already went in step 5,
+   with the dictionary editing.
 9. Release editor 2.0.0, in a separate PR, because 1.3.0 loses data on migrated
    content: it ignores the list, so a save drops it and leaves the `[i]` tokens behind.
 
@@ -912,3 +932,4 @@ branch in each repo. One commit per step, with approval before each commit.
 | 8 | Backlink counts after single use | Count every citation |
 | 9 | Places that chain a claim with an entity | Stay separate references |
 | 10 | Collection editing in the editor | Hand-edited YAML, reloaded on file change |
+| 11 | How the editor creates and edits references | One popup with search, term hits inserted at once, a sidebar pick, templates by use, targets in reading order |

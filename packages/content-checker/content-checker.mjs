@@ -3272,11 +3272,30 @@ function* inlineTokens(text) {
     yield { token: tokenOf(match), start: match.index, source: match[0] };
   }
 }
-function* referenceTokens(text) {
-  for (const { token } of inlineTokens(text)) {
-    if (token.kind === "ref" || token.kind === "legacy-ref") yield token;
-    else if (token.kind === "bold-italic" || token.kind === "bold") yield* referenceTokens(token.inner);
+function* placedInlineTokens(text, textStartsSentence = true) {
+  for (const match of inlineTokens(text)) {
+    yield { ...match, sentenceStart: atSentenceStart(text, match.start, textStartsSentence) };
   }
+}
+function* renderedReferences(text, textStartsSentence = true, offset = 0) {
+  for (const match of placedInlineTokens(text, textStartsSentence)) {
+    const { token } = match;
+    if (token.kind === "ref" || token.kind === "legacy-ref" || token.kind === "self-ref") {
+      yield { ...match, token, start: offset + match.start };
+    } else if (token.kind === "bold-italic" || token.kind === "bold") {
+      const marker = token.kind === "bold" ? 2 : 3;
+      yield* renderedReferences(token.inner, match.sentenceStart, offset + match.start + marker);
+    }
+  }
+}
+function* referenceTokens(text) {
+  for (const { token } of renderedReferences(text)) {
+    if (token.kind !== "self-ref") yield token;
+  }
+}
+function atSentenceStart(text, index, textStartsSentence = true) {
+  const textBefore = text.slice(0, index).trimEnd();
+  return textBefore.length === 0 ? textStartsSentence : /[.!?]$/.test(textBefore);
 }
 
 // ../display-templates/src/references.ts
