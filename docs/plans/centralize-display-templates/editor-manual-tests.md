@@ -28,15 +28,18 @@ Unless a check says otherwise, it uses any file with references. File names are 
 ## How references show
 
 9. Open a chapter and a section. Each reference shows as the site renders it, with
-   brackets and an underline on the linked part. Hovering a link shows its target.
-10. Capitalization: a reference at the start of a field, after `.`, `?` or `!`, and at
-    the start of `**...**` is capitalized. Type before a reference to move it into and
-    out of a sentence start, and the capital follows.
+   brackets around the linked part and no underline. Hovering a link shows its target
+   quickly.
+10. Capitalization: a reference at the start of a field or after `.`, `?` or `!` is
+    capitalized. One at the start of `**...**` is capitalized only if the bold run
+    itself starts a sentence. Type before a reference to move it into and out of a
+    sentence start, and the capital follows.
 11. Error states show the reference in red with a wavy underline and the reason on
     hover:
     - edit the templates file on disk to break or remove a template the open file uses;
     - paste a reference into a formula's content;
-    - wrap a reference in `$...$`.
+    - type a `$` right before a reference and another right after it, so the reference
+      is inside a math span. The site reads no references in math.
 12. Fix the templates file on disk. The references recover without reopening the panel,
     and the pop-up for the problem appeared while it was broken.
 13. Break `entity-labels.json` in services. Every reference shows the registry error.
@@ -60,9 +63,11 @@ Unless a check says otherwise, it uses any file with references. File names are 
 21. `[` inside `$...$`, inside `^...^` and after an unclosed `$` types a plain `[`.
 22. `[[` in a definition gives `[[]]` and the term flow as before. In a section file the
     second `[` does nothing.
-23. In a figure lead-in, `[` then `*` inserts `[*]`.
+23. In a figure lead-in, `[` then `*` inserts `[*]`. It shows as the figure's
+    self-reference and behaves as one unit, like other references.
 24. Create a theorem reference: search `23.10`, pick it, choose `a [23.10. Tétel]ben`,
-    check the preview at the caret, and confirm.
+    check the preview at the caret, and confirm. Move down the template list with the
+    arrow keys past its bottom edge: the list scrolls to keep the selected row in view.
 25. Tab on a term hit opens Text mode with that text, ready to edit.
 26. Select a word and type `[`. The word is the search and the link text, and
     confirming replaces it. With a selection across lines or one holding a reference,
@@ -70,8 +75,9 @@ Unless a check says otherwise, it uses any file with references. File names are 
 27. Enter a URL, `https://hu.wikipedia.org/wiki/Prímszám`, with the text `Wikipedia`.
 28. Pick a target in the sidebar while the popup is open. Start another pick and cancel
     it with Escape: both the pick and the popup close.
-29. In the sidebar, pick a claim inside a subsection. A notice says it can't be a
-    reference target.
+29. Search the popup for a claim inside a subsection or a details block. It isn't
+    offered, since the site doesn't number such claims, and the sidebar doesn't list
+    it either.
 30. The popup opens in every text field that reads references, including the figure
     caption and the quote, and in none of formula content, claim formula or typewriter
     rows.
@@ -93,7 +99,9 @@ Unless a check says otherwise, it uses any file with references. File names are 
     `each-the-index-label`. The target list shows the two groups.
 37. Switch an item to Text, edit it and confirm. On an item with two targets, the switch
     is disabled with the reason.
-38. Open (↗) on a target opens its panel, or the browser for a URL.
+38. Open (↗) on a target opens its panel, or the browser for a URL. Open the current
+    panel with a single click in the sidebar first: it stays open next to the target's
+    panel.
 39. A reference whose target was renamed shows "not found" and Re-pick.
 40. A damaged reference, typed as `[@zz]`, shows the reason and offers only Remove.
 41. Edit the templates file on disk while a popup is open. The target list and the
@@ -107,3 +115,8 @@ Unless a check says otherwise, it uses any file with references. File names are 
     neither line.
 44. Scroll with the popup open: it follows the reference. Scroll the reference out of
     view: the popup closes.
+
+## Saving
+
+45. Open several files, including long chapters, and save each without editing it.
+    `git status` in the content repo shows no change.
