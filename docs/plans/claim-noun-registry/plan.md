@@ -586,18 +586,21 @@ of `references-refactor`.
   says, not by its number, and stay `text` items.
 - A `label` group for claims in list templates. Every claim list groups by
   `parent`, which already keeps one noun per group.
-- Labels for chapters and sections (see open question 9).
+- Labels for `pont`, `fejezet` and `szakasz`. Each is one word that doesn't depend on
+  the target, so the registry would hold its forms without removing a template
+  (see open questions 6 and 9).
 
 ## Open questions
 
 | # | Question | Proposal |
 |---|---|---|
-| 1 | Is 80 to 60 templates worth a registry entry, a content field and an editor control? | Yes, mostly for what it fixes beyond the count: the panel title, one place for the inflected forms, and words ready for the English locale. Worth confirming before step 1. |
-| 2 | Default noun | `statement` for every parent type |
-| 3 | Does the knowledge-base panel title read the registry | Yes |
+| 1 | Is 80 to 60 templates worth a registry entry, a content field and an editor control? | Decided: yes, mostly for what it fixes beyond the count: the panel title, one place for the inflected forms, and words ready for the English locale. |
+| 2 | Default noun | Decided: `statement` for every parent type |
+| 3 | Does the knowledge-base panel title read the registry | Decided: yes |
 | 4 | The minority references | Review one by one. Keep the three `axiom` templates for the short form, and declare `peano-axiom` on the Peano definition. |
 | 5 | Templates whose case ending is inside the link today | Move the boundary and list the change, unless the review prefers `inflect` |
-| 6 | Does `pont` move into the registry | No |
-| 7 | Field name | `claim-label` |
+| 6 | Does `pont` move into the registry | Decided: no. The word is the same for every claim, so all 34 templates would stay and only the spelling would move, at the cost of five new case keys on every variant. |
+| 7 | Field name | Decided: `claim-label` |
 | 8 | Rename the registry from entity labels to labels | Decided: yes, as part of this work (step 1a) |
-| 9 | Do `fejezet` and `szakasz` become label types too | They fit the same shape, with one variant each and `target.label` on chapter and section targets. It removes no template, since each type has one word, but 18 templates write one of the two words today, most with a case ending, and the English locale needs its own words. The list templates write `fejezeteket`, a plural accusative, which would be a new case key for every variant. Proposal: a follow-up after this plan, not part of it. |
+| 9 | Do `fejezet` and `szakasz` become label types too | Decided: no, for the same reason as `pont`. Each type has one word, so no template would go, and the templates keep writing the words. |
+| 10 | Fold `ring-axiom`, `order-axiom`, `peano-axiom` and `group-axiom` into `axiom` | Decided: no. It would reword 47 of the 63 references to an axiom claim, nearly all in files other than the definition's own, where `a 3. axióma` no longer says which set is meant. It removes no template beyond what the registry already merges, only four variants. |
