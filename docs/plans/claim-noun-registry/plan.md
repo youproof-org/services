@@ -12,57 +12,63 @@ Status: first version, for review. The open questions are listed at the end.
 
 ## Current state
 
-Measured on the content repo at `279f341` (branch `centralize-display-templates`),
-after the step 4 migration to reference lists and before step 4a. Rerun with
+Measured on the content repo's `references-refactor` branch at `c9ed62d`, after
+steps 4 and 4a of the display templates plan: the references are lists, and the
+hand-chained lists are list references. Rerun with
 `node measure.cjs <content dir> <js-yaml module path>`, next to this plan.
 
 65 entity files hold 217 claim blocks: 46 theorems, 12 definitions and 7 remarks.
-They are cited 867 times: 844 through a template and 23 as literal text
-(`disztributivitási szabály`, always the same claim). 58 entities are cited through
-a claim.
+Their claims are cited 867 times: 844 through a template and 23 as literal text
+(`disztributivitási szabály`, always the same claim). A list reference counts once
+for each claim it names. 58 entities are cited through a claim.
 
-60 of the collection's templates accept a claim, and 58 accept nothing else. By the
-noun they write:
+80 of the collection's templates accept a claim: 60 for a single claim and 20 list
+templates. By the word they write for the claim:
 
-| Noun | Word | Templates | References | Cited from the parent or its proof | Cited from elsewhere |
-|---|---|---|---|---|---|
-| `point` | pont | 25 | 496 | 50 | 446 |
-| `statement` | állítás | 6 | 129 | 121 | 8 |
-| `property` | tulajdonság | 4 | 84 | 74 | 10 |
-| none | | 6 | 57 | 9 | 48 |
-| `ring-axiom` | gyűrűaxióma | 5 | 28 | 0 | 28 |
-| `axiom` | axióma | 3 | 16 | 5 | 11 |
-| `condition` | feltétel | 3 | 15 | 6 | 9 |
-| `order-axiom` | rendezési axióma | 4 | 11 | 0 | 11 |
-| `peano-axiom` | Peano-axióma | 3 | 6 | 0 | 6 |
-| `group-axiom` | csoportaxióma | 1 | 2 | 2 | 0 |
+| Noun | Word | Templates | Of which list | Citations | From the parent or its proof | From elsewhere |
+|---|---|---|---|---|---|---|
+| `point` | pont | 34 | 9 | 527 | 50 | 477 |
+| `statement` | állítás | 10 | 4 | 135 | 125 | 10 |
+| `property` | tulajdonság | 7 | 3 | 90 | 79 | 11 |
+| `ring-axiom` | gyűrűaxióma | 8 | 3 | 34 | 0 | 34 |
+| `axiom` | axióma | 4 | 1 | 18 | 5 | 13 |
+| `condition` | feltétel | 3 | 0 | 15 | 6 | 9 |
+| `order-axiom` | rendezési axióma | 4 | 0 | 11 | 0 | 11 |
+| `peano-axiom` | Peano-axióma | 3 | 0 | 6 | 0 | 6 |
+| `group-axiom` | csoportaxióma | 1 | 0 | 2 | 2 | 0 |
+| no word | | 6 | 0 | 6 | 0 | 6 |
+
+The last row is the templates that write no word for the claim at all, only its
+number: `a [24.1. Tétel 3.]` or a bare `[3.]`. They were mostly the non-final
+members of hand-chained lists, which is why step 4a took their citations from 57 to
+6. Four of the six are unused now.
 
 What the numbers show:
 
 - **The noun is not one per entity.** 37 of the 58 parents are cited with more than
   one noun. In almost every case it is `pont` plus one other word.
 - **`pont` is structural, the other words say what the claim is.** `pont` goes with
-  the parent named in the possessive (`a 24.1. Tétel 2. pontja`), and 446 of its 496
-  uses come from another file. `állítás` and `tulajdonság` stand alone
-  (`a 2. állítás`), and most of their uses are in the parent's own file or its
+  the parent named in the possessive (`a 24.1. Tétel 2. pontja`), and 477 of its 527
+  citations come from another file. `állítás` and `tulajdonság` stand alone
+  (`a 2. állítás`), and most of their citations are in the parent's own file or its
   proof, where the parent needs no naming. So any claim can be called a `pont` of
   its parent, whatever else it is called.
 - **Leaving `pont` aside, an entity has one noun.** 45 parents are cited with a noun
-  other than `pont`. 40 of them use exactly one. The other five account for 17 of
-  291 references (see [Minority references](#minority-references)).
+  other than `pont`. 40 of them use exactly one. The other five account for 20 of
+  311 citations (see [Minority references](#minority-references)).
 - **Theorems split between two words.** 28 theorems mainly use `állítás` and 12
-  mainly use `tulajdonság`. The axiom words belong to four definitions. 13 parents are only
-  ever cited as `pont` or with no noun, four of them remarks.
-- **The 29 templates of the eight nouns other than `pont` have 11 shapes.** Each
+  mainly use `tulajdonság`. The axiom words belong to four definitions. 13 parents
+  are only ever cited as `pont` or with no word, four of them remarks.
+- **The 40 templates of the eight nouns other than `pont` have 20 shapes.** Each
   noun repeats a subset of the same shapes: with or without the article, a few
-  cases, and the parent named with `szerinti`.
+  cases, the parent named with `szerinti`, and the same again as lists.
 - **The `pont` family is the larger half and a declared noun doesn't touch it.** Its
-  25 templates differ by how the parent is named, by case and by link extent, never
+  34 templates differ by how the parent is named, by case and by link extent, never
   by noun.
 
 The display templates plan estimated that the claim tail would shrink to about a
-dozen templates. With the measured data it shrinks from 60 to 42: the 29 noun
-templates become 11, and the 25 `pont` templates and the 6 without a noun stay. See
+dozen templates. With the measured data it shrinks from 80 to 60: the 40 noun
+templates become 20, and the 34 `pont` templates and the 6 without a word stay. See
 [The `pont` family](#the-pont-family) for what it would take to go further.
 
 The site already names a claim in one more place. `kbPanelClaim` in
@@ -99,13 +105,10 @@ write today.)
 
 Rules, on top of the existing ones:
 
-- `claim` is not a KB entity type. It is a label type: the registry holds it, and
-  `entityLabels(locale, 'claim', variant)` returns it, but nothing treats a claim as
-  an entity because of it. The registry code is in
-  `packages/content-model/src/entity-labels.ts`, and it ties the two together today:
-  `EntityLabelLocale` is keyed by `KbEntityType`, the registry check walks
-  `KB_ENTITY_TYPES`, and `labelType` throws on any other type. `KB_ENTITY_TYPES`
-  stays as it is, and a second list names the label types those three read.
+- A type in the registry is the type of a label, not the type of an entity. Until
+  now the two were the same list. `claim` is the first label type that isn't a KB
+  entity: a claim has no file and no page, and its label is chosen by the entity
+  that holds it. Step 1 has the code changes this needs.
 - Every variant defines every case key its locale declares, as for entities. That is
   8 variants with 13 Hungarian cases each. The cases the templates use today are
   `acc`, `ine`, `ins`, `pl`, `poss` and `poss-ine`. No new case key is needed.
@@ -163,12 +166,9 @@ entity's `label` and not yet the noun of its claims. So the outline entity gains
 `apps/website/lib/content/outline.ts` for the site, and the editor's loader for the
 editor. The editor then needs no claim logic of its own.
 
-`groupKeys` in the same file gives a claim a `parent` group and no `label` group.
-It stays that way in this plan (see [Non-goals](#non-goals)).
-
 ### Templates
 
-The 29 noun templates collapse to 11, one per shape:
+The 29 single-claim noun templates collapse to 11, one per shape:
 
 | New template | Renders, for a `property` and a `ring-axiom` | Replaces |
 |---|---|---|
@@ -198,7 +198,30 @@ two letters and changes no text. Each such reference goes into the manifest of
 intended changes, or its template uses `inflect` inside the link to keep today's
 boundary. Decide per template in step 4.
 
-The six templates without a noun and the 25 `pont` templates stay as they are.
+The 11 noun list templates collapse to 9:
+
+| New list template | Renders, for two claims | Replaces |
+|---|---|---|
+| `the-indexes-claim-label` | a [2.] és [3. tulajdonság] | 2 |
+| `each-the-index-claim-label` | a [2.] és a [3. gyűrűaxióma] | 2 |
+| `each-the-index-claim-label-pl` | a [2.] és a [3. állítás]ok | 1 |
+| `the-indexes-claim-label-acc` | a [2.] és [3. gyűrűaxiómá]t | 1 |
+| `indexes-claim-label-acc` | [2.] és [3. állítás]t | 1 |
+| `indexes-claim-label-pl` | [2.] és [3. gyűrűaxiómá]k | 1 |
+| `indexes-claim-label` | [2.] és [3. axióma] | 1 |
+| `the-parent-index-label-per-indexes-claim-label` | a [24.5. Tétel szerinti 2.] és [3. tulajdonság] | 1 |
+
+The ninth, `the-parent-index-label-indexes-statement-pl-poss`
+(`a [24.1. Tétel 2.] és [3. állítás]ai`), keeps its word. It needs a plural
+possessive, which is not a Hungarian case key today, and two citations don't justify
+adding one to every variant.
+
+Every claim list template groups by `parent`. An entity has one claim noun, so a
+group never mixes nouns, and `groupKeys` needs no `label` group for claims.
+
+The six templates without a word and the 34 `pont` templates stay as they are. Ten
+of the 80 templates are cited by no claim today, three of them noun templates.
+Removing those is a cleanup that doesn't depend on this plan.
 
 ### Minority references
 
@@ -206,22 +229,22 @@ Five parents are cited with two nouns other than `pont`:
 
 | Parent | Nouns | Likely reading |
 |---|---|---|
-| `definitions.gyuru-test` | `ring-axiom` 28, `axiom` 6 | `axióma` is the short form |
+| `definitions.gyuru-test` | `ring-axiom` 34, `axiom` 8 | `axióma` is the short form |
 | `definitions.peano-axiomarendszer` | `axiom` 10, `peano-axiom` 6 | `axióma` is the short form |
-| `theorems.reszcsoport-feltetele` | `property` 8, `condition` 3 | either word fits |
-| `theorems.gyuru-reszbenrendezesenek-tulajdonsagai` | `statement` 10, `property` 1 | one stray |
+| `theorems.reszcsoport-feltetele` | `property` 9, `condition` 3 | either word fits |
+| `theorems.gyuru-reszbenrendezesenek-tulajdonsagai` | `statement` 10, `property` 2 | strays |
 | `theorems.asszocialtsag-tulajdonsagai` | `property` 7, `statement` 1 | one stray |
 
 The entity declares the majority noun, with one proposed exception: the Peano
 definition declares `peano-axiom` although `axióma` is used more, because the short
-form can stay a template of its own and the specific word can't. By count 17
-references are in the minority, and 21 with that exception. Each has three outcomes,
+form can stay a template of its own and the specific word can't. By count 20
+citations are in the minority, and 24 with that exception. Each has three outcomes,
 chosen in a review with the content owner like the `plural-in` one:
 
 - take the declared noun, so the text changes and the reference goes into the
   manifest;
 - keep a template with the word written in. This fits the short form: the three
-  `axiom` templates stay, accepted on any claim, for the 16 references that say
+  `axiom` templates stay, accepted on any claim, for the 18 citations that say
   `axióma` about a ring or Peano axiom;
 - become a `text` item, for a one-off.
 
@@ -230,17 +253,18 @@ sentences yet.
 
 ### The `pont` family
 
-A declared noun leaves these 25 templates alone, because their word doesn't depend
+A declared noun leaves these 34 templates alone, because their word doesn't depend
 on the entity. They could still move their inflection into the registry, and three
 ways were looked at:
 
 | Option | Effect | Verdict |
 |---|---|---|
-| Leave `pont` written in the templates | 25 templates stay. Chapter and section templates write `fejezet` and `szakasz` the same way. | This plan |
-| A `point` variant, and a template field that pins the variant `target.label` reads | Same 25 templates, with the forms in the registry. Needs five new Hungarian case keys (`poss-acc`, `poss-sub`, `pl-poss`, `pl-poss-dat`, `pl-poss-acc`), and every variant of every type has to define each one. | Not worth it for one word |
-| The reference names the noun (`noun: point`) | One template per shape for every noun, about 20 in all. Adds a second concept to every claim reference and to the picker, which decision 4 of the display templates plan rejected for `case`. | No |
+| Leave `pont` written in the templates | 34 templates stay. Chapter and section templates write `fejezet` and `szakasz` the same way. | This plan |
+| A `point` variant, and a template field that pins the variant `target.label` reads | Same 34 templates, with the forms in the registry. Needs five new Hungarian case keys (`poss-acc`, `poss-sub`, `pl-poss`, `pl-poss-dat`, `pl-poss-acc`), and every variant of every type has to define each one. | Not worth it for one word |
+| The reference names the noun (`noun: point`) | One template per shape for every noun. Adds a second concept to every claim reference and to the picker, which decision 4 of the display templates plan rejected for `case`. | No |
 
-What would shrink the family is unrelated to the noun: 13 of the 25 are used once,
+What would shrink the family is unrelated to the noun: ten of its 25 single-claim
+templates are used once or not at all,
 and several differ only in link extent (`pontja]` against `pont]ja`) or in writing
 `megjegyzés` where `target.parent.label.canonical` would do. Merging those is a
 cleanup of the collection and can happen at any time. Step 4a of the display
@@ -284,7 +308,7 @@ bad value is visible.
 The template picker needs nothing new. It renders each template against the actual
 target through the shared engine, so a claim's noun shows up in the previews once
 the editor's context carries `label`. The popup lists the templates for the
-target's kind, most used first, so a claim's list gets up to 18 entries shorter,
+target's kind, most used first, so a claim's list gets up to 20 entries shorter,
 depending on how many written-in nouns the review keeps.
 
 This depends on step 7 of the display templates plan. Its services side is under
@@ -299,9 +323,14 @@ The dropdown itself is editor code.
 ### 1. Registry (services)
 
 Add the `claim` entry to `entity-labels.json` with all 8 variants and 13 cases. The
-content owner reviews the Hungarian forms before the commit. In
-`packages/content-model/src/entity-labels.ts`, separate the label types from
-`KB_ENTITY_TYPES` and relax the lowercase check for a leading capital. Extend
+content owner reviews the Hungarian forms before the commit.
+
+The registry code in `packages/content-model/src/entity-labels.ts` treats label
+types and KB entity types as one list in three places: `EntityLabelLocale` is keyed
+by `KbEntityType`, the registry check walks `KB_ENTITY_TYPES`, and `labelType`
+throws on any other type. Give those three a list of label types of their own, and
+leave `KB_ENTITY_TYPES` to mean entities. Relax the lowercase check for a leading
+capital. Extend
 `packages/content-model/test/entity-labels.test.ts`. The website's
 `lib/i18n/entity-labels.ts` only binds the registry file to those functions, so it
 needs no change beyond its re-exports.
@@ -347,8 +376,8 @@ references (see [Delivery](#delivery)):
 - sets `claim-label` on each entity whose claims are cited with a noun other than
   `pont` and other than the default. From the data that is the 12 `property`
   theorems, the `condition` theorem and the four axiom definitions;
-- adds the 11 templates to the collection under reviewed names;
-- rewrites each reference that uses one of the 29 noun templates to the matching
+- adds the 19 templates to the collection under reviewed names;
+- rewrites each reference that uses one of the 40 noun templates to the matching
   new template, when the noun is the parent's declared one;
 - lists the minority references for review and leaves them unchanged until each
   has a decision;
@@ -463,19 +492,20 @@ content.
 - A noun per claim block.
 - The 23 `disztributivitási szabály` references. They name one claim by what it
   says, not by its number, and stay `text` items.
-- Claim list templates. Step 4a of the display templates plan designs them. Once
-  `target.label` exists on a claim, a list template can read it. Grouping claims by
-  `label` would need `groupKeys` to give a claim a `label` group, which it doesn't
-  today. Add it when a list template needs it.
+- A `label` group for claims in list templates. Every claim list groups by
+  `parent`, which already keeps one noun per group.
+- Labels for chapters and sections (see open question 9).
 
 ## Open questions
 
 | # | Question | Proposal |
 |---|---|---|
-| 1 | Is 60 to 42 templates worth a registry entry, a content field and an editor control? | Yes, mostly for what it fixes beyond the count: the panel title, one place for the inflected forms, and words ready for the English locale. Worth confirming before step 1. |
+| 1 | Is 80 to 60 templates worth a registry entry, a content field and an editor control? | Yes, mostly for what it fixes beyond the count: the panel title, one place for the inflected forms, and words ready for the English locale. Worth confirming before step 1. |
 | 2 | Default noun | `statement` for every parent type |
 | 3 | Does the knowledge-base panel title read the registry | Yes |
 | 4 | The minority references | Review one by one. Keep the three `axiom` templates for the short form, and declare `peano-axiom` on the Peano definition. |
 | 5 | Templates whose case ending is inside the link today | Move the boundary and list the change, unless the review prefers `inflect` |
 | 6 | Does `pont` move into the registry | No |
 | 7 | Field name | `claim-label` |
+| 8 | Rename the registry from entity labels to labels, now that a type in it is a label type | Yes for the concept and the code names. The file name `entity-labels.json` is read by path from the editor, from `check-refs.mjs` and from `ref-check.yml`, so renaming it is cheapest on `references-refactor`, before editor 2.0.0 and the 2.4.0 release. After that it needs the three repos to change together. |
+| 9 | Do `fejezet` and `szakasz` become label types too | They fit the same shape, with one variant each and `target.label` on chapter and section targets. It removes no template, since each type has one word, but 18 templates write one of the two words today, most with a case ending, and the English locale needs its own words. The list templates write `fejezeteket`, a plural accusative, which would be a new case key for every variant. Proposal: a follow-up after this plan, not part of it. |

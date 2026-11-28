@@ -20,6 +20,7 @@ const NOUNS = [
   ['pont', 'point'],
 ]
 const nounOf = (template) => NOUNS.find(([word]) => template.includes(word))?.[1] ?? '(none)'
+const textOf = (entry) => entry.template ?? JSON.stringify(entry.list)
 
 const templates = yaml.load(
   fs.readFileSync(path.join(contentDir, 'display-templates/display-templates.hu.yaml'), 'utf8'),
@@ -53,7 +54,7 @@ const readReferences = (node, file) => {
         if (typeof target !== 'string' || !target.includes('.claims.')) continue
         if (item.text !== undefined) { bump(literal, item.text); continue }
         const parent = target.replace(/\.claims\..*$/, '')
-        const noun = nounOf(templates[item.display].template ?? JSON.stringify(templates[item.display].list))
+        const noun = nounOf(textOf(templates[item.display]))
         bump(uses, item.display)
         bump((nounsByParent[parent] ??= {}), noun)
         const ownFile = file.includes(parent.split('.').pop())
@@ -83,16 +84,20 @@ console.log(`Files with claim blocks: ${claimFiles}, claim blocks: ${claimBlocks
 
 console.log('Uses per template')
 for (const [name, t] of claimTemplates) {
-  console.log(`${String(uses[name] ?? 0).padStart(5)}  ${nounOf(t.template ?? '').padEnd(12)} ${name}`)
+  console.log(`${String(uses[name] ?? 0).padStart(5)}  ${(t.list ? 'list' : 'single').padEnd(7)} ${nounOf(textOf(t)).padEnd(12)} ${name}`)
 }
 
 const totals = {}
 const templatesPerNoun = {}
 for (const nouns of Object.values(nounsByParent)) for (const [noun, n] of Object.entries(nouns)) totals[noun] = (totals[noun] ?? 0) + n
-for (const [, t] of claimTemplates) bump(templatesPerNoun, nounOf(t.template ?? ''))
-console.log('\nNoun: references, templates, cited from')
+const listsPerNoun = {}
+for (const [, t] of claimTemplates) {
+  bump(templatesPerNoun, nounOf(textOf(t)))
+  if (t.list) bump(listsPerNoun, nounOf(textOf(t)))
+}
+console.log('\nNoun: target citations, templates, of which list templates, cited from')
 for (const [noun, n] of Object.entries(totals).sort((a, b) => b[1] - a[1])) {
-  console.log(`${String(n).padStart(5)}  ${String(templatesPerNoun[noun]).padStart(3)}  ${noun.padEnd(12)} ${JSON.stringify(nounsBySource[noun])}`)
+  console.log(`${String(n).padStart(5)}  ${String(templatesPerNoun[noun]).padStart(3)}  ${String(listsPerNoun[noun] ?? 0).padStart(3)}  ${noun.padEnd(12)} ${JSON.stringify(nounsBySource[noun])}`)
 }
 
 const parents = Object.keys(nounsByParent)
