@@ -308,9 +308,9 @@ separate. The other twelve places were reviewed one by one:
 
 A list sorts its targets by their position in the content, which is why rows 1 and
 2 reorder. In rows 4 and 5 the two entities have different labels, so they are two
-groups and the group separator `, valamint` replaces `és`. Row 6 is recorded as
-folded with its rendering kept; whether it is folded or left as two references is
-still to confirm.
+groups and the group separator `, valamint` replaces `és`. Row 6 is folded
+with its rendering kept: `the-indexes` writes the article and the first number, then
+the bare numbers, with no noun.
 
 After rows 1, 2 and 9 no claim is cited without a word. `the-parent-index-label-index`
 has no use left and is removed, and `claim` comes off the targets of the number-only
