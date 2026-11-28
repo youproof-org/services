@@ -42,7 +42,8 @@ templates. By the word they write for the claim:
 The last row is the templates that write no word for the claim at all, only its
 number: `a [24.1. Tétel 3.]` or a bare `[3.]`. They were mostly the non-final
 members of hand-chained lists, which is why step 4a took their citations from 57 to
-6. Four of the six are unused now.
+6. Four of the six are unused now. The remaining six citations get a word in this
+plan (see [Chains the earlier conversion missed](#chains-the-earlier-conversion-missed)).
 
 What the numbers show:
 
@@ -275,6 +276,46 @@ chosen in a review with the content owner like the `plural-in` one:
 The "Likely reading" column is a guess from the counts. Nobody has read the
 sentences yet.
 
+### Chains the earlier conversion missed
+
+Step 4a of the display templates plan converted the hand-chained lists its collector
+found. The collector files a whole run of chained references by what the run
+contains, so a claim chain that continues into a term (`[48], [49] és [50], valamint
+az [51]`, where `[51]` is a term) counted as mixed scope and stayed. `find-chains.cjs`,
+next to this plan, cuts a run at every term and external link and reports each
+stretch of two or more references to entities, claims, sections or chapters. It also
+lists the references that show only a number outside any chain. Run it with
+`node find-chains.cjs <content dir> <js-yaml module path>`.
+
+At `c9ed62d` it reports 16 chains and 2 lone number-only references. Six chains are
+a claim next to an entity, which decision 9 of the display templates plan keeps
+separate. The other twelve places were reviewed one by one:
+
+| # | File | Text now | Decision | Renders after |
+|---|---|---|---|---|
+| 1 | `abszolutertek-euklideszi-norma-bizonyitas.yaml` | `mivel [48], [49] és [50], valamint az` | One `the-parent-index-label-indexes-point-pl-poss` item | `a [15.1. Tétel 2.], [3.] és [5. pontjai]`, was `2., 5. és 3.` |
+| 2 | same file | `mivel [61], [62], [63] és [64], valamint az` | One `the-parent-index-label-indexes-point-pl-poss` item | `a [15.1. Tétel 2.], [3.], [4.] és [5. pontjai]`, was `2., 5., 3. és 4.` |
+| 3 | `18-…/05-kongruenciak.yaml` | `hogy [35], valamint [36] miért` | One `each-the-index-label-ine` item | Unchanged |
+| 4 | `csoportelem-rendjere-vonatkozo-osszefuggesek-bizonyitas.yaml` | `tehát [21] és [22] alapján` | One `each-the-index-label` item | `a [18.15. Tétel], valamint a [18.18. Definíció]`, was `és` |
+| 5 | `normalosztok-es-csoporthomomorfizmusok-bizonyitas.yaml` | `akkor [2] és [3] alapján` | One `each-the-index-label` item | `a [25.5. Tétel], valamint a [25.6. Definíció]`, was `és` |
+| 6 | `08-…/08-de-hogy-jon-ide-a-kriptografia.yaml` | `[0] és [1], valamint az ebben a fejezetben` | One item with a new number-only chapter list template, `the-indexes` | Unchanged: `A [6.] és [7.]` |
+| 7 | `23-…/07-a-kicsi-kodolo-kulcsok-problemaja.yaml` | `[22], valamint a [23]` | Keep | |
+| 8 | `05-…/05-az-aktiv-tamado.yaml` | `[0], míg a hash függvényekről [1]ban` | Keep | |
+| 9 | `euler-fermat-tetel-bizonyitas.yaml` | `[17] alapján` | Not a list: `the-parent-index-label-index` becomes `the-parent-index-label-index-point-poss` | `A [20.2. Tétel 4. pontja]`, was `A [20.2. Tétel 4.]` |
+| 10 | `csoportok-homomorfizmustetele-bizonyitas.yaml` | `[17], valamint [18] utáni [19]` | Keep: the definition only anchors the remark | |
+| 11 | `pozitivitastartomany-szukseges-es-elegseges-feltetele-bizonyitas.yaml` | `a [69]ok és [70] miatt` | Keep: one member is a name | |
+| 12 | `26-…/12-az-aks-primteszt.yaml` | `a [2] vagy a [3]` | Keep: both are names | |
+
+A list sorts its targets by their position in the content, which is why rows 1 and
+2 reorder. In rows 4 and 5 the two entities have different labels, so they are two
+groups and the group separator `, valamint` replaces `és`. Row 6 is recorded as
+folded with its rendering kept; whether it is folded or left as two references is
+still to confirm.
+
+After rows 1, 2 and 9 no claim is cited without a word. `the-parent-index-label-index`
+has no use left and is removed, and `claim` comes off the targets of the number-only
+templates that still list it.
+
 ### The `pont` family
 
 A declared noun leaves these 34 templates alone, because their word doesn't depend
@@ -419,10 +460,14 @@ references (see [Delivery](#delivery)):
   new template, when the noun is the parent's declared one;
 - lists the minority references for review and leaves them unchanged until each
   has a decision;
+- converts the reviewed places in
+  [Chains the earlier conversion missed](#chains-the-earlier-conversion-missed),
+  renumbering the later `[n]` tokens of each text as the step 4a conversion did;
 - removes the noun templates that nothing uses any more.
 
 The script stops if a rewritten reference would render different text, so a wrong
-`claim-label` can't pass.
+`claim-label` can't pass. The reviewed places above are the exception: they come
+from a places file, and each must render exactly what its row records.
 
 Update the "Labels System" and "References System" sections of
 `docs/content-model.md`, the template name pattern there, and the content repo's
@@ -473,9 +518,17 @@ The intended changes are:
 - the minority references whose review chose the declared noun;
 - the references whose link boundary moves (see [Templates](#templates));
 - the panel titles of the entities that declare a `claim-label`, checked by rule:
-  each title must be the index and the declared noun.
+  each title must be the index and the declared noun;
+- the reviewed places in
+  [Chains the earlier conversion missed](#chains-the-earlier-conversion-missed).
+  Rows 1, 2, 4, 5 and 9 change the page text, and the file records the text before
+  and after for each. Rows 3 and 6 must keep the page text and the targets, and only
+  the number of reference items may differ.
 
-Everything else must be identical.
+Everything else must be identical: every reference display, every page text and
+every backlink count outside the listed places. A difference that is not in the
+intended-changes file is a migration bug, and an entry in the file that the diff
+doesn't produce fails the check too, so the file can't hold more than what changed.
 
 ### 7. Editor (editor repo)
 
