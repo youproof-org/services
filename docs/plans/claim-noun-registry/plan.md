@@ -4,9 +4,10 @@ Give a claim a label, the way a definition or a theorem has one. An entity names
 its claims are called, the word and its inflected forms live in the label registry,
 and claim templates read `target.label` instead of carrying the noun.
 
-This is the later phase named in decision 7 of
+This is the phase named in decision 7 of
 `docs/plans/centralize-display-templates/plan.md`. It builds on that plan and on
-`docs/plans/centralize-entity-labels/plan.md`.
+`docs/plans/centralize-entity-labels/plan.md`, and it is merged into
+`references-refactor`, so the three ship as one release.
 
 Status: first version, for review. The open questions are listed at the end.
 
@@ -81,8 +82,9 @@ show as `1. állítás` on the ring definition's page while the text calls them
 
 ### Registry
 
-`apps/website/lib/i18n/entity-labels.json` gets a `claim` entry per locale, with the
-same shape as an entity type:
+The registry (`apps/website/lib/i18n/entity-labels.json` today, see
+[From entity labels to labels](#from-entity-labels-to-labels)) gets a `claim` entry
+per locale, with the same shape as an entity type:
 
 ```json
 "claim": {
@@ -123,6 +125,28 @@ Rules, on top of the existing ones:
 
 **No `point` variant.** `pont` is not what a claim is, so an entity never declares
 it. See [The `pont` family](#the-pont-family).
+
+### From entity labels to labels
+
+Once a type in the registry is a label type, "entity labels" is the wrong name for
+it. The registry becomes the label registry, in the file and in the code:
+
+| Today | Becomes |
+|---|---|
+| `apps/website/lib/i18n/entity-labels.json` | `labels.json` |
+| `apps/website/lib/i18n/entity-labels.ts`, `packages/content-model/src/entity-labels.ts` | `labels.ts` |
+| `EntityLabelRegistry`, `EntityLabelLocale`, `EntityLabelType`, `EntityLabelVariant`, `EntityLabels` | the same without `Entity` |
+| `entityLabels`, `entityLabelCases`, `entityLabelVariant`, `entityLabelVariants`, `validateEntityLabelRegistry` | the same without `entity`, settled in step 1a |
+
+The file is read by path from outside services: the editor
+(`src/content/servicesData.ts`), the content repo's `scripts/check-refs.mjs`, and
+`ref-check.yml`, which downloads it from `stable/staging`. Nothing released reads
+it yet under a name that has to keep working: editor 2.0.0 and the content check
+that downloads the checker both ship with `references-refactor`. So the rename
+costs three coordinated commits now, and would cost a three-repo release later.
+
+Finished one-off scripts and the plans under `docs/plans/` keep the old name. They
+describe the past.
 
 ### Entity files
 
@@ -311,18 +335,18 @@ the editor's context carries `label`. The popup lists the templates for the
 target's kind, most used first, so a claim's list gets up to 20 entries shorter,
 depending on how many written-in nouns the review keeps.
 
-This depends on step 7 of the display templates plan. Its services side is under
-way: the registry code, the collection and reference readers, the numbering and the
-template context are all in the packages, and the content checker is built from
-them. The editor side has not started. The editor reads `entity-labels.json` from
-the services checkout, so the claim variants reach it without an editor release.
-The dropdown itself is editor code.
+This builds on step 7 of the display templates plan, which is under way on the
+`references-refactor` branches: the registry code, the collection and reference
+readers, the numbering and the template context are in the services packages, and
+the editor work is on its own branch. The editor reads the registry file from the
+services checkout, so the claim variants reach it without editor code. The
+dropdown itself is editor code.
 
 ## Steps
 
 ### 1. Registry (services)
 
-Add the `claim` entry to `entity-labels.json` with all 8 variants and 13 cases. The
+Add the `claim` entry to the registry file with all 8 variants and 13 cases. The
 content owner reviews the Hungarian forms before the commit.
 
 The registry code in `packages/content-model/src/entity-labels.ts` treats label
@@ -334,6 +358,18 @@ capital. Extend
 `packages/content-model/test/entity-labels.test.ts`. The website's
 `lib/i18n/entity-labels.ts` only binds the registry file to those functions, so it
 needs no change beyond its re-exports.
+
+### 1a. Rename to labels (services)
+
+Its own commit, with no change in behaviour: rename the registry file, the two
+modules, the types and the functions as listed under
+[From entity labels to labels](#from-entity-labels-to-labels), with their tests
+(`apps/website/test/entity-labels.test.mjs`,
+`packages/content-model/test/entity-labels.test.ts`) and every importer. Regenerate
+the content checker. Update the error messages that name the file.
+
+The editor and the content repo read the file by path, so their halves (steps 5
+and 7) land together with this one on the three `references-refactor` branches.
 
 ### 2. Loader and context (services)
 
@@ -364,9 +400,11 @@ decision goes the other way.
 Update `docs/content-site-and-static-generation.md` and `docs/i18n-design.md` where
 they describe labels and reference templates.
 
-Version: the label and template changes ship as one release, 2.4.0, from
-`references-refactor`. This phase comes after it, so it gets its own bump, to
-2.5.0. If it ends up in that release, it gets none.
+Both documents name `entity-labels.json` and the entity label registry. Update
+them for the rename.
+
+No version bump. This phase is merged into `references-refactor` and ships in its
+release, 2.4.0, which already carries the label and template changes.
 
 ### 4. Content migration (content repo)
 
@@ -396,7 +434,7 @@ templates.
 `scripts/check-refs.mjs` no longer keeps its own copy of the template rules. It
 runs the build's checks from `packages/content-checker/content-checker.mjs`, a
 committed file that services generates from the packages, and it reads
-`entity-labels.json` beside it. So the work splits in two:
+the registry file beside it. So the work splits in two:
 
 - **Comes with services.** The template checks, including the claim shape that
   allows `target.label` and the case key check on it, reach the script through the
@@ -406,6 +444,10 @@ committed file that services generates from the packages, and it reads
   for `claim-label`: it is a `claim` variant of the entity's locale, and it sits on
   a definition, theorem or remark. Warn on a `claim-label` in a file without claim
   blocks.
+
+For the rename, point `check-refs.mjs` and `ref-check.yml` at `labels.json`, and
+update the `--registry` help, `CLAUDE.md` and `docs/content-model.md` where they
+name the file.
 
 `ref-check.yml` downloads the checker and the registry from services
 `stable/staging`. Until this plan's services change is there, a content pull
@@ -437,54 +479,51 @@ Everything else must be identical.
 
 ### 7. Editor (editor repo)
 
-This comes after the nine editor steps of the display templates plan, which end
-with editor 2.0.0. Those steps have the editor bundle the shared packages from the
-services checkout and build the content outline from what it loads. On top of that:
+Two parts, on the editor's `references-refactor` branch.
+
+**The rename has to be in editor 2.0.0.** Read `labels.json` in
+`src/content/servicesData.ts`, and update the tests, `README.md`, `package.json`
+and `docs/extension-messaging.md` where they name the file. An editor released
+with the old path can't find the registry in a services checkout that has step 1a.
+
+**The claim noun**, on top of the editor steps of the display templates plan, which
+have the editor bundle the shared packages and build the content outline:
 
 1. Read `claim-label` in the editor's loader and pass it into the outline entity as
    `claimLabel`. The shared `buildContext` then gives the template previews the
    claim noun.
 2. Add the claim noun dropdown to the entity header.
-3. Release a new editor version, built against a services checkout that has step 2.
 
-Add the checks that need a real VS Code window to a manual test list next to this
-plan, as `docs/plans/centralize-display-templates/editor-manual-tests.md` does for
-2.0.0: the dropdown writes and removes the field, and the previews of a claim
-reference follow it.
+Add the checks that need a real VS Code window to
+`docs/plans/centralize-display-templates/editor-manual-tests.md`: the dropdown
+writes and removes the field, and the previews of a claim reference follow it.
 
-Separate PR. An editor that predates it can't set the noun, and its previews of a
-template that reads `target.label` on a claim fail the shared template check.
-
-Check first whether editor 2.0.0 keeps a top-level field it doesn't know when it
-saves an entity file. Editor 1.3.0 dropped the `references` list that way, which is
-why the display templates plan releases the editor first. If 2.0.0 would drop
-`claim-label`, this editor version has to be out before authors edit migrated
-content.
+This ships in 2.0.0 as well. That version doesn't go out without it.
 
 ## Delivery
 
-- Services: branch `claim-noun-registry`, which carries `references-refactor`. That
-  branch holds the label and the template changes and reaches `development` in one
-  PR, as one release. Merge it in again as it moves, and merge `development`
-  instead once it has landed. One commit per step, with approval before each commit.
-- Content: a branch off `content/yp-94-chapter-26` after the content
-  `references-refactor` branch is merged back into it, and after step 4a of the
-  display templates plan, so the claim lists are already list templates when this
-  migration runs. If chapter 26 is still being finalized there, the same rule
-  applies as for that migration: nothing else merges meanwhile, or the script is
-  rerun on conflict.
-- Editor: before the content migration reaches a branch authors edit, if the check
-  in step 7 shows an older editor would drop `claim-label`. Otherwise in any order.
-- Both mismatched pairs are safe, so this needs no freeze and no `pr-gate` bypass:
+This work is merged into `references-refactor` in each repo and ships with it, as
+part of the release the display templates plan describes: the editor first, as
+2.0.0, then services and content together after chapter 26 is finalized. It adds
+no release, no freeze and no bypass of its own.
 
-| Pair | Result |
-|---|---|
-| New services, old content | Builds and renders as before. No entity declares a `claim-label`, and the old templates are still valid. Only the panel title can differ, and without a `claim-label` it doesn't. |
-| Old services, new content | Build fails before the upload. The template check rejects `target.label` on a claim, and `doc-examples` loads the whole graph in the unit-test step. |
+- Services: branch `claim-noun-registry` off `references-refactor`, merged back into
+  it when done. One commit per step, with approval before each commit.
+- Content: a branch off the content `references-refactor`, after step 4a, merged
+  back into it. The migration script is repeatable, like the others there.
+- Editor: on the editor's `references-refactor`, before 2.0.0 is released.
+- The rename (steps 1a, 5 and 7) lands on the three branches together. Between
+  those commits, a checkout of one repo can't find the registry in another.
 
-  Services goes first, then content. Content pull requests are checked with the
-  services code on `stable/staging` (step 5), which is one more reason for that
-  order.
+Within the release, the claim noun adds no ordering constraint of its own. Old
+content builds unchanged with the new services, since no entity declares a
+`claim-label`. New content with old services fails the build before the upload,
+because the template check rejects `target.label` on a claim. Services still goes
+first, as that plan's runbook already requires.
+
+Content pull requests are checked with the services code on `stable/staging`
+(step 5), so they fail there until the release reaches it, as they do for the rest
+of `references-refactor`.
 
 ## Non-goals
 
@@ -507,5 +546,5 @@ content.
 | 5 | Templates whose case ending is inside the link today | Move the boundary and list the change, unless the review prefers `inflect` |
 | 6 | Does `pont` move into the registry | No |
 | 7 | Field name | `claim-label` |
-| 8 | Rename the registry from entity labels to labels, now that a type in it is a label type | Yes for the concept and the code names. The file name `entity-labels.json` is read by path from the editor, from `check-refs.mjs` and from `ref-check.yml`, so renaming it is cheapest on `references-refactor`, before editor 2.0.0 and the 2.4.0 release. After that it needs the three repos to change together. |
+| 8 | Rename the registry from entity labels to labels | Decided: yes, as part of this work (step 1a) |
 | 9 | Do `fejezet` and `szakasz` become label types too | They fit the same shape, with one variant each and `target.label` on chapter and section targets. It removes no template, since each type has one word, but 18 templates write one of the two words today, most with a case ending, and the English locale needs its own words. The list templates write `fejezeteket`, a plural accusative, which would be a new case key for every variant. Proposal: a follow-up after this plan, not part of it. |
